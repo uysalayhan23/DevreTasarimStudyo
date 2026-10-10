@@ -2039,6 +2039,29 @@ function upgradeLegacyLm358PhysicalPackage(l){
 }
 for(const l of L.lessons)upgradeLegacyLm358PhysicalPackage(l);
 
+// Physical probes are part of the rich series/parallel labs. Keep the simulated
+// electric path intact: current probe contacts substitute for the jack-to-wire
+// joins while the black parallel probe touches one shared branch node.
+for(const id of ['dc-circuits-src-07','dc-circuits-src-08']){
+ const l=L.byId[id];if(!l)continue;const p=l.project;
+ if(id==='dc-circuits-src-08'){
+  const branchWires=p.wires.filter(w=>w.from?.c==='a'&&w.from?.p==='COM'&&['r1','r2'].includes(w.to?.c)&&w.to?.p==='1');
+  if(branchWires.length===2){
+   p.wires=p.wires.filter(w=>!branchWires.includes(w));
+   p.wires.push(W('r1','1','r2','1','R1 ve R2 ortak pozitif kola bağlanır.','Paralel dirençler iki ortak düğüm arasında bulunur.'));
+  }
+ }
+ for(const m of [...p.components].filter(c=>c.typeId==='unit-ut33d-plus'))ensureUT33Probes(l,m);
+ if(id==='dc-circuits-src-08'){
+  const black=p.components.find(c=>c.id==='a-black');
+  if(black&&!black.probeTarget)black.probeTarget={c:'r1',p:'1'};
+ }
+ const probeIds=new Set(p.components.filter(c=>/^test-probe-/.test(c.typeId)).map(c=>c.id));
+ l.steps=p.wires.filter(w=>!w.probeLead&&!probeIds.has(w.from?.c)&&!probeIds.has(w.to?.c)).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Güç devresinin terminallerini bağlayın.',why:w.tutorialWhy||'Bu iletken ölçüm devresinin gerçek yolunu tamamlar.',color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ if(l.pedagogyReview){l.pedagogyReview.componentIds=p.components.map(c=>c.typeId);l.pedagogyReview.physicalProbes=true}
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
