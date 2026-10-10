@@ -101,8 +101,19 @@ test('cable branches are electrical connections; matching colors alone are not',
   t.project.wires.push({id:'wa',from:{c:s.id,p:'L'},to:{j:'j'}},{id:'wb',from:{j:'j'},to:{c:h.id,p:'X1'}});t.wire(h,'X2',s,'N');
   t.solve();assert.equal(h._active,true);t.project.wires.shift();t.solve();assert.equal(h._active,false);
 });
-test('PLC and generic PLC I/O clear simulation states',()=>{
-  for(const id of ['plc-0-0','plc-io-symbol']){const t=circuit(),h=t.add('lamp-green','h');h._active=true;t.add(id,'plc');assert.equal(t.solve().blocked,true);assert.equal(h._active,false)}
+test('PLC and generic PLC I/O clear stale states without blocking independent circuits',()=>{
+  for(const id of ['plc-0-0','plc-io-symbol']){
+    const t=circuit(),h=t.add('lamp-green','h');h._active=true;
+    const plc=t.add(id,'plc'),result=t.solve();
+    assert.equal(result.blocked,false,id+' must not disable the circuit');
+    assert.equal(result.stable,true,id+' converges');
+    assert.equal(h._active,false,id+' clears stale lamp');
+    assert.equal(plc._active,false,id+' stays inactive without a supply');
+    if(byId[id].isPLC){
+      assert.equal(plc._plcRuntime.powered,false,id+' PLC not powered');
+      assert.ok(Object.values(plc._plcRuntime.outputs).every(value=>value===false),id+' outputs cannot energize without supply');
+    }
+  }
 });
 test('short circuits stay off; an NC feedback loop advances without blocking other branches',()=>{
   const t=circuit(),s=t.add('supply-1p','s'),h=t.add('lamp-green','h');t.wire(s,'L',s,'N');t.wire(s,'L',h,'X1');t.wire(s,'N',h,'X2');
