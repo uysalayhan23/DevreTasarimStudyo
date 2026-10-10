@@ -7,10 +7,10 @@ const Audit=require('../scripts/visual-corpus-audit-v11920.cjs');
 test('WP-016 visual corpus audit inventories manifests and mapped sidecars without hiding unaudited assets',()=>{
   const r=Audit.audit();
   assert.equal(r.version,'v1.19.20-visual-corpus-audit1');
-  assert.equal(r.totals.records,264);
+  assert.equal(r.totals.records,266);
   assert.equal(r.totals.pixelAudited,264);
-  assert.equal(r.totals.pixelAuditPending,0);
-  assert.equal(r.totals.sourceReviewPending,50);
+  assert.equal(r.totals.pixelAuditPending,2);
+  assert.equal(r.totals.sourceReviewPending,52);
   assert.equal(r.totals.exactModelRisk,163);
   assert.equal(r.byManifest.plc.total,202);
   assert.equal(r.byManifest.plc.pixelAudited,202);
@@ -20,8 +20,11 @@ test('WP-016 visual corpus audit inventories manifests and mapped sidecars witho
   assert.equal(r.byManifest.material.total,48);
   assert.equal(r.byManifest.material.pixelAudited,48);
   assert.equal(r.byManifest.material.pixelAuditPending,0);
-  assert.equal(r.byManifest['mapped-sidecar'].total,6);
+  assert.equal(r.byManifest['mapped-sidecar'].total,8);
   assert.equal(r.byManifest['mapped-sidecar'].pixelAudited,6);
+  assert.equal(r.byManifest['mapped-sidecar'].pixelAuditPending,2);
+  const pending=r.queue.filter(row=>row.manifest==='mapped-sidecar'&&['ordel-top-v115','weid-front-v115'].includes(row.assetKey));
+  assert.equal(pending.length,2,'new mapped sidecars remain visible, not falsely pixel-audited');
 });
 
 test('WP-016 resolved exact panel sidecars leave the audit queue while unresolved sidecars remain visible',()=>{
