@@ -1,5 +1,5 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),zlib=require('node:zlib');
 const ROOT=path.resolve(__dirname,'..'),ui=fs.readFileSync(path.join(ROOT,'dist/tutorial-mode.js'),'utf8'),browser=fs.readFileSync(path.join(ROOT,'scripts/browser-visual-hl-v11920.cjs'),'utf8');
 function fragment(start,end){const a=ui.indexOf(start),b=ui.indexOf(end,a);assert.ok(a>=0&&b>a);return ui.slice(a,b)}
 const source=fragment('function applyCoachUi(coach){','function persistCoachBox');
@@ -51,15 +51,15 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
   data.copy(b,8);b.writeUInt32BE(crc(b.subarray(4,8+data.length)),8+data.length);
   return b;
  }
- function sample(w=1440,h=1000){
+ function sample(w=1,h=1){
   const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(w,0);ihdr.writeUInt32BE(h,4);ihdr[9]=6;
-  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',Buffer.from([1,2,3])),chunk('IEND')]);
+  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',zlib.deflateSync(Buffer.from([0,255,0,0,255]))),chunk('IEND')]);
  }
- const valid=sample();assert.equal(png(valid).width,1440);assert.equal(png(valid).height,1000);
+ const valid=sample();assert.equal(png(valid).width,1);assert.equal(png(valid).height,1);
  const sig=Buffer.from(valid);sig[0]=0;assert.throws(()=>png(sig));
  const crcError=Buffer.from(valid);crcError[29]^=1;assert.throws(()=>png(crcError));
  assert.throws(()=>png(valid.subarray(0,valid.length-3)));
  const noData=Buffer.concat([valid.subarray(0,33),chunk('IEND')]);assert.throws(()=>png(noData));
  const trailing=Buffer.concat([valid,Buffer.from([0])]);assert.throws(()=>png(trailing));
- assert.throws(()=>png(sample(0,1000)));assert.throws(()=>png(sample(1440,0)));
+ assert.throws(()=>png(sample(0,1)));assert.throws(()=>png(sample(1,0)));
 });
