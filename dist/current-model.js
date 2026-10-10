@@ -33,7 +33,7 @@
   for(const c of project.components){const d=byId[c.typeId];if(!d)continue;delete c._currentValue;
    for(const p of d.pins){const v=net.at(c,p.id)[0];if(!v)continue;(v.type==='ac'?acNodes:dcNodes).add(pin(c,p.id));const angle=v.type==='ac'?({L1:0,L2:-2*Math.PI/3,L3:2*Math.PI/3}[v.leg]||0):0,mag=['N','0','PE'].includes(v.leg)?0:v.volts;fixed.set(pin(c,p.id),[mag*Math.cos(angle),mag*Math.sin(angle)])}
    if(d.kind==='current-transformer')cts.push(add(c,'P1','P2',1e-6,'ct'));
-   else if(['diode','led'].includes(d.kind))diodes.push({c,drop:d.kind==='led'?2:.7});
+   else if(['diode','led','photodiode'].includes(d.kind)){diodes.push({c,drop:d.kind==='led'?2:d.kind==='photodiode'?1:.7});if(d.kind==='photodiode'){const lux=Math.max(0,Number(c.illuminationLux??d.defaultIlluminationLux??100)),photo=70e-6*lux/1000+Math.max(0,Number(d.darkCurrentA)||0);c._photocurrentA=photo;inject(pin(c,'A'),pin(c,'K'),photo)}}
    else if(d.kind==='meter-a')meters.push(add(c,d.pins[0].id,d.pins[1].id,1e-6,'meter'));
    else if(d.kind==='ldr'){
     const lux=Math.max(.01,Number(c.illuminationLux??d.illuminationLux??10)),r10=Math.max(1,Number(d.r10)||15000),gamma=Math.max(.1,Number(d.gamma)||.6),dark=Math.max(r10,Number(d.darkResistance)||1000000),r=Math.min(dark,r10*Math.pow(10/lux,gamma));
@@ -50,12 +50,12 @@
     if(isACComponent(c,d)){const hz=sourceFrequency(c),br=addY(c,a,b,[0,2*Math.PI*hz*cap],'capacitor-ac');Object.assign(br,{reactiveType:'C',value:cap,hz});reactive.push(br)}
     else{const dt=reactiveDt(c),r=dt/cap,br=add(c,a,b,r,'capacitor-dc'),vp=Number(c._capacitorVoltage)||0;inject(br.a,br.b,vp/r);Object.assign(br,{reactiveType:'C',value:cap,dt,previous:vp});reactive.push(br)}
    }
-   else if(d.kind==='reactor'||d.id==='winding'){
+   else if(d.kind==='speaker'){add(c,d.pins[0].id,d.pins[1].id,Math.max(.1,Number(c.impedanceOhm??d.impedanceOhm??8)),'speaker-load')} else if(d.kind==='crystal'){const a=d.pins[0].id,b=d.pins[1].id,m=d.crystalModel||{},rs=Math.max(.01,Number(m.seriesResistance)||40),cm=Math.max(1e-15,Number(m.motionalCapacitance)||2e-14),lm=Math.max(1e-9,Number(m.motionalInductance)||.079),c0=Math.max(0,Number(m.shuntCapacitance)||3e-12);if(isACComponent(c,d)){const hz=sourceFrequency(c),w=2*Math.PI*hz,x=w*lm-1/(w*cm),den=rs*rs+x*x,ys=[rs/den,-x/den],yp=[0,w*c0],br=addY(c,a,b,[ys[0]+yp[0],ys[1]+yp[1]],'crystal-bvd');Object.assign(br,{crystal:true,hz,seriesR:rs,motionalC:cm,motionalL:lm,shuntC:c0});reactive.push(br)}else add(c,a,b,1e12,'crystal-dc-open')} else if(d.kind==='reactor'||d.id==='winding'){
     const ind=Math.max(1e-9,Number(c.inductance??d.inductance??.15)),a=d.pins[0].id,b=d.pins[1].id;
     if(isACComponent(c,d)){const hz=sourceFrequency(c),br=addY(c,a,b,[0,-1/(2*Math.PI*hz*ind)],'inductor-ac');Object.assign(br,{reactiveType:'L',value:ind,hz});reactive.push(br)}
     else{const dt=reactiveDt(c),r=ind/dt,br=add(c,a,b,r,'inductor-dc'),ip=Number(c._inductorCurrent)||0;inject(br.a,br.b,-ip);Object.assign(br,{reactiveType:'L',value:ind,dt,previous:ip});reactive.push(br)}
    }
-   else if(d.kind==='opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),br=add(c,'OUT','V-',ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,'IN+'),im:pin(c,'IN-'),vp:pin(c,'V+'),vm:pin(c,'V-'),out:pin(c,'OUT'),gain:Math.max(10,Number(d.openLoopGain)||100000)});}
+   else if(d.kind==='opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),br=add(c,'OUT','V-',ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,'IN+'),im:pin(c,'IN-'),vp:pin(c,'V+'),vm:pin(c,'V-'),out:pin(c,'OUT'),gain:Math.max(10,Number(d.openLoopGain)||100000)});} else if(d.kind==='dual-opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),vp=String(d.supplyPins?.positive||'8'),vm=String(d.supplyPins?.negative||'4');for(const ch of d.opampChannels||[]){const br=add(c,String(ch.out),vm,ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,String(ch.plus)),im:pin(c,String(ch.minus)),vp:pin(c,vp),vm:pin(c,vm),out:pin(c,String(ch.out)),gain:Math.max(10,Number(d.openLoopGain)||100000),channel:String(ch.out)})}}
    else if(d.kind==='potentiometer'){const r=Math.max(1,Number(c.potMax)||10000),p=Math.max(0,Math.min(100,c.potentiometer??50))/100;add(c,'1','2',r*p,'load');add(c,'2','3',r*(1-p),'load')}
    else if(d.ptWires)add(c,'A','B1',Devices.output(c,d).value,'load');
    else if(['sensor-ntc','sensor-ptc'].includes(d.id))add(c,d.pins[0].id,d.pins[1].id,Devices.output(c,d).value,'load');
@@ -64,7 +64,7 @@
    else if(['motor3','motor-yd'].includes(d.kind)&&c._motorDrive){const drive=project.components.find(v=>v.id===c._motorDrive),s=drive?._acs800||drive?._v20;if(s?.running&&s.current>0){const delta=c._motorConnection==='delta',r=s.voltage/(Math.max(.0001,s.current)*(delta?1/Math.sqrt(3):Math.sqrt(3))),upper=d.kind==='motor3'?['U','V','W']:['U1','V1','W1'];for(let i=0;i<3;i++)add(c,upper[i],['U2','V2','W2'][i],r,'v20-motor');}}
    else if(d.kind==='meter-v')add(c,d.pins[0].id,d.pins[1].id,1e7,'voltmeter');
    else if(d.kind==='multimeter'){const [mode,range]=UT.setting(c,d);if(mode==='DCV'||mode==='ACV'||mode==='Hz')add(c,'V','COM',1e7,'ut-voltage');else if(mode==='DCA')add(c,UT.jack(c,d),'COM',range===10?.01:1,'ut-current')}
-   else if(d.kind==='clamp-meter'){const [mode]=Clamp.setting(c);if(mode==='DCV'||mode==='ACV')add(c,'V','COM',1e7,'ut200-voltage')}
+   else if(d.digitalIc==='dac0808'&&c._digitalIc?.powered){const a=pin(c,'4'),g=pin(c,'2'),amps=Math.max(0,Number(c._digitalIc.analogCurrentA)||0);add(c,'4','2',1e10,'dac0808-output');inject(g,a,amps);c._currentValue=amps} else if(d.kind==='clamp-meter'){const [mode]=Clamp.setting(c);if(mode==='DCV'||mode==='ACV')add(c,'V','COM',1e7,'ut200-voltage')}
    else if(d.kind==='energy-analyzer'){add(c,'L','N',1e7,'energy-analyzer-voltage');add(c,'S1','S2',.05,'energy-analyzer-ct')}
    for(const s of [...(d.id==='abb-acs800-r5'&&c._acs800?.board?[{a:'X21:9',b:'X21:10',value:c._acs800.ao[0]/1000,compliance:14},{a:'X21:11',b:'X21:12',value:c._acs800.ao[1]/1000,compliance:14}]:[]),...(c._instrument?.current||[]),...(c._sensorSignal?[c._sensorSignal]:[]),...(d.id==='sinamics-v20-1p'&&c._v20?.powered?[{a:'4',b:'5',value:c._v20.ao/1000,compliance:10}]:[])]){const a=pin(c,s.a),b=pin(c,s.b);injected.set(a,[(injected.get(a)?.[0]||0)+s.value,0]);injected.set(b,[(injected.get(b)?.[0]||0)-s.value,0]);Object.assign(add(c,s.a,s.b,1e10,'current-source'),{source:s})}
   }
