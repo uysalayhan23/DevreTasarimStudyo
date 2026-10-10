@@ -14,7 +14,7 @@ const ids=['measurement-workshop-outline-035','measurement-workshop-outline-036'
 test('45 measurement lessons retained, six specialized C lessons have distinct learning aims',()=>{
  const {L}=setup(),rows=L.lessons.filter(x=>x.topicId==='measurement-workshop');
  assert.equal(rows.length,45);
- assert.equal(rows.filter(x=>x.designStandard==='rich-reference-v1').length,27,'7 prior rich + 9 A + 5 B + 6 C; pending meter and sensor lessons open');
+ assert.equal(rows.filter(x=>x.designStandard==='rich-reference-v1').length,27,'24 rich lessons before C; three tachometer labs newly rich, power trio specialized; 18 remain');
  assert.equal(rows.filter(x=>x.pedagogyReview?.version==='v1.19.20-measure-batch-c').length,6);
  const questions=new Set();for(const id of ids){const x=L.byId[id];assert.equal(x.designStandard,'rich-reference-v1');assert.ok(x.measurementUpgrade?.task?.length>45);assert.ok(x.learningGoal?.length>50);assert.equal(x.measurementUpgrade.options.length,3);questions.add(x.measurementUpgrade.question);assert.ok(x.project.components.length>=3);for(const step of x.steps)assert.ok(x.project.wires.some(w=>JSON.stringify(w.from)===JSON.stringify(step.from)&&JSON.stringify(w.to)===JSON.stringify(step.to)),id+' fabricated wire')}
  assert.equal(questions.size,6);
