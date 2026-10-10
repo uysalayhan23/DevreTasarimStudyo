@@ -17,8 +17,8 @@ async function ensure(){
  if(loading)return loading;
  loading=(async()=>{
   await load('tutorial-lessons.js?v=1.19.1-dashboard3');
-  await load('tutorial-mode.js?v=1.19.20-real-ic-visuals1');
-  await load('tutorial-enhancements.js?v=1.19.1-dashboard3');
+  await load('tutorial-mode.js?v=1.19.20-coach-restore1');
+  await load('tutorial-enhancements.js?v=1.19.20-coach-restore1');
   if(!root.DTSTutorialMode)throw new Error('Öğretici Modu başlatılamadı');
   return root.DTSTutorialMode;
  })().catch(e=>{loading=null;throw e});
