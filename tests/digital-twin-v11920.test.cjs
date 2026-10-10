@@ -68,10 +68,12 @@ test('Selection2 5SL6116 becomes the first fully promoted sourced orthographic p
 test('WP-021 registry and audit expose one current truth for mapped product evidence',()=>{
   const registry=DigitalTwin.registry(library);
   const audit=DigitalTwin.audit(library);
-  assert.equal(Object.keys(registry).length,12);
-  assert.equal(audit.mapped,12);
-  assert.equal(audit.verifiedPhysical,12);
-  assert.equal(audit.exactVisual,12);
+  assert.equal(Object.keys(registry).length,13);
+  assert.equal(audit.mapped,13);
+  assert.equal(audit.verifiedPhysical,13);
+  assert.equal(audit.exactVisual,13);
+  assert.equal(registry['converter-pressure'].visual.promotionReady,false,'WAZ5 orientation evidence is still pending');
+  assert.equal(registry['converter-pressure'].panel.eligible,false,'WAZ5 panel promotion is blocked');
   assert.equal(audit.orthographicVisual,7);
   assert.equal(audit.visualPromotionReady,12);
   assert.equal(audit.verifiedTerminalGeometry,8);
