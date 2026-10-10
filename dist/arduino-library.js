@@ -150,6 +150,31 @@
     part('arduino-tlp521-2','TLP521-2 Optokuplör','TLP521-2 · 2 kanal · DIP-8','arduino-semiconductors','arduino-optocoupler',150,116,[P('1','1 · A1',0,22,'left'),P('2','2 · K1',0,46,'left'),P('3','3 · A2',0,70,'left'),P('4','4 · K2',0,94,'left'),P('8','8 · C1',150,22,'right'),P('7','7 · E1',150,46,'right'),P('6','6 · C2',150,70,'right'),P('5','5 · E2',150,94,'right')],{arduinoRole:'opto',refPrefix:'U',channels:2,pinMap:{'1':'A1','2':'K1','3':'A2','4':'K2','5':'E2','6':'C2','7':'E1','8':'C1'},datasheet:{source:'tlp521-1-2-4-datasheet.pdf',package:'DIP-8',vceo:55,isolationVrms:2500}}),
     part('arduino-tlp521-4','TLP521-4 Optokuplör','TLP521-4 · 4 kanal · DIP-16','arduino-semiconductors','arduino-optocoupler',176,164,[P('1','1 · A1',0,20,'left'),P('2','2 · K1',0,38,'left'),P('3','3 · A2',0,56,'left'),P('4','4 · K2',0,74,'left'),P('5','5 · A3',0,92,'left'),P('6','6 · K3',0,110,'left'),P('7','7 · A4',0,128,'left'),P('8','8 · K4',0,146,'left'),P('16','16 · C1',176,20,'right'),P('15','15 · E1',176,38,'right'),P('14','14 · C2',176,56,'right'),P('13','13 · E2',176,74,'right'),P('12','12 · C3',176,92,'right'),P('11','11 · E3',176,110,'right'),P('10','10 · C4',176,128,'right'),P('9','9 · E4',176,146,'right')],{arduinoRole:'opto',refPrefix:'U',channels:4,pinMap:{'1':'A1','2':'K1','3':'A2','4':'K2','5':'A3','6':'K3','7':'A4','8':'K4','9':'E4','10':'C4','11':'E3','12':'C3','13':'E2','14':'C2','15':'E1','16':'C1'},datasheet:{source:'tlp521-1-2-4-datasheet.pdf',package:'DIP-16',vceo:55,isolationVrms:2500}})
   ];
+  /* Physical package closure for Arduino IC/semiconductor parts.
+     Preserve every existing functional pin id and runtime role, but annotate the
+     real package so the shared material renderer draws a transparent, orthographic
+     top view with terminal hotspots exactly on the physical lead coordinates. */
+  for(const d of components){
+    const numbered=(d.pins||[]).map((p,i)=>{
+      const m=String(p.label||p.id||'').match(/^\s*(\d+)/);
+      if(m)p.physicalPin=Number(m[1]);
+      else if(/^\d+$/.test(String(p.id)))p.physicalPin=Number(p.id);
+      return p;
+    });
+    if(d.arduinoRole==='ne555'||d.kind==='arduino-ic'||d.arduinoRole==='opto'){
+      const count=Math.max(2,...numbered.map(p=>Number(p.physicalPin)||0));
+      const marking=String(d.model||d.name||d.id).split(' · ')[0].replace(/\s+DIP-?\d+$/i,'').trim();
+      d.realPackage={type:'PDIP',pins:count,marking,topView:true,orthographic:true,transparentBackground:true};
+      d.preservePinGeometry=true;
+      d.hideMaterialPinLabels=false;
+    }else if(d.arduinoRole==='transistor-to126'){
+      d.realPackage={type:'TO-126',pins:3,marking:(d.name||'').split(' ')[0],topView:true,orthographic:true,transparentBackground:true};
+      d.preservePinGeometry=true;
+    }else if(d.arduinoRole==='transistor-to92'){
+      d.realPackage={type:'TO-92',pins:3,marking:(d.name||'').split(' ')[0],topView:true,orthographic:true,transparentBackground:true};
+      d.preservePinGeometry=true;
+    }
+  }
   if(root.COMPONENT_LIBRARY&&Array.isArray(root.COMPONENT_LIBRARY)){const have=new Set(root.COMPONENT_LIBRARY.map(d=>d.id));for(const d of components)if(!have.has(d.id))root.COMPONENT_LIBRARY.push(d)}
   function schematic(d,c={},norm='IEC'){
     if(!(d.arduinoBoard||d.arduinoOnly))return null;
@@ -279,7 +304,7 @@
     if(role==='diode')return '<g class="arduino-material arduino-3d-part"><path d="M4 '+H/2+'H28M'+(W-28)+' '+H/2+'H'+(W-4)+'" stroke="#aab4b9" stroke-width="4"/><rect x="28" y="'+(H/2-8)+'" width="'+(W-56)+'" height="16" rx="7" fill="#20262b" stroke="#0e1215"/><rect x="'+(W-40)+'" y="'+(H/2-8)+'" width="5" height="16" fill="#cdd5d9"/><path d="M32 '+(H/2-5)+'H'+(W-32)+'" stroke="#fff" opacity=".23"/></g>';
     if(role==='bench-supply'){const v=Number(c.dcVoltage??d.defaultVoltage??5),lim=Number(c.currentLimit??d.defaultCurrentLimit??1);return '<g class="arduino-material arduino-3d-part"><rect x="6" y="8" width="'+(W-12)+'" height="'+(H-16)+'" rx="9" fill="#d5d9dc" stroke="#5b6870" stroke-width="3"/><path d="M14 15H'+(W-14)+'" stroke="#fff" opacity=".8"/><rect x="22" y="23" width="74" height="32" rx="4" fill="#101b1d" stroke="#4d5e64"/><text x="59" y="44" text-anchor="middle" font-family="monospace" font-size="16" fill="#72ff8d">'+v.toFixed(1)+'V</text><circle cx="123" cy="38" r="15" fill="#34434b" stroke="#111a1f"/><circle cx="123" cy="78" r="15" fill="#34434b" stroke="#111a1f"/><text x="123" y="42" text-anchor="middle" font-size="7" fill="#eef7f9">V</text><text x="123" y="82" text-anchor="middle" font-size="7" fill="#eef7f9">A</text><circle cx="151" cy="40" r="7" fill="#d32f2f"/><circle cx="151" cy="82" r="7" fill="#263238"/><text x="62" y="81" text-anchor="middle" font-size="8" fill="#263238">LIMIT '+lim.toFixed(1)+' A</text></g>'}
     if(role==='transistor-to92'){return '<g class="arduino-material arduino-orthographic transistor-to92-photo-redraw"><path d="M37 59V102M56 59V102M75 59V102" stroke="#111" stroke-width="3.2" stroke-linecap="round"/><path d="M30 22q26-20 52 0v38H30Z" fill="#20272c" stroke="#090d10" stroke-width="3"/><path d="M36 25q18-12 36-1" stroke="#60717a" stroke-width="3" opacity=".55"/><text x="56" y="47" text-anchor="middle" font-size="9" fill="#e7eef1">BC327</text></g>'}
-    if(role==='transistor-to126'){const href=d.id==='arduino-bd139'?'https://www.vistronica.com/23503-large_default/transistor-npn-bd139-80v-15a-to-126.jpg':'https://www.vistronica.com/21851-large_default/transistor-pnp-bd140-to-126.jpg';return '<g class="arduino-material arduino-orthographic transistor-to126-real-photo"><rect x="3" y="3" width="'+(W-6)+'" height="'+(H-6)+'" rx="5" fill="#fff" stroke="#cbd5e1"/><image href="'+href+'" x="8" y="6" width="'+(W-16)+'" height="'+(H-12)+'" preserveAspectRatio="xMidYMid meet"/></g>'}
+    if(role==='transistor-to126'){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' 72V'+H+'" stroke="#c8cdd0" stroke-width="6"/>';return '<g class="arduino-material arduino-orthographic transistor-to126-package">'+legs+'<rect x="23" y="20" width="'+(W-46)+'" height="58" rx="6" fill="#17191b" stroke="#050607" stroke-width="3"/><rect x="32" y="5" width="'+(W-64)+'" height="22" rx="3" fill="#bcc2c5" stroke="#71797d" stroke-width="2"/><circle cx="'+(W/2)+'" cy="16" r="5.5" fill="#f5f7f8" stroke="#7a8287"/><text x="'+(W/2)+'" y="57" text-anchor="middle" font-size="10" font-weight="800" fill="#edf0f2">'+esc((d.name||'').split(' ')[0])+'</text></g>'}
     if(role==='opto'){const bodyX=30,bodyW=W-60,model=d.id.replace('arduino-','').toUpperCase();let leads='';for(const q of d.pins){const edge=q.side==='left'?bodyX:bodyX+bodyW;leads+='<path d="M'+q.x+' '+q.y+'H'+edge+'" stroke="#b8bec1" stroke-width="4" stroke-linecap="round"/><rect x="'+(q.side==='left'?edge-4:edge)+'" y="'+(q.y-3)+'" width="4" height="6" fill="#d7dcde"/>'}return '<g class="arduino-material arduino-orthographic tlp521-photo-redraw">'+leads+'<rect x="'+bodyX+'" y="10" width="'+bodyW+'" height="'+(H-20)+'" rx="4" fill="#e7dfcb" stroke="#9a927f" stroke-width="2.5"/><path d="M'+(W/2-9)+' 10a9 7 0 0 0 18 0" fill="#c8bfa9" stroke="#9a927f"/><circle cx="'+(bodyX+11)+'" cy="22" r="4.2" fill="#aa8a55"/><path d="M'+(bodyX+6)+' 17H'+(bodyX+bodyW-6)+'" stroke="#f8f4e8" opacity=".8"/><text x="'+W/2+'" y="'+(H/2-2)+'" text-anchor="middle" font-size="'+(d.channels===4?9:10.5)+'" font-weight="700" fill="#8f6f43">TOSHIBA</text><text x="'+W/2+'" y="'+(H/2+14)+'" text-anchor="middle" font-size="'+(d.channels===4?9:11)+'" font-weight="800" fill="#8b6e47">'+esc(model)+'</text><text x="'+W/2+'" y="'+(H-15)+'" text-anchor="middle" font-size="6" fill="#9b8058">GaAs IRED · PHOTO-TRANSISTOR</text></g>'}
     if(role==='breadboard-power'){
       const on=c._hw131Powered??(c.hw131On!==false),l=String(c.hw131Left??d.hw131Left??'5'),r=String(c.hw131Right??d.hw131Right??'3.3'),fault=!!c._hw131Short;
