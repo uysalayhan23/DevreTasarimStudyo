@@ -660,35 +660,35 @@ test('Siemens 5TL canonical front unlocks verified panel terminal anchors',()=>{
 });
 
 
-test('control material proportion audit detects the real-scale distortions exposed by Malzeme test',()=>{
+test('material scale audit preserves user-locked frame while reporting manufacturer difference',()=>{
   const cases={
-    'mcb-1p':{x:80/18,y:100/90},
-    'mcb-2p':{x:100/36,y:100/90},
-    'mcb-3p':{x:120/54,y:100/90},
-    'disconnect-1p':{x:80/18,y:100/89.8},
-    'thermal-magnetic':{x:140/45,y:120/97},
-    'main-contact':{x:120/45,y:100/58},
-    'sinamics-v20-1p':{x:260/90.8,y:380/160.9}
+    'mcb-1p':[36,140], 'mcb-2p':[100,100], 'mcb-3p':[108,140],
+    'disconnect-1p':[36,140], 'thermal-magnetic':[90,194],
+    'main-contact':[90,116], 'sinamics-v20-1p':[260,380]
   };
-  for(const [id,expected] of Object.entries(cases)){
-    const row=Physical.materialScaleAudit(byId[id]);
-    assert.equal(row.status,'distorted-aspect',id);
-    assert.ok(Math.abs(row.unitsPerMm.x-expected.x)<1e-9,id+':x');
-    assert.ok(Math.abs(row.unitsPerMm.y-expected.y)<1e-9,id+':y');
-    assert.ok(row.aspectError>.05,id);
+  for(const [id,[w,h]] of Object.entries(cases)){
+    const d=byId[id],record=Physical.get(d),audit=Physical.materialScaleAudit(d);
+    assert.ok(record,id+':manufacturer record');
+    assert.equal(d.w,w,id+':current width');assert.equal(d.h,h,id+':current height');
+    assert.ok(Math.abs(audit.unitsPerMm.x-w/record.widthMm)<1e-9,id+':x');
+    assert.ok(Math.abs(audit.unitsPerMm.y-h/record.heightMm)<1e-9,id+':y');
+    assert.equal(audit.status,Math.abs(w/h-record.widthMm/record.heightMm)/(record.widthMm/record.heightMm)>.05?'distorted-aspect':'aspect-consistent',id);
+    if(d.physicalScaleSource==='workspace-space-v1:user-locked'){
+      assert.equal(d.physicalDimensionsMm.width*2,w,id+':user width');
+      assert.equal(d.physicalDimensionsMm.height*2,h,id+':user height');
+    }
   }
 });
 
-test('control material scale coverage remains machine-readable and does not invent dimensions for unmapped devices',()=>{
+test('scale audit reports verified mismatch separately from current locked geometry',()=>{
   const rows=['mcb-1p','thermal-magnetic','sinamics-v20-1p','relay-1'].map(id=>byId[id]).filter(Boolean);
   const audit=Physical.materialScaleCoverage(rows);
   assert.equal(audit.library,rows.length);
   assert.ok(audit.verified>=3);
-  assert.ok(audit.distorted>=3);
-  const unmapped=byId['relay-1'];
-  if(unmapped)assert.equal(Physical.materialScaleAudit(unmapped).status,'unverified-physical-dimensions');
+  assert.ok(audit.distorted>=2);
+  assert.ok(audit.rows.some(r=>r.componentId==='thermal-magnetic'&&r.status==='aspect-consistent'));
+  assert.equal(Physical.materialScaleAudit(byId['relay-1']).status,'unverified-physical-dimensions');
 });
-
 
 test('verified material definitions use one canonical physical scene scale without mutating source definitions',()=>{
   assert.equal(Physical.MATERIAL_SCENE_UNITS_PER_MM,2);
@@ -729,8 +729,11 @@ test('material definition uses verified terminal geometry where available and pr
   const mcb=Physical.materialDefinition(byId['mcb-1p']);
   const p1=mcb.pins.find(p=>p.id==='1'),p2=mcb.pins.find(p=>p.id==='2');
   const e1=Physical.terminalGeometryEvidence(byId['mcb-1p'],'1'),e2=Physical.terminalGeometryEvidence(byId['mcb-1p'],'2');
-  assert.deepEqual({x:p1.x,y:p1.y,side:p1.side},{x:e1.xMm*2,y:e1.yMm*2,side:e1.side});
-  assert.deepEqual({x:p2.x,y:p2.y,side:p2.side},{x:e2.xMm*2,y:e2.yMm*2,side:e2.side});
+  assert.equal(mcb._materialScaleSource,'workspace-space-v1:user-locked');
+  assert.deepEqual({x:p1.x,y:p1.y,side:p1.side},{x:18,y:0,side:'top'});
+  assert.deepEqual({x:p2.x,y:p2.y,side:p2.side},{x:18,y:140,side:'bottom'});
+  assert.equal(e1.xMm,9);assert.equal(e1.yMm,13);
+  assert.equal(e2.xMm,9);assert.equal(e2.yMm,81.3); // official record retained separately
 
   const smps=byId['smps'],normalized=Physical.materialDefinition(smps);
   assert.equal(Physical.get(smps).terminalGeometryStatus,'verified');
@@ -765,7 +768,7 @@ test('normalized material layout audit reports legacy Malzeme test overlap witho
   assert.equal(audit.overlapCount,1);
   assert.deepEqual(
     {aRef:audit.overlaps[0].aRef,bRef:audit.overlaps[0].bRef,width:audit.overlaps[0].overlapWidth,height:audit.overlaps[0].overlapHeight},
-    {aRef:'S18',bRef:'S19',width:8,height:180}
+    {aRef:'S18',bRef:'S19',width:8,height:140}
   );
   assert.equal(JSON.stringify(components),before);
 });
@@ -948,19 +951,23 @@ test('Selection 2 photo-backed devices opt into wire-over-body layering without 
   }
 });
 
-test('5TL canonical user front calibration is exact and distortion-free',()=>{
+test('5TL canonical front metadata matches exact committed WebP and user frame stays separate',()=>{
   const d=byId['disconnect-1p'],r=Physical.get(d);
+  const binary=fs.readFileSync(require.resolve('../dist/assets/products/siemens-5tl1163-0-user-front.webp'));
+  const crypto=require('node:crypto');
   assert.equal(r.visualOrientationStatus,'orthographic-front');
   assert.equal(r.panelGeometryReady,true);
   assert.equal(r.visualSourceStatus,'user-supplied-canonical');
   assert.equal(r.visualSourceFile,'siemens-5tl1163-0-user-front.webp');
-  assert.equal(r.visualSourceSha256,'a3a183eb6bf319d549536bcaac5f6a038d9a61ab843bfd168de4da8ef9e23f04');
-  assert.deepEqual(r.visualCalibration,{sourcePixelWidth:180,sourcePixelHeight:898,renderPixelWidth:180,renderPixelHeight:898,physicalFrameWidthMm:18,physicalFrameHeightMm:89.8,unitsPerMm:10});
+  assert.equal(r.visualSourceSha256,crypto.createHash('sha256').update(binary).digest('hex'));
+  assert.deepEqual(r.visualCalibration,{sourcePixelWidth:180,sourcePixelHeight:861,renderPixelWidth:180,renderPixelHeight:861,physicalFrameWidthMm:18,physicalFrameHeightMm:89.8,unitsPerMm:10});
+  assert.deepEqual({...d.physicalDimensionsMm},{width:18,height:70,shape:'rect'});
   const normalized=Physical.materialDefinition(d);
-  assert.equal(normalized.w,36);
-  assert.equal(normalized.h,179.6);
-  assert.ok(Math.abs(normalized.w/normalized.h-18/89.8)<1e-12);
+  assert.equal(normalized.w,36);assert.equal(normalized.h,140);
+  assert.equal(normalized._materialScaleSource,'workspace-space-v1:user-locked');
+  assert.equal(r.heightMm,89.8,'manufacturer metadata must not be silently overwritten');
 });
+
 
 test('sensor visual policy and connectorized external geometry keep SICK panel-ready without fabricated anchors',()=>{
   const d=byId['photoeye'],r=Physical.get(d);
