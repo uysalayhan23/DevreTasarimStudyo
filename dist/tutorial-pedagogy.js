@@ -2021,6 +2021,10 @@ function upgradeLegacyLm358PhysicalPackage(l){
   if(ids.has(w.from?.c)&&LM358_A_PIN_MAP[w.from.p])w.from.p=LM358_A_PIN_MAP[w.from.p];
   if(ids.has(w.to?.c)&&LM358_A_PIN_MAP[w.to.p])w.to.p=LM358_A_PIN_MAP[w.to.p];
  }
+ for(const step of l.steps||[]){
+  if(ids.has(step.from?.c)&&LM358_A_PIN_MAP[step.from.p])step.from.p=LM358_A_PIN_MAP[step.from.p];
+  if(ids.has(step.to?.c)&&LM358_A_PIN_MAP[step.to.p])step.to.p=LM358_A_PIN_MAP[step.to.p];
+ }
  for(const comp of p.components||[]){
   const t=comp.probeTarget;if(t&&ids.has(t.c)&&LM358_A_PIN_MAP[t.p])t.p=LM358_A_PIN_MAP[t.p];
  }

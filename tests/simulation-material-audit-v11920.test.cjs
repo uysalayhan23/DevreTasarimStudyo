@@ -17,7 +17,7 @@ function finalLessons(){
 }
 function runtimeLibrary(){
   const ctx={window:{}};
-  for(const file of ['library.js','clamp-meter.js','installation-v118.js','design-library.js','electronics-library-v119.js','arduino-library.js','dold-library.js','hcfa-library.js','tutorial-components.js'])
+  for(const file of ['library.js','clamp-meter.js','installation-v118.js','design-library.js','electronics-library-v119.js','electronics-ics-v11920.js','arduino-library.js','dold-library.js','hcfa-library.js','tutorial-components.js'])
     vm.runInNewContext(fs.readFileSync(require.resolve('../dist/'+file),'utf8'),ctx);
   const lib=ctx.window.DTSDesignLibrary.extend(ctx.window.COMPONENT_LIBRARY);
   const Arduino=require('../dist/arduino-library.js');
@@ -116,9 +116,9 @@ test('material audit: every connectable non-drawing material has a simulation/ru
   const special=new Set(['sinamics-v20-1p','abb-acs800-r5','hcfa-sv-x2ea040a-a','unit-ut33d-plus','unit-ut200a','load-cell','winding','ground','thermocouple','sensor-ntc','sensor-ptc','sensor-pt100','sensor-pt100-2wire','sensor-pt100-4wire']);
   const unsupported=[];
   for(const d of library.filter(d=>(d.pins||[]).length&&!d.diagramOnly&&!d.visualOnly&&!d.superseded)){
-    if(drawing.has(d.id)||d.arduinoOnly||d.arduinoBoard||d.isPLC||d.instrument||d.doldSafety||d.incrementalEncoder38mm||d.hcfaPulseSource||d.hcfaModbusMaster||special.has(d.id))continue;
+    if(drawing.has(d.id)||d.digitalIc&&sim.includes('d?.digitalIc')||d.arduinoOnly||d.arduinoBoard||d.isPLC||d.instrument||d.doldSafety||d.incrementalEncoder38mm||d.hcfaPulseSource||d.hcfaModbusMaster||special.has(d.id))continue;
     if(Components.contactGroups(d).length)continue;
-    const k=String(d.kind||''),modeled=sim.includes("'"+k+"'")||sim.includes('"'+k+'"')||sim.includes("d.id==='"+d.id+"'")||behavior.includes(d.id)||numeric.includes(d.id);
+    const k=String(d.kind||''),modeled=sim.includes("'"+k+"'")||sim.includes('"'+k+'"')||sim.includes("d.id==='"+d.id+"'")||behavior.includes(d.id)||numeric.includes(d.id)||numeric.includes("d.kind==='"+k+"'");
     if(!modeled)unsupported.push(d.id);
   }
   assert.deepEqual(unsupported,[]);
@@ -136,8 +136,8 @@ test('HCFA pulse and Modbus teaching devices report a live simulation link',()=>
 test('simulation audit cache and module load order are current',()=>{
   const html=fs.readFileSync(require.resolve('../dist/index.html'),'utf8');
   const pos=x=>{const i=html.indexOf(x);assert.ok(i>=0,x);return i};
-  assert.ok(pos('plc-runtime.js?rev=20261008-sim-audit1')<pos('simulation.js?rev=20261008-sim-audit1'));
+  assert.ok(pos('plc-runtime.js?rev=20261008-sim-audit1')<pos('simulation.js?rev=20261010-real-ics1'));
   assert.match(html,/plc-front\.js\?rev=20261008-sim-audit1/);
-  assert.match(html,/app\.js\?rev=20261008-sim-audit1/);
+  assert.match(html,/app\.js\?rev=20261010-lm358-output1/);
   assert.match(html,/hcfa-ui\.js\?rev=20261008-sim-audit1/);
 });

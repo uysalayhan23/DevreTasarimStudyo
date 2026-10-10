@@ -45,9 +45,9 @@ const family={
   diode:id=>/diode|tutorial-diode/i.test(id),
   mosfet:id=>/mosfet/i.test(id),
   igbt:id=>/igbt/i.test(id),
-  scr:id=>/tutorial-scr/i.test(id),
-  triac:id=>/tutorial-triac/i.test(id),
-  diac:id=>/tutorial-diac/i.test(id),
+  scr:id=>/(?:^|-)scr(?:$|-)/i.test(id),
+  triac:id=>/(?:^|-)triac(?:$|-)/i.test(id),
+  diac:id=>/(?:^|-)diac(?:$|-)/i.test(id),
   opto:id=>/tlp521|opto/i.test(id),
   opamp:id=>/tutorial-opamp|lm358/i.test(id),
   motor:id=>/(^|-)motor|hcfa-sv-x2mh|motor-3p/i.test(id),
@@ -63,7 +63,15 @@ function assertFamily(l,f,label,ok=family[f]){
 test('LESSON AUDIT: every wiring lesson has a single connected electrical graph',()=>{
   for(const l of Lessons.lessons.filter(x=>x.kind==='wiring')){
     assert.ok(l.project.wires.length,`${l.id} has no wires`);
-    assert.equal(l.steps.length,l.project.wires.length,`${l.id} steps do not match wires`);
+    const endpointKey=e=>String(e.c)+'|'+String(e.p);
+    const wireKey=w=>endpointKey(w.from)+'>'+endpointKey(w.to);
+    const stepKeys=new Set(l.steps.map(w=>wireKey(w)));
+    for(const step of l.steps)assert.ok(l.project.wires.some(w=>wireKey(w)===wireKey(step)),`${l.id}: guided step not present in circuit`);
+    for(const w of l.project.wires){
+      if(stepKeys.has(wireKey(w)))continue;
+      const preconnectedProbe=!!w.probeLead||l.project.components.some(c=>(c.id===w.from.c||c.id===w.to.c)&&byId[c.typeId]?.probeColor);
+      assert.ok(preconnectedProbe,`${l.id}: unintroduced functional wire ${wireKey(w)}`);
+    }
     const ids=l.project.components.map(c=>c.id);
     const index=new Map(ids.map(id=>[id,[]]));
     for(const w of l.project.wires||[]){
@@ -145,7 +153,7 @@ test('LESSON AUDIT: every named semiconductor has a library entry, pins and an i
   const required=[
     ['bd139-npn','NPN'],['bd140-pnp','PNP'],['mosfet-n','MOSFET'],['igbt-n','IGBT'],['scr','SCR'],['triac','TRIAC'],['diac','DIAC']
   ];
-  for(const [id,label] of required){const d=byId[id];if(!d)continue;assert.ok((d.pins||[]).length>=2,`${label}: no pins`);assert.ok(d.designMaterial||d.productVisualUrl||d.visualInfo?.match==='representative',`${label}: no identified physical visual`)}
+  for(const [id,label] of required){const d=byId[id];if(!d)continue;assert.ok((d.pins||[]).length>=2,`${label}: no pins`);assert.ok(d.designMaterial||d.productVisualUrl||d.realPackage?.orthographic||d.visualInfo?.match==='representative',`${label}: no identified physical visual`)}
 });
 
 test('LESSON AUDIT: no semantic duplicate lesson title appears more than twice within one topic',()=>{
