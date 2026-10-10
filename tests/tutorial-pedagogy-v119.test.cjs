@@ -33,22 +33,31 @@ test('all final tutorial lessons pass the beginner pedagogy review',()=>{
 });
 
 
-test('guided demo lessons keep rebuild steps after the final pedagogy pass without converting conceptual boards',()=>{
+test('guided demo lessons rebuild functional wires while preserving optional probe-lead guidance',()=>{
  for(const l of Lessons.lessons){
   const wires=l.project?.wires||[],guided=l.kind==='wiring'||l.project?.tutorialLesson?.phase==='demo';
   if(!guided)continue;
   assert.ok(wires.length>0,l.id+' guided lesson needs wires');
   assert.equal(l.kind,'wiring',l.id+' guided lesson kind');
-  assert.equal(l.steps.length,wires.length,l.id+' guided step/wire mismatch');
-  for(let i=0;i<wires.length;i++){
-   assert.deepEqual(JSON.parse(JSON.stringify(l.steps[i].from)),JSON.parse(JSON.stringify(wires[i].from)),l.id+' step '+i+' from');
-   assert.deepEqual(JSON.parse(JSON.stringify(l.steps[i].to)),JSON.parse(JSON.stringify(wires[i].to)),l.id+' step '+i+' to');
-   assert.ok(l.steps[i].hint,l.id+' step '+i+' hint');
-   assert.ok(l.steps[i].why,l.id+' step '+i+' why');
+  const key=e=>JSON.stringify([e.from?.c,e.from?.p,e.to?.c,e.to?.p]);
+  const wireKeys=new Set(wires.map(key));
+  const stepKeys=new Set(l.steps.map(key));
+  const probeIds=new Set(l.project.components.filter(c=>/^test-probe-/.test(c.typeId)).map(c=>c.id));
+  for(const [i,step] of l.steps.entries()){
+   assert.ok(wireKeys.has(key(step)),l.id+' step '+i+' must connect real terminals');
+   assert.ok(step.hint,l.id+' step '+i+' hint');
+   assert.ok(step.why,l.id+' step '+i+' why');
+  }
+  for(const w of wires){
+   if(w.probeLead||probeIds.has(w.from?.c)||probeIds.has(w.to?.c))continue;
+   assert.ok(stepKeys.has(key(w)),l.id+' missing functional wire guide '+key(w));
   }
  }
- const first=Lessons.byId['button-led-1'];assert.ok(first);assert.equal(first.project.tutorialLesson.phase,'demo');assert.equal(first.project.wires.length,4);assert.equal(first.steps.length,4);assert.equal(first.kind,'wiring');
- const conceptual=Lessons.byId['dc-circuits-src-01'];if(conceptual&&conceptual.project.wires.length&&conceptual.project.tutorialLesson?.phase!=='demo')assert.notEqual(conceptual.kind,'wiring');
+ const first=Lessons.byId['button-led-1'];assert.ok(first);
+ assert.equal(first.project.tutorialLesson.phase,'demo');assert.equal(first.project.wires.length,4);
+ assert.equal(first.steps.length,4);assert.equal(first.kind,'wiring');
+ const conceptual=Lessons.byId['dc-circuits-src-01'];
+ if(conceptual&&conceptual.project.wires.length&&conceptual.project.tutorialLesson?.phase!=='demo')assert.notEqual(conceptual.kind,'wiring');
 });
 
 test('dual DC lessons preserve intended isolation or shared-reference topology exactly',()=>{
