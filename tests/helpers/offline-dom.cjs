@@ -68,7 +68,7 @@ function parse(html,parent){
   }
 }
 function createApp({project,appearance='iec',dashboard=false,settings={},environment={}}={}){
-  const dist=path.resolve(__dirname,'../../dist'),html=fs.readFileSync(path.join(dist,'index.html'),'utf8'),win=new Events(),doc=new Node('document');doc.ownerDocument=doc;doc.parentNode=win;win.document=doc;doc.innerHTML=html;doc.body=doc.querySelector('body');doc.activeElement=doc.body;doc.hidden=false;
+  const dist=path.resolve(__dirname,'../../dist'),html=fs.readFileSync(path.join(dist,'index.html'),'utf8'),win=new Events(),doc=new Node('document');doc.ownerDocument=doc;doc.parentNode=win;win.document=doc;doc.innerHTML=html;doc.documentElement=doc.querySelector('html');doc.body=doc.querySelector('body');doc.activeElement=doc.body;doc.hidden=false;
   doc.createElement=tag=>new Node(tag,doc);doc.createElementNS=(_,tag)=>new Node(tag,doc);doc.elementFromPoint=()=>doc.body;
   const storage=new Map([['ccs-appearance',appearance],['ccs-sound','off']]);if(project)storage.set('ods-project',JSON.stringify(project));for(const [k,v] of Object.entries(settings))storage.set(k,String(v));
   let clock=0,nextId=0;const timers=new Map(),frames=new Map();
