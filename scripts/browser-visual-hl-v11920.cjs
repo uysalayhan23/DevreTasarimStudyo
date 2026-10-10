@@ -269,6 +269,33 @@ async function main(){
        // Keep an interaction-state screenshot even when its geometry assertion fails.
        const panelShot=await shot(cdp,'hl-panel-'+id);
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelScreenshot=panelShot;
+       // Resize the real browser viewport; assert restored and minimized geometry.
+       const resizeChecks=[];
+       try{
+        await cdp.call('Emulation.setDeviceMetricsOverride',{width:760,height:640,deviceScaleFactor:1,mobile:false});
+        await evaluate(cdp,`(()=>{window.dispatchEvent(new Event('resize'));return true})()`);
+        await sleep(100);
+        const sized=await evaluate(cdp,`(()=>{
+         const p=document.querySelector('#tutorialCoach'),r=p.getBoundingClientRect();
+         return {width:innerWidth,height:innerHeight,left:r.left,top:r.top,right:r.right,bottom:r.bottom,
+          bounded:r.left>=7&&r.top>=57&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1};
+        })()`);
+        resizeChecks.push({mode:'restored',...sized});
+        const small=await evaluate(cdp,`(()=>{
+         const p=document.querySelector('#tutorialCoach'),b=p.querySelector('[data-tutorial-coach-minimize]');
+         b.click();const r=p.getBoundingClientRect();
+         return {width:innerWidth,height:innerHeight,left:r.left,top:r.top,right:r.right,bottom:r.bottom,
+          bounded:p.classList.contains('is-minimized')&&r.left>=7&&r.top>=57&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1};
+        })()`);
+        resizeChecks.push({mode:'minimized',...small});
+       }finally{
+        await cdp.call('Emulation.setDeviceMetricsOverride',{width:GOLDEN.viewport.width,height:GOLDEN.viewport.height,deviceScaleFactor:1,mobile:false});
+        await evaluate(cdp,`(()=>{document.querySelector('#tutorialCoach [data-tutorial-coach-minimize]')?.click();window.dispatchEvent(new Event('resize'));return true})()`);
+       }
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].resizeChecks=resizeChecks;
+       assert(resizeChecks.length===2&&resizeChecks.every(v=>v.bounded),
+         'Panel resize bounds failed: '+id+' '+JSON.stringify(resizeChecks));
+
        assert(interaction.ok,'Panel drag/bounds/close/reopen failed: '+id+' '+JSON.stringify(interaction));
       }
 
