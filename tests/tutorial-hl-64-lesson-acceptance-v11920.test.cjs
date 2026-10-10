@@ -21,7 +21,10 @@ function loaded(){
  return L;
 }
 test('64/64 H-L lessons expose unique projects, guided wiring and review content',()=>{
- const L=loaded();assert.equal(ids.length,64);assert.equal(L.lessons.length,1655);
+ const L=loaded();assert.equal(ids.length,64);assert.equal(new Set(ids).size,64,'duplicate lesson identifiers');assert.equal(L.lessons.length,1655);
+ const projects=ids.map(id=>L.byId[id]?.project?.projectId);
+ assert.ok(projects.every(Boolean),'missing project identifiers');
+ assert.equal(new Set(projects).size,64,'duplicate lesson project identifiers');
  for(const id of ids){
   const lesson=L.byId[id];assert.ok(lesson,id);
   assert.equal(lesson.designStandard,'rich-reference-v1',id);
@@ -33,6 +36,7 @@ test('64/64 H-L lessons expose unique projects, guided wiring and review content
   assert.equal(lesson.steps.length,lesson.project.wires.length,id);
   const terminals=new Set(lesson.project.wires.map(w=>[w.from.c,w.from.p,w.to.c,w.to.p].join('|')));
   for(const step of lesson.steps)assert.ok(terminals.has([step.from.c,step.from.p,step.to.c,step.to.p].join('|')),id);
+  assert.equal(new Set(lesson.steps.map(s=>[s.from.c,s.from.p,s.to.c,s.to.p].join('|'))).size,lesson.project.wires.length,id+' missing or repeated guided wire');
  }
 });
 test('64/64 H-L lesson projects pass simulator initial-state no-short/no-block checks',()=>{
