@@ -24,8 +24,8 @@ test('verified Siemens protection devices use exact local photos while unverifie
  for(const d of lib.filter(d=>['breaker','breaker2','breaker3','thermal-magnetic'].includes(d.kind))){
   const closed=M.markup(d,{state:false}),opened=M.markup(d,{state:true});
   if(exactIds.has(d.id)){
-   if(d.id==='thermal-magnetic')assert.match(closed,/siemens-3rv2011-1ja10-cad-front\.svg/,d.id);else if(d.id==='disconnect-1p')assert.match(closed,/siemens-5tl1163-0-user-front\.webp/,d.id);else assert.match(closed,/siemens-.*-v113.png/,d.id);
-   assert.equal(d.visualInfo?.match,'exact',d.id);
+   if(d.id==='thermal-magnetic')assert.match(closed,/siemens-3rv2011-user-front-v11920\.webp/,d.id);else if(d.id==='disconnect-1p')assert.match(closed,/siemens-5tl1163-0-user-front\.webp/,d.id);else if(d.id==='mcb-1p')assert.match(closed,/siemens-5sl6116-7-user-front-v11920\.webp/,d.id);else assert.match(closed,/siemens-mcb[23]-v113\.png/,d.id);
+   assert.equal(d.visualInfo?.match,d.id==='mcb-3p'?'calibrated-family-front':'exact',d.id);
    assert.ok(d.siemensPhoto,d.id);
   }else if(d.id==='thermal-magnetic-1p'){
    assert.doesNotMatch(closed,/siemens-mcb1-v113.png/);
@@ -37,7 +37,7 @@ test('verified Siemens protection devices use exact local photos while unverifie
   assert.notEqual(closed,opened,d.id);
   assert.ok(Sim.conductingPairs({state:false},d,new Map(),new Set()).length>0,d.id);
   assert.equal(Sim.conductingPairs({state:true},d,new Map(),new Set()).filter(([a])=>!['95'].includes(a)).length,0,d.id);
-  for(const [,file]of closed.matchAll(/href="(assets\/[^"]+)"/g))assert.ok(fs.existsSync(require('node:path').join(__dirname,'../dist',file)),d.id+':'+file);
+  for(const [,file]of closed.matchAll(/href="(assets\/[^"]+)"/g))assert.ok(fs.existsSync(require('node:path').join(__dirname,'../dist',file.split(/[?#]/)[0])),d.id+':'+file);
  }
  for(const id of ['limit-no','limit-nc','mechanical-control','mechanical-latching']){const art=M.markup(byId[id],{state:true});assert.match(art,/limit-sem121-v113.jpg/);assert.match(art,/roller-lever[^>]*rotate\(90/);}
 });

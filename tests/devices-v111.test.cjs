@@ -53,7 +53,7 @@ test('all v1.11 starter circuits contain valid terminals and solve',()=>{
 });
 test('front animations move their own actuators; audio devices use four distinct matching product images',()=>{
  for(const id of ['limit-no','limit-nc','mechanical-control','mechanical-latching'])assert.match(M.markup(byId[id],{state:true}),/roller-lever[^>]*rotate\(90/);
- assert.match(M.markup(byId['thermal-magnetic'],{state:true}),/siemens-3rv2011-1ja10-cad-front\.svg/);assert.notEqual(M.markup(byId['mcb-1p'],{state:true}),M.markup(byId['mcb-1p'],{state:false}));
+ assert.match(M.markup(byId['thermal-magnetic'],{state:true}),/siemens-3rv2011-user-front-v11920\.webp/);assert.notEqual(M.markup(byId['mcb-1p'],{state:true}),M.markup(byId['mcb-1p'],{state:false}));
  for(const [id,file] of [['speaker','speaker'],['buzzer','buzzer'],['annunciation','alarm'],['siren','siren']])assert.ok(M.markup(byId[id],{}).includes(file+'-v111.'));
  const d=byId.potentiometer;assert.ok(M.markup(d,{potentiometer:75,potMax:100000}).includes('75000 Ω'));
 });

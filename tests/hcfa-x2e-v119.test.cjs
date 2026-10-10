@@ -1,6 +1,7 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const H=require('../dist/hcfa-x2e.js'),Sim=require('../dist/simulation.js');
+const root=path.join(__dirname,'..');
 function loadLibrary(){
  const ctx={window:{}};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/library.js'),'utf8'),ctx);
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/hcfa-library.js'),'utf8'),ctx);
@@ -88,7 +89,7 @@ test('HCFA physical envelopes and connector pins follow the user dimension drawi
  assert.equal(d.w,84);assert.equal(d.h,330);
  assert.deepEqual({...d.physicalDimensionsMm},{width:42,height:165,depth:151,shape:'rect'});
  assert.equal(d.physicalScaleSource,'workspace-space-v1:user-locked');
- assert.deepEqual(d.driveSpec.dimensionsMm,[42,165,151]);
+ assert.deepEqual(Array.from(d.driveSpec.dimensionsMm),[42,165,151]);
  assert.equal(m.w,324.4);assert.equal(m.h,120);
  assert.equal(m.physicalDimensionsMm.width,162.2);assert.equal(m.physicalDimensionsMm.height,60);
  assert.equal(m.physicalDimensionsMm.bodyLength,122.7);assert.equal(m.physicalDimensionsMm.frontOffset,6.5);
@@ -98,7 +99,7 @@ test('HCFA physical envelopes and connector pins follow the user dimension drawi
  for(const p of ['U','V','W','PE','ENC'])assert.equal(m.pins.find(x=>x.id===p).side,'top',p);
  const ui=fs.readFileSync(path.join(__dirname,'../dist/hcfa-ui.js'),'utf8');
  assert.match(ui,/hcfa-live-physical-display/);
- assert.match(ui,/width="84" height="330"/);
+ assert.match(ui,/const frameW=84,frameH=330/);assert.match(ui,/data-visual-fit="contain-no-distortion"/);
  assert.match(ui,/hcfa-product-photo-side/);
 });
 
@@ -107,7 +108,7 @@ test('HCFA terminal labels use the approved readable outside-column layout witho
  assert.equal(d.terminalLabelLayout,'outside-readable-v1');
  const cn1=d.pins.filter(p=>p.block==='CN1');
  assert.equal(cn1.length,44);
- assert.deepEqual(cn1.map(p=>p.terminal).sort((a,b)=>a-b),Array.from({length:44},(_,i)=>i+1));
+ assert.deepEqual(Array.from(cn1,p=>p.terminal).sort((a,b)=>a-b),Array.from({length:44},(_,i)=>i+1));
  const left=cn1.filter(p=>p.side==='left'),right=cn1.filter(p=>p.side==='right');
  assert.equal(left.length,22);assert.equal(right.length,22);
  for(const rows of [left,right])for(let i=1;i<rows.length;i++)assert.ok(rows[i].y-rows[i-1].y>=5.39,'CN1 vertical spacing');
@@ -117,7 +118,7 @@ test('HCFA terminal labels use the approved readable outside-column layout witho
  const symbols=fs.readFileSync(path.join(__dirname,'../dist/symbols.js'),'utf8');
  assert.match(symbols,/p\.labelAnchor\|\|'middle'/);
  const html=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
- assert.match(html,/hcfa-library\.js\?rev=20261008-terminal-readable1/);
+ assert.match(html,/hcfa-library\.js\?rev=20261008-motor-labels1/);
  assert.match(html,/symbols\.js\?rev=20261008-terminal-readable1/);
 });
 
@@ -159,13 +160,14 @@ test('HCFA product-photo panel supports live interactive simulation controls',()
  H.action(c,'up');assert.equal(H.config(c).virtualPulseHz,1100);
  c._hcfa.fault='Err.013';H.action(c,'reset');assert.equal(c._hcfa.fault,'');
  const ui=fs.readFileSync(path.join(root,'dist','hcfa-ui.js'),'utf8');
- for(const a of ['mode','shift','up','down','set','reset','home','pulse'])assert.match(ui,new RegExp('data-hcfa-action=["\\\\\']'+a));
+ const rendered=require('../dist/hcfa-ui.js').markup(c,B[H.id]);
+ for(const a of ['mode','shift','up','down','set','reset','home','pulse'])assert.ok(rendered.includes('data-hcfa-action="'+a+'"'),a+' clickable action');
  assert.match(ui,/SET · Servo ON\/OFF/);
  assert.match(ui,/hcfa-photo-quick-action/);
  assert.match(ui,/editor\(\)\?\.snapshot\(runtime\)/);
  const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
  assert.match(html,/hcfa-x2e\.js\?rev=20261008-panel-interactive1/);
- assert.match(html,/hcfa-ui\.js\?rev=20261008-panel-interactive1/);
+ assert.match(html,/hcfa-ui\.js\?rev=20261008-sim-audit1/);
 });
 
 test('HCFA physical display cycles status actual speed command speed and pulse monitor',()=>{

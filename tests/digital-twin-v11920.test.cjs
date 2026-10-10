@@ -68,17 +68,17 @@ test('Selection2 5SL6116 becomes the first fully promoted sourced orthographic p
 test('WP-021 registry and audit expose one current truth for mapped product evidence',()=>{
   const registry=DigitalTwin.registry(library);
   const audit=DigitalTwin.audit(library);
-  assert.equal(Object.keys(registry).length,11);
-  assert.equal(audit.mapped,11);
-  assert.equal(audit.verifiedPhysical,11);
-  assert.equal(audit.exactVisual,11);
-  assert.equal(audit.orthographicVisual,6);
-  assert.equal(audit.visualPromotionReady,11);
+  assert.equal(Object.keys(registry).length,12);
+  assert.equal(audit.mapped,12);
+  assert.equal(audit.verifiedPhysical,12);
+  assert.equal(audit.exactVisual,12);
+  assert.equal(audit.orthographicVisual,7);
+  assert.equal(audit.visualPromotionReady,12);
   assert.equal(audit.verifiedTerminalGeometry,8);
   assert.equal(audit.verifiedProfiles,3);
   assert.equal(audit.verifiedProfileColliders,1);
   assert.equal(audit.activeAnchorVisualEligible,8);
-  assert.equal(audit.panelGateReady,10);
+  assert.equal(audit.panelGateReady,11);
   assert.equal(audit.panelPromoted,10);
   assert.equal(audit.panelReady,10);
   for(const id of ['main-contact','mcb-1p','mcb-2p','mcb-3p','thermal-magnetic','disconnect-1p','smps','fan-1p','photoeye','sinamics-v20-1p'])assert.deepEqual(audit.blockers[id],{visual:[],panel:[]},id);
