@@ -213,6 +213,29 @@ async function main(){
       const screen=await shot(cdp,'hl-'+id);
       report.states.hlLessons.items.push({id,...details,coach,screenshot:screen});
       assert(coach.visible&&coach.text>60,'Tutorial coach not rendered: '+id);
+      // Once per topic, exercise real panel click handlers and pointer drag, then restore.
+      if(n===1){
+       const interaction=await evaluate(cdp,`(()=>{
+        const panel=document.querySelector('#tutorialCoach'),bar=panel?.querySelector('.tutorial-float-bar');
+        const mini=panel?.querySelector('[data-tutorial-coach-minimize]'),reopen=document.querySelector('#tutorialCoachReopen');
+        if(!panel||!bar||!mini||!reopen) return {ok:false,reason:'Panel controls missing'};
+        if(panel.classList.contains('is-minimized'))mini.click();
+        mini.click();const minimized=panel.classList.contains('is-minimized');
+        mini.click();const restored=!panel.classList.contains('is-minimized');
+        const before=panel.getBoundingClientRect();
+        const init={pointerId:71,bubbles:true,clientX:before.left+24,clientY:before.top+18};
+        bar.dispatchEvent(new PointerEvent('pointerdown',init));
+        document.dispatchEvent(new PointerEvent('pointermove',{...init,clientX:init.clientX+45,clientY:init.clientY+28}));
+        document.dispatchEvent(new PointerEvent('pointerup',{...init,clientX:init.clientX+45,clientY:init.clientY+28}));
+        const after=panel.getBoundingClientRect(),dragged=Math.abs(after.left-before.left)>2||Math.abs(after.top-before.top)>2;
+        reopen.click();const hidden=panel.hidden;
+        reopen.click();const visible=!panel.hidden;
+        return {ok:minimized&&restored&&dragged&&hidden&&visible,minimized,restored,dragged,hidden,visible};
+       })()`);
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelInteraction=interaction;
+       assert(interaction.ok,'Panel minimize/restore/drag/toggle failed: '+id+' '+JSON.stringify(interaction));
+      }
+
       report.states.hlLessons.checked++;
       await evaluate(cdp,`(async()=>{await window.DTSStudio.home();await window.DTSTutorialMode.openHub();return true})()`);
       await sleep(80);
