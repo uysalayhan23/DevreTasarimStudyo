@@ -2021,6 +2021,13 @@ function upgradeLegacyLm358PhysicalPackage(l){
   if(ids.has(w.from?.c)&&LM358_A_PIN_MAP[w.from.p])w.from.p=LM358_A_PIN_MAP[w.from.p];
   if(ids.has(w.to?.c)&&LM358_A_PIN_MAP[w.to.p])w.to.p=LM358_A_PIN_MAP[w.to.p];
  }
+ for(const comp of p.components||[]){
+  const t=comp.probeTarget;if(t&&ids.has(t.c)&&LM358_A_PIN_MAP[t.p])t.p=LM358_A_PIN_MAP[t.p];
+ }
+ if(/Eviren yükselteç DC giriş/i.test(l.title)){
+  const input=p.components.find(x=>x.id==='in'&&x.typeId==='potentiometer');
+  if(input&&Number(input.potentiometer)===35)input.potentiometer=55;
+ }
  l.materials=materialRows(p);
  l.realElectronicsParts=true;
  l.pedagogyReview={...(l.pedagogyReview||{}),realElectronicsParts:true,lm358PhysicalPackage:true,realPackagePolicy:'orthographic-top-pin-aligned'};
