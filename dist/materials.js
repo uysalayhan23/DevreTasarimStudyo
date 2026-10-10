@@ -85,7 +85,24 @@
     return form==='ellipse'?'<ellipse cx="'+(x+w*fit.w/2)+'" cy="'+(y+h*fit.h/2)+'" rx="'+w*fit.w/2+'" ry="'+h*fit.h/2+'" '+extra+'/>':'<rect x="'+x+'" y="'+y+'" width="'+w*fit.w+'" height="'+h*fit.h+'" rx="2" '+extra+'/>';
   }
   const Modern=typeof module==='object'&&module.exports?require('./modern-materials.js'):root.DTSModernMaterials;
+  const escReal=s=>String(s??'').replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  function realPackageMarkup(d){
+    const p=d.realPackage;if(!p)return null;const w=d.w,h=d.h,mark=escReal(p.marking||d.model||d.name);
+    if(p.type==='PDIP'){
+      const bx=34,bw=w-68,by=9,bh=h-18;let legs='';for(const q of d.pins){if(q.side==='left')legs+='<path d="M0 '+q.y+'H'+bx+'" stroke="#c8cdd0" stroke-width="7"/>';else if(q.side==='right')legs+='<path d="M'+(w-bx)+' '+q.y+'H'+w+'" stroke="#c8cdd0" stroke-width="7"/>'}
+      return '<g data-real-package="PDIP">'+legs+'<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="7" fill="#17191b" stroke="#050607" stroke-width="3"/><path d="M'+(w/2-15)+' '+by+'a15 15 0 0 0 30 0" fill="#050607"/><circle cx="'+(bx+12)+'" cy="'+(by+17)+'" r="4.5" fill="#8a9094"/><text x="'+(w/2)+'" y="'+(h/2+2)+'" text-anchor="middle" font-size="13" font-weight="800" fill="#e7eaec">'+mark+'</text></g>';
+    }
+    if(/^TO-220|^TO-3P/.test(p.type)){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' '+(h-70)+'V'+h+'" stroke="#c8cdd0" stroke-width="9"/>';return '<g data-real-package="'+escReal(p.type)+'">'+legs+'<rect x="25" y="18" width="'+(w-50)+'" height="'+(h-90)+'" rx="6" fill="#181a1c" stroke="#050607" stroke-width="3"/><rect x="34" y="3" width="'+(w-68)+'" height="25" rx="4" fill="#c7cbcd" stroke="#6c7276" stroke-width="2"/><circle cx="'+(w/2)+'" cy="15" r="7" fill="#f7f8f8" stroke="#7c8285"/><text x="'+(w/2)+'" y="'+(h/2)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#eceff1">'+mark+'</text></g>'}
+    if(p.type==='TO-92'){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' 92V'+h+'" stroke="#c8cdd0" stroke-width="6"/>';return '<g data-real-package="TO-92">'+legs+'<path d="M25 88V45a42 42 0 0 1 85 0v43z" fill="#16191b" stroke="#050607" stroke-width="3"/><text x="'+(w/2)+'" y="59" text-anchor="middle" font-size="12" font-weight="800" fill="#e9edef">'+mark+'</text></g>'}
+    if(p.type==='DO-35'||p.type==='DO-41'){const bx=p.type==='DO-41'?42:38,bw=p.type==='DO-41'?86:74,hh=p.type==='DO-41'?28:24;return '<g data-real-package="'+p.type+'"><path d="M0 '+(h/2)+'H'+bx+'M'+(bx+bw)+' '+(h/2)+'H'+w+'" stroke="#c8cdd0" stroke-width="5"/><rect x="'+bx+'" y="'+(h/2-hh/2)+'" width="'+bw+'" height="'+hh+'" rx="'+(hh/2)+'" fill="'+(p.type==='DO-41'?'#17191b':'#3370a8')+'" stroke="#153e61" stroke-width="2"/><path d="M'+(bx+bw-15)+' '+(h/2-hh/2)+'v'+hh+'" stroke="#d7dadd" stroke-width="5"/><text x="'+(w/2)+'" y="'+(h/2+4)+'" text-anchor="middle" font-size="9" font-weight="800" fill="#fff">'+mark+'</text></g>'}
+    if(p.type==='HC-49')return '<g data-real-package="HC-49"><path d="M0 '+(h/2)+'H31M119 '+(h/2)+'H'+w+'" stroke="#c8cdd0" stroke-width="5"/><rect x="31" y="14" width="88" height="'+(h-28)+'" rx="14" fill="#b7bdc1" stroke="#656d72" stroke-width="3"/><text x="'+(w/2)+'" y="'+(h/2+4)+'" text-anchor="middle" font-size="10" font-weight="800" fill="#263238">'+mark+'</text></g>';
+    if(p.type==='ELECTRET-9.7')return '<g data-real-package="ELECTRET"><path d="M45 80V'+h+'M81 80V'+h+'" stroke="#c8cdd0" stroke-width="6"/><circle cx="'+(w/2)+'" cy="48" r="43" fill="#c5c9cb" stroke="#666d71" stroke-width="3"/><circle cx="'+(w/2)+'" cy="48" r="26" fill="#202427"/></g>';
+    if(p.type==='SPEAKER-40')return '<g data-real-package="SPEAKER"><path d="M48 98V'+h+'M102 98V'+h+'" stroke="#c8cdd0" stroke-width="6"/><circle cx="'+(w/2)+'" cy="55" r="50" fill="#252a2d" stroke="#60686d" stroke-width="4"/><circle cx="'+(w/2)+'" cy="55" r="34" fill="#111416"/><text x="'+(w/2)+'" y="116" text-anchor="middle" font-size="8" fill="#d7dcdf">'+mark+'</text></g>';
+    if(p.type==='BPW34')return '<g data-real-package="BPW34"><path d="M40 80V'+h+'M80 80V'+h+'" stroke="#c8cdd0" stroke-width="6"/><rect x="22" y="14" width="76" height="70" rx="13" fill="#dcecf3" fill-opacity=".72" stroke="#7f98a4" stroke-width="3"/><rect x="36" y="28" width="48" height="37" rx="4" fill="#3b4650"/><text x="60" y="76" text-anchor="middle" font-size="8" font-weight="800" fill="#27343a">BPW34</text></g>';
+    return null;
+  }
   function baseMarkup(d,c={}){
+    const real=realPackageMarkup(d);if(real)return real;
     const arduino=ArduinoLibrary?.art?.(d,c);if(arduino)return arduino;
     if(d.id==='abb-acs800-r5')return (typeof module==='object'&&module.exports?require('./acs800-art.js'):root.DTSACS800Art).markup(d,c);
     const instrument=(typeof module==='object'&&module.exports?require('./materials-v115.js'):root.DTSMaterials115)?.markup(d,c,sprite);if(instrument)return instrument;
