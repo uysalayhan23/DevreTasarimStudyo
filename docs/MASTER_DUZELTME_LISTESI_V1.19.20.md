@@ -1592,3 +1592,22 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - MQ-13: Yeni repo `uysalayhan23/DevreTasarimStudyo`, dal `main`; GitHub Actions çalıştırılmadı, commit mesajları `[skip ci]`.
 
 **Sonraki gerçek iş:** 26 dönüşmemiş ders içinde sayaç/enerji, takometre, sensör, osiloskop, fiziksel ölçüm araçları ve LCR türlerini **cihazın gerçek davranışını taklit eden işlevsel laboratuvarlara** dönüştür. Sahte devre veya doğrulanmamış ölçüm sonucu üretme. Her ders için pedagojik ve görsel ekran kabulü ayrıca yapılır.
+
+
+## 2026-10-10 — Ölçüm dersleri dalga biçimi ve frekans/akım uygulama grubu B
+
+**MQ-07 DURUM: KOD DÖNÜŞÜMÜ 24/45; HEDEFLİ DERS/DEVRE TESTLERİ 120/120 PASS; Windows ve tek tek görsel/pedagojik kabul AÇIK.** Önceki 19 geliştirilmiş dersi izleyen 5 özel ders:
+
+- `measurement-workshop-outline-016` — Osiloskop ile ölçüm yapma: düşük gerilimli sanal jeneratör, CH1/GND, kare dalga, periyot ve Vpp.
+- `measurement-workshop-outline-044` — Osiloskop ile sinyal ölçümleri: frekans / zaman tabanı karşılaştırması.
+- `measurement-workshop-outline-045` — Osiloskopla sinyal ölçümleri: tetikleme, doğru referans, kopuk GND durumunun neden geçerli ölçüm üretmediği.
+- `measurement-workshop-outline-033` — Pens ampermetreyle akım ölçümü: zaten doğrulanmış sanal UT200A tek iletken AC RMS laboratuvarına bağlanan ders özel açıklaması ve kontrol sorusu.
+- `measurement-workshop-outline-034` — Frekansmetreyle frekans ölçümü: zaten doğrulanmış sanal UT61E+ Hz laboratuvarına bağlanan T=1/f uygulaması.
+
+**Üretim:** `dist/tutorial-measurement-batch-b.js` beş dersin her birine farklı öğrenme hedefi, görev, konu kontrol sorusu ve gerçek proje bileşenlerini bağlar. Üç osiloskop dersindeki `arduino-signal-generator` OUT→`arduino-oscilloscope` CH1 ve GND→GND gerçek devre kablolarıyla bağlıdır; yalnız sanal 0–5 V kaynak kullanılır. `dist/tutorial-mode.js` içinde 50 Hz / 1 kHz / 10 kHz presetleri, gerçek `DTSArduino.tick` sonucundan hesaplanan CH1 `_scopeStats1.freq`, `vpp`, periyot ve geçersiz GND uyarısı vardır. Ölçüm değeri yalnız statik metinden üretilmez; örneklenen dalga izi runtime'dan gelir. `tutorial.css` kontrolleri yalnız mevcut sürüklenebilir yüzer öğretim penceresine yerleştirir; çalışma sahnesi boyutunu değiştirmez.
+
+**MQ-12 kanıt:** Yerel proje ZIP çalışma kopyası + yeni B modülü/UI: `node scripts/check.cjs` **PASS** (224 JS, 106 bağımlılık, 728 malzeme, 58 korunan proje); `node --test --test-concurrency=4 tests/tutorial-*.test.cjs tests/lesson-circuit-audit-v119.test.cjs` **120/120 PASS**, 0 FAIL. `tests/tutorial-measurement-batch-b-v11920.test.cjs` 5/5 PASS: 3×(50,1000,10000) Hz Arduino osiloskop ölçümünde sinyal frekansı doğru, genlik 5 Vpp, CH1 tetikleme geçerli; GND kaldırıldığında frekans ölçümü sahte gösterilmez; UT200A ≈1 A RMS, UT61E+ ≈1000 Hz gerçek `Simulation.solve` okuması. Kullanıcının tüm kodu son GitHub HEAD üzerinde tam regresyondan ve Windows/Edge piksel kabulünden geçmedi; bunlar **PASSED değil**. Korumalı eski dersler ve 45'lik envanter değiştirilmedi.
+
+**21/45 henüz gelişmiş laboratuvar standardında değil:** enerji sayacı/kWh, motor devir takometresi, sensör analog ölçümü, dijital LCR, elektronik devre ölçümleri, metre/kumpas/mikrometre/lüksmetre/desibelmetre/termometre ve genel ölçüm teorisi. Özellikle enerji sayacı veya takometre için gerçek ölçüm runtime'ı doğrulanmadan başka cihazın ekranıyla sahte sonuç gösterilmeyecek. Bunlar sonraki ayrı paketlere bölünür.
+
+MQ-13: Repo `uysalayhan23/DevreTasarimStudyo` `main`; GitHub Actions kullanılmadı. Commitlerde `[skip ci]`. MQ-00 final DONE değil; 24/45 yalnız kod düzeyinde geliştirilmiş ders kapsamıdır.
