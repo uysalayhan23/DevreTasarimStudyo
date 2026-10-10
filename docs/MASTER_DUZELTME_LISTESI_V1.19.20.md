@@ -1437,3 +1437,19 @@ Kaynak: Kullanıcının paylaştığı `DevreTasarimStudyo-main.zip` dosyası. A
 - **KOD DÜZELTMELERİ MEVCUT; GENEL MQ-00 DONE DEĞİL.** Yalnız tek tek geçen doğrulamalar PASS; başarısız ve süre limitini aşan testler açık.
 - Önce gerçek fiziksel/terminal hatalarını düzelt; sonra özgün LOCKED referansın eksikliğini gider; bütün testleri son GitHub HEAD'e eşit dosya ağacında tekrar çalıştır; görsel maske/siluet ve alpha denetimini tamamla; paketle; sonunda kullanıcıya yalnız gerçek Windows kabul ZIP'i sun.
 - 2026-10-10 kullanıcısının kesin yasağı: GitHub Actions çalıştırılmaz; tüm commit mesajları `[skip ci]` içerir.
+
+
+## 2026-10-10 — Fiziksel ölçek ve ana regresyon ikinci tur
+
+Durum: **FİZİKSEL HEDEFLİ GRUP 75/75 PASS / KALAN GENEL REGRESYON AÇIK / ZIP SON KABULÜ HENÜZ İSTENMEYECEK**.
+
+- Kaynak: kullanıcının yüklediği 82 MB `DevreTasarimStudyo-main.zip`. Komut: `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs`. Tam koşu, yeni fiziksel düzeltmelerin tamamının yerel kopyaya uygulanmasından sonra fakat son birkaç ek test düzenlemesinden önce yapıldı: **817 test / 764 PASS / 53 FAIL**. Bu sayı son GitHub HEAD testi olarak adlandırılmamalıdır.
+- MQ-02/MQ-04: WAZ5 gerçek 8540300000 datasheet W/H/D = **17.5 × 92.4 × 112.4 mm**, kullanıcı sahne oranı **35 × 184.8 scene-unit**. Kütüphane ürünü `instrument:'waz5'` ile resmi `weid-front-v115` Digital Twin kaydına bağlandı. Yanlış/missing instrument için metadata **null** (fail-closed), ayrıca ayrı regresyon testi **1/1 PASS**. Üretici metadata karşılaştırması ile kullanıcının ayrı kilitli gösterim ölçüsü artık testte birbirine karıştırılmıyor.
+- MQ-12 fiziksel metadata ve kullanıcı ölçek kilitleri: `tests/physical-metadata-v11920.test.cjs` + `tests/user-scale-only-lock-v11920.test.cjs` yerel çalıştırma **75/75 PASS**. 5TL kaynak WebP SHA-256, kayıtla hesaplanarak doğrulanır. ENDA ET4420 alt iki sıradaki gerçek terminal noktaları (y=108 ve 130) gövde sahne yüksekliği 96'dan bağımsız erişilebilir kalır; terminal hatları yapay biçimde yeniden yerleştirilmez. Kullanıcı kilitli MCB ölçülerinin üretici katalog ölçüsünden farklılığı raporda ayrıca görünür.
+- MQ-04/MQ-12 pano iletken geometrisi: eski K1 `x+width*.25` yaklaşık terminal beklentisi kaldırıldı; fiziksel doğrulanmış terminal çapa noktası cihazla birlikte +25 taşınmasıyla hedefli test **PASS**.
+- MQ-12 doküman sembolü ve Digital Twin hedefli testleri **15/15 PASS**. Pano uygunluğunu kanıtı olmayan WAZ5/ORDEL için sahte hazır/panel-ready sonucu verilmedi.
+- MQ-12 diğer hedefli gruplar: işaretçi/marquee **7/7 PASS**; pano malzeme dahil etme ve görsel envanter **9/9 PASS**. Beklenen eski sabit cache revision'ları güncel scriptin varlığı ve eski revizyonun dönmemesi olarak sınanır.
+- MQ-03 görsel envanter: **266 kayıt, 264 piksel denetimli, 2 piksel denetimi bekliyor**. Yeni `ordel-top-v115` ve `weid-front-v115` mapped sidecar'ları açık olarak gösterilir; **kaynak RGB / SVG clipPath** gerçek şeffaf asset dosyası olarak sunulmaz. Kaynak review pending **52**. Fiziksel silhouette, alfa, piksel görsel ve terminal hizası kabulü açık.
+- MQ-12 açık hatlar: eksik özgün `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md`; ZIP içinde `.git` bulunmadığından 3 lock baseline testi; öğretici rich-format ve bazı eski snapshot/cache beklentileri; PLC I/O simülasyon davranışı; tam son HEAD regresyonu ve Windows/Edge gerçek kabulü.
+- MQ-13 kaynak/kilit koruması: repo `uysalayhan23/DevreTasarimStudyo`, dal `main`; yalnız mevcut dalda küçük commitler; **GitHub Actions 0 çalıştırma**, commit mesajları `[skip ci]`.
+- MQ-00 kararı: **HEDEFLİ FİZİKSEL DÜZELTME KABUL, PROJE NİHAİ DONE DEĞİL**. Eksik belgeyi uydurarak LOCKED orijinal gibi kaydetmeyin. Kaynak teknik kanıt ve tam regresyon tamamlanana kadar kullanıcıya son kabul ZIP'i sunmayın.
