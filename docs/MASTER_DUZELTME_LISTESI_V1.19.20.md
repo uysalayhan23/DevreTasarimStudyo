@@ -1621,3 +1621,23 @@ MQ-13: Repo `uysalayhan23/DevreTasarimStudyo` `main`; GitHub Actions kullanılma
 - Kaynak eşitliği sınırı: Yerel test ağacı kullanıcı ZIP'i üzerinde yeni modül/UI/testler uygulanarak oluşturulmuştur; GitHub son HEAD ile root-tree SHA birebir eşitliği bu turda ispatlanmadı. GitHub `main` üzerinde ayrı dosya sözdizimi/yükleme kontrolleri yapılmıştır. Yerel 838/841 sayısı **GitHub son HEAD üzerinde çalışan Actions ya da Windows testi değildir**.
 - GitHub Actions tetiklenmedi; commitler `[skip ci]`. Eski Windows `BASLAT.bat` `file:///` başlatma kilidi, gerçek pano fiziksel boyutları ve kaynak maskesi kuralları korunur.
 - MQ-00 final kararı: **24/45 gelişmiş ders kodu hazır; 21/45 dönüşüm bekliyor; nihai Windows/Edge görsel ve her dersin pedagojik kullanıcılı kabulü açık.** Üç native Git testi uygun checkout olmadan geçmiş sayılamaz.
+
+
+## 2026-10-10 — Batch C enerji analizi ve sanal takometre laboratuvarları
+
+**MQ-07 kod doğrulamalı durum: 27/45 gelişmiş ders; 18/45 hâlâ dönüşüm bekliyor; kullanıcı Windows görsel/pedagojik final kabulü AÇIK.**
+
+Önceki 24/45 sayımı gerçek kod `rich-reference-v1` envanterinde yeniden kontrol edildi ve **doğrulandı**. Bu 24 içinde `measurement-workshop-outline-035`, `036`, `037` enerji analizi dersleri zaten bulunuyordu. Batch C bu üç dersin **konuya özgü amaç, uygulama ve sorularını özelleştirir** fakat üç yeni ders saymaz. Yeni gelişmiş laboratuvara dönüştürülen dersler şunlardır:
+- `measurement-workshop-src-09`: Motor devir sayısının sanal temassız takometre ile ölçümü.
+- `measurement-workshop-outline-023`: Takometre ölçümlerinde rpm ve tur/s ilişkisinin öğrenilmesi.
+- `measurement-workshop-outline-024`: Dijital takometreyle sanal motor devri karşılaştırması.
+
+**Teknik içerik:** `dist/tutorial-measurement-batch-c.js` bu 6 derse özgü konu hedefleri ve test soruları yükler. Enerji analizi üçlüsü mevcut doğrulanmış `energy-analyzer-1p` + sanal 230 V eğitim yükü modelini kullanır; P/Q/S/PF ve Wh hesapları `Simulation.solve` ve `_energyAnalyzer` durumundan gelir. Dirençli 230 W/0 var/PF=1, endüktif 184 W/+138 var/PF=.8, kapasitif 184 W/−138 var/PF=.8 referansları fiziksel modelle eşleşir. Sanal 1 saat sonunda dirençli 230 W yük için enerji yaklaşık 230 Wh = 0,230 kWh'dir.
+
+Takometre laboratuvarlarında sanal `supply-3p` ile `motor-3p` güç yolunun 4 gerçek bağlantısı vardır; `tutorial-tachometer` **elektrik terminaline bağlanmaz**. Mevcut motor simülasyonunun `_motorRPM` verisine ve `_active` durumuna bağlı 750/1500/3000 rpm kontrolleri yüzer ders anlatımı penceresindedir. Besleme koparsa geçerli RPM gösterilmez. Bu okumalar **sanal motor modeli** kaynaklıdır; kalibre edilmiş bağımsız optik sensör donanımı simülasyonu olarak sunulmaz.
+
+**MQ-12 hedefli delil:** `node scripts/check.cjs` **PASS** (227 JS syntax, 106 dependency, 728 material, 58 protected examples). `node --test --test-concurrency=4 tests/tutorial-*.test.cjs tests/lesson-circuit-audit-v119.test.cjs` **126/126 PASS**, yeni `tests/tutorial-measurement-batch-c-v11920.test.cjs` **6/6 PASS**. GitHub `main` üzerinde yeni modül/arayüz JS parse, 6 dersin kimliği, 3 enerji + 3 takometre kaynak eşlemesi, yükleyici, CSS ve buton entegrasyonu ayrıca kod-içi smoke ile doğrulandı. Bunlar Windows ekran görüntüsü onayı değildir.
+
+**Kalan 18 ders:** gerçek enerji sayacı endeksinin modellenmesi (`src-08`, `outline-038`), sensör gerilim/sinyal ölçümü (`src-10`), LCR, uzunluk/kumpas/mikrometre, ışık/ses/sıcaklık ölçüm araçları, cihaz sınıflandırmaları ve diğer teori/elektronik ölçü başlıkları. Gerçek sensör ve cihaz modeli olmadan sahte sonuç üretilmez.
+
+**Kilitler:** Yüzer ders penceresi, büyütülmüş yazılar, ilk tıklamayla gizlenen bağlamsal açıklamalar, sağ panel, 2 scene-unit/mm, karşıdan görünüş ve localhost'suz `BASLAT.bat` korunur. GitHub Actions tetiklenmez, bütün commitler `[skip ci]` içerir. Tam Git-history/Windows görsel kabulü ve ana MQ-00 CLOSED ayrı kapıdır.

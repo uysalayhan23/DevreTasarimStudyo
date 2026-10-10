@@ -145,3 +145,12 @@ Osiloskoplu dersler sadece simgesel ekran göstermez. Sanal sinyal jeneratörün
 Her başlığın farklı öğrenme hedefi, ölçüm görevi, konu kontrolü ve neden-sonuç açıklaması bulunur. UT200A pens ve UT61E+ frekansmetre dersleri doğrulanmış sanal cihaz laboratuvarlarını kullanabilir, ancak kendi kazanımlarına uygun sorular içerir. Yeni kontroller yalnız `#tutorialCoach` içine konur; sürüklenebilir pencere/sağ panel/ilk tıklama-hover mikro açıklamalarının davranışı ve çalışma alanı korunur.
 
 Kod ve veri testleri bu aşamada güçlü regresyon delili sağlar; gerçek Windows/Edge piksel kabulü, 45/45 tek tek ders kalite kapanışı ve başka ölçüm cihazları için doğrulanmamış sayısal model kabulü yapılmamıştır.
+
+
+## 25. Enerji analizörü ve sanal takometreyle uygulamalı ölçme
+
+Enerji analizi derslerinde konuya özgü wattmetre/cosφ kazanımları farklı sorularla öğretilir. P, Q, S, PF ve biriken Wh verileri simülasyon çözücüsünden alınır; statik sayılar çalışan ölçüm diye sunulmaz. Öğrenci üç sanal yük karakterini değiştirip gerçek modelin işaret ve güç katsayısı ilişkisini gözlemler.
+
+Temassız takometre öğreniminde cihaz motorun elektrik terminallerine bağlanmaz. Bu sürüm, bağımsız gerçek optik algılayıcı değil, sanal `motor-3p` modelinden türeyen `_motorRPM` ölçümünü gösterir. Yalnız motor çalışırken hedeflenen motorun RPM'si geçerli sayılır; enerji kesildiğinde eski okuma saklanmaz. 750/1500/3000 rpm kontrolü ve rpm/60 tur/s karşılaştırması mevcut yüzer ders penceresi içine yerleşir; çalışma alanı ve mikro açıklama davranışı değiştirilmez.
+
+Her 6 dersin özgün öğrenme hedefi, ölçüm görevi ve konu kontrolü ayrı tutulur. İlk 24 gelişmiş dersin üçü zaten enerji analizi dersidir; C paketinde 3 takometre dersinin yükseltilmesiyle toplam gelişmiş kod kapsamı 27/45 olur. Her dersin gerçek Windows/Edge ekran, piksel, terminal ve çocukların anlayacağı pedagojik son kabulü ayrıca yapılacaktır.
