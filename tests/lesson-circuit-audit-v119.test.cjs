@@ -22,6 +22,17 @@ const Lessons=finalLessons();
 const library=runtimeLibrary();
 const byId=Object.fromEntries(library.map(x=>[x.id,x]));
 const lc=s=>String(s||'').toLocaleLowerCase('tr-TR');
+
+test('LM358 inverting DC lesson starts in a measurable range and probes the physical output pin',()=>{
+ const l=Lessons.lessons.find(x=>/Eviren yükselteç DC giriş/i.test(x.title));assert.ok(l,'lesson');
+ const u=l.project.components.find(x=>x.id==='u1'),pot=l.project.components.find(x=>x.id==='in'),red=l.project.components.find(x=>x.id==='v1-red'),black=l.project.components.find(x=>x.id==='v1-black');
+ assert.equal(u.typeId,'lm358p-dip8');assert.equal(red.probeTarget?.c,'u1');assert.equal(String(red.probeTarget?.p),'1');assert.equal(black.probeTarget?.c,'g1');assert.equal(black.probeTarget?.p,'M');
+ assert.equal(Number(pot.potentiometer),55);
+ const vcc=24,vref=12,vin=vcc*(1-Number(pot.potentiometer)/100),gain=47000/10000,vout=vref-gain*(vin-vref);
+ assert.ok(vout>1&&vout<22.5,'expected measurable LM358 output, got '+vout);assert.ok(Math.abs(vout-17.64)<.05,vout);
+ const pins=new Set(l.project.wires.flatMap(w=>[w.from,w.to]).filter(e=>e.c==='u1').map(e=>String(e.p)));for(const p of ['1','2','3','4','8'])assert.ok(pins.has(p),'LM358 pin '+p);
+});
+
 const visualOnly=d=>d?.visualOnly||d?.diagramOnly||d?.kind==='tutorial-meter'||d?.kind==='multimeter'||d?.kind==='clamp-meter';
 const usedComponents=l=>new Set((l.project.wires||[]).flatMap(w=>[w.from.c,w.to.c]));
 const family={
