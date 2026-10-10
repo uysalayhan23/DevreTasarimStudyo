@@ -45,7 +45,7 @@ test('PNP proximity sensor reports model supply/contact, not imaginary meter vol
  for(const [idx,active] of [[0,false],[1,true],[2,false]]){
   const result=model.choose(l,p,idx,Simulation.solve,byId);
   assert.equal(s._sensorSupply,'ok');assert.equal(!!s._contactStates.output,active);
-  assert.match(result.label,/PNP BK çıkışı:/);assert.doesNotMatch(result.label,/BK.*24\.00 V/);
+  assert.match(result.label,/PNP BK:/);assert.match(result.label,/UNI-T DCV:/);const meter=p.components.find(c=>c.typeId==='unit-ut33d-plus');assert.equal(meter._meter.mode,'DCV');assert.ok(Math.abs(meter._meter.value-(active?24:0))<.05,'actual PNP 24/0 V instrument reading');
  }
 });
 test('independent virtual scenarios preserve correct dimensional conversions and formulas',()=>{
