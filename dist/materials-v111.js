@@ -22,18 +22,22 @@
     a=`<defs><clipPath id="${scope}"><rect x="7" y="7" width="${w-14}" height="${h-14}" rx="7"/></clipPath></defs><image href="assets/products/${file}" x="7" y="7" width="${w-14}" height="${h-14}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${scope})"/>`;
    }
   }else if(d.kind==='phase-monitor'){
-   const f=d.phaseProtection;
-   a=`<svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="${f?'325 120 370 1400':'130 200 760 1290'}" preserveAspectRatio="none"><image href="assets/products/${f?'fkv':'fsr'}-front-v111.png" width="1024" height="1536"/></svg>`;
+   const f=d.phaseProtection,scope='phase-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
+   const vb=f?'325 120 370 1400':'130 200 760 1290';
+   const clip=f?'<rect x="336" y="130" width="348" height="1378" rx="18"/>':'<rect x="145" y="212" width="730" height="1264" rx="20"/>';
+   a=`<svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="${vb}" preserveAspectRatio="none"><defs><clipPath id="${scope}">${clip}</clipPath></defs><image href="assets/products/${f?'fkv':'fsr'}-front-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></svg>`;
    a+=circle(f?75:124,f?150:177,3,c._active?'#4ff461':'#35513a');
    if(c._phaseFault)a+=text(c._phaseFault,x,h+8,8);
   }else if(d.id==='nh-fuse-holder'){
    a=rect(10,10,w-20,h-20,'#74868f')+rect(18,24,w-36,h-54,'#383f42');
    for(let i=0;i<3;i++)a+=rect(28+i*50,32,24,18,'#c5a770')+rect(28+i*50,164,24,18,'#c5a770');
-   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="none"><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580"/></svg>`;
+   const nhScope='nh-holder-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
+   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="none"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
    for(let i=0;i<3;i++)if(c.nhFuses?.[i])a+=rect(34+i*50,88,12,77,'#b8bdc0')+rect(28+i*50,104,24,46,'#eee9dc')+text('NH',40+i*50,130,8);
    a+='</g>'+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
   }else if(d.id==='nh-fuse'){
-   a=`<image href="assets/products/nh-reference-v111.png" x="10" y="5" width="${w-20}" height="${h-10}" preserveAspectRatio="xMidYMid meet"/>`;
+   const nhFuseScope='nh-fuse-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
+   a=`<defs><clipPath id="${nhFuseScope}"><path d="M24 18H${w-24}V${h-18}H24Z"/></clipPath></defs><image href="assets/products/nh-reference-v111.png" x="10" y="5" width="${w-20}" height="${h-10}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${nhFuseScope})"/>`;
   }else if(d.id==='packet-star-delta'){
    const angle=[-60,0,60][Number(c.position)||0];
    a=rect(x-66,y-72,132,144,'#087e64')+rect(x-58,y-64,116,128,'#eaf0df')+text('0',x-42,y-30)+text('Y',x,y-45)+text('Δ',x+42,y-30)+circle(x,y,31,'#096f58')+`<g transform="rotate(${angle} ${x} ${y})">${rect(x-9,y-36,18,72,'#05503f',6)}<path d="M${x} ${y-30}v18" stroke="white" stroke-width="3"/></g>`+text('METOP MT031',x,y+55,9);
