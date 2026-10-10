@@ -76,7 +76,7 @@
     const label=(...args)=>labelMarkup(c,...args);
     let art;
     if(material){
-      art=wireOverlayOnly?'':d._auxOnly?'':d.productVisualUrl?'<g class="real-product-photo"><rect x="2" y="2" width="'+(d.w-4)+'" height="'+(d.h-4)+'" rx="6" fill="#fff" stroke="#cbd5e1"/><image href="'+esc(d.productVisualUrl)+'" x="7" y="7" width="'+(d.w-14)+'" height="'+(d.h-14)+'" preserveAspectRatio="xMidYMid meet"/></g>':(d.hcfaDrive||d.hcfaServoMotor||d.hcfaPulseSource||d.hcfaModbusMaster)?HCFAUI.markup(c,d):(d.doldSafety||d.doldNe5021)?DoldSafety.materialMarkup(c,d):d.incrementalEncoder38mm?IncrementalEncoder.markup(c,d):Materials.markup(d,c);
+      art=wireOverlayOnly?'':d._auxOnly?'':d.realPackage?Materials.markup(d,c):d.productVisualUrl?'<g class="real-product-photo"><image href="'+esc(d.productVisualUrl)+'" x="2" y="2" width="'+(d.w-4)+'" height="'+(d.h-4)+'" preserveAspectRatio="xMidYMid meet"/></g>':(d.hcfaDrive||d.hcfaServoMotor||d.hcfaPulseSource||d.hcfaModbusMaster)?HCFAUI.markup(c,d):(d.doldSafety||d.doldNe5021)?DoldSafety.materialMarkup(c,d):d.incrementalEncoder38mm?IncrementalEncoder.markup(c,d):Materials.markup(d,c);
       if(rotation&&!d.materialSymbol&&!d.designMaterial)art=art.replace(/<text\b([^>]*)>/g,(all,attrs)=>'<text'+attrs+' transform="rotate('+(-rotation)+' '+(attrs.match(/\bx="([^"]*)"/)?.[1]||0)+' '+(attrs.match(/\by="([^"]*)"/)?.[1]||0)+')">');
     }
     else{
