@@ -1407,3 +1407,33 @@ Durum: **KOD DÜZELTMESİ TESLİM / 11/11 HEDEFLİ STATİK DENETİM PASS / GÖRS
 - Çalıştırılabilir Node testinin kaynak sözdizimi ayrıca V8 parser ile doğrulandı; test dosyası `tests/photo-background-runtime-v11920.test.cjs`, commit `240fe5c15f8f33141d0a63a8ea8caa82b7a448ed`. Bu testin Node test runner'da çalıştırıldığı iddia edilmez.
 - Çalışma ortamı GitHub DNS/clone erişimi sağlamadığından tam Node `node scripts/check.cjs`, `node scripts/run-tests.cjs`, fotoğraf piksel alpha analizi ve gerçek Chrome/Edge görsel onayı **NOT RUN**. Kullanıcı Windows ZIP kabulü öncesi bunlara yanlış PASS verilmez.
 - MQ-00: **KOD + HEDEFLİ RUNTIME SMOKE KABUL; NİHAİ GÖRSEL/PİKSEL + FİZİKSEL TERMİNAL + TAM TEST KAPISI AÇIK**. GitHub Actions kullanılmadı, commitler `[skip ci]`.
+
+
+## 2026-10-10 — Kullanıcı ZIP'inden MQ-00 yerel kalite/regresyon denetimi
+
+Durum: **AKTİF / KOD DÜZELTMELERİ YÜKLENDİ / HEDEFLİ TESTLER PASS / GENEL REGRESYON ve GÖRSEL KABUL OPEN / ZIP SON KULLANICI KABULÜNE HENÜZ HAZIR DEĞİL**.
+
+Kaynak: Kullanıcının paylaştığı `DevreTasarimStudyo-main.zip` dosyası. Arşiv güvenli biçimde çıkarıldı; Node v22.16.0 kullanıldı, GitHub Actions çalıştırılmadı. Bu kullanıcı arşivi GitHub `.git` geçmişini içermediğinden lock-baseline testleri (3 hata) buradan tamamlanmış kabul edilemez. Yeni hedef repo `uysalayhan23/DevreTasarimStudyo` dal `main` kullanıldı.
+
+### Doğrulanan kanıtlar
+
+- `node scripts/check.cjs`: **PASS** (son yerel çalışma ağacında 215 JS dosyası sözdizimi, 106 yerel bağımlılık, 728 malzeme ve 58 korunan örnek). Bunun gerçek Windows/browser testi olmadığı korunur.
+- Bounded full suite: `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs` ilk bütünleşik tur **815 TEST / 734 PASS / 81 FAIL**; logda ayrıntılar mevcut. Bu tur test harness DOM düzeltmesini içerir; **sonraki tüm düzeltmeleri içeren yeni full suite çalışması değildir**. Sonraki hedefli 19 test **19/19 PASS** (lesson-circuit 8, simulation-material 10, yeni LM358 physical step guard 1).
+- Fiziksel metadata + kullanıcı ölçek kilidi hedef grubu (75 test): **57 PASS / 18 FAIL**. Eski fixture/revision karşılaştırmaları ile gerçek mm/terminal sorunları ayıklanmadığından release-ready değildir. Özellikle WAZ5, ET4420, Omron, terminal geometrisi, ölçek coverage ve 5TL asset hash iddiaları ayrıca incelenecek; doğrulanmış kanonik görsel/binary sırf test beklentisi için değiştirilmeyecektir.
+- Ürün görselleri denetlendi: FKV, FSR, NH, ENDA, Baykon ve Weidmüller'in bazı kaynak PNG'leri **RGB / gerçek alfa içermiyor**. Uygulamada SVG `clipPath` maskeleme kullanılıyor; bunlar saydam kaynak asset olarak raporlanamaz. Fiziksel görünür siluet ve terminal eşleşmesi/Windows onayı açık.
+- Gerçek Chromium görsel kabul denemesi bu container'da yanıt üretmedi. `BASLAT.bat` / `file:///.../dist/index.html` kilidi ve kanonik 2 scene-unit/mm sözleşmesi korunmalıdır.
+- Kilitli `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md` belgesi **yüklenen ZIP ve yeni repo main içinde yok**; 10 referans-format testi kaynak dosyayı açamıyor. Elde olmayan özgün LOCKED belge uydurulmadı ve yeniden yazılmış metin kanonik original olarak sunulmadı.
+
+### Repo üzerinde tamamlanan düzeltmeler
+
+- `066e05415a473ec58ec67e70348bfd2e4ed4af2b`: offline test DOM `documentElement` modellenmesi, gerçek uygulama açılış testindeki harness crash kapatıldı.
+- `9b32aaea8f0dc984f95aba0f296ba7c411961322`: kullanıcı kilitli fiziksel boyutlar `Symbols.prepareLibrary` aşamasında 20-unit grid'e yuvarlanmaz.
+- `73f17eae22170bbff490193af49863cbc9c1f021`: fiziksel frame/pin remap için regresyon testi.
+- `ce225db507f2a584b03cb82db986d7df68ba6c7e`: 5 eski aygıt/digital twin/HCFA testini güncel kanonik model ve runtime'a hizalama.
+- `5d96a612e1da88e30c2c115551b5d65b0b11c602`: LM358P PDIP-8 migration gerçek devre telleri kadar öğretici `steps` terminal uçlarını da günceller; yanlış/pasif eski tutorial pin adları giderildi. Test denetimi yeni elektronik parça kimlikleri, gerçek paket görselleri, önceden takılı prob kabloları ve güncel enerji analizörü ile digital IC modellerine göre hizalandı; LM358 odaklı yeni regresyon eklendi.
+
+### MQ-00 karar ve sonraki kapılar
+
+- **KOD DÜZELTMELERİ MEVCUT; GENEL MQ-00 DONE DEĞİL.** Yalnız tek tek geçen doğrulamalar PASS; başarısız ve süre limitini aşan testler açık.
+- Önce gerçek fiziksel/terminal hatalarını düzelt; sonra özgün LOCKED referansın eksikliğini gider; bütün testleri son GitHub HEAD'e eşit dosya ağacında tekrar çalıştır; görsel maske/siluet ve alpha denetimini tamamla; paketle; sonunda kullanıcıya yalnız gerçek Windows kabul ZIP'i sun.
+- 2026-10-10 kullanıcısının kesin yasağı: GitHub Actions çalıştırılmaz; tüm commit mesajları `[skip ci]` içerir.
