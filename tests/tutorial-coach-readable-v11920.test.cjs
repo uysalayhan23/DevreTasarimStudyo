@@ -3,7 +3,9 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const css=fs.readFileSync(path.join(__dirname,'../dist/tutorial.css'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
 const marker='/* MQ-07 readable floating coach text';
-const rules=css.slice(css.lastIndexOf(marker));
+const end=css.indexOf('/* MQ-07 global contextual micro-explanations');
+assert.ok(end>0);
+const rules=css.slice(css.lastIndexOf(marker),end);
 test('floating tutorial explanations use larger readable text, without changing canvas labels',()=>{
  assert.ok(rules.startsWith(marker));
  assert.match(rules,/#tutorialCoach :is\(p,li,[^}]+?font-size:13px;line-height:1\.5/);
@@ -20,6 +22,6 @@ test('floating tutorial window keeps its original size, resize, minimize and scr
  assert.match(css,/#tutorialCoach\{[^}]*resize:both;overflow:auto/);
 });
 test('runtime loads the updated tutorial CSS with a distinct cache key',()=>{
- assert.match(html,/tutorial\.css\?rev=20261010-coach-readable1/);
+ assert.match(html,/tutorial\.css\?rev=20261010-micro-hints1/);
  assert.doesNotMatch(html,/tutorial\.css\?rev=20261009-energy-rich1/);
 });
