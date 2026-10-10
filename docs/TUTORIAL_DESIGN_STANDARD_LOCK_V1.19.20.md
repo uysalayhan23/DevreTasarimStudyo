@@ -136,3 +136,12 @@ Kırmızı ve siyah prob açıklamaları karışmaz; açıklamalar malzeme ve me
 Ölçme ve ölçü aletleri bölümündeki her başlık kendi kazanımına göre farklı öğrenci görevi, doğru prob yuvası ve kademe, gerçek devre/ölçüm değeri, birden fazla deney noktası, kendi konu kontrolü ve adım adım yeniden kurma içermelidir. Doğrulanmış kanonik gerilim/akım laboratuvarının kullanılmasına izin verilir; ancak dersin özgün hedefi ve neden açıklaması korunmalıdır. Başka bir dersten yalnız görüntü veya başlık kopyalamak tamamlanmış öğretim sayılmaz.
 
 Yüzer ders penceresi 13–14 px okunabilirliği ve serbest sürükleme/küçültme davranışını korur. İlk tıklamada gizlenen, hover ile açılan küçük kartlar sahnede sürekli alan kaplamaz. Dokuz alt konu için `tutorial-measurement-batch-a.js` ve `tutorial-measurement-batch-a-v11920.test.cjs` güvenlik ağıdır. Kod düzeyinde zengin laboratuvar bulunması, Windows görsel kabulünün tamamlandığı anlamına gelmez.
+
+
+## 24. Osiloskop ve frekans deneylerinde gerçek sanal dalga verisi
+
+Osiloskoplu dersler sadece simgesel ekran göstermez. Sanal sinyal jeneratörünün OUT/GND uçları osiloskobun CH1/GND uçlarına gerçek devre kablolarıyla bağlanır. Öğrenci 50 Hz, 1 kHz ve 10 kHz presetlerinde zaman tabanını değiştirip örneklenmiş dalga izinden frekans, Vpp ve periyodu öğrenir. `DTSArduino.tick` üzerinden elde edilen `_scopeStats1` ve `_scopeGrounded` verileri kullanılır; GND kopuk olduğunda ölçüm varmış gibi gösterilmez. Kaynak yalnız sanal 0–5 V'tur; gerçek canlı ekipmanla deneme talimatı değildir.
+
+Her başlığın farklı öğrenme hedefi, ölçüm görevi, konu kontrolü ve neden-sonuç açıklaması bulunur. UT200A pens ve UT61E+ frekansmetre dersleri doğrulanmış sanal cihaz laboratuvarlarını kullanabilir, ancak kendi kazanımlarına uygun sorular içerir. Yeni kontroller yalnız `#tutorialCoach` içine konur; sürüklenebilir pencere/sağ panel/ilk tıklama-hover mikro açıklamalarının davranışı ve çalışma alanı korunur.
+
+Kod ve veri testleri bu aşamada güçlü regresyon delili sağlar; gerçek Windows/Edge piksel kabulü, 45/45 tek tek ders kalite kapanışı ve başka ölçüm cihazları için doğrulanmamış sayısal model kabulü yapılmamıştır.
