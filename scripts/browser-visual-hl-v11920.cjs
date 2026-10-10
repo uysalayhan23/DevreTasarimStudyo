@@ -234,11 +234,15 @@ async function main(){
        const interaction=await evaluate(cdp,`(()=>{
         const p=document.querySelector('#tutorialCoach'),btn=document.querySelector('#tutorialCoachReopen'),r=p.getBoundingClientRect();
         const dragged=Math.abs(r.left-${setup.left})>2||Math.abs(r.top-${setup.top})>2;
+        const bounded=r.left>=7&&r.top>=57&&r.right<=window.innerWidth+1&&r.top<=window.innerHeight-48+1;
         btn.click();const hidden=p.hidden;btn.click();const visible=!p.hidden;
-        return {dragged,hidden,visible,ok:dragged&&hidden&&visible};
+        return {dragged,bounded,hidden,visible,ok:dragged&&bounded&&hidden&&visible};
        })()`);
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelInteraction={...interaction,minimized:setup.minimized,restored:setup.restored};
-       assert(interaction.ok,'Panel drag/close/reopen failed: '+id+' '+JSON.stringify(interaction));
+       // Keep an interaction-state screenshot even when its geometry assertion fails.
+       const panelShot=await shot(cdp,'hl-panel-'+id);
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelScreenshot=panelShot;
+       assert(interaction.ok,'Panel drag/bounds/close/reopen failed: '+id+' '+JSON.stringify(interaction));
       }
 
       report.states.hlLessons.checked++;
