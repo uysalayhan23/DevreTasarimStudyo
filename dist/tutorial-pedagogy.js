@@ -2039,6 +2039,19 @@ function upgradeLegacyLm358PhysicalPackage(l){
 }
 for(const l of L.lessons)upgradeLegacyLm358PhysicalPackage(l);
 
+// RS conceptual cards use an SN74HC00N (four NAND gates), not a standalone
+// RS flip-flop IC. Never claim a functional latch when the lesson has no wires.
+for(const l of L.lessons){
+ if(!/RS Flip-Flop/i.test(l.title)||l.kind!=='quiz'||l.project?.wires?.length)continue;
+ const nand=l.project.components.find(c=>c.typeId==='sn74hc00n');if(!nand)continue;
+ nand.label='SN74HC00N · 4 NAND kapısı (RS mandal yapı taşı)';
+ l.summary='RS mandalın iki NAND kapısının çapraz geri beslemesiyle nasıl kurulacağını kavramsal olarak öğrenir; gösterilen SN74HC00N tek başına hazır bir RS flip-flop değildir.';
+ l.explanation='SN74HC00N dört adet NAND kapısı içerir. RS mandal kurmak için iki NAND kapısının çıkışları karşılıklı diğerinin girişine geri beslenir; S ve R girişleri durum değişimini belirler. Bu dersteki görünümde bağlantı kablosu bulunmadığından çalışan bir RS devresi simüle edilmez.';
+ l.learningGoal='SN74HC00N NAND kapısı ile tamamlanmış RS mandalı arasındaki farkı, iki kapı ve çapraz geri beslemenin neden gerekli olduğunu açıklamak.';
+ l.materials=materialRows(l.project);
+ l.pedagogyReview={...(l.pedagogyReview||{}),conceptualNandLatch:true};
+}
+
 // Physical probes are part of the rich series/parallel labs. Keep the simulated
 // electric path intact: current probe contacts substitute for the jack-to-wire
 // joins while the black parallel probe touches one shared branch node.
