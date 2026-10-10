@@ -215,25 +215,30 @@ async function main(){
       assert(coach.visible&&coach.text>60,'Tutorial coach not rendered: '+id);
       // Once per topic, exercise real panel click handlers and pointer drag, then restore.
       if(n===1){
-       const interaction=await evaluate(cdp,`(()=>{
+       const setup=await evaluate(cdp,`(()=>{
         const panel=document.querySelector('#tutorialCoach'),bar=panel?.querySelector('.tutorial-float-bar');
         const mini=panel?.querySelector('[data-tutorial-coach-minimize]'),reopen=document.querySelector('#tutorialCoachReopen');
-        if(!panel||!bar||!mini||!reopen) return {ok:false,reason:'Panel controls missing'};
+        if(!panel||!bar||!mini||!reopen)return {ok:false,reason:'Panel controls missing'};
         if(panel.classList.contains('is-minimized'))mini.click();
         mini.click();const minimized=panel.classList.contains('is-minimized');
         mini.click();const restored=!panel.classList.contains('is-minimized');
-        const before=panel.getBoundingClientRect();
-        const init={pointerId:71,bubbles:true,clientX:before.left+24,clientY:before.top+18};
-        bar.dispatchEvent(new PointerEvent('pointerdown',init));
-        document.dispatchEvent(new PointerEvent('pointermove',{...init,clientX:init.clientX+45,clientY:init.clientY+28}));
-        document.dispatchEvent(new PointerEvent('pointerup',{...init,clientX:init.clientX+45,clientY:init.clientY+28}));
-        const after=panel.getBoundingClientRect(),dragged=Math.abs(after.left-before.left)>2||Math.abs(after.top-before.top)>2;
-        reopen.click();const hidden=panel.hidden;
-        reopen.click();const visible=!panel.hidden;
-        return {ok:minimized&&restored&&dragged&&hidden&&visible,minimized,restored,dragged,hidden,visible};
+        const rect=bar.getBoundingClientRect(),p=panel.getBoundingClientRect();
+        return {ok:true,minimized,restored,x:rect.left+Math.min(24,rect.width/3),y:rect.top+Math.min(16,rect.height/2),left:p.left,top:p.top};
        })()`);
-       report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelInteraction=interaction;
-       assert(interaction.ok,'Panel minimize/restore/drag/toggle failed: '+id+' '+JSON.stringify(interaction));
+       assert(setup.ok&&setup.minimized&&setup.restored,'Panel minimize/restore failed: '+id+' '+JSON.stringify(setup));
+       const x=setup.x,y=setup.y;
+       await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x,y});
+       await cdp.call('Input.dispatchMouseEvent',{type:'mousePressed',x,y,button:'left',clickCount:1});
+       await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:x+45,y:y+28,buttons:1});
+       await cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:x+45,y:y+28,button:'left',clickCount:1});
+       const interaction=await evaluate(cdp,`(()=>{
+        const p=document.querySelector('#tutorialCoach'),btn=document.querySelector('#tutorialCoachReopen'),r=p.getBoundingClientRect();
+        const dragged=Math.abs(r.left-${setup.left})>2||Math.abs(r.top-${setup.top})>2;
+        btn.click();const hidden=p.hidden;btn.click();const visible=!p.hidden;
+        return {dragged,hidden,visible,ok:dragged&&hidden&&visible};
+       })()`);
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelInteraction={...interaction,minimized:setup.minimized,restored:setup.restored};
+       assert(interaction.ok,'Panel drag/close/reopen failed: '+id+' '+JSON.stringify(interaction));
       }
 
       report.states.hlLessons.checked++;
