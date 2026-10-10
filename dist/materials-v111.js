@@ -9,7 +9,18 @@
   let a='';
   if(['speaker','buzzer','annunciation','siren'].includes(d.id)){
    const file={speaker:'speaker-v111.jpg',buzzer:'buzzer-v111.png',annunciation:'alarm-v111.jpg',siren:'siren-v111.jpg'}[d.id];
-   a=d.id==='buzzer'?`<svg x="10" y="8" width="${w-20}" height="${h-16}" viewBox="67 52 126 126"><image href="assets/products/${file}" width="382" height="223"/></svg>`:`<image href="assets/products/${file}" x="7" y="7" width="${w-14}" height="${h-14}" preserveAspectRatio="xMidYMid meet"/>`;
+   const scope='bg111-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
+   if(d.id==='buzzer'){
+    a=`<svg x="10" y="8" width="${w-20}" height="${h-16}" viewBox="67 52 126 126"><defs><clipPath id="${scope}"><circle cx="130" cy="115" r="59"/></clipPath></defs><image href="assets/products/${file}" width="382" height="223" clip-path="url(#${scope})"/></svg>`;
+   }else if(d.id==='speaker'){
+    const r=Math.max(1,Math.min(w-14,h-14)*.48);
+    a=`<defs><clipPath id="${scope}"><circle cx="${x}" cy="${y}" r="${r}"/></clipPath></defs><image href="assets/products/${file}" x="7" y="7" width="${w-14}" height="${h-14}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${scope})"/>`;
+   }else if(d.id==='siren'){
+    const r=Math.max(1,Math.min(w-14,h-14)*.47);
+    a=`<defs><clipPath id="${scope}"><circle cx="${x}" cy="${y-2}" r="${r}"/></clipPath></defs><image href="assets/products/${file}" x="7" y="7" width="${w-14}" height="${h-14}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${scope})"/>`;
+   }else{
+    a=`<defs><clipPath id="${scope}"><rect x="7" y="7" width="${w-14}" height="${h-14}" rx="7"/></clipPath></defs><image href="assets/products/${file}" x="7" y="7" width="${w-14}" height="${h-14}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${scope})"/>`;
+   }
   }else if(d.kind==='phase-monitor'){
    const f=d.phaseProtection;
    a=`<svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="${f?'325 120 370 1400':'130 200 760 1290'}" preserveAspectRatio="none"><image href="assets/products/${f?'fkv':'fsr'}-front-v111.png" width="1024" height="1536"/></svg>`;
