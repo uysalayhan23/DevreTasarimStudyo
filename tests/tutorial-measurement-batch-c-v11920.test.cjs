@@ -58,9 +58,9 @@ test('RPM controls stay within floating teaching coach, preserving workspace and
  assert.match(s,/tutorial-measurement-batch-c\.js\?v=1\.19\.20-batch-c1/);
  assert.match(s,/data-measurement-tacho-rpm/);assert.match(s,/motor\._motorRPM/);assert.match(s,/root\.CCSSimulation\?\.solve\?\.\(project/);
  assert.match(s,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d1/);
- assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d1/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d1/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d2/);
+ assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d2/);
  const rules=css.slice(css.lastIndexOf('/* MQ-07 simulation-derived energy and tachometer learning'));
  assert.match(rules,/#tutorialCoach \.measurement-tacho-observation/);
  assert.doesNotMatch(rules,/#viewport|#propertiesPanel|\.workspace-wrap|(?:^|[;{])\s*(?:width|height|left|right|position|top|bottom|resize)\s*:/);

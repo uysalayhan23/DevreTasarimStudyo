@@ -62,8 +62,8 @@ test('scope presets are wired to real Arduino runtime and occupy only the existi
  assert.match(mode,/data-measurement-scope-hz/);assert.match(mode,/root\.DTSArduino\?\.tick\?\.\(project/);
  assert.match(mode,/function measurementUpgradeCard\(l,session,project\)/);
  assert.match(mode,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d1/);
- assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d1/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d2/);
+ assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
  const rules=css.slice(css.lastIndexOf('/* MQ-07 scope learning controls'));
  assert.match(rules,/#tutorialCoach \.measurement-scope-observation/);
  assert.doesNotMatch(rules,/#viewport|\.workspace-wrap|#propertiesPanel|(?:^|[;{])\s*(?:width|height|left|right|position|top|bottom)\s*:/);

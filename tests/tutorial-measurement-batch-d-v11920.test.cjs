@@ -73,13 +73,13 @@ test('all conceptual lessons have model-source warnings and never impersonate li
 });
 test('shared lesson coach, micro-hints, UI footprints and asset revisions stay connected',()=>{
  const mode=read('tutorial-mode.js'),bootstrap=read('tutorial-bootstrap.js'),html=read('index.html'),css=read('tutorial.css');
- assert.match(mode,/tutorial-measurement-batch-d\.js\?v=1\.19\.20-batch-d1/);
- assert.match(mode,/DTSMeasurementWorkbench\?\.display/);assert.match(mode,/DTSMeasurementWorkbench\?\.choose/);
+ assert.match(mode,/tutorial-measurement-batch-d\.js\?v=1\.19\.20-batch-d2/);
+ assert.match(mode,/DTSMeasurementWorkbench\?\.display/);assert.match(mode,/DTSMeasurementWorkbench\?\.diagram/);assert.match(mode,/DTSMeasurementWorkbench\?\.choose/);
  assert.match(mode,/data-measurement-workbench-index/);
  assert.match(mode,/DTSTutorialMicroHints\?\.sync/);
- assert.match(bootstrap,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d1/);
- assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d1/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d1/);
+ assert.match(bootstrap,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d2/);
+ assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d2/);
  const rules=css.slice(css.lastIndexOf('/* MQ-07 accessible virtual measurement exercises'));
  assert.match(rules,/#tutorialCoach \.measurement-workbench-panel/);
  assert.doesNotMatch(rules,/#viewport|\.workspace-wrap|#propertiesPanel|(?:^|[;{])\s*(?:width|height|left|right|position|top|bottom|resize)\s*:/);
