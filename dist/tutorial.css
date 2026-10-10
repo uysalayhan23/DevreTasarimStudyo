@@ -424,3 +424,14 @@ body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibil
 .tutorial-micro-tooltip{position:absolute;z-index:17;width:225px;max-width:calc(100% - 16px);padding:10px 12px;background:#fff;border:1px solid #73a6d1;border-radius:10px;box-shadow:0 7px 20px rgba(24,64,95,.20);pointer-events:none}
 .tutorial-micro-tooltip small{display:block;margin-top:4px;font-size:10px;color:#647d8b}
 @media(max-width:700px){.tutorial-micro-intro{left:8px;right:8px;max-height:102px;gap:5px}.tutorial-micro-intro article{padding:5px;flex-basis:135px;max-width:190px;font-size:10px}.tutorial-micro-tooltip{width:195px}}
+
+/* MQ-07 measurement subtopic specialization — in draggable coach, never on canvas. */
+#tutorialCoach .measurement-upgrade-card{padding:11px 12px;margin:7px 0 12px;background:rgba(240,248,255,.97);border:1px solid #a7cae5;border-radius:11px;font-size:13px;line-height:1.48;color:#22465d}
+#tutorialCoach .measurement-upgrade-card>small{display:block;font-size:11px;color:#276b98;font-weight:800}
+#tutorialCoach .measurement-upgrade-card h3{margin:4px 0 8px;font-size:14px}
+#tutorialCoach .measurement-upgrade-card p{margin:5px 0 9px;font-size:13px}
+#tutorialCoach .measurement-upgrade-card>div:not(.measurement-upgrade-answers){margin:6px 0 8px;font-size:13px}
+#tutorialCoach .measurement-upgrade-answers{display:grid;grid-template-columns:1fr;gap:5px}
+#tutorialCoach .measurement-upgrade-answers button{min-height:31px;padding:6px 9px;text-align:left;font-size:12px;border:1px solid #c1d3e0;background:#fff;color:#26485f;border-radius:7px;cursor:pointer}
+#tutorialCoach .measurement-upgrade-answers button:hover{border-color:#1677bd;background:#f1f9ff}
+#tutorialCoach .measurement-upgrade-feedback{font-weight:700;color:#14754d}
