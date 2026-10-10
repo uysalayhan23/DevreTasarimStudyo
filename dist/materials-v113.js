@@ -29,7 +29,7 @@
    }else{
     const n=d.siemensPhoto==='5SL6316-7'?3:d.siemensPhoto==='5SL6216-7'?2:1,iw=[0,211,403,594][n],file='siemens-mcb'+n+'-v113.png';
     let windows='';for(let i=0;i<n;i++)windows+=`<rect x="${61+192*i}" y="550" width="89" height="134" fill="#303c40"/>`;
-    a=`<svg x="5" y="5" width="${w-10}" height="${h-10}" viewBox="0 0 ${iw} 1000"><defs><clipPath id="${id}-body"><rect x="8" y="8" width="${iw-16}" height="984" rx="6"/></clipPath><clipPath id="${id}"><rect x="20" y="684" width="${iw-40}" height="61"/></clipPath></defs>${image(file,iw,1000,`clip-path="url(#${id}-body)"`)}${windows}<rect x="20" y="684" width="${iw-40}" height="61" fill="#d4d8d7"/><g class="breaker-lever" transform="translate(0 ${on?0:-100})">${image(file,iw,1000,`clip-path="url(#${id})"`)}</g><text x="${iw/2}" y="${on?590:700}" font-size="28" text-anchor="middle" fill="${on?'#acd8ac':'#b52121'}">${on?'0 OFF':'I ON'}</text></svg>`;
+    a=`<svg x="5" y="5" width="${w-10}" height="${h-10}" viewBox="0 0 ${iw} 1000" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${id}-body"><rect x="8" y="8" width="${iw-16}" height="984" rx="6"/></clipPath><clipPath id="${id}"><rect x="20" y="684" width="${iw-40}" height="61"/></clipPath></defs>${image(file,iw,1000,`clip-path="url(#${id}-body)"`)}${windows}<rect x="20" y="684" width="${iw-40}" height="61" fill="#d4d8d7"/><g class="breaker-lever" transform="translate(0 ${on?0:-100})">${image(file,iw,1000,`clip-path="url(#${id})"`)}</g><text x="${iw/2}" y="${on?590:700}" font-size="28" text-anchor="middle" fill="${on?'#acd8ac':'#b52121'}">${on?'0 OFF':'I ON'}</text></svg>`;
    }
   }
   return a?`<g class="material-layer material-v113" data-material="photo-${d.id}">${a}</g>`:'';
