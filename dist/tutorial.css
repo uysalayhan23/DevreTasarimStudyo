@@ -448,3 +448,14 @@ body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibil
 #tutorialCoach .measurement-tacho-presets{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0}
 #tutorialCoach .measurement-tacho-presets button{font-size:12px;border:1px solid #9bc0db;border-radius:8px;background:#fff;padding:6px 9px;cursor:pointer}
 #tutorialCoach .measurement-tacho-presets button[aria-pressed="true"]{background:#e3f2ff;border-color:#2484c9;font-weight:800}
+
+/* MQ-07 accessible virtual measurement exercises, only inside the existing floating coach. */
+#tutorialCoach .measurement-workbench-panel{margin:8px 0;padding:9px;border:1px solid #bad4e5;border-radius:9px;background:#f7fbff;font-size:13px;line-height:1.45}
+#tutorialCoach .measurement-workbench-options{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+#tutorialCoach .measurement-workbench-options button{font-size:12px;min-height:32px;padding:5px 8px;border:1px solid #adc7dc;border-radius:7px;background:white;color:#185276;cursor:pointer}
+#tutorialCoach .measurement-workbench-options button[aria-pressed="true"]{background:#e1f2ff;border-color:#1982c9;font-weight:800}
+#tutorialCoach .measurement-workbench-gauge{height:8px;margin:8px 0;background:#dbeaf2;border-radius:9px;overflow:hidden}
+#tutorialCoach .measurement-workbench-gauge>i{display:block;height:100%;background:#2377a7;transition:width .1s}
+#tutorialCoach .measurement-workbench-result{display:block;margin:7px 0;font-size:13px;font-weight:800;line-height:1.55;color:#134962;overflow-wrap:anywhere}
+#tutorialCoach .measurement-workbench-equation{font-size:12px;margin:5px 0}
+#tutorialCoach .measurement-workbench-panel>small{display:block;font-size:11px;line-height:1.5;color:#596e7b}
