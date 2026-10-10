@@ -1384,3 +1384,16 @@ Kullanıcı ekran kabulü doğrultusunda entegre ve benzeri elektronik malzemele
 - Pedagoji sürümü: `v1.19.20-pedagogy64-real-ic-visuals`.
 - Cache zinciri `real-ic-visuals1` / `real-visuals1` anahtarlarıyla yenilendi.
 - GitHub Actions **çalıştırılmadı**. Native full Node/browser smoke bu turda çalıştırılmadı ve PASS sayılmadı.
+
+
+## 2026-10-10 — Fotoğraf arka plan maskeleme / oran koruma MQ-00 ara kabul
+
+Durum: **KOD DÜZELTMESİ TESLİM / 11/11 HEDEFLİ STATİK DENETİM PASS / GÖRSEL VE FİZİKSEL KABUL OPEN**.
+
+- Dal: yeni hedef depo `uysalayhan23/DevreTasarimStudyo` / `main`. Önceki `v1.19.20` dal tanımları geçiş öncesi kaynak kurallarına aittir; mevcut golden referansları değiştirilmedi.
+- MQ-03 görsel: FKV/FSR/NH render'ındaki ve ENDA/Baykon/Weidmüller ürün fotoğraf yardımcılarındaki `preserveAspectRatio="none"` kullanımı hedefli olarak `xMidYMid meet` ile değiştirildi. Siemens mevcut oran koruyan viewBox'ları muhafaza edildi. Kaynak fotoğraf binary'lerinin alfa kanalı değişmedi; maskeleme şeffaf PNG/WebP dosya üretimi gibi gösterilmez.
+- Kod commitleri: `7f9854962ec5ca3564b9c98825b4b920e6f18991`, `a0d95d3259730c857de3e5dbec4ca319ae55d950`. MQ-12 regresyon test dosyası: `tests/photo-background-aspect-v11920.test.cjs`, commit `d978ffb06223b27ad4fc9bfb90399447ab4dccf1`.
+- MQ-12 **hedefli statik inceleme**: GitHub `main` üzerindeki üç canlı renderer dosyasında 11 pozitif/negatif literal kod sözleşmesi kontrolü **11/11 PASS**. Bu, Node test çalıştırılması veya görsel piksel/siluet doğrulaması değildir.
+- MQ-02/MQ-04 ve MQ-03 açık kabul: gerçek fotoğraf silueti, clipPath kaynak koordinatları, sahnede görünen ürünün doğrulanmış mm ölçeği ve terminal hizalaması; gerçek Windows/Edge tarayıcı kabulü ve tam `node scripts/run-tests.cjs` **NOT RUN / NOT PASSED**.
+- MQ-13: hedef repo/dal ve son teslim commit zinciri doğrulandı. GitHub Actions çalıştırılmadı, commitler `[skip ci]`.
+- MQ-00 kararı: **NİHAİ DONE DEĞİL**. Gerçek tarayıcı/siluet/terminal ve test çalıştırma kanıtı sağlanınca aynı başlık altında kapanış yapılacak. Bu kayıt eski backlog kimliklerini çoğaltmaz.
