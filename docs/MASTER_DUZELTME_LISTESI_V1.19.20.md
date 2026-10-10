@@ -1641,3 +1641,14 @@ Takometre laboratuvarlarında sanal `supply-3p` ile `motor-3p` güç yolunun 4 g
 **Kalan 18 ders:** gerçek enerji sayacı endeksinin modellenmesi (`src-08`, `outline-038`), sensör gerilim/sinyal ölçümü (`src-10`), LCR, uzunluk/kumpas/mikrometre, ışık/ses/sıcaklık ölçüm araçları, cihaz sınıflandırmaları ve diğer teori/elektronik ölçü başlıkları. Gerçek sensör ve cihaz modeli olmadan sahte sonuç üretilmez.
 
 **Kilitler:** Yüzer ders penceresi, büyütülmüş yazılar, ilk tıklamayla gizlenen bağlamsal açıklamalar, sağ panel, 2 scene-unit/mm, karşıdan görünüş ve localhost'suz `BASLAT.bat` korunur. GitHub Actions tetiklenmez, bütün commitler `[skip ci]` içerir. Tam Git-history/Windows görsel kabulü ve ana MQ-00 CLOSED ayrı kapıdır.
+
+
+## 2026-10-10 — Batch C tam regresyon 844/847
+
+**MQ-12 yerel son tur:** Kullanıcının yüklediği ZIP üzerine uygulanmış C paketi ile `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs` sonucu **847 TOPLAM / 844 PASS / 3 FAIL / 0 SKIP**, yaklaşık 300,05 saniye. Başarısızlıkların tamamı `tests/repo-lock-integrity-v11920.test.cjs` kaynaklıdır: **WP-017 pinned baseline**, **workflow baseline self-reference**, **integrity checker mutation digest**. Kullanıcı ZIP'inde gerçek `.git` olmadığı için bunlar **PASS sayılmadı**. Öğretici, enerji analizörü, motor RPM, yüzer koç ve simülasyon testlerinde FAIL yoktur.
+
+`node scripts/check.cjs` ayrıca **PASS** (227 JS, 106 yerel dependency, 728 malzeme, 58 korunan örnek). Hedefli `tests/tutorial-*.test.cjs` + `tests/lesson-circuit-audit-v119.test.cjs` koşusu **126/126 PASS**; C paketine özel 6 testin tamamı geçti. GitHub `main` kaynakları ayrıca JS parse/öğretici yükleme/altı ders kimliği ve enerji-takometre preset entegrasyonu açısından smoke-pass oldu.
+
+**Kaynak sınırı:** 844/847 Node koşusu kullanıcı ZIP'i tabanlı **yerel çalışma ağacından** alındı; son GitHub HEAD root-tree SHA birebir eşleştirilip aynı tam komut GitHub checkout içinde yeniden çalıştırılmadı. Bu sebeple sonuç GitHub Actions veya Windows kullanıcı kabulü şeklinde etiketlenmez. Github Actions çalıştırılmadı, bütün commitler `[skip ci]`.
+
+**MQ-00 güncel sonuç:** 45 derslik ölçme serisinde gerçek `rich-reference-v1` sayımı **27/45**, 18 ders dönüşüm bekliyor. Önceki 24/45 sayımı doğrudur: bu paket 3 mevcut enerji dersi özelleştirmesi + **3 yeni** takometre laboratuvarı yapmıştır. Gerçek optik sensör kalibrasyonu veya fiziksel Windows/Edge/piksel kabulü tamamlanmış değildir.
