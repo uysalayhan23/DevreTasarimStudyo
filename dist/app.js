@@ -78,6 +78,7 @@
       const pinMap={'OUT':'1','IN-':'2','IN+':'3','V-':'4','V+':'8'};
       for(const c of p.components)if(legacyLm358.has(c.id)){c.typeId='lm358p-dip8';if(c.ref==='U1A')c.ref='U1';c.label=String(c.label||'LM358P').replace(/A kanalı|Unit A/gi,'').replace(/\s+·\s*$/,'').trim()||'LM358P';c.physicalPackageUpgrade='PDIP-8'}
       for(const w of p.wires||[])for(const end of ['from','to']){const r=w[end];if(r&&legacyLm358.has(r.c)&&pinMap[r.p])r.p=pinMap[r.p]}
+      for(const c of p.components||[]){const t=c.probeTarget;if(t&&legacyLm358.has(t.c)&&pinMap[t.p])t.p=pinMap[t.p]}
     }
     p.components.forEach(c=>{if(c.typeId==='plug-1p'&&p.wires.some(w=>[w.from,w.to].some(r=>r.c===c.id&&r.p==='PE')))c.typeId='plug-1p-earthed';const step=Leads.floating(byId[c.typeId])?0.001:GRID;c.x=Math.round((c.x||0)/step)*step;c.y=Math.round((c.y||0)/step)*step;delete c._pressed;c._spin=0;Labels.sanitize(c)});
     p.junctions.forEach(j=>{j.x=Math.round(j.x/GRID)*GRID;j.y=Math.round(j.y/GRID)*GRID});
