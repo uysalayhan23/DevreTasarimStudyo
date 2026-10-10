@@ -45,6 +45,6 @@ test('series-battery cache chain is current',()=>{
  assert.match(h,/tutorial-components\.js\?rev=20261009-energy-rich1/);
  assert.match(h,/materials\.js\?rev=20261010-real-visuals1/);
  assert.match(h,/simulation\.js\?rev=20261010-real-ics1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-dc-batch-e1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-dc-batch-e1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-control-batch-f1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-control-batch-f1/);
 });
