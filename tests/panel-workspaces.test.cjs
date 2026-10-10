@@ -52,7 +52,7 @@ test('new building vavien circuit lights in two matching states and goes dark fr
   p.wires=p.wires.filter(w=>w.to.p!=='N');Sim.solve(p,byId);assert.equal(lamp._active,false);
 });
 test('mode separation retains all legacy records and new materials render in every library style with unchanged pins',()=>{
-  assert.ok(lib.length>=493);assert.ok(lib.filter(d=>d.isPLC).length>=208);assert.equal(W.includes(byId['coil-contactor'],'panel'),false);assert.equal(W.includes(byId['coil-contactor'],'control'),true);assert.equal(W.includes(byId['main-contact'],'panel'),true);assert.equal(lib.filter(d=>W.includes(d,'panel')).length,lib.length-1);
+  assert.ok(lib.length>=493);assert.ok(lib.filter(d=>d.isPLC).length>=208);assert.equal(W.includes(byId['coil-contactor'],'panel'),false);assert.equal(W.includes(byId['coil-contactor'],'control'),true);assert.equal(W.includes(byId['main-contact'],'panel'),true);assert.deepEqual(lib.filter(d=>!W.includes(d,'panel')).map(d=>d.id).sort(),['coil-contactor','converter-pressure','converter-temperature'],'logical coil and unverified external instruments must not be panel-promoted');
   for(const project of ['01_Kumanda_Muhurleme','02_Tesisat_Vavien','03_Egitim_Panosu'])for(const c of example(project).components||[])assert.ok(byId[c.typeId],c.typeId);
   for(const d of lib){assert.ok(W.includes(d,'control')||W.includes(d,'building')||d.classification.group==='panel-layout',d.id);if(d.isPLC)assert.equal(W.includes(d,'building'),false)}
   for(const d of lib.filter(d=>d.designMaterial||d.materialSymbol))for(const angle of [0,90,180,270]){
