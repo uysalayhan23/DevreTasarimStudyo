@@ -38,7 +38,7 @@ test('panel line identities inherit automatically, reject cross-line joins, chan
 test('panel wires survive rail and device movements, manual route save/reload, and selective deletion',()=>{
   const project=example(),p=project.panel=P.normalize(project.panel,byId),w=connect(p,'Q1','2','K1','1','#e53935',[{x:210,y:275,surface:'plate'}]),initial=W.endpoint(p,byId,w.from),saved=plain(w);
   assert.equal(P.moveRail(p,item(p,'Q1').railId,0,25).ok,true);assert.equal(W.endpoint(p,byId,w.from).y,initial.y+25);assert.deepEqual(plain(w),saved);
-  const target=item(p,'K1'),move=P.proposal(p,target,target.x+25,target.y);assert.equal(move.ok,true);Object.assign(target,move.item);assert.equal(W.endpoint(p,byId,w.to).x,target.x+target.w*.25);
+  const target=item(p,'K1'),beforeTo=W.endpoint(p,byId,w.to),move=P.proposal(p,target,target.x+25,target.y);assert.equal(move.ok,true);Object.assign(target,move.item);assert.equal(W.endpoint(p,byId,w.to).x,beforeTo.x+25,'verified terminal anchor follows device translation');
   const parsed=Projects.parse(JSON.stringify(Projects.clean(project)));P.normalize(parsed.panel,byId);assert.deepEqual(parsed.panel.wires,p.wires);
   P.remove(p,[item(p,'Q1').railId]);assert.equal(p.wires.length,1);assert.equal(item(p,'Q1').mount,'plate');P.remove(p,[target.id]);assert.equal(p.wires.length,0);
   const invalid=example().panel;invalid.wires=[{...saved,to:{c:item(invalid,'K1').id,p:'MISSING'}}];assert.throws(()=>P.normalize(invalid,byId),/terminal/);
