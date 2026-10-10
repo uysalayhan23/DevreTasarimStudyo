@@ -17,7 +17,7 @@ function finalLessons(){
 }
 function runtimeLibrary(){
  const ctx={window:{}};
- for(const file of ['library.js','clamp-meter.js','installation-v118.js','design-library.js','electronics-library-v119.js','arduino-library.js','dold-library.js','hcfa-library.js','tutorial-components.js'])
+ for(const file of ['library.js','clamp-meter.js','installation-v118.js','design-library.js','electronics-library-v119.js','electronics-ics-v11920.js','arduino-library.js','dold-library.js','hcfa-library.js','tutorial-components.js'])
   vm.runInNewContext(fs.readFileSync(require.resolve('../dist/'+file),'utf8'),ctx);
  const lib=ctx.window.DTSDesignLibrary.extend(ctx.window.COMPONENT_LIBRARY);
  for(const d of Arduino.components)if(!lib.some(x=>x.id===d.id))lib.push(d);
