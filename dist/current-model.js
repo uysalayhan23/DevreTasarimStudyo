@@ -104,18 +104,19 @@
    for(let iter=0;iter<30;iter++){
     const work=new Map([...injected].map(([k,v])=>[k,[v[0],v[1]]]));let change=0;
     for(const o of opamps){
-     const val=n=>(guess.get(n)||[0,0])[0],lo=val(o.vm),hi=val(o.vp),vp=val(o.ip),vm=val(o.im);
-     if(!(hi>lo+.5)){o.c._opampPowered=false;o.c._opampOutput=lo;o.c._opampDiff=vp-vm;continue}
-     const prev=Number.isFinite(o.c._opampIterOutput)?o.c._opampIterOutput:Math.max(lo+.02,Math.min(hi-1.5,val(o.out)));
+     const val=n=>(guess.get(n)||[0,0])[0],lo=val(o.vm),hi=val(o.vp),vp=val(o.ip),vm=val(o.im),ch=o.channel||'main';
+     const channels=o.c._opampChannels||(o.c._opampChannels={}),cs=channels[ch]||(channels[ch]={});
+     if(!(hi>lo+.5)){cs.powered=false;cs.output=lo;cs.diff=vp-vm;if(!o.channel){o.c._opampPowered=false;o.c._opampOutput=lo;o.c._opampDiff=vp-vm}continue}
+     const prev=Number.isFinite(cs.iter)?cs.iter:Math.max(lo+.02,Math.min(hi-1.5,val(o.out)));
      const wanted=Math.max(lo+.02,Math.min(hi-1.5,lo+o.gain*(vp-vm))),target=prev+(wanted-prev)*.12;
-     o.c._opampIterOutput=target;o.c._opampPowered=true;o.c._opampDiff=vp-vm;addCurrent(work,o.out,o.vm,target/o.br.r);
+     cs.iter=target;cs.powered=true;cs.diff=vp-vm;o.c._opampPowered=true;if(!o.channel)o.c._opampDiff=vp-vm;addCurrent(work,o.out,o.vm,target/o.br.r);
     }
     const next=solveGraph(branches,fixed,work);
-    for(const o of opamps){const a=(next.get(o.out)||[0,0])[0],b=(guess.get(o.out)||[0,0])[0];change=Math.max(change,Math.abs(a-b));o.c._opampOutput=a}
+    for(const o of opamps){const a=(next.get(o.out)||[0,0])[0],b=(guess.get(o.out)||[0,0])[0],ch=o.channel||'main',cs=o.c._opampChannels?.[ch]||(o.c._opampChannels[ch]={});change=Math.max(change,Math.abs(a-b));cs.output=a;if(!o.channel)o.c._opampOutput=a}
     guess=next;if(change<1e-4)break;
    }
    secondary=guess;
-   for(const o of opamps){delete o.c._opampIterOutput;o.c._currentValue=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r)}
+   for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
   }
   for(const b of reactive){
    const va=secondary.get(b.a)||[0,0],vb=secondary.get(b.b)||[0,0],vr=[va[0]-vb[0],va[1]-vb[1]],vm=Math.hypot(vr[0],vr[1]);let amps=current(b,secondary);
@@ -126,6 +127,7 @@
   }
   for(const {c} of diodes){const a=secondary.get(pin(c,'A'))||[0,0],k=secondary.get(pin(c,'K'))||[0,0],b=branches.find(x=>x.c===c&&x.role==='diode');c._voltageValue=Math.abs(a[0]-k[0]);c._currentValue=b?current(b,secondary):0}
   for(const b of branches.filter(b=>b.role==='load'&&['resistor','lamp'].includes(byId[b.c.typeId]?.kind))){const a=secondary.get(b.a),z=secondary.get(b.b);b.c._currentValue=current(b,secondary);b.c._voltageValue=a&&z?Math.hypot(a[0]-z[0],a[1]-z[1]):0}
+  for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){b.c._speakerPowerW=amps*amps*b.r;b.c._active=b.c._speakerPowerW>1e-5}else{b.c._crystalFrequencyHz=b.hz||0;b.c._active=amps>1e-9}}
   for(const b of meters)b.c._currentValue=current(b,secondary);
   for(const b of branches.filter(b=>b.energyTraining)){
    const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot((a[0]||0)-(z[0]||0),(a[1]||0)-(z[1]||0)),amps=current(b,secondary),g=b.y?.[0]||0,sus=b.y?.[1]||0,active=vm*vm*g,reactive=-vm*vm*sus,apparent=vm*amps,pf=apparent>1e-9?Math.max(0,Math.min(1,active/apparent)):0;
