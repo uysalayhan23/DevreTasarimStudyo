@@ -1,0 +1,35 @@
+{
+  "version": "1.12.0",
+  "date": "2026-09-17",
+  "tests": {
+    "total": 153,
+    "passed": 153,
+    "failed": 0,
+    "log": "final-v112-all.txt",
+    "syntaxFiles": 38,
+    "uniqueHtmlIds": 201
+  },
+  "browser": [
+    "SB2 arrow click while running: 10 kg and 0.200 mV on both cell and wired voltmeter",
+    "SB2 500 kg of 1000 kg, 10 V excitation: 10.000 mV on cell and voltmeter",
+    "NTC actual mouse drag: 25°C / 10000 Ω to 97.885°C / 741 Ω",
+    "PT100 and thermocouple share the exact same photo renderer; PT100 terminal identifiers and coordinates tested unchanged"
+  ],
+  "source": "https://kobastar.com/tr/product-details/sb2-lama-tip-paslanmaz-load-cell/",
+  "loadCellModel": {
+    "sensitivityMvPerV": 2,
+    "defaultCapacityKg": 1000,
+    "recommendedExcitationV": 10,
+    "maxExcitationV": 15,
+    "formula": "mV = 2 × excitationV × weightKg / capacityKg",
+    "limits": "Nominal linear model; no thermal drift, hysteresis, zero error or output impedance loading"
+  },
+  "ntcModel": {
+    "resistanceAt25C": 10000,
+    "betaK": 3950,
+    "rangeC": [
+      -50,
+      150
+    ]
+  }
+}

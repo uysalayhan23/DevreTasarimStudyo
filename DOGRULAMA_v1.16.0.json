@@ -1,0 +1,27 @@
+{
+  "version": "1.16.0",
+  "date": "2026-09-26T16:34:12.095786+00:00",
+  "baseline": "1.15.2",
+  "full_suite": {
+    "tests": 221,
+    "passed": 221,
+    "failed": 0,
+    "command": "node --test --test-reporter=tap tests/*.test.cjs"
+  },
+  "additional_release_tests": {
+    "v20_domain_tests": 16,
+    "v20_domain_passed": 16,
+    "render_regression_tests": 31,
+    "render_regression_passed": 31,
+    "integration_tests": 34,
+    "integration_passed": 34
+  },
+  "visual_check": "Şema ve 3D V20 SVG renderi incelendi; terminal yerleri, LCD ve tuş hizaları kontrol edildi.",
+  "browser_validation": "Deterministik DOM adaptörüyle gerçek uygulama olayları doğrulandı. Yerel Windows Chrome/Edge görsel testi bu ortamda yapılmadı.",
+  "static_assets": {
+    "html_local_references": 57,
+    "missing": [],
+    "javascript_syntax": "passed"
+  },
+  "model_limits": "V20_KILAVUZU.md — eğitim modeli; tam Siemens firmware/PLC/RS485/PWM emülasyonu değildir."
+}

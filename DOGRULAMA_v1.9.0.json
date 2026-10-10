@@ -1,0 +1,9 @@
+{
+  "version": "1.9.0",
+  "date": "2026-09-17",
+  "tests": {"total": 122, "passed": 122, "failed": 0, "command": "node --test tests/*.test.cjs", "log": "final-v19-all.txt"},
+  "browserChecks": ["Level sensor photograph and moving float visible", "Position 100 percent and voltage mode show 10.00 V", "Impulse relay and auxiliary terminals appear on one front-view housing"],
+  "newExamples": 6,
+  "pending": ["mkş.pdf: exact motor-protector symbol and product-specific terminal layout", "aar.pdf: exact overcurrent symbol and six main terminals without test/reset", "gkr.pdf: main terminal arrangement and measured-voltage trip behavior"],
+  "limits": ["Analog sensor values are local educational readouts, not a general analog circuit or PLC input solver", "Temperature curves are illustrative, not manufacturer calibration tables", "SSR uses an ideal controlled-switch model", "Finder images are AI-adapted front views with SVG silhouette clipping"]
+}

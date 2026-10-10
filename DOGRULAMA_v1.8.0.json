@@ -1,0 +1,23 @@
+﻿{
+    "application":  "Devre Tasarım Stüdyosu",
+    "version":  "1.8.0",
+    "date":  "2026-09-16",
+    "checks":  {
+                   "browser":  "Motor placement and star/delta bridge selection visually checked",
+                   "examples":  "3 new examples; terminal endpoints and motor control behavior validated",
+                   "guide_entries":  447,
+                   "node_tests":  {
+                                      "failed":  0,
+                                      "command":  "node --test tests/*.test.cjs",
+                                      "duration_ms":  101374.5476,
+                                      "total":  104,
+                                      "passed":  104
+                                  }
+               },
+    "limitations":  [
+                        "Remaining PLC models are representative and unverified",
+                        "Sensor artwork is representative",
+                        "No PLC execution",
+                        "Logical motor/drive simulation; no current/torque/capacitor/ramp dynamics"
+                    ]
+}

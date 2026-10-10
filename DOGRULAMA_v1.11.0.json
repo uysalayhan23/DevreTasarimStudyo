@@ -1,0 +1,38 @@
+{
+  "version": "1.11.0",
+  "date": "2026-09-17",
+  "automated": {
+    "tests": 147,
+    "passed": 147,
+    "failed": 0,
+    "log": "final-v111-all.txt",
+    "syntaxFiles": 37,
+    "unchangedBrandedSensors": [
+      "autonics-pr12-npn",
+      "autonics-bj-npn",
+      "sensor-brand-omron",
+      "sensor-brand-telemecanique",
+      "sensor-brand-baumer",
+      "sensor-brand-ifm",
+      "sensor-brand-wenglor",
+      "sensor-brand-pepperl-fuchs"
+    ]
+  },
+  "browser": {
+    "url": "http://127.0.0.1:8765/",
+    "observations": [
+      "100/5 CT: primary 10.000 A, secondary meter 0.500 A",
+      "200/5 CT: secondary meter 0.250 A",
+      "Middle WSI terminal open: lamp states true,false,true; neighboring NH lamps unchanged",
+      "NH lid open: all three NH lamp loads off",
+      "L2=99 V: FS-R remains on, FKV-03 and its lamp turn off",
+      "L2=0 V: both phase relays and lamps turn off",
+      "Distinct audio photos and front views visually inspected"
+    ]
+  },
+  "limits": [
+    "CT: resistive AC model; reactive motor/coil currents are not calculated",
+    "Generated orthographic images are representative adaptations",
+    "PT100 lead resistance, fuse melting curves and phase-relay transient timing are not modeled"
+  ]
+}

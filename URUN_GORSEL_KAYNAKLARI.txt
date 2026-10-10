@@ -1,0 +1,1709 @@
+ÜRÜN GÖRSELLERİ VE EŞLEŞTİRMELER — v1.6.1
+=======================================
+
+208 PLC ve modül: 89 model kodu eşleşmesi, 113 aile/varyant
+görseli, 6 temsili kayıt. Aile adıyla kayıtlı CPU'larda bir sipariş kodu
+örneği seçilmiştir. Aynı üretici fotoğrafı birden fazla varyant için
+kullanılabilir. Bu nedenle bütün kayıtlar birebir model eşleşmesi değildir.
+
+Ürün fotoğrafları ve ticari ürün çizimleri yerel dosyalardan yüklenir.
+Uygulama dış arka planı SVG kesim sınırıyla gizler; orijinal görüntü dosyası
+değişmez. Kütüphane ve çalışma sayfası aynı görseli kullanır. Düğme başlığı
+ve kontaktör durum katmanı bu görsel üzerinde hareket eder.
+
+Görseldeki yazılar veya görünür vida sayısı şemanın elektriksel pin planı
+olmaz. Mevcut bağlantı noktaları ve kimlikleri korunmuştur; üreticiye göre
+doğrulanmış montaj/terminal planı bu görsel güncellemesinin kapsamında değildir.
+
+BAŞLAT / DURDUR
+Ortak temsili buton gövdesi, yeşil ve kırmızı başlıklar. Önceki farklı açılı
+Siemens başlat butonu bu kartlarda kullanılmaz.
+
+KLASİK MALZEMELER
+
+weidmuller-pro-top — PRO TOP1 120W 24V 5A
+Kayıtlar: 24 VDC Güç Kaynağı
+Dosya: dist/assets/products/weidmuller-pro-top-2466870000.jpg
+Ürün sayfası: https://eshop.weidmueller.com/en/pro-top1-120w-24v-5a/p/2466870000
+Görsel: https://assets.dam.weidmueller.com/assets/api/5af29004-8807-4292-afd3-b195c01b907a/DAP_Master_PP,w_800,q_80
+
+sick-photoelectric — W4-3 / WTB4-3P2161
+Kayıtlar: Fotosel Sensör
+Dosya: dist/assets/products/sick-wtb4.jpg
+Ürün sayfası: https://docs.rs-online.com/3782/0900766b81685336.pdf
+Görsel: https://media.rs-online.com/f_auto%2Cq_auto%2Cbo_1.5px_solid_white%2Cb_auto%2Cc_pad%2Cdpr_2%2Ch_399%2Cw_710/c_pad%2Ch_399%2Cw_710/F5300939-01?pgw=1
+
+siemens-contactor — Siemens SIRIUS 3RT2016-1BB41
+Kayıtlar: Kontaktör Bobini, Güç Kontaktörü, Motor Yol Verici, Tek Hat Motor Kumandası
+Dosya: dist/assets/products/siemens-3rt2016-1bb41-bare.jpg
+Ürün sayfası: https://store.tremtech.com/siemens-3rt2016-1bb41-3-pole-9a-contactor-24vdc-coil/
+Görsel: https://cdn11.bigcommerce.com/s-b8b6a/images/stencil/1280x1280/products/1646/4369/10506_06__12520.1585673757.jpg?c=2
+
+siemens-auxiliary — SIRIUS 3RH29
+Kayıtlar: Yardımcı Kontak, Yardımcı Kontak, Değiştirici Yardımcı Kontak
+Dosya: dist/assets/products/siemens-3rh2911.jpg
+Ürün sayfası: https://sieportal.siemens.com/en-gb/products-services/10046404
+Görsel: https://media.rs-online.com/f_auto%2Cq_auto%2Cbo_1.5px_solid_white%2Cb_auto%2Cc_pad%2Cdpr_2%2Ch_399%2Cw_710/c_pad%2Ch_399%2Cw_710/F8613496-01?pgw=1
+
+autonics-pr — PR12-4DN
+Kayıtlar: Endüktif Sensör · NPN
+Dosya: dist/assets/products/autonics-pr12-4dn.webp
+Ürün sayfası: https://www.autonics.com/us/model/PR12-4DN
+Görsel: https://www.autonics.com/web/2022/05/product/PR12-4DN.webp
+
+autonics-bj — BJ series
+Kayıtlar: Fotosel Sensör · NPN
+Dosya: dist/assets/products/autonics-bj100-ddt.webp
+Ürün sayfası: https://www.autonics.com/kr/model/BJ100-DDT
+Görsel: https://www.autonics.com/web/product/sensor/BJ1M-DDT.webp
+
+rittal-fan — TopTherm filter fans
+Kayıtlar: Filtreli Pano Fanı
+Dosya: dist/assets/products/rittal-3241100.jpg
+Ürün sayfası: https://www.rittal.com/com-en/products/PG20231215KLI101/PG20231215KLI102/PG20240718KLI001/PRO0299?variantId=3241100
+Görsel: https://www.galco.com/media/catalog/product/cache/d39e02013e7835781591080df4a46d84/3/2/3241100-rittal_1.jpg
+
+PLC / OTOMASYON
+
+Siemens | S7-1200 | CPU 1211C DC/DC/DC [plc-0-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7211-1AE40-0XB0
+Dosya: dist/assets/plc/plc-0-0.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7211-1ae40-0xb0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/5552-6ES7211-1AE40-0XB0_1.jpg?v=1787720235&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7211-1AE40-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CPU 1212C AC/DC/Rly [plc-0-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7212-1BE40-0XB0
+Dosya: dist/assets/plc/plc-0-1.png
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7212-1be40-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-212-1be40-0xb0-02-png/processor-cpu-1212c-simatic-s7-1200-6es7212-1be40-0xb0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7212-1BE40-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CPU 1214C DC/DC/DC [plc-0-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7214-1AG40-0XB0
+Dosya: dist/assets/plc/plc-0-2.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7214-1ag40-0xb0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/7280-6ES7214-1AG40-0XB0_1.jpg?v=1787712117&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7214-1AG40-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CPU 1215C DC/DC/DC [plc-0-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7215-1AG40-0XB0
+Dosya: dist/assets/plc/plc-0-3.png
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7215-1ag40-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-215-1ag40-0xb0-02-png/control.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7215-1AG40-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CPU 1217C DC/DC/DC [plc-0-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7217-1AG40-0XB0
+Dosya: dist/assets/plc/plc-0-4.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7217-1ag40-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-217-1ag40-0xb0-01/processor-cpu-1217c-simatic-s7-1200-6es7217-1ag40-0xb0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7217-1AG40-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | SM 1221 DI 8 [plc-0-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7221-1BF32-0XB0
+Dosya: dist/assets/plc/plc-0-5.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7221-1bf32-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-221-1bf32-0xb0-01/control.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7221-1BF32-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | SM 1221 DI 16 [plc-0-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7221-1BH32-0XB0
+Dosya: dist/assets/plc/plc-0-6.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7221-1bh32-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-221-1bh32-0xb0-02-tif/digital-input-module-simatic-s7-1200-6es7221-1bh32-0xb0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7221-1BH32-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | SM 1222 DO 8 Rly [plc-0-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7222-1HF32-0XB0
+Dosya: dist/assets/plc/plc-0-7.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7222-1hf32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72221HF320XB0_7fc683c9-abbc-4893-bdfa-2083d1a56639.jpg?v=1640730219
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | SM 1222 DO 16 [plc-0-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7222-1BH32-0XB0
+Dosya: dist/assets/plc/plc-0-8.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7222-1bh32-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es72221bh320xb0-01/control.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7222-1BH32-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | SM 1223 DI8/DO8 [plc-0-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7223-1BH32-0XB0
+Dosya: dist/assets/plc/plc-0-9.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7223-1bh32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72231BH320XB0_01142177-1ddb-4dd7-b4d3-495193adbc25.jpg?v=1640730188
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | SM 1231 AI 4 [plc-0-10]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7231-4HD32-0XB0
+Dosya: dist/assets/plc/plc-0-10.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7231-4hd32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72314HD320XB0_c40ce93f-9a9b-438d-bc79-15937ece6fbf.jpg?v=1640730069
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | SM 1231 RTD 4 [plc-0-11]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7231-5PD32-0XB0
+Dosya: dist/assets/plc/plc-0-11.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7231-5pd32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72315PD320XB0_1339198c-e32c-4f41-8019-a85d1bca5677.jpg?v=1640730044
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | SM 1232 AO 4 [plc-0-12]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7232-4HD32-0XB0
+Dosya: dist/assets/plc/plc-0-12.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7232-4hd32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72324HD320XB0_518889b1-43df-4bdc-b7e2-34fd752052f7.jpg?v=1640730078
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | SM 1234 AI4/AO2 [plc-0-13]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7234-4HE32-0XB0
+Dosya: dist/assets/plc/plc-0-13.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7234-4he32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72344HE320XB0_e763dff1-680f-42a9-84f8-01c19c4ba920.jpg?v=1640730037
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | CM 1241 RS232 [plc-0-14]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7241-1AH32-0XB0
+Dosya: dist/assets/plc/plc-0-14.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7241-1ah32-0xb0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/5560-6ES7241-1AH32-0XB0_1.jpg?v=1787720243&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7241-1AH32-0XB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CM 1241 RS485 [plc-0-15]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7241-1CH32-0XB0
+Dosya: dist/assets/plc/plc-0-15.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7241-1ch32-0xb0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES72411CH320XB0_9570e822-187d-427d-964b-a452a449afdf.jpg?v=1640730090
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-1200 | CM 1243-5 PROFIBUS [plc-0-16]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7243-5DX30-0XE0
+Dosya: dist/assets/plc/plc-0-16.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6gk7243-5dx30-0xe0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6gk7-243-5dx30-0xe0-01/control.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6GK7243-5DX30-0XE0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CP 1243-1 Ethernet [plc-0-17]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7243-1BX30-0XE0
+Dosya: dist/assets/plc/plc-0-17.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6gk7243-1bx30-0xe0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6gk7-243-1bx30-0xe0-01-tif/control.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6GK7243-1BX30-0XE0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | CSM 1277 Switch [plc-0-18]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7277-1AA10-0AA0
+Dosya: dist/assets/plc/plc-0-18.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6gk7277-1aa10-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6gk7-277-1aa10-0aa0-01/compact-switch-module.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6GK7277-1AA10-0AA0. Library record does not specify a hardware revision.
+
+Siemens | S7-1200 | PM 1207 Güç Kaynağı [plc-0-19]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6EP1332-1SH71
+Dosya: dist/assets/plc/plc-0-19.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6ep1332-1sh71
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6ep1-332-1sh71-01/power-supply-pm-1207-simatic-s7-1200-6ep1332-1sh71.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6EP1332-1SH71. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CPU 1511-1 PN [plc-1-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7511-1AK02-0AB0
+Dosya: dist/assets/plc/plc-1-0.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7511-1ak02-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-511-1ak02-0ab0-01/processor.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7511-1AK02-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CPU 1513-1 PN [plc-1-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7513-1AL02-0AB0
+Dosya: dist/assets/plc/plc-1-1.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7513-1al02-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-513-1al02-0ab0-01/processor.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7513-1AL02-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CPU 1515-2 PN [plc-1-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7515-2AM01-0AB0
+Dosya: dist/assets/plc/plc-1-2.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7515-2am01-0ab0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES75152AM010AB0_da09491a-8ac1-4097-81e8-340b012b11d2.jpg?v=1640730378
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Siemens | S7-1500 | CPU 1516-3 PN/DP [plc-1-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7516-3AN01-0AB0
+Dosya: dist/assets/plc/plc-1-3.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7516-3an01-0ab0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES75163AN010AB0_4f22ab89-f4e5-41d8-b00f-22f362272b75.jpg?v=1640730381
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Siemens | S7-1500 | CPU 1517-3 PN/DP [plc-1-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7517-3AP00-0AB0
+Dosya: dist/assets/plc/plc-1-4.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7517-3ap00-0ab0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES75173AP000AB0_14621cdf-d1eb-464e-a1d0-4c6be874cf67.jpg?v=1640730383
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Siemens | S7-1500 | CPU 1518-4 PN/DP [plc-1-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7518-4AP00-0AB0
+Dosya: dist/assets/plc/plc-1-5.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7518-4ap00-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-518-4ap00-0ab0-01/processor-cpu-1518-4-pn-dp-simatic-s7-1500-6es7518-4ap00-0ab0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7518-4AP00-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CPU 1511F-1 PN [plc-1-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7511-1FK02-0AB0
+Dosya: dist/assets/plc/plc-1-6.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7511-1fk02-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-511-1fk02-0ab0-01/processor-6es7511-1fk02-0ab0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7511-1FK02-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | DI 32x24VDC [plc-1-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7521-1BL00-0AB0
+Dosya: dist/assets/plc/plc-1-7.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7521-1bl00-0ab0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/8129-6ES7521-1BL00-0AB0_1.jpg?v=1787709565&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7521-1BL00-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | DQ 32x24VDC [plc-1-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7522-1BL01-0AB0
+Dosya: dist/assets/plc/plc-1-8.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7522-1bl01-0ab0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/8125-6ES7522-1BL01-0AB0_1.jpg?v=1787709481&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7522-1BL01-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | AI 8xU/I/RTD [plc-1-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7531-7KF00-0AB0
+Dosya: dist/assets/plc/plc-1-9.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6es7531-7kf00-0ab0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/8237-6ES7531-7KF00-0AB0_1.jpg?v=1787708334&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6ES7531-7KF00-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | AQ 8xU/I HS [plc-1-10]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7532-5HF00-0AB0
+Dosya: dist/assets/plc/plc-1-10.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7532-5hf00-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-532-5hf00-0ab0-01/analog-output-module-sm-532-simatic-s7-1500-6es7532-5hf00-0ab0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7532-5HF00-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | TM Count 2x24V [plc-1-11]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7550-1AA00-0AB0
+Dosya: dist/assets/plc/plc-1-11.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7550-1aa00-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-550-1aa00-0ab0-01/simatic-s7-1500-6es7550-1aa0-0ab0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7550-1AA00-0AB0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CM PtP RS232 [plc-1-12]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7540-1AD00-0AA0
+Dosya: dist/assets/plc/plc-1-12.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7540-1ad00-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-540-1ad00-0aa0-01/communication-module-simatic-s7-1500-6es7540-1ad00-0aa0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7540-1AD00-0AA0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CM PtP RS422/485 [plc-1-13]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7540-1AB00-0AA0
+Dosya: dist/assets/plc/plc-1-13.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7540-1ab00-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-540-1ab00-0aa0-01/communication-module-simatic-s7-1500-6es7540-1ab00-0aa0.jpg
+Kaynak notu: Actual commercial product photo for ordering code 6ES7540-1AB00-0AA0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | CP 1543-1 [plc-1-14]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7543-1AX00-0XE0
+Dosya: dist/assets/plc/plc-1-14.jpg
+Ürün sayfası: https://shop.ima-tec.com/en/products/6gk7543-1ax00-0xe0
+Görsel: https://shop.ima-tec.com/cdn/shop/files/8241-6GK7543-1AX00-0XE0_1.jpg?v=1787708346&width=1024
+Kaynak notu: Actual commercial product photo for ordering code 6GK7543-1AX00-0XE0. Library record does not specify a hardware revision.
+
+Siemens | S7-1500 | PS 60W 24/48/60VDC [plc-1-15]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7505-0RA00-0AB0
+Dosya: dist/assets/plc/plc-1-15.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7505-0ra00-0ab0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES75050RA000AB0_f505ab30-0e74-4d6f-878a-a4f8a696e86e.jpg?v=1640730486
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | S7-300 | CPU 312 [plc-2-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7312-1AE14-0AB0
+Dosya: dist/assets/plc/plc-2-0.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7312-1ae14-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-312-1ae14-0ab0-01/processor.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7312-1AE14-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CPU 313C [plc-2-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7313-5BG04-0AB0
+Dosya: dist/assets/plc/plc-2-1.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7313-5bg04-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-313-5bg04-0ab0-01/processor.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7313-5BG04-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CPU 314C-2 PN/DP [plc-2-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7314-6EH04-0AB0
+Dosya: dist/assets/plc/plc-2-2.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7314-6eh04-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-314-6eh04-0ab0-01/processor-cpu-314c-2-pn-dp-simatic-s7-300-6es7314-6eh04-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7314-6EH04-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CPU 315-2 PN/DP [plc-2-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7315-2EH14-0AB0
+Dosya: dist/assets/plc/plc-2-3.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7315-2eh14-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-315-2eh14-0ab0-01/processor-cpu-315-2-pn-dp-simatic-s7-300-6es7315-2eh14-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7315-2EH14-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CPU 317-2 PN/DP [plc-2-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7317-2EK14-0AB0
+Dosya: dist/assets/plc/plc-2-4.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7317-2ek14-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-317-2ek14-0ab0-01/processor-cpu-317-2-pn-dp-simatic-s7-300-6es7317-2ek14-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7317-2EK14-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CPU 319-3 PN/DP [plc-2-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7318-3EL01-0AB0
+Dosya: dist/assets/plc/plc-2-5.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7318-3el01-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-318-3el01-0ab0-01/processor.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7318-3EL01-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | SM 321 DI 16 [plc-2-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7321-1BH02-0AA0
+Dosya: dist/assets/plc/plc-2-6.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7321-1bh02-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-321-1bh02-0aa0-01/digital-input-module-sm-321-simatic-s7-300-6es7321-1bh02-0aa0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7321-1BH02-0AA0 is a variant of the named library family.
+
+Siemens | S7-300 | SM 322 DO 16 [plc-2-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7322-1BH01-0AA0
+Dosya: dist/assets/plc/plc-2-7.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7322-1bh01-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-322-1bh01-0aa0-01/digital-output-module-sm-322-simatic-s7-300-6es7322-1bh01-0aa0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7322-1BH01-0AA0 is a variant of the named library family.
+
+Siemens | S7-300 | SM 323 DI16/DO16 [plc-2-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7323-1BL00-0AA0
+Dosya: dist/assets/plc/plc-2-8.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7323-1bl00-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-323-1bl00-0aa0-01/digital-i-o-module-sm-323-simatic-s7-300-6es7323-1bl00-0aa0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7323-1BL00-0AA0 is a variant of the named library family.
+
+Siemens | S7-300 | SM 331 AI 8 [plc-2-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7331-7KF02-0AB0
+Dosya: dist/assets/plc/plc-2-9.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7331-7kf02-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-331-7kf02-0ab0-01/analog-input-module-sm-331-simatic-s7-300-6es7331-7kf02-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7331-7KF02-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | SM 332 AO 4 [plc-2-10]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7332-5HD01-0AB0
+Dosya: dist/assets/plc/plc-2-10.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7332-5hd01-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-332-5hd01-0ab0-01/analog-output-module-sm-332-simatic-s7-300-6es7332-5hd01-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7332-5HD01-0AB0 is a variant of the named library family.
+
+Siemens | S7-300 | CP 343-1 [plc-2-11]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7343-1EX30-0XE0
+Dosya: dist/assets/plc/plc-2-11.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6gk7343-1ex30-0xe0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6gk7-343-1ex30-0xe0-01/communication-processor-cp-343-1-simatic-s7-300-6gk7343-1ex30-0xe0.jpg
+Kaynak notu: Actual product image; selected ordering code 6GK7343-1EX30-0XE0 is a variant of the named library family.
+
+Siemens | S7-300 | CP 342-5 [plc-2-12]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6GK7342-5DA03-0XE0
+Dosya: dist/assets/plc/plc-2-12.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6gk7342-5da03-0xe0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6gk7-342-5da03-0xe0-01/communication-processor-cp-342-5-simatic-s7-300-6gk7342-5da03-0xe0.jpg
+Kaynak notu: Actual product image; selected ordering code 6GK7342-5DA03-0XE0 is a variant of the named library family.
+
+Siemens | S7-300 | FM 350-1 Counter [plc-2-13]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7350-1AH03-0AE0
+Dosya: dist/assets/plc/plc-2-13.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7350-1ah03-0ae0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-350-1ah03-0ae0-01/counter-module-fm-350-1-simatic-s7-300-6es7350-1ah03-0ae0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7350-1AH03-0AE0 is a variant of the named library family.
+
+Siemens | S7-300 | PS 307 5A [plc-2-14]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7307-1EA01-0AA0
+Dosya: dist/assets/plc/plc-2-14.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7307-1ea01-0aa0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-307-1ea01-0aa0-01/power-supply-simatic-s7-300-6es7307-1ea01-0aa0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7307-1EA01-0AA0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200SP IM155-6 PN ST [plc-3-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7155-6AU01-0BN0
+Dosya: dist/assets/plc/plc-3-0.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7155-6au01-0bn0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-155-6au01-0bn0-01/interface-module-6es7155-6au01-0bn0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7155-6AU01-0BN0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200SP IM155-6 PN HF [plc-3-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7155-6AU01-0CN0
+Dosya: dist/assets/plc/plc-3-1.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7155-6au01-0cn0
+Görsel: http://plc-direct.com/cdn/shop/products/6ES71556AU010CN0_c4ef4f76-6e8a-4ace-b8c7-94903151f043.jpg?v=1640724301
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | ET200 | DI 8x24VDC ST [plc-3-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7131-6BF01-0BA0
+Dosya: dist/assets/plc/plc-3-2.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7131-6bf01-0ba0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-131-6bf01-0ba0-01/digital-input-module-6es7131-6bf01-0ba0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7131-6BF01-0BA0 is a variant of the named library family.
+
+Siemens | ET200 | DQ 8x24VDC ST [plc-3-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7132-6BF01-0BA0
+Dosya: dist/assets/plc/plc-3-3.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7132-6bf01-0ba0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-132-6bf01-0ba0-01/digital-output-module-6es7132-6bf01-0ba0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7132-6BF01-0BA0 is a variant of the named library family.
+
+Siemens | ET200 | AI 4xI 2-wire ST [plc-3-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7134-6GD01-0BA1
+Dosya: dist/assets/plc/plc-3-4.jpg
+Ürün sayfası: https://plc-direct.com/products/6es7134-6gd01-0ba1
+Görsel: http://plc-direct.com/cdn/shop/products/6ES71346GD010BA1_0de4a016-ac9b-4663-97cd-65cf39e5423d.jpg?v=1640724206
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Siemens | ET200 | AQ 4xU/I ST [plc-3-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7135-6HD00-0BA1
+Dosya: dist/assets/plc/plc-3-5.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7135-6hd00-0ba1
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-135-6hd00-0ba1-01/analog-output-module.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7135-6HD00-0BA1 is a variant of the named library family.
+
+Siemens | ET200 | F-DI 8x24VDC HF [plc-3-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7136-6BA01-0CA0
+Dosya: dist/assets/plc/plc-3-6.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7136-6ba01-0ca0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-136-6ba01-0ca0-01/digital-input-module.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7136-6BA01-0CA0 is a variant of the named library family.
+
+Siemens | ET200 | F-DQ 4x24VDC HF [plc-3-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7136-6DB00-0CA0
+Dosya: dist/assets/plc/plc-3-7.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7136-6db00-0ca0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-136-6db00-0ca0-01/control.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7136-6DB00-0CA0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200M IM153-1 [plc-3-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7153-1AA03-0XB0
+Dosya: dist/assets/plc/plc-3-8.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7153-1aa03-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-153-1aa03-0xb0-01/interface-module-im-153-1-simatic-s7-300-6es7153-1aa03-0xb0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7153-1AA03-0XB0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200M IM153-2 [plc-3-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7153-2BA10-0XB0
+Dosya: dist/assets/plc/plc-3-9.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7153-2ba10-0xb0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-153-2ba10-0xb0-01-tif/interface-module-im-153-2-simatic-s7-300-6es7153-2ba10-0xb0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7153-2BA10-0XB0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200S IM151-1 [plc-3-10]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7151-1AA05-0AB0
+Dosya: dist/assets/plc/plc-3-10.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7151-1aa05-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-151-1aa05-0ab0-01/interface-module-im-151-1-simatic-et200s-6es7151-1aa05-0ab0.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7151-1AA05-0AB0 is a variant of the named library family.
+
+Siemens | ET200 | ET 200eco PN [plc-3-11]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 6ES7141-6BG00-0AB0
+Dosya: dist/assets/plc/plc-3-11.jpg
+Ürün sayfası: https://www.santaclarasystems.com/siemens/6es7141-6bg00-0ab0
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/siemens-6es7-141-6bg00-0ab0-01/control.jpg
+Kaynak notu: Actual product image; selected ordering code 6ES7141-6BG00-0AB0 is a variant of the named library family.
+
+Delta | DVP | DVP-SS2 CPU [plc-4-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-SS2 CPU
+Dosya: dist/assets/plc/plc-4-0.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/253
+Görsel: https://filecenter.deltaww.com/products/images/06/060301/DVP-SS2_S.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP-SA2 CPU [plc-4-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-SA2 CPU
+Dosya: dist/assets/plc/plc-4-1.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/252
+Görsel: https://filecenter.deltaww.com/products/images/06/060301/DVP-SA2_S.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP-SX2 CPU [plc-4-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-SX2 CPU
+Dosya: dist/assets/plc/plc-4-2.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/168
+Görsel: https://filecenter.deltaww.com/products/images/06/060301/DVP-SX2_S.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP-SE CPU [plc-4-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-SE CPU
+Dosya: dist/assets/plc/plc-4-3.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/243
+Görsel: https://filecenter.deltaww.com/products/images/06/060301/DVP-SE_S.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP-EH3 CPU [plc-4-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-EH3 CPU
+Dosya: dist/assets/plc/plc-4-4.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/241
+Görsel: https://filecenter.deltaww.com/products/images/06/060301/DVP-EH2_S.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP-ES3 CPU [plc-4-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP-ES3 CPU
+Dosya: dist/assets/plc/plc-4-5.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/DVP-ES3
+Görsel: https://filecenter.deltaww.com/products/images/2601/202601271435048049001.jpg?w=1920
+Kaynak notu: Official Delta CPU family product photo; record has no complete order code.
+
+Delta | DVP | DVP16SP11R [plc-4-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP16SP11R
+Dosya: dist/assets/plc/plc-4-6.jpg
+Ürün sayfası: https://www.em.co.za/DVP16SP11R
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-16SP-extension module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-16SP-extension module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | DVP | DVP16SP11T [plc-4-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: DVP16SP11T
+Dosya: dist/assets/plc/plc-4-7.jpg
+Ürün sayfası: https://www.em.co.za/DVP16SP11T
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-16SP-extension module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-16SP-extension module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | DVP | DVP04AD-S [plc-4-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DVP04AD-S
+Dosya: dist/assets/plc/plc-4-8.jpg
+Ürün sayfası: https://deltavina.com/dvp04ad-s/
+Görsel: https://deltavina.com/wp-content/uploads/2022/09/DVP04AD-S-min.jpg
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Delta | DVP | DVP04DA-S [plc-4-9]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | DVP | DVP06XA-S [plc-4-10]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | DVP | DVPEN01-SL [plc-4-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DVPEN01-SL
+Dosya: dist/assets/plc/plc-4-11.jpg
+Ürün sayfası: https://www.em.co.za/DVPEN01-SL
+Görsel: https://www.em.co.za/images/WEB Images B/EM MISSING/Delta-DVPEN01-SL-communication module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-DVPEN01-SL-communication module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | DVP | DVPPF02-SL [plc-4-12]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DVPPF02-SL
+Dosya: dist/assets/plc/plc-4-12.jpg
+Ürün sayfası: https://www.deltaww.com/en-US/products/Industrial-Fieldbus-Solution/197
+Görsel: https://filecenter.deltaww.com/products/images/06/060305/DVPPF02-sl_S.jpg?w=1920
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Delta | AS | AS228T-A CPU [plc-5-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS228T-A CPU
+Dosya: dist/assets/plc/plc-5-0.jpg
+Ürün sayfası: https://www.em.co.za/AS228T-A
+Görsel: https://www.em.co.za/images/WEB Images B/202 website images/C-Section/Delta-AS228R-A-AS200 CPU module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS228R-A-AS200 CPU module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS228P-A CPU [plc-5-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS228P-A CPU
+Dosya: dist/assets/plc/plc-5-1.jpg
+Ürün sayfası: https://www.em.co.za/AS228P-A
+Görsel: https://www.em.co.za/images/WEB Images B/202 website images/C-Section/Delta-AS228R-A-AS200 CPU module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS228R-A-AS200 CPU module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS332T-A CPU [plc-5-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS332T-A CPU
+Dosya: dist/assets/plc/plc-5-2.jpg
+Ürün sayfası: https://www.em.co.za/AS332T-A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AS332T-CPU Module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS332T-CPU Module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS324MT-A CPU [plc-5-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS324MT-A CPU
+Dosya: dist/assets/plc/plc-5-3.jpg
+Ürün sayfası: https://www.em.co.za/AS324MT-A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AS332T-CPU Module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS332T-CPU Module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS16AM10N-A [plc-5-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS16AM10N-A
+Dosya: dist/assets/plc/plc-5-4.jpg
+Ürün sayfası: https://www.em.co.za/AS16AM10N-A
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-AS300-16AM-input module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS300-16AM-input module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS16AN01T-A [plc-5-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS16AN01T-A
+Dosya: dist/assets/plc/plc-5-5.jpg
+Ürün sayfası: https://www.em.co.za/AS16AN01T-A
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-AS300-16AN-T-Input-Output module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS300-16AN-T-Input-Output module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS08AD-A [plc-5-6]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | AS | AS04DA-A [plc-5-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS04DA-A
+Dosya: dist/assets/plc/plc-5-7.jpg
+Ürün sayfası: https://www.em.co.za/AS04DA-A
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-AS300-04DA-analog Output modules.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS300-04DA-analog Output modules.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS06XA-A [plc-5-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AS06XA-A
+Dosya: dist/assets/plc/plc-5-8.jpg
+Ürün sayfası: https://www.em.co.za/AS06XA-A
+Görsel: https://www.em.co.za/images/WEB Images B/C Missing/Delta-AS300-06XA-analog Input-Output modules.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS300-06XA-analog Input-Output modules.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS-FCOPM [plc-5-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AS-FCOPM
+Dosya: dist/assets/plc/plc-5-9.jpg
+Ürün sayfası: https://www.em.co.za/AS-FCOPM
+Görsel: https://www.em.co.za/images/WEB Images B/ZS No Images-21-10-20/Delta-AS-FCOPM.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS-FCOPM.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AS | AS01DNET-A [plc-5-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AS01DNET-A
+Dosya: dist/assets/plc/plc-5-10.jpg
+Ürün sayfası: https://www.em.co.za/AS01DNET-A
+Görsel: https://www.em.co.za/images/WEB Images B/ZS No Images-21-10-20/Delta-AS01DNET-A.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AS01DNET-A.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AHCPU500-RS2 [plc-6-0]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AHCPU500-RS2
+Dosya: dist/assets/plc/plc-6-0.jpg
+Ürün sayfası: https://www.em.co.za/AHCPU500-RS2
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AHCPU500-RS2-CPU modules.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AHCPU500-RS2-CPU modules.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AHCPU510-EN [plc-6-1]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AHCPU510-EN
+Dosya: dist/assets/plc/plc-6-1.jpg
+Ürün sayfası: https://www.em.co.za/AHCPU510-EN
+Görsel: https://www.em.co.za/images/WEB Images B/202 website images/C-Section/Delta-AHCPU510-EN-CPU-modules.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AHCPU510-EN-CPU-modules.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AHCPU530-EN [plc-6-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AHCPU530-EN
+Dosya: dist/assets/plc/plc-6-2.jpg
+Ürün sayfası: https://www.em.co.za/AHCPU530-EN
+Görsel: https://www.em.co.za/images/WEB Images B/EM-Clearance Images/Delta-AHCPU500-RS2-CPU modules.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AHCPU500-RS2-CPU modules.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AH16ANNN [plc-6-3]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | AH | AH16AP11T [plc-6-4]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | AH | AH08AD-5A [plc-6-5]
+Durum: Temsili görsel — birebir eşleşme doğrulanmadı
+Bu kayıt için uygun ürün görseli veya model kodu doğrulanamadı.
+
+Delta | AH | AH04DA-5A [plc-6-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AH04DA-5A
+Dosya: dist/assets/plc/plc-6-6.jpg
+Ürün sayfası: https://www.em.co.za/AH04DA-5A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AH16AM30N-5A-JIS removable digital input module.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AH16AM30N-5A-JIS removable digital input module.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AH10SCM-5A [plc-6-7]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AH10SCM-5A
+Dosya: dist/assets/plc/plc-6-7.jpg
+Ürün sayfası: https://www.em.co.za/AH10SCM-5A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AH10EN-5A [plc-6-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AH10EN-5A
+Dosya: dist/assets/plc/plc-6-8.jpg
+Ürün sayfası: https://www.em.co.za/AH10EN-5A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+
+Delta | AH | AH10DNET-5A [plc-6-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: AH10DNET-5A
+Dosya: dist/assets/plc/plc-6-9.jpg
+Ürün sayfası: https://www.em.co.za/AH10DNET-5A
+Görsel: https://www.em.co.za/images/WEB Images B/Web Pictures/Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+Kaynak notu: Product image used on model page; image filename Delta-AH10EN-Ethernet communication module Master-Slave.jpg?resizeid=5&resizeh=500&resizew=500
+
+Omron | CP | CP1E-N CPU [plc-7-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CP1E
+Dosya: dist/assets/plc/plc-7-0.jpg
+Ürün sayfası: https://www.ia.omron.com/products/family/2064/
+Görsel: https://www.ia.omron.com/Images/l_2064-13-118599-198x198.jpg
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Omron | CP | CP1L-EM CPU [plc-7-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CP1L-EM CPU
+Dosya: dist/assets/plc/plc-7-1.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1L-EM30DR-D
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1L-EM30.jpg
+Kaynak notu: Official Omron product page; image alt is CP1L-EM30. Library record names a CPU family without a full order code; image represents CP1L-EM30DR-D.
+
+Omron | CP | CP2E-N CPU [plc-7-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CP2E-N CPU
+Dosya: dist/assets/plc/plc-7-2.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP2E-N30DR-D
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP2E-N30DT-A.jpg
+Kaynak notu: Official Omron product page; image alt is CP2E-N30DT-A. Library record names a CPU family without a full order code; image represents CP2E-N30DR-D.
+
+Omron | CP | CP1W-20EDR1 [plc-7-3]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-20EDR1
+Dosya: dist/assets/plc/plc-7-3.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-20EDR1
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-20EDR1.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-20EDR1.
+
+Omron | CP | CP1W-32ER [plc-7-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-32ER
+Dosya: dist/assets/plc/plc-7-4.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-32ER
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-32ER.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-32ER.
+
+Omron | CP | CP1W-40EDR [plc-7-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-40EDR
+Dosya: dist/assets/plc/plc-7-5.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-40EDR
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-40EDR.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-40EDR.
+
+Omron | CP | CP1W-AD041 [plc-7-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-AD041
+Dosya: dist/assets/plc/plc-7-6.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-AD041
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-AD041.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-AD041.
+
+Omron | CP | CP1W-DA041 [plc-7-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-DA041
+Dosya: dist/assets/plc/plc-7-7.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-DA041
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-DA041.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-DA041.
+
+Omron | CP | CP1W-MAD44 [plc-7-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-MAD44
+Dosya: dist/assets/plc/plc-7-8.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CP1W-MAD44
+Görsel: https://8z1xg04k.tinifycdn.com/images/CP1W-MAD44.jpg
+Kaynak notu: Official Omron product page; image alt is CP1W-MAD44.
+
+Omron | CP | CP1W-CIF11 [plc-7-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CP1W-CIF11
+Dosya: dist/assets/plc/plc-7-9.jpg
+Ürün sayfası: https://www.fa.omron.co.jp/product/item/CP1W-CIF11/en/
+Görsel: https://www.fa.omron.co.jp/product/item/assets/pimg/CP1W-CIF11.jpg
+Kaynak notu: Product image used on model page; image filename CP1W-CIF11.jpg
+
+Omron | CJ | CJ2M-CPU31 [plc-8-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ2M-CPU31
+Dosya: dist/assets/plc/plc-8-0.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ2M-CPU31
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ2M-CPU35.jpg
+Kaynak notu: Official Omron product page; image alt is CJ2M-CPU35.
+
+Omron | CJ | CJ2M-CPU33 [plc-8-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ2M-CPU33
+Dosya: dist/assets/plc/plc-8-1.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ2M-CPU33
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ2M-CPU35.jpg
+Kaynak notu: Official Omron product page; image alt is CJ2M-CPU35.
+
+Omron | CJ | CJ2H-CPU64-EIP [plc-8-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ2H-CPU64-EIP
+Dosya: dist/assets/plc/plc-8-2.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ2H-CPU64-EIP
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ2H-CPU68-EIP.jpg
+Kaynak notu: Official Omron product page; image alt is CJ2H-CPU68-EIP.
+
+Omron | CJ | CJ1W-ID211 [plc-8-3]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CJ1W-ID211
+Dosya: dist/assets/plc/plc-8-3.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-ID211
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-ID211.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-ID211.
+
+Omron | CJ | CJ1W-OD211 [plc-8-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ1W-OD211
+Dosya: dist/assets/plc/plc-8-4.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-OD211
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-OD212.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-OD212.
+
+Omron | CJ | CJ1W-AD081-V1 [plc-8-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ1W-AD081-V1
+Dosya: dist/assets/plc/plc-8-5.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-AD081-V1
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-AD081.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-AD081.
+
+Omron | CJ | CJ1W-DA041 [plc-8-6]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ1W-DA041
+Dosya: dist/assets/plc/plc-8-6.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-DA041
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-DA042V.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-DA042V.
+
+Omron | CJ | CJ1W-SCU42 [plc-8-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CJ1W-SCU42
+Dosya: dist/assets/plc/plc-8-7.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-SCU42
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-SCU42.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-SCU42.
+
+Omron | CJ | CJ1W-ETN21 [plc-8-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CJ1W-ETN21
+Dosya: dist/assets/plc/plc-8-8.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/CJ1W-ETN21
+Görsel: https://8z1xg04k.tinifycdn.com/images/CJ1W-ETN21.jpg
+Kaynak notu: Official Omron product page; image alt is CJ1W-ETN21.
+
+Omron | CJ | CJ1W-EIP21 [plc-8-9]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: CJ1W-EIP21
+Dosya: dist/assets/plc/plc-8-9.jpg
+Ürün sayfası: https://www.omron-ap.com/products/family/1995/
+Görsel: https://www.omron-ap.com/Images/l_1995-25-118568-198x198.jpg
+Kaynak notu: Manufacturer or supplier product/family image; model revision is not specified by the library record.
+
+Omron | NX/NJ | NX1P2 CPU [plc-9-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: NX1P2 CPU
+Dosya: dist/assets/plc/plc-9-0.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX1P2-1040DT1
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX1P2-xx40DTx.jpg
+Kaynak notu: Official Omron product page; image alt is NX1P2-xx40DTx. Library record names a CPU family without a full order code; image represents NX1P2-1040DT1.
+
+Omron | NX/NJ | NX102 CPU [plc-9-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: NX102 CPU
+Dosya: dist/assets/plc/plc-9-1.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX102-1000
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX102-1200.jpg
+Kaynak notu: Official Omron product page; image alt is NX102-1200. Library record names a CPU family without a full order code; image represents NX102-1000.
+
+Omron | NX/NJ | NJ101 CPU [plc-9-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: NJ101 CPU
+Dosya: dist/assets/plc/plc-9-2.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NJ101-1000
+Görsel: https://8z1xg04k.tinifycdn.com/images/NJ101-1000_alt01.jpg
+Kaynak notu: Official Omron product page; image alt is NJ101-1000 alt01. Library record names a CPU family without a full order code; image represents NJ101-1000.
+
+Omron | NX/NJ | NJ501 CPU [plc-9-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: NJ501 CPU
+Dosya: dist/assets/plc/plc-9-3.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NJ501-1500
+Görsel: https://8z1xg04k.tinifycdn.com/images/NJ501-1500.jpg
+Kaynak notu: Official Omron product page; image alt is NJ501-1500. Library record names a CPU family without a full order code; image represents NJ501-1500.
+
+Omron | NX/NJ | NX-ID3343 [plc-9-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-ID3343
+Dosya: dist/assets/plc/plc-9-4.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-ID3343
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-ID3343.jpg
+Kaynak notu: Official Omron product page; image alt is NX-ID3343.
+
+Omron | NX/NJ | NX-OD3256 [plc-9-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-OD3256
+Dosya: dist/assets/plc/plc-9-5.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-OD3256
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-OD3256.jpg
+Kaynak notu: Official Omron product page; image alt is NX-OD3256.
+
+Omron | NX/NJ | NX-AD4203 [plc-9-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-AD4203
+Dosya: dist/assets/plc/plc-9-6.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-AD4203
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-AD4203.jpg
+Kaynak notu: Official Omron product page; image alt is NX-AD4203.
+
+Omron | NX/NJ | NX-DA2603 [plc-9-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-DA2603
+Dosya: dist/assets/plc/plc-9-7.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-DA2603
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-DA2603.jpg
+Kaynak notu: Official Omron product page; image alt is NX-DA2603.
+
+Omron | NX/NJ | NX-ECC203 [plc-9-8]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: NX-ECC203
+Dosya: dist/assets/plc/plc-9-8.jpg
+Ürün sayfası: https://www.fa.omron.co.jp/product/item/NX-ECC203/en/
+Görsel: https://www.fa.omron.co.jp/product/item/assets/pimg/NX-ECC202.jpg
+Kaynak notu: Product image used on model page; image filename NX-ECC202.jpg
+
+Omron | NX/NJ | NX-SL5500 [plc-9-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-SL5500
+Dosya: dist/assets/plc/plc-9-9.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-SL5500
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-SL5500.jpg
+Kaynak notu: Official Omron product page; image alt is NX-SL5500.
+
+Omron | NX/NJ | NX-SIH400 [plc-9-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-SIH400
+Dosya: dist/assets/plc/plc-9-10.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-SIH400
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-SIH400.jpg
+Kaynak notu: Official Omron product page; image alt is NX-SIH400.
+
+Omron | NX/NJ | NX-SOD400 [plc-9-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: NX-SOD400
+Dosya: dist/assets/plc/plc-9-11.jpg
+Ürün sayfası: https://industrial.omron.eu/en/products/NX-SOD400
+Görsel: https://8z1xg04k.tinifycdn.com/images/NX-SOD400.jpg
+Kaynak notu: Official Omron product page; image alt is NX-SOD400.
+
+Schneider | Modicon | M221 CPU [plc-10-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: TM221CE16R
+Dosya: dist/assets/plc/plc-10-0.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM221CE16R/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130224&p_File_Type=rendition_1500_jpg
+Kaynak notu: Manufacturer image of TM221CE16R; library label identifies the CPU family without a full ordering code.
+
+Schneider | Modicon | M241 CPU [plc-10-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: TM241CE24R
+Dosya: dist/assets/plc/plc-10-1.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM241CE24R/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130208&p_File_Type=rendition_1500_jpg
+Kaynak notu: Manufacturer image of TM241CE24R; library label identifies the CPU family without a full ordering code.
+
+Schneider | Modicon | M251 CPU [plc-10-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: TM251MESE
+Dosya: dist/assets/plc/plc-10-2.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM251MESE/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130200&p_File_Type=rendition_1500_jpg
+Kaynak notu: Manufacturer image of TM251MESE; library label identifies the CPU family without a full ordering code.
+
+Schneider | Modicon | M262 CPU [plc-10-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: TM262L10MESE8T
+Dosya: dist/assets/plc/plc-10-3.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM262L10MESE8T/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=M262_CPMGU18001&p_File_Type=rendition_1500_jpg
+Kaynak notu: Manufacturer image of TM262L10MESE8T; library label identifies the CPU family without a full ordering code.
+
+Schneider | Modicon | TM3DI16 [plc-10-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3DI16
+Dosya: dist/assets/plc/plc-10-4.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM3DI16/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130314&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | TM3DQ16R [plc-10-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3DQ16R
+Dosya: dist/assets/plc/plc-10-5.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM3DQ16R/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130320&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | TM3AI4 [plc-10-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3AI4
+Dosya: dist/assets/plc/plc-10-6.jpg
+Ürün sayfası: https://iqelectro.com/products/tm3ai4-schneider-electric-analog-input-module-modicon-tm3-4-inputs-screw-24v-dc
+Görsel: http://iqelectro.com/cdn/shop/files/TM3AI4.webp?v=1708099871
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | TM3AQ4 [plc-10-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3AQ4
+Dosya: dist/assets/plc/plc-10-7.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM3AQ4/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PIO00006834&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | TM3TI4 [plc-10-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3TI4
+Dosya: dist/assets/plc/plc-10-8.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM3TI4/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=PF130353&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | TM3XHSC202 [plc-10-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TM3XHSC202
+Dosya: dist/assets/plc/plc-10-9.jpg
+Ürün sayfası: https://www.se.com/us/en/product/TM3XHSC202/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=TM3_CP19003&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | BMX P34 M340 CPU [plc-10-10]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: BMXP342020
+Dosya: dist/assets/plc/plc-10-10.jpg
+Ürün sayfası: https://www.se.com/us/en/product/BMXP342020/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=BMXP342020_main_image&p_File_Type=rendition_1500_jpg
+Kaynak notu: Manufacturer image of BMXP342020; library label identifies the CPU family without a full ordering code.
+
+Schneider | Modicon | BMX DDI 3202K [plc-10-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: BMXDDI3202K
+Dosya: dist/assets/plc/plc-10-11.jpg
+Ürün sayfası: https://www.se.com/us/en/product/BMXDDI3202K/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=BMXDDI3202K_main_image&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | BMX DDO 3202K [plc-10-12]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: BMXDDO3202K
+Dosya: dist/assets/plc/plc-10-12.jpg
+Ürün sayfası: https://www.se.com/us/en/product/BMXDDO3202K/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=BMXDDO3202K_main_image&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | BMX AMI 0810 [plc-10-13]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: BMXAMI0810
+Dosya: dist/assets/plc/plc-10-13.jpg
+Ürün sayfası: https://www.se.com/us/en/product/BMXAMI0810/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=BMXAMI0810_image&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Schneider | Modicon | BMX NOC 0401 [plc-10-14]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: BMXNOC0401
+Dosya: dist/assets/plc/plc-10-14.jpg
+Ürün sayfası: https://www.se.com/us/en/product/BMXNOC0401/
+Görsel: https://download.schneider-electric.com/files?p_Doc_Ref=BMXNOC0401_main_image&p_File_Type=rendition_1500_jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | PM573-ETH CPU [plc-11-0]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: PM573-ETH CPU
+Dosya: dist/assets/plc/plc-11-0.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap130300r0271
+Görsel: https://cdn.productimages.abb.com/9IBA186399_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | PM585-ETH CPU [plc-11-1]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: PM585-ETH CPU
+Dosya: dist/assets/plc/plc-11-1.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap140500r0271
+Görsel: https://cdn.productimages.abb.com/9IBA202335_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | PM595-4ETH-F CPU [plc-11-2]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: PM595-4ETH-F CPU
+Dosya: dist/assets/plc/plc-11-2.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap155500r0279
+Görsel: https://cdn.productimages.abb.com/9IBA201873_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | DI524 [plc-11-3]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DI524
+Dosya: dist/assets/plc/plc-11-3.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap240000r0001
+Görsel: https://cdn.productimages.abb.com/9PAA00000134397_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | DO524 [plc-11-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DO524
+Dosya: dist/assets/plc/plc-11-4.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap240700r0001
+Görsel: https://cdn.productimages.abb.com/9IBA188296_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | DX522 [plc-11-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: DX522
+Dosya: dist/assets/plc/plc-11-5.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap245200r0001
+Görsel: https://cdn.productimages.abb.com/9IBA188400_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | AI523 [plc-11-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AI523
+Dosya: dist/assets/plc/plc-11-6.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap250300r0001
+Görsel: https://cdn.productimages.abb.com/9IBA189072_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | AO523 [plc-11-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AO523
+Dosya: dist/assets/plc/plc-11-7.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap250200r0001
+Görsel: https://cdn.productimages.abb.com/9IBA189074_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | AX522 [plc-11-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: AX522
+Dosya: dist/assets/plc/plc-11-8.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap250000r0001
+Görsel: https://cdn.productimages.abb.com/9IBA189076_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | CM579-PNIO [plc-11-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CM579-PNIO
+Dosya: dist/assets/plc/plc-11-9.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap170901r0001
+Görsel: https://cdn.productimages.abb.com/9IBA186190_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | CM578-CN [plc-11-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: CM578-CN
+Dosya: dist/assets/plc/plc-11-10.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap170800r0001
+Görsel: https://cdn.productimages.abb.com/9IBA186230_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+ABB | AC500 | TU515 Terminal Unit [plc-11-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: TU515 Terminal Unit
+Dosya: dist/assets/plc/plc-11-11.png
+Ürün sayfası: https://www.abb.com/global/en/products/1sap212200r0001
+Görsel: https://cdn.productimages.abb.com/9IBA188356_master.png
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX3U CPU [plc-12-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: FX3U CPU
+Dosya: dist/assets/plc/plc-12-0.webp
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plc_fx/plc-main-unit/fx3u-32mr-es.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt602fbb853c077875/6a99c09c78628f099a135dbf/231487.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Manufacturer image of FX3U-32MR/ES; library label identifies CPU family without a full ordering code.
+
+Mitsubishi | MELSEC | FX5U CPU [plc-12-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: FX5U CPU
+Dosya: dist/assets/plc/plc-12-1.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/cpu-module/fx5u-32mr-es.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt1b2a721bc198ca5e/6a99c5abcded26a8e482152f/280489.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Manufacturer image of FX5U-32MR/ES; library label identifies CPU family without a full ordering code.
+
+Mitsubishi | MELSEC | FX5UC CPU [plc-12-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: FX5UC CPU
+Dosya: dist/assets/plc/plc-12-2.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/cpu-module/fx5uc-32mt-d.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blte236c29f58bd5e39/6aa1765bfcc02af7a8654ac4/283529.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Manufacturer image of FX5UC-32MT/D; library label identifies CPU family without a full ordering code.
+
+Mitsubishi | MELSEC | FX5-16EX/ES [plc-12-3]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-16EX/ES
+Dosya: dist/assets/plc/plc-12-3.webp
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/io-module/fx5-16ex-es.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blte1a7a342a66f95e5/6a99c5b36c13101edf0c88fb/280505.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX5-16EYT/ES [plc-12-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-16EYT/ES
+Dosya: dist/assets/plc/plc-12-4.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/io-module/fx5-16eyt-es.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/bltf0fc1dc18bd89127/6a99c5b2cded265ed8821531/280503.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX5-4AD [plc-12-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-4AD
+Dosya: dist/assets/plc/plc-12-5.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/analog-control-module/fx5-4ad.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/bltb2c0ca6a6fbe5d69/68c23eaa19ea9e2495811379/334430.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX5-4DA [plc-12-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-4DA
+Dosya: dist/assets/plc/plc-12-6.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/analog-control-module/fx5-4da.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt79e71abfe9d71747/6a99ca177e091bebd16edaef/325715.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX5-CCL-MS [plc-12-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-CCL-MS
+Dosya: dist/assets/plc/plc-12-7.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/network-communication-module/fx5-ccl-ms.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt6c56f7f0884f301b/6994bb3a95a7790008aba1ef/312299.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | FX5-ENET/IP [plc-12-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: FX5-ENET/IP
+Dosya: dist/assets/plc/plc-12-8.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcf/network-communication-module/fx5-enet-ip.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt4afa9dd86b929e30/6a99ca9eb032943650e12f1c/409824.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | Q03UDVCPU [plc-12-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: Q03UDVCPU
+Dosya: dist/assets/plc/plc-12-9.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcq/cpu/cpu/q03udvcpu.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/bltbb29c588b8960df3/6a99c382710cc8b3ac20e0b0/266161.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | QX42 [plc-12-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: QX42
+Dosya: dist/assets/plc/plc-12-10.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcq/io/input/qx42.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/bltec31c49b0bee2785/6a99bd0b276bb48257fe8bbe/132574.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | QY42P [plc-12-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: QY42P
+Dosya: dist/assets/plc/plc-12-11.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcq/io/output/qy42p.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/blt7621ad3ef6f82458/6a99bd0b3b988b13ecf4c64a/132577.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | Q64AD [plc-12-12]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: Q64AD
+Dosya: dist/assets/plc/plc-12-12.jpg
+Ürün sayfası: https://emea-fa.mitsubishielectric.com/fa/products/cnt/plc/plcq/analog_io/analog-input/q64ad.html
+Görsel: https://eu-images.contentstack.com/v3/assets/blt5412ff9af9aef77f/bltadbd25cda8faeea0/6a99bce1bc37d00981e3459d/129615.jpg?auto=webp&quality=90&format=jpg&disable=upscale
+Kaynak notu: Unedited original manufacturer product image.
+
+Mitsubishi | MELSEC | QJ71E71-100 [plc-12-13]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: QJ71E71-100
+Dosya: dist/assets/plc/plc-12-13.jpg
+Ürün sayfası: https://www.santaclarasystems.com/mitsubishi/qj71e71-100
+Görsel: https://parts.santaclarasystems.com/images/t_catalog,f_auto,dpr_auto/mitsubishi-qj71e71-100-01/ethernet-interface-module.jpg
+Kaynak notu: Actual product photo from the ordering-code product page.
+
+Allen-Bradley | Compact/ControlLogix | Micro850 2080-LC50 [plc-13-0]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 2080-LC50-24QWB
+Dosya: dist/assets/plc/plc-13-0.jpg
+Ürün sayfası: https://www.plcdepartment.com/products/2080-lc50-24qwb-allen-bradley
+Görsel: https://www.plcdepartment.com/cdn/shop/files/796934e68e57d188a4857b1ce788e00b_1200x1200.jpg?v=1781477572
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Allen-Bradley | Compact/ControlLogix | CompactLogix 5380 [plc-13-1]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 5069-L306ER
+Dosya: dist/assets/plc/plc-13-1.jpg
+Ürün sayfası: https://www.plcdepartment.com/products/5069-l306er-allen-bradley
+Görsel: https://www.plcdepartment.com/cdn/shop/files/f87fcd9e2357f884d47e899e288e3875_1200x1200.jpg?v=1781489188
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Allen-Bradley | Compact/ControlLogix | ControlLogix 5580 [plc-13-2]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: ControlLogix 5580
+Dosya: dist/assets/plc/plc-13-2.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1756-l81e.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1756/1756-L83e_1000x1000.jpg
+Kaynak notu: Manufacturer image of 1756-L81E; library label identifies controller family without a full ordering code. Manufacturer uses this family image on the model-specific product page; filename 1756-L83e_1000x1000.jpg.
+
+Allen-Bradley | Compact/ControlLogix | 1769-IQ16 [plc-13-3]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 1769-IQ16
+Dosya: dist/assets/plc/plc-13-3.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1769-iq16.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1769/1769-HSC_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image. Manufacturer uses this family image on the model-specific product page; filename 1769-HSC_1000x1000.jpg.
+
+Allen-Bradley | Compact/ControlLogix | 1769-OB16 [plc-13-4]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 1769-OB16
+Dosya: dist/assets/plc/plc-13-4.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1769-ob16.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1769/1769-HSC_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image. Manufacturer uses this family image on the model-specific product page; filename 1769-HSC_1000x1000.jpg.
+
+Allen-Bradley | Compact/ControlLogix | 1769-IF4 [plc-13-5]
+Durum: Aile / varyant görseli
+Görselin ürün kodu: 1769-IF4
+Dosya: dist/assets/plc/plc-13-5.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1769-if4.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1769/1769-HSC_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image. Manufacturer uses this family image on the model-specific product page; filename 1769-HSC_1000x1000.jpg.
+
+Allen-Bradley | Compact/ControlLogix | 1769-OF4 [plc-13-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1769-OF4
+Dosya: dist/assets/plc/plc-13-6.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1769-of4.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1769/1769-OF4_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Allen-Bradley | Compact/ControlLogix | 5069-IB16 [plc-13-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 5069-IB16
+Dosya: dist/assets/plc/plc-13-7.jpg
+Ürün sayfası: https://www.plcdepartment.com/products/5069-ib16-allen-bradley
+Görsel: https://www.plcdepartment.com/cdn/shop/files/c26e754ec2ddc11cd18d94f8d92a2cf3_1200x1200.jpg?v=1781488710
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Allen-Bradley | Compact/ControlLogix | 5069-OB16 [plc-13-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 5069-OB16
+Dosya: dist/assets/plc/plc-13-8.jpg
+Ürün sayfası: https://www.plcdepartment.com/products/5069-ob16-allen-bradley
+Görsel: https://www.plcdepartment.com/cdn/shop/files/1b5248967c90517e887e01a2677576d5_1200x1200.jpg?v=1781488329
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Allen-Bradley | Compact/ControlLogix | 5069-IF8 [plc-13-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 5069-IF8
+Dosya: dist/assets/plc/plc-13-9.jpg
+Ürün sayfası: https://www.plcdepartment.com/products/5069-if8-allen-bradley
+Görsel: https://www.plcdepartment.com/cdn/shop/files/bec142b8cf94e83951079a0852eae72d_1200x1200.jpg?v=1781488214
+Kaynak notu: Supplier product image. Family records do not specify a complete ordering code or hardware revision.
+
+Allen-Bradley | Compact/ControlLogix | 1756-IB16 [plc-13-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1756-IB16
+Dosya: dist/assets/plc/plc-13-10.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1756-ib16.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1756/1756-IB16_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Allen-Bradley | Compact/ControlLogix | 1756-OB16E [plc-13-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1756-OB16E
+Dosya: dist/assets/plc/plc-13-11.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1756-ob16e.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1756/1756-OB16E_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Allen-Bradley | Compact/ControlLogix | 1756-IF8 [plc-13-12]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1756-IF8
+Dosya: dist/assets/plc/plc-13-12.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1756-if8.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1756/1756-IF8_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Allen-Bradley | Compact/ControlLogix | 1756-EN2T [plc-13-13]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1756-EN2T
+Dosya: dist/assets/plc/plc-13-13.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1756-en2t.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1756/1756-EN2T_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+Allen-Bradley | Compact/ControlLogix | 1734-AENTR POINT I/O [plc-13-14]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: 1734-AENTR POINT I/O
+Dosya: dist/assets/plc/plc-13-14.jpg
+Ürün sayfası: https://www.rockwellautomation.com/en-us/products/details.1734-aentr.html
+Görsel: https://www.rockwellautomation.com/resources/images/productinfo/IDW_1000x1000/1734/1734-AENTR_1000x1000.jpg
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-196R CPU [plc-14-0]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-196R CPU
+Dosya: dist/assets/plc/plc-14-0.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-196r/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/196R-03-PLC-CPU-MODULLERI-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-196T CPU [plc-14-1]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-196T CPU
+Dosya: dist/assets/plc/plc-14-1.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-196t/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/11/PLC-CPU-MODULLERI-196T-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-296R CPU [plc-14-2]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-296R CPU
+Dosya: dist/assets/plc/plc-14-2.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-296r/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/11/PLC-CPU-MODULLERI-296R-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-296T CPU [plc-14-3]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-296T CPU
+Dosya: dist/assets/plc/plc-14-3.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-296t/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-CPU-MODULLERI-296T-01gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-396R CPU [plc-14-4]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-396R CPU
+Dosya: dist/assets/plc/plc-14-4.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-396r/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-CPU-MODULLERI-396R-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-396T CPU [plc-14-5]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-396T CPU
+Dosya: dist/assets/plc/plc-14-5.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-396t/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-CPU-MODULLERI-396T-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-496R CPU [plc-14-6]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-496R CPU
+Dosya: dist/assets/plc/plc-14-6.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-496r/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-CPU-MODULLERI-496R-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GLC-496T CPU [plc-14-7]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GLC-496T CPU
+Dosya: dist/assets/plc/plc-14-7.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-496t/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-CPU-MODULLERI-496T-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-44RA 4DI/4RO [plc-14-8]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-44RA 4DI/4RO
+Dosya: dist/assets/plc/plc-14-8.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-44ra/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_44RA-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-80IA 8DI [plc-14-9]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-80IA 8DI
+Dosya: dist/assets/plc/plc-14-9.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-80ia/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_80IA-01.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-08TA 8TO [plc-14-10]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-08TA 8TO
+Dosya: dist/assets/plc/plc-14-10.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-08ta/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_08TA-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-88RA 8DI/8RO [plc-14-11]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-88RA 8DI/8RO
+Dosya: dist/assets/plc/plc-14-11.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-88ra/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM88RA-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-88TA 8DI/8TO [plc-14-12]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-88TA 8DI/8TO
+Dosya: dist/assets/plc/plc-14-12.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-88ta/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_88TA-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-16IA 16DI [plc-14-13]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-16IA 16DI
+Dosya: dist/assets/plc/plc-14-13.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-dijital-modul-gxm-16ia/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_16IA-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-16TA 16TO [plc-14-14]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-16TA 16TO
+Dosya: dist/assets/plc/plc-14-14.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-16ta/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_16TA-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-40AN 4AI [plc-14-15]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-40AN 4AI
+Dosya: dist/assets/plc/plc-14-15.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-40an/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_40AN-03-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-42AN 4AI/2AO [plc-14-16]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-42AN 4AI/2AO
+Dosya: dist/assets/plc/plc-14-16.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-42an/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM42AN-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-02AN 2AO [plc-14-17]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-02AN 2AO
+Dosya: dist/assets/plc/plc-14-17.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-02an/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM_02AN-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-06AN 6AO [plc-14-18]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-06AN 6AO
+Dosya: dist/assets/plc/plc-14-18.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-06an/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM06AN-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-10L Load Cell [plc-14-19]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-10L Load Cell
+Dosya: dist/assets/plc/plc-14-19.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-load-cell-modules-gxm-10l/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM10L-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-20L Load Cell [plc-14-20]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-20L Load Cell
+Dosya: dist/assets/plc/plc-14-20.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-load-cell-moduesl-gxm-20l/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM20L-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-20UA Sıcaklık [plc-14-21]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-20UA Sıcaklık
+Dosya: dist/assets/plc/plc-14-21.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-temperature-modules-gxm-20ua/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM20UA-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+GMTCNT | GLC/GXM | GXM-40UA Sıcaklık [plc-14-22]
+Durum: Ürün görseli — model kodu eşleşmesi
+Görselin ürün kodu: GXM-40UA Sıcaklık
+Dosya: dist/assets/plc/plc-14-22.webp
+Ürün sayfası: https://gmtcontrol.com/en/urunler/plc-temperature-modules-gxm-40ua/
+Görsel: https://gmtcontrol.com/wp-content/uploads/2025/12/PLC-GENISLEME-MODULLERI-GXM40UA-01-gmtcnt.webp
+Kaynak notu: Unedited original manufacturer product image.
+
+Fotoğraf ve marka hakları ilgili üretici / görsel sağlayıcılarına aittir.
+Genel malzeme aileleri temsili çizimlerdir; liste satış sıralaması değildir.

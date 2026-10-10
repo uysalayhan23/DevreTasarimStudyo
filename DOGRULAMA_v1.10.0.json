@@ -1,0 +1,24 @@
+{
+  "version": "1.10.0",
+  "date": "2026-09-17",
+  "fullSuite": {"total": 133, "passed": 133, "failed": 0, "command": "node --test --test-concurrency=2 tests/*.test.cjs", "log": "final-v110-all.txt"},
+  "afterSchrackRevision": {"total": 45, "passed": 45, "failed": 0, "command": "node --test tests/devices-v110.test.cjs tests/regression.test.cjs tests/book-symbols.test.cjs", "log": "final-v110-revision.txt"},
+  "distinctTestCases": 134,
+  "browserChecks": [
+    "Dragging the material level float changes the visible output from 12.00 mA to 20.00 mA",
+    "Dragging the linear rod changes the visible output from 5.00 V to 9.86 V; the powered example clears the no-supply indicator",
+    "Successive selector clicks choose positions 1, 2 and 3; only the corresponding lamp becomes active",
+    "Maintained lever changes to rotate(45 626 650) and powers its warning load",
+    "New device gallery renders v1.10.0 with corrected 14-screw Schrack image and only A1/A2 electrical port groups",
+    "No browser console errors observed during these checks"
+  ],
+  "newExamples": 4,
+  "limits": [
+    "Real U1KT003 has switching outputs and IO-Link; its analog variant here is an educational adaptation",
+    "Analog values are local sensor output readouts, not a general analog circuit or PLC input solver",
+    "Schrack 14-terminal socket is a user-specified representative arrangement; only A1/A2 are connectable on the coil component",
+    "Generated product front views are representative, with SVG silhouette masking",
+    "Physical speaker loudness depends on browser/OS audio settings; voice creation and cleanup are covered by automated tests"
+  ],
+  "previousPendingDocuments": ["mkş.pdf", "aar.pdf", "gkr.pdf"]
+}

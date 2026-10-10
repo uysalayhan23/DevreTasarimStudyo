@@ -1,0 +1,1305 @@
+# v1.19.20 — MASTER DÜZELTME LİSTESİ
+
+Durum: **AKTİF / TEK KAYNAK / FULL G7 CLEAN / MQ-00 REVIEW COMPLETE WITH OPEN BLOCKERS**
+Tarih: 2026-10-04
+Aktif dal: `v1.19.20`
+Kaynak auditler:
+- `docs/MASTER_QUALITY_AUDIT_V2.md`
+- `docs/MASTER_QUALITY_AUDIT_V3_AGENT_CROSSCHECK.md`
+
+Bu dosya bundan sonraki kalite ve düzeltme çalışmalarının tek birleşik backlog kaynağıdır. Aynı bulgu ikinci kez yeni ID ile açılmaz; mevcut kayda kanıt eklenir.
+
+## Öncelik anlamı
+
+- **P0:** release blocker / gerçek pano, elektriksel doğruluk veya veri güvenliği için kritik.
+- **P1:** yüksek öncelikli kalite, güvenilirlik, pedagojik veya operasyonel açık.
+- **P2:** mimari borç, verim, bakım ve organizasyon iyileştirmesi.
+- **AUDIT GAP:** karar vermek için henüz eksik kalan denetim.
+
+---
+
+# P0 — RELEASE BLOCKER
+
+| ID | Alan | Lider | Çapraz doğrulama | Sorun | Tamamlanma ölçütü |
+|---|---|---|---|---|---|
+| MQ-P0-001 | Fiziksel ölçü / Digital Twin | MQ-02 | MQ-01, MQ-03, MQ-04, MQ-11, MQ-12 | Ürün bazlı gerçek W/H/D mm sistemi yok; pano ölçüsü kategori fallbacklerine bağlı. | Merkezi physical metadata + sourceStatus; doğrulanmış ürünlerde gerçek mm; legacy fallback açıkça approximate; test ve migration. |
+| MQ-P0-002 | Terminal geometrisi | MQ-04 | MQ-02, MQ-03, MQ-12 | Terminal pano koordinatı yaklaşık gövde boyutuna oranlanıyor. | Terminal/asset/hitbox/pano aynı doğrulanmış fiziksel frame; golden geometry testleri. |
+| MQ-P0-003 | Signed enerji/akım yönü | MQ-05, MQ-06 | MQ-07, MQ-12 | Enerjili hat animasyonu var fakat kablo başına solver-türevi signed yön yok. | Signed flow contract; mühürleme/geri besleme dahil yön golden testleri; UI yönü solver verisinden türetilir. |
+| MQ-P0-004 | Pano 3B çarpışma | MQ-02, MQ-03 | MQ-04, MQ-10, MQ-12 | Door/plate derinlik ve kapanma çarpışma kontrolü yok. | Door sweep volume + depth/clearance collision; kapanmayan fiziksel pano geçersiz sayılır. |
+
+---
+
+# P1 — YÜKSEK ÖNCELİK
+
+| ID | Alan | Lider | Çapraz doğrulama | Sorun / eksik | Hedef |
+|---|---|---|---|---|---|
+| MQ-P1-001 | Digital Twin | MQ-01/MQ-02 | MQ-04/MQ-11 | Ürün bilgisi birçok dosyaya dağılmış; merkezi kayıt yok. | ID, üretici/model, kaynak, ölçü, asset, terminal, simülasyon, kalite tek sözleşmede. |
+| MQ-P1-002 | Asset standardı | MQ-01/MQ-03 | MQ-09/MQ-12 | front/top/isometric/perspective ve exact/family/representative metadata merkezi değil. | orientation + matchQuality + sourceStatus validator. |
+| MQ-P1-003 | Pano render | MQ-03 | MQ-02/MQ-10 | Native görsel X/Y bağımsız scale ile esneyebilir. | Aspect-safe physical frame + crop/anchor standardı. |
+| MQ-P1-004 | 2.5D/3D doğruluk | MQ-03 | MQ-02/MQ-04 | Çoğu cihaz gerçek CAD değil; genel extrusion kullanıyor. | Ölçü-doğru 2.5D minimum standardı; kritik cihazlarda gerçek profile/depth/collider. |
+| MQ-P1-005 | MEB | MQ-08 | MQ-07/MQ-12 | Ders bazlı area/branch/module/outcome/prerequisite/source-status zinciri yok. | Resmi MEB metadata + kaynak/sürüm/sayfa + prerequisite doğrulaması. |
+| MQ-P1-006 | Gerçek browser test | MQ-10/MQ-12 | MQ-13 | Gerçek Chrome/Edge visual regression yok. | Dashboard/editör/pano/öğretici için browser smoke + seçili golden geometry/screenshot testleri. |
+| MQ-P1-007 | CI kalite kapıları | MQ-12 | Tüm uzmanlar | G1–G4 fiziksel/pedagojik kapılar otomatik değil. | Digital twin/source/asset/MEB/signed-flow validatorları CI'a eklenir. |
+| MQ-P1-008 | Sürüm kimliği | MQ-10/MQ-13 | MQ-12 | v1.19.20 dalı uygulama ve ZIP'te v1.19.1 görünüyor. | APP_VERSION/UI/launcher/kullanım/paket adı atomik v1.19.20 politikasıyla eşleşir. |
+| MQ-P1-009 | Doküman current-truth | MQ-13 | MQ-00/MQ-12 | README/GELISTIRME/TALEPLER/DURUM içinde eski aktif dal/test bilgileri var. | Current truth tek yerde; tarihsel içerik HISTORY/ARCHIVE olarak ayrılır. |
+| MQ-P1-010 | Save/load migration | MQ-11 | MQ-12/MQ-10 | Migration şekil/alias bazlı; versioned chain yok. | vN→vN+1 migration registry + eski proje fixture/round-trip matrisi. |
+| MQ-P1-011 | Kilitli dal alarmı | MQ-13 | MQ-12/MQ-00 | Eski branch değişikliği ancak sonraki v1.19.20 CI'da fark edilir. | Kilitli ref değişikliklerini en erken aşamada algılayan alarm akışı. |
+| MQ-P1-012 | Default branch | MQ-13 | MQ-00 | Default `main` = v1.18.0; Code→Download ZIP yanlış sürümü verebilir. | Default-branch kararı veya çok görünür güncel dal yönlendirmesi. |
+| MQ-P1-013 | Pano mühendislik kuralları | MQ-02/MQ-04 | MQ-12 | bend radius, duct fill, clearance, segregasyon, servis/termal/BOM eksik. | Aşamalı engineering constraints katmanı. |
+| MQ-P1-014 | Kaynak otoritesi | MQ-01/MQ-09 | MQ-03/MQ-13 | Manufacturer ve supplier kaynakları teknik kanıt açısından ayrılmıyor. | sourceAuthority + technicalSource + sourceStatus. |
+| MQ-P1-015 | Repo lock tamper-resistance | MQ-13/MQ-12 | MQ-00 | Checker/workflow aynı aktif dalda birlikte değiştirilebilir. | Server-side protection mümkünse etkinleştir; o zamana kadar checker/workflow kritik değişiklik protokolü + bağımsız baseline kaydı. |
+
+---
+
+# P2 — BAKIM / VERİM / MİMARİ BORÇ
+
+| ID | Lider | Sorun | Hedef |
+|---|---|---|---|
+| MQ-P2-001 | MQ-11/MQ-13 | `dist/library.js` monolitik ve audit maliyeti yüksek. | ID'leri bozmadan sidecar digital twin metadata/generator/validator. |
+| MQ-P2-002 | MQ-10/MQ-11 | Stale `#newBtn` handler version:6 proje oluşturuyor. | Tek createProject controller/API. |
+| MQ-P2-003 | MQ-10/MQ-13 | Cache-buster etiketleri v1.19.0/v1.19.1 semver gibi karışık. | App semver ve cache revision ayrı standarda bağlanır. |
+| MQ-P2-004 | MQ-13 | Root'ta tarihsel doğrulama/yenilik/final kayıtları aktif dosyalarla karışık. | Referans kırmadan archive/history index ve kontrollü organizasyon. |
+| MQ-P2-005 | MQ-01/MQ-09/MQ-13 | Asset license/provenance metadata yok. | license/usageRights/attribution/retrievedAt; bilinmiyorsa UNKNOWN. |
+| MQ-P2-006 | MQ-12/MQ-13 | Docs-only committe bile 455 test + Windows ZIP üretiliyor. | Fast docs/repo-integrity gate + code/assets değişiminde full CI. |
+| MQ-P2-007 | MQ-12/MQ-13 | Windows runtime artifact tüm tracked geliştirme reposunu paketliyor. | Explicit runtime allowlist; source ZIP ayrı GitHub Code ZIP olarak kalır. |
+
+---
+
+## MQ-P1-001
+Durum: **CONTRACT COMPLETE / SOURCE CONSOLIDATION INCREMENTAL**  
+`dist/digital-twin.js` read-only merkezi Digital Twin sözleşmesi ürün kimliği, verified fiziksel ölçü/kaynak, asset match/orientation/provenance, terminal identity/geometry, simülasyon ve panel promotion durumunu tek kayıtta birleştirir. Selection 2 consolidation turunda 10 ürünün machine-readable queue visual match/orientation, terminalGeometry ve panelGeometryReady alanlarının runtime `physical-metadata` panel-eligible mapping'iyle birebir eşleşmesi yeni regression testiyle kilitlendi. Alt kaynakların fiziksel olarak tek dosyaya taşınması zorunlu değildir; kalan açık kapsam yeni gerçek binary/CAD/terminal evidence geldikçe registry üzerinden incremental olarak kapanır.
+
+## MQ-P1-002
+Durum: **CONTRACT DONE / CORPUS COVERAGE INCREMENTAL**  
+`dist/asset-quality.js` merkezi source-asset quality sözleşmesini taşır; runtime visual truth ise artık `physical-metadata` mapping/policy ile Digital Twin içinde source audit'ten ayrı tutulur. WP-016 orientation coverage 264/264 tamamlanmıştır. Selection 2 **10/10 promoted, 0 blocked** durumundadır. Derived-front (`panel-visual-derived-front-v1`) ve sensor-flex (`sensor-visual-flex-v1`) runtime orientation'ları ham kaynak fotoğraf audit sonucunu ezmeden ayrı alanlarda korunur. PROtop exact DXF terminal geometry kullanıcı paketinden parse edilerek kapanmıştır.
+
+## MQ-P1-014
+Durum: **DONE**  
+Visual/catalog kaynağı ile teknik ürün kanıtı birbirinden ayrılmıştır. `sourceAuthority` manufacturer/official-doc/authorized-distributor/supplier/other enumunu destekler; `technicalSource()` fiziksel ürün datasheet kaynağını visual source'dan ayrı taşır. Supplier görseli manufacturer teknik kanıtı gibi yükseltilmez. Kaynak yoksa/otorite belirsizse `other/unverified/missing` korunur.
+
+## MQ-P1-003
+Durum: **DONE / FULL G7 VERIFIED**  
+Pano native ürün render'ındaki X/Y bağımsız ölçek kaldırıldı. `panel.js::aspectPlacement()` fiziksel mm frame'i değiştirmeden tek uniform scale ile aspect-fit uygular ve çizimi merkez anchor ile yerleştirir. Eski `scale(w/d.w, h/d.h)` yolu kaldırılmıştır. Unit/golden test ve hedefli runtime doğrulaması temizdir; current runtime HEAD `8b37af601a899d41c193bcf037deb49d0f2d121a` üzerinde full G7 run `37311847588` SUCCESS ile kapanmıştır.
+
+## MQ-P1-004
+Durum: **CONTRACT FIXED / V20 PROFILE VERIFIED / COLLIDER INTEGRATION COVERAGE OPEN**  
+Verified W/H/D ölçüsü gerçek 2.5D profil/CAD collider doğrulamasıyla karıştırılmaz. Physical/Digital Twin sözleşmesinde `profileStatus`, `colliderStatus`, `colliderMethod` ve `colliderProfileXZMm` fail-closed validation altındadır. **PROtop 2466870000**, kullanıcı tarafından sağlanan exact altı görünüşlü DXF paketiyle ilk runtime `verified-profile` collider ürünü olmuştur: top-view main-body CAD silueti resmi 35×125 mm nominal X/Z frame'e normalize edilip `panel.js` door-sweep collision hesabında gerçekten tüketilir. V20 exact profile evidence verified kalır fakat raw CAD polygon/mesh runtime'a taşınmadığı için collider'ı bilinçli olarak `conservative-envelope` kalır. Diğer ürünlerde profile/CAD coverage incremental olarak açıktır. V20 ise kullanıcı tarafından sağlanan exact article CADClick dosyalarıyla: `6SL3210-5BB21-5UV1_2D_dimension_withFrame_en.DXF` front DIM 90.8×160.9 mm, right DIM 147 mm ve back geometry 90.8×160.9 mm doğrular; exact `6SL3210-5BB21-5UV1_3D_en.pdf` gerçek `/Subtype /U3D` stream taşır ve Top/Front/Right/Bottom/Back/Left/Isometric CAD view'larını içerir. DXF SHA-256 `323f43f81033c746e1b19740387cd3518e0c77478eecb422e2fbbc2324f91bfd`, 3D PDF SHA-256 `edefd2605c6e4e8367e834922f3ab0bee7abbcc48f1e7f3b38462d11640bc778`, decoded U3D stream SHA-256 `d3915b3bbe9f4bc48724cf66f8770afbb16b1a555c6c6047431b1c5808d9a60c` olarak kayıtlıdır. Bu nedenle V20 runtime/Digital Twin `profileStatus: verified` durumuna yükseltildi. Ancak mevcut door-sweep collision kodu CAD polygon/U3D mesh tüketmeyip yalnız rectangular W/H/depth envelope kullandığından `colliderStatus: conservative-envelope` bilinçli olarak korunur; `verified-profile` collider ancak CAD geometry gerçekten collision runtime'a entegre edildiğinde kullanılacaktır.
+
+## MQ-P1-008
+Durum: **DONE**  
+APP_VERSION/UI/dashboard/HTML launcher/BASLAT.bat/KULLANIM.txt/Windows package adı `v1.19.20` kimliğinde hizalanmıştır. Runtime package adı `dist/app.js` içindeki APP_VERSION'dan türetilir; sürüm kimliği ayrı cache revision alanlarından ayrıdır.
+
+## MQ-P1-009
+Durum: **DONE**  
+README ve `docs/DURUM_VE_SINIRLAR.md` güncel çalışma gerçeğini taşır; tarihsel kayıtlar current truth gibi sunulmaz. 2026-10-05 Actions politikası değişikliği sonrası README'deki eski “her committe CI” ifadesi de manuel kilometre taşı / PR politikasına düzeltilmiştir.
+
+Kanıt:
+- WP-014 validation CI: run `37230148221` SUCCESS @ `d662f3690b4197519ce268e0c4aca4f9d5f937cb`
+- Güncel README Actions policy düzeltmesi: `8829cb8d7a0a666a774657b573f74ac9e3bb3fb3`
+
+## MQ-P1-006
+Durum: **DONE**  
+Gerçek Chrome/Chromium dashboard-editor-pano-öğretici visual smoke runner ve golden geometry bounds CI'a bağlıdır. Browser job ayrı artifact üretir ve geçmiş protected baseline run'ında başarıyla tamamlanmıştır.
+
+Kanıt:
+- Browser visual CI: run `37227639023` SUCCESS @ `7ba82db3743f7dfcb3a70258cb3252a406bde970`
+
+## MQ-P1-007
+Durum: **DONE / DIGITAL TWIN INTEGRATED / FULL G7 VERIFIED**  
+G1–G4 master quality runner CI'da ayrı adım olarak çalışır: G1 physical/terminal + unified Digital Twin contract, G2 asset source/orientation, G3 MEB, G4 signed-flow. Digital Twin registry G1'e dahildir. Selection 2 + runtime visual policy + profile/collider quality-gate konsolidasyonu sonrası protected integrity baseline iki aşamalı BOOTSTRAP→PIN protokolüyle `75b7b4bafc64466baa6c211f3d7c89505d790f07` commit'ine yeniden pinlenmiştir. Current runtime HEAD `8b37af601a899d41c193bcf037deb49d0f2d121a` üzerinde manuel full G7 run `37311847588` SUCCESS: fast-gate, G1–G4, first-launch smoke, tüm regresyon, Windows ZIP/extraction, browser visual smoke ve Windows launcher smoke temizdir.
+
+## MQ-P1-005
+Durum: **DONE**  
+Lesson-level MEB contract uygulanmıştır: area/branch/module/outcome/source/version/prerequisite alanları machine-verifiable biçimde üretilir. Resmi MEB/EBA kaynakları ayrı source registry'de tutulur; generic veya birebir doğrulanmamış ders adları `unverified/partial` kalır. Uygulama learningGoal alanı resmi MEB kazanımı gibi sunulmaz; official outcome verification yoksa code/text boş ve status unverified kalır. WP-010 testleri daha sonraki tam regresyon run'ında CI altyapı düzeltmesi sonrası geçmiştir.
+
+Kanıt:
+- WP-010 test commit: `25312d39439215e4373d34d919ab846cbd2e0064`
+- Full-history CI düzeltmesi sonrası SUCCESS: run `37226577693` @ `9d94501c17ff6921ea875455f0a02ba942256393`
+
+## MQ-P1-010
+Durum: **DONE**  
+Versioned project migration registry `project-store.js` içinde contiguous v5→v6→v7 zinciriyle uygulanmıştır. Eski shipped fixture'lar migration + structural-preservation + round-trip testlerinden geçer; unsupported eski/future schema sessizce dönüştürülmez.
+
+Kanıt:
+- WP-011 regression CI: run `37226947925` SUCCESS @ `36d9d6e1ba87d6174e0b6981a4ab06650afd81ce`
+
+## MQ-P1-011
+Durum: **REPO-INTERNAL GUARD DONE / AUTONOMOUS REMOTE ALARM OPEN**  
+Workflow fast-gate her doğrulamada kilitli `main/v1.19.0/v1.19.1` SHA'larını ve izinli branch listesini kontrol eder; immutable baseline integrity checker kritik workflow/checker dosyalarını commit digest ile korur. 2026-10-05 branch cleanup sonrası izinli branch inventory tam olarak dört dala indi ve rerun fast-gate SUCCESS ile guard'ın yeniden geçtiği kanıtlandı. Ancak push-trigger kullanıcı talimatıyla kapalı olduğundan kilitli branch dışarıdan değişirse bağımsız/anlık GitHub alarmı kendiliğinden çalışmaz; sonraki PR/manual validation bunu yakalar. Bu nedenle repo-içi koruma tamam, autonomous remote alarm kapsamı açıktır.
+
+## MQ-P1-012
+Durum: **BLOCKED BY GITHUB REPOSITORY SETTING ACTION**  
+Gerçek repo metadata'sı `default_branch: main` göstermektedir. README güncel `v1.19.20` dalına geçişi açıkça uyarır; ancak GitHub bağlantısı repo-settings/default-branch update aksiyonu sunmadığı için default branch bu oturumda değiştirilemez. Hesap bağlantısı admin yetkisi raporlasa da kullanılabilir connector aksiyonları bu yazmayı desteklemiyor. `main` golden kilidi bozulmaz.
+
+## MQ-P1-015
+Durum: **IMMUTABLE BASELINE PROTOCOL DONE / SERVER-SIDE PROTECTION OPEN**  
+Protected workflow/checker/browser/golden dosyaları immutable commit baseline hash'leriyle doğrulanır; workflow credentials read-only ve full-history checkout zorunludur. 2026-10-06 runtime visual policy + profile/collider G1/G2 güncellemesi iki aşamalı BOOTSTRAP→PIN protokolüyle atomik olarak uygulanmış ve baseline `75b7b4bafc64466baa6c211f3d7c89505d790f07` commit'ine pinlenmiştir. Önceki `d5f68849...` baseline tarihsel olarak superseded kabul edilir. 2026-10-05 governance recheck'te branch-protection endpoint'i integration administration erişimi olmadığı için `403 Resource not accessible by integration` döndürdü; repository rulesets endpoint'i ise mevcut GitHub planı/private-repo koşulunda `403 Upgrade to GitHub Pro or make this repository public` döndürdü. Bu nedenle server-side branch/ruleset enforcement repo-içi baseline guard ile ikame edilmiş durumda ve dış platform kapsamı açık kalır.
+
+
+2026-10-05 current-HEAD manuel G7 run `37307752725` fast-gate integrity adımında, `scripts/quality-gates-v11920.cjs` current hash'inin eski immutable baseline ile uyuşmaması nedeniyle fail etti. Protected kalite-gate değişikliği geri alınmadı; resmi BOOTSTRAP→PIN protokolü uygulanarak yeni baseline `d5f68849c6322e54f17a0d9faa2b3eab531818de` commit'ine pinlendi (`2b8a5f7d...`). Bu run downstream doğrulamaya geçemedi; yeni HEAD için yeniden manuel G7 gereklidir.
+## MQ-P2-006
+Durum: **DONE**  
+CI scope classifier docs-only değişiklikleri fast gate'e, runtime/quality değişikliklerini full regression/package/browser/Windows yollarına ayırır. Kullanıcının Actions dakika politikası nedeniyle normal push otomasyonu ayrıca kapatılmış; PR veya manuel kilometre taşı doğrulaması korunmuştur.
+
+## MQ-P2-007
+Durum: **DONE**  
+Windows runtime ZIP explicit allowlist kullanır; tests/scripts/tools/docs/.github ve geliştirme/audit payload'ı son kullanıcı paketine alınmaz. Paket manifesti, CRC, extracted byte hashes ve launcher smoke doğrulaması vardır.
+
+Kanıt:
+- Full regression + Windows ZIP + Windows launcher SUCCESS: run `37226577693` @ `9d94501c17ff6921ea875455f0a02ba942256393`
+- Branch-policy cleanup proof: run `37272112342` attempt 2 — fast-gate/browser/Windows SUCCESS; regression reached 555/557 before two test-harness failures.
+- Repo metadata 2026-10-05: `default_branch=main`; branch inventory temiz — yalnız `main`, `v1.19.0`, `v1.19.1`, `v1.19.20` mevcut.
+
+## MQ-P1-013
+Durum: **DONE / ADVISORY ENGINEERING LAYER**  
+Aşamalı pano mühendislik katmanı uygulanmıştır: BOM, doğrulanmış input gerektiren duct-fill, bend-radius, service-clearance, üretici montaj clearance denetimi, segregasyon advisory sınıfı, termal yük envanteri ve door-clearance özeti tek audit raporunda birleşir. Kanıtı olmayan kapasite/servis/termal/mevzuat bilgisi uydurulmaz; segregasyon `training-advisory`, enclosure thermal compliance ise doğrulanmış enclosure/ambient verisi yoksa `unknown` kalır. WP-015 katmanı daha sonraki tam CI run'ında G1–G4, tüm regresyon, browser visual smoke, Windows ZIP ve launcher smoke ile başarıyla doğrulanmıştır.
+
+Kanıt:
+- Full validation CI: run `37232638076` SUCCESS @ `a36dcfbe1b7dcbd88b69e5043dc9f01b98118492`
+
+## MQ-P2-001
+Durum: **DONE / SIDECAR DIGITAL TWIN**  
+`dist/library.js` ID ve davranış sürekliliği için yerinde bırakılmıştır; audit maliyetini azaltan sidecar `dist/digital-twin.js` merkezi ürün/fizik/asset/terminal/simülasyon/kalite görünümünü üretir ve validator sağlar. Monolitik library fiziksel olarak parçalanmadan hedeflenen sidecar metadata/generator/validator mimarisi tamamlanmıştır.
+
+## MQ-P2-002
+Durum: **DONE**  
+Yeni proje oluşturma yolu tek merkezî `window.DTSEditor.create(mode,...)` controller'ına bağlıdır. `#newBtn` inline eski schema üretmez; merkezî create yolu `version:7` oluşturur. Stale `version:6` handler'ın geri gelmesini engelleyen `tests/project-create-v11920.test.cjs` eklendi.
+
+Kanıt:
+- Regression lock: `fcfcf56c8928f3d6c5e47d7d8f4fbb61cf4f9c84`
+
+## MQ-P2-003
+Durum: **DONE**  
+Uygulama sürüm kimliği ile cache revision ayrılmıştır. `dist/app.js` `APP_VERSION='1.19.20'` taşırken statik asset cache-buster'ları semver gibi davranmayan tarih/work-package `rev=20261004-wp014...` biçimindedir. Cache revision değişikliği uygulama semver'i değiştirmez.
+
+## MQ-P2-004
+Durum: **DONE / REFERENCE-SAFE HISTORY INDEX**  
+Root'taki tarihsel `DOGRULAMA_v*`, `DOSYA_LISTESI_v*`, `YENILIKLER_v*`, `final-v*` ve eski görsel kaynak kayıtları referans kırmamak için taşınmadan `docs/HISTORY_INDEX.md` altında archive/tarihsel olarak sınıflandırılmıştır. Güncel gerçek kaynaklar README, DURUM, GELISTIRME ve master backlog olarak ayrı tanımlıdır. Ayrım regression testiyle kilitlenmiştir.
+
+Kanıt:
+- History index: `fbfbaabec733916be45f133bbf17a57c9136e9d6`
+- Regression lock: `f4c15363f6f911168ff93a1570fe549d8a527338`
+
+## MQ-P2-005
+Durum: **DONE / UNKNOWN ALLOWED BY CONTRACT**  
+Asset provenance/license sözleşmesi `licenseStatus`, `usageRights`, `attributionRequired`, `retrievedAt` ve `provenanceStatus` alanlarını taşır. Kanıt bulunmayan görseller için değerler açıkça `unknown`/partial kalır; hak veya provenance uydurulmaz. WP-016 pixel-orientation audit 264/264 tamamlanmıştır; kalan source/provenance ve exact/family riskleri machine-readable audit kuyruğunda açık tutulur.
+
+## MQ-13 FINAL REPO CONTINUITY AUDIT
+Durum: **DONE / REPO CONTINUITY CLEAN WITH DECLARED PLATFORM LIMITS**  
+Tarih: 2026-10-05
+
+MQ-13 final kontrol sonucu:
+- Aktif çalışma dalı yalnız `v1.19.20`; final runtime validation anchor HEAD `8b37af601a899d41c193bcf037deb49d0f2d121a`.
+- Branch inventory yalnız `main`, `v1.19.0`, `v1.19.1`, `v1.19.20`; stale `work-v11920-batch` silinmiştir.
+- Kilitli eski refler değişmemiştir: `main=e00b6fcf0ea3eb721eae8285beb7052573b61373`, `v1.19.0=6846c6ee7df1c2f194eabf4fd58035d4423e8508`, `v1.19.1=68372f8018b28efe04a505792c41f12c8159376c`.
+- Repo-integrity / izinli branch fast-gate final run içinde SUCCESS.
+- Import/path/package zinciri full G7 içinde doğrulandı; Windows ZIP + extraction ve Windows launcher smoke SUCCESS.
+- Browser visual smoke SUCCESS; current runtime test/regresyon zinciri SUCCESS.
+- Runtime package explicit allowlist kullanmaya devam eder; docs/tests/scripts geliştirme payload'ı son kullanıcı ZIP'ine sızdırılmaz.
+- Current-truth ve operasyon devam noktası bu master backlog içinde günceldir.
+- GitHub platform sınırlamaları açıkça korunur: default branch hâlâ `main`; branch-protection/ruleset server-side enforcement connector/plan erişimiyle kapatılamamıştır. Bunlar MQ-P1-012 ve MQ-P1-015 altında açık kalır.
+
+Kanıt:
+- Full G7: run `37311847588` SUCCESS @ `8b37af601a899d41c193bcf037deb49d0f2d121a`.
+- Final branch inventory: yalnız dört izinli branch; protected flag server-side olarak false.
+- Repository permission bağlantısı: admin/maintain/push/pull/triage mevcut.
+
+### Selection 2 front-candidate qualification audit — 2026-10-05
+- 3RT: e-parts exact direct image artık high-resolution web byte/pixel seviyesinde açıldı; `3RT2016-1BB41` marking okunaklı, yüz straight-on ve anlamlı side/top depth face yok. Visual orientation şartı web-pixel düzeyinde kapanmıştır. GitHub bağlantısında base64 blob oluşturma yolu bulundu; fakat dış image byte'ı execution ortamına transfer edilemediği için original binary repo'ya yazılamadı. Bu nedenle tek açık gate repo-level binary + provenance'dır. Shared GitHub mirror family görseli reddedilmeye devam eder.
+- 3RV: Maschinenteil24 exact direct image artık web byte/pixel seviyesinde açıldı; `3RV2011-1JA10` marking görünür, cihaz straight-on front ve anlamlı side face yok. Güçlü exact orthographic-front candidate doğrulandı. Fakat original binary repo'ya taşınamadığı için provenance gate açık; GitHub mirror binary de 3RV6011-1JA10 ile shared olduğundan reddedilir. Terminal-center geometry verified; tek gerçek blocker repo-level visual acquisition.
+- 5TL: önceki exact ürün fotoğrafı perspective kaldı; fakat TIM exact `5TL1163-0` ürün sayfası galerisinde yeni straight-on/orthographic-front aday bulundu. Sayfa manufacturer index'i ve galeri açıklamaları exact ürünü gösteriyor, ancak erişilebilir görsel çözünürlüğünde model marking bağımsız olarak okunaklı değil ve original binary repo'ya alınamadı. Bu nedenle exact-page association tek başına image-level exactness sayılmadı. Terminal-center geometry verified; visual replacement gate açık.
+- PROtop: üç exact Weidmüller DAM asset'i pixel seviyesinde incelendi; product photo exact marking taşıyor fakat three-quarter/perspective, diğerleri circuit diagram + derating graph. Exact datasheet `Drawings` sayfası mekanik/dimensioned terminal çizimi içermiyor. Yeni turda eShop `Downloads & links` üzerinden official STEP/DWG/DXF linkleri doğrudan takip edildi: STEP sunucusu `application/step`, DWG ve DXF linkleri `application/zip` binary yanıtı veriyor. Böylece exact CAD dosyalarının gerçekten canlı olduğu kesinleşti; blocker artık CAD varlığı değil, web katmanının binary MIME'ı modele aktarmaması ve execution container'ın DAM DNS'ini çözememesi nedeniyle byte transport/geometry validation. DigiKey manufacturer-provided `2466870000 STP` bunu ayrıca bağımsız doğruluyor. PARTcommunity preview family/shared kaldığı için visual promotion sağlamaz.
+- Rittal: exact official PDF contains a real product photo, but orthographic qualification could not be established at pixel level.
+- SICK: exact WTB4-3P2161 photos found, but side/three-quarter.
+- V20: terminal geometry exact `6SL3210-5BB21-5UV1_2D_dimension_withFrame_en.DXF` ile verified kalır; 90.8×160.9 mm front frame ve ±0.5 mm terminal-center anchor'ları authoritative kaynaktır. Kullanıcının bu turda seçtiği 1086×1448 RGBA front görseli kanonik runtime görseli yapıldı. Ana front frame `x=140..947, y=18..1448` crop ile 807×1430 px'e ayrıldı, 280×496 WebP türevine çevrildi ve exact 90.8×160.9 mm gövde oranına bağlandı. Source SHA-256 `a9a7b7d93f82dd7e81be67d807df718f484aa0b881beb0b562f3838a1b38a9d2`; repo WebP SHA-256 `c8db14a110d3df76375289d3bfb30c0b25f1eab71ea9839ab9ff72dd0ef29667`; Git blob `47ea4bedb7153891a2ccee88e31ad3285e59dcc3`; runtime path `dist/assets/products/sinamics-v20-6sl3210-5bb21-5uv1-user-front-v2.webp`. Exact product kimliği Siemens exact CAD/DXF + önceki Gümrük Sepeti same-gallery `6SL3210-5BB21-5UV1 / 1.5 kW` nameplate zinciriyle korunur. Physical terminal grouping görüntü düzenine ve Siemens FSAA–FSAD kılavuzuna göre `upperControl=13,13b,14,14b,12,15,16`, `lowerControl=1–11`, `relay=17–19`; güç giriş/çıkış sıraları ayrı tutulur. Runtime body 90.8×160.9×147 mm, `panelGeometryReady=true`; V20 PROMOTED.
+- Shared/family mirror binaries are now regression-locked as non-promotable evidence.
+
+## MQ-00 MASTER REVIEW — 2026-10-05
+Durum: **REVIEW COMPLETE / CORE RUNTIME G7 CLEAN / RELEASE CLOSURE BLOCKED BY DECLARED OPEN EVIDENCE & GOVERNANCE ITEMS**
+
+G0–G8 kararı:
+- **G0 Repo/Dal/Süreklilik: PASS** — MQ-13 final repo audit temiz; stale branch yok, eski kilitli refler değişmedi.
+- **G1 Kaynak: PASS WITH OPEN COVERAGE** — kaynak otoritesi sözleşmesi çalışıyor; kanıtsız alanlar fail-closed/unknown kalıyor. 51 source-review pending açık backlog'dur.
+- **G2 Fiziksel: PASS WITH OPEN PRODUCT EVIDENCE** — Physical Digital Twin çekirdeği ve güvenli fallback sözleşmesi doğrulandı; Selection 2'de 4 ürün PROMOTED, 6 ürün BLOCKED. 3RV ve 5TL terminal-center geometry resmi orthographic drawing'lerden; V20 terminal-center geometry exact article DXF'den ve exact front visual Gümrük Sepeti same-gallery provenance ile panel-ready duruma getirildi. Terminal-center evidence açık kalan tek Selection 2 ürünü artık PROtop'tur.
+- **G3 Elektrik: PASS** — signed-flow, terminal sözleşmeleri ve ilgili elektriksel regresyon temizdir.
+- **G4 Pedagoji: PASS** — MEB/source-status/prerequisite kalite kapıları temizdir.
+- **G5 UI/Dosya: PASS** — browser visual smoke, first-launch ve Windows launcher smoke temizdir.
+- **G6 Hedef test: PASS** — yeni kök nedenleri yakalayan hedefli testler ve Selection 2 fail-closed kilitleri mevcuttur.
+- **G7 Tam regresyon: PASS** — run `37311847588` current runtime HEAD üzerinde tamamen SUCCESS.
+- **G8 MQ-00 Master onay: CONDITIONAL / CONTINUE** — çekirdek runtime kalite zinciri DONE kabul edilir; ancak aşağıdaki açıklar nedeniyle tüm `v1.19.20` programı release-closed sayılmaz.
+
+Açık zorunlu işler:
+1. **Selection 2:** 3RT, 3RV, 5TL, PROtop, Rittal, SICK, V20 için exact/orthographic/provenance ve ürün-bazlı kanıt blocker'ları; machine-readable queue fail-closed.
+2. **MQ-P0-002:** PROtop terminal-center mm evidence coverage. 3RV, 5TL ve V20 kapanmıştır; V20 exact article DXF ile verified durumdadır.
+3. **MQ-P1-001 / MQ-P1-002:** Digital Twin/source ve asset/source/provenance coverage incremental kapanışı.
+4. **MQ-P1-004:** V20 exact CAD profile evidence verified; kalan ürünlerde profile evidence coverage ve tüm cihazlarda gerçek CAD profile/mesh collider runtime entegrasyonu açık. `conservative-envelope` yalnız runtime gerçek profile tüketene kadar korunur.
+5. **MQ-AUDIT-GAP-001 / WP-016:** pixel orientation 264/264 tamam; source/identity review açık.
+6. **MQ-P1-011:** autonomous remote alarm platform kapsamı açık.
+7. **MQ-P1-012:** default branch `main` kalıyor; connector repo-setting write aksiyonu yok.
+8. **MQ-P1-015:** server-side branch protection/ruleset açık; repo içi immutable baseline guard aktif.
+
+MQ-00 kararı:
+**CORE RUNTIME = DONE / FULL G7 VERIFIED. PROGRAM = CONTINUE, NOT RELEASE-CLOSED.**
+Bir sonraki çalışma noktası yeni genel refactor değil; fail-closed açık evidence/governance maddelerini sırayla kapatmaktır. Selection 2 ürün dönüşümü machine-readable queue sırasıyla sürer ve kanıt gelmeyen ürün promote edilmez.
+
+# AUDIT GAP
+
+| ID | Lider | Eksik denetim | Kapanış ölçütü |
+|---|---|---|---|
+| MQ-AUDIT-GAP-001 / WP-016 | MQ-01/MQ-03 | **PIXEL ORIENTATION AUDIT COMPLETE / SOURCE & IDENTITY REVIEW OPEN.** `scripts/visual-corpus-audit-v11920.cjs` tüm aktif PLC/product/material manifestlerini ve physical componentMap'teki manifest-dışı sidecar assetleri tek audit kuyruğunda toplar. Mevcut corpus: 264 kayıt; 264/264 pixel-audited, 0 pixel-audit pending; V20 exact front provenance kapanışı sonrası 50 source-review pending; 163 exact-model risk. PLC corpus 202/202, product manifest 8/8, mapped-sidecar 6/6 ve material atlas 48/48 pixel-orientation coverage tamamlanmıştır. Görsel değiştirme işi Selection 2 olarak zorunlu iş sırasının en sonunda kalır; bu aşamada yalnız source/provenance ve exact/family/representative kimlik riskleri açıktır. Pano mapped-sidecar coverage 6/6 pixel-audited durumundadır. | Her aktif asset pixel seviyede sınıflandırılmış, source/provenance durumu kayıtlı ve yanlışlar P0/P1 olarak iş paketlenmiş. |
+
+---
+
+# BİLİNEN KAPSAM SINIRLARI — BUG DEĞİL
+
+| ID | Kapsam |
+|---|---|
+| MQ-LIM-001 | PLC ladder/program runtime ve fieldbus/Modbus/USS/DDCS tam emülasyon yok. |
+| MQ-LIM-002 | PLC görsellerinin tamamı birebir varyant değildir; family match kayıtları vardır. |
+| MQ-LIM-003 | V20/ACS800 tam firmware/PWM/DTC fizik emülasyonu değildir. |
+| MQ-LIM-004 | Yarı iletken modellerinin bir bölümü ideal eğitim modelidir; tam analog/SPICE davranışı değildir. |
+| MQ-LIM-005 | Arduino runtime tam C++/Core/tüm üçüncü parti kütüphane emülasyonu değildir. |
+| MQ-LIM-006 | Bina tesisatında kesit/seçicilik/koruma koordinasyonu/mevzuat hesabı tam mühendislik hesabı değildir. |
+
+Bu sınırlar gizlenmez; profesyonel hedef genişletilirse ayrı roadmap maddesine dönüştürülür.
+
+---
+
+# ZORUNLU İŞ SIRASI
+
+## Dalga 1 — P0 temel
+1. MQ-P0-001 Physical Digital Twin schema.
+2. MQ-P0-002 Terminal coordinate contract.
+3. MQ-P0-003 Signed current/energy flow.
+4. MQ-P0-004 Door/plate 3B collision.
+
+## Dalga 2 — P1 veri ve kaynak
+5. MQ-P1-001, 002, 003, 004, 014.
+6. WP-016 full visual corpus audit.
+7. MQ-P1-005 MEB.
+8. MQ-P1-010 migration.
+
+## Dalga 3 — Test/release/GitHub
+9. MQ-P1-006, 007.
+10. MQ-P1-008, 009.
+11. MQ-P1-011, 012, 015.
+12. MQ-P2-006, 007.
+
+## Dalga 4 — Profesyonel pano ve bakım
+13. MQ-P1-013.
+14. MQ-P2-001…005.
+
+## Selection 2 · Dalga 5 güncel ürün dönüşüm durumu
+Machine-readable source of truth: `docs/SELECTION2_PRODUCT_REPLACEMENT_QUEUE_V1.19.20.json`.
+
+Durum: **CLOSED-COMPLETE — 10/10 promoted, 0 blocked, 0 invalid.**
+
+- Siemens 5SL 1P/2P/3P, 3RT2016-1BB41, 3RV2011-1JA10, 5TL1163-0, Weidmüller PROtop 2466870000, Rittal 3241100, SICK WTB4-3P2161 ve SINAMICS V20 6SL3210-5BB21-5UV1 Selection 2 promotion kapılarını geçmiştir.
+- Exact identity/provenance, kabul edilmiş runtime visual policy, verified fiziksel frame ve gereken terminal/connector geometry birbirinden bağımsız tutulur.
+- PROtop son blocker'ı kullanıcı tarafından sağlanan exact `2466870000_DXF.zip` ile kapanmıştır; L/N/P/M runtime terminal anchor'ları exact DXF'ten mm olarak doğrulanmıştır.
+- 3RV exact Siemens TIF + manufacturer CAD front ile, 3RT/Rittal/PROtop accepted derived-front policy ile, SICK sensor-flex policy ile kapanmıştır.
+- Selection 2 kapanışı profile/CAD işini otomatik kapatmaz. Sıradaki aktif kalite paketi **MQ-P1-004 profile/CAD runtime collider coverage**'dır.
+- Profile/CAD ilk runtime entegrasyonu: PROtop exact top-view DXF → normalized 35×125 mm X/Z collider profile → `panel.js` door-sweep consumer → `colliderStatus:'verified-profile'`.
+- V20 `profileStatus:'verified'` fakat collider halen `conservative-envelope`; raw CAD profile/mesh collision runtime'a taşınmadan yükseltilmez.
+
+## Dalga 5 — En son görsel birebirlik / orthographic ürün dönüşümü
+15. Mevcut normal iş akışı ve önceki dalgalar tamamlandıktan sonra pano ürünlerini tek tek gerçek, birebir model eşleşmeli, dış kaynak/provenance kayıtlı, izometrik olmayan `orthographic-front` görsellerle değiştir/doğrula.
+16. Bu son dalgada öncelik sırası: Siemens 5SL ailesi → 3RT → 3RV → 5TL → Weidmüller PROtop → Rittal → SICK → SINAMICS V20.
+17. Bu dalga Selection 1 kapsamındaki panel geometry promotion / terminal-CAx / manufacturer-clearance / G7 zincirinin önüne alınmaz; yalnız mevcut iş sırasının sonunda başlatılır.
+
+## Başlangıç çalışma paketi
+
+**İlk teknik paket: WP-001 / MQ-P0-001 — Physical Dimension / Digital Twin Schema.**
+
+Bu paket doğrudan üretici ölçülerini rastgele koda yazmakla başlamaz. Önce:
+1. mevcut veri alanları haritalanır,
+2. schema önerisi hazırlanır,
+3. MQ-04 terminal etkisini kontrol eder,
+4. MQ-11 migration etkisini kontrol eder,
+5. MQ-12 test planını oluşturur,
+6. MQ-13 dosya yerleşimi ve repo sürekliliğini kontrol eder,
+7. MQ-00 tasarımı onayladıktan sonra uygulama başlar.
+
+
+# AKTİF İLERLEME
+
+## MQ-P0-001
+Durum: **DONE / FULL G7 VERIFIED**  
+Merkezi physical metadata, sourceStatus/sourceAuthority, verified ürünlerde gerçek W/H/D mm, güvenli staged panel geometry ve legacy approximate fallback uygulanmıştır. Selection 2 terminal/profile/Digital Twin consolidation turları sonrası runtime queue/mapping senkronu regression testine bağlanmıştır; doğrulanmamış ürünlere ölçü veya terminal koordinatı uydurulmaz. Repo-hygiene blocker 2026-10-05 tarihinde kullanıcı tarafından `work-v11920-batch` branch'i silinerek kaldırıldı. GitHub branch inventory artık yalnız `main`, `v1.19.0`, `v1.19.1`, `v1.19.20` içeriyor ve üç kilitli eski ref beklenen SHA'larda. Branch-policy yüzünden düşen Actions run `37272112342`, attempt 2 olarak yeniden çalıştırıldı: `fast-gate` SUCCESS, G1–G4 SUCCESS, first-launch smoke SUCCESS, browser visual smoke SUCCESS ve gerçek Windows launcher smoke SUCCESS oldu. Regresyon 557 testin 555'ini geçirdi; iki failure üretim davranışından değil `tests/physical-metadata-v11920.test.cjs` içindeki test-harness hatalarından kaynaklandı (`requiredClearanceMm` clone mutation derinlik varsayımı ve eski testte `spec` initialization sırası). Güncel HEAD'de harness ayrıca Selection 2 sonrası 5SL terminal/orientation gerçeğiyle senkronize edilerek `8cecd264...` commit'inde düzeltildi; Rittal photo-evidence semantiği de queue/test arasında `91e59d57...` + `cfd20b39...` ile uzlaştırıldı. Güncel test dosyaları syntax-parse temizdir. Ardışık harness/expectation düzeltmeleri sonrası current runtime HEAD `8b37af601a899d41c193bcf037deb49d0f2d121a` üzerinde full G7 run `37311847588` tamamen SUCCESS sonuçlandı. Böylece Physical Digital Twin çekirdek sözleşmesi, migration/regresyon, browser/Windows smoke ve runtime package zinciri MQ-P0-001 kapsamında kapanmıştır. Ürün bazlı eksik terminal/profile/source coverage ayrı açık kayıtlar olan MQ-P0-002, MQ-P1-001/002/004 ve Selection 2 altında fail-closed kalır.
+
+
+2026-10-05 panel-oran örneği sonrası ölçek sözleşmesi düzeltildi: doğrulanmış manufacturer W/H/D artık `panelGeometryStatus: staged` olsa bile yeni pano yerleşiminde gerçek mm footprint olarak kullanılır; terminal/visual gate staged kalmaya devam eder. Eski kaydedilmiş projeler sessizce yeniden boyutlandırılmaz. `Panel.proportionAudit()` serialized `w/h/depth` ile doğrulanmış fiziksel W/H/D'yi karşılaştırır ve tolerans dışı `wrong-uniform-scale` / `distorted-aspect` kayıtlarını raporlar. Repo içindeki `03_Egitim_Panosu.odsdevre` fixture'ında legacy MCB, PROtop SMPS ve contactor boyut farkları bu audit ile yakalanır.
+
+2026-10-05 kullanıcı `Malzeme test.odsdevre` + ekran görüntüsü audit sonucu: dosya `workspaceMode: control`, 69 component ve explicit `materialScale` değeri olmadan kaydedilmiş. Control/material renderer varsayılan `materialScale=1` altında component `d.w/d.h` şematik kutularını fiziksel boyutmuş gibi kullandığı için gerçek ürün oranları bozuluyor. Ölçülen örnekler: 1P MCB 4.44/1.11 scene-unit-per-mm (x/y), 3P MCB 2.22/1.11, 3RV 3.11/1.24, 3RT main-contact 2.67/1.72, V20 2.89/2.38. Bu yalnız uniform scale sorunu değil; aspect distortion da var. `Physical.materialScaleAudit()` ve `materialScaleCoverage()` eklendi; verified physical W/H ile control-material scene W/H karşılaştırması machine-readable `distorted-aspect` sonucu üretiyor. 2026-10-05 ikinci aşamada `Physical.materialDefinition()` + `app.js` render/port/obstacle/local-point entegrasyonu eklendi. Verified industrial ürünler material görünüşte kanonik `2 scene-unit/mm` ölçeğine normalize edilir; kaydedilmiş JSON konumu/ölçeği mutate edilmez ve explicit kullanıcı `materialScale` değeri bunun üstünde uniform çarpan olarak kalır. Kullanıcı `Malzeme test.odsdevre` fixture'ı 69 component / 0 explicit materialScale içerir; bu dosyada K3/K4, S17/S18/S19, S20, S21 ve S23 olmak üzere 8 verified ürün yeni normalization kapsamına girer. Örnek normalize envelope'lar: 1P MCB 36×180, 2P 72×180, 3P 108×180, 5TL 36×179.6, 3RV 90×194, 3RT 90×116, V20 181.6×321.8 scene-unit. Panel proportion audit ile control/material proportion audit ayrı sözleşmeler olarak korunur; unverified fiziksel ölçüler uydurulmaz ve özel instrument/PLC/Arduino sınıfları verified physical contract gelene kadar fail-closed bırakılır. Normalization sonrası legacy yerleşim çakışmaları `Physical.materialLayoutAudit()` ile ayrıca denetlenir; kullanıcı fixture'ında S18 3P MCB ile S19 2P MCB arasında 8×180 scene-unit overlap tespit edilir. Runtime material görünüşe geçişte/proje açılışında kullanıcıya uyarı verir fakat x/y koordinatlarını otomatik değiştirmez. V20 material görünüşünde kanonik ürün fotoğrafı ayrı body/backdrop katmanında tutulur; normal kablolar bu gövdenin üstünde, terminal hotspot/pin/etiket ve görünmez BOP etkileşim alanları kabloların üstünde render edilir. Opt-in `wireOverBody` sözleşmesi tekrar kullanılabilir ortak katman mekanizmasıdır; IEC görünüş davranışı korunur.
+## MQ-P0-002
+Durum: **CONTRACT DONE / EVIDENCE COVERAGE OPEN**  
+Physical terminal anchor sözleşmesi tamamlanmış ve fail-closed doğrulama korunur. Siemens 5SL 1P/2P/3P ve 3RT terminal geometry mm anchor'ları verified durumundadır. 3RV2011-1JA10 ana terminalleri exact Siemens orthographic drawing + 45×97 mm body ile ±1.5 mm toleransta; 5TL1163-0 1/2 terminalleri official front drawing + 18×89.8 mm body ile ±2 mm toleransta verified durumdadır. V20 için kullanıcı tarafından sağlanan exact CADClick `6SL3210-5BB21-5UV1_2D_dimension_withFrame_en.DXF` doğrudan parse edildi: exact article title block, `mm [in]` unit ve 90.8×160.9 mm front body frame doğrulandı; SHA-256 `323f43f81033c746e1b19740387cd3518e0c77478eecb422e2fbbc2324f91bfd`. Power + user terminal merkezleri (`1–11`, `13/13b`, `14/14b`, `12`, `15–19`, `L1`, `N/L2`, `PE`, `U/V/W`, `DC-/DC+`, `PE2`) exact vector centers üzerinden `exact-article-2d-dxf-mm-coordinate-extraction` yöntemiyle ±0.5 mm toleransta verified edildi. V20 exact Gümrük Sepeti front visual artık repo binary + provenance ile runtime'a bağlıdır; `visualMatchStatus: exact`, `orthographic-front` ve exact DXF terminal geometry birlikte active terminal anchors/panel promotion'ı açar. V20 terminal ve visual blocker'ları kapanmıştır. Selection 2 terminal-center blocker'ı kalmamıştır: PROtop exact `2466870000_DXF.zip` parse edilmiş, runtime L/N/P/M anchor'ları exact DXF fiziksel terminal satırlarına bağlanmıştır. Koordinat uydurulmaz; yeni ürünler aynı fail-closed sözleşmeyle incremental ilerler.
+
+## MQ-P0-003
+Durum: **DONE**  
+Solver-türevi signed terminal currents, KCL tabanlı signed wire flow, runtime/UI entegrasyonu, DC forward/reverse ve AC bidirectional animasyonları ile mühürleme/geri besleme golden testleri uygulanmıştır.
+
+## MQ-P0-004
+Durum: **DONE**  
+Door sweep volume + depth/clearance collision, unsafe door-closing UI guard ve golden clearance testleri uygulanmıştır.
+
+### Selection 1 · Panel geometry promotion evidence matrisi
+- **Siemens 5SL6116-7 / mcb-1p:** ürün W/H/D ve installation depth verified; exact + orthographic-front mevcut; terminal kimliği verified; terminal merkezleri Siemens orthographic dimensional drawing'den kaynaklı ve ±1 mm toleransla `terminalGeometryStatus: verified`. Teknik gate **ready-candidate**; gerçek `panelGeometryReady` promotion Selection 2'deki source/provenance visual işi tamamlanana kadar kapalı.
+- **Siemens 3RT2016-1BB41 / main-contact:** ürün ölçüsü + clearance verified; 10 fiziksel terminal için Siemens orthographic dimensional drawing'den kaynaklı terminal geometry evidence verified. Mevcut ana asset `front-perspective`; bu nedenle active terminal anchor ve gerçek panel geometry promotion kapalı. Terminal evidence ile active anchor ayrı sözleşmelerdir.
+- **Siemens 3RV2011-1JA10 / thermal-magnetic:** ürün ölçüsü/clearance ve ana terminal kimliği kanıtlı; exact Siemens orthographic drawing + 45×97 mm body scale ile ana terminal merkezleri ±1.5 mm toleransta verified. `terminalGeometryStatus: verified`; perspective görsel nedeniyle panel geometry staged kalır.
+- **Siemens 5TL1163-0 / disconnect-1p:** ürün ölçüsü ve installation depth verified; exact modeli kapsayan Siemens 1P orthographic/front drawing doğrulanmış 18×89.8 mm body scale ile kullanılarak 1/2 terminal merkezleri ±2 mm toleransta verified edilmiştir: yaklaşık (9,9) mm ve (9,80.8) mm. `terminalGeometryStatus: verified`; mevcut perspective visual nedeniyle active anchor ve panel geometry promotion staged kalır.
+- **Manufacturer clearance verified verdict:** 3RT/PROtop/V20 clearance metadata'sı runtime'a bağlıdır; ancak gerçek verdict için hedef ve sınırlayıcı komşu geometriler `ready + verified` olmalıdır. Mevcut gerçek ürünlerin hiçbiri bu koşulu henüz taşımadığı için gerçek proje üzerinde verified verdict üretmek **bilinçli olarak bloklu** kalır.
+- Bu blocker'ı çözmek için Selection 2 öne alınmaz. Görsel birebirlik/orthographic replacement işi zorunlu iş sırasının en sonunda kalır; o dalga geldiğinde ilk gerçek `panelGeometryReady` ürün üzerinden manufacturer-clearance audit tekrar çalıştırılır.
+
+Kanıt:
+- WP-001/M2 CI: `37205273860` SUCCESS
+- WP-002 contract CI: `37206171985` SUCCESS
+- WP-002 consolidated terminal contract CI: `37211244972` SUCCESS @ `bd8ab192024ee6903defa442ece6a43c3115f91c`
+- WP-003 signed-flow CI: `37220369262` SUCCESS @ `850f2143c950f7b50d17d651559270a8405bd821`
+- WP-004 door-sweep CI: `37221208843` SUCCESS @ `b5b60ca94ec49cfa5e2198379b7635b9f89970c4`
+
+
+### Selection 2 AUTO-PROGRESS checkpoint — 2026-10-06
+
+- **V20 wire/render katmanı:** DONE. `174f0984...` ile ürün gövdesi kabloların altına, terminal/control overlay kabloların üstüne alındı; `f9b7f321...` ile body seçme/sürükleme etkileşimi korunarak backdrop click yolu kapatıldı. Yeni DOM-order regresyonu `tests/v20-interface.test.cjs` içine eklendi. GitHub Actions tetiklenmedi; commitler `[skip ci]`.
+- **3RT:** BLOCKED — terminal geometry verified; qualifying exact strong-front web candidate mevcut, ancak original binary + repo provenance gate'i kapalı.
+- **3RV:** BLOCKED — terminal geometry verified; exact straight-on candidate mevcut, ancak original binary + provenance repo'ya taşınamadı.
+- **5TL:** BLOCKED — terminal geometry verified; exact-page orthographic candidate context mevcut fakat image-level exact identity + original binary/provenance eksik.
+- **PROtop:** BLOCKED — exact official product imagery perspective; STEP/DXF varlığı verified fakat CAD bytes retrieve+validate edilemediği için terminal-center geometry unverified.
+- **Rittal:** BLOCKED — dimensions/cutout/connection evidence verified; qualifying exact orthographic-front real binary yok.
+- **SICK:** BLOCKED — dimensions/connector evidence verified; accessible exact real photos perspective/three-quarter.
+- **MQ-00 kararı:** Selection 2 **KAPATILMADI**. Fail-closed kuralına göre 6 açık ürünün visual/provenance ve gereken terminal geometry gate'leri temizlenmeden DONE verilemez. Machine-readable queue 2026-10-06 checkpoint'iyle senkronize edildi.
+
+
+
+### Selection 2 evidence refresh — 2026-10-06
+
+AUTO-PROGRESS ile 3RT → 3RV → 5TL → PROtop → Rittal → SICK kaynak taraması tekrarlandı. 3RT için exact model işaretli straight-on aday, 3RV için exact model işaretli güçlü front aday bağımsız olarak yeniden doğrulandı; ikisinde de kalan blocker repo binary + provenance transferidir. 5TL exact 5TL1163-0 görseli yeniden kontrol edildi ve perspektif kaldı. PROtop exact resmi sayfa/ölçü/terminal count doğrulaması korunur; resmi ürün görseli perspective ve STEP/DXF byte geometry validation hâlâ kapalıdır. Rittal SK 3241.100 resmi ürün fotoğrafı three-quarter; SICK WTB4-3P2161 exact RS fotoğrafı side/three-quarter. Fail-closed nedeniyle bu altı ürün promote edilmedi; verified ölçü/terminal durumları gevşetilmedi.
+
+
+
+### Selection 2 wire-layer cross-cutting gate — 2026-10-06
+
+3RT, 3RV, 5TL, PROtop, Rittal ve SICK physical mappings ortak `wireOverBody:true` sözleşmesine alındı. Böylece bu fotoğraf tabanlı material cihazlar için runtime katman hedefi V20 ile aynıdır: **device body/photo < wires < terminal/control overlay**. Bu değişiklik yalnız render ordering sözleşmesidir; hiçbir ürünün exact/orthographic/provenance veya terminal-geometry promotion gate'i gevşetilmedi ve blocked ürünler blocked kalır.
+
+
+
+### Selection 2 candidate refresh — 2026-10-06 round 2
+
+Fresh public-source search found a **source-level exact straight-on front** for Siemens 3RV2011-1JA10 (visible exact article marking). This closes its source-discovery problem but not repo promotion: original binary + provenance still must be transported into the offline package. 3RT2016-1BB41 has an exact near-front candidate but a small bottom depth plane remains visible, so strict orthographic gate stays blocked. 5TL dimensions/identity remain exact but available real imagery is perspective. Rittal SK 3241.100 has a stronger near-front candidate, still with residual perspective. SICK WTB4-3P2161 has an exact side-orthographic view, but it is not the required front/lens orientation. No fail-closed gate was weakened.
+
+
+
+### PROtop CAD metadata narrowing — 2026-10-06
+
+PARTcommunity exact project metadata for `2466870000.prj` was re-confirmed. The CAD generator exposes exact article identity and a generated bounding envelope of approximately **34 × 131.2 × 135.4 mm**, while the official Weidmüller product catalogue continues to state **35 × 130 × 125 mm** product dimensions. This discrepancy is treated as CAD-envelope-vs-product-body context, not as a contradiction and not as a basis for fabricated terminal anchors. The public metadata does not expose terminal-center coordinates. Therefore PROtop remains fail-closed until STEP/2D CAD bytes can be transported and parsed.
+
+
+
+### Selection 2 binary intake gate — 2026-10-06
+
+External image/CAD bytes cannot currently be transported by the agent runtime even when public source pixels/URLs are visible. To prevent ad-hoc copying or accidental promotion, `scripts/selection2-import-asset.cjs` now provides a deterministic fail-closed intake path. Visual candidates require exact-model proof, `orthographic-front`, manufacturer/supplier authority and HTTPS provenance; PROtop CAD intake is separately scoped to exact article CAD. Imported bytes are staged under `evidence/selection2/` with SHA-256 sidecars and `status: candidate-not-promoted`. The helper never changes `panelGeometryReady` or promotion state.
+
+
+
+### Selection 2 manufacturer-binary narrowing — 2026-10-06
+
+The exact Siemens datasheets for **3RT2016-1BB41** and **3RV2011-1JA10** were inspected as local binaries. Their page-1 embedded product images are now SHA-256 tracked as manufacturer evidence. Both images are exact-document evidence but remain three-quarter/perspective, so neither is eligible as the runtime orthographic visual. This narrows the remaining 3RV blocker to acquisition of the already-qualified straight-on external binary; 3RT likewise keeps its strict orthographic binary gate. No promotion state or panelGeometryReady flag was changed.
+
+
+
+### PROtop CAD mirror audit + Rittal depth gate — 2026-10-06
+
+GitHub code search was exhausted for exact PROtop article CAD filenames (`2466870000.prj/.step/.stp/.dxf/.dwg`) and did not yield a transportable exact CAD binary. Exact PARTcommunity project identity remains verified, but terminal-center coordinates are still unavailable; terminal geometry therefore stays unverified. Rittal SK 3241.100 now also carries an explicit metadata-reconciliation gate: **107 mm installation depth** and **132 mm alternate overall-depth evidence** are not treated as interchangeable. No 3D envelope promotion will occur until exact drawing semantics reconcile those values.
+
+
+
+### Selection 2 source-discovery progress — 2026-10-06 round 3
+
+- **5TL1163-0:** Siemens LV10 exact 5TL1 dimensional drawings re-confirm the one-module front geometry and exact article family. This remains technical geometry evidence only; it does not satisfy the project's real-photo visual lock.
+- **Rittal SK 3241.100:** a new exact strong-front supplier candidate was found. The source view is sufficiently front-oriented to become the preferred binary-acquisition target, but no runtime promotion is allowed until the original binary is stored with provenance and independently pixel-audited.
+- **SICK WTB4-3P2161 / 1028099:** an exact front-lens photo was found, but visible top/side depth keeps it outside the strict orthographic-front gate.
+
+
+
+### Sensor visual acceptance flexibility — 2026-10-06
+
+User-approved policy change: **sensor-class products are no longer front-only**. For sensors, exact real **isometric / three-quarter** views may be accepted when they better communicate the sensing face, connector and mounting/body orientation. Exact model identity, provenance, and independently verified physical dimensions remain mandatory. This flexibility applies to sensors only; DIN protection devices, contactors, power supplies and other panel hardware retain their stricter orientation rules. SICK WTB4-3P2161 / 1028099 is now evaluated under `sensor-visual-flex-v1`.
+
+
+### 5TL1163 canonical front promotion — 2026-10-06
+
+User-supplied front asset `dist/assets/products/siemens-5tl1163-0-user-front.webp` is now the canonical material runtime visual. The optimized WebP is **180 × 898 px**, SHA-256 `a3a183eb6bf319d549536bcaac5f6a038d9a61ab843bfd168de4da8ef9e23f04`, and maps exactly to the verified Siemens **18.0 × 89.8 mm** front envelope at **10 px/mm**. Existing terminal geometry is retained at **1 = (9, 9) mm** and **2 = (9, 80.8) mm**. With front visual + verified dimensions + verified terminal geometry, 5TL is promoted and `panelGeometryReady=true`. The shared `wireOverBody` contract remains active, so wires render above the photo and terminal interaction remains above the wires.
+
+
+### Non-sensor visual derivation policy — 2026-10-06
+
+User-approved rule: for non-sensor panel hardware, a native exact orthographic-front photo remains preferred, but it is no longer mandatory when unavailable. The best exact-model **real product image** may be cropped/rectified into a **front-facing derived runtime asset**. Raw isometric/perspective source images are not used as-is for non-sensor panel hardware. Source provenance and derived-asset provenance are both recorded. Physical dimensions remain sourced from exact technical data (or an explicitly approved class reference), and terminal-center geometry remains independently verified; photo rectification must never be used to invent terminal coordinates. This policy is `panel-visual-derived-front-v1`. Sensor products continue under the separate `sensor-visual-flex-v1` policy.
+
+
+
+### 3RV exact-front acquisition checkpoint — 2026-10-06
+
+Exact `3RV2011-1JA10` straight-on/front sources were re-confirmed from multiple suppliers. The execution environment cannot currently resolve/fetch the image hosts (MT24, TCDN/Eletrosul, TME cloud image proxy), so no binary was silently substituted and no synthetic model label was invented. Under `panel-visual-derived-front-v1`, rectification remains allowed once exact source bytes are available. Until then, 3RV remains visually blocked only by binary transport/provenance; its verified dimensions and terminal geometry are preserved.
+
+
+
+### SICK sensor visual gate closure — 2026-10-06
+
+The existing exact repo binary `dist/assets/products/sick-wtb4.jpg` already has recorded RS product-page/image provenance in the product asset manifest and visibly identifies **WTB4-3P2161 / 1028099**. Under the user-approved `sensor-visual-flex-v1` policy, its informative side/three-quarter sensor view is accepted. The physical runtime gate is now policy-aware: sensor isometric/three-quarter orientation no longer creates an orthographic-front failure. SICK is **not** marked panel-ready yet because terminal/connector geometry remains unverified; that blocker is kept separate and fail-closed.
+
+
+### SICK connectorized external geometry closure — 2026-10-06
+
+The exact SICK WTB4-3P2161 datasheet verifies **16 × 39.5 × 12 mm**, **Connector M8, 3-pin**, connection diagram **Cd-045**, and pin assignment **BN/1 = L+**, **BU/3 = M**, **BK/4 = Q**. The dimensional drawing identifies callout **8 = Connection**. Because this product is an external connectorized field sensor, panel readiness now validates the connector interface rather than fabricating three separate body-terminal center coordinates. The runtime keeps per-conductor terminal anchors unverified/null while the physical product itself is promoted as panel-geometry ready.
+
+### 3RT2016 derived-front promotion — 2026-10-06
+
+The repository already contains an exact, single-product `3RT2016-1BB41` source binary with readable exact article marking and recorded supplier provenance. Under the user-approved `panel-visual-derived-front-v1` policy, runtime presentation now crops the visible top-depth plane from source viewBox `358 328 536 762` to front-derived viewBox `358 394 536 691`, which closely matches the verified **45 × 58 mm** front envelope without replacing product identity. Terminal centers remain sourced independently from the Siemens orthographic dimensional drawing and are not inferred from the photo. 3RT is promoted and `panelGeometryReady=true`.
+
+
+### Rittal 3241100 derived-front promotion — 2026-10-06
+
+The existing exact repo source `dist/assets/products/rittal-3241100.jpg` is reused under the user-approved **panel-visual-derived-front-v1** fallback. A front-face crop (`63 29 180 251`) is non-uniformly rectified into `dist/assets/products/rittal-3241100-derived-front.svg` at a square **255 × 255 mm** runtime face. Manufacturer installation geometry remains authoritative: **224 × 224 mm cutout**, **107 mm installation depth**, **25 mm projection/build depth**. Rittal is promoted for panel placement/rendering with `panelGeometryReady=true`; electrical terminal geometry remains independently `unverified` and no terminal coordinates are inferred from the rectified visual.
+
+
+
+### PROtop 2466870000 derived-front visual closure — 2026-10-06
+
+The exact repo photo `dist/assets/products/weidmuller-pro-top-2466870000.jpg` is now reused under **panel-visual-derived-front-v1**. The front/control plane is cropped from `218 86 248 690` and rectified to a **35 × 130 mm** runtime face via `dist/assets/products/weidmuller-pro-top-2466870000-derived-front.svg`. This closes the visual-orientation blocker only. PROtop remains fail-closed for panel terminal geometry: exact STEP/DXF/DWG bytes still must be retrieved and terminal-center mm coordinates parsed; no coordinates are inferred from the rectified image.
+
+
+
+### P0 Windows launcher incident closure — 2026-10-06
+
+Gerçek kullanıcı denemesinde `BASLAT.bat` çift tıklanınca uygulamanın açılmadığı doğrulandı. Kök neden, launcher'ın önce `explorer.exe "%LAUNCHER%"` çağırması ve Explorer'ın HTML dosyasını tarayıcıda açmadan da başarı kodu döndürebilmesiydi; batch bu kodu gerçek açılış başarısı sanıp hemen kapanıyordu. Aynı zamanda CI `DTS_LAUNCHER_TEST=1` gönderdiği halde güncel launcher bu değişkeni okumadığı için Windows smoke testi gerçek başlatma yolunu güvenilir biçimde korumuyordu.
+
+Düzeltme: Explorer devri kaldırıldı; launcher önce kurulu Edge/Chrome yollarını ve PATH'i dener, ardından `start "" "%INDEX%"` ile Windows varsayılan HTML uygulamasına doğrudan devreder. `DTS_LAUNCHER_TEST=1` kapısı browser açılmadan önce çalışır ve `DTS_LAUNCHER_SMOKE_OK` üretir. `tests/windows-launcher-v11920.test.cjs` bu sözleşmeyi ve `explorer.exe` regresyonunu kilitler. GitHub Actions dakika tasarrufu nedeniyle bu düzeltme commit'inde workflow tetiklenmez; sonraki anlamlı toplu G7 kilometre taşında gerçek Windows smoke yeniden doğrulanacaktır.
+
+
+### Profile/CAD runtime integration checkpoint — 2026-10-06
+
+- **Lead:** MQ-03 · **Cross-check:** MQ-02/MQ-04 · **MQ-12:** contract tests · **MQ-13:** repo continuity · **MQ-00:** package remains OPEN for coverage.
+- PROtop exact six-view DXF archive SHA-256 `e248de04fa18ab287e5bc3b1fb5ebd07e5e6de768af32ab30dff46aeae8f2f48`; exact top DXF SHA-256 `183feb0ba2dcc7e3adb3435035c586ebbc62e33c38dfcdc1e66f6c30baaa9a54`.
+- Top-view main-body CAD profile is normalized to official 35 mm width × 125 mm depth and is now consumed by runtime door-sweep collision. Generic verified-profile support requires actual `colliderProfileXZMm`; status alone cannot claim verified collision.
+- Digital Twin consolidation now separates **source image audit** from **active runtime visual orientation/policy** and carries collider method/profile geometry into the unified registry.
+- **3RV2011-1JA10:** exact `G_NSA0_XX_93051V.dxf` front/left layers verify 45 × 97 × 96.9 mm profile bounds; `profileStatus: verified`. Because the package has no exact top-view X/Z collision polygon, collider remains `conservative-envelope` and no polygon is inferred.
+- V20 and remaining products stay fail-closed at `conservative-envelope` until raw profile/mesh geometry is actually consumed.
+- GitHub Actions intentionally not run; all commits use `[skip ci]`. Full G7 remains reserved for the later agreed milestone.
+
+
+### G7 preparation checkpoint — 2026-10-06
+
+- G2'nin eski native-orthographic-only panel-ready kontrolü kullanıcı onaylı runtime policy'lerle uyumsuzdu; full G7 öncesi düzeltildi.
+- G2 panel-ready visual doğrulaması artık Digital Twin runtime truth kullanır: native `orthographic-front`, `panel-visual-derived-front-v1` ve `sensor-visual-flex-v1` kabul politikaları source audit'i silmeden doğrulanır.
+- G1 raporu policy-aware active terminal-anchor sayısını, verified profile sayısını ve verified-profile collider sayısını içerir.
+- Protected `scripts/quality-gates-v11920.cjs` değişikliği workflow `BOOTSTRAP` ile aynı atomik committe yapıldı: `75b7b4bafc64466baa6c211f3d7c89505d790f07`.
+- PIN commit: `a03a2d5432b6f02661734a0132900cf55739322b`.
+- Current protected-file set baseline normalization karşılaştırmasında **8/8 MATCH**; quality-gates syntax temiz.
+- Actions henüz çalıştırılmadı. Sonraki adım artık tek anlamlı toplu **full G7 validation**; ardından MQ-00 master review.
+
+
+### Full G7 dispatch blocker — 2026-10-06
+
+Current milestone preparation is complete, but final MQ-00 DONE is intentionally withheld. The workflow only supports PR/manual dispatch; the connected GitHub action surface cannot start a new manual workflow run, and creating a temporary branch/PR would violate the locked branch policy. GitHub reports zero workflow runs for target milestone HEAD `97429b591d3bfd902e6ae7a1860d2d6876dfc42b`. A container-side full-regression fallback was attempted but the execution environment cannot resolve `github.com`, so no substitute result is claimed. Current branch has only documentation-only blocker recording changes after that milestone preparation. **State: BLOCKED solely on one actual full G7 dispatch.**
+
+
+### Repository migration G0 repair + Actions-free G7-equivalent static audit — 2026-10-06
+
+- **Active repo:** `ayhanuysal031980-crypto/Devre-Tasarim-Studyo` · **active branch:** `v1.19.20`.
+- Source-to-target `v1.19.20` tree was rechecked: **691/691 blobs, 0 missing / 0 changed / 0 extra** against the source repository snapshot.
+- Migration exposed a real G0/MQ-13 continuity defect: the copied workflow still pinned source-repository commit SHAs that did not exist in the new repository. This would make the fast gate fail even with correct runtime code.
+- The locked historical snapshots were reconstructed in the new repository without weakening policy:
+  - `main` → `aa62ddeb68de4211d66e92ecc8e0adebc3f901fa`, tree-equivalent to old golden main (**553/553, 0/0/0**),
+  - `v1.19.0` → `faeef90ef3ed037c71a1715610ee0f9d33913aa4` (**614/614, 0/0/0**),
+  - `v1.19.1` → `ddd822ea124072a43a6a7bd501b73290110e3480` (**635/635, 0/0/0**).
+- G0 workflow branch locks were re-pinned to the new immutable repository refs. Migration baseline two-stage pin completed; current integrity baseline is `7d1ef9cf39ebf6de2614ad7423551c64ea35a5cc`.
+- Current `v1.19.20` HEAD after pinning: `bf58becb61a9e52411ed2e16b5b3c4ca5d7c7065`.
+- Protected integrity set: **8/8 MATCH** after normalization. Four LOCKED policy files retain their expected blob SHAs. Branch inventory is exactly `main`, `v1.19.0`, `v1.19.1`, `v1.19.20`.
+- All migration-repair commits used `[skip ci]`; current HEAD has **0 Actions runs**.
+- **G1 static contract audit:** PASS. Runtime metadata contains **10 products / 11 mappings**, **8 verified terminal-geometry mappings**, **3 verified profiles**, **1 verified-profile collider**; current physical-metadata regression expectations match these values.
+- **G2 static contract audit:** PASS. Selection 2 queue is **10/10 promoted, 0 blocked, 0 non-empty blockers**. Runtime `panelGeometryReady` count is 10; accepted visual-policy split remains native orthographic / derived-front / sensor-flex without relaxing provenance.
+- **G3 static contract audit:** PASS. Curriculum contract continues to separate verified MEB source metadata from unverified application learning goals; no unverified outcome is silently promoted to official verified outcome.
+- **G4 static contract audit:** PASS for source/harness presence and signed-flow contract wiring. Executable solver golden run is still **local execution pending** because the current chat GitHub connector does not provide a shell against the private repository.
+- **Runtime package static audit:** PASS. Explicit allowlist resolves to **492 runtime files**, inside the asserted 400–550 range; all required launcher/runtime/example/license/PDF entries are present. Full ZIP build/extract/hash execution remains **local execution pending**.
+- **Windows launcher static audit:** PASS. `DTS_LAUNCHER_TEST` gate exists before browser launch, `explorer.exe` is absent, Edge/Chrome + `start "" "%INDEX%"` fallback and visible error path remain intact. Real `cmd.exe` execution remains **Windows acceptance pending**.
+- **MQ-12 decision:** static/contract layer PASS; executable full regression + browser smoke + package execution pending.
+- **MQ-13 decision:** migration continuity defect CLOSED; repo/branch/lock structure is now internally coherent in the new repository.
+- **MQ-00 decision:** remains **BLOCKED**, but the blocker is now narrowed to execution evidence only: full local/hosted G7-equivalent regression, browser smoke, package build/extract verification and real Windows launcher acceptance. No unresolved static contract or migration-continuity blocker is currently known.
+
+
+### Historical executable evidence cross-map — 2026-10-06
+
+- Read-only audit of the source repository found the nearest successful full workflow run: **run 37311847588**, head `8b37af601a899d41c193bcf037deb49d0f2d121a`, conclusion **SUCCESS**.
+- That run completed all four jobs successfully: fast-gate, validate-and-package, real Windows launcher smoke, and browser visual smoke. Inside validate-and-package, syntax/dependency checks, **G1–G4**, first-launch smoke, full regression, and Windows ZIP build/extract verification all completed successfully.
+- The successful run artifacts still exist and are unexpired: Windows package artifact `11346388802` and browser-visual artifact `11346191969`.
+- Diff from that successful head to the migrated source snapshot `cca96b8626445fc1436acfc471bd459dce897ec9` contains 44 changed files, 41 of them validation/runtime relevant. Therefore the old SUCCESS is **not** claimed as a current-HEAD full-G7 pass.
+- Transferable execution evidence was narrowed by dependency/hash review:
+  - **G3:** quality-gate G3 implementation and tutorial curriculum/source dependencies did not change after the successful run; historical execution evidence remains applicable to the unchanged G3 contract.
+  - **G4 solver core:** `dist/simulation.js`, `dist/signed-flow.js`, and `tests/signed-flow-v11920.test.cjs` are unchanged since the successful run. `quality-gates-v11920.cjs::g4` is also unchanged. `dist/app.js` did change, but inspected diff is physical-material rendering/scale integration and does not modify the signed-flow class contract asserted by the test. Historical execution evidence is therefore retained as strong G4 evidence, while a current-HEAD rerun is still preferred before final MQ-00 closure.
+  - **G1/G2:** not transferable as final execution evidence because physical metadata, Digital Twin, asset policy, Selection 2 queue, and G1/G2 gate logic changed after the successful run.
+  - **Browser visual:** not transferable because runtime rendering files changed materially.
+  - **Windows launcher:** not transferable because `BASLAT.bat` changed after the successful run.
+  - **ZIP/package:** packaging implementation is unchanged, but packaged runtime content changed; current-content ZIP build/extract/hash remains pending.
+- Source-repo run `37452013760` at `cca96b...` ended at **fast-gate failure** and skipped validate/package, browser, and Windows jobs. This does not constitute a runtime regression result. The migration-specific G0 continuity defect that would break fast-gate has since been repaired in the target repository.
+- Revised execution status: **G3 = historical execution-backed PASS; G4 = historical execution-backed / current rerun preferred; G1/G2 + full regression + browser + current package + current Windows launcher = current execution pending.**
+
+
+### Actions-free in-memory execution: G1/G2/G3 current-head closure — 2026-10-06
+
+- GitHub-hosted Actions remains intentionally unused. Current repository modules were fetched from the private target repo and executed directly in the connected V8 environment with a CommonJS-compatible in-memory loader.
+- First current G1 execution found a real regression: `DigitalTwin.validate()` accepted terminal geometry states only `verified|unverified`, while the already-approved SICK external sensor contract intentionally uses `connectorized-external`. This caused G1 to fail for component `photoeye` with validator reason `terminals` even though the physical/panel gate was correctly ready.
+- Root cause classification: **Digital Twin enum drift**, not bad SICK physical evidence and not a reason to invent body terminal anchors.
+- Fix commit: `f1e27b439f27785079f7cf59824604c59b6d6554` — validator now accepts `connectorized-external` alongside `verified|unverified`.
+- Regression lock commit: `a3582cb572fd38580f10e53068457bb2235cee1b` — `tests/digital-twin-v11920.test.cjs` now explicitly requires SICK `photoeye` to validate with `connectorized-external`, no active body-anchor eligibility, panel ready/promoted, and no quality blockers.
+- Re-executed current G1 result: **PASS** — products=10, mappings=11, verifiedDimensions=10, verifiedTerminalGeometry=8, activeAnchorVisualEligible=8, stagedTerminalGeometry=3, verifiedProfiles=3, verifiedProfileColliders=1, digitalTwinRecords=11, digitalTwinInvalid=0.
+- Re-executed current G2 result: **PASS** — criticalProducts=8, criticalOrientationAudited=8, Selection2 total=10, promoted=10, blocked=0, invalid=0. Asset audit still reports rights conservatively (licenseUnknown=258, usageRightsUnknown=258); these are explicit unknowns, not silently promoted rights.
+- Current G3 was also executed in-memory from `tutorial-lessons.js -> tutorial-expanded-lessons.js -> tutorial-source-outline.js -> tutorial-pedagogy.js -> tutorial-curriculum.js`: **PASS** — lessons=1655, sourceVerified=1219, sourcePartial=260, sourceUnverified=176, officialOutcomeVerified=0, appPrerequisites=1604, auditInvalid=0, validateInvalid=0.
+- **MQ-12 status update:** G1/G2/G3 now have current-head execution evidence without Actions. G4 remains historical execution-backed plus unchanged solver/golden-test evidence; full Node runner, browser smoke, current ZIP build/extract/hash and real Windows launcher remain outside this chat execution surface.
+
+
+### Current regression narrowing — migration + asset quality + Selection 2 — 2026-10-06
+
+- `project-migration-v11920` contract was executed in-memory against current target-repo files: **PASS**. v5/v6/v7 shipped fixtures preserve circuit structure/connectivity, clean/parse round-trip succeeds, unversioned recognizable legacy migrates to v7 without input mutation, and unsupported/future/invalid schema values remain fail-closed.
+- `asset-quality-v11920` core contract was executed against current manifests: **PASS**. Runtime `product-assets.js` equals canonical product manifest; product audit = 8 total / 7 exact / 1 family; PLC audit = 202 total / 88 exact / 114 family / 198 perspective / 3 orthographic-front / 1 front-perspective / 0 invalid. All generated descriptors validate; unknown rights remain explicit.
+- Selection 2 replacement queue core regression was executed against current queue + physical metadata: **PASS**. Queue schema valid; promoted list exactly equals the 10-item order; blocked list empty; closure status `closed-complete`; live panelGeometryReady truth matches queue truth; PROtop terminal geometry=`verified`, SICK=`connectorized-external`, Rittal=`unverified`; closure snapshot = 10 promoted / 0 blocked / 0 invalid.
+- These checks further reduce the unexecuted portion of the full Node regression harness. Remaining non-emulated coverage still requires native Node `--test` orchestration and environment-dependent browser/package/Windows surfaces.
+
+
+### Browser/package/launcher current contract narrowing — 2026-10-06
+
+- `browser-visual-contract-v11920` environment-independent contract executed against current files: **PASS**. PNG dimension parser, collapsed-card guard, real Chrome CDP requirements, fixed 1440×1000 viewport and dashboard/editor/panel/tutorial screenshot coverage all pass. No Playwright/Puppeteer/Selenium dependency is present.
+- Browser runner SHA `873363d0464dd4f786871666482442912de548fd` and golden SHA `4621e04608762eb1baeedc0520fc7b2584ee00e6` are byte-identical to the last complete successful G7 run `37311847588`. The harness itself is therefore historically execution-backed and current-contract clean; current runtime rendering still requires one real Chrome/Chromium run.
+- Windows launcher environment-independent contract executed against current `BASLAT.bat`: **PASS**. `DTS_LAUNCHER_TEST` and `DTS_LAUNCHER_SMOKE_OK` are present before browser launch, executable `explorer.exe` usage is absent, Edge/Chrome discovery exists, `start "" "%INDEX%"` fallback remains, and visible `:launch_error -> pause -> exit /b 7` path remains.
+- `BASLAT.bat` SHA differs from the last successful Windows smoke run, so historical `cmd.exe` success is not promoted to current launcher acceptance. **Real current Windows cmd.exe acceptance remains pending.**
+- Runtime-package contract was executed from the current Git tree using the same explicit allowlist rules as `scripts/package.py --list`: **PASS**, profile `runtime-allowlist-v1`, **492 files**. All required launcher/runtime/example/license/PDF entries are present; `tests/ scripts/ tools/ docs/ .github/` and locked/audit payload remain excluded.
+- `scripts/package.py` SHA `f3301b7030020d1a0b9f96b78e4aa1f84eb784d3` is byte-identical to the last successful full G7 package run. Packaging algorithm is therefore historically execution-backed and current manifest contract is clean. Because packaged runtime bytes changed afterward, current ZIP create/CRC/extract/SHA verification remains pending.
+- Remaining executable-only scope is now: native Node `--test` full orchestration, one current real Chrome visual smoke, one current ZIP build/CRC/extract/hash verification, and one current real Windows launcher smoke; then MQ-00 final review.
+
+
+### G7 run #3 cancellation analysis + panel routing closure — 2026-10-06
+
+- Workflow run `37509910723` on `6d10060550ff3696daec70585fe5bd60ec79baf8` was **cancelled by job timeout**, not by a regression assertion. GitHub annotation: `The job has exceeded the maximum execution time of 15m0s`.
+- In that run: fast-gate PASS, G1–G4 PASS, first-launch smoke PASS, real Chrome visual smoke PASS, real Windows `cmd.exe` launcher smoke PASS. The regression process was still running when the 15-minute validate/package job limit cancelled it; ZIP verification was therefore skipped.
+- Workflow hardening commit `36826116d572258f119654da8147850b152098ad`: `validate-and-package timeout-minutes` increased **15 → 30** with `[skip ci]`; no additional Actions run was started.
+- The only failure from the preceding complete regression run was traced to a real panel-routing incompatibility at Siemens 3RT verified terminal A1. Verified terminal geometry placed the A1 anchor at the correct physical coordinate, while the fixed 12 mm routing stub remained 0.6 mm inside the device clearance box.
+- Runtime fix `6d10060550ff3696daec70585fe5bd60ec79baf8`: terminal stubs are passed through the existing safe `escape()` routine before orthogonal routing. No physical terminal coordinate, evidence, clearance rule, or Digital Twin truth was weakened.
+- Actions-free isolated execution of current `dist/panel-wiring.js`: **PASS**. A verified A1 endpoint connects successfully; one valid route is produced; source and destination terminal coordinates remain unchanged; the route exits the device envelope correctly.
+- Current closure status: all known contract/runtime blockers are closed. A complete native Node `--test` rerun and current ZIP build/extract/hash remain pending only because Actions minutes are exhausted / no local shell execution surface is available in this chat.
+
+
+### FINAL G7 / MQ-00 closure — 2026-10-06
+
+- Final full GitHub Actions validation run: **37513253115** on commit `a68fe72c4502956c3fb9d1da23f0a8ae6ff663d4` — **SUCCESS**.
+- Fast gate: **PASS** — repo integrity, locked-file policy, branch policy, documentation integrity, CI scope.
+- G1–G4 Master Quality gates: **PASS**.
+- First-launch / safety smoke: **PASS**.
+- Native Node full regression: **697/697 PASS, 0 fail, 0 cancelled, 0 skipped**; duration ~670.8 s.
+- Real Chrome/Chromium visual smoke: **PASS** for dashboard/editor/panel/tutorial.
+- Real Windows `cmd.exe` launcher smoke: **PASS**.
+- Windows package build/extract validation: **PASS**.
+  - profile: `runtime-allowlist-v1`
+  - files: **492**
+  - bytes: **83,832,351**
+  - package SHA256: `f0eb0995838ca9c76c55870609cd35ab502d01603c9294f68520922451eefd73`
+  - CRC: **passed**
+  - extracted file hashes: **passed**
+- Final Actions artifacts:
+  - Windows package artifact ID `11436637332`, uploaded size 83,808,705 bytes, artifact digest `sha256:58d70e199611248e57bdb164aeeb29f3f2d8a7950fb628d1eb7c29b91e863d9a`.
+  - Browser visual artifact ID `11436820129`, artifact digest `sha256:1ec2342062b2080b8ce596a2e0600c89e83dfc4b6026b762b4306dd4e9247390`.
+- The validation job timeout was hardened from 15 to 30 minutes before the final run, allowing the complete regression suite to finish.
+- Temporary `push` trigger used only to start this one final run through the connected GitHub tool was removed immediately afterward. Normal workflow triggers are restored to `pull_request` + `workflow_dispatch`.
+- Post-validation integrity baseline cleanup:
+  - trigger-restore commit: `f18ec71686a6e198d7470885c47e8b91622fabe4`
+  - final baseline pin commit: `82dde8db9346b0b50a86ce1e789c00149db2c27e`
+- **MQ-12 FINAL: PASS** — executable validation complete.
+- **MQ-13 FINAL: PASS** — repository continuity / locks / allowed branch structure coherent after migration and final trigger cleanup.
+- **MQ-00 FINAL: PASS / CLOSED** — no known blocking regression remains for the validated v1.19.20 runtime. Any future development begins from this closed quality baseline.
+
+
+## 2026-10-07 — MQ-P0-001 ORDEL HMT physical-scale correction
+
+Durum: **DONE — TARGETED STATIC/RUNTIME CONTRACT VERIFIED**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 (physical scale)
+- CrossCheck: MQ-03 (visual/geometry)
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Component: `converter-temperature` / ORDEL HMT-R / HMT-T
+- Root cause: runtime library definition had reverted to `240 × 240` scene units while the locked project scale is `2 scene-unit/mm`; this made the Ø45 mm head transmitter render as if it were 120 × 120 mm in the control-material workspace.
+- Correct physical contract: **diameter = 45 mm**, radius = 22.5 mm, body frame = `45 × 45 mm`, depth/height = `20 mm`.
+- Canonical runtime footprint: `90 × 90` scene units.
+- Existing visual asset is preserved: `ordel-top-v115.png`.
+- Terminal coordinates were scaled by the same 0.375 factor as the body, preventing image/hitbox drift.
+- Manufacturer evidence: ORDEL HMT-R manual `https://www.ordel.com.tr/upload/KK_134_3_TR_HMT-R.pdf`.
+- Regression locks: `tests/user-scale-only-lock-v11920.test.cjs`, `tests/physical-metadata-v11920.test.cjs`, `tests/instruments-v115.test.cjs`.
+- GitHub Actions were not run; commits use `[skip ci]`.
+
+
+## 2026-10-07 — Ortak çalışma uzayı ve ölçek referansı
+
+Durum: **IMPLEMENTED — TARGETED STATIC CONTRACT ADDED; FULL G7 DEFERRED BY ACTIONS POLICY**
+
+- TechnicalDirector: MQ-00
+- Lead: MQ-02
+- CrossCheck: MQ-03, MQ-04
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Kanonik çalışma uzayı: 2800 × 1800 scene-unit = 1400 × 900 mm.
+- Kanonik oran: 2 scene-unit/mm; grid 10 scene-unit = 5 mm.
+- Kumanda, tesisat/elektrik ve Arduino ana editörü artık `dist/workspace-space.js` sözleşmesinden ölçü alır.
+- Pano mm-native kalır; çalışma uzayı fiziksel kıyas oranı 1 mm = 2 scene-unit olarak kilitlenmiştir.
+- Önceki 2400 × 1500 scene-unit çalışma sınırı genişletildi; mevcut koordinatlar taşınmadı.
+- WAZ5 8540300000 merkezi physical metadata: 17.5 × 92.4 × 112.4 mm; görünür asset doğrudan 35 × 184.8 scene-unit frame'e bağlandı.
+- ORDEL HMT: Ø45 mm → 90 × 90 scene-unit; mevcut doğrulama korunur.
+- Siemens 3RT2016-1BB41: main-contact gerçek physical component; motor-starter ve coil-contactor 90 × 116 scene-unit görünümünü main-contact üzerinden physical proxy olarak taşır ve bağımsız ürün ölçüsü iddia etmez.
+- Yeni regression: `tests/workspace-space-v11920.test.cjs`; mevcut scale/physical metadata testleri güncellendi.
+- GitHub Actions çalıştırılmadı; commitler `[skip ci]` ile yapıldı.
+
+
+## 2026-10-07 — SSR shared-workspace scale
+
+Durum: **DONE — TARGETED STATIC CONTRACT VERIFIED**
+
+- Component: `solid-state-relay` / Katı Hâl Rölesi · SSR
+- Kullanıcı ölçüsü: kısa kenar **45 mm**, uzun kenar **62 mm**.
+- Ortak uzay oranı: **2 scene-unit/mm**.
+- Runtime physical frame: **90 × 124 scene-unit**.
+- Pin/terminal koordinatları gövdeyle aynı oranla yeniden ölçeklenir.
+- Derinlik kullanıcı tarafından verilmediği için uydurulmaz; `physicalDimensionsMm` yalnız width/height/shape taşır.
+- Mevcut görsel/simge korunur; `visualAssetPreserved=true` ölçek kilidiyle işaretlenir.
+- Regression: `tests/user-scale-only-lock-v11920.test.cjs` SSR için 45×62 mm → 90×124 unit ve pin sınırı kontrolü yapar.
+- GitHub Actions çalıştırılmadı; commitlerde `[skip ci]` kullanıldı.
+
+
+## 2026-10-07 — Omron MY röle görseli ve ortak uzay ölçeği
+
+Durum: **IMPLEMENTED / USER-APPROVED VISUAL**
+
+- Röle kütüphane görseli kullanıcı tarafından seçilen Omron MY front/orthographic asset ile değiştirildi.
+- Asset: `dist/assets/products/omron-my-relay-v11920.webp`.
+- Fiziksel ön yüz: **21.5 × 28 mm**.
+- Ortak çalışma uzayı: **43 × 56 scene-unit** (2 scene-unit/mm).
+- Yalnız **A1** ve **A2** terminalleri korunur.
+- A1 üst kısa kenar merkezinde, A2 alt kısa kenar merkezindedir.
+- Diğer görsel terminal çıkıntıları runtime elektriksel terminali değildir ve kütüphane sözleşmesinde yoktur.
+- IEC/şematik röle davranışı değiştirilmez; yeni görsel yalnız material görünümde kullanılır.
+- Hedef regresyon: `tests/user-scale-only-lock-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı; commitler `[skip ci]` ile oluşturuldu.
+
+
+## 2026-10-07 — Kullanıcı fiziksel ölçek paketi + röle/SSR aktif LED + HCFA görsel/terminal düzeltmesi
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 / MQ-03
+- CrossCheck: MQ-04 / MQ-05 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Ortak çalışma uzayı oranı değişmedi: **2 scene-unit/mm**.
+- Sıcaklık Kontrol Cihazı: **48 × 48 mm → 96 × 96 scene-unit**.
+- Termik Röle Yardımcı Kontağı NO/NC: **46 × 87 mm → 92 × 174 scene-unit**.
+- DC Röle Bobini: **28 × 78 mm → 56 × 156 scene-unit**.
+- Darbe Rölesi Bobini, Zaman Rölesi Bobini, Bırakmada Gecikmeli Bobin, Flaşör Bobini ve Çekmede Gecikmeli Bobin: **17.4 × 84 mm → 34.8 × 168 scene-unit**.
+- Bütün bu scale-only düzeltmelerde pin/materialPin koordinatları gövdeyle aynı oranla ölçeklenir; görseller korunur ve fiziksel kaynak workspace-space-v1:user-locked olarak işaretlenir.
+- Röle/bobin ve SSR material renderer, simülasyonun mevcut c._active state'inden beslenen **yeşil aktif LED** katmanı taşır. Pasif durumda LED koyu kalır; elektriksel solver davranışı değiştirilmez.
+- HCFA drive için kullanıcı tarafından sağlanan doğru ürün görseli offline WebP olarak mevcut embedded image zincirine geçirildi; drive fiziksel ön frame'i ölçü çizimine göre **42 × 165 mm → 84 × 330 scene-unit** oldu.
+- HCFA drive terminal kimlikleri korunurken görsel bağlantı bölgelerine yeniden hizalandı. CN1/CN2/CN3, RS485 ve güç/motor terminal pinleri yeni fiziksel frame sınırları içinde tutulur.
+- HCFA canlı fiziksel ekran, powered/servo/running/fault/rpm/monitor state'lerini yeni görseldeki ekran bölgesine bindirir; MODE/SHIFT/UP/DOWN/SET hotspotları yeni görsele kalibre edildi.
+- HCFA servo motor için kullanıcı tarafından sağlanan doğru yan görünüş görseli offline WebP olarak embedded image zincirine geçirildi.
+- Servo motor görünür fiziksel frame'i ölçü çiziminden **162.2 × 60 mm → 324.4 × 120 scene-unit** olarak bağlandı. Kaydedilen boyut alt kanıtları: body 122.7 mm, front offset 6.5 mm, shaft shoulder 3 mm, shaft 30 mm / Ø14, pilot Ø50.
+- Motor U/V/W/PE güç bağlantıları ile ENC bağlantısı yeni görseldeki üst konnektör bölgelerine taşındı; elektriksel pin kimlikleri değişmedi.
+- Yeni HCFA WebP embedded payload audit'i: drive **11,458 byte / RIFF-WEBP**, motor **12,960 byte / RIFF-WEBP**; base64 chunk birleşimleri sırasıyla 15,280 ve 17,280 karakter olarak doğrulandı.
+- Regression kaynakları güncellendi: tests/user-scale-only-lock-v11920.test.cjs ve tests/hcfa-x2e-v119.test.cjs.
+- GitHub Actions çalıştırılmadı. Bu turdaki doğrulama syntax + in-memory geometry/pin bounds + embedded WebP signature/size + static runtime contract düzeyindedir; native full Node/Windows acceptance bu commit için ayrıca çalıştırılmadı.
+
+
+## 2026-10-08 — Buton fiziksel ölçek ve basma çapı paketi
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 / MQ-03
+- CrossCheck: MQ-04 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Ortak çalışma uzayı oranı: **2 scene-unit/mm**.
+- 2 Kanallı Acil Stop, Başlat Butonu, Başlat/Durdur Butonu, Durdur Butonu, Işıklı Buton, İki El Emniyet Butonu ve Jog Butonu · 4 Uçlu: **36 × 46 mm → 72 × 92 scene-unit**.
+- Bu grubun hareketli/basılan iç buton çapı: **29 mm → 58 scene-unit**.
+- Acil Stop ile Mantar Buton NO/NC için gövde boyutu değiştirilmeden merkez kırmızı aktüatör çapı **40 mm → 80 scene-unit** olarak kilitlendi.
+- Pin ve materialPin koordinatları gövde ölçeklemesi ile aynı X/Y oranında taşınır; elektriksel pin ID'leri korunur.
+- DOLD iki kanallı acil stop ve iki-el emniyet butonu aynı fiziksel frame sözleşmesine alındı; malzeme görünümünde sırasıyla emergency-stop ve green-pushbutton assetleri kullanılır.
+- Material renderer, buttonActuatorDiameterScene metadata'sını kullanarak raster kap/etkileşim bölgesini asset merkezini koruyarak gerçek scene-unit çapına çeker.
+- Regression: tests/user-scale-only-lock-v11920.test.cjs + tests/dold-safety-v119.test.cjs.
+- GitHub Actions çalıştırılmadı; hedef doğrulama syntax, runtime library eval, fiziksel ölçü, pin sınırı ve actuator-region contract düzeyindedir.
+
+
+## 2026-10-08 — Windows BASLAT.bat açılış onarımı
+
+Durum: **IMPLEMENTED — ACTIONS-FREE STATIC LAUNCHER VALIDATION PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02
+- CrossCheck: MQ-04 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- BASLAT.bat artık doğrudan ham Windows dosya yolunu tarayıcıya vermek yerine BASLAT.html üzerinden file:/// URI üretir.
+- Edge ve Chrome yanında Firefox da desteklenir.
+- Birincil tarayıcı açılışı başarısız olursa sırasıyla Windows FileProtocolHandler, PowerShell Start-Process ve klasik START fallback zinciri denenir.
+- dist/index.html, arduino-card, tutorial-card ve window.DTSStudio paket bütünlük kontrolleri korunur.
+- Hata halinde CMD penceresi kapanmaz; kullanıcıya BASLAT.html hedefi ve desteklenen tarayıcılar gösterilir.
+- DTS_LAUNCHER_TEST smoke kapısı tarayıcı açmadan kalır ve test sözleşmesi tests/windows-launcher-v11920.test.cjs içinde güncellenmiştir.
+- GitHub Actions çalıştırılmadı. Windows üzerinde gerçek çift-tıklama kabulü bu ortamda çalıştırılamadığı için PASSED sayılmadı; statik launcher contract doğrulaması PASS.
+
+
+## 2026-10-08 — ET4420 48×48 görünür yüz + alt terminal sırası düzeltmesi
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- Sıcaklık Kontrol Cihazı component fiziksel gövdesi değişmedi: **48 × 48 mm = 96 × 96 scene-unit**.
+- Önceki özel ET4420 renderer sabit **240 × 240 scene-unit** fotoğraf çizdiği için görünür cihaz yaklaşık 2.5× büyük görünüyordu; bu hata giderildi.
+- ENDA ET4420 ürün fotoğrafı artık doğrudan component fiziksel frame'ini kullanır: **d.w × d.h = 96 × 96**.
+- Canlı PV/SP ekranı, durum LED'leri ve SET/FUNCTION/UP/DOWN hotspotları aynı 48×48 frame'e oransal ölçeklenir.
+- 4–17 terminal ID'leri korunur; 14 terminalin tamamı cihaz görselinin dışına, **alt kenarda soldan sağa tek sıra** halinde taşındı.
+- Pinlerin elektriksel koordinatları alt kenarda `y = d.h` ve `side = bottom` olarak kilitlendi; terminal kutuları görseli kapatmamak için fiziksel ön yüzün hemen altında render edilir.
+- Görsel asset/crop korunmuştur; yalnız render boyutu ve terminal geometri yerleşimi düzeltildi.
+- Regression: `tests/user-scale-only-lock-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı; syntax + library runtime geometry + renderer static contract doğrulaması PASS. Gerçek Windows UI kabulü ayrıca pending.
+
+
+## 2026-10-08 — 18×70 mm bobin / tek kutuplu cihaz paketi + FKV-03 + 5SL6116-7 kullanıcı görseli
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 / MQ-03
+- CrossCheck: MQ-04 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Önceki ET4420 kapanışı korunur: Sıcaklık Kontrol Cihazı gerçek **48 × 48 mm → 96 × 96 scene-unit** frame'de render edilir; canlı yüz overlay'i frame ile ölçeklenir ve 14 terminal görselin altında tek yatay sıradadır.
+- Darbe Rölesi Bobini, Zaman Rölesi Bobini, Flaşör Bobini, Bırakmada Gecikmeli Bobin ve Çekmede Gecikmeli Bobin: **18 × 70 mm → 36 × 140 scene-unit**.
+- Tek Kutuplu Ayırıcı: **18 × 70 mm → 36 × 140 scene-unit**.
+- Siemens **5SL6116-7** ile eşleşen 1P kesici entries: **18 × 70 mm → 36 × 140 scene-unit**.
+- 5SL6116-7 için kullanıcı tarafından 2026-10-08 sağlanan önden/şeffaf görsel canonical runtime visual olarak assets/products/siemens-5sl6116-7-user-front-v11920.webp üzerinden kullanılır; mevcut ON/OFF simülasyon state'i korunur.
+- Faz Koruma Rölesi · Tense FKV-03: **23 × 60 mm → 46 × 120 scene-unit**.
+- Yardımcı Röle Bobini kullanıcının tekrar onayladığı Omron MY görselinde kalır; fiziksel gövde **21.5 × 28 mm → 43 × 56 scene-unit**, A1/A2 kısa kenarlardadır.
+- Tüm scale-only işlemlerde pin/materialPin geometri oranı korunur ve pin sınırları yeni fiziksel frame içinde doğrulanır.
+- Regression kaynağı: tests/user-scale-only-lock-v11920.test.cjs.
+- GitHub Actions çalıştırılmadı; syntax, runtime library eval, geometry/pin bounds ve static visual-contract doğrulaması kullanıldı.
+
+
+## 2026-10-08 — 5SL6316-7 + 3RV2011 kullanıcı görseli ve fiziksel ölçek kapanışı
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 / MQ-03
+- CrossCheck: MQ-04 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Ortak çalışma uzayı oranı değişmedi: **2 scene-unit/mm**.
+- Siemens **5SL6316-7** üç kutuplu kesici: **54 × 70 mm → 108 × 140 scene-unit**.
+- Siemens **3RV2011** termik-manyetik/motor koruma şalteri: **45 × 97 mm → 90 × 194 scene-unit**.
+- 3RV2011 için kullanıcının 2026-10-08 tarihinde verdiği önden ürün görseli canonical runtime material asset olarak `assets/products/siemens-3rv2011-user-front-v11920.webp` dosyasına bağlandı.
+- Görsel fiziksel frame'e distortion uygulanmadan şeffaf canvas içinde kalibre edildi; runtime `physicalFrameMm:{width:45,height:97}` sözleşmesi ile render edilir.
+- Mevcut 3RV terminal ID'leri ve bağlantı semantiği korunur; pinler yeni fiziksel frame'e oransal taşınır ve gövde sınırlarında doğrulanır.
+- Regression kaynağı: `tests/user-scale-only-lock-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı; syntax + runtime library eval + physical geometry + pin bounds + visual asset contract doğrulaması kullanıldı.
+
+
+## 2026-10-08 — ET4420 iki terminal sırası düzeltmesi
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- Sıcaklık Kontrol Cihazı / ENDA ET4420 ön yüz fiziksel ölçüsü değişmedi: **48 × 48 mm → 96 × 96 scene-unit**.
+- Cihaz fotoğrafı, canlı PV/SP ekranı ve tuş hotspotları mevcut 48×48 mm ön yüz kalibrasyonunda korunur.
+- 14 terminal artık görselin altında **7 + 7 olacak şekilde iki ayrı yatay sıra** halinde render edilir.
+- Birinci sıra terminalleri: **4–10**; ikinci sıra terminalleri: **11–17**.
+- İki sıra arasında dikey boşluk vardır; terminal kutuları ve etiketleri üst üste gelmez.
+- Elektriksel pin ID'leri ve bağlantı semantiği değişmedi; bağlantı anchor'ları 48×48 mm gövdenin alt kenarında korunur.
+- Regression: `tests/user-scale-only-lock-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı; syntax + metadata + renderer contract doğrulaması kullanıldı.
+
+
+## 2026-10-08 — ET4420 gerçek port satırları + DC röle Omron görsel düzeltmesi
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED CONTRACT VALIDATION PASS**
+
+- Screenshot auditinde ET4420'nin önceki çözümünde gerçek portlar tek sırada kalırken ayrıca ikinci bir sahte görsel terminal katmanı çizildiği doğrulandı.
+- Sahte terminal katmanı kaldırıldı. ET4420'nin 14 gerçek/interaktif portu artık iki yatay sıradadır: 4–10 için y=108, 11–17 için y=130.
+- ET4420 ön gövdesi 48 × 48 mm / 96 × 96 scene-unit olarak değişmeden kalır.
+- Uzun fonksiyon açıklamaları signalLabel alanında korunur; çalışma alanında yalnız 4–17 terminal numaraları görünür.
+- Referans ve açıklama yazıları terminal sıralarının altına taşınması için annotationBottomOffsetScene=58 kullanır.
+- Screenshot'taki eski şeffaf Schrack rölesinin coil-relay-dc runtime görselinden geldiği saptandı. Bu elemanın daha önce kilitlenen 28 × 78 mm gövdesi korunarak kullanıcı onaylı Omron MY görseline geçirildi.
+- coil-relay-dc A1/A2 uçları üst ve alt kısa kenarlardadır. coil-relay için 21.5 × 28 mm Omron sözleşmesi aynen korunur.
+- GitHub Actions çalıştırılmadı; syntax + runtime library geometry + static renderer contract doğrulaması kullanıldı.
+
+
+## 2026-10-08 — Açık görsel kapanışı · 5SL6316 / 3RV / 5TL / HCFA
+
+Durum: **IMPLEMENTED — ACTIONS-FREE TARGETED VISUAL CONTRACT PASS**
+
+- TechnicalDirector: MQ-00
+- LeadAgent: MQ-02 / MQ-03
+- CrossCheck: MQ-04 / MQ-10
+- TestEvidence: MQ-12
+- RepoContinuity: MQ-13
+- Siemens 5SL6316-7 fiziksel frame'i 54 × 70 mm → 108 × 140 scene-unit olarak korunur. Runtime mevcut Siemens 3P family front assetini gövde oranına uygun center-crop ile kullanır; görüntü esnetilmez. Model/rating ön yüz overlay'i 5SL6316-7 / C16 / 400 V / 6 kA olarak sabitlendi.
+- Siemens 3RV2011 renderer artık CAD line-art yerine kullanıcının yüklediği siemens-3rv2011-user-front-v11920.webp görselini doğrudan kullanır; 45 × 97 mm → 90 × 194 scene-unit frame ve terminal semantiği korunur.
+- Siemens 5TL1163-0 için mevcut canonical siemens-5tl1163-0-user-front.webp evidence kaydı tekrar denetlendi: exact product context, orthographic-front, repo binary ve manufacturer terminal geometry mevcut. Runtime fit modu contain-no-distortion; görsel uygunluk gate'i accepted-promoted olarak kapalıdır.
+- HCFA drive ve servo motor görsellerindeki preserveAspectRatio=none kaldırıldı. Her iki ürün görseli kendi piksel oranını koruyarak fiziksel frame içinde merkezlenir.
+- HCFA drive canlı ekran ve MODE/SHIFT/UP/DOWN/SET hotspotları deformasyonsuz iç image box koordinatlarına yeniden map edilir. Servo motor spin/etiket overlay'leri de gerçek iç image box'a bağlanır.
+- Ortak ilke: görsel değişikliğinde yalnız metadata değil runtime renderer, fiziksel frame, pin/terminal geometrisi ve state overlay birlikte doğrulanır. Fiziksel ölçek ortak çalışma uzayı referansı 2 scene-unit/mm ile hesaplanır.
+- Regression: tests/user-scale-only-lock-v11920.test.cjs.
+- GitHub Actions çalıştırılmadı. Syntax + runtime library metadata + renderer static contract doğrulaması kullanıldı; gerçek Windows UI kabulü ayrı pending kalır.
+
+
+## 2026-10-08 — Görsel değişikliği zorunlu çalışma prensibi
+
+Durum: **LOCKED WORKING PRINCIPLE**
+
+Bundan sonraki her kullanıcı görsel değiştirme talimatı yalnız metadata değişikliğiyle tamamlanmış sayılmaz. Kapanış için aşağıdakilerin tamamı zorunludur:
+
+- Kullanıcının verdiği gerçek asset repo içinde canonical runtime görsele bağlanır.
+- Runtime renderer'ın gerçekten bu asseti kullandığı statik olarak doğrulanır.
+- Görsel boyutu ortak çalışma uzayı referansı **2 scene-unit/mm** üzerinden kullanıcının verdiği gerçek fiziksel ölçüye bağlanır.
+- Görsel aspect ratio korunur; kullanıcı ayrıca istemedikçe stretch/distortion uygulanmaz.
+- pins/materialPins/terminal hotspotları yeni fiziksel frame ile birlikte hizalanır.
+- Aktif/pasif state overlayleri yeni görsel koordinatlarına yeniden kalibre edilir.
+- Aynı dosya adı daha önce kullanıldıysa browser/file-cache nedeniyle eski görselin kalmasını engellemek için revision/cache-bust uygulanır.
+- Kullanıcı ekran görüntüsünde eski görsel görüyorsa yalnız metadata PASS yeterli değildir; gerçek runtime path, renderer önceliği ve cache zinciri ayrıca kapatılır.
+- MQ-12 kanıtı runtime asset path + physical frame + terminal bounds + renderer contractı içerir.
+- Gerçek Windows UI kabulü çalıştırılmadıysa PASSED denmez; pending olarak tutulur.
+
+
+## 2026-10-08 — Darbe/Zaman/Flaşör gecikmeli bobinler + 1P cihazlar + 5SL + Röle runtime teslim kapanışı
+
+Durum: **DONE — ACTIONS-FREE TARGETED RUNTIME/ASSET CONTRACT PASS**
+
+- Ajan zinciri: MQ-00 → MQ-03/MQ-02 lider/çapraz görsel-fiziksel audit → MQ-12 targeted runtime kanıtı → MQ-13 repo sürekliliği → MQ-00 DONE.
+- Ortak ölçek: **2 scene-unit/mm**.
+- `coil-pulse`, `coil-timer`, `coil-flasher`, `coil-delay-off`, `coil-delay-on`: **18 × 70 mm → 36 × 140 scene-unit**, pinler frame içinde.
+- `disconnect-1p`: **18 × 70 mm → 36 × 140 scene-unit**, kullanıcı kilidi verified üretici fallback'inin önünde korunuyor.
+- Siemens `5SL6116-7` / `mcb-1p`: **18 × 70 mm → 36 × 140 scene-unit**; `physicalScaleSource=workspace-space-v1:user-locked`; `physical-metadata.js` verified 18×90 kaydıyla çakışmada kullanıcı kilidini fail-safe biçimde koruyor.
+- Tense FKV-03 / `motor-protection-relay`: **23 × 60 mm → 46 × 120 scene-unit**, tüm terminaller frame içinde.
+- Runtime cache kapanışı: `dist/index.html` gerçek `library.js?rev=20261008-user-scale-lock7` yükler; `materials-v113.js?rev=20261008-user-scale-lock12`, `materials-v115.js?rev=20261008-user-scale-lock7`, `materials.js?rev=20261008-user-scale-lock6`, `physical-metadata.js?rev=20261008-user-scale-lock6` ile zincir günceldir. Eski `library.js?rev=20261008-visual-runtime4` yolu aktif değildir.
+- Siemens 5SL6116-7 canonical binary `dist/assets/products/siemens-5sl6116-7-user-front-v11920.webp`: canlı decoder kontrolünde açıldı; RIFF/WEBP VP8X+ALPH+VP8 yapısı, **126 × 490 px**, RIFF declared-length ve chunk sınırları tutarlı. Renderer `materials-v113.js` içinde aynı binary'yi `?rev=20261008-5sl6116-11` ile kullanır, `preserveAspectRatio=xMidYMid meet` ve `contain-no-distortion` korunur.
+- 5SL runtime calibration metadata'sı canonical binary ile eşitlendi: `sourceCanvasPx=126×490`, `targetFrameMm=18×70`.
+- “Röle” (`coil-relay` ve görünür `misc-relay`) ile `coil-relay-dc` aynı canonical `omron-my-relay-v11920.webp` assetine bağlıdır. Binary canlı decoder kontrolünde açıldı; renderer `materials-v115.js` içinde tek Omron runtime yolunu kullanır.
+- Regression kilidi `tests/user-scale-only-lock-v11920.test.cjs`: fiziksel frame, user-lock source, pin bounds, cache revisions, Omron ortak asset, 5SL asset path/viewBox, 126×490 metadata ve RIFF/chunk bütünlüğünü doğrular.
+- GitHub Actions çalıştırılmadı. Gerçek Windows UI kabulü bu ortamda yürütülmediği için ayrıca PASSED sayılmamıştır; bu listedeki repo/runtime/cache/asset kök nedenleri kod tarafında kapanmıştır.
+
+
+## 2026-10-08 — HCFA drive terminal okunabilirlik kapanışı
+
+Durum: **DONE — TERMINAL STRUCTURE PRESERVED / READABILITY LAYOUT APPLIED**
+
+- Kullanıcı onaylı hedef görünüş: HCFA drive terminalleri daha seyrek ve okunabilir; sol kolon yazıları terminalin solunda, sağ kolon yazıları terminalin sağında.
+- Cihaz görseli, HCFA model kimliği, fiziksel gövde **42 × 165 mm**, terminal ID'leri, elektriksel işlevler ve bağlantı semantiği değiştirilmedi.
+- CN1 44 terminal olarak korunur: 22 sol + 22 sağ. X koordinatları **0 / 84** değişmedi; yalnız dikey okunabilirlik aralığı 5.0 → **5.4 scene-unit** olarak hafif açıldı.
+- CN1 etiket fontu 6.2 px; sol etiketler `end` anchor ile dışarı sola, sağ etiketler `start` anchor ile dışarı sağa taşındı.
+- L1/L2/L3, P/C, U/V/W, PE, CN2/CN3/CN4/CN5 alt terminallerinin terminal noktaları değiştirilmedi; yalnız labelOffset/anchor ile yazılar ilgili kenarın dışına alındı.
+- `symbols.js` pin bazlı `labelAnchor` metadata'sını destekleyecek şekilde geriye uyumlu genişletildi; diğer cihazlarda metadata yoksa önceki davranış aynen sürer.
+- Cache: `hcfa-library.js?rev=20261008-terminal-readable1` ve `symbols.js?rev=20261008-terminal-readable1`.
+- Regression: `tests/hcfa-x2e-v119.test.cjs` terminal sayısı/ID'leri, 22+22 kolon yapısı, yeni aralık, sol/sağ anchor ve cache revizyonlarını kilitler.
+- GitHub Actions çalıştırılmadı; değişiklik yalnız HCFA terminal görünüş/readability katmanıdır.
+
+
+## 2026-10-08 — HCFA servodrive ürün ekranı interaktif simülasyon kapanışı
+
+Durum: **DONE — PRODUCT-PHOTO PANEL INTERACTIVE / ACTIONS-FREE CONTRACT PASS**
+
+- HCFA SV-X2EA040A-A ürün görseli ve terminal yapısı değiştirilmedi.
+- Ürün fotoğrafındaki fiziksel panel tuşları interaktif: MODE ekran seviyesini değiştirir, SHIFT monitor seçimini ilerletir, ▲/▼ hız veya aktif pulse-test frekansını değiştirir, SET Servo ON/OFF yapar.
+- Ürün görseli üzerinde ek hızlı simülasyon kontrolleri: RST, HOME ve PULSE. Bunlar mevcut `H.action()` state makinesine bağlıdır; ayrı veya sahte simülasyon yolu oluşturulmadı.
+- Live display MODE ile durum → gerçek hız → hız talimatı → monitor/pulse görünümünü döndürür; fault/alarm ve enerjisiz durum önceliklidir.
+- Pulse test açıldığında başlangıç frekansı 0 ise 1000 Hz atanır; ▲/▼ pulse frekansını 100 Hz adımla değiştirir. Pulse kapalı hız modunda ▲/▼ P03.03 hız talimatını 10 rpm adımla değiştirir.
+- Simülasyon çalışırken HCFA panel komutları `snapshot(runtime)` üzerinden uygulanır; protected/runtime kullanımında mevcut simülasyon davranışı bozulmadan panel kontrolü mümkün olur.
+- Cache revizyonları: `hcfa-x2e.js?rev=20261008-panel-interactive1` ve `hcfa-ui.js?rev=20261008-panel-interactive1`.
+- Regression `tests/hcfa-x2e-v119.test.cjs`: Servo ON/OFF, Reset, Home, Pulse, hız/pulse artır-azalt, fotoğraf hitbox'ları, live display döngüsü ve cache anahtarlarını kilitler.
+- GitHub Actions çalıştırılmadı; mevcut HCFA terminal/servo motor/fiziksel ölçek yapısı korunur.
+
+
+## 2026-10-08 — Siemens 3RV2011-4AA10 canonical görsel + 45×97 mm runtime kapanışı
+
+Durum: **DONE — VALID CANONICAL ASSET / USER-LOCKED PHYSICAL SCALE**
+
+- Termik Manyetik Şalter runtime kimliği korunarak kullanıcı tarafından verilen Siemens SIRIUS 3RV2011-4AA10 tam karşıdan görsel canonical asset olarak kullanıldı.
+- Önceki `siemens-3rv2011-user-front-v11920.webp` dosyası truncated idi: gerçek boyut 15.020 bayt, RIFF declared length 35.666 bayt. Bu bozuk binary tamamen değiştirildi.
+- Yeni canonical WebP: **180 × 388 px**, exact **45:97** oranı, **18.932 bayt**, RIFF declared length = fiziksel dosya uzunluğu; VP8X/chunk sınırları regression ile kilitli.
+- Fiziksel kütüphane ölçüsü mevcut kullanıcı kilidinde korunur: **45 × 97 mm**. Ortak uzay ölçeğinde **2 scene-unit/mm → 90 × 194 scene-unit**.
+- Renderer `viewBox=0 0 180 388`, `preserveAspectRatio=xMidYMid meet`; görsel gerilmez/deforme edilmez.
+- Üst ana terminaller 1/L1, 3/L2, 5/L3; alt ana terminaller 2/T1, 4/T2, 6/T3 mevcut verified anchor geometrisiyle korunur. Terminal/elektriksel yapı değiştirilmedi.
+- Runtime asset revision: `siemens-3rv2011-user-front-v11920.webp?rev=20261008-3rv6`.
+- Script cache: `materials-v113.js?rev=20261008-user-scale-lock13`.
+- GitHub Actions çalıştırılmadı. Windows gerçek UI kabulü bu ortamda ayrıca PASSED sayılmamıştır; repo/runtime/asset sözleşmesi kapatılmıştır.
+
+
+## 2026-10-08 — Proje alanı marquee/toplu seçim mouse başlangıç ofseti düzeltmesi
+
+Durum: **DONE — SCROLL-AWARE POINTER→WORLD COORDINATES**
+
+- Kullanıcının videosunda tekil tıklama doğruyken toplu seçim dikdörtgeninin mouse noktasının yukarı-solundan başladığı doğrulandı.
+- Kök neden: `canvasPoint()` ve `worldPoint()` client koordinatını world koordinatına çevirirken scroll edilmiş `viewport.scrollLeft` / `scrollTop` değerlerini hesaba katmıyordu.
+- `viewport.js` içine merkezi `clientToWorld()` eklendi. Dönüşüm: client − viewport rect + scroll offset → mevcut camera inverse.
+- `app.js` içindeki hem `canvasPoint()` hem `worldPoint()` aynı scroll-aware dönüşümü kullanır. Marquee, kablo çizimi, drop/yerleştirme gibi coordinate-based akışlar aynı kaynakla tutarlı hale gelir.
+- Tekil DOM hit-test, seçim üyeliği, component geometrisi, zoom/pan algoritması ve simülasyon mantığı değiştirilmedi.
+- Regression `tests/selection.test.cjs`: scroll uygulanmış ve scroll uygulanmamış client→world sonuçlarını ayrı doğrular.
+- Cache: `viewport.js?rev=20261008-scroll-coordinates1` ve `app.js?rev=20261008-scroll-coordinates1`.
+- GitHub Actions çalıştırılmadı.
+
+
+## 2026-10-08 — Tek Kutuplu Ayırıcı Siemens 5TL11631 canonical görsel kapanışı
+
+Durum: **DONE — USER-SUPPLIED CANONICAL FRONT / SCALE LOCK PRESERVED**
+
+- Kullanıcının yüklediği Siemens 5TL11631 tam karşıdan görsel Tek Kutuplu Ayırıcı için canonical runtime asset olarak bağlandı.
+- Görseldeki şeffaf dış boşluklar temizlendi; görünür cihaz geometrisi değiştirilmeden **180 × 861 px** WebP üretildi.
+- Fiziksel kullanıcı kilidi değişmedi: **18 × 70 mm → 36 × 140 scene-unit** (`2 scene-unit/mm`).
+- Terminal yapısı ve elektriksel davranış değişmedi: üst terminal `1`, alt terminal `2`; mevcut pin/anchor geometrisi korunur.
+- Runtime `contain-no-distortion` / `preserveAspectRatio=xMidYMid meet` kullanır.
+- Asset yolu aynı canonical path üzerinde: `dist/assets/products/siemens-5tl1163-0-user-front.webp`; runtime rev `?rev=20261008-5tl5`.
+- `library.js` user-approved upload kaynağını ve `runtimeVisualCalibration sourceCanvasPx=180×861 / targetFrameMm=18×70` bilgisini taşır.
+- Verified üretici fizik metadata ölçüsü değiştirilmedi; yalnız asset provenance/pixel calibration yeni binary ile eşitlendi.
+- Regression testi WebP RIFF/chunk bütünlüğü, 180×861 boyut, 18×70 mm user-lock, renderer path/viewBox ve cache zincirini kilitler.
+- Cache: `materials-v113.js?rev=20261008-user-scale-lock14`.
+- GitHub Actions çalıştırılmadı.
+
+
+## 2026-10-08 — Öğretici Modu Elektrik Makineleri interaktif laboratuvarları
+
+Durum: **DONE — TRANSFORMATÖR + MOTOR SERBEST DENEY SAYFALARI**
+
+- Öğretici ana sayfasına mevcut ders/kablolama pedagojisini bozmadan `Etkileşimli Deney Laboratuvarları` bölümü eklendi.
+- Transformatörler Laboratuvarı: primer/sekonder sarım, step-up/step-down/1:1, giriş gerilimi, frekans, VA, yük, cosφ, verim, regülasyon, nüve kesiti, Bmax, nüve kaybı ve mıknatıslanma akımı değiştirilebilir.
+- Trafo sonuçları V2 ideal/yüklü, I1/I2, güç, kayıplar, regülasyon, Φmax ve B değerlerini canlı gösterir; B>Bmax doyum uyarısı verir. Simülasyonda anlık v1/v2 ve akı göstergesi hareket eder.
+- Hazır trafo deneyleri: 230→24 V step-down, 230→400 V step-up, 1:1 izolasyon ve frekans düşürerek doyum gözlemi.
+- Motorlar Laboratuvarı: 3~ asenkron, 3~ senkron ve DC motor; gerilim, anma gerilimi, frekans, kutup, yıldız/üçgen, cosφ, kayma, güç, yük, verim, yön, alan akısı ve anma devri değiştirilebilir.
+- Motor sonuçları n_s, mil devri, kayma, akım, tork, giriş/çıkış gücü, faz gerilimi ve V/f değerlerini canlı gösterir; aşırı yük, yüksek/düşük V/f ve alan zayıflatma uyarıları vardır.
+- Motor görseli simülasyonda hesaplanan hıza/yöne göre döner. Hazır deneyler: nominal 50 Hz/4 kutup, 25 Hz sabit V/f, %120 yük, yön tersleme, senkron ve DC motor.
+- Her iki sayfa sanal eğitim uyarısı taşır; mevcut proje editörü, tutorial lesson verileri ve kablo yeniden-kurma motoru değiştirilmedi.
+- Runtime `dist/tutorial-labs.js`; cache `tutorial-labs.js?rev=20261008-electric-machines-labs1` ve `tutorial.css?rev=20261008-electric-machines-labs1`.
+- Regression `tests/tutorial-labs-v11920.test.cjs` trafo ve motor hesaplarını ve dashboard entegrasyonunu kilitler.
+- GitHub Actions çalıştırılmadı.
+
+
+## 2026-10-08 — Marquee seçim kutusu screen-space overlay düzeltmesi #2
+
+Durum: **DONE — VISUAL MARQUEE DECOUPLED FROM CAMERA TRANSFORM**
+
+- Kullanıcı ilk `scrollLeft/scrollTop` düzeltmesinden sonra kaymanın devam ettiğini bildirdi.
+- Yeniden denetimde aktif CSS'in `.viewport{overflow:hidden}` kullandığı doğrulandı; dolayısıyla önceki scroll odaklı kök neden bu runtime için belirleyici değildi.
+- Marquee görselinin transformed SVG `#workspace` içine eklenmesi kaldırıldı.
+- Seçim kutusu artık `#viewport` üzerinde HTML overlay olarak doğrudan client/screen koordinatında çizilir. Başlangıç noktası `clientX/Y - viewport.getBoundingClientRect().left/top` ile fiziksel mouse pikseline bağlanır.
+- Hangi malzemelerin seçileceği değişmedi: membership hesabı `worldPoint()` + `Selection.inBox()` ile scene/world koordinatında devam eder.
+- Kamera pan/zoom, component drag, kablo çizimi ve simülasyon kodları değiştirilmedi.
+- CSS `.selection-box` ekran overlay'i için `position:absolute`, `pointer-events:none`, dashed border ve z-index ile güncellendi.
+- Cache: `styles.css?rev=20261008-marquee-screen-overlay1`, `app.js?rev=20261008-marquee-screen-overlay1`.
+- Regression `tests/marquee-screen-overlay-v11920.test.cjs`: visual box'un workspace yerine viewport'a eklendiğini ve selection membership'in world-space kaldığını kilitler.
+- GitHub Actions çalıştırılmadı.
+
+
+## 2026-10-08 — Öğretici · Doğru akım ve kullanım alanları zengin interaktif ders sayfası
+
+Durum: **DONE — REAL APP PAGE / FREE-PROBE SIMULATION LESSON**
+
+- `Doğru akım ve kullanım alanları` generic konu panosundan çıkarıldı; özel `dcUsageProject()` ile gerçek çalışma alanına dönüştürüldü.
+- Merkez devre: `1 · DC kaynak · 24 V`, `2 · Direnç yük · 100 Ω`, `3 · UNI-T UT33D+`, `4 · Kırmızı prob`, `5 · Siyah prob`.
+- Kaynak ve 100 Ω direnç kapalı DC yük devresi oluşturur; teorik yük akımı Ohm Kanunuyla `24/100 = 0,24 A`.
+- UNI-T başlangıçta DCV 200 V kademesinde. Kırmızı prob `VΩmA`, siyah prob `COM` girişine kabloyla bağlıdır; prob uçlarında başlangıç `probeTarget` kilidi yoktur.
+- Mevcut runtime `beginProbeDrag()` kullanılır: öğrenci probu terminale, junction'a veya normal kablo üzerine serbestçe sürükleyip değdirebilir; ölçüm sonucu temas noktalarına göre değişir.
+- Ders türü `explore`; generic `Devreyi yeniden kur` akışı bu sayfada kullanılmaz. Doğrudan `Simülasyonu çalıştır`, `Sonraki uygulama`, `Konu listesine dön` eylemleri sunulur.
+- Sağ konu paneli istenen formatta özelleştirildi: öğrenme hedefleri, devre elemanları, 4 adımlı çalışma sırası, serbest prob bilgi kutusu, Ohm Kanunu kartı, beklenen gözlem, akım ölçümünün seri bağlantı uyarısı, DC kullanım alanları, öğrenci görevi ve açıklamalı soru.
+- Ders paneli için özel responsive CSS eklendi; diğer öğretici derslerinin coach düzeni değiştirilmedi.
+- Cache: `tutorial-pedagogy.js?v=1.19.20-pedagogy16`, `tutorial-mode.js?v=1.19.20-dc-usage-rich1`, `tutorial.css?rev=20261008-dc-usage-rich1`, `tutorial-bootstrap.js?rev=20261008-dc-usage-rich1`.
+- Regression: `tests/tutorial-dc-usage-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı.
+
+
+### DC usage final acceptance lock düzeltmesi
+
+- Canlı curriculum reconstruction ilk committen sonra özel dersin `explicitTitleProject()` içindeki genel “akım” eşleştiricisi tarafından generic panoya çevrildiğini yakaladı.
+- Exact-title guard `explicitTitleProject()` başlangıcına taşındı.
+- `normalizeMeters()` ve tüm genel Faz 6/QA işlemlerinden sonra final acceptance lock eklendi.
+- Final lock özel `dcUsageProject()` nesnesini yeniden kurar ve `kind=explore`, `phase=explore`, `steps=[]`, 5 komponent, 24 V/100 Ω, DCV 200 V ve iki serbest prob durumunu kesinleştirir.
+- `L.pedagogy.version` → `v1.19.20-pedagogy16`.
+- Regression artık tutorial-lessons + expanded-lessons + pedagogy zincirini VM içinde gerçek runtime sırasıyla çalıştırıp final ders nesnesini doğrular.
+
+
+## 2026-10-08 — Öğretici · DC kaynakları ve bağlantıları zengin ders yeniden tasarımı
+
+Durum: **DONE — PREDICT → OBSERVE → MEASURE → REBUILD PEDAGOGY**
+
+- `DC kaynakları ve bağlantıları` dersi generic öğretici metinden çıkarıldı; title-specific rich coach eklendi.
+- Ders devresi: 24 VDC kaynak, 1 kΩ dirençli yük, UNI-T UT33D+ DCV 200 V, kırmızı ve siyah fiziksel prob.
+- Hesap: I=24/1000=0,024 A=24 mA; P=24×0,024=0,576 W.
+- Panel akışı: ders hedefi → enerji yolu/polarite → önce tahmin et → gerçek elemanlar → gerilim ölçüm mini deneyleri → Ohm/güç karşılaştırması → beklenen gözlemler → sık hatalar → gerçek kullanım alanları → öğrenci görevi → guided rebuild.
+- Mini deney düğmeleri: kaynak uçlarını ölç, yük uçlarını ölç, probları tersle, probları serbest bırak. ProbeTarget'lar runtime'da değiştirilir; öğrenci daha sonra probu terminal/junction/kablo üzerine elle sürükleyebilir.
+- Yeniden-kurma pedagojisi düzeltildi: fiziksel prob kabloları guided wiring adımı değildir ve rebuild sırasında korunur; öğrenci yalnız +24 V → R1 → 0 V güç yolunu kurar.
+- 0 V ile PE/toprak kavramlarının otomatik olarak aynı olmadığı açıkça öğretilir; gerilim ölçümünün paralel, akım ölçümünün seri olduğu hata kartında vurgulanır.
+- Cache: pedagogy17, mode `dc-source-rich2`, tutorial CSS/bootstrap `dc-source-rich2`.
+- Regression: `tests/tutorial-dc-source-rich-v11920.test.cjs` runtime curriculum zincirini VM içinde baştan çalıştırarak exact lesson/project/step/probe durumunu doğrular.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Öğretici · Pillerin seri bağlanması tam ders yeniden tasarımı
+
+Durum: **DONE — REAL BATTERY CELLS / SERIES VOLTAGE / GUIDED SIMULATION**
+
+- Anlamsız placeholder kutu düzeni kaldırıldı; `Pillerin seri bağlanması` dersi iki işlevsel 1,5 V eğitim hücresi, 100 Ω yük, UNI-T UT33D+ ve iki fiziksel prob içeren özel çalışma alanına dönüştürüldü.
+- `tutorial-battery` artık `visualOnly/diagramOnly` değildir. `kind=battery`, gerçek `+` / `−` terminalleri ve 1,5 V hücre davranışı taşır.
+- Ayrı görsel dosyası üretilmedi. Pil görünümü mevcut SVG/material renderer içinde önden görülen silindirik AA hücre olarak çizilir; kutup işaretleri ve 1,5 V etiketi sahnede görünür.
+- Seri paket modeli fiziksel seri köprüyü denetler. BT1/− → BT2/+ bağlantısı mevcut olduğunda iki 1,5 V kaynak aynı paket domaininde 3,0 V oluşturur.
+- Yük yolu: BT1/+ → R1 · 100 Ω → BT2/−. İdeal sonuç: 3,0 V / 100 Ω = 0,03 A = 30 mA.
+- UNI-T DCV 20 V kademesinde Pil 1, Pil 2 ve toplam paket için hazır prob deneyleri vardır; problar serbest bırakılıp terminal/junction/kablo üzerinde elle kullanılabilir.
+- Sağ konu paneli: seri bağlantı görselleştirmesi, Vtoplam=V1+V2, aynı seri akım, Ah kapasitesi açıklaması, 4 adımlı bağlantı sırası, ölçüm mini deneyleri, beklenen gözlemler, kritik bağlantı mantığı, kullanım bağlamları, öğrenci görevi ve konu kontrolü.
+- Guided rebuild üç gerçek güç bağlantısını öğretir; fiziksel prob kabloları rebuild sırasında korunur.
+- Cache zinciri: `tutorial-pedagogy.js?v=1.19.20-pedagogy18`, `tutorial-mode.js?v=1.19.20-battery-series-rich1`, `tutorial.css?rev=20261008-battery-series-rich1`, `tutorial-components.js?rev=20261008-battery-series-rich1`, `materials.js?rev=20261008-battery-series-rich1`, `simulation.js?rev=20261008-battery-series-rich1`.
+- Regression: `tests/tutorial-battery-series-v11920.test.cjs`; mevcut DC usage/source cache testleri yeni zincire güncellendi.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Öğretici · Pil ve akü tipleri karşılaştırmalı sanal laboratuvar
+
+Durum: **DONE — SUPPLEMENTAL PAGE / 10-LESSON DC LOCK PRESERVED**
+
+- Kullanıcının gönderdiği sıkışık ve generic `Pil ve akü tipleri` sayfa düzeni yeniden tasarlandı. Ayrı bir görsel üretilmedi; tüm kaynak görselleri uygulamanın mevcut SVG/material renderer'ında önden ve okunabilir biçimde çizilir.
+- Resmî DC konu listesi 10 ders olarak korunur. Yeni sayfa `dc-battery-types-rich` kimliğiyle `Pillerin seri bağlanması` dersinin ardından açılan tamamlayıcı sayfadır; `L.lessons` sayısını artırmaz ve sonraki adımda `Pillerin paralel bağlanması` dersine geçer.
+- Dört işlevsel kaynak eklendi: 1,5 V alkalin AA, 1,2 V NiMH AA, 3,7 V Li-ion 18650 ve 12 V kurşun-asit akü. Her biri `kind=battery` olduğundan yalnız dekor değil, simülasyonda DC kaynak olarak davranır.
+- Sayfa çalışma alanında ayrıca UNI-T UT33D+ DCV 20 V, serbest kırmızı/siyah prob ve 1 kΩ sanal test yükü bulunur.
+- Öğrenci tek tıkla dört kaynağın nominal gerilimini ölçebilir veya probları serbest bırakabilir.
+- Sanal yük düğmeleri seçilen kaynağı 1 kΩ yüke bağlar; ideal akımlar Alkalin 1,5 mA, NiMH 1,2 mA, Li-ion 3,7 mA ve 12 V akü 12 mA olarak Ohm Kanunu ile karşılaştırılır.
+- İçerik; birincil/şarj edilebilir ayrımı, nominal gerilim, Ah kapasite, Wh enerji, Wh≈V×Ah ilişkisi, tipik kullanım alanları, kimya farkları ve temel güvenlik/seçim mantığını ayrı ve geniş bloklarda öğretir.
+- Sayfa karmaşıklaştırılmadan geniş karşılaştırma kartları, ölçüm paneli, sanal yük deneyi, kullanım senaryosu matrisi, güvenlik kutusu, öğrenci görevi ve konu kontrolü ile zenginleştirildi.
+- Gerçek hücrelerle tehlikeli deney yönlendirmesi yapılmaz; kısa devre ve uygun olmayan şarj işlemlerinden kaçınılması açıkça belirtilir, yük deneyi sanal laboratuvarla sınırlıdır.
+- Cache zinciri: `tutorial-pedagogy.js?v=1.19.20-pedagogy19`, `tutorial-mode.js?v=1.19.20-battery-types-rich1`, `tutorial.css?rev=20261008-battery-types-rich1`, `tutorial-components.js?rev=20261008-battery-types-rich1`, `materials.js?rev=20261008-battery-types-rich1`.
+- Regression: `tests/tutorial-battery-types-v11920.test.cjs`; mevcut DC usage/source/series testlerinin cache beklentileri yeni zincire güncellendi.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Öğretici · Pillerin paralel bağlanması tam ders yeniden tasarımı
+
+Durum: **DONE — REAL PARALLEL RAILS / VOLTAGE MEASUREMENT / GUIDED REBUILD**
+
+- Generic konu kontrolü/placeholder düzeni kaldırıldı; `Pillerin paralel bağlanması` dersi iki işlevsel 1,5 V pil, 100 Ω yük, UNI-T UT33D+ ve iki fiziksel prob içeren gerçek öğretici çalışma alanına dönüştürüldü.
+- Paralel bağlantı fiziksel olarak `BT1/+ → BT2/+` ortak pozitif ray ve `BT1/− → BT2/−` ortak negatif ray ile kurulur. Yük bu iki ortak ray arasına bağlanır.
+- İdeal paket gerilimi seri bağlantıdaki gibi toplanmaz; yaklaşık **1,5 V** kalır. 100 Ω yükte teorik toplam akım `1,5/100 = 0,015 A = 15 mA`.
+- Eş ideal hücrelerde 15 mA yükün yaklaşık 7,5 mA + 7,5 mA paylaşılabileceği kavramsal olarak açıklanır; gerçek paylaşımın iç direnç, sıcaklık ve hücre durumuna bağlı olduğu özellikle belirtilir.
+- UNI-T DCV 20 V kademesinde Pil 1, Pil 2 ve çapraz ortak ray ölçümü için hazır prob seçimleri vardır; problar istenirse tekrar serbest bırakılır.
+- Sağ konu paneli yeniden tasarlandı: paralel bağlantı görselleştirmesi, ortak ray mantığı, `Vpaket≈1,5 V`, `I=V/R`, seri/paralel karşılaştırması, kapasite/Ah mantığı, ideal-gerçek ayrımı, ölçüm deneyi, öğrenci görevi ve konu kontrolü.
+- Guided rebuild dört gerçek güç bağlantısını sırasıyla öğretir: + ray, − ray, yük besleme ve yük dönüşü. Probe kabloları rebuild sırasında korunur.
+- Sayfa gerçek hücrelerle deney yaptırmaz; uygulama içindeki sanal simülasyonla sınırlandırılır ve farklı gerilim/kimya/doluluk durumundaki hücrelerin paralel paket için uygun kabul edilmemesi açıklanır.
+- Cache zinciri: `tutorial-pedagogy.js?v=1.19.20-pedagogy20`, `tutorial-mode.js?v=1.19.20-battery-parallel-rich1`, `tutorial.css?rev=20261008-battery-parallel-rich1`, `tutorial-bootstrap.js?rev=20261008-battery-parallel-rich1`.
+- Regression: `tests/tutorial-battery-parallel-v11920.test.cjs`; mevcut DC usage/source/series/types testlerinin cache beklentileri yeni zincire güncellendi.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Öğretici Modu ortak referans formatı
+
+Durum: **DONE — REFERENCE FORMAT STANDARDIZED**
+
+- Kullanıcının sağladığı zengin öğretici ekran, bundan sonraki Öğretici Modu sayfa düzeltmeleri için ortak görsel/pedagojik referans kabul edildi.
+- Standardın ayrıntıları `docs/TUTORIAL_REFERENCE_FORMAT_V1.19.20.md` içinde tanımlandı.
+- İlk uygulama kümesi: `Doğru akım ve kullanım alanları`, `DC kaynakları ve bağlantıları`, `Pillerin seri bağlanması`, `Pil ve akü tipleri`, `Pillerin paralel bağlanması`.
+- Bu beş sayfada ana devre alanına numaralı açıklama kartları, yan kritik-eleman kartları, kısa akış etiketi ve dört bölümlü alt öğrenme şeridi eklendi.
+- Alt şerit standardı: **Soru → Kısa bilgi / bağıntı → Beklenen gözlem → Öğrenci görevi**.
+- Sağdaki ders penceresi geniş ve sabit konu anlatımı paneline dönüştürülür; büyük ekranlarda özellik paneli gizlenerek çalışma alanı + konu anlatımı ikilisi önceliklendirilir.
+- Sol 3D Malzeme Kütüphanesi korunur.
+- Harici/generatif görsel üretilmez; mevcut gerçek kütüphane malzemeleri, SVG/material renderer ve HTML/CSS kullanılır.
+- Referans overlay yalnız bu zengin format derslerinde etkinleşir; dar ekranlarda ana ders/simülasyon kullanılabilir kalacak biçimde overlay gizlenir.
+- Genel interaktif soru kartı `data-reference-answer` üzerinden ders geri bildirimine bağlandı.
+- Cache zinciri: `tutorial.css?rev=20261008-reference-format1`, `tutorial-bootstrap.js?rev=20261008-reference-format1`, `tutorial-mode.js?v=1.19.20-reference-format1`.
+- Regression: `tests/tutorial-reference-format-v11920.test.cjs`; önceki DC usage/source/battery testlerinin cache beklentileri yeni zincire güncellendi.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Kablo çiziminde mouse/kablo güzergâhı hizalama düzeltmesi
+
+Durum: **DONE — POINTER TIP / DRAFT WIRE ALIGNMENT**
+
+- Kullanıcı videosunda kablo çizim önizlemesinin mouse imlecinin ucundan kaydığı doğrulandı.
+- Eski `canvasPoint/worldPoint` hesabı viewport + camera + scroll değerlerini elle ters çeviriyordu. Yeni Öğretici Modu yerleşiminde, CSS transform/layout değişiklikleri ve tarayıcı ölçek koşullarında bu yöntem ekranda görülen gerçek SVG koordinatıyla ayrışabiliyordu.
+- Yeni ortak `pointerWorldPoint(e)` dönüşümü önce canlı SVG `getScreenCTM().inverse()` matrisini kullanır. Böylece gerçek ekran pikselindeki pointer ucu doğrudan SVG dünya koordinatına çevrilir.
+- `canvasPoint(e)` ve `worldPoint(e)` aynı dönüşümü kullanır; kablo draft önizlemesi, güzergâh noktaları, kablo segment sürükleme ve diğer pointer tabanlı etkileşimler aynı koordinat kaynağında kalır.
+- Eski `Viewport.clientToWorld` dönüşümü yalnız `getScreenCTM` kullanılamazsa güvenli fallback olarak korunmuştur.
+- Kablo önizleme zinciri değişmedi: `pointermove → canvasPoint → draftMouse → routePoints(...draftMouse...)`. Bu nedenle yalnız koordinat kayması düzeltilmiş, mevcut routing/guided wiring davranışı korunmuştur.
+- Cache: `app.js?rev=20261008-pointer-ctm1`.
+- Regression: `tests/pointer-wire-alignment-v11920.test.cjs`.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Tüm dersler / malzemeler simülasyon kapsam auditi
+
+Durum: **DONE — PLC GLOBAL BLOCK REMOVED / LIVE PLC RUNTIME / MATERIAL COVERAGE LOCKED**
+
+- Runtime kütüphanesi ve Öğretici Modu dersleri çapraz tarandı: 902 kütüphane kaydı, 724 bağlanabilir malzeme ve 624 wiring dersi audit kapsamına alındı.
+- Kritik hata: PLC veya visual-only elemanı bulunan proje hem UI hem solver seviyesinde global olarak bloke ediliyordu. Bu engel kaldırıldı.
+- `dist/plc-runtime.js` eklendi: DC/AC PLC besleme algılama, gerçek DI okuma, PNP/NPN/röle DO iletimi, START/STOP latch ve timed-stop eğitim davranışı.
+- S7-1200 motor zinciri temsilî runtime doğrulamasında START → DQ → kontaktör bobini → ana kontak → motor akışı çalıştı; START bırakılınca latch korundu, STOP ile çıkış/bobin/motor kapandı.
+- PLC ön yüz DI/DQ terminallerine canlı durum göstergesi eklendi.
+- NTC, PTC, PT100, 2/4 telli PT100 ve termokupl mevcut canlı solver modelleri doğrulandı.
+- HCFA Pulse/Direction kaynağı ve Modbus RTU masterı simülasyonda fiziksel bağlantı durumunu üretir; görsel üzerinde DRIVE LINK / LINK OK durumu gösterilir.
+- Elektriksel olmayan ok/etki/radyasyon/çapraz referans türü çizim yardımcıları fiziksel simülasyon malzemelerinden ayrıldı; bu yardımcıların varlığı artık solver'ı bloke etmez.
+- Yeni regression: `tests/simulation-material-audit-v11920.test.cjs`.
+- Ayrıntılı rapor: `docs/SIMULATION_MATERIAL_AUDIT_V1.19.20.md`.
+- Cache zinciri: `plc-runtime.js?rev=20261008-sim-audit1`, `simulation.js?rev=20261008-sim-audit1`, `plc-front.js?rev=20261008-sim-audit1`, `hcfa-ui.js?rev=20261008-sim-audit1`, `app.js?rev=20261008-sim-audit1`.
+- Önceki mouse/SVG CTM kablo hizalama düzeltmesi `app.js` içinde korunmuştur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Öğretici · Ohm Kanunu deneyi + ayarlanabilir DC kaynak standardı
+
+Durum: **DONE — ADJUSTABLE BENCH SUPPLY / OHM LAB / GLOBAL TUTORIAL SOURCE UPGRADE**
+
+- Kullanıcı kararı doğrultusunda öğretici derslerde generic `supply-dc-plus` sembolü kaldırıldı; mevcut ders gerilimini koruyan `arduino-bench-supply` 0–30 V ayarlanabilir masa güç kaynağına yükseltildi.
+- Runtime ders ağacında artık `supply-dc-plus` kullanan öğretici proje kalmıyor. 258 adet ayarlanabilir DC kaynak kullanımı doğrulandı.
+- `Ohm Kanunu deneyi` özel kabul kilidiyle yeniden kuruldu: G1 ayarlanabilir DC kaynak, A1 UNI-T akım ölçümü, R1 değiştirilebilir direnç ve V1 UNI-T paralel gerilim ölçümü.
+- Başlangıç: 24 V / 120 Ω → ideal 0,20 A. Kaynak deney seçenekleri 6/12/18/24 V; direnç seçenekleri 120/240/470 Ω.
+- İki UNI-T için fiziksel kırmızı/siyah problar oluşturuldu. A1 probları seri akım yoluna, V1 probları R1 uçlarına paralel temas eder.
+- Sağ konu paneli Ohm Kanunu için özgün zengin laboratuvar tasarımına dönüştürüldü: canlı V/R/I/P özeti, kaynak ayarları, direnç ayarları, üç temel Ohm bağıntısı, ölçüm bağlantı mantığı, beklenen gözlem ve öğrenci görevi.
+- Ortak referans sahnesine Ohm Kanunu deneyi eklendi; üst kartlar ayarlı kaynak / direnç / ampermetreyi, yan kartlar akım probu ve voltmetreyi açıklar.
+- 10 derslik DC kilidi korunmuştur; `dc-circuits-src-06` aynı başlık ve konumda kalır.
+- Cache zinciri: `tutorial-pedagogy.js?v=1.19.20-pedagogy21`, `tutorial-mode.js?v=1.19.20-ohm-rich1`, `tutorial.css?rev=20261008-ohm-rich1`, `tutorial-bootstrap.js?rev=20261008-ohm-rich1`.
+- Regression: `tests/tutorial-ohm-rich-v11920.test.cjs`; mevcut DC/battery/reference testlerinin cache beklentileri güncellendi.
+- GitHub Actions çalıştırılmadı.
+
+
+## Öğretici Modu — rich-reference-v1 sabit tasarım kilidi
+Durum: **LOCKED / USER DECISION / ACTIVE**
+
+2026-10-08 kullanıcı kararıyla `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md` tüm yeni/yeniden tasarlanan Öğretici Modu ders sayfaları için zorunlu kabul standardıdır.
+
+Zorunlu görünür bilgi: **devrenin amacı + eleman görevleri + ölçüm yöntemi + bağlantı nedeni + beklenen sonuç**. Sayfa zengin fakat sıkışık olmayacak; boş/dağınık generic görünüm kabul edilmeyecek. Ayarlanabilir güç kaynağı görseli ortak öğretici görsel dilinin parçasıdır; DC derslerinde işlevsel kaynak, AC/üç faz/pil gibi farklı kaynak fiziğine sahip derslerde ise elektriksel gerçeği bozmayan ayrıştırılmış referans kullanım kuralı geçerlidir.
+
+İlk açık kabul referansı: **Temel Elektrik 7 · Seri Devre Analizi**. Bu ders `seriesAnalysisRich=true`, `designStandard='rich-reference-v1'` metadata'sı, özel seri-devre proje üreticisi ve zengin referans paneli ile genel şablona geri düşmeye karşı kilitlenmiştir.
+
+## 2026-10-08 — Öğretici UI kararı: yüzer konu anlatımı + aç/kapa sağ panel + Temel Elektrik 8
+
+Durum: **DONE / LOCKED USER DECISION / SUPERSEDES FIXED RIGHT-COACH RULE**
+
+- Önceki tarihsel kayıtta geçen “sağdaki ders penceresi geniş ve sabit konu anlatımı paneline dönüştürülür; özellik paneli gizlenir” kararı **superseded** kabul edilir.
+- Güncel tek kabul gerçeği `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md` içindeki `rich-reference-v1` standardıdır.
+- `Konu Anlatımı` artık bağımsız yüzer penceredir: sürüklenebilir, native yeniden boyutlandırılabilir, küçültülüp geri büyütülebilir, kapatılıp sağ panelden yeniden açılabilir.
+- Konum, genişlik, yükseklik, küçültülmüş durum ve açık/kapalı tercihi `localStorage` tabanlı UI state ile korunur.
+- Sağ `Özellikler` panelinin mevcut X kapatma / `Özellikler` geri-açma altyapısı korunmuş ve `rich-reference` CSS’in paneli zorla gizleyen kuralı kaldırılmıştır.
+- Sağ panelde Öğretici Modu aktifken `Konu anlatımını aç/kapat` kontrolü görünür olur; konu anlatımı ve özellik paneli birbirinden bağımsızdır.
+- `Temel Elektrik 8 · Paralel Devre Analizi` generic `dcNetwork(...,'parallel')` sunumundan ayrıldı ve özel `parallelAnalysisRich=true`, `designStandard='rich-reference-v1'` kabul kilidine alındı.
+- Devre kabul değerleri: G1=24 V, R1=100 Ω, R2=220 Ω, `Req=68,75 Ω`, `I1=240 mA`, `I2≈109 mA`, `Itoplam≈349 mA`, `VR1=VR2≈24 V`.
+- A1 toplam akımı dallanma öncesinde DCA 10 A / 10A girişiyle ölçer; 349 mA toplam akım 200 mA kademesini aşar.
+- V1 DCV 200 V kademesinde R1, R2 veya kaynak uçlarına taşınabilir; üç ölçümün de yaklaşık 24 V olması beklenir.
+- GitHub Actions çalıştırılmayacaktır; doğrulama statik/sözdizimi/regresyon sözleşmesi üzerinden yapılır.
+
+## 2026-10-08 — Temel Elektrik 9 · Karışık Devre Analizi rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / BASIC ELECTRICITY 9**
+
+- Eski `dcNetwork(...,'mixed')` generic sayfası yerine özel `dcMixedAnalysisProject()` kullanılır.
+- Devre topolojisi `R1 + (R2 || R3)` olarak görsel ve pedagojik olarak açık hale getirildi.
+- G1 ayarlanabilir 24 VDC kaynak; A1 DCA 200 mA toplam akım ölçümü; R1=100 Ω seri; R2=220 Ω ve R3=330 Ω paralel kollardır.
+- Eski sayfadaki ikinci ayrı voltmetre kaldırıldı; tek V1 voltmetre R1 gerilimi ile paralel grup gerilimi arasında seçilebilir ölçüm yapar. Böylece devre alanındaki büyük ölçü aleti/prob kalabalığı azaltılır.
+- Kabul değerleri: `R2||R3=132 Ω`, `Rtoplam=232 Ω`, `Itoplam≈103,45 mA`, `VR1≈10,34 V`, `Vpar≈13,66 V`, `I2≈62,07 mA`, `I3≈41,38 mA`.
+- Pedagojik çözüm sırası: paraleli sadeleştir → seri toplam → toplam akım → gerilim paylaşımı → kol akımları → KCL/KVL kontrolü.
+- Kontrol ilişkileri: `I2+I3≈Itoplam` ve `VR1+Vpar≈24 V`.
+- `mixedAnalysisRich=true` ve `designStandard='rich-reference-v1'` acceptance metadata ile generic şablona geri dönüş engellenir.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standartları aynen korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Temel Elektrik 10 · Kirchhoff kanunlarıyla devre kontrolü kapanışı
+
+Durum: **DONE / LOCKED / BASIC ELECTRICITY 10**
+
+- Eski Kirchhoff sayfasındaki çoklu A0/A2/A3/V0/V1/V2 multimetre düzeni kaldırılarak özel `dcKirchhoffControlProject()` kullanıldı.
+- Yeni düzen yalnız iki UNI-T ölçü aleti kullanır: A1 seçilebilir akım ölçeri ve V1 seçilebilir gerilim ölçeri.
+- A1 ölçüm seçenekleri: toplam akım ≈103,45 mA, R2 kolu ≈62,07 mA, R3 kolu ≈41,38 mA.
+- V1 ölçüm seçenekleri: DCV 200 V kademesinde R1 ≈10,34 V, paralel bölüm ≈13,66 V, kaynak ≈24 V.
+- A1 akım konumu değiştirildiğinde devrenin gerçek seri ölçüm yolu yeniden oluşturulur; seçilmeyen kolların doğrudan iletim yolu korunur.
+- V1 fiziksel prob hedefleri seçilen ölçüm bölümünün uçlarına taşınır.
+- KCL kontrolü: `103,45 ≈ 62,07 + 41,38 mA`.
+- KVL kontrolü: `24 ≈ 10,34 + 13,66 V`.
+- `kirchhoffControlRich=true`, `designStandard='rich-reference-v1'` ve `physicalProbes=true` ile kabul kilidi eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-08 — Voltmetre ile gerilim ölçümü rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / VOLTAGE MEASUREMENT**
+
+- Eski generic `dcMeasurementProject(...,'voltage')` sayfası yerine özel `dcVoltageMeasurementRichProject()` kullanılır.
+- G1 ayarlanabilir 24 VDC masa kaynağı, R1=1 kΩ yük ve gerçek UNI-T UT33D+ kullanılır.
+- UNI-T seçici `DCV 200 V` kademesindedir; 24 V kaynak için DCV 20 V kullanımı engellenir.
+- Fiziksel kırmızı `VΩmA` ve siyah `COM` problar korunur.
+- Dört interaktif prob ölçümü: R1≈+24 V, kaynak≈+24 V, aynı düğüm≈0 V, ters polarite≈−24 V.
+- `voltageMeasurementRich=true`, `designStandard='rich-reference-v1'` ve `physicalProbes=true` acceptance metadata eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-09 — Ampermetre ile akım ölçümü rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / CURRENT MEASUREMENT**
+
+- Eski generic `dcMeasurementProject(...,'current')` sayfası yerine özel `dcCurrentMeasurementRichProject()` kullanılır.
+- G1 ayarlanabilir 24 VDC masa kaynağı, R1=1 kΩ yük ve gerçek UNI-T UT33D+ kullanılır.
+- UNI-T seçici `DCA 200 mA` kademesindedir; 24 mA beklenen akım için DCA 20 mA kullanımı uygun kabul edilmez.
+- Fiziksel kırmızı `VΩmA` ve siyah `COM` problar korunur.
+- Üç interaktif ölçüm: yük öncesi≈+24 mA, yük sonrası≈+24 mA, ters prob yönü≈−24 mA.
+- Ölçüm konumu değiştirildiğinde gerçek seri akım yolu otomatik yeniden kurulur; ampermetre paralel ölçüm yolu oluşturmaz.
+- `currentMeasurementRich=true`, `designStandard='rich-reference-v1'` ve `physicalProbes=true` acceptance metadata eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-09 — Multimetre ile direnç ölçümü rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / RESISTANCE MEASUREMENT**
+
+- Eski generic `board(...)` direnç ölçüm sayfası yerine özel `resistanceMeasurementRichProject()` kullanılır.
+- Ayarlanabilir güç kaynağı görsel standardı korunur fakat G1 `OFF / 0,0 V` ve R1’den tamamen elektriksel olarak ayrıdır.
+- R1=1 kΩ, M1=UNI-T UT33D+ ve seçici `Ω 2 kΩ` kademesindedir.
+- Fiziksel kırmızı `VΩmA` ve siyah `COM` problar kullanılır; fazladan bağımsız prob kartları kaldırılır.
+- Üç interaktif ölçüm: R1≈1,000 kΩ, prob kısa devre≈0 Ω, açık prob=OL.
+- Enerjili devrede Ω ölçümü kabul edilmez; uygulamanın multimetre motorundaki mevcut güvenlik uyarısı ile pedagojik içerik aynı kurala bağlanır.
+- `resistanceMeasurementRich=true`, `designStandard='rich-reference-v1'`, `physicalProbes=true`, `sourceOff=true` acceptance metadata eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-09 — Pens ampermetre ile akım ölçümü rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / CLAMP CURRENT MEASUREMENT**
+
+- Eski generic pens/ampermetre sayfası yerine özel `clampCurrentMeasurementRichProject()` kullanılır.
+- G0 ayarlanabilir DC güç kaynağı ortak ders görseli olarak OFF/devreden ayrılmış tutulur; ölçüm devresinin kaynağı değildir.
+- G1 sanal 230 VAC eğitim kaynağı ve R1=230 Ω yük ile yaklaşık 1 A RMS simülasyon devresi kurulur.
+- P1 gerçek `unit-ut200a`, seçici `ACA 2 A` (`meterPosition:1`) kullanır.
+- Pens başlangıçta faz iletkenini `clampedWireId` ile kavrar; faz / nötr / boşta presetleri gerçek clamp hedefini değiştirir.
+- Devre kesilmez ve UT200A seri eleman gibi bağlanmaz.
+- UT200A'nın mevcut simülasyon motorundaki AC-only davranışı korunur; DC iletkende pens sayısal akımı üretilmez.
+- Sayfa simülasyon-only güvenlik uyarısı içerir; gerçek şebeke üzerinde uygulama talimatı değildir.
+- `clampCurrentMeasurementRich=true`, `designStandard='rich-reference-v1'`, `acOnly=true` acceptance metadata eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-09 — Frekansmetre ile frekans ölçümü UT61E+ rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / FREQUENCY MEASUREMENT**
+
+- UT33D+ üzerinde gerçek üründe bulunmayan Hz fonksiyonu oluşturulmadı.
+- Öğretici Modu için ayrı `unit-ut61e-plus` işlevsel multimetre bileşeni eklendi; cihaz UT61E+ kimliği, VΩHz/COM girişleri ve ayrı ön yüz ile gösterilir.
+- Multimetre motoruna model-bazlı `Hz` ölçüm modu eklendi; UT33D+ range tablosu değiştirilmedi.
+- UT61E+ Hz ölçümü `arduino-signal-generator` düşük gerilimli sanal kaynağının `generatorFrequency` değerini gerçek prob hedeflerinden okur.
+- Ders özel `frequencyMeasurementRichProject()` kullanır: G0 ayarlı kaynak OFF/devreden ayrılmış, FG1 0–5 V sanal sinyal jeneratörü, M1 UT61E+ Hz.
+- Presetler: 50 Hz / 1 kHz / 10 kHz; periyotlar 20 ms / 1 ms / 0,1 ms.
+- `frequencyMeasurementRich=true`, `designStandard='rich-reference-v1'`, `multimeterModel='UNI-T UT61E+'`, `simulationOnly=true` acceptance metadata eklendi.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- Sayfa gerçek şebeke ölçüm talimatı içermez; düşük gerilimli simülasyon laboratuvarıdır.
+- GitHub Actions çalıştırılmadı.
+
+## 2026-10-09 — Wattmetre / cosφ dersleri enerji analizörü rich-reference-v1 kapanışı
+
+Durum: **DONE / LOCKED / ENERGY ANALYZER POWER LAB**
+
+- Kütüphaneye `energy-analyzer-1p` tek faz enerji analizörü ve `current-transformer-edu-1p` sanal CT eklendi.
+- Analizör normal ölçüm kütüphanesinde görünür; eğitim yükü `energy-training-load-1p` yalnız öğretici senaryolarda kullanılır.
+- `dist/energy-analyzer.js` ile V, I, P, Q, S, PF/cosφ, Hz ve Wh çalışma motoru eklendi.
+- `current-model.js` enerji eğitim yükünü kompleks admittansla çözer; dirençli/endüktif/kapasitif presetlerde P-Q-S-PF sonuçları fiziksel olarak tutarlı üretilir.
+- Analizörün sanal L-N gerilim girişi yüksek empedanslı, CT S1-S2 girişi simülasyon burden modeliyle kapalıdır.
+- Wattmetre ve güç faktörü dersleri özel `energyAnalyzerPowerProject()` ile hazır devre olarak açılır.
+- Kabul sonuçları: R → 230 W / 0 var / PF1,00; L → 184 W / +138 var / PF0,80; C → 184 W / −138 var / PF0,80; her üçünde S≈230 VA ve I≈1 A.
+- Konu anlatımı yük presetlerini gerçek proje parametrelerine bağlar; yalnız metin değiştirmez.
+- Ön yüz analizör ekranında U, I, P, Q, S, PF, Hz ve Wh birlikte gösterilir.
+- Sayfa simülasyon-only uyarısı taşır; gerçek şebeke bağlantısı veya uygulama talimatı içermez.
+- Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
+- GitHub Actions çalıştırılmadı.

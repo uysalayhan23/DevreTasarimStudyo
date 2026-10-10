@@ -1,0 +1,32 @@
+{
+  "version": "1.18.0",
+  "date": "2026-09-27",
+  "tests": {
+    "tests": 255,
+    "pass": 255,
+    "fail": 0,
+    "skipped": 0
+  },
+  "static": {
+    "syntax_errors": [],
+    "missing_index_assets": [],
+    "bundled_projects": 58,
+    "unprotected_examples": []
+  },
+  "checked": [
+    "Hazır örneği düzenleme engeli ve başarılı/iptal/hatalı Farklı Kaydet",
+    "Korunan dosyanın üzerine kaydetme engeli",
+    "Tekrarlanan kablo ve terminal temasında simülasyonun devam etmesi",
+    "Temas uyarısından sonra kumanda butonlarının çalışması",
+    "Bağımsız komütatör ve ikili zil butonu kontakları",
+    "Ara vaviyen çapraz/düz yolları",
+    "Zil ve kapı otomatiğinin bağımsız enerjilenmesi",
+    "Yerel SVG malzeme önizlemelerinin görsel kontrolü",
+    "Mevcut ACS800, V20 ve pano kablolama regresyonları"
+  ],
+  "limits": [
+    "Arayüz olay testleri gerçek uygulama kodunu deterministik DOM uyarlayıcısında çalıştırır.",
+    "Windows/Edge üzerinde etkileşimli test yapılmadı. Tarayıcı motoru bu ortamda indirilemedi.",
+    "Görsel SVG kontrolü librsvg ile gerçekleştirildi."
+  ]
+}

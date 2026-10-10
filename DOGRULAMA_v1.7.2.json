@@ -1,0 +1,58 @@
+{
+  "application": "Devre Tasarım Stüdyosu",
+  "version": "1.7.2",
+  "date": "2026-09-13",
+  "checks": {
+    "node_tests": {
+      "total": 93,
+      "passed": 93,
+      "failed": 0,
+      "duration_ms": 88756.669707,
+      "command": "node --test --test-concurrency=1 tests/*.test.cjs"
+    },
+    "runtime_javascript_syntax": "passed",
+    "index_local_references": "passed: 32 local references; panel wiring script precedes panel script",
+    "library_entries": 493,
+    "plc_entries": 208,
+    "panel_svg_visual_review": [
+      "3d",
+      "plate",
+      "door"
+    ],
+    "note_and_neon_svg_visual_review": "passed: multiline note and energized indicators on light canvas",
+    "panel_wiring_svg_visual_review": [
+      "plate",
+      "door",
+      "3d"
+    ]
+  },
+  "coverage": [
+    "dashboard and startup preferences",
+    "drafts and design mode navigation",
+    "folder scan, open, save, Save As, cancellations and permissions",
+    "external-file conflicts and new filename collisions",
+    "favorites and PLC-only brand filters",
+    "live-edit safety and normal button animation sequence",
+    "latching, sources, conductor identities, sensor targets and motor direction",
+    "panel rail mounting, movement, deletion, undo/redo and hinged door",
+    "400% zoom without changed wire routes",
+    "live note input with grouped undo and redo",
+    "independent note drag, keyboard movement, zoom and upright rotation",
+    "hide/show note without losing text or saved position; project reload",
+    "note overlays in all symbol norms and material view",
+    "note editing during simulation leaves topology and routes unchanged",
+    "energized wire and terminal classes clear on simulation stop",
+    "panel terminal wiring, user waypoints, collision detours and ferrule rendering",
+    "panel line inheritance, conflicting line rejection and per-color cross-section changes",
+    "panel wire endpoint replacement, cancellation, deletion and undo/redo",
+    "panel wiring project persistence, rail and device movement, hinged-door wiring",
+    "instant rail and duct insertion in crowded and small enclosures",
+    "all 493 library records preserve terminal identifiers on panel device boundaries"
+  ],
+  "limitations": [
+    "DOM events use a deterministic adapter; file handles are test doubles.",
+    "Windows Chrome/Edge layout, physical audio and actual file picker permissions were not executed in this environment.",
+    "Panel dimensions are editable approximations; product images are not complete manufacturer CAD meshes.",
+    "Panel wiring and ferrules are visual educational representations, not manufacturing terminal positions or a panel electrical simulation."
+  ]
+}

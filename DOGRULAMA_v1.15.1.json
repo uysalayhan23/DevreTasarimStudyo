@@ -1,0 +1,35 @@
+{
+  "version": "1.15.1",
+  "baseVersion": "1.15.0",
+  "date": "2026-09-20",
+  "tests": {
+    "total": 194,
+    "passed": 194,
+    "failed": 0,
+    "skipped": 0,
+    "command": "node --test tests/*.test.cjs",
+    "log": "final-v1151-all.txt"
+  },
+  "checks": [
+    "SMPS L/N accepts 220 VAC and output requires closed supply circuit",
+    "Provisional wiring inherits actual source identity",
+    "Deleting or recoloring the last ordinary conductor releases its color lock",
+    "Existing phase, neutral, DC source and panel net conflicts remain rejected",
+    "Red/black leads retain independent measurement identity and thickness",
+    "Live probes contact wire segments without splitting wires",
+    "Meter and lead dragging retain ordinary route paths and circuit device coordinates",
+    "Free positions, flexible bends and wire targets survive save/open",
+    "Deleted wire targets detach automatically"
+  ],
+  "example": "Ornekler/220V_24V_Esnek_Prob_v1.15.1.odsdevre",
+  "exampleReading": {
+    "dcVolts": 24,
+    "inputACVolts": 220
+  },
+  "visualVerification": "Application SVG scene rendered with sharp and visually inspected",
+  "windowsBrowserVerification": false,
+  "limitations": [
+    "Windows Chrome/Edge could not be run directly in this environment",
+    "Existing simplified electrical calculation model remains in use"
+  ]
+}

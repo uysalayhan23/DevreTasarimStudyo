@@ -1,0 +1,1234 @@
+TAP version 13
+# Subtest: actual app startup, drop focus, text editing, canvas focus and multi-select Delete
+ok 1 - actual app startup, drop focus, text editing, canvas focus and multi-select Delete
+  ---
+  duration_ms: 7217.277991
+  type: 'test'
+  ...
+# Subtest: drawing, branching, rejection and terminal reset through the application handlers
+ok 2 - drawing, branching, rejection and terminal reset through the application handlers
+  ---
+  duration_ms: 13240.653463
+  type: 'test'
+  ...
+# Subtest: right-click line settings update visible width by color and preserve net role when palette is reassigned
+ok 3 - right-click line settings update visible width by color and preserve net role when palette is reassigned
+  ---
+  duration_ms: 7901.256116
+  type: 'test'
+  ...
+# Subtest: 3D sensor target can be added, dragged, removed, animated and resumed after tab visibility changes
+ok 4 - 3D sensor target can be added, dragged, removed, animated and resumed after tab visibility changes
+  ---
+  duration_ms: 6388.501247
+  type: 'test'
+  ...
+# Subtest: four-terminal Jog switches two independent circuits without bridging NO and NC terminals
+ok 5 - four-terminal Jog switches two independent circuits without bridging NO and NC terminals
+  ---
+  duration_ms: 7.107574
+  type: 'test'
+  ...
+# Subtest: both complementary outputs of a four-wire PNP or NPN sensor require both supply wires
+ok 6 - both complementary outputs of a four-wire PNP or NPN sensor require both supply wires
+  ---
+  duration_ms: 9.733203
+  type: 'test'
+  ...
+# Subtest: thermal auxiliary contacts follow the named overload trip and release independently of coil references
+ok 7 - thermal auxiliary contacts follow the named overload trip and release independently of coil references
+  ---
+  duration_ms: 1.905119
+  type: 'test'
+  ...
+# Subtest: three-pole packet switch passes separate phases and disconnects a real motor
+ok 8 - three-pole packet switch passes separate phases and disconnects a real motor
+  ---
+  duration_ms: 1.136608
+  type: 'test'
+  ...
+# Subtest: schematic-only analog, KNX and socket records introduce neither phantom supply nor short circuit
+ok 9 - schematic-only analog, KNX and socket records introduce neither phantom supply nor short circuit
+  ---
+  duration_ms: 1.196629
+  type: 'test'
+  ...
+# Subtest: document library records have unique IDs, valid grid terminals, shared previews and explicit source pages
+ok 10 - document library records have unique IDs, valid grid terminals, shared previews and explicit source pages
+  ---
+  duration_ms: 117.835886
+  type: 'test'
+  ...
+# Subtest: a source determines the conductor identity in either drawing direction and overrides an unrelated palette color
+ok 11 - a source determines the conductor identity in either drawing direction and overrides an unrelated palette color
+  ---
+  duration_ms: 8.796968
+  type: 'test'
+  ...
+# Subtest: L1/L2/N/PE and distinct secondary supplies cannot be directly merged, including via a junction or fuse
+ok 12 - L1/L2/N/PE and distinct secondary supplies cannot be directly merged, including via a junction or fuse
+  ---
+  duration_ms: 1.648893
+  type: 'test'
+  ...
+# Subtest: branch wires inherit the existing color and size, and deleting the last wire restores the terminal
+ok 13 - branch wires inherit the existing color and size, and deleting the last wire restores the terminal
+  ---
+  duration_ms: 6.696012
+  type: 'test'
+  ...
+# Subtest: a color remains locked while in use and is released after its last wire is deleted
+ok 14 - a color remains locked while in use and is released after its last wire is deleted
+  ---
+  duration_ms: 0.531483
+  type: 'test'
+  ...
+# Subtest: recoloring updates the complete line while independent color thicknesses survive save/open
+ok 15 - recoloring updates the complete line while independent color thicknesses survive save/open
+  ---
+  duration_ms: 2.049929
+  type: 'test'
+  ...
+# Subtest: reconnecting excludes the detached wire but still respects a surviving line at its other end
+ok 16 - reconnecting excludes the detached wire but still respects a surviving line at its other end
+  ---
+  duration_ms: 0.65492
+  type: 'test'
+  ...
+# Subtest: legacy color mistakes are corrected from the actual source without changing endpoints or routes
+ok 17 - legacy color mistakes are corrected from the actual source without changing endpoints or routes
+  ---
+  duration_ms: 0.413775
+  type: 'test'
+  ...
+# Subtest: forward/reverse contactor wiring remains legal and the actual phase order reverses the schematic motor
+ok 18 - forward/reverse contactor wiring remains legal and the actual phase order reverses the schematic motor
+  ---
+  duration_ms: 26.022647
+  type: 'test'
+  ...
+# Subtest: targets require the correct material, distance, alignment and powered sensor output
+ok 19 - targets require the correct material, distance, alignment and powered sensor output
+  ---
+  duration_ms: 17.106269
+  type: 'test'
+  ...
+# Subtest: dragging a target uses millimetres independent of zoom and rotation without moving any electrical terminals
+ok 20 - dragging a target uses millimetres independent of zoom and rotation without moving any electrical terminals
+  ---
+  duration_ms: 1.896056
+  type: 'test'
+  ...
+# Subtest: automatic target travel crosses the detection boundary and settings survive save/open
+ok 21 - automatic target travel crosses the detection boundary and settings survive save/open
+  ---
+  duration_ms: 1.398324
+  type: 'test'
+  ...
+# Subtest: keyboard editing is protected while a focused drawing surface accepts Delete
+ok 22 - keyboard editing is protected while a focused drawing surface accepts Delete
+  ---
+  duration_ms: 0.192571
+  type: 'test'
+  ...
+# Subtest: every selector position connects only the selected NO output to COM, including twelve outputs
+ok 23 - every selector position connects only the selected NO output to COM, including twelve outputs
+  ---
+  duration_ms: 11.228062
+  type: 'test'
+  ...
+# Subtest: front lever turns 45 degrees and Jog retains four isolated NO/NC terminals with chosen color
+ok 24 - front lever turns 45 degrees and Jog retains four isolated NO/NC terminals with chosen color
+  ---
+  duration_ms: 0.925609
+  type: 'test'
+  ...
+# Subtest: thermal helpers use the second photo and NC/NO screw locations while preserving wire IDs
+ok 25 - thermal helpers use the second photo and NC/NO screw locations while preserving wire IDs
+  ---
+  duration_ms: 1.046362
+  type: 'test'
+  ...
+# Subtest: flasher relay and beacon have independent ON/OFF intervals and restart on power restoration
+ok 26 - flasher relay and beacon have independent ON/OFF intervals and restart on power restoration
+  ---
+  duration_ms: 5.816162
+  type: 'test'
+  ...
+# Subtest: ultrasonic echo model has a blind zone, finite range, beam and distance-derived analog output
+ok 27 - ultrasonic echo model has a blind zone, finite range, beam and distance-derived analog output
+  ---
+  duration_ms: 13.609032
+  type: 'test'
+  ...
+# Subtest: all lamp and LED definitions accept a color that appears in the material drawing
+ok 28 - all lamp and LED definitions accept a color that appears in the material drawing
+  ---
+  duration_ms: 2.396292
+  type: 'test'
+  ...
+# Subtest: alarm voices start once, stop on power loss, mute and hidden state; all four devices produce audio
+ok 29 - alarm voices start once, stop on power loss, mute and hidden state; all four devices produce audio
+  ---
+  duration_ms: 1.329109
+  type: 'test'
+  ...
+# Subtest: actual editor drag handlers change analog values without moving the sensor, including rotated material rods
+ok 30 - actual editor drag handlers change analog values without moving the sensor, including rotated material rods
+  ---
+  duration_ms: 7685.921624
+  type: 'test'
+  ...
+# Subtest: selector editor grows ports and face numbers, saves and rejects removal of a connected output
+ok 31 - selector editor grows ports and face numbers, saves and rejects removal of a connected output
+  ---
+  duration_ms: 5524.623336
+  type: 'test'
+  ...
+# Subtest: shipped v1.10 examples have valid terminals and working analog power, selector loads and audible loads
+ok 32 - shipped v1.10 examples have valid terminals and working analog power, selector loads and audible loads
+  ---
+  duration_ms: 8.992142
+  type: 'test'
+  ...
+# Subtest: flash durations and color are editable and survive save/load
+ok 33 - flash durations and color are editable and survive save/load
+  ---
+  duration_ms: 5196.002378
+  type: 'test'
+  ...
+# Subtest: revised Schrack socket has four NO, four NC, two coil and four bottom COM screws, with only coil ports connectable
+ok 34 - revised Schrack socket has four NO, four NC, two coil and four bottom COM screws, with only coil ports connectable
+  ---
+  duration_ms: 1.128165
+  type: 'test'
+  ...
+# Subtest: PT100 2/3/4 wire variants share the probe image and only join same-end leads; thermocouple has two isolated pairs
+ok 35 - PT100 2/3/4 wire variants share the probe image and only join same-end leads; thermocouple has two isolated pairs
+  ---
+  duration_ms: 7.927854
+  type: 'test'
+  ...
+# Subtest: each fused terminal disconnects its own load while adjacent terminals remain powered
+ok 36 - each fused terminal disconnects its own load while adjacent terminals remain powered
+  ---
+  duration_ms: 4.547875
+  type: 'test'
+  ...
+# Subtest: NH holder requires each installed fuse and opening its cover isolates all three poles
+ok 37 - NH holder requires each installed fuse and opening its cover isolates all three poles
+  ---
+  duration_ms: 1.319224
+  type: 'test'
+  ...
+# Subtest: FS-R and FKV-03 respond to phase sequence, missing phase, neutral loss and FKV voltage tolerance
+ok 38 - FS-R and FKV-03 respond to phase sequence, missing phase, neutral loss and FKV voltage tolerance
+  ---
+  duration_ms: 9.498869
+  type: 'test'
+  ...
+# Subtest: Metop MT031 has sixteen physical terminals, seven fixed bridges and the catalog eight-cam table
+ok 39 - Metop MT031 has sixteen physical terminals, seven fixed bridges and the catalog eight-cam table
+  ---
+  duration_ms: 0.586757
+  type: 'test'
+  ...
+# Subtest: CT converts calculated resistive AC current, ratio changes reach the actual secondary ammeter
+ok 40 - CT converts calculated resistive AC current, ratio changes reach the actual secondary ammeter
+  ---
+  duration_ms: 8.907786
+  type: 'test'
+  ...
+# Subtest: SSR positive 24 V operates NO and NC isolated output contacts and reversed input cannot actuate
+ok 41 - SSR positive 24 V operates NO and NC isolated output contacts and reversed input cannot actuate
+  ---
+  duration_ms: 2.368119
+  type: 'test'
+  ...
+# Subtest: editor variants, device scaling and fuse states persist
+ok 42 - editor variants, device scaling and fuse states persist
+  ---
+  duration_ms: 12216.267703
+  type: 'test'
+  ...
+# Subtest: a connected fourth PT100 lead prevents reduction to two wires
+ok 43 - a connected fourth PT100 lead prevents reduction to two wires
+  ---
+  duration_ms: 3228.06045
+  type: 'test'
+  ...
+# Subtest: the ratio property and potentiometer knob update saved values without moving the component
+ok 44 - the ratio property and potentiometer knob update saved values without moving the component
+  ---
+  duration_ms: 5465.271233
+  type: 'test'
+  ...
+# Subtest: CT rejects DC even with an unrelated AC source, and follows line-to-line AC voltage
+ok 45 - CT rejects DC even with an unrelated AC source, and follows line-to-line AC voltage
+  ---
+  duration_ms: 1.088264
+  type: 'test'
+  ...
+# Subtest: all v1.11 starter circuits contain valid terminals and solve
+ok 46 - all v1.11 starter circuits contain valid terminals and solve
+  ---
+  duration_ms: 12.000979
+  type: 'test'
+  ...
+# Subtest: front animations move their own actuators; audio devices use four distinct matching product images
+ok 47 - front animations move their own actuators; audio devices use four distinct matching product images
+  ---
+  duration_ms: 5.409386
+  type: 'test'
+  ...
+# Subtest: NTC 10k/B3950 resistance decreases with temperature and returns 10k at 25°C
+ok 48 - NTC 10k/B3950 resistance decreases with temperature and returns 10k at 25°C
+  ---
+  duration_ms: 4.996903
+  type: 'test'
+  ...
+# Subtest: all PT100 variants use the same probe renderer as thermocouple and preserve their terminals
+ok 49 - all PT100 variants use the same probe renderer as thermocouple and preserve their terminals
+  ---
+  duration_ms: 4.610809
+  type: 'test'
+  ...
+# Subtest: SB2 differential output reaches a wired voltmeter and scales with weight, capacity and actual excitation
+ok 50 - SB2 differential output reaches a wired voltmeter and scales with weight, capacity and actual excitation
+  ---
+  duration_ms: 10.532291
+  type: 'test'
+  ...
+# Subtest: load cell cannot produce signal without excitation or with a 24 V input; reversal changes differential polarity
+ok 51 - load cell cannot produce signal without excitation or with a 24 V input; reversal changes differential polarity
+  ---
+  duration_ms: 1.823146
+  type: 'test'
+  ...
+# Subtest: temperature mouse drag updates resistance without moving the sensor and undo restores it
+ok 52 - temperature mouse drag updates resistance without moving the sensor and undo restores it
+  ---
+  duration_ms: 5719.739689
+  type: 'test'
+  ...
+# Subtest: load arrow press, hold, drag, cancellation and reset are independent of component movement
+ok 53 - load arrow press, hold, drag, cancellation and reset are independent of component movement
+  ---
+  duration_ms: 8842.964238
+  type: 'test'
+  ...
+# Subtest: passive reed set switches a real lamp by magnet proximity, including NC and misalignment
+ok 54 - passive reed set switches a real lamp by magnet proximity, including NC and misalignment
+  ---
+  duration_ms: 6.316268
+  type: 'test'
+  ...
+# Subtest: reed magnet drag respects rotation and supports persistent independent magnet position
+ok 55 - reed magnet drag respects rotation and supports persistent independent magnet position
+  ---
+  duration_ms: 1.559879
+  type: 'test'
+  ...
+# Subtest: editor mouse drag moves only magnet, scales delta, persists and cancels cleanly
+ok 56 - editor mouse drag moves only magnet, scales delta, persists and cancels cleanly
+  ---
+  duration_ms: 5638.979372
+  type: 'test'
+  ...
+# Subtest: fuse rows have two-unit gaps, aligned pins and independent electrical contacts
+ok 57 - fuse rows have two-unit gaps, aligned pins and independent electrical contacts
+  ---
+  duration_ms: 56.329145
+  type: 'test'
+  ...
+# Subtest: all requested breakers use local genuine Siemens photos and operate independently of image
+ok 58 - all requested breakers use local genuine Siemens photos and operate independently of image
+  ---
+  duration_ms: 1.869256
+  type: 'test'
+  ...
+# Subtest: material float travels only along the visible rod at both ends and midpoint
+ok 59 - material float travels only along the visible rod at both ends and midpoint
+  ---
+  duration_ms: 4.823972
+  type: 'test'
+  ...
+# Subtest: v1.9 examples load with valid endpoints and expected initial simulation states
+ok 60 - v1.9 examples load with valid endpoints and expected initial simulation states
+  ---
+  duration_ms: 12.416208
+  type: 'test'
+  ...
+# Subtest: changing an associated contact to NC keeps its real wire ends valid in material view
+ok 61 - changing an associated contact to NC keeps its real wire ends valid in material view
+  ---
+  duration_ms: 1.580569
+  type: 'test'
+  ...
+# Subtest: 24 V polarity gates sensor output; reversed and AC supplies are classified separately
+ok 62 - 24 V polarity gates sensor output; reversed and AC supplies are classified separately
+  ---
+  duration_ms: 6.781501
+  type: 'test'
+  ...
+# Subtest: level and position have exact linear endpoints and midpoint; temperature trends match sensor principles
+ok 63 - level and position have exact linear endpoints and midpoint; temperature trends match sensor principles
+  ---
+  duration_ms: 0.499195
+  type: 'test'
+  ...
+# Subtest: on delay, off delay and minutes are driven by elapsed simulation time
+ok 64 - on delay, off delay and minutes are driven by elapsed simulation time
+  ---
+  duration_ms: 1.618366
+  type: 'test'
+  ...
+# Subtest: impulse relay toggles once on each rising edge and retains output after release
+ok 65 - impulse relay toggles once on each rising edge and retains output after release
+  ---
+  duration_ms: 1.784573
+  type: 'test'
+  ...
+# Subtest: flasher runs periodic on/off intervals and resets when power is removed
+ok 66 - flasher runs periodic on/off intervals and resets when power is removed
+  ---
+  duration_ms: 0.857607
+  type: 'test'
+  ...
+# Subtest: SSR input is polarity sensitive and switches isolated output
+ok 67 - SSR input is polarity sensitive and switches isolated output
+  ---
+  duration_ms: 2.824059
+  type: 'test'
+  ...
+# Subtest: automatic auxiliary contact preserves schematic position, wires and reference across material switching
+ok 68 - automatic auxiliary contact preserves schematic position, wires and reference across material switching
+  ---
+  duration_ms: 6.657914
+  type: 'test'
+  ...
+# Subtest: eight packaged examples retain valid terminals and reach the documented measurements
+ok 69 - eight packaged examples retain valid terminals and reach the documented measurements
+  ---
+  duration_ms: 28.153758
+  type: 'test'
+  ...
+# Subtest: TX11 voltage output follows weight and requires both supply and loadcell wiring
+ok 70 - TX11 voltage output follows weight and requires both supply and loadcell wiring
+  ---
+  duration_ms: 16.103653
+  type: 'test'
+  ...
+# Subtest: external T/R bridge selects voltage; removing it restores current output
+ok 71 - external T/R bridge selects voltage; removing it restores current output
+  ---
+  duration_ms: 2.604217
+  type: 'test'
+  ...
+# Subtest: EX/SIG cable colors are independent across terminal blocks and survive save/open
+ok 72 - EX/SIG cable colors are independent across terminal blocks and survive save/open
+  ---
+  duration_ms: 9.02984
+  type: 'test'
+  ...
+# Subtest: PNP/NPN outputs use configured positive/negative colors without inventing power
+ok 73 - PNP/NPN outputs use configured positive/negative colors without inventing power
+  ---
+  duration_ms: 6.716182
+  type: 'test'
+  ...
+# Subtest: 20 color profiles can be reassigned without changing physical net identities
+ok 74 - 20 color profiles can be reassigned without changing physical net identities
+  ---
+  duration_ms: 1.693631
+  type: 'test'
+  ...
+# Subtest: one jack per probe, plug moving and migration of older duplicate connections
+ok 75 - one jack per probe, plug moving and migration of older duplicate connections
+  ---
+  duration_ms: 1.141025
+  type: 'test'
+  ...
+# Subtest: meter prefixes scale display only, including full-scale mA and megohms
+ok 76 - meter prefixes scale display only, including full-scale mA and megohms
+  ---
+  duration_ms: 1.021965
+  type: 'test'
+  ...
+# Subtest: NIST curves agree with independent fixed point tables and CVD PT100
+ok 77 - NIST curves agree with independent fixed point tables and CVD PT100
+  ---
+  duration_ms: 2.027975
+  type: 'test'
+  ...
+# Subtest: WAZ5 powers independently and supplies a real current-loop meter
+ok 78 - WAZ5 powers independently and supplies a real current-loop meter
+  ---
+  duration_ms: 10.006356
+  type: 'test'
+  ...
+# Subtest: HMT-R requires two-wire PT100, bridge and actual loop supply
+ok 79 - HMT-R requires two-wire PT100, bridge and actual loop supply
+  ---
+  duration_ms: 6.941463
+  type: 'test'
+  ...
+# Subtest: TX11 excitation and loadcell output settle regardless of component order
+ok 80 - TX11 excitation and loadcell output settle regardless of component order
+  ---
+  duration_ms: 2.174707
+  type: 'test'
+  ...
+# Subtest: ET4420 hysteresis, SSR and sensor failure follow wired input
+ok 81 - ET4420 hysteresis, SSR and sensor failure follow wired input
+  ---
+  duration_ms: 2.365756
+  type: 'test'
+  ...
+# Subtest: terminal arrays isolate rows; retired definitions remain loadable
+ok 82 - terminal arrays isolate rows; retired definitions remain loadable
+  ---
+  duration_ms: 1.04542
+  type: 'test'
+  ...
+# Subtest: UT33D+ measures DC voltage and series current; rejects wrong jack and live resistance
+ok 83 - UT33D+ measures DC voltage and series current; rejects wrong jack and live resistance
+  ---
+  duration_ms: 3.231394
+  type: 'test'
+  ...
+# Subtest: UT33D+ reads an unpowered resistor and open circuit separately
+ok 84 - UT33D+ reads an unpowered resistor and open circuit separately
+  ---
+  duration_ms: 0.735622
+  type: 'test'
+  ...
+# Subtest: both independent thermocouple pairs produce the same nonlinear millivolt output
+ok 85 - both independent thermocouple pairs produce the same nonlinear millivolt output
+  ---
+  duration_ms: 1.2307
+  type: 'test'
+  ...
+# Subtest: illuminated button lamp has independent supply and survives contact changes
+ok 86 - illuminated button lamp has independent supply and survives contact changes
+  ---
+  duration_ms: 1.2374
+  type: 'test'
+  ...
+# Subtest: HT-2 channels are separately scaled and stop on missing supply
+ok 87 - HT-2 channels are separately scaled and stop on missing supply
+  ---
+  duration_ms: 1.304262
+  type: 'test'
+  ...
+# Subtest: ET4420 digital display-only input drops both relay and SSR outputs
+ok 88 - ET4420 digital display-only input drops both relay and SSR outputs
+  ---
+  duration_ms: 1.396681
+  type: 'test'
+  ...
+# Subtest: open 4–20 mA output has bounded compliance voltage instead of enormous values
+ok 89 - open 4–20 mA output has bounded compliance voltage instead of enormous values
+  ---
+  duration_ms: 0.563112
+  type: 'test'
+  ...
+# Subtest: NCV senses an AC terminal near the instrument head and ignores DC
+ok 90 - NCV senses an AC terminal near the instrument head and ignores DC
+  ---
+  duration_ms: 0.809834
+  type: 'test'
+  ...
+# Subtest: old terminal identities migrate to retained instrument definitions without breaking wires
+ok 91 - old terminal identities migrate to retained instrument definitions without breaking wires
+  ---
+  duration_ms: 0.392373
+  type: 'test'
+  ...
+# Subtest: ET4420 supply variants reject incorrect voltage and unsupported L does not produce an invented reading
+ok 92 - ET4420 supply variants reject incorrect voltage and unsupported L does not produce an invented reading
+  ---
+  duration_ms: 0.399754
+  type: 'test'
+  ...
+# Subtest: each quick tap paints a press before the electrical edge and produces a bounded contact pulse
+ok 93 - each quick tap paints a press before the electrical edge and produces a bounded contact pulse
+  ---
+  duration_ms: 2.079733
+  type: 'test'
+  ...
+# Subtest: overlapping rapid taps are not lost; holding, release and cancellation cannot leave a stale edge
+ok 94 - overlapping rapid taps are not lost; holding, release and cancellation cannot leave a stale edge
+  ---
+  duration_ms: 0.352783
+  type: 'test'
+  ...
+# Subtest: selector clicks are delayed once and stay latched after pointer release
+ok 95 - selector clicks are delayed once and stay latched after pointer release
+  ---
+  duration_ms: 0.199212
+  type: 'test'
+  ...
+# Subtest: a painted quick Start tap seals a real contactor circuit; Stop drops it and remains released
+ok 96 - a painted quick Start tap seals a real contactor circuit; Stop drops it and remains released
+  ---
+  duration_ms: 4.603969
+  type: 'test'
+  ...
+# Subtest: three-phase direction follows phase order and stops on lost phase; DC follows polarity
+ok 97 - three-phase direction follows phase order and stops on lost phase; DC follows polarity
+  ---
+  duration_ms: 1.549743
+  type: 'test'
+  ...
+# Subtest: sound state groups one coil and its followers into one clack; disconnected motors make no hum
+ok 98 - sound state groups one coil and its followers into one clack; disconnected motors make no hum
+  ---
+  duration_ms: 0.825879
+  type: 'test'
+  ...
+# Subtest: Autonics NPN outputs sink to BU and need both supply wires before operating a load
+ok 99 - Autonics NPN outputs sink to BU and need both supply wires before operating a load
+  ---
+  duration_ms: 1.00587
+  type: 'test'
+  ...
+# Subtest: offline audio starts once per transition, mutes, and cleans repeated motor loops
+ok 100 - offline audio starts once per transition, mutes, and cleans repeated motor loops
+  ---
+  duration_ms: 2.154036
+  type: 'test'
+  ...
+# Subtest: new instruments expose actual settings, persist values and share photo with palette
+ok 101 - new instruments expose actual settings, persist values and share photo with palette
+  ---
+  duration_ms: 7021.8413
+  type: 'test'
+  ...
+# Subtest: terminal count selector preserves wired ports and prevents deleting an occupied row
+ok 102 - terminal count selector preserves wired ports and prevents deleting an occupied row
+  ---
+  duration_ms: 8468.710487
+  type: 'test'
+  ...
+# Subtest: live probe dragging attaches, measures, detaches, cancels and keeps its cable
+ok 103 - live probe dragging attaches, measures, detaches, cancels and keeps its cable
+  ---
+  duration_ms: 11853.598475
+  type: 'test'
+  ...
+# Subtest: ET4420 front keys respect the control lock and set-point bounds
+ok 104 - ET4420 front keys respect the control lock and set-point bounds
+  ---
+  duration_ms: 5566.798207
+  type: 'test'
+  ...
+# Subtest: TX11 selector, live wire probes and wires above the photo work together
+ok 105 - TX11 selector, live wire probes and wires above the photo work together
+  ---
+  duration_ms: 31281.910275
+  type: 'test'
+  ...
+# Subtest: 20-color sidebar and voltage labels persist while EX/SIG colors remain free
+ok 106 - 20-color sidebar and voltage labels persist while EX/SIG colors remain free
+  ---
+  duration_ms: 18486.739717
+  type: 'test'
+  ...
+# Subtest: red jack dropdown moves the existing lead and range changes clear hold and rescale
+ok 107 - red jack dropdown moves the existing lead and range changes clear hold and rescale
+  ---
+  duration_ms: 9341.594664
+  type: 'test'
+  ...
+# Subtest: auxiliary contact is automatically inserted and returns to its saved schematic location
+ok 108 - auxiliary contact is automatically inserted and returns to its saved schematic location
+  ---
+  duration_ms: 6308.887966
+  type: 'test'
+  ...
+# Subtest: duplicating a relay gives it a new associated auxiliary contact
+ok 109 - duplicating a relay gives it a new associated auxiliary contact
+  ---
+  duration_ms: 3987.388832
+  type: 'test'
+  ...
+# Subtest: a pending sensor failure never removes parts from a subsequently opened project
+ok 110 - a pending sensor failure never removes parts from a subsequently opened project
+  ---
+  duration_ms: 3047.148776
+  type: 'test'
+  ...
+# Subtest: analog mode and position persist; material level float is an interactive control
+ok 111 - analog mode and position persist; material level float is an interactive control
+  ---
+  duration_ms: 8079.629519
+  type: 'test'
+  ...
+# Subtest: reverse supply shows failure then removes sensor and attached wires
+ok 112 - reverse supply shows failure then removes sensor and attached wires
+  ---
+  duration_ms: 1726.586374
+  type: 'test'
+  ...
+# Subtest: SMPS L/N accepts 220 VAC through provisional wiring and only powers its output after the switch closes
+ok 113 - SMPS L/N accepts 220 VAC through provisional wiring and only powers its output after the switch closes
+  ---
+  duration_ms: 12.785013
+  type: 'test'
+  ...
+# Subtest: stale locks disappear on load, but a surviving ordinary wire keeps its color locked
+ok 114 - stale locks disappear on load, but a surviving ordinary wire keeps its color locked
+  ---
+  duration_ms: 2.010979
+  type: 'test'
+  ...
+# Subtest: two probes measure existing wires without modifying their routes, identities or topology
+ok 115 - two probes measure existing wires without modifying their routes, identities or topology
+  ---
+  duration_ms: 6.806057
+  type: 'test'
+  ...
+# Subtest: flexible leads use broad smooth cubics, exact endpoints and non-grid contacts
+ok 116 - flexible leads use broad smooth cubics, exact endpoints and non-grid contacts
+  ---
+  duration_ms: 1.066251
+  type: 'test'
+  ...
+# Subtest: shipped examples use valid ports and run their intended control circuits
+ok 117 - shipped examples use valid ports and run their intended control circuits
+  ---
+  duration_ms: 8.952241
+  type: 'test'
+  ...
+# Subtest: all six phase permutations work with both star and delta; every transposition reverses
+ok 118 - all six phase permutations work with both star and delta; every transposition reverses
+  ---
+  duration_ms: 2.642705
+  type: 'test'
+  ...
+# Subtest: unbridged six-lead motor stops; external star and delta work and broken winding stops
+ok 119 - unbridged six-lead motor stops; external star and delta work and broken winding stops
+  ---
+  duration_ms: 0.931048
+  type: 'test'
+  ...
+# Subtest: single phase reverses for either one winding swap, not both, and needs auxiliary winding
+ok 120 - single phase reverses for either one winding swap, not both, and needs auxiliary winding
+  ---
+  duration_ms: 1.305423
+  type: 'test'
+  ...
+# Subtest: motor terminals retain legacy IDs and use opposing rows
+ok 121 - motor terminals retain legacy IDs and use opposing rows
+  ---
+  duration_ms: 4.067768
+  type: 'test'
+  ...
+# Subtest: Dahlander high speed requires the first winding group bridged and keeps phase direction
+ok 122 - Dahlander high speed requires the first winding group bridged and keeps phase direction
+  ---
+  duration_ms: 0.731565
+  type: 'test'
+  ...
+# Subtest: V20 needs mains, run command and DIC return; reverse changes motor direction
+ok 123 - V20 needs mains, run command and DIC return; reverse changes motor direction
+  ---
+  duration_ms: 3.085153
+  type: 'test'
+  ...
+# Subtest: star/delta packet selects mutually exclusive real motor connections
+ok 124 - star/delta packet selects mutually exclusive real motor connections
+  ---
+  duration_ms: 1.345874
+  type: 'test'
+  ...
+# Subtest: all norms and material styles preserve every existing terminal in every orientation
+ok 125 - all norms and material styles preserve every existing terminal in every orientation
+  ---
+  duration_ms: 2948.372327
+  type: 'test'
+  ...
+# Subtest: norm choices draw actual graphic variants, and every library preview shares its canvas drawing
+ok 126 - norm choices draw actual graphic variants, and every library preview shares its canvas drawing
+  ---
+  duration_ms: 277.832245
+  type: 'test'
+  ...
+# Subtest: names, notes, addresses, pin names and symbol lettering move independently at any zoom and survive rotation/save
+ok 127 - names, notes, addresses, pin names and symbol lettering move independently at any zoom and survive rotation/save
+  ---
+  duration_ms: 1.596022
+  type: 'test'
+  ...
+# Subtest: catalog groups every element once and area/norm/brand/family filters combine without hiding norms
+ok 128 - catalog groups every element once and area/norm/brand/family filters combine without hiding norms
+  ---
+  duration_ms: 20.883495
+  type: 'test'
+  ...
+# Subtest: note appears while typing, is drawn above all components, hides without deletion and restores its independent position
+ok 129 - note appears while typing, is drawn above all components, hides without deletion and restores its independent position
+  ---
+  duration_ms: 6426.517055
+  type: 'test'
+  ...
+# Subtest: a note edits as one undo operation and stays positioned in every norm, 3D mode, rotation and zoom
+ok 130 - a note edits as one undo operation and stays positioned in every norm, 3D mode, rotation and zoom
+  ---
+  duration_ms: 8728.452183
+  type: 'test'
+  ...
+# Subtest: live note editing keeps current flowing, wire routes unchanged and energy indicators disappear on stop
+ok 131 - live note editing keeps current flowing, wire routes unchanged and energy indicators disappear on stop
+  ---
+  duration_ms: 5543.253904
+  type: 'test'
+  ...
+# Subtest: custom cable styles remain independent on a shared net after normalization and reload
+ok 132 - custom cable styles remain independent on a shared net after normalization and reload
+  ---
+  duration_ms: 8.801984
+  type: 'test'
+  ...
+# Subtest: duct lids cover wire artwork without modifying its route or endpoints
+ok 133 - duct lids cover wire artwork without modifying its route or endpoints
+  ---
+  duration_ms: 14.005102
+  type: 'test'
+  ...
+# Subtest: an attached gland steers a route and follows accessory movement while keeping terminals
+ok 134 - an attached gland steers a route and follows accessory movement while keeping terminals
+  ---
+  duration_ms: 10.963261
+  type: 'test'
+  ...
+# Subtest: panel conductors attach to exact pins, avoid intervening devices and keep ferrules in all camera views
+ok 135 - panel conductors attach to exact pins, avoid intervening devices and keep ferrules in all camera views
+  ---
+  duration_ms: 19.473773
+  type: 'test'
+  ...
+# Subtest: panel line identities inherit automatically, reject cross-line joins, change thickness per color, and release deleted terminals
+ok 136 - panel line identities inherit automatically, reject cross-line joins, change thickness per color, and release deleted terminals
+  ---
+  duration_ms: 9.016298
+  type: 'test'
+  ...
+# Subtest: panel wires survive rail and device movements, manual route save/reload, and selective deletion
+ok 137 - panel wires survive rail and device movements, manual route save/reload, and selective deletion
+  ---
+  duration_ms: 3.345376
+  type: 'test'
+  ...
+# Subtest: door-to-plate wires keep both terminal ends during door movement and hide interior wires behind the closed door
+ok 138 - door-to-plate wires keep both terminal ends during door movement and hide interior wires behind the closed door
+  ---
+  duration_ms: 11.308652
+  type: 'test'
+  ...
+# Subtest: panel UI connects terminals with waypoints and ferrules, cancels drafts, edits size, reconnects and undoes deletion
+ok 139 - panel UI connects terminals with waypoints and ferrules, cancels drafts, edits size, reconnects and undoes deletion
+  ---
+  duration_ms: 13747.362805
+  type: 'test'
+  ...
+# Subtest: adding a rail or duct immediately succeeds in crowded and small panels, selects it, and reveals the interior
+ok 140 - adding a rail or duct immediately succeeds in crowded and small panels, selects it, and reveals the interior
+  ---
+  duration_ms: 8622.425751
+  type: 'test'
+  ...
+# Subtest: panel zoom, pan, orbit and view switches keep saved cable routes byte-identical and do not enable simulation
+ok 141 - panel zoom, pan, orbit and view switches keep saved cable routes byte-identical and do not enable simulation
+  ---
+  duration_ms: 4293.868076
+  type: 'test'
+  ...
+# Subtest: every library terminal maps to the panel device boundary, including PLC I/O, and covered waypoints reroute without losing anchors
+ok 142 - every library terminal maps to the panel device boundary, including PLC I/O, and covered waypoints reroute without losing anchors
+  ---
+  duration_ms: 99.191513
+  type: 'test'
+  ...
+# Subtest: panel mounting rejects collisions, missing rails and undersized enclosures without changing the layout
+ok 143 - panel mounting rejects collisions, missing rails and undersized enclosures without changing the layout
+  ---
+  duration_ms: 1.820031
+  type: 'test'
+  ...
+# Subtest: panel coordinates round-trip through open/closed door and multiple camera views without changing millimetres
+ok 144 - panel coordinates round-trip through open/closed door and multiple camera views without changing millimetres
+  ---
+  duration_ms: 11.991855
+  type: 'test'
+  ...
+# Subtest: new building vavien circuit lights in two matching states and goes dark from either switch
+ok 145 - new building vavien circuit lights in two matching states and goes dark from either switch
+  ---
+  duration_ms: 5.997515
+  type: 'test'
+  ...
+# Subtest: mode separation retains all legacy records and new materials render in every library style with unchanged pins
+ok 146 - mode separation retains all legacy records and new materials render in every library style with unchanged pins
+  ---
+  duration_ms: 136.26547
+  type: 'test'
+  ...
+# Subtest: DVP-SE uses the five documented variants, octal addresses and separate relay commons
+ok 147 - DVP-SE uses the five documented variants, octal addresses and separate relay commons
+  ---
+  duration_ms: 5.557821
+  type: 'test'
+  ...
+# Subtest: CP1E catalogue has all 66 listed CPUs and renewal-specific terminal hardware
+ok 148 - CP1E catalogue has all 66 listed CPUs and renewal-specific terminal hardware
+  ---
+  duration_ms: 0.786409
+  type: 'test'
+  ...
+# Subtest: S7-1200 variants use valid 40-series order codes and differential pairs only on 1217C
+ok 149 - S7-1200 variants use valid 40-series order codes and differential pairs only on 1217C
+  ---
+  duration_ms: 1.979312
+  type: 'test'
+  ...
+# Subtest: GMT CPU and expansion modules retain their actual front connector banks
+ok 150 - GMT CPU and expansion modules retain their actual front connector banks
+  ---
+  duration_ms: 0.246763
+  type: 'test'
+  ...
+# Subtest: CP2E catalogue contains exactly the 39 manufacturer CPU order codes
+ok 151 - CP2E catalogue contains exactly the 39 manufacturer CPU order codes
+  ---
+  duration_ms: 0.243778
+  type: 'test'
+  ...
+# Subtest: W613 terminal examples preserve stagger, commons, PE, unused cavities and channel words
+ok 152 - W613 terminal examples preserve stagger, commons, PE, unused cavities and channel words
+  ---
+  duration_ms: 0.202446
+  type: 'test'
+  ...
+# Subtest: every model has unique complete I/O, and every visual screw is its connectable endpoint
+ok 153 - every model has unique complete I/O, and every visual screw is its connectable endpoint
+  ---
+  duration_ms: 56.565406
+  type: 'test'
+  ...
+# Subtest: all rotations connect to the front screw while preserving schematic identities
+ok 154 - all rotations connect to the front screw while preserving schematic identities
+  ---
+  duration_ms: 408.889926
+  type: 'test'
+  ...
+# Subtest: the legacy family entry retains old endpoint identities for existing projects
+ok 155 - the legacy family entry retains old endpoint identities for existing projects
+  ---
+  duration_ms: 0.816084
+  type: 'test'
+  ...
+# Subtest: live wire measurement and free meter/lead movement preserve circuit routes, parts and saved contact
+ok 156 - live wire measurement and free meter/lead movement preserve circuit routes, parts and saved contact
+  ---
+  duration_ms: 23068.109502
+  type: 'test'
+  ...
+# Subtest: actual L/N port gestures connect SMPS and Delete releases red for a different net
+ok 157 - actual L/N port gestures connect SMPS and Delete releases red for a different net
+  ---
+  duration_ms: 8713.658317
+  type: 'test'
+  ...
+# Subtest: folder scan lists only project files, opening reads current disk state and Save updates that exact file
+ok 158 - folder scan lists only project files, opening reads current disk state and Save updates that exact file
+  ---
+  duration_ms: 2.582544
+  type: 'test'
+  ...
+# Subtest: denied file permission, external edits, save dialog cancel and write failure never report a successful save
+ok 159 - denied file permission, external edits, save dialog cancel and write failure never report a successful save
+  ---
+  duration_ms: 1.113484
+  type: 'test'
+  ...
+# Subtest: new folder saves avoid existing filenames and Save As copies to the selected destination
+ok 160 - new folder saves avoid existing filenames and Save As copies to the selected destination
+  ---
+  duration_ms: 0.786138
+  type: 'test'
+  ...
+# Subtest: fallback folder selection is readable and unsupported save uses a downloadable project plus local draft
+ok 161 - fallback folder selection is readable and unsupported save uses a downloadable project plus local draft
+  ---
+  duration_ms: 0.979971
+  type: 'test'
+  ...
+# Subtest: folder restore does not request permission automatically; explicit refresh can request it
+ok 162 - folder restore does not request permission automatically; explicit refresh can request it
+  ---
+  duration_ms: 0.325311
+  type: 'test'
+  ...
+# Subtest: invalid JSON and storage quota failure are surfaced; internal simulation fields are excluded from exports
+ok 163 - invalid JSON and storage quota failure are surfaced; internal simulation fields are excluded from exports
+  ---
+  duration_ms: 1.174465
+  type: 'test'
+  ...
+# Subtest: open switch, missing return, PE and identical phase cannot energize a lamp
+ok 164 - open switch, missing return, PE and identical phase cannot energize a lamp
+  ---
+  duration_ms: 4.675568
+  type: 'test'
+  ...
+# Subtest: same reference closes NO, opens NC, and returns on coil power loss
+ok 165 - same reference closes NO, opens NC, and returns on coil power loss
+  ---
+  duration_ms: 4.457146
+  type: 'test'
+  ...
+# Subtest: main contactor is open without K1 and needs three distinct motor phases
+ok 166 - main contactor is open without K1 and needs three distinct motor phases
+  ---
+  duration_ms: 1.466947
+  type: 'test'
+  ...
+# Subtest: start/stop self holding survives Start release and drops on Stop
+ok 167 - start/stop self holding survives Start release and drops on Stop
+  ---
+  duration_ms: 1.048514
+  type: 'test'
+  ...
+# Subtest: relay chain longer than five stages converges and releases fully
+ok 168 - relay chain longer than five stages converges and releases fully
+  ---
+  duration_ms: 14.407326
+  type: 'test'
+  ...
+# Subtest: smps requires both input terminals; its output is never an independent source
+ok 169 - smps requires both input terminals; its output is never an independent source
+  ---
+  duration_ms: 1.017648
+  type: 'test'
+  ...
+# Subtest: transformer requires both input terminals; its output is never an independent source
+ok 170 - transformer requires both input terminals; its output is never an independent source
+  ---
+  duration_ms: 0.757595
+  type: 'test'
+  ...
+# Subtest: autotransformer requires both input terminals; its output is never an independent source
+ok 171 - autotransformer requires both input terminals; its output is never an independent source
+  ---
+  duration_ms: 0.723253
+  type: 'test'
+  ...
+# Subtest: rectifier requires both input terminals; its output is never an independent source
+ok 172 - rectifier requires both input terminals; its output is never an independent source
+  ---
+  duration_ms: 1.470753
+  type: 'test'
+  ...
+# Subtest: cascaded transformer and power supply lose their outputs when primary is disconnected
+ok 173 - cascaded transformer and power supply lose their outputs when primary is disconnected
+  ---
+  duration_ms: 0.581199
+  type: 'test'
+  ...
+# Subtest: all coil and load variants stay off with zero or one supply wire
+ok 174 - all coil and load variants stay off with zero or one supply wire
+  ---
+  duration_ms: 16.501231
+  type: 'test'
+  ...
+# Subtest: separate secondary supplies cannot be mixed as a phantom return
+ok 175 - separate secondary supplies cannot be mixed as a phantom return
+  ---
+  duration_ms: 0.380855
+  type: 'test'
+  ...
+# Subtest: cable branches are electrical connections; matching colors alone are not
+ok 176 - cable branches are electrical connections; matching colors alone are not
+  ---
+  duration_ms: 0.376119
+  type: 'test'
+  ...
+# Subtest: PLC and generic PLC I/O clear simulation states
+ok 177 - PLC and generic PLC I/O clear simulation states
+  ---
+  duration_ms: 0.460235
+  type: 'test'
+  ...
+# Subtest: short circuits stay off; an NC feedback loop advances without blocking other branches
+ok 178 - short circuits stay off; an NC feedback loop advances without blocking other branches
+  ---
+  duration_ms: 2.620992
+  type: 'test'
+  ...
+# Subtest: screenshot circuit seals after changing K1 NC to NO, including its parallel power supply
+ok 179 - screenshot circuit seals after changing K1 NC to NO, including its parallel power supply
+  ---
+  duration_ms: 9.467189
+  type: 'test'
+  ...
+# Subtest: NO/NC type conversion preserves endpoint positions, both wire directions, routes and names
+ok 180 - NO/NC type conversion preserves endpoint positions, both wire directions, routes and names
+  ---
+  duration_ms: 0.856415
+  type: 'test'
+  ...
+# Subtest: every library preview uses the complete canvas geometry including PLCs, terminals and labels
+ok 181 - every library preview uses the complete canvas geometry including PLCs, terminals and labels
+  ---
+  duration_ms: 277.397444
+  type: 'test'
+  ...
+# Subtest: every text is upright and every pin stays on the grid in all four orientations
+ok 182 - every text is upright and every pin stays on the grid in all four orientations
+  ---
+  duration_ms: 384.081661
+  type: 'test'
+  ...
+# Subtest: pan supports positive and negative X and Y; zoom preserves the anchor world point
+ok 183 - pan supports positive and negative X and Y; zoom preserves the anchor world point
+  ---
+  duration_ms: 0.351301
+  type: 'test'
+  ...
+# Subtest: every contact-bearing library item switches a real lamp in NO and NC modes
+ok 184 - every contact-bearing library item switches a real lamp in NO and NC modes
+  ---
+  duration_ms: 85.780122
+  type: 'test'
+  ...
+# Subtest: each contactor pole and overload auxiliary pair can have a separate mode
+ok 185 - each contactor pole and overload auxiliary pair can have a separate mode
+  ---
+  duration_ms: 1.088425
+  type: 'test'
+  ...
+# Subtest: changeover settings always preserve complementary throws
+ok 186 - changeover settings always preserve complementary throws
+  ---
+  duration_ms: 0.28406
+  type: 'test'
+  ...
+# Subtest: NC sensor output is gated by its supply even when no target is detected
+ok 187 - NC sensor output is gated by its supply even when no target is detected
+  ---
+  duration_ms: 1.977319
+  type: 'test'
+  ...
+# Subtest: NO/NC configuration persists without changing wires, geometry, rotation or control mode
+ok 188 - NO/NC configuration persists without changing wires, geometry, rotation or control mode
+  ---
+  duration_ms: 4.516016
+  type: 'test'
+  ...
+# Subtest: all library records have local 3D assets and the library and sheet share the complete material drawing
+ok 189 - all library records have local 3D assets and the library and sheet share the complete material drawing
+  ---
+  duration_ms: 214.326304
+  type: 'test'
+  ...
+# Subtest: switching IEC and material drawings preserves simulation state and exact terminal positions in every orientation
+ok 190 - switching IEC and material drawings preserves simulation state and exact terminal positions in every orientation
+  ---
+  duration_ms: 1181.543878
+  type: 'test'
+  ...
+# Subtest: marquee hit detection follows rotated bodies and works in all drag directions at any camera zoom
+ok 191 - marquee hit detection follows rotated bodies and works in all drag directions at any camera zoom
+  ---
+  duration_ms: 1.666148
+  type: 'test'
+  ...
+# Subtest: moving a selection keeps internal wires and junctions together while external branches stay connected
+ok 192 - moving a selection keeps internal wires and junctions together while external branches stay connected
+  ---
+  duration_ms: 0.961773
+  type: 'test'
+  ...
+# Subtest: selecting the whole circuit moves all branches without changing connectivity or saved labels
+ok 193 - selecting the whole circuit moves all branches without changing connectivity or saved labels
+  ---
+  duration_ms: 0.480756
+  type: 'test'
+  ...
+# Subtest: one shared grid displacement constrains every selected body to the sheet without spreading the group
+ok 194 - one shared grid displacement constrains every selected body to the sheet without spreading the group
+  ---
+  duration_ms: 0.385403
+  type: 'test'
+  ...
+# Subtest: first launch opens dashboard, announces Yakub and safety; dismissal preference is independent from live-edit warnings
+ok 195 - first launch opens dashboard, announces Yakub and safety; dismissal preference is independent from live-edit warnings
+  ---
+  duration_ms: 2587.712479
+  type: 'test'
+  ...
+# Subtest: dashboard creates each design mode, preserves drafts and returns home without deleting projects
+ok 196 - dashboard creates each design mode, preserves drafts and returns home without deleting projects
+  ---
+  duration_ms: 10830.41266
+  type: 'test'
+  ...
+# Subtest: favorites persist, alphabetize and respect design mode; PLC brands never appear in electrical tab
+ok 197 - favorites persist, alphabetize and respect design mode; PLC brands never appear in electrical tab
+  ---
+  duration_ms: 5502.395417
+  type: 'test'
+  ...
+# Subtest: every live add, port connection, wire disconnection and Delete attempt stops the simulation without changing topology
+ok 198 - every live add, port connection, wire disconnection and Delete attempt stops the simulation without changing topology
+  ---
+  duration_ms: 4619.068073
+  type: 'test'
+  ...
+# Subtest: normal start/stop interaction still animates before current flows and latching holds after release
+ok 199 - normal start/stop interaction still animates before current flows and latching holds after release
+  ---
+  duration_ms: 4790.285266
+  type: 'test'
+  ...
+# Subtest: 400% zoom keeps wire geometry byte-identical
+ok 200 - 400% zoom keeps wire geometry byte-identical
+  ---
+  duration_ms: 1352.430658
+  type: 'test'
+  ...
+# Subtest: panel interface moves mounted devices with their rail, opens/closes the door, saves and reloads the same layout
+ok 201 - panel interface moves mounted devices with their rail, opens/closes the door, saves and reloads the same layout
+  ---
+  duration_ms: 8390.576184
+  type: 'test'
+  ...
+# Subtest: color and motor bridge changes survive save, undo and reload
+ok 202 - color and motor bridge changes survive save, undo and reload
+  ---
+  duration_ms: 7467.296336
+  type: 'test'
+  ...
+# Subtest: PLC library restricts brands and exposes documented S7-1200 channels with unique pins
+ok 203 - PLC library restricts brands and exposes documented S7-1200 channels with unique pins
+  ---
+  duration_ms: 2444.350425
+  type: 'test'
+  ...
+# Subtest: packet selector exposes a working contact table and persisted position
+ok 204 - packet selector exposes a working contact table and persisted position
+  ---
+  duration_ms: 3212.514817
+  type: 'test'
+  ...
+1..204
+# tests 204
+# suites 0
+# pass 204
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 70446.56289

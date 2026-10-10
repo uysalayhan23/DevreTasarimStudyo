@@ -1,0 +1,28 @@
+{
+  "version": "1.6.3",
+  "date": "2026-09-12",
+  "tests": 65,
+  "passed": 65,
+  "failed": 0,
+  "command": "node --test --test-concurrency=1 tests/*.test.cjs",
+  "component_records": 479,
+  "material_groups": 41,
+  "local_asset_mappings_checked": 258,
+  "examples_checked": 11,
+  "new_examples": [
+    "Ileri_Geri_Motor_v1.6.3.odsdevre",
+    "Sensor_Hedefleri_v1.6.3.odsdevre"
+  ],
+  "verification": [
+    "Kumanda simülasyonu ve faz sırası",
+    "Renk kilidi ve hat çakışması",
+    "Dallanma, yeniden bağlantı ve terminal sıfırlama",
+    "Renk başına kablo kesiti",
+    "DOM adaptörüyle gerçek uygulama olay işleyicileri",
+    "Delete odağı ve çoklu silme",
+    "Sensör hedefi, mesafe, malzeme ve sekme görünürlüğü",
+    "Statik SVG görsel incelemesi",
+    "Yerel dosya ve görsel bağımlılıkları"
+  ],
+  "limits": "Gerçek Windows Chrome/Edge üzerinde mouse, ses ve animasyon testi yapılmadı. DOM adaptörü ve statik SVG incelemesi tarayıcı testi yerine geçmez."
+}

@@ -1,0 +1,110 @@
+CONTROL CIRCUIT STUDIO v1.6.3 - SEMBOL KAYNAKLARI VE KAPSAM
+=======================================================
+
+Bu sürümde sembol katmanı yenilenmiştir; mevcut kayıt kimlikleri, terminal
+koordinatları, terminal yönleri ve elektriksel simülasyon modeli korunur.
+Görünüm menüsünde Şema sembolleri ve 3D malzeme seçenekleri bulunur.
+
+ÜÇ NORMUN ANA GÖRSEL KAYNAĞI
+--------------------------
+EET2025KKA1008(1).pdf - Kumanda ve Kontrol Atölyesi
+PDF s. 37-39, Görsel 1.32:
+  s. 37: besleme, toprak/nötr, sigorta, otomatik sigorta, şalter, termik
+         röle, lamba, başlat/durdur, jog/acil stop ve sınır anahtarı.
+  s. 38: termik-manyetik şalter, köprü doğrultucu, motorlar, kontaktör
+         bobini, güç/yardımcı kontak ve düz zaman rölesi.
+  s. 39: ters zaman rölesi, özel zaman röleleri, soft starter ve trafo.
+
+Örnek gerçek çizim farklılıkları:
+  Kontaktör bobini: TSE eğik çizgili dikdörtgen; IEC dikdörtgen; ANSI daire.
+  Yardımcı kontak: TSE mafsallı/kontak uçları halkalı; IEC eğik kontak;
+                  ANSI paralel kontak çizgileri, kapalı durumda çapraz çizgi.
+  Buton: TSE/IEC mekanik itici işareti; ANSI köprü kontak ve itici.
+  Sigorta/otomatik sigorta: kitaptaki üç ayrı işaret ailesi.
+  Trafo: TSE/ANSI dolu sargı çizgileri; IEC sarım yayları ve nüve çizgileri.
+  Direnç: IEC/TSE dikdörtgen; ANSI zikzak.
+
+ANSI çizimleri, bu projenin mevcut dikey terminal düzenine uyarlanmıştır.
+Kütüphane seçimi mevcut projeyi kendiliğinden yatay ladder düzenine çevirmez.
+Görünen uç adları bazı normlarda değişir (L1/L2/L3 -> R/S/T gibi); dahili
+terminal kimlikleri ve elektriksel fazlar değişmez. NO/NC ayarı geçerlidir.
+
+DİĞER YÜKLENEN BELGELERİN ROLÜ
+-----------------------------
+EET2025KTA1004(1).pdf - Kumanda Teknikleri Atölyesi:
+  Kumanda, motor, bobin/kontak ve koruma ailelerinin konu tasnifi.
+EET2025PP1232-panoSimgeler(1).pdf - Pano Projeleri Çizimi:
+  PDF s. 98-104; sembol/işlev verisi, cihaz tanımı, pin adı, açıklama ve
+  kütüphane ailesinin ayrılması. Motor ve güç kaynağı gösterimleri.
+EOT2025ATL1005(1).pdf - Endüstriyel Otomasyon Atölyesi:
+  PDF s. 33-37 kumanda elemanları; s. 68-73 PLC birimleri ve bağlantıları.
+  PLC işlemci, giriş/çıkış, haberleşme ve teknoloji modülü tasnifi.
+TEMEL ELEKTRONİK_9 (ENDÜSTRİYEL OTOMASYON TEKNOLOJİLERİ)(1).pdf:
+  PDF s. 24 direnç ve ayarlı direnç; s. 76 kondansatör; diyot ve diğer
+  temel elektronik aileleri. Ortak semboller ve direnç varyantı.
+TEMEL ELEKTRİK-ELEKTRONİK_9 (ELEKTRİK ELEKTRONİK TEKNOLOJİSİ)(1).pdf:
+  PDF s. 141 şema düzeni; s. 226 bağlantı, eş ölçü, hizalama, etiket ve
+  elektronik çizim kuralları. Tesisat/aydınlatma ve elektronik alanları.
+EET2025TA1005(1).pdf - Tesisat Atölyesi:
+  Tesisat ve aydınlatma kullanım alanı.
+EET2025KEA1006(1).pdf - Küçük Ev Aletleri Atölyesi:
+  Motor, anahtarlama, termostat/sensör ve yük işlevlerinin kullanım alanları.
+EET2025EA1007(1).pdf - Elektronik Atölyesi:
+  Röle, pasif eleman, yarı iletken ve ölçüm aileleri.
+EET2025ADE1009(1).pdf - Analog-Dijital Elektronik Atölyesi:
+  Elektronik ve kontrol işlevlerinin konu ayrımı.
+EET2025PA1113-pano(1).pdf - Pano Atölyesi:
+  Pano beslemesi, koruma, klemens/bara ve ölçüm grupları.
+EET2025KP1115-pano(1).pdf - Kontrol Panoları:
+  Kontaktör, röle, kumanda, güç ve yardımcı devre grupları.
+TEST UYGULAMALARI_11 (ELEKTRİK ELEKTRONİK TEKNOLOJİSİ).pdf:
+  Ölçme/test kullanım alanı; bağımsız bir üç-norm sembol atlası değildir.
+
+AYRINTILI EŞLEŞTİRME
+-------------------
+SEMBOL_ESLESTIRMELERI.json her mevcut elemanın kimliğini, malzeme grubunu,
+kullanım alanlarını ve sembol kaynak/kapsamını listeler.
+dist/normlar.html bütün mevcut elemanları TSE/IEC/ANSI sütunlarında gösterir.
+Bu rehber ve kütüphane, çalışma sayfasıyla aynı çizim işlevini kullanır.
+
+KAPSAMIN SINIRLARI
+-----------------
+Norm adları, yüklenen eğitim kitaplarındaki karşılaştırma başlıklarıdır.
+Kitaplar resmî TSE/IEC/ANSI standartlarının tüm içeriği değildir. Bu paket
+resmî uygunluk, sertifikasyon veya tam standart veri tabanı iddiası taşımaz.
+Belgelerde ayrı karşılığı olmayan özel röle/sensör/PLC ve yardımcı şema
+nesneleri, ilgili aile ya da ortak işlev bloğu ile gösterilir. Kitapta aynı
+olan grafikler normlar arasında aynı kalır; yapay farklılık oluşturulmaz.
+PLC modüllerinin mevcut pin dizilimi korunmuştur; üreticilerin bütün
+ürün kodları için doğrulanmış terminal planı veya PLC program simülasyonu
+eklenmemiştir. Yeni kitaplarda geçen her donanım tipi ayrıca eklenmemiştir;
+Önceki 347 kayıt korunur; v1.6.2 ile 132 belge kaydı daha eklenmiştir.
+
+Resmî IEC kapsamını kontrol etmek için kullanılan ana kaynak:
+https://www.iec.ch/standards-development/graphics-figures
+https://tc3.iec.ch/tc-activity/graphical-symbols-for-diagrams/
+Uygulamanın çalışması bu bağlantılara veya internet erişimine bağlı değildir.
+
+
+v1.6.2 — YENİ KAYNAK TARAMASI
+---------------------------
+EET2025TA1005(1).pdf: PDF 102 (basılı 100) Tablo 4.2 telefon;
+114 (112) Tablo 4.4 anten; 141 (139) Tablo 5.3 KNX/EIB;
+142 (140) Tablo 5.4 tesisat planı. Fiş/priz ve buat bölümleri de
+bağlanabilir işlev gösterimleri için kullanıldı.
+EET2025PP1232-panoSimgeler(1).pdf: PDF 136–138 kumanda sembolleri.
+EET2025KP1115-pano(1).pdf: PDF 117 sembol tablosu; PDF 20–55 sensörler.
+EET2025PA1113-pano(1).pdf: PDF 19 Tablo 1.1 devre ve pano yerleşimi;
+PDF 89 Tablo 4.1 kumanda elemanları.
+
+Kütüphanede zaten bulunan işlevler tekrar eklenmedi. Yeni 132 kaydın ve
+güncellenen 14 çizimin ad/sayfa/terminal/işlev listesi
+BELGE_SEMBOL_EKLERI_v1.6.2.json dosyasındadır.
+
+Tablolarda sadece bir gösterim bulunan KNX, plan, yerleşim ve analog
+işlevler üç norm seçeneğinde ortak çizim kullanır. Fotoğraflı sensör
+bölümleri bağlantı için işlevsel gösterime dönüştürülmüştür; bunlar
+standart veri tabanından alınmış resmî sembol numaraları değildir.
+Mimari plan işaretlerinde çoklu bağımsız uçlar dış bağlantı çerçevesiyle
+uyarlanır. Pano içi yerleşim çizimleri ayrı, elektriksel pinsiz kayıtlardır.
+Üçüncü taraf PDF dosyalarının kendisi pakete dahil edilmez.

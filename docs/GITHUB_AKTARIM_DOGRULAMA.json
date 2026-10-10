@@ -1,0 +1,47 @@
+{
+  "date": "2026-09-28",
+  "scope": "GitHub aktarımı; uygulama kaynaklarında değişiklik yok",
+  "originalFiles": 537,
+  "originalFilesUnchanged": true,
+  "tests": {
+    "tests": 255,
+    "pass": 255,
+    "fail": 0,
+    "skipped": 0
+  },
+  "static": {
+    "version": "1.18.0",
+    "syntaxFiles": 100,
+    "localDependencies": 63,
+    "libraryDefinitions": 722,
+    "protectedProjects": 58
+  },
+  "windowsPackage": {
+    "files": 553,
+    "crc": "passed",
+    "extractedFileHashes": "passed",
+    "sha256": "faae61128c5263a0b056d4b72f4927000b1ba743e2bb84218e65c2e326f7e526",
+    "testedBeforeFinalStatusNote": true
+  },
+  "limits": [
+    "Windows/Edge etkileşimli testi yapılmadı.",
+    "GitHub Actions testlere başlamadan başarısız oldu; otomatik artifact henüz oluşmadı. Yerel testler ve ZIP doğrulaması başarılı."
+  ],
+  "github": {
+    "repository": "uysal23/Devre-Tasarim-Studyosu",
+    "importCommit": "75def69f909b621023299443ee4bb9e76d45b53f",
+    "tree": "4084b74e6ef91050d789c586d400461f66e25fe6",
+    "files": 553,
+    "allRemoteBlobHashesMatch": true,
+    "mainVerified": true,
+    "visibility": "private"
+  },
+  "githubActions": {
+    "run": "https://github.com/uysal23/Devre-Tasarim-Studyosu/actions/runs/36419601539",
+    "conclusion": "failure",
+    "executedSteps": 0,
+    "runnerAssigned": false,
+    "jobLogAvailable": false,
+    "failureReason": "Ayrıntılı açıklama bu oturumda okunamadı; kesin neden doğrulanmadı."
+  }
+}

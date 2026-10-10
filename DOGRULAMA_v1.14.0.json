@@ -1,0 +1,19 @@
+{
+  "version": "1.14.0",
+  "date": "2026-09-18",
+  "scopeComplete": false,
+  "scopeNotes": "YENILIKLER_v1.14.0.md",
+  "tests": {"total": 167, "passed": 167, "failed": 0, "log": "final-v114-all.txt"},
+  "hardwareVariants": {"CP1E": 66, "CP2E": 39, "S7-1200-standard-40-series-CPU": 13, "GLC": 8, "GXM": 15, "DVP-SE": 5},
+  "visuals": "Manufacturer-drawing-derived representative front SVGs; not original photographs or claimed photo-identical copies",
+  "deltaUnderside": "Power and COM2 are displayed in a labelled auxiliary strip, not claimed to be front-face connectors or a dimensionally exact underside view",
+  "browser": [
+    "DVP26SE11R added from the PLC processor group",
+    "Native number control changed materialScale to 2.05; SVG scale(2.05) verified",
+    "POWER:1 connected to INPUT:1 by clicking actual terminal circles",
+    "90-degree rotation retained the wire",
+    "IEC/material mode change retained 37 terminals and the wire"
+  ],
+  "compatibility": "Legacy records and endpoint identities retained for existing projects; no automatic conversion",
+  "plcExecution": "PLC simulation remains unsupported"
+}

@@ -1,0 +1,2494 @@
+{
+  "schemaVersion": 1,
+  "branch": "v1.19.20",
+  "generatedAt": "2026-10-06",
+  "policy": {
+    "visualAcceptance": "real-exact-product-image + external-source/provenance + pixel-audited orthographic-front",
+    "generatedOrRedrawnVisualAllowed": false,
+    "promotionRule": "panelGeometryReady only after verified dimensions, exact visual, orthographic-front and verified terminal geometry when terminals are required"
+  },
+  "order": [
+    "siemens-5sl6116-7",
+    "siemens-5sl6216-7",
+    "siemens-5sl6316-7",
+    "siemens-3rt2016-1bb41",
+    "siemens-3rv2011-1ja10",
+    "siemens-5tl1163-0",
+    "weidmuller-2466870000",
+    "rittal-3241100",
+    "sick-wtb4-3p2161",
+    "siemens-6sl3210-5bb21-5uv1"
+  ],
+  "products": {
+    "siemens-5sl6116-7": {
+      "componentId": "mcb-1p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "manufacturer",
+        "provenance": "recorded-xmp"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": []
+    },
+    "siemens-5sl6216-7": {
+      "componentId": "mcb-2p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "manufacturer",
+        "provenance": "recorded-xmp"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": []
+    },
+    "siemens-5sl6316-7": {
+      "componentId": "mcb-3p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "manufacturer",
+        "provenance": "recorded-xmp"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": []
+    },
+    "siemens-3rt2016-1bb41": {
+      "componentId": "main-contact",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "source-image-derived-front",
+        "sourceAuthority": "supplier exact repo binary + Siemens manufacturer geometry",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "Siemens Industry Mall / official datasheet",
+        "manufacturerImageCaxGallery": "available",
+        "terminalGeometryEvidence": "verified manufacturer orthographic technical drawing",
+        "binaryFrontAssetRetrievable": false,
+        "qualifyingFrontCandidateFound": true,
+        "qualifyingFrontCandidateSource": "supplier",
+        "qualifyingFrontCandidateUrl": "https://e-parts-automation.com/en/products/siemens-sirius-3rt20161bb41-schutz-ac3-9a-24v-dc-3polig",
+        "qualifyingFrontCandidateImageUrl": "https://e-parts-automation.com/cdn/shop/files/57_d75881cf-b273-40be-8702-e611ee877140.jpg?v=1762883560&width=1946",
+        "binaryRetrievalBlockedByEnvironment": true,
+        "binaryRetrievalFailure": "direct image is viewable/pixel-auditable through web retrieval, but execution-environment binary download into repo remains unavailable",
+        "webVisualInspectionDate": "2026-10-05",
+        "webVisualInspectionResult": "candidate-front-view-confirmed",
+        "webVisualInspectionNotes": "Exact 3RT2016-1BB41 marking visible in supplier image; front face dominates and no meaningful side/top depth face is visible in the inspected web image.",
+        "binaryTransferToRepoStillBlocked": true,
+        "promotionDecision": "PROMOTED: exact repo source binary rectified by front-face crop under panel-visual-derived-front-v1 + exact 45x58 mm Siemens dimensions + independently verified terminal anchors",
+        "alternateFrontCandidateFound": true,
+        "alternateFrontCandidateSource": "supplier",
+        "alternateFrontCandidateUrl": "https://store.tremtech.com/siemens-3rt2016-1bb41-3-pole-9a-contactor-24vdc-coil/",
+        "alternateFrontCandidateWebInspectionDate": "2026-10-05",
+        "alternateFrontCandidateWebInspectionResult": "exact-model-front-view-confirmed",
+        "alternateFrontCandidateNotes": "Exact 3RT2016-1BB41 marking is visible and the photographed face is strongly front-oriented; this remains candidate evidence only because source binary bytes could not be transferred into the repo for pixel/provenance audit.",
+        "officialUploadedDatasheetReviewed": true,
+        "officialUploadedDatasheetDate": "2026-10-04",
+        "officialDatasheetExactIdentity": "3RT2016-1BB41 / SIRIUS power contactor / 3RT2 / S00",
+        "officialDatasheetDimensionsMm": {
+          "width": 45,
+          "height": 58,
+          "depth": 73
+        },
+        "officialDatasheetMountingClearanceMm": {
+          "forward": 10,
+          "up": 10,
+          "down": 10,
+          "sideBySide": 0,
+          "sideToGroundedOrLiveParts": 6
+        },
+        "officialDatasheetFrontDrawingConfirmed": true,
+        "officialDatasheetTerminalDiagramConfirmed": true,
+        "officialDatasheetTerminalLabels": [
+          "1/L1",
+          "3/L2",
+          "5/L3",
+          "2/T1",
+          "4/T2",
+          "6/T3",
+          "13",
+          "14",
+          "A1+",
+          "A2-"
+        ],
+        "officialDatasheetImageDatabaseAndCaxLinksConfirmed": true,
+        "officialDatasheetTerminalGeometryEvidence": "front orthographic dimensional drawing + exact terminal/device circuit diagram; existing terminal geometry remains verified",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "official-2d-profile-evidence-available",
+        "profileCadEvidence": "official Siemens datasheet includes front + side dimensional drawing; Image Database/CAX route confirmed",
+        "profileCadRuntimeDecision": "do-not-promote-profileStatus solely from dimensions; current collider remains conservative until explicit profile/CAD geometry is integrated",
+        "thirdFrontCandidateFound": true,
+        "thirdFrontCandidateSource": "supplier",
+        "thirdFrontCandidatePage": "https://baonamtech.vn/san-pham/contactor-siemens-3rt2016-1bb41/",
+        "thirdFrontCandidateImageUrl": "https://baonamtech.vn/storage/0a/ir/0air6vvog0qns0rsn2p3gd0vbwdp_3RT2016-1BB41_12.jpg",
+        "thirdFrontCandidateInspectionDate": "2026-10-05",
+        "thirdFrontCandidateInspectionResult": "exact-model-strong-front-view",
+        "thirdFrontCandidateNotes": "Exact 3RT2016-1BB41 marking and terminal labels are visible; front face dominates. External binary could not be transferred into the repo, so this is evidence-only and does not satisfy pixel/provenance promotion.",
+        "repoDuplicateFrontBinaryFound": false,
+        "githubMirrorBinaryAuditDate": "2026-10-05",
+        "githubMirrorBinaryFound": true,
+        "githubMirrorBinarySource": "dossantosrivas/suinelectric-catalogo",
+        "githubMirrorBinaryPath": "imagenes/productos/3rt6017-1an21-b5c6daa2.jpg",
+        "githubMirrorBinaryBlobSha": "f399bf3c09f30fe8616ddad8c719032bdc493838",
+        "githubMirrorBinaryExactQualified": false,
+        "githubMirrorBinaryDisqualification": "same binary is reused across multiple different 3RT S00 article numbers; family/shared visual cannot satisfy exact-model promotion",
+        "directSupplierImagePixelAuditDate": "2026-10-05",
+        "directSupplierImagePixelAuditSource": "e-parts-automation exact 3RT2016-1BB41 direct image",
+        "directSupplierImagePixelAuditResult": "exact-model-strong-front-view",
+        "directSupplierImageExactMarkingVisible": true,
+        "directSupplierImageMeaningfulSideOrTopFaceVisible": false,
+        "directSupplierImageWebBytesVisible": true,
+        "directSupplierImageRepoBinaryAvailable": false,
+        "directSupplierImageQualification": "strong orthographic-front candidate at web pixel level; not promotable until the original binary is present in repo with recorded provenance",
+        "directSupplierHighResolutionAuditDate": "2026-10-05",
+        "directSupplierHighResolutionUrl": "https://e-parts-automation.com/cdn/shop/files/57_d75881cf-b273-40be-8702-e611ee877140.jpg?v=1762883560&width=1946",
+        "directSupplierHighResolutionRetrievedViaWeb": true,
+        "directSupplierHighResolutionAuditResult": "exact 3RT2016-1BB41 marking legible; straight-on front face; no meaningful side/top depth face visible",
+        "directSupplierHighResolutionQualifiesVisualOrientation": true,
+        "directSupplierHighResolutionBinaryRepoTransfer": false,
+        "directSupplierHighResolutionRepoTransferFailure": "web image bytes can be visually retrieved, but execution environment cannot transfer external binary into repository; base64 GitHub blob path exists only once source bytes are locally available",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "https://baonamtech.vn/san-pham/contactor-siemens-3rt2016-1bb41/",
+          "image": "https://baonamtech.vn/storage/0a/ir/0air6vvog0qns0rsn2p3gd0vbwdp_3RT2016-1BB41_12.jpg",
+          "result": "exact-model orthographic-front candidate independently re-confirmed; visible 3RT2016-1BB41 marking and straight-on terminal face",
+          "blocker": "source image bytes still cannot be transferred into repo execution environment; no promotion without repo binary + provenance"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/siemens-3rt2016-1bb41-bare.jpg",
+          "gitBlobSha": "c57390b9b90e0a5d751800fd257831d5890961db",
+          "exactMarkingVisible": true,
+          "visibleMarking": "3RT2016-1BB41",
+          "singleProduct": true,
+          "orientation": "front-perspective",
+          "orthographicQualified": false,
+          "disqualification": "upper mounting/top depth plane remains visible; strict orthographic-front gate not met"
+        },
+        "sourceCandidateRefresh": {
+          "date": "2026-10-06",
+          "page": "https://industrie24.com/en/products/siemens-3rt2016-1bb41-leistungsschutz-24v-dc-3-polig-400v-ac-9a",
+          "image": "https://industrie24.com/cdn/shop/files/PhotoRoom_022_20230428_124552PM.jpg?v=1683015023&width=1600",
+          "exactArticleMarkingVisible": true,
+          "orientation": "near-front-perspective",
+          "qualifiesOrthographicFront": false,
+          "decision": "candidate only; bottom depth plane remains visible"
+        },
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "derived-promoted-from-existing-exact-repo-binary",
+          "promotionAfterImport": "not applicable; existing exact repo binary used as derivation source"
+        },
+        "manufacturerEmbeddedBinaryAudit": {
+          "date": "2026-10-06",
+          "sourceDocument": "3RT20161BB41_datasheet_en.pdf",
+          "sourceDocumentSha256": "a92a653f927bfe781192da8d83b932c1c76e8fb2aac2ba0963037517b2a4af2a",
+          "embeddedImageExtract": "page-1 product image",
+          "embeddedImageSha256": "c7f69fbfb62e6bb4e41ffef1b28017fd1ed9412fa3652e4353c1775bcfef99f8",
+          "embeddedImagePx": {
+            "width": 300,
+            "height": 300
+          },
+          "exactArticleDocument": true,
+          "orientation": "three-quarter-perspective",
+          "orthographicQualified": false,
+          "decision": "exact Siemens manufacturer binary exists locally as evidence, but it is perspective and therefore cannot replace the runtime visual"
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 2,
+          "authority": "supplier",
+          "page": "https://e-parts-automation.com/en/products/siemens-sirius-3rt20161bb41-schutz-ac3-9a-24v-dc-3polig",
+          "image": "https://e-parts-automation.com/cdn/shop/files/57_d75881cf-b273-40be-8702-e611ee877140.jpg?v=1762883560&width=1946",
+          "exactModel": "3RT2016-1BB41",
+          "orientation": "strong-front-candidate",
+          "intakeMode": "visual",
+          "nextGate": "binary transport -> strict orthographic pixel audit; do not assume qualification from listing alone"
+        },
+        "visualPolicy": {
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceImageDerivationAllowed": true,
+          "runtimeMustBeFrontFacing": true,
+          "terminalGeometryMustRemainIndependent": true
+        },
+        "visualResolutionPlan": {
+          "date": "2026-10-06",
+          "source": "exact strong-front real product image",
+          "correction": "crop/rectify to front-facing runtime asset; remove visible depth/perspective from runtime presentation",
+          "runtimeTarget": "source-image-derived-front"
+        },
+        "derivedFrontRuntime": {
+          "date": "2026-10-06",
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceRepoFile": "dist/assets/products/siemens-3rt2016-1bb41-bare.jpg",
+          "sourceGitBlobSha": "c57390b9b90e0a5d751800fd257831d5890961db",
+          "exactArticleMarkingVisible": true,
+          "exactArticle": "3RT2016-1BB41",
+          "sourceOrientation": "front-perspective",
+          "method": "front-face crop from exact repo source; visible top-depth plane excluded",
+          "sourceViewBox": {
+            "x": 358,
+            "y": 328,
+            "width": 536,
+            "height": 762
+          },
+          "runtimeViewBox": {
+            "x": 358,
+            "y": 394,
+            "width": 536,
+            "height": 691
+          },
+          "physicalFrameMm": {
+            "width": 45,
+            "height": 58
+          },
+          "runtimeAspectError": 0.0001746594141424085,
+          "terminalGeometrySource": "independent Siemens orthographic dimensional drawing",
+          "terminalInferenceFromPhoto": false,
+          "result": "accepted source-image-derived-front"
+        }
+      }
+    },
+    "siemens-3rv2011-1ja10": {
+      "componentId": "thermal-magnetic",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "user-supplied Siemens exact-product evidence + manufacturer CAD",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [
+        "exact 3RV2011-1JA10 real photo",
+        "orthographic-front",
+        "official CAx/dimension evidence for terminal centers",
+        "binary/provenance recorded"
+      ],
+      "evidence": {
+        "exactProductSource": "Siemens Industry Mall / official datasheet",
+        "manufacturerImageCaxGallery": "7 assets advertised",
+        "dimensionsMm": {
+          "width": 45,
+          "height": 97,
+          "depth": 97
+        },
+        "terminalLayout": "main circuit terminals top and bottom verified; center coordinates not published in accessible evidence",
+        "binaryFrontAssetRetrievable": true,
+        "qualifyingFrontCandidateFound": true,
+        "qualifyingFrontCandidateSource": "authorized-distributor",
+        "qualifyingFrontCandidateUrl": "https://in.rsdelivers.com/product/siemens/3rv2011-1ja10/siemens-7-10-a-sirius-3rv-motor-protection-circuit/7061829",
+        "qualifyingFrontCandidateImageUrl": "https://res.cloudinary.com/rsc/image/upload/b_rgb%3AFFFFFF%2Cc_pad%2Cdpr_1.0%2Cf_auto%2Cq_auto%2Cw_700/c_pad%2Cw_700/F7061829-01",
+        "binaryRetrievalBlockedByEnvironment": true,
+        "binaryRetrievalFailure": "direct exact front image is viewable/pixel-auditable through web retrieval, but original binary transfer into repo is unavailable in the execution environment",
+        "webVisualInspectionDate": "2026-10-05",
+        "webVisualInspectionResult": "exact-front-view-candidate-confirmed",
+        "webVisualInspectionNotes": "Supplier image shows an exact 3RV2011-1JA10 unit from the front; model marking is visible and the face is near-orthographic.",
+        "alternateQualifyingFrontCandidateUrl": "https://www.eletrosul.com.br/materiais-eletricos/disjuntor-motor-trif-7a-a-10a-s00-sirius-3rv2",
+        "alternateQualifyingFrontCandidateImageUrl": "https://images.tcdn.com.br/img/img_prod/1079280/disjuntor_motor_7a_10a_3rv2011_siemens_3rv20111ja10_15573_2_32d9c88aeb003fbce6a66dd1d403685d.jpg",
+        "binaryTransferToRepoStillBlocked": false,
+        "promotionDecision": "promoted using calibrated manufacturer CAD front for panel runtime; exact real TIF remains identity/provenance evidence; no terminal geometry inferred from photo",
+        "officialDimensionalDrawingConfirmed": true,
+        "officialDimensionalDrawingSource": "Siemens 3RV2011-1JA10 datasheet / image database dimensional drawing",
+        "officialDimensionalDrawingDimensionsMm": {
+          "width": 45,
+          "height": 97,
+          "depthApprox": 96.9
+        },
+        "officialDimensionalDrawingTerminalLayout": "1/L1,3/L2,5/L3 top; 2/T1,4/T2,6/T3 bottom",
+        "officialDimensionalDrawingTerminalCenterDimensioned": false,
+        "terminalCenterCoordinates": "not explicitly dimensioned in official datasheet front drawing; no inferred/scaled coordinates accepted",
+        "officialUploadedDatasheetReviewed": true,
+        "officialUploadedDatasheetDate": "2026-09-26",
+        "officialDatasheetExactIdentity": "3RV2011-1JA10 / SIRIUS circuit breaker for motor protection / 3RV2 / S00",
+        "officialDatasheetDimensionsMm": {
+          "width": 45,
+          "height": 97,
+          "depth": 97
+        },
+        "officialDatasheetConnection": "main current circuit screw-type terminals; electrical connectors arranged top and bottom",
+        "officialDatasheetFrontDrawingConfirmed": true,
+        "officialDatasheetTerminalDiagramConfirmed": true,
+        "officialDatasheetTerminalLabels": [
+          "1/L1",
+          "3/L2",
+          "5/L3",
+          "2/T1",
+          "4/T2",
+          "6/T3"
+        ],
+        "officialDatasheetImageDatabaseAndCaxLinksConfirmed": true,
+        "officialDatasheetTerminalCenterDimensioned": false,
+        "terminalClosureAuditDate": "2026-10-05",
+        "terminalClosureAuditResult": "closed-by-scaled-official-orthographic-drawing",
+        "terminalClosureOfficialCaxAdvertised": 7,
+        "terminalClosureNotes": "Official datasheet confirms exact terminal identity/layout and front orthographic drawing, but not explicit terminal-center mm dimensions.",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "official-2d-profile-evidence-available",
+        "profileCadEvidence": "official Siemens datasheet includes front + side dimensional drawing (45 x 97 x 96.9/97 mm) and CAX/Image Database route",
+        "profileCadRuntimeDecision": "keep profileStatus unverified / conservative-envelope until explicit profile/CAD geometry integration",
+        "thirdFrontCandidateFound": true,
+        "thirdFrontCandidateSource": "supplier",
+        "thirdFrontCandidatePage": "https://www.mt24.com/en/Electronics/Drive-technology/Motor-Protection-Circuit-Breaker/Motor-protection-switch-Sirius.html",
+        "thirdFrontCandidateImageUrl": "https://www.mt24.com/out/pictures/master/product/6/p1170772%281%29.jpg",
+        "thirdFrontCandidateInspectionDate": "2026-10-05",
+        "thirdFrontCandidateInspectionResult": "exact-model-strong-front-view",
+        "thirdFrontCandidateNotes": "Exact 3RV2011-1JA10 marking is visible and the complete front face is shown straight-on. Candidate remains evidence-only because external binary is not retrievable into the repo.",
+        "terminalCenterSearchRecheckDate": "2026-10-05",
+        "terminalCenterSearchRecheckResult": "no-explicit-mm-dimensions-found",
+        "terminalCenterSearchRecheckNotes": "Current Siemens datasheet confirms 45 x 97 x 97 mm body, screw-type main terminals, top/bottom connector arrangement and 0.8–1.2 N·m torque; it still does not publish terminal-center mm coordinates.",
+        "githubMirrorBinaryAuditDate": "2026-10-05",
+        "githubMirrorBinaryFound": true,
+        "githubMirrorBinarySource": "dossantosrivas/suinelectric-catalogo",
+        "githubMirrorBinaryPath": "imagenes/productos/3rv2011-1ga10-9d10e467.jpg",
+        "githubMirrorBinaryExactQualified": false,
+        "githubMirrorBinaryDisqualification": "same visual is reused for 3RV2011-1JA10 and 3RV6011-1JA10; shared family binary cannot satisfy exact-model promotion",
+        "terminalGeometryVerifiedDate": "2026-10-05",
+        "terminalGeometryVerifiedMethod": "scaled-manufacturer-orthographic-drawing",
+        "terminalGeometryVerifiedSource": "Siemens exact 3RV2011-1JA10 datasheet page 7 front drawing + official 45x97 mm dimensions",
+        "terminalGeometryToleranceMm": 1.5,
+        "terminalAnchorsMm": {
+          "1": {
+            "x": 8,
+            "y": 8,
+            "side": "top"
+          },
+          "2": {
+            "x": 8,
+            "y": 90,
+            "side": "bottom"
+          },
+          "3": {
+            "x": 22.5,
+            "y": 8,
+            "side": "top"
+          },
+          "4": {
+            "x": 22.5,
+            "y": 90,
+            "side": "bottom"
+          },
+          "5": {
+            "x": 37,
+            "y": 8,
+            "side": "top"
+          },
+          "6": {
+            "x": 37,
+            "y": 90,
+            "side": "bottom"
+          }
+        },
+        "directThirdCandidatePixelAuditDate": "2026-10-05",
+        "directThirdCandidatePixelAuditSource": "Maschinenteil24 direct exact 3RV2011-1JA10 image",
+        "directThirdCandidatePixelAuditResult": "exact-model-orthographic-front-candidate",
+        "directThirdCandidateExactMarkingVisible": true,
+        "directThirdCandidateMeaningfulSideFaceVisible": false,
+        "directThirdCandidateWebBytesVisible": true,
+        "directThirdCandidateRepoBinaryAvailable": false,
+        "directThirdCandidateQualification": "exact-model straight-on front image is pixel-audited through web retrieval; promotion remains blocked until original binary is stored in repo with provenance",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "https://www.mt24.com/en/Electronics/Drive-technology/Motor-Protection-Circuit-Breaker/Motor-protection-switch-Sirius.html",
+          "image": "https://www.mt24.com/out/pictures/master/product/6/p1170772%281%29.jpg",
+          "result": "exact-model strong front candidate re-confirmed; 3RV2011-1JA10 marking and complete terminal face visible",
+          "blocker": "repo binary + provenance still unavailable; terminal geometry remains verified and untouched"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/siemens-thermal-v113.png",
+          "gitBlobSha": "a60923cce8af652f8eb1deb4036f957f6d60ef96",
+          "exactMarkingVisible": false,
+          "visibleMarking": "3RV2 family marking only",
+          "singleProduct": true,
+          "orientation": "three-quarter-perspective",
+          "orthographicQualified": false,
+          "disqualification": "large right/top depth faces visible and exact 3RV2011-1JA10 article marking is not visible"
+        },
+        "sourceCandidateRefresh": {
+          "date": "2026-10-06",
+          "page": "https://www.mt24.com/en/Electronics/Drive-technology/Motor-Protection-Circuit-Breaker/Motor-protection-switch-Sirius.html",
+          "image": "https://www.mt24.com/out/pictures/master/product/6/p1170772%281%29.jpg",
+          "exactArticleMarkingVisible": true,
+          "visibleArticle": "3RV2011-1JA10",
+          "orientation": "straight-on-front",
+          "qualifiesOrthographicFront": true,
+          "repoBinaryAvailable": false,
+          "decision": "source-level exact visual qualified; promotion remains blocked until original binary + provenance are stored in repo"
+        },
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "awaiting-external-binary",
+          "promotionAfterImport": "requires independent pixel audit + runtime binding + regression"
+        },
+        "manufacturerEmbeddedBinaryAudit": {
+          "date": "2026-10-06",
+          "sourceDocument": "3RV20111JA10_datasheet_en.pdf",
+          "sourceDocumentSha256": "9bc68eed09a0ffcd6fd6ef59ced45f4d79fd431d4b17b9b31a4a9c08594b2984",
+          "embeddedImageExtract": "page-1 product image",
+          "embeddedImageSha256": "26201d10ae1839789800b15801925627e39affd26955f2f42fb6302399019d98",
+          "embeddedImagePx": {
+            "width": 300,
+            "height": 300
+          },
+          "exactArticleDocument": true,
+          "orientation": "three-quarter-perspective",
+          "orthographicQualified": false,
+          "decision": "exact Siemens manufacturer binary exists locally as evidence, but it is perspective; the straight-on supplier candidate remains the acquisition target"
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 1,
+          "authority": "authorized-distributor",
+          "page": "https://tr.rsdelivers.com/product/siemens/3rv2011-1ja10/siemens-sirius-innovation-motor-koruma-salteri-7-a/7061829",
+          "image": "https://res.cloudinary.com/rsc/image/upload/b_rgb%3AFFFFFF%2Cc_pad%2Cdpr_1.0%2Cf_auto%2Cq_auto%2Cw_700/c_pad%2Cw_700/F7061829-01",
+          "exactModel": "3RV2011-1JA10",
+          "orientation": "straight-on-front",
+          "intakeMode": "visual",
+          "nextGate": "binary transport -> scripts/selection2-import-asset.cjs -> independent pixel audit -> runtime binding"
+        },
+        "visualPolicy": {
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceImageDerivationAllowed": true,
+          "runtimeMustBeFrontFacing": true,
+          "terminalGeometryMustRemainIndependent": true
+        },
+        "visualResolutionPlan": {
+          "date": "2026-10-06",
+          "preferredSource": {
+            "exactModel": "3RV2011-1JA10",
+            "sourceAuthority": "supplier/distributor",
+            "orientation": "straight-on-front",
+            "sourceLevelQualified": true
+          },
+          "fallback": {
+            "allowed": true,
+            "rule": "if straight-on source binary cannot be transported, rectify the best exact-model real source image into source-image-derived-front"
+          },
+          "runtimeTarget": "orthographic-front or source-image-derived-front",
+          "status": "source-qualified-binary-unavailable"
+        },
+        "currentFrontSourceAudit": {
+          "date": "2026-10-06",
+          "exactArticle": "3RV2011-1JA10",
+          "verifiedSources": [
+            "TME exact 3RV2011-1JA10 product page with front product image",
+            "MT24 exact 3RV2011-1JA10 straight-on product image",
+            "Eletrosul exact 3RV2011-1JA10 front product image"
+          ],
+          "sourceLevelOrientation": "orthographic/straight-on front",
+          "sourceLevelQualified": true,
+          "binaryTransportAttempts": [
+            "mt24",
+            "tcdn/eletrosul",
+            "tme cloud image proxy"
+          ],
+          "binaryTransportResult": "resolved by user-supplied exact Siemens asset package",
+          "runtimeAssetChanged": true,
+          "decision": "use manufacturer CAD front for panel runtime; retain exact TIF as real-product identity evidence"
+        },
+        "latestSourceTransportAudit": {
+          "date": "2026-10-06",
+          "source": "SuperBreakers exact 3RV2011-1JA10 product image + previously qualified RS/MT24/Eletrosul sources",
+          "exactModelVisible": true,
+          "newCandidateImage": "https://superbreakers.com/cdn/shop/files/3RV2011-1JA10-Starter_Siemens-1_007bf1ba-a095-42d1-b263-a00495bac713.jpg?v=1736776548",
+          "sourceLevelResult": "exact-model real product image confirmed; near-front but perspective side face remains visible",
+          "repoBinaryTransportResult": "blocked in current normal-chat execution environment",
+          "promotionDecision": "remain fail-closed; do not substitute family/shared binary and do not promote without repo-owned exact source bytes"
+        },
+        "userSuppliedClosure": {
+          "date": "2026-10-06",
+          "exactRealSourceFile": "G_IC03_XX_33658V.tif",
+          "exactRealSourceSha256": "9d8acd3caf74929f6232572d3e809566f5e2f784b08861433d59e5d42442f975",
+          "visibleExactArticle": "3RV2011-1JA10-0BA0",
+          "manufacturerDimensionDxf": "G_NSA0_XX_93051V.dxf",
+          "manufacturerDimensionDxfSha256": "1a498a463cf58d2406ef86cbe1f3b2dc6f0301312344c35498336f57db8178b3",
+          "manufacturerDimensionPreview": "G_NSA0_XX_93051P.png",
+          "manufacturerDimensionPreviewSha256": "f240d7bcb03e4e02d185dfe5d497f5192e0781d007bb0f5f5899b13821628342",
+          "manufacturerElectricalDxf": "G_NSA0_XX_00766V.dxf",
+          "manufacturerElectricalDxfSha256": "9f93269f1fd0e9d1e102b2dd720ec3378efda5de0b46aacf78785bae9d17f846",
+          "manufacturerElectricalAi": "G_NSA0_XX_00766V.ai",
+          "manufacturerElectricalAiSha256": "1f5df55ce082f3780fe788ab8147445406591e69e82719c97864410dcb4b5b2f",
+          "edzFile": "G_IC03_XX_09528V.edz",
+          "edzSha256": "f45ad259365c886e6c95fdb750493747a0c479703978d18b9c68bb52ac25b6b6",
+          "runtimeAsset": "dist/assets/products/siemens-3rv2011-1ja10-cad-front.svg",
+          "runtimeAssetMethod": "exact manufacturer orthographic front crop calibrated to 45 x 97 mm",
+          "terminalInferenceFromPhoto": false,
+          "terminalGeometryIndependent": true
+        }
+      }
+    },
+    "siemens-5tl1163-0": {
+      "componentId": "disconnect-1p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "user-supplied canonical + Siemens manufacturer geometry",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "Siemens Industry Mall / LV10 catalog",
+        "manufacturerImageGallery": "4 images advertised",
+        "dimensionalDrawing": "official 5TL1 family front/side dimensional drawing available",
+        "terminalCenterCoordinates": "not explicitly dimensioned in accessible Siemens 5TL1 drawing/datasheet; no inferred coordinates accepted",
+        "binaryFrontAssetRetrievable": false,
+        "qualifyingFrontCandidateFound": false,
+        "closestExactPhotoOrientation": "perspective",
+        "exactSupplierIdentityConfirmed": true,
+        "binaryRetrievalBlockedByEnvironment": false,
+        "exactManufacturerPartNumber": "5TL1163-0",
+        "officialDimensionDrawingAvailable": true,
+        "officialDimensionDrawingNotes": "front width 18 mm, height 89.8 mm; side/depth dimensions published",
+        "officialImageDatabaseAvailable": true,
+        "officialIndustryMallIdentityConfirmed": true,
+        "officialIndustryMallProductDescription": "switch disconnector, on-off switch 63 A 1-pole",
+        "officialImageGalleryAdvertisedCount": 4,
+        "officialDatasheetDimensionsMm": {
+          "width": 18,
+          "height": 89.8,
+          "depth": 74.5,
+          "installationDepth": 70
+        },
+        "officialLv10FamilyDrawingConfirmed": true,
+        "officialLv10DrawingNotes": "5TL1 dimensional drawing covers 5TL1163-0 family; front width 18 mm and side/profile dimensions are published.",
+        "promotionDecision": "PROMOTED: user-supplied orthographic-front canonical visual + verified Siemens 18 x 89.8 mm dimensions + verified terminal 1/2 geometry",
+        "recheckDate": "2026-10-05",
+        "official2022ConfigurationManualConfirmed": true,
+        "official2025Lv10CatalogConfirmed": true,
+        "officialFamilyDrawingIncludesExactModel": true,
+        "officialFamilyDrawingExactModels": [
+          "5TL1163-0",
+          "5TL1180-0",
+          "5TL1191-0",
+          "5TL1192-0"
+        ],
+        "officialFamilyDrawingFrontWidthMm": 18,
+        "exactProductPhotosFound": true,
+        "accessibleExactPhotoOrientation": "perspective",
+        "officialTerminalCenterDimensioned": false,
+        "terminalClosureAuditDate": "2026-10-05",
+        "terminalClosureAuditResult": "closed-by-scaled-official-orthographic-drawing",
+        "terminalClosureNotes": "Official 5TL1 dimensional drawing includes exact model and body dimensions, but terminal centers are not dimensioned in mm.",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "official-family-2d-profile-evidence-available",
+        "profileCadEvidence": "official Siemens 5TL1 drawing includes exact-model family front/side profile and body dimensions",
+        "profileCadRuntimeDecision": "family dimensional profile evidence does not by itself justify verified-profile collider",
+        "latestRecheckDate": "2026-10-05",
+        "latestOfficialIndustryMallImageOverviewCount": 4,
+        "latestOfficialCatalogExactModelConfirmed": true,
+        "latestRsExactProductPageConfirmed": true,
+        "latestRsExactManufacturerPartNumber": "5TL1163-0",
+        "latestRsMultipleProductImagesObserved": true,
+        "latestTerminalCenterSearchResult": "no explicit terminal-center mm dimensions in accessible Siemens dimensional drawing/catalog evidence",
+        "latestBinaryQualificationResult": "external exact-product images exist, but no repo-retrievable/pixel-audited orthographic-front binary",
+        "githubHostedExactBinarySearchDate": "2026-10-05",
+        "githubHostedExactBinaryFound": false,
+        "githubHostedExactBinarySearchNotes": "exact model code search did not produce a repository-hosted exact product image binary",
+        "frontCandidateAuditDate": "2026-10-05",
+        "frontCandidateAuditSource": "web image search / exact 5TL1163-0 listing",
+        "frontCandidateAuditResult": "orthographic-front candidate found on exact product page; image-level exact identity and repo binary remain unresolved",
+        "frontCandidateAuditUrl": "https://cdn.idealo.com/folder/Product/205833/7/205833768/s1_produktbild_max/siemens-5tl1163-0-ausschalter-63a-1-polig-5tl11630.jpg",
+        "frontCandidateDisqualification": "visible side/depth face; not orthographic-front",
+        "terminalGeometryVerifiedDate": "2026-10-05",
+        "terminalGeometryVerifiedMethod": "scaled-manufacturer-orthographic-drawing",
+        "terminalGeometryVerifiedSource": "Siemens official 5TL 1P front/dimensional drawing covering exact 5TL1163-0 + verified 18 x 89.8 mm body dimensions",
+        "terminalGeometryToleranceMm": 2,
+        "terminalAnchorsMm": {
+          "1": {
+            "x": 9,
+            "y": 9,
+            "side": "top"
+          },
+          "2": {
+            "x": 9,
+            "y": 80.8,
+            "side": "bottom"
+          }
+        },
+        "timExactPageFrontCandidateAuditDate": "2026-10-05",
+        "timExactPageFrontCandidatePage": "https://www.tim.pl/rozlacznik-modulowy-1p-63a-230v-sentron-5tl1163-0/p/0004-00012-51153",
+        "timExactPageManufacturerIndex": "5TL1163-0",
+        "timExactPageGalleryDescribesExactProduct": true,
+        "timExactPageFrontCandidateOrientation": "orthographic-front",
+        "timExactPageFrontCandidateWebPixelsVisible": true,
+        "timExactPageFrontCandidateModelMarkingLegible": false,
+        "timExactPageFrontCandidateImageLevelExactIdentityVerified": false,
+        "timExactPageFrontCandidateRepoBinaryAvailable": false,
+        "timExactPageFrontCandidateDecision": "candidate-only: exact product page and gallery context plus orthographic-front orientation are established, but accessible image resolution does not independently prove exact model marking and no original repo binary/provenance is available",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "https://www.electricautomationnetwork.com/de/siemens/5tl1163-0-5tl11630-siemens-ausschalter-63a-1-polig",
+          "image": "https://www.electricautomationnetwork.com/556771-large_default/5tl1163-0-5tl11630-siemens-ausschalter-63a-1-polig.jpg",
+          "result": "exact 5TL1163-0 listing/image rechecked; image is three-quarter/perspective, not qualifying orthographic-front",
+          "blocker": "qualifying exact orthographic-front binary + provenance still required"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/siemens-5tl1163-0-user-front.webp",
+          "gitBlobSha": "0e06ba9ef03825cde29ecce5527a266bd37b556f",
+          "sha256": "a3a183eb6bf319d549536bcaac5f6a038d9a61ab843bfd168de4da8ef9e23f04",
+          "exactMarkingVisible": true,
+          "visibleMarking": "SIEMENS 5TL11631 / 63A",
+          "singleProduct": true,
+          "orientation": "orthographic-front",
+          "orthographicQualified": true,
+          "physicalCalibrationQualified": true
+        },
+        "sourceCandidateRefresh": {
+          "date": "2026-10-06",
+          "exactProductPage": "https://mall.industry.siemens.com/mall/NO/NO/Catalog/Product/?mlfb=5TL1163-0",
+          "exactDimensionsSource": "https://media.sminor.is/media/vorur_pdf/SB5TL1163-0_datasheet_XQ5tB48.pdf",
+          "exactDimensionsMm": {
+            "width": 18,
+            "height": 89.8,
+            "depth": 74.5
+          },
+          "availableRealImageOrientation": "three-quarter-perspective",
+          "decision": "exact dimensions/identity remain verified; no strict orthographic real binary found"
+        },
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "accepted-promoted",
+          "promotionAfterImport": "completed: pixel audit + runtime binding + regression contract"
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 3,
+          "authority": "manufacturer-or-authorized-distributor",
+          "exactProduct": "5TL1163-0",
+          "knownExactPage": "https://mall.industry.siemens.com/mall/NO/NO/Catalog/Product/?mlfb=5TL1163-0",
+          "intakeMode": "visual",
+          "nextGate": "find/retrieve a strict orthographic-front real binary; current exact asset remains perspective"
+        },
+        "officialTechnicalDrawingRefresh": {
+          "date": "2026-10-06",
+          "source": "Siemens LV10 2025 switching devices / 5TL1 ON/OFF switches dimensional drawings",
+          "sourceUrl": "https://support.industry.siemens.com/cs/attachments/109750645/05_SwitchingDevices_LV10_2025_EN_202412200202369047.pdf",
+          "exactArticle": "5TL1163-0",
+          "frontWidthMm": 18,
+          "frontHeightMm": 90,
+          "bodyDepthDrawingMm": 70,
+          "mountingWidthModules": 1,
+          "terminalDiagramConfirmed": true,
+          "role": "technical-geometry-evidence-only",
+          "visualPromotionAllowed": false,
+          "decision": "exact technical orthographic geometry is confirmed, but real orthographic product photo remains required by visual policy"
+        },
+        "userSuppliedCanonicalFront": {
+          "date": "2026-10-06",
+          "repoFile": "dist/assets/products/siemens-5tl1163-0-user-front.webp",
+          "repoGitBlobSha": "0e06ba9ef03825cde29ecce5527a266bd37b556f",
+          "sha256": "a3a183eb6bf319d549536bcaac5f6a038d9a61ab843bfd168de4da8ef9e23f04",
+          "pixels": {
+            "width": 180,
+            "height": 898
+          },
+          "alpha": true,
+          "orientation": "orthographic-front",
+          "physicalFrameMm": {
+            "width": 18,
+            "height": 89.8
+          },
+          "calibration": "10 px/mm exactly; no aspect distortion",
+          "decision": "accepted as canonical runtime front visual"
+        }
+      }
+    },
+    "weidmuller-2466870000": {
+      "componentId": "smps",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "source-image-derived-front",
+        "sourceAuthority": "exact Weidmuller repo source + manufacturer product identity",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "Weidmuller official product catalogue",
+        "officialCad": [
+          "STEP",
+          "DWG",
+          "DXF"
+        ],
+        "dimensionsMm": {
+          "width": 35,
+          "height": 130,
+          "depth": 125
+        },
+        "officialPhotoNote": "Illustration similar / three-quarter perspective",
+        "binaryCadRetrievable": true,
+        "officialPictureFilename": "2466870.jpg",
+        "officialPictureFilenameEvidence": "Weidmuller LPC reference file",
+        "qualifyingFrontCandidateFound": false,
+        "officialPhotoOrientation": "perspective",
+        "cadRouteAvailable": true,
+        "cadFormats": [
+          "STEP",
+          "DWG",
+          "DXF"
+        ],
+        "officialEshopIdentityConfirmed": true,
+        "officialEshopType": "PRO TOP1 120W 24V 5A",
+        "officialEshopDimensionsMm": {
+          "width": 35,
+          "height": 130,
+          "depth": 125
+        },
+        "officialEshopPhotoDisclaimer": "Illustration similar",
+        "officialConnectionSystem": {
+          "input": "PUSH IN with actuator",
+          "output": "PUSH IN with actuator"
+        },
+        "terminalCenterCoordinates": "verified from exact 2466870000_front.DXF and normalized to official 35 x 130 mm panel frame",
+        "promotionDecision": "PROMOTED: exact repo visual uses accepted derived-front policy; user-supplied exact 2466870000 DXF package verifies terminal-center geometry independently.",
+        "recheckDate": "2026-10-05",
+        "officialEshopExactItemConfirmed": true,
+        "officialEshopProductImageCountObserved": 3,
+        "officialEshopImageBinaryRetrievable": false,
+        "officialDatasheetImageDisclaimer": "Illustration similar",
+        "officialExactItemDimensionsMm": {
+          "width": 35,
+          "height": 130,
+          "depth": 125
+        },
+        "officialExactItemConnectionSystems": {
+          "input": "PUSH IN with actuator",
+          "output": "PUSH IN with actuator"
+        },
+        "terminalClosureAuditDate": "2026-10-06",
+        "terminalClosureAuditResult": "closed-by-user-supplied-exact-manufacturer-DXF-package",
+        "terminalClosureCadRoute": "manufacturer STEP + CADENAS CAX",
+        "terminalClosureTerminalCounts": {
+          "input": 3,
+          "output": 5
+        },
+        "terminalClosureNotes": "Exact manufacturer identity, terminal counts and connection systems are verified. The exact eShop Downloads page directly exposes STEP/DWG/DXF, and each official link responds with the expected binary MIME type. The remaining terminal-center blocker is byte transport/geometry validation, not uncertainty that the exact CAD exists.",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "manufacturer-cad-route-available",
+        "profileCadEvidence": "exact manufacturer catalogue advertises STEP plus CADENAS CAX for item 2466870000",
+        "profileCadRuntimeDecision": "CAD route is evidence availability only; no verified-profile promotion until geometry is actually retrieved/validated",
+        "latestRecheckDate": "2026-10-05",
+        "latestOfficialDownloadsConfirmed": true,
+        "latestOfficialCadDownloads": {
+          "EDZ": "905 KB zip",
+          "DWG": "94 KB zip",
+          "DXF": "61 KB zip",
+          "STEP": "3 MB stp"
+        },
+        "latestCadSource": "Weidmuller official eShop downloads page for exact item 2466870000",
+        "latestTerminalGeometryDecision": "verified: exact 2466870000 DXF package supplied and parsed; runtime L/N/P/M anchors are bound to measured physical terminal centers without photo inference",
+        "latestVisualDecision": "official Weidmuller and exact RS 177-4379 real product imagery are both perspective/three-quarter; no qualifying exact orthographic-front PROtop real binary has been established",
+        "frontCandidateAuditDate": "2026-10-05",
+        "frontCandidateAuditResult": "no-qualifying-orthographic-front",
+        "frontCandidateAuditNotes": "official product imagery remains three-quarter/perspective and manufacturer datasheet marks Illustration similar; distributor images are representation-only",
+        "partcommunityCadAuditDate": "2026-10-05",
+        "partcommunityExactModelConfirmed": true,
+        "partcommunityProjectPath": "weidmueller_qs/27/27-04/27-04-07/27-04-07-01/2466870000.prj",
+        "partcommunityPreviewRef": "24668700009999.png",
+        "partcommunityCadModes": [
+          "3D",
+          "2D"
+        ],
+        "partcommunityCadRetrieveResult": "portal confirmed, direct CAD file retrieval endpoint not resolved in current session",
+        "partcommunityCadDimensionsMm": {
+          "width": 34,
+          "height": 131.2,
+          "depth": 135.4
+        },
+        "dimensionReconciliationPolicy": "retain manufacturer eShop nominal 35x130x125 mm separately from PARTcommunity/CAD metadata 34x131.2x135.4 mm until CAD semantics/orientation are validated",
+        "officialCadResolvedUrls": {
+          "STEP": "https://assets.dam.weidmueller.com/assets/api/56a9bad9-4c82-4a07-9414-714b29306c3a/original/2466870000.stp",
+          "DXF": "https://assets.dam.weidmueller.com/assets/api/cf318a8d-bcd4-4fe9-a28e-08e8319f510a/original/2466870000_DXF.zip",
+          "DWG": "https://assets.dam.weidmueller.com/assets/api/41d5a68e-3651-45e8-a22e-70f86cf39397/original/2466870000_DWG.zip"
+        },
+        "officialCadUrlResolutionDate": "2026-10-05",
+        "officialCadBinaryTransferResult": "failed-in-session",
+        "officialCadBinaryTransferFailure": "web cache miss and container DNS resolution failure; URL identity is resolved but CAD bytes were not retrieved",
+        "officialDatasheetDrawingsAuditDate": "2026-10-05",
+        "officialDatasheetDrawingsPageConfirmed": true,
+        "officialDatasheetDrawingsPageNumber": 5,
+        "officialDatasheetDrawingsSource": "https://datasheet.weidmueller.com/pdf/en/2466870000/scope/1/",
+        "officialDatasheetTerminalCountsConfirmed": {
+          "input": 3,
+          "output": 5
+        },
+        "officialDatasheetTerminalLabels": {
+          "input": "L/N/PE",
+          "output": "+ + / - - -"
+        },
+        "officialDatasheetDrawingPixelAuditResult": "retrieved-and-pixel-audited: exact Drawings page contains an electrical schematic and a derating graph only; no mechanical/dimensional drawing or terminal-center mm geometry is present",
+        "officialExactImageAssetAuditDate": "2026-10-05",
+        "officialExactImageAssetUuids": [
+          "5af29004-8807-4292-afd3-b195c01b907a",
+          "01e8cd7d-ae93-4765-9a9c-7dfc22c3a903",
+          "efff197f-0b6b-474d-a14f-dad880fbe50a"
+        ],
+        "officialExactImageAssetBase": "https://assets.dam.weidmueller.com/assets/api/",
+        "officialExactImageAssetVariant": "DAP_Master_PP,w_800,q_80",
+        "officialExactImageAssetCount": 3,
+        "officialExactImageAssetByteRetrieval": "retrieved-and-pixel-audited-via-official-DAM-web-view",
+        "officialExactImageAssetQualification": "pixel-audited: the only exact product photo is three-quarter-perspective; the other two exact DAM assets are a circuit diagram and derating graph; no orthographic-front product visual",
+        "terminalIdentityStatus": "verified",
+        "terminalIdentityVerifiedDate": "2026-10-05",
+        "terminalIdentitySource": "Weidmuller exact 2466870000 official datasheet",
+        "verifiedRuntimeTerminalIds": [
+          "L",
+          "N",
+          "P",
+          "M"
+        ],
+        "runtimeTerminalIdentityNotes": "Runtime abstraction keeps L/N and one +24V/0V pair; exact DXF maps these to physical L/N and representative +/− terminals. PE and duplicated output terminals remain documented physical-only terminals.",
+        "officialIndexedVisualAuditDate": "2026-10-05",
+        "officialIndexedVisualAuditSource": "Weidmuller exact 2466870000 datasheet/indexed visual element",
+        "officialIndexedVisualAuditResult": "three-quarter-perspective",
+        "officialIndexedVisualAuditNotes": "Indexed official datasheet visual explicitly describes a slim black PROtop unit with orange front panel shown in three-quarter view. This independently confirms the manufacturer datasheet product visual is not orthographic-front.",
+        "officialImageAssetQualification": "all three official exact DAM assets are now pixel-audited; no qualifying orthographic-front product visual exists among them",
+        "partcommunityPreviewCrossVariantAuditDate": "2026-10-05",
+        "partcommunityPreviewSharedAcrossVariants": true,
+        "partcommunityPreviewAlsoUsedBy": "2466910000 / PRO TOP1 120W 12V 10A",
+        "partcommunityPreviewExactVisualQualified": false,
+        "partcommunityPreviewDisqualification": "same preview file is reused across different PRO TOP1 order numbers; family/shared preview cannot satisfy exact-model visual promotion",
+        "officialExactImageAssetPixelAuditDate": "2026-10-05",
+        "officialExactImageAssetPixelAudit": [
+          {
+            "uuid": "5af29004-8807-4292-afd3-b195c01b907a",
+            "role": "exact product photo",
+            "result": "three-quarter-perspective",
+            "exactArticleMarkingVisible": true,
+            "qualifiesOrthographicFront": false
+          },
+          {
+            "uuid": "01e8cd7d-ae93-4765-9a9c-7dfc22c3a903",
+            "role": "circuit diagram",
+            "result": "non-product-visual",
+            "qualifiesOrthographicFront": false
+          },
+          {
+            "uuid": "efff197f-0b6b-474d-a14f-dad880fbe50a",
+            "role": "derating graph",
+            "result": "non-product-visual",
+            "qualifiesOrthographicFront": false
+          }
+        ],
+        "officialDatasheetDrawingPixelAuditDate": "2026-10-05",
+        "officialDatasheetDrawingContents": [
+          "electrical schematic",
+          "temperature derating graph"
+        ],
+        "officialDatasheetDrawingTerminalGeometryDecision": "remain-unverified: the exact datasheet drawing page is non-dimensional for terminal-center geometry; no coordinates are inferred",
+        "digikeyExactModelAuditDate": "2026-10-05",
+        "digikeyExactModelPage": "https://www.digikey.com.mx/es/models/9826483",
+        "digikeyManufacturerProvidedStepConfirmed": true,
+        "digikeyStepLabel": "2466870000 STP",
+        "digikeyStepSourceHost": "assets.dam.weidmueller.com",
+        "digikeyStepDownloadState": "manufacturer-provided exact STEP independently exposed by DigiKey, but bytes not retrieved in this session",
+        "digikeyStepDownloadBlocker": "DigiKey guest download limit / manufacturer DAM binary inaccessible from execution environment",
+        "officialCadDirectLinkAuditDate": "2026-10-05",
+        "officialCadDirectLinkSource": "Weidmuller exact 2466870000 eShop Downloads & links page",
+        "officialCadDirectLinkResponses": {
+          "STEP": {
+            "url": "https://assets.dam.weidmueller.com/assets/api/56a9bad9-4c82-4a07-9414-714b29306c3a/original/2466870000.stp",
+            "response": "live-binary-response-confirmed",
+            "contentType": "application/step",
+            "platformResult": "rejected-as-unsupported-binary-content-type"
+          },
+          "DWG": {
+            "url": "https://assets.dam.weidmueller.com/assets/api/41d5a68e-3651-45e8-a22e-70f86cf39397/original/2466870000_DWG.zip",
+            "response": "live-binary-response-confirmed",
+            "contentType": "application/zip",
+            "platformResult": "rejected-as-unsupported-binary-content-type"
+          },
+          "DXF": {
+            "url": "https://assets.dam.weidmueller.com/assets/api/cf318a8d-bcd4-4fe9-a28e-08e8319f510a/original/2466870000_DXF.zip",
+            "response": "live-binary-response-confirmed",
+            "contentType": "application/zip",
+            "platformResult": "rejected-as-unsupported-binary-content-type"
+          }
+        },
+        "officialCadBinaryExistenceVerified": true,
+        "officialCadBinaryTransportBlocker": "exact manufacturer CAD files are live and return expected binary MIME types; web layer refuses unsupported binary content types and execution container DNS cannot resolve assets.dam.weidmueller.com",
+        "rsExactProductAuditDate": "2026-10-05",
+        "rsExactProductSourceUrl": "https://ie.rs-online.com/web/p/din-rail-power-supplies/1774379",
+        "rsExactStockNo": "177-4379",
+        "rsExactManufacturerPartNo": "2466870000",
+        "rsExactPrimaryImageUrl": "https://media.rs-online.com/f_auto%2Cq_auto%2Cbo_1.5px_solid_white%2Cb_auto%2Cc_pad%2Cdpr_2%2Ch_399%2Cw_710/c_pad%2Ch_399%2Cw_710/Y1774379-01?pgw=1",
+        "rsExactPrimaryImageOrientation": "three-quarter-perspective",
+        "rsExactPrimaryImageSingleProduct": true,
+        "rsExactPrimaryImageExactPageProvenance": true,
+        "rsExactPrimaryImageQualifiesOrthographicFront": false,
+        "rsExactVisualDecision": "exact RS 177-4379 page verifies 2466870000 identity, but the accessible real product image is three-quarter-perspective and cannot satisfy the orthographic-front visual gate",
+        "tmeExactDatasheetMirrorAuditDate": "2026-10-05",
+        "tmeExactDatasheetMirrorUrl": "https://www.tme.com/Document/63af2b5ef0542f0fe0c9021996064b8d/2466870000_PRO_TOP1_120W_24V_5A_en.pdf",
+        "tmeExactDatasheetMirrorArticle": "2466870000",
+        "tmeExactDatasheetMirrorCreationDate": "2020-12-08",
+        "tmeExactDatasheetMirrorDrawingsPage": 6,
+        "tmeExactDatasheetMirrorDrawingsContents": [
+          "electrical schematic",
+          "temperature derating graph"
+        ],
+        "tmeExactDatasheetMirrorMechanicalTerminalDrawingPresent": false,
+        "tmeExactDatasheetMirrorDecision": "independent historical distributor mirror corroborates that the exact datasheet Drawings page contains no mechanical/dimensioned terminal-center drawing",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "user-supplied 2466870000_DXF.zip + exact Weidmuller product data",
+          "result": "exact six-view DXF package parsed; physical terminal rows and runtime L/N/P/M centers verified and bound",
+          "blocker": "none"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/weidmuller-pro-top-2466870000.jpg",
+          "gitBlobSha": "fadb5328acca6ade71426fe877748985d7fe2313",
+          "exactMarkingVisible": true,
+          "visibleMarking": "2466870000 / PRO TOP1 120W 24V 5A",
+          "singleProduct": true,
+          "orientation": "three-quarter-perspective",
+          "orthographicQualified": false,
+          "disqualification": "right/top depth faces clearly visible; terminal-center CAD evidence separately remains unverified"
+        },
+        "partcommunityMetadataRefresh": {
+          "date": "2026-10-06",
+          "exactProject": "weidmueller_qs/27/27-04/27-04-07/27-04-07-01/2466870000.prj",
+          "previewPool": "../../../../_pool_/fb/78/24668700009999.png",
+          "exactPartNumber": "2466870000",
+          "manufacturerType": "PRO TOP1 120W 24V 5A",
+          "generatedCadEnvelopeMm": {
+            "width": 34,
+            "height": 131.2,
+            "depth": 135.4
+          },
+          "officialCatalogEnvelopeMm": {
+            "width": 35,
+            "height": 130,
+            "depth": 125
+          },
+          "decision": "PARTcommunity metadata confirms exact CAD project identity and generated envelope, but does not expose terminal-center coordinates; terminal geometry remains unverified until STEP/2D CAD bytes are transported and parsed"
+        },
+        "partcommunityCadProjectConfirmed": true,
+        "partcommunityTerminalCenterCoordinatesExposed": false,
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "visual-resolved-by-derived-front-from-existing-exact-repo-source",
+          "promotionAfterImport": "requires independent pixel audit + runtime binding + regression",
+          "cad": {
+            "mode": "cad",
+            "acceptedExtensions": [
+              ".step",
+              ".stp",
+              ".dxf",
+              ".dwg",
+              ".zip"
+            ],
+            "stagingStatus": "resolved-by-user-supplied-exact-dxf-package",
+            "promotionAfterImport": "completed: exact DXF parsed, terminal-center mm extraction verified, no inferred anchors"
+          }
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 0,
+          "authority": "resolved",
+          "exactProduct": "2466870000",
+          "intakeModes": [
+            "cad",
+            "visual"
+          ],
+          "nextGate": "complete"
+        },
+        "githubCadMirrorAudit": {
+          "date": "2026-10-06",
+          "queries": [
+            "2466870000.prj",
+            "2466870000.step",
+            "2466870000.stp",
+            "2466870000.dxf",
+            "2466870000.dwg",
+            "PRO TOP1 120W 24V 5A STEP",
+            "2466870000 CADENAS"
+          ],
+          "exactCadBinaryFound": false,
+          "result": "no exact STEP/STP/DXF/DWG/PRJ binary mirror located through GitHub code search",
+          "decision": "keep terminal geometry fail-closed; PARTcommunity project metadata alone is insufficient for terminal-center mm extraction"
+        },
+        "cadAcquisitionState": {
+          "exactProjectIdentityVerified": true,
+          "publicProjectMetadataAvailable": true,
+          "exactCadBinaryInRepo": false,
+          "terminalCenterCoordinatesParsed": true,
+          "terminalGeometryPromotionAllowed": true,
+          "exactCadBinarySupplied": true,
+          "exactCadBinaryParsed": true,
+          "sourceArchive": "2466870000_DXF.zip",
+          "sourceArchiveSha256": "e248de04fa18ab287e5bc3b1fb5ebd07e5e6de768af32ab30dff46aeae8f2f48",
+          "frontDxf": "2466870000_front.DXF",
+          "frontDxfSha256": "17bd3bc956e6970c3915ab40d6a4158f0b05f1ac1f6f5db965c99af1ecf3c8c2",
+          "parsedEvidenceFile": "evidence/selection2/weidmuller-2466870000-dxf-terminal-evidence.json",
+          "terminalCentersVerified": true
+        },
+        "visualPolicy": {
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceImageDerivationAllowed": true,
+          "runtimeMustBeFrontFacing": true,
+          "terminalGeometryMustRemainIndependent": true
+        },
+        "visualResolutionPlan": {
+          "date": "2026-10-06",
+          "source": "best exact-model real PROtop image",
+          "correction": "derive front-facing runtime visual from perspective source",
+          "runtimeTarget": "source-image-derived-front",
+          "caveat": "visual derivation and terminal geometry remain independent; terminal geometry is now verified from the supplied exact DXF package"
+        },
+        "derivedFrontClosure": {
+          "date": "2026-10-06",
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceRepoFile": "dist/assets/products/weidmuller-pro-top-2466870000.jpg",
+          "sourceGitBlobSha": "fadb5328acca6ade71426fe877748985d7fe2313",
+          "sourceMatch": "exact",
+          "sourceOrientation": "three-quarter-perspective",
+          "runtimeFile": "dist/assets/products/weidmuller-pro-top-2466870000-derived-front.svg",
+          "method": "front-face-crop+nonuniform-rectification",
+          "sourceViewBox": "218 86 248 690",
+          "runtimeViewBox": "0 0 350 1300",
+          "physicalFrameMm": {
+            "width": 35,
+            "height": 130
+          },
+          "decision": "visual blocker closed by accepted derived-front policy; terminal geometry independently closed by exact 2466870000 DXF parse"
+        },
+        "latestCadMirrorSearchAudit": {
+          "date": "2026-10-06",
+          "officialCadIdentity": "2466870000 STEP/DXF/DWG direct manufacturer assets already confirmed",
+          "githubFilenameQueries": [
+            "2466870000.stp",
+            "2466870000.step",
+            "2466870000.dxf",
+            "2466870000.prj"
+          ],
+          "githubExactCadMirrorFound": false,
+          "decision": "historical pre-upload audit: GitHub mirror search failed, later superseded by user-supplied exact DXF package"
+        },
+        "userSuppliedDxfClosure": {
+          "date": "2026-10-06",
+          "archive": "2466870000_DXF.zip",
+          "archiveSizeBytes": 62912,
+          "archiveSha256": "e248de04fa18ab287e5bc3b1fb5ebd07e5e6de768af32ab30dff46aeae8f2f48",
+          "exactFiles": [
+            "2466870000_front.DXF",
+            "2466870000_back.DXF",
+            "2466870000_top.DXF",
+            "2466870000_bottom.DXF",
+            "2466870000_left.DXF",
+            "2466870000_right.DXF"
+          ],
+          "frontDxfSha256": "17bd3bc956e6970c3915ab40d6a4158f0b05f1ac1f6f5db965c99af1ecf3c8c2",
+          "parser": "ezdxf 1.4.4",
+          "cadFrontExtentsMm": {
+            "width": 34.000366024,
+            "height": 131.2000114231
+          },
+          "nominalFrameMm": {
+            "width": 35,
+            "height": 130,
+            "depth": 125
+          },
+          "runtimeAnchorsMm": {
+            "P": {
+              "x": 5.7,
+              "y": 3.8,
+              "side": "top",
+              "physical": "P1"
+            },
+            "M": {
+              "x": 16,
+              "y": 3.8,
+              "side": "top",
+              "physical": "M1"
+            },
+            "L": {
+              "x": 12,
+              "y": 124.8,
+              "side": "bottom",
+              "physical": "L"
+            },
+            "N": {
+              "x": 17.2,
+              "y": 124.8,
+              "side": "bottom",
+              "physical": "N"
+            }
+          },
+          "terminalIdentity": {
+            "input": [
+              "L",
+              "N",
+              "PE"
+            ],
+            "output": [
+              "P1",
+              "P2",
+              "M1",
+              "M2",
+              "M3"
+            ],
+            "officialOutputPattern": "+ + / - - -"
+          },
+          "geometryMethod": "exact-article-2d-dxf-mm-coordinate-extraction+nominal-frame-normalization",
+          "toleranceMm": 0.5,
+          "inferredCoordinates": false
+        }
+      }
+    },
+    "rittal-3241100": {
+      "componentId": "fan-1p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "source-image-derived-front",
+        "sourceAuthority": "exact repo source + Rittal manufacturer geometry",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "unverified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "Rittal official product page",
+        "dimensionsMm": {
+          "width": 255,
+          "height": 255,
+          "installationDepth": 107
+        },
+        "currentBinaryMetadataProvenance": "not manufacturer-identifying",
+        "binaryOrthographicAssetRetrievable": false,
+        "officialProductIdentityConfirmed": true,
+        "qualifyingFrontCandidateFound": false,
+        "currentAssetOrientation": "front-perspective",
+        "officialPdfProductImageAvailable": true,
+        "officialPdfDimensions": {
+          "width": 255,
+          "height": 255,
+          "installationDepth": 107,
+          "cutoutWidth": 224,
+          "cutoutHeight": 224
+        },
+        "officialPdfModel": "SK 3241.100",
+        "officialRittal2026PdfConfirmed": true,
+        "officialModelNumber": "SK 3241.100",
+        "officialConnectionNote": "all filter fans except 3237.XXX use spring-loaded/screwless spring terminal",
+        "productModificationNote": "connection-clamp cover omitted since May 2024; function and operational reliability unaffected",
+        "promotionDecision": "PROMOTED: exact repo source rectified to front-facing runtime visual under panel-visual-derived-front-v1 + verified 255x255 face and 224x224 cutout",
+        "recheckDate": "2026-10-05",
+        "officialProductPageExactIdentity": "SK 3241100 / TopTherm filter fan",
+        "official2026PdfPhotoObserved": true,
+        "official2026PdfPhotoType": "real product photo on official Rittal PDF cover",
+        "official2026PdfPhotoOrthographicFrontQualified": false,
+        "official2026PdfDimensions": {
+          "width": 255,
+          "height": 255,
+          "installationDepth": 107,
+          "cutoutWidth": 224,
+          "cutoutHeight": 224
+        },
+        "officialConnectionSystem": "screwless spring terminal (except 3237.XXX)",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "installation-envelope-evidence-available",
+        "profileCadEvidence": "official Rittal data verifies 255 x 255 face, 107 mm installation depth, 25 mm projection/build depth and 224 x 224 cutout",
+        "profileCadRuntimeDecision": "sufficient for installation envelope/cutout, not sufficient for detailed verified-profile collider",
+        "officialPdfProductImageOrthographicFrontQualified": false,
+        "officialPdfProductImageQualificationNote": "Official Rittal PDF contains a real product photo, but it is not a qualifying exact orthographic-front replacement asset.",
+        "latestRecheckDate": "2026-10-05",
+        "latestOfficialArticleIdentity": "SK 3241100 / SK 3241.100",
+        "latestOfficialWHDDescriptionMm": {
+          "width": 255,
+          "height": 255,
+          "buildDepth": 25
+        },
+        "latestOfficialInstallationDepthMm": 107,
+        "latestOfficialCutoutMm": {
+          "width": 224,
+          "height": 224
+        },
+        "latestOfficialConnection": "spring-loaded terminal for this model family (3237.XXX exception does not apply)",
+        "latestVisualQualification": "official product/PDF evidence does not provide a qualifying exact orthographic-front real binary for repo promotion",
+        "frontCandidateAuditDate": "2026-10-05",
+        "frontCandidateAuditSource": "Rittal official 2026 exact-model PDF/product page",
+        "frontCandidateAuditResult": "exact-official-product-photo-present-but-orthographic-qualification-not-established",
+        "frontCandidateAuditNotes": "Official exact-model PDF is accessible and includes a product photo, but pixel-level screenshot retrieval failed; do not promote without direct orthographic verification.",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "https://www.rittal.com/sg-en/products/BRA230621002/BRA230621004/BRA230621009/BRA230728002/PRO0299?variantId=3241100",
+          "supportingPdf": "https://www.elektrobalt.lt/amfile/file/download/file/5321/product/12712/",
+          "result": "exact SK 3241.100 identity and official dimensions re-confirmed; available official product photo remains three-quarter",
+          "blocker": "qualifying exact orthographic-front real binary + provenance still required"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/rittal-3241100.jpg",
+          "gitBlobSha": "ff910d08901071286699887690ec512b0e5a942d",
+          "exactMarkingVisible": false,
+          "visibleMarking": "no exact article marking visible",
+          "singleProduct": true,
+          "orientation": "front-perspective",
+          "orthographicQualified": false,
+          "disqualification": "side/depth edge visible and binary itself does not independently establish exact 3241100 identity"
+        },
+        "sourceCandidateRefresh": {
+          "date": "2026-10-06",
+          "officialPdf": "https://www.rittal.com/pdf-creator/variant/in-en/3241100",
+          "exactModel": "SK 3241.100",
+          "exactDimensionsMm": {
+            "width": 255,
+            "height": 255,
+            "installationDepth": 107
+          },
+          "strongFrontCandidate": "https://ramautomations.com/cdn/shop/files/fan-filter-unit-sk-3241_100-rittal-ram-automations.jpg?v=1750876883&width=3840",
+          "orientation": "near-front-perspective",
+          "qualifiesOrthographicFront": false,
+          "decision": "candidate only; residual perspective/depth remains"
+        },
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "resolved-by-derived-front-from-existing-exact-repo-source",
+          "promotionAfterImport": "completed via derived-front policy; no new external binary required"
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 5,
+          "authority": "supplier",
+          "exactProduct": "SK 3241.100 / 3241100",
+          "page": "https://usedindustrialparts.com/tr-tr/products/rittal-sk-3241-100-fan-filter-unit",
+          "image": "https://usedindustrialparts.com/cdn/shop/files/Rittal-SK-3241_100-Fan-Filter-Unit-Fan-Unit-Used-Industrial-Parts-2.jpg?v=1751382436&width=1946",
+          "orientation": "strong-front",
+          "intakeMode": "visual",
+          "nextGate": "binary transport -> selection2-import-asset.cjs -> independent pixel audit -> runtime binding if strict orthographic gate passes"
+        },
+        "depthReconciliationGate": {
+          "date": "2026-10-06",
+          "nominalFaceMm": {
+            "width": 255,
+            "height": 255
+          },
+          "installationDepthMm": 107,
+          "alternateOverallDepthEvidenceMm": 132,
+          "status": "requires-reconciliation-before-promoting-3d-envelope",
+          "rule": "installation depth and overall body depth are distinct concepts; do not overwrite one with the other without exact drawing evidence"
+        },
+        "newFrontCandidate": {
+          "date": "2026-10-06",
+          "sourceAuthority": "supplier",
+          "page": "https://usedindustrialparts.com/tr-tr/products/rittal-sk-3241-100-fan-filter-unit",
+          "image": "https://usedindustrialparts.com/cdn/shop/files/Rittal-SK-3241_100-Fan-Filter-Unit-Fan-Unit-Used-Industrial-Parts-2.jpg?v=1751382436&width=1946",
+          "exactModel": "SK 3241.100",
+          "orientation": "strong-front",
+          "sourceLevelOrthographicQualified": true,
+          "repoBinaryAvailable": false,
+          "decision": "source-level front candidate accepted for acquisition priority; binary/provenance + independent pixel audit still mandatory before runtime binding"
+        },
+        "visualPolicy": {
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceImageDerivationAllowed": true,
+          "runtimeMustBeFrontFacing": true,
+          "terminalGeometryMustRemainIndependent": true
+        },
+        "visualResolutionPlan": {
+          "date": "2026-10-06",
+          "source": "best exact SK 3241.100 real product image",
+          "correction": "derive front-facing runtime visual from strong-front/perspective source",
+          "runtimeTarget": "source-image-derived-front",
+          "caveat": "depth metadata reconciliation remains separate"
+        },
+        "derivedFrontPromotion": {
+          "date": "2026-10-06",
+          "policyId": "panel-visual-derived-front-v1",
+          "sourceRepoFile": "dist/assets/products/rittal-3241100.jpg",
+          "sourceGitBlobSha": "ff910d08901071286699887690ec512b0e5a942d",
+          "sourceMatch": "exact",
+          "sourceOrientation": "front-perspective",
+          "runtimeFile": "dist/assets/products/rittal-3241100-derived-front.svg",
+          "method": "front-face-crop+nonuniform-rectification",
+          "sourceViewBox": "63 29 180 251",
+          "runtimeViewBox": "0 0 510 510",
+          "physicalFrameMm": {
+            "width": 255,
+            "height": 255
+          },
+          "mountingCutoutMm": {
+            "width": 224,
+            "height": 224
+          },
+          "installationDepthMm": 107,
+          "projectionDepthMm": 25,
+          "decision": "promoted for panel placement/rendering; electrical terminal geometry remains unverified and is not inferred from rectified visual"
+        }
+      }
+    },
+    "sick-wtb4-3p2161": {
+      "componentId": "photoeye",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "isometric-allowed",
+        "sourceAuthority": "RS supplier binary + SICK manufacturer datasheet identity",
+        "provenance": "verified"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "connectorized-external",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "SICK official datasheet",
+        "dimensionsMm": {
+          "width": 16,
+          "height": 39.5,
+          "depth": 12
+        },
+        "officialTechnicalFrontDrawing": "available",
+        "officialPhotoNote": "illustration may differ / perspective product photo",
+        "currentBinaryMetadataProvenance": "not manufacturer-identifying",
+        "officialProductIdentityConfirmed": true,
+        "qualifyingFrontCandidateFound": false,
+        "officialPhotoOrientation": "perspective",
+        "officialTechnicalFrontDrawingAvailable": true,
+        "officialDatasheetImageDisclaimer": "Resimler farklı olabilir / images may differ",
+        "exactReplacementPhotoAcceptableFromDatasheet": false,
+        "officialDatasheetDate": "2025-11-21",
+        "officialPartNumber": 1028099,
+        "officialDimensionsMm": {
+          "width": 16,
+          "height": 39.5,
+          "depth": 12
+        },
+        "officialConnector": "M8 3-pin",
+        "officialDimensionalDrawingAvailable": true,
+        "officialDimensionalDrawingNotes": "WTx4-3 potentiometer drawing gives front/side dimensions and optical/mounting callouts.",
+        "officialPhotoDisclaimer": "Illustration may differ",
+        "promotionDecision": "PROMOTED: exact dimensions + exact repo visual with RS provenance accepted under sensor policy + exact SICK M8 3-pin connector identity/pin assignment; per-pin body terminal anchors are not fabricated because this is a connectorized external field device",
+        "recheckDate": "2026-10-05",
+        "officialExactIdentity": "WTB4-3P2161 / part 1028099",
+        "officialDatasheetIllustrationMayDiffer": true,
+        "officialProductPhotoOrientation": "three-quarter/perspective",
+        "officialTechnicalDrawingUsableForGeometry": true,
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "official-2d-dimensional-profile-evidence-available",
+        "profileCadEvidence": "official SICK datasheet provides front/side dimensional drawing for WTx4-3 housing",
+        "profileCadRuntimeDecision": "retain conservative-envelope; drawing is usable geometry evidence but not a full verified 3D collider",
+        "latestRecheckDate": "2026-10-05",
+        "latestOfficialExactIdentity": "WTB4-3P2161 / 1028099",
+        "latestOfficialProductPhotoView": "three-quarter/perspective",
+        "latestOfficialPhotoDisclaimer": "images may differ from original",
+        "latestOfficialDrawingGeometry": {
+          "widthMm": 16,
+          "heightMm": 39.5,
+          "depthMm": 12,
+          "connector": "M8 3-pin"
+        },
+        "latestVisualQualification": "official datasheet photo remains non-qualifying for exact orthographic-front replacement",
+        "githubHostedExactBinarySearchDate": "2026-10-05",
+        "githubHostedExactBinaryFound": false,
+        "githubHostedExactBinarySearchNotes": "GitHub search returned text/demo references only; no repository-hosted exact product image binary",
+        "frontCandidateAuditDate": "2026-10-05",
+        "frontCandidateAuditResult": "exact-product-photos-found-but-side-or-three-quarter",
+        "frontCandidateAuditSources": [
+          "RS exact WTB4-3P2161 image",
+          "Next Day Automation exact WTB4-3P2161 image"
+        ],
+        "frontCandidateDisqualification": "side/three-quarter view; not orthographic-front",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "source": "https://au.rs-online.com/web/p/photoelectric-sensors/5300939",
+          "image": "https://media.rs-online.com/image/upload/bo_1.5px_solid_white%2Cb_auto%2Cc_pad%2Cdpr_2%2Cf_auto%2Ch_399%2Cq_auto%2Cw_710/c_pad%2Ch_399%2Cw_710/F5300939-01?pgw=1",
+          "result": "exact WTB4-3P2161/1028099 product image rechecked; visible article marking but side/three-quarter orientation",
+          "blocker": "qualifying exact orthographic-front real binary + provenance still required"
+        },
+        "repoBinaryPixelAudit": {
+          "date": "2026-10-06",
+          "file": "dist/assets/products/sick-wtb4.jpg",
+          "gitBlobSha": "549b3e4c73324ad39f836cdf9d898f3f5c7ce71d",
+          "exactMarkingVisible": true,
+          "visibleMarking": "WTB4-3P2161 / 1028099",
+          "singleProduct": true,
+          "orientation": "side-three-quarter",
+          "orthographicQualified": false,
+          "disqualification": "sensor side body and connector depth dominate; not a front orthographic view",
+          "orientationPolicyResult": "accepted-under-sensor-visual-flex-v1 if exact identity/provenance remains valid"
+        },
+        "sourceCandidateRefresh": {
+          "date": "2026-10-06",
+          "page": "https://us.rs-online.com/product/sick/wtb4-3p2161/70879568/",
+          "image": "https://res.cloudinary.com/allied-electronics-automation/image/upload/b_rgb%3AFFFFFF%2Cc_pad%2Cdpr_1.0%2Cf_auto%2Ch_457%2Cq_auto%2Cw_800/c_pad%2Ch_457%2Cw_800/70879568_alt.jpg?_i=AB&pgw=1",
+          "exactArticleMarkingVisible": true,
+          "visibleArticle": "WTB4-3P2161 / 1028099",
+          "orientation": "side-orthographic",
+          "qualifiesRequiredFront": false,
+          "decision": "exact side product view, but not the required front/lens orthographic orientation"
+        },
+        "binaryIntakeGate": {
+          "script": "scripts/selection2-import-asset.cjs",
+          "mode": "visual",
+          "stagingStatus": "awaiting-external-binary",
+          "promotionAfterImport": "requires independent pixel audit + runtime binding + regression"
+        },
+        "preferredAcquisitionTarget": {
+          "priority": 6,
+          "authority": "manufacturer-or-authorized-distributor",
+          "exactProduct": "WTB4-3P2161 / 1028099",
+          "intakeMode": "visual",
+          "nextGate": "front/lens orthographic real binary; side-orthographic and three-quarter images remain non-qualifying"
+        },
+        "frontLensCandidateRefresh": {
+          "date": "2026-10-06",
+          "sourceAuthority": "supplier",
+          "page": "https://shop.faure-technologies.com/fr/1028099-cellule-photoelectrique-wtb4-3p2161-portee-de-15-a-150-mm",
+          "image": "https://m.shop.faure-technologies.com/data/medias/11845/style/mobile_prod_sheet/Cellule_photoelectrique_Sick_1028099.jpg",
+          "exactArticle": "WTB4-3P2161 / 1028099",
+          "orientation": "front-lens-three-quarter",
+          "frontLensVisible": true,
+          "orthographicQualified": false,
+          "decision": "useful visual identity evidence only; top/side depth remains visible, so strict front orthographic gate stays blocked"
+        },
+        "sensorVisualPolicy": {
+          "policyId": "sensor-visual-flex-v1",
+          "applies": true,
+          "isometricAllowed": true,
+          "threeQuarterAllowed": true,
+          "frontOnlyRequired": false,
+          "rationale": "sensor usability benefits from seeing lens/sensing face, connector and body orientation; exact identity/provenance still mandatory"
+        },
+        "currentRuntimeVisual": {
+          "file": "dist/assets/products/sick-wtb4.jpg",
+          "gitBlobSha": "549b3e4c73324ad39f836cdf9d898f3f5c7ce71d",
+          "exactPart": "WTB4-3P2161",
+          "officialPartNumber": 1028099,
+          "imageSourcePage": "https://nz.rs-online.com/web/p/photoelectric-sensors/5300939",
+          "imageUrl": "https://media.rs-online.com/f_auto%2Cq_auto%2Cbo_1.5px_solid_white%2Cb_auto%2Cc_pad%2Cdpr_2%2Ch_399%2Cw_710/c_pad%2Ch_399%2Cw_710/F5300939-01?pgw=1",
+          "identitySource": "https://www.sick.com/media/pdf/6/76/976/dataSheet_WTB4-3P2161_1028099_en.pdf",
+          "orientation": "side-three-quarter",
+          "policyResult": "accepted-under-sensor-visual-flex-v1",
+          "visualGate": "closed"
+        },
+        "connectorInterface": {
+          "date": "2026-10-06",
+          "source": "https://www.sick.com/media/pdf/6/76/976/dataSheet_WTB4-3P2161_1028099_en.pdf",
+          "exactArticle": "WTB4-3P2161 / 1028099",
+          "connector": "M8, 3-pin",
+          "connectionDiagram": "Cd-045",
+          "pinAssignment": {
+            "BN": 1,
+            "BU": 3,
+            "BK": 4
+          },
+          "functions": {
+            "1": "+ (L+)",
+            "3": "- (M)",
+            "4": "Q"
+          },
+          "dimensionalDrawing": "WTx4-3, potentiometer",
+          "connectionCallout": "8 = Connection",
+          "panelInterpretation": "external connectorized field device; no fabricated per-conductor body terminal centers",
+          "geometryGateResult": "accepted-connectorized-external"
+        }
+      }
+    },
+    "siemens-6sl3210-5bb21-5uv1": {
+      "componentId": "sinamics-v20-1p",
+      "status": "promoted",
+      "visual": {
+        "match": "exact",
+        "orientation": "orthographic-front",
+        "sourceAuthority": "supplier",
+        "provenance": "recorded"
+      },
+      "geometry": {
+        "dimensions": "verified",
+        "terminalGeometry": "verified",
+        "panelGeometryReady": true
+      },
+      "blockers": [],
+      "nextAcceptance": [],
+      "evidence": {
+        "exactProductSource": "Siemens Industry Mall",
+        "manufacturerImageCaxGallery": "4 assets advertised",
+        "frameSize": "FSAC",
+        "dimensionsMm": {
+          "width": 90,
+          "height": 160,
+          "depth": 147
+        },
+        "currentVisual": "user-selected canonical single-product orthographic-front V20 image calibrated to the exact 90.8 x 160.9 mm DXF front frame",
+        "exactSingleProductBinaryRetrievable": true,
+        "officialProductIdentityConfirmed": true,
+        "qualifyingFrontCandidateFound": true,
+        "exactSingleModelFrontPhotoFound": true,
+        "exactManufacturerPartNumber": "6SL3210-5BB21-5UV1",
+        "rsExactProductPageAvailable": true,
+        "rsCadDownloadAdvertised": true,
+        "manufacturerProductImagesAndCadCount": 4,
+        "accessibleExactPhotoOrientation": "orthographic-front",
+        "currentAssetStillDisqualified": false,
+        "officialIndustryMallIdentityConfirmed": true,
+        "officialIndustryMallDescription": "SINAMICS V20 1AC 200-240V, 1.5 kW, size AC",
+        "officialDimensionsMm": {
+          "width": 90,
+          "height": 160,
+          "depth": 147
+        },
+        "officialImageDisclaimer": "Abbildung ähnlich / illustration similar",
+        "promotionDecision": "promoted: user-selected canonical orthographic-front runtime image is repo-backed and physically calibrated to exact Siemens CAD dimensions; terminal identities/order and center coordinates remain verified by Siemens manual + exact article DXF",
+        "recheckDate": "2026-10-05",
+        "officialExactIdentity": "6SL3210-5BB21-5UV1 / SINAMICS V20 / 1AC 200-240V / 1.5 kW / size AC",
+        "officialMallNominalDimensionsMm": {
+          "width": 90,
+          "height": 160,
+          "depth": 147
+        },
+        "officialDatasheetCalculatedDimensionsMm": {
+          "width": 91,
+          "height": 160.9,
+          "depth": 147
+        },
+        "dimensionReconciliationPolicy": "retain both nominal catalog size and datasheet-calculated dimensions; do not silently collapse discrepancy",
+        "officialImageGalleryCount": 4,
+        "officialProductImageDisclaimer": "Abbildung ähnlich / image similar",
+        "officialTerminalCenterDimensioned": false,
+        "terminalCenterCoordinates": {
+          "1": {
+            "x": 20.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "2": {
+            "x": 24.2,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "3": {
+            "x": 27.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "4": {
+            "x": 31.2,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "5": {
+            "x": 34.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "6": {
+            "x": 38.2,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "7": {
+            "x": 41.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "8": {
+            "x": 45.2,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "9": {
+            "x": 48.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "10": {
+            "x": 52.2,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "11": {
+            "x": 55.7,
+            "y": 122.2,
+            "side": "bottom"
+          },
+          "12": {
+            "x": 49.4,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "13": {
+            "x": 35.4,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "14": {
+            "x": 42.4,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "15": {
+            "x": 52.9,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "16": {
+            "x": 56.4,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "17": {
+            "x": 64.7,
+            "y": 123.1,
+            "side": "bottom"
+          },
+          "18": {
+            "x": 68.2,
+            "y": 123.1,
+            "side": "bottom"
+          },
+          "19": {
+            "x": 71.7,
+            "y": 123.1,
+            "side": "bottom"
+          },
+          "PE": {
+            "x": 18.1,
+            "y": 4.8,
+            "side": "top"
+          },
+          "L1": {
+            "x": 36,
+            "y": 11.3,
+            "side": "top"
+          },
+          "N": {
+            "x": 45.5,
+            "y": 11.3,
+            "side": "top"
+          },
+          "13b": {
+            "x": 38.9,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "14b": {
+            "x": 45.9,
+            "y": 110.2,
+            "side": "bottom"
+          },
+          "U": {
+            "x": 21.5,
+            "y": 148,
+            "side": "bottom"
+          },
+          "V": {
+            "x": 29.7,
+            "y": 148,
+            "side": "bottom"
+          },
+          "W": {
+            "x": 37.9,
+            "y": 148,
+            "side": "bottom"
+          },
+          "DC-": {
+            "x": 46.1,
+            "y": 148,
+            "side": "bottom"
+          },
+          "DC+": {
+            "x": 54.3,
+            "y": 148,
+            "side": "bottom"
+          },
+          "PE2": {
+            "x": 71.1,
+            "y": 154.3,
+            "side": "bottom"
+          }
+        },
+        "terminalClosureAuditDate": "2026-10-05",
+        "terminalClosureAuditResult": "closed-by-exact-article-2d-dxf-mm-coordinate-extraction",
+        "terminalClosureOfficialCadAssetsAdvertised": 4,
+        "terminalClosureNotes": "User-supplied exact Siemens CADClick DXF carries the exact 6SL3210-5BB21-5UV1 title block and mm units. The front drawing is 1:1 in the exact 90.8 x 160.9 mm frame. User-terminal 11+7+3 physical groups match the Siemens FSAA-FSAD numbering, and power terminals match the official V20 terminal assignment. Terminal geometry is now verified independently from the still-family repo visual.",
+        "profileCadAuditDate": "2026-10-05",
+        "profileCadAuditResult": "verified-exact-cad-profile",
+        "profileCadEvidence": "Siemens Industry Mall advertises 4 product/M-CAD/E-CAD assets for exact article",
+        "profileCadRuntimeDecision": "profileStatus is verified from exact article DXF multiview plus embedded U3D model; colliderStatus remains conservative-envelope because current door-sweep runtime still consumes a rectangular W/H/depth envelope rather than CAD profile polygons/mesh",
+        "latestRecheckDate": "2026-10-05",
+        "latestOfficialExactIdentity": "6SL3210-5BB21-5UV1",
+        "latestOfficialFrameSize": "FSAC",
+        "latestOfficialNominalDimensionsMm": {
+          "width": 90,
+          "height": 160,
+          "depth": 147
+        },
+        "latestOfficialCrossReferenceDimensionsConfirmed": true,
+        "latestOfficialCadRouteConfirmed": true,
+        "latestTerminalCenterSearchResult": "closed: exact article DXF bytes were supplied and parsed locally; terminal-center mm anchors are verified",
+        "latestVisualQualification": "PROMOTED: user-selected canonical front image is stored as the runtime repo binary and calibrated to the exact 90.8 x 160.9 mm 5UV1 DXF frame; exact article identity remains independently anchored by Siemens CAD/DXF plus the prior Gümrük Sepeti same-gallery 6SL3210-5BB21-5UV1 / 1.5 kW nameplate provenance",
+        "githubHostedExactBinarySearchDate": "2026-10-05",
+        "githubHostedExactBinaryFound": false,
+        "githubHostedExactBinarySearchNotes": "GitHub search returned text/catalog references only; no repository-hosted exact single-model product image binary",
+        "frontCandidateAuditDate": "2026-10-05",
+        "frontCandidateAuditResult": "exact-model-listing-found-but-no-qualifying-product-front",
+        "frontCandidateAuditNotes": "Exact 6SL3210-5BB21-5UV1 results showed packaging/model label or nearby V20 variants; neither establishes an exact single-model orthographic-front product binary.",
+        "cadPortalAuditDate": "2026-10-05",
+        "tracePartsExactPartConfirmed": true,
+        "tracePartsExactPartNumber": "6SL3210-5BB21-5UV1",
+        "tracePartsCadFormats": [
+          "STEP AP203",
+          "STEP AP214",
+          "STEP AP242",
+          "DWG 2D",
+          "DWG 3D",
+          "DXF 2D",
+          "DXF 3D",
+          "IGES",
+          "STL",
+          "PNG",
+          "JPG"
+        ],
+        "tracePartsCadRetrieveResult": "exact CAD portal confirmed; CAD file not retrieved/validated in current session",
+        "siemensCadAssetCountConfirmed": 4,
+        "cadRetrievalAuditDate": "2026-10-05",
+        "cadRetrievalAuditSources": [
+          "Siemens Industry Mall exact product page: 4 product/M-CAD/E-CAD assets advertised",
+          "TraceParts exact part page: 6SL3210-5BB21-5UV1 with STEP/DWG/DXF/IGES/STL and other formats"
+        ],
+        "cadRetrievalAuditResult": "exact CAD portal confirmed; direct exact CAD asset bytes not retrieved/validated in current session",
+        "siemensDynamicCadLinkResolution": "failed-cache-timeout",
+        "exactDatasheetTerminalDimensionRecheck": "datasheet endpoint timed out; no explicit terminal-center mm evidence obtained",
+        "officialExactDimensionDrawingResolvedDate": "2026-10-05",
+        "officialExactDimensionDrawingUrl": "https://static.siemens.com/mimes/10001000PNG/G_D011_XX_00424P.png",
+        "officialExactCircuitDiagramUrl": "https://static.siemens.com/mimes/10001000PNG/G_SD01_XX_00852P.png",
+        "officialExactStaticAssetResolutionSource": "exact 6SL3210-5BB21-5UV1 product-download listing resolving Siemens static dimension drawing and circuit diagram",
+        "officialExactStaticAssetPixelAuditResult": "dimension drawing retrieved and visually inspected: exact Siemens orthographic front+side technical drawing is visible; explicit terminal-center mm dimensions are not present, so terminal geometry remains unverified",
+        "exactImageFalsePositiveAuditDate": "2026-10-05",
+        "exactImageFalsePositiveFindings": [
+          {
+            "source": "eBay exact 6SL3210-5BB21-5UV1",
+            "result": "exact packaging label only; no product front binary"
+          },
+          {
+            "source": "eBay front-facing SINAMICS V20",
+            "result": "front image is 6SL3210-5BB21-5UV0, not exact -5UV1"
+          },
+          {
+            "source": "Dimensional front-facing SINAMICS V20",
+            "result": "image/model belongs to 6SL3210-5BE21-5UV1, not exact 6SL3210-5BB21-5UV1"
+          },
+          {
+            "source": "TradeIndia exact-title listing",
+            "result": "product photo cannot be trusted as exact model identity from page title alone; terminal/input layout not proven against exact FSAC article"
+          }
+        ],
+        "exactImageFalsePositivePolicy": "exact listing/page title does not establish exact-image identity; visible part-number or authoritative exact asset provenance is required",
+        "terminalIdentityStatus": "verified",
+        "terminalIdentityVerifiedDate": "2026-10-05",
+        "terminalIdentitySource": "Siemens SINAMICS V20 Operating Instructions, FSAA-FSAD/FSAC terminal layout",
+        "verifiedRuntimeTerminalIds": [
+          "L1",
+          "N",
+          "PE",
+          "U",
+          "V",
+          "W",
+          "DC-",
+          "DC+",
+          "PE2",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "13",
+          "13b",
+          "14",
+          "14b",
+          "12",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19"
+        ],
+        "terminalIdentityDuplicateMapping": {
+          "13b": "second physical terminal 13 (24V)",
+          "14b": "second physical terminal 14 (0V)"
+        },
+        "terminalIdentityNotes": "Official manual verifies the FSAA-FSAD user terminal numbering/order and power terminal functions; current runtime identity is verified independently from terminal-center geometry.",
+        "rsExactImageKeyAuditDate": "2026-10-05",
+        "rsExactProductPageSource": "RS exact product page, RS stock 2033539, manufacturer part 6SL3210-5BB21-5UV1",
+        "rsExactImageKeys": [
+          "R2033539-01",
+          "2033539"
+        ],
+        "rsExactImageCountObserved": 2,
+        "rsExactImagePixelAuditResult": "primary exact RS image R2033539-01 retrieved and pixel-audited: single-product real image is front-perspective, not orthographic-front; secondary image key 2033539 remains unresolved",
+        "tracePartsExactCadPageConfirmed": true,
+        "tracePartsExactCadPageSource": "TraceParts/RS exact part 6SL3210-5BB21-5UV1, RS stock 2033539",
+        "tracePartsExactCadFormatsConfirmed": [
+          "DWG 2D",
+          "DWG 3D",
+          "DXF 2D",
+          "DXF 3D",
+          "STEP AP203",
+          "STEP AP214",
+          "STEP AP242",
+          "IGES",
+          "STL",
+          "PNG",
+          "JPG"
+        ],
+        "exactVisualAcquisitionTarget": "retrieve RS image key R2033539-01 or 2033539 and verify visible exact-model identity/orientation; page identity alone is not sufficient",
+        "officialExactDimensionDrawingPixelAuditDate": "2026-10-05",
+        "officialExactDimensionDrawingVisualResult": "orthographic-front-and-side technical drawing",
+        "officialExactDimensionDrawingTerminalCenterDecision": "do-not-infer: visible terminal blocks are insufficient for verified mm centers without explicit dimension/validated CAD mapping",
+        "rsExactPrimaryImageAuditDate": "2026-10-05",
+        "rsExactPrimaryImageUrl": "https://media.rs-online.com/f_auto/R2033539-01.jpg",
+        "rsExactPrimaryImageRetrieved": true,
+        "rsExactPrimaryImageSingleProduct": true,
+        "rsExactPrimaryImageOrientation": "front-perspective",
+        "rsExactPrimaryImageExactPageProvenance": true,
+        "rsExactPrimaryImageQualifiesOrthographicFront": false,
+        "rsSecondaryImageKeyState": "2033539 key published on exact RS page but binary endpoint not resolved in this session",
+        "officialTerminalPhysicalLayoutAuditDate": "2026-10-05",
+        "officialTerminalPhysicalLayoutSource": "Siemens SINAMICS V20 Operating Instructions 04/2019, terminal description for FSAA to FSAC",
+        "officialUserTerminalRows": {
+          "top": [
+            "13",
+            "13b",
+            "14",
+            "14b",
+            "12",
+            "15",
+            "16"
+          ],
+          "bottom": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11"
+          ],
+          "relay": [
+            "17",
+            "18",
+            "19"
+          ]
+        },
+        "officialPowerTerminalPhysicalLabels": {
+          "mains": [
+            "L1",
+            "L2/N",
+            "PE"
+          ],
+          "motorAndDc": [
+            "U",
+            "V",
+            "W",
+            "DC-",
+            "DC+",
+            "PE"
+          ]
+        },
+        "runtimeToOfficialPowerLabel": {
+          "L1": "L1",
+          "N": "L2/N",
+          "PE": "input PE",
+          "U": "U",
+          "V": "V",
+          "W": "W",
+          "DC-": "DC-",
+          "DC+": "DC+",
+          "PE2": "output PE"
+        },
+        "runtimePhysicalTerminalLayoutMatch": true,
+        "runtimeDuplicateTerminalMappingConfirmed": {
+          "13b": "second physical 13 / +24 V",
+          "14b": "second physical 14 / 0 V"
+        },
+        "terminalGeometryQualification": "verified from exact Siemens 6SL3210-5BB21-5UV1 DXF vector geometry; current family/collage visual remains independently disqualified",
+        "siemensCadGenEndpointAuditDate": "2026-10-05",
+        "siemensCadGenEndpointTemplate": "https://mall.industry.siemens.com/spice/docuservice/rest/document.spring?articleNumber=6SL3210-5BB21-5UV1++&language=en&region=CN&documentGroup=MallDetailPage&documentId=CADGENPLUS3D",
+        "siemensCadGenEndpointDerivation": "derived from Siemens indexed CADGENPLUS3D document URLs for neighboring exact V20 articles; corrected service path is /spice/docuservice/, not /spice/docservice/",
+        "siemensCadGenEndpointResolutionState": "exact endpoint constructed; web retrieval rejects direct binary and execution environment DNS cannot resolve mall.industry.siemens.com, so CAD bytes remain unavailable",
+        "siemensCadGenEndpointValidation": "route semantics match Siemens indexed CADGENPLUS3D pattern; no terminal-center geometry promoted without returned exact file bytes",
+        "siemensCadGenRegionalAuditDate": "2026-10-05",
+        "siemensCadGenRegionalAttempts": [
+          {
+            "region": "WW",
+            "language": "en",
+            "result": "gateway-url-not-accessible-via-web-layer"
+          },
+          {
+            "region": "DE",
+            "language": "de",
+            "result": "gateway-url-not-accessible-via-web-layer"
+          },
+          {
+            "region": "AT",
+            "language": "de",
+            "result": "gateway-url-not-accessible-via-web-layer"
+          },
+          {
+            "region": "US",
+            "language": "en",
+            "result": "gateway-url-not-accessible-via-web-layer"
+          },
+          {
+            "region": "CN",
+            "language": "en",
+            "result": "gateway-url-not-accessible-via-web-layer"
+          }
+        ],
+        "siemensCadGenRegionalConclusion": "region/language mismatch ruled out: WW/DE/AT/US/CN variants all fail at the same document-gateway access layer",
+        "siemensIndexedStaticCadSearchDate": "2026-10-05",
+        "siemensIndexedStaticCadSearchResult": "no exact 6SL3210-5BB21-5UV1 CADClick/static *_3D_* file was indexed by current web search; official Mall, Hardy Schmitz and TraceParts continue to independently confirm exact CAD availability",
+        "officialD311FamilyDrawingAuditDate": "2026-10-05",
+        "officialD311FamilyDrawingCode": "G_D011_XX_00424a",
+        "officialD311FamilyDrawingSource": "Siemens D 31.1 2024 SINAMICS V20 dimensional drawings",
+        "officialD311FamilyDrawingAppliesToFrames": [
+          "FSAA",
+          "FSAB",
+          "FSAC",
+          "FSAD",
+          "FSA",
+          "FSB",
+          "FSC",
+          "FSD",
+          "FSE"
+        ],
+        "officialD311FsacDimensionsMm": {
+          "widthA": 90.8,
+          "heightB2": 160.9,
+          "depthC": 147,
+          "drillingWidthD": 79,
+          "drillingHeightE": 140
+        },
+        "officialD311FamilyDrawingShowsTerminals": true,
+        "officialD311FamilyDrawingExactTerminalScalingQualified": false,
+        "officialD311FamilyDrawingDisqualification": "the same generic front/side line drawing is paired with multiple frame-size dimension rows from FSAA through FSE; terminal pixels in that family drawing cannot be scaled as exact FSAC terminal-center coordinates",
+        "terminalGeometryInferencePolicy": "do not derive FSAC terminal-center mm anchors from G_D011_XX_00424a/P pixels; require exact frame/article CAD bytes or explicit exact-frame terminal dimensions",
+        "latestOfficialTerminalLayoutCrossCheckDate": "2026-10-05",
+        "latestOfficialTerminalLayoutCrossCheckSource": "Siemens SINAMICS V20 Operating Instructions 12/2024",
+        "latestOfficialTerminalLayoutCrossCheckResult": "current official manual still confirms duplicated 13/14 user terminals and FSAA-FSAD user-terminal ordering; identity/layout remains verified but no terminal-center mm dimensions are supplied",
+        "latestExactPhotoSearchDate": "2026-10-05",
+        "latestExactPhotoSearchResult": "exact 6SL3210-5BB21-5UV1 product listings continue to expose perspective/three-quarter photos; no qualifying exact single-model orthographic-front real binary found",
+        "exactArticleDxfAuditDate": "2026-10-05",
+        "exactArticleDxfFile": "6SL3210-5BB21-5UV1_2D_dimension_withFrame_en.DXF",
+        "exactArticleDxfSha256": "323f43f81033c746e1b19740387cd3518e0c77478eecb422e2fbbc2324f91bfd",
+        "exactArticleDxfFormat": "AutoCAD DXF AC1015 / R2000",
+        "exactArticleDxfTitleBlockArticle": "6SL3210-5BB21-5UV1",
+        "exactArticleDxfDrawingUnit": "mm [in]",
+        "exactArticleDxfFrontLayer": "10000_FRONT",
+        "exactArticleDxfFrontBodyFrameMm": {
+          "width": 90.8,
+          "height": 160.9
+        },
+        "exactArticleDxfFrontBodyReference": {
+          "leftX": 358.428809,
+          "rightX": 449.228809,
+          "bottomY": 318.163492,
+          "topY": 479.063492
+        },
+        "exactArticleDxfGeometryDecision": "verified exact-article 1:1 vector geometry; terminal anchors are extracted directly from DXF entity centers in the 90.8 x 160.9 mm front body frame, not scaled from the generic family raster drawing",
+        "terminalGeometryVerifiedDate": "2026-10-05",
+        "terminalGeometryVerifiedMethod": "exact-article-2d-dxf-mm-coordinate-extraction",
+        "terminalGeometryToleranceMm": 0.5,
+        "exactArticleDxfUserTerminalStructure": {
+          "lowerRow": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11"
+          ],
+          "upperSeven": [
+            "13",
+            "13b",
+            "14",
+            "14b",
+            "12",
+            "15",
+            "16"
+          ],
+          "relayBlock": [
+            "17",
+            "18",
+            "19"
+          ]
+        },
+        "userSuppliedFrontImageAuditDate": "2026-10-05",
+        "userSuppliedFrontImageSourceUrl": "https://www.industry-mobile-support.siemens-info.com/en/product/6sl3210-5be21-5uv0",
+        "userSuppliedFrontImageObservedOrientation": "orthographic-front",
+        "userSuppliedFrontImageSingleProduct": true,
+        "userSuppliedFrontImageSourceArticle": "6SL3210-5BE21-5UV0",
+        "userSuppliedFrontImageTargetArticle": "6SL3210-5BB21-5UV1",
+        "userSuppliedFrontImageExactTargetMatch": false,
+        "userSuppliedFrontImageDisqualification": "source page is Siemens article 6SL3210-5BE21-5UV0, not target 6SL3210-5BB21-5UV1; 5BE21-5UV0 is a different V20 variant/frame and cannot satisfy exact target visual provenance",
+        "userSuppliedFrontImageDecision": "retain as front-orientation/reference evidence only; do not promote or replace target visual",
+        "userSuppliedSiemensTifAuditDate": "2026-10-05",
+        "userSuppliedSiemensTifFile": "P_D011_XX_01069V.tif",
+        "userSuppliedSiemensTifSha256": "028a1db783203544dd5a54ca4211fbe92b0e4c4f5992a96a680d2777e3361784",
+        "userSuppliedSiemensTifDimensionsPx": {
+          "width": 2189,
+          "height": 2620
+        },
+        "userSuppliedSiemensTifDpi": 300,
+        "userSuppliedSiemensTifMetadata": {
+          "artist": "Siemens AG - Industry Sector",
+          "copyright": "© Siemens AG 2010, Alle Rechte vorbehalten",
+          "rightsWebStatement": "http://www.automation.siemens.com/bilddb",
+          "software": "Adobe Photoshop CS6 (Windows)",
+          "savedAt": "2018-02-27 12:00:50"
+        },
+        "userSuppliedSiemensTifObservedOrientation": "three-quarter-front",
+        "userSuppliedSiemensTifVisibleArticle": "6SL3210-5BB12-5UV1",
+        "userSuppliedSiemensTifVisibleMotorPowerKw": 0.25,
+        "userSuppliedSiemensTifTargetArticle": "6SL3210-5BB21-5UV1",
+        "userSuppliedSiemensTifExactTargetMatch": false,
+        "userSuppliedSiemensTifDisqualification": "official Siemens Image Database TIFF, but the visible side nameplate identifies 6SL3210-5BB12-5UV1 (0.25 kW), not target 6SL3210-5BB21-5UV1 (1.5 kW); image is also three-quarter/front-perspective rather than orthographic-front",
+        "userSuppliedSiemensTifDecision": "retain as authoritative wrong-article/image-database false-positive evidence only; do not promote or store as target visual",
+        "userSuppliedRs1368125AuditDate": "2026-10-05",
+        "userSuppliedRs1368125SourceUrl": "https://no.rs-online.com/web/p/inverter-drives/1368125",
+        "userSuppliedRs1368125StockNo": "136-8125",
+        "userSuppliedRs1368125SourceArticle": "6SL3210-5BB17-5UV1",
+        "userSuppliedRs1368125SourcePowerKw": 0.75,
+        "userSuppliedRs1368125SourceFrame": "FSAB",
+        "userSuppliedRs1368125TargetArticle": "6SL3210-5BB21-5UV1",
+        "userSuppliedRs1368125ExactTargetMatch": false,
+        "userSuppliedRs1368125ObservedOrientation": "front-perspective",
+        "userSuppliedRs1368125Files": [
+          {
+            "file": "F1368125-01(3).webp",
+            "sha256": "8fd313826aca499226d2bc7fdcc5ad0b464b2e6fed40823cdf853bd06838e94b",
+            "width": 1420,
+            "height": 798
+          },
+          {
+            "file": "F1368125-01(1).webp",
+            "sha256": "79e4b83930286e2728d947ec7c522076b973c3c6659112aab114c38a50065c6a",
+            "width": 1420,
+            "height": 798
+          }
+        ],
+        "userSuppliedRs1368125Disqualification": "RS stock 136-8125 is manufacturer part 6SL3210-5BB17-5UV1 (0.75 kW, FSAB), not target 6SL3210-5BB21-5UV1 (1.5 kW, FSAC); uploaded F1368125-01 images are therefore wrong-article reference images and are also front-perspective rather than strict orthographic-front",
+        "userSuppliedRs1368125Decision": "retain as authoritative RS wrong-article false-positive evidence only; do not promote or store as target visual",
+        "exactRs2033539RecheckDate": "2026-10-05",
+        "exactRs2033539SourceUrl": "https://no.rs-online.com/web/p/inverter-drives/2033539",
+        "exactRs2033539Article": "6SL3210-5BB21-5UV1",
+        "exactRs2033539PrimaryImageKey": "R2033539-01",
+        "exactRs2033539PrimaryImageOrientation": "front-perspective",
+        "exactRs2033539PrimaryImageTargetExact": true,
+        "exactRs2033539PrimaryImageQualifiesOrthographicFront": false,
+        "woolarsExactPageAuditDate": "2026-10-05",
+        "woolarsExactPageUrl": "https://www.woolars.com/siemens-vfd/6sl3210-5bb21-5uv1/",
+        "woolarsExactPackagingLabelVisible": true,
+        "woolarsExactPackagingLabelArticle": "6SL3210-5BB21-5UV1",
+        "woolarsProductPhotoOrientation": "perspective",
+        "woolarsProductPhotoQualifiesOrthographicFront": false,
+        "woolarsDecision": "exact-page packaging labels corroborate target identity, but accessible real product image remains perspective and cannot satisfy orthographic-front visual promotion",
+        "ebayExactUsedListingAuditDate": "2026-10-05",
+        "ebayExactUsedListingUrl": "https://www.ebay.com/itm/127441554055",
+        "ebayExactUsedListingTitle": "1pc used Siemens 6SL3210-5BB21-5UV1",
+        "ebayExactUsedListingImageSetObserved": true,
+        "ebayExactUsedListingImageDescriptions": [
+          "front-panel product photo",
+          "side-panel/nameplate product photo",
+          "box/product-label photo",
+          "additional side/rear product photos"
+        ],
+        "ebayExactUsedListingPixelAuditComplete": true,
+        "ebayExactUsedListingVisibleArticleFromPixels": "6SL3210-5BB21-5UV1",
+        "ebayExactUsedListingQualifiesOrthographicFront": false,
+        "ebayExactUsedListingDecision": "source-level exact visual qualified: same listing photo set contains a straight-on single-product front image and a high-resolution side nameplate visibly reading 6SL3210-5BB21-5UV1; promotion remains blocked only until the original front binary is stored in repo with provenance and replaces the current family/collage asset",
+        "ebayExactUsedListingFrontImageUrl": "https://i.ebayimg.com/images/g/uDMAAeSwenJo9dWv/s-l1600.webp",
+        "ebayExactUsedListingNameplateImageUrl": "https://i.ebayimg.com/images/g/oxMAAeSwrBRo9dWz/s-l1600.webp",
+        "ebayExactUsedListingFrontOrientation": "orthographic-front",
+        "ebayExactUsedListingFrontSingleProduct": true,
+        "ebayExactUsedListingFrontImageQualifiesOrthographicFront": true,
+        "ebayExactUsedListingNameplateExactTargetMatch": true,
+        "ebayExactUsedListingSamePhotoSetProvenance": true,
+        "ebayExactUsedListingSourceLevelExactVisualQualified": true,
+        "ebayExactUsedListingRepoBinaryAvailable": false,
+        "ebayExactUsedListingRepoTransferAttemptDate": "2026-10-05",
+        "ebayExactUsedListingRepoTransferFailure": "high-resolution eBay image bytes are retrievable through the web layer, but execution-container DNS cannot resolve i.ebayimg.com; original binary cannot yet be copied into repo",
+        "exactSingleProductBinaryRetrievalScope": "repo binary present",
+        "profileRuntimeStatus": "verified",
+        "colliderRuntimeStatus": "conservative-envelope",
+        "profileVerifiedMethod": "exact-article-dxf-multiview+embedded-u3d",
+        "profileVerifiedBoundsMm": {
+          "width": 90.8,
+          "height": 160.9,
+          "depth": 147
+        },
+        "profileEvidenceFiles": [
+          {
+            "file": "6SL3210-5BB21-5UV1_2D_dimension_withFrame_en.DXF",
+            "sha256": "323f43f81033c746e1b19740387cd3518e0c77478eecb422e2fbbc2324f91bfd",
+            "role": "exact-article-2d-multiview"
+          },
+          {
+            "file": "6SL3210-5BB21-5UV1_3D_en.pdf",
+            "sha256": "edefd2605c6e4e8367e834922f3ab0bee7abbcc48f1e7f3b38462d11640bc778",
+            "role": "exact-article-embedded-u3d"
+          }
+        ],
+        "profileDxfVerification": {
+          "frontLayer": "10000_FRONT",
+          "frontDimensionMm": {
+            "width": 90.8,
+            "height": 160.9
+          },
+          "rightLayer": "12000_RIGHT",
+          "rightDepthDimensionMm": 147,
+          "rightRawExtentMm": {
+            "depth": 147.009998,
+            "height": 161.322435
+          },
+          "backLayer": "15000_BACK",
+          "backRawExtentMm": {
+            "width": 90.8,
+            "height": 160.9
+          }
+        },
+        "profile3dVerification": {
+          "pdfSubtype": "U3D",
+          "decodedStreamBytes": 917548,
+          "decodedStreamSha256": "d3915b3bbe9f4bc48724cf66f8770afbb16b1a555c6c6047431b1c5808d9a60c",
+          "views": [
+            "Top",
+            "Front",
+            "Right",
+            "Bottom",
+            "Back",
+            "Left",
+            "Isometric"
+          ]
+        },
+        "colliderPromotionDecision": "do not mark verified-profile until runtime collision code consumes validated CAD profile geometry; evidence availability alone is not collider integration",
+        "gumrukSepetiAuditDate": "2026-10-05",
+        "gumrukSepetiProductUrl": "https://www.gumruksepeti.com/products/siemens-sinamics-v20-6sl3210-5bb21-5uv1-1-5kw-surucu-2-el",
+        "gumrukSepetiListingNo": "357285789849",
+        "gumrukSepetiPageTitle": "Siemens Sinamics v20 , 6SL3210-5BB21-5UV1 1.5kw sürücü - Arızalı",
+        "gumrukSepetiFrontImageUrl": "https://www.gumruksepeti.com/cdn/shop/files/WhatsAppGorsel2025-02-25saat11.53.54_f18be419.jpg?v=1740473800",
+        "gumrukSepetiNameplateImageUrl": "https://www.gumruksepeti.com/cdn/shop/files/WhatsAppGorsel2025-02-25saat11.54.04_b7c5527d.jpg?v=1740473824",
+        "gumrukSepetiSameGalleryProvenance": true,
+        "gumrukSepetiVisibleNameplateArticle": "6SL3210-5BB21-5UV1",
+        "gumrukSepetiVisibleMotorPowerKw": 1.5,
+        "gumrukSepetiFrontSingleProduct": true,
+        "gumrukSepetiFrontOrientation": "orthographic-front",
+        "gumrukSepetiExactTargetMatch": true,
+        "userSuppliedGumrukFrontFile": "image.png",
+        "userSuppliedGumrukFrontSha256": "e6279665fe044e2b96258e6ebb3262510f63ad69b2ec0fb7736edaa934f10bad",
+        "repoVisualFile": "dist/assets/products/sinamics-v20-6sl3210-5bb21-5uv1-user-front-v2.webp",
+        "repoVisualSha256": "c8db14a110d3df76375289d3bfb30c0b25f1eab71ea9839ab9ff72dd0ef29667",
+        "repoVisualGitBlobSha": "47ea4bedb7153891a2ccee88e31ad3285e59dcc3",
+        "repoVisualDimensionsPx": {
+          "width": 512,
+          "height": 596
+        },
+        "repoVisualDerivative": "WebP quality 92 resized from user-supplied exact gallery front source",
+        "repoVisualProvenanceRecorded": true,
+        "gumrukSepetiDecision": "accepted for Selection 2: exact target identity is established by same-gallery nameplate; front image is single-product and orthographic-front; user-supplied front source was normalized to a repo WebP derivative with hashes recorded",
+        "previousRepoVisualSha256": "04113aeec074eefa59af923f45336893b4fb548875c74d1a8e223902eb5bddb0",
+        "previousRepoVisualGitBlobSha": "309e158c63ac04863b42441849827c88be34e4c3",
+        "runtimeVisualSelectionDate": "2026-10-05",
+        "runtimeVisualSelection": "user-supplied canonical SINAMICS V20 front image",
+        "userSuppliedCanonicalFrontSha256": "a9a7b7d93f82dd7e81be67d807df718f484aa0b881beb0b562f3838a1b38a9d2",
+        "runtimeVisualCalibration": {
+          "sourcePx": {
+            "width": 1086,
+            "height": 1448
+          },
+          "cropPx": {
+            "x": 140,
+            "y": 18,
+            "width": 807,
+            "height": 1430
+          },
+          "renderPx": {
+            "width": 280,
+            "height": 496
+          },
+          "physicalFrameMm": {
+            "width": 90.8,
+            "height": 160.9
+          },
+          "method": "crop exact physical front frame; high-quality WebP resample preserving 90.8x160.9 mm aspect"
+        },
+        "runtimePhysicalFrameMm": {
+          "width": 90.8,
+          "height": 160.9,
+          "depth": 147
+        },
+        "runtimePhysicalScaleDecision": "runtime/panel material envelope now uses the exact article DXF front frame 90.8 x 160.9 mm and 147 mm depth; Siemens nominal 90 x 160 x 147 mm remains retained separately as catalog nominal data",
+        "terminalPhysicalRows": {
+          "inputPower": [
+            "PE",
+            "L1",
+            "N"
+          ],
+          "upperControl": [
+            "13",
+            "13b",
+            "14",
+            "14b",
+            "12",
+            "15",
+            "16"
+          ],
+          "lowerControl": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11"
+          ],
+          "relay": [
+            "17",
+            "18",
+            "19"
+          ],
+          "outputPower": [
+            "U",
+            "V",
+            "W",
+            "DC-",
+            "DC+",
+            "PE2"
+          ]
+        },
+        "terminalVisualOrderVerified": true,
+        "terminalVisualOrderDecision": "visual grouping follows the Siemens FSAA-FSAD physical layout: duplicated 13/14 plus 12/15/16 in the upper control strip, 1-11 in the lower strip, and 17-19 in the relay block; exact mm centers remain authoritative from the exact 5UV1 DXF",
+        "latestAutoProgressAudit": {
+          "date": "2026-10-06",
+          "result": "promoted-runtime-layering-verified-by-contract",
+          "canonicalAsset": "dist/assets/products/sinamics-v20-6sl3210-5bb21-5uv1-user-front-v2.webp",
+          "renderFramePx": {
+            "width": 280,
+            "height": 496
+          },
+          "physicalFrameMm": {
+            "width": 90.8,
+            "height": 160.9
+          },
+          "terminalGeometry": "exact Siemens DXF anchors retained",
+          "wireLayerContract": "device photo/body below wires; terminal/control interaction overlay above wires",
+          "commits": [
+            "174f0984a2ad0b9a0056ab44026bd469bb70c7d0",
+            "f9b7f321fe3449989f1544457a1e5c6d5da683cd"
+          ]
+        },
+        "runtimeVisualRevision": "2026-10-06-v2-sharp",
+        "runtimeWireLayerContract": "device body/photo < wires < terminal/control interaction overlay",
+        "runtimeWireLayerContractCommits": [
+          "174f0984a2ad0b9a0056ab44026bd469bb70c7d0",
+          "f9b7f321fe3449989f1544457a1e5c6d5da683cd"
+        ]
+      }
+    }
+  },
+  "closureSnapshot": {
+    "date": "2026-10-06",
+    "total": 10,
+    "promoted": 10,
+    "blocked": 0,
+    "invalid": 0,
+    "blockedProducts": {},
+    "rule": "fail-closed: exact identity/provenance + accepted visual policy + required geometry evidence; Selection 2 is closed only when all required products are promoted"
+  },
+  "nextAcquisitionTargets": {
+    "date": "2026-10-06",
+    "order": [],
+    "policy": "Selection 2 complete; no remaining product acquisition blockers."
+  },
+  "section2Closure": {
+    "status": "closed-complete",
+    "auditDate": "2026-10-06",
+    "promoted": [
+      "siemens-5sl6116-7",
+      "siemens-5sl6216-7",
+      "siemens-5sl6316-7",
+      "siemens-6sl3210-5bb21-5uv1",
+      "siemens-5tl1163-0",
+      "sick-wtb4-3p2161",
+      "siemens-3rt2016-1bb41",
+      "rittal-3241100",
+      "siemens-3rv2011-1ja10",
+      "weidmuller-2466870000"
+    ],
+    "blocked": [],
+    "rule": "fail-closed: do not close Selection 2 until every required product passes exact visual/orientation/provenance and terminal geometry gates",
+    "lastEvidenceRefresh": "2026-10-06T12:02+03:00",
+    "repoBinaryPixelAuditDate": "2026-10-06",
+    "acquisitionPriority": [],
+    "lastCadEvidenceRefresh": "2026-10-06",
+    "nextExecutableStep": "Selection 2 complete; run local regression/consistency audit and continue the next locked workflow section.",
+    "lastEvidenceNarrowing": "2026-10-06",
+    "blockerMatrix": {
+      "siemens-3rv2011-1ja10": [],
+      "weidmuller-2466870000": []
+    },
+    "lastCadMirrorAudit": "2026-10-06",
+    "sourceDiscoveryProgress": {
+      "date": "2026-10-06",
+      "3RV": "promoted: user-supplied exact TIF identity + Siemens orthographic CAD front calibrated to 45 x 97 mm; terminal geometry remains independently verified",
+      "3RT": "promoted: exact repo binary converted to source-image-derived-front runtime crop; terminal geometry independently verified",
+      "5TL": "exact official technical orthographic geometry confirmed; real orthographic product photo still missing",
+      "PROtop": "promoted: user-supplied exact 2466870000 DXF package parsed; L/N/P/M runtime anchors verified against physical L/N/PE and + + / - - - terminal rows",
+      "Rittal": "new exact strong-front source candidate found; binary transport/audit missing",
+      "SICK": "promoted: visual/provenance + exact M8 3-pin connector interface verified under sensor policy"
+    },
+    "lastPromotion": "2026-10-06: weidmuller-2466870000"
+  },
+  "binaryIntakeGate": {
+    "status": "implemented",
+    "script": "scripts/selection2-import-asset.cjs",
+    "stagingRoot": "evidence/selection2",
+    "visualRequirements": [
+      "exact-model-proof",
+      "orthographic-front",
+      "manufacturer-or-supplier-authority",
+      "https-provenance",
+      "sha256-sidecar",
+      "pixel-audit-before-promotion"
+    ],
+    "cadRequirements": [
+      "exact-model-proof",
+      "https-provenance",
+      "sha256-sidecar",
+      "cad-parse-before-terminal-geometry-promotion"
+    ],
+    "promotionPolicy": "staging-only; import helper never changes panelGeometryReady or status"
+  },
+  "visualAcceptancePolicies": {
+    "sensor": {
+      "policyId": "sensor-visual-flex-v1",
+      "appliesTo": "sensor-class products",
+      "preferred": [
+        "orthographic-front",
+        "front-lens",
+        "isometric",
+        "three-quarter"
+      ],
+      "allowed": [
+        "orthographic-front",
+        "front-lens",
+        "isometric",
+        "three-quarter"
+      ],
+      "disallowed": [
+        "rear-only",
+        "connector-only",
+        "cropped-identity-ambiguous",
+        "wrong-model",
+        "illustration-only"
+      ],
+      "mandatoryGates": [
+        "exact-model identity or exact article provenance",
+        "real product binary with recorded provenance",
+        "important sensing face / connector / mounting geometry visible enough for user understanding",
+        "physical envelope independently verified when panel geometry is required"
+      ],
+      "note": "Sensor products may use informative isometric/three-quarter real photos when those views communicate sensing face, connector and mounting geometry better than a strict front view."
+    },
+    "standardPanelHardware": {
+      "policyId": "panel-visual-derived-front-v1",
+      "appliesTo": "non-sensor panel hardware",
+      "preferred": [
+        "orthographic-front-real"
+      ],
+      "allowed": [
+        "orthographic-front-real",
+        "source-image-derived-front"
+      ],
+      "derivationRule": "If an exact-model orthographic-front real image cannot be acquired, use the best exact-model real product image and rectify/crop it into a front-facing runtime visual. Do not use isometric/perspective source as-is.",
+      "mandatoryGates": [
+        "exact-model identity or exact article provenance",
+        "source image must show enough of the real product front/body to support rectification",
+        "derived runtime asset must be front-facing with side/top depth visually removed or minimized",
+        "original source and derived asset provenance must both be recorded",
+        "physical envelope must come from exact technical dimensions or an explicitly approved class-reference",
+        "terminal geometry must remain independently verified; image rectification does not verify terminal centers"
+      ],
+      "disallowed": [
+        "wrong-model",
+        "family-only-when-exact-model-is-available",
+        "isometric-runtime-for-non-sensor",
+        "perspective-runtime-for-non-sensor",
+        "illustration-only",
+        "terminal-coordinate-inference-from-rectified-photo"
+      ]
+    }
+  }
+}

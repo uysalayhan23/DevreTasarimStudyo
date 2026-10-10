@@ -1,0 +1,73 @@
+{
+  "version": "1.13.0",
+  "date": "2026-09-17",
+  "tests": {
+    "total": 158,
+    "passed": 158,
+    "failed": 0,
+    "log": "final-v113-all.txt",
+    "syntaxFiles": 40,
+    "uniqueHtmlIds": 202
+  },
+  "browser": [
+    "Actual mouse drag of NO magnet from 20 mm to 5 mm turns on connected lamp",
+    "Actual mouse drag of NC magnet from 20 mm to 5 mm turns off connected lamp",
+    "Mechanical control roller click produces rotate(90 660 502)",
+    "Gallery visually checked: genuine Siemens photos, SEM 121 body/lever, close-packed independent fused terminals"
+  ],
+  "preserved": [
+    "NTC temperature/resistance slider",
+    "PT100 pins and shared thermocouple renderer",
+    "SB2 2 mV/V differential output and actual excitation",
+    "Seven existing branded inductive sensor definitions unchanged"
+  ],
+  "reed": {
+    "passive": true,
+    "defaultEducationalThresholdMm": 10,
+    "normalProduct": "MR-228B NO",
+    "nc": "Educational variant sharing NO product photo",
+    "principle": "https://www.deeterelectronics.com/reed-switch-how-it-works/"
+  },
+  "fusedTerminals": {
+    "pitch": 40,
+    "width": 38,
+    "gap": 2
+  },
+  "photos": [
+    {
+      "file": "limit-sem121-v113.jpg",
+      "bytes": 85903,
+      "sha256": "7d7301c172422df9c5f5ae4ce887f2c22f21c03dc7aa536146aea94b1190b6ca"
+    },
+    {
+      "file": "reed-mr228b-v113.jpg",
+      "bytes": 32927,
+      "sha256": "546bcf5dd2c40c04b6451d049d45b253373758e93a2f0e725a1663832fb0a761"
+    },
+    {
+      "file": "siemens-isolator-v113.png",
+      "bytes": 703365,
+      "sha256": "5f4c1b11c04df1409bc07c51b922eb168a91b4a3cdc989e45b1416cee3197e88"
+    },
+    {
+      "file": "siemens-mcb1-v113.png",
+      "bytes": 848174,
+      "sha256": "10c7fb836c05ce4ef6c3174d60de673c52d1f7a5668c8a7229fe06a62b8a1e9b"
+    },
+    {
+      "file": "siemens-mcb2-v113.png",
+      "bytes": 1616301,
+      "sha256": "fd2357f63d3419662cd4df597cceaeb8d405dfcf1c404a87bca8d94cfead81a8"
+    },
+    {
+      "file": "siemens-mcb3-v113.png",
+      "bytes": 2380428,
+      "sha256": "6ac455e4888438a0f39dfe4fb6642dc355188e057a4f0831e3066ba85cb64029"
+    },
+    {
+      "file": "siemens-thermal-v113.png",
+      "bytes": 833523,
+      "sha256": "5e7b6731fdb912b1be8764ca50e250fa9661dc481101ee03f4c85181ba21e23a"
+    }
+  ]
+}

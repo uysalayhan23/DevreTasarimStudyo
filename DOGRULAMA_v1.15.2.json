@@ -1,0 +1,43 @@
+{
+  "version": "1.15.2",
+  "baseVersion": "1.15.1",
+  "date": "2026-09-20",
+  "tests": {
+    "total": 204,
+    "passed": 204,
+    "failed": 0,
+    "skipped": 0,
+    "command": "node --test --test-reporter=tap tests/*.test.cjs",
+    "log": "final-v1152-all.txt"
+  },
+  "checks": [
+    "TX11 V/G 0–10 V follows zero, quarter, half and full-scale weights",
+    "External T/R bridge selects voltage output; supply and loadcell connections required",
+    "EX/SIG colors independent from power lines, including through terminal blocks",
+    "Twenty cable colors with persisted line and voltage annotation settings",
+    "PNP/NPN wire roles follow output polarity without adding simulated power",
+    "One meter jack per probe; duplicate plugs rejected and old direct duplicates normalized",
+    "mA/mV/kΩ/MΩ display prefixes preserve underlying SI measurements",
+    "TX11 terminal wires drawn above 3D photo with separate access paths",
+    "Real application event tests for mode changes, wire-contact probing and save/open"
+  ],
+  "examples": [
+    {
+      "file": "Ornekler/TX11_0_10V_Prob_Olcumu_v1.15.2.odsdevre",
+      "weightKg": 500,
+      "display": "5.00 V"
+    },
+    {
+      "file": "Ornekler/TX11_4_20mA_Prob_Olcumu_v1.15.2.odsdevre",
+      "weightKg": 1000,
+      "display": "20.000 mA"
+    }
+  ],
+  "visualVerification": "Actual application SVG rendered with sharp and inspected; TX11 terminal layer and meter readout",
+  "windowsBrowserVerification": false,
+  "limitations": [
+    "Windows Chrome/Edge not run directly in this environment",
+    "Existing simplified educational electrical model retained",
+    "Cable voltage labels do not change source voltage"
+  ]
+}

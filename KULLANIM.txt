@@ -1,0 +1,345 @@
+DEVRE TASARIM STÜDYOSU v1.19.20
+
+GELİŞTİRME TEMELİ
+- v1.19.0, değişmez golden v1.18.0 kopyası e00b6fcf0ea3eb721eae8285beb7052573b61373 üzerinden başlatılmıştır.
+- Bu başlangıç sürümünde işlevsel davranış değiştirilmemiştir; aşağıdaki v1.18.0 yenilikleri aynen devralınır.
+Yakub Uysal'ın elektrik atölyesi
+
+BAŞLAT
+ZIP'i yeni bir klasöre tamamen çıkarın. ZIP penceresinin içindeyken BASLAT.bat'a
+çift tıklamayın; Windows bu durumda yalnız BAT dosyasını geçici klasöre çıkarabilir
+ve dist klasörü bulunamadığı için uygulama açılamaz.
+
+GitHub > Code > Download ZIP ile alınan kaynak arşivi de kullanılabilir:
+1) İndirilen ZIP'e sağ tıklayın > Tümünü ayıkla / Extract All.
+2) Çıkarılan klasöre girin.
+3) BASLAT.bat dosyasına çift tıklayın.
+Başlatıcı önce Microsoft Edge'i, sonra Google Chrome'u arar; bulunamazsa Windows'un
+varsayılan HTML uygulamasını kullanır.
+
+Alternatif başlatıcı: BASLAT.html
+Doğrudan alternatif: dist/index.html dosyasını güncel Chrome veya Edge ile açın.
+
+Faz 11'de doğrulanan Windows paketi için GitHub Actions'taki en son başarılı
+"Test ve Windows ZIP" çalışmasının Artifacts bölümündeki
+"Devre-Tasarim-Studyosu-Windows" paketini tercih edebilirsiniz.
+
+İnternet, kurulum veya sunucu gerekmez. Eski Internet Explorer desteklenmez.
+Başlıkta / dashboard sürüm bilgisinde “v1.19.20” görmelisiniz. v1.5 veya önceki
+uygulama klasörünü çalıştırmanız gerekmez; bu paket tek başına yeterlidir.
+
+BU SÜRÜMDE YENİ (v1.18.0)
+- Hazır örnekler salt okunurdur. Düzenlemeden önce Farklı Kaydet ile kopya oluşturun.
+  Kaydetme iptal edilirse örnek kilitli kalır. Dosya indirme kullanılıyorsa indirdiğiniz
+  kopyayı Dosyadan Aç ile açın. Uygulama içinden özgün örneğin üzerine yazılamaz.
+- Simülasyonda kablo, terminal ve ek noktasına her doğrudan temasta uyarı çıkar.
+  Simülasyon otomatik durmaz; uyarıyı kapatınca çalışmaya devam eder.
+  Bağlantı ve yerleşim düzenlemek için önce üstteki Simülasyonu Durdur'a basın.
+  Cihaz gövdelerini seçme, buton/şalter, sürücü ve ölçüm kumandaları korunur.
+- Komütatör ve ara vaviyen sembolleri gönderdiğiniz çizimlere göre yenilendi.
+  Komütatörün iki tuşunu ayrı ayrı kullanabilirsiniz.
+- Tesisat / Dağıtım > Zil ve kapı otomatiği: elektronik zil, zil butonu,
+  light buton, ikili zil butonu ve kapı otomatiği. Semboller kitap sayfa 142'nin
+  açık şemalarındandır. İkili butonun her tuşu yalnız kendi kontağını kapatır.
+- Fiş, E27 duy, data, telefon ve TV prizi görselleri ürün referanslarına göre
+  beyaz çerçeveli kütüphane çizimlerine uyarlandı.
+- Ayrıntılar: YENILIKLER_v1.18.0.md ve GORSEL_KAYNAKLARI_v1.18.0.md.
+
+ÖNCEKİ SÜRÜM (v1.17.1)
+- ACS800'e bağlı kablolar malzeme görselinin üzerinde görünür.
+- Pano gövdesi: metal yüzey, derinlik, montaj plakası, menteşe, conta ve tutamak.
+- Pano araçları üstte tek satırdır. Gruplar gölgeli ayraçlarla ayrılır;
+  dar ekranda çubuğu yatay kaydırabilirsiniz.
+- Bağlı kabloya tıklayın. Üstteki “Seçili kablo” rengini veya sağdaki
+  renk alanını değiştirin; seçim hemen uygulanır. Özel renk de seçebilirsiniz.
+- Üst üste duran bir kabloyu bulmak için bağlı malzemeyi seçin;
+  sağdaki “Bağlı kablolar · renk düzenle” listesinden kabloya tıklayın.
+- Bir kablonun güzergâhını değiştirmek diğer kabloları oynatmaz.
+  Aynı kablo kanalından çok sayıda kablo üst üste geçebilir.
+  Seçili kablo üstte çizilir; uçlar ve mevcut güzergâh noktaları korunur.
+
+ÖNCEKİ SÜRÜM (v1.17.0)
+
+- Malzeme grubu > Sürücüler > ABB ACS800 · R5.
+- ACS800'ü seçin, sağdaki ACS800 Parametreler düğmesine basın.
+- 105 ABB parametresi; yerel / harici kumanda, RMIO, yön ve rampalar.
+- Dashboardda dört ACS800 atölyesi; ilk deneme için Panel ve Yön.
+- Ayrıntılar: ACS800_KILAVUZU.md. Belgeler klasöründe ABB kılavuzları var.
+- R5 modeli: ACS800-04-0075-3. Fotoğraf adındaki 0100-3 kılavuzda R6
+  olduğundan fotoğraf gövde referansıdır; güç uçları R5'e göre çizilmiştir.
+
+ÖNCEKİ SÜRÜM (v1.16.0)
+- SINAMICS V20'yi seçin: sağda V20 Parametreler. Cihazın M tuşu da açar.
+- Canlı durum ekranı, panel/terminal kumandası, hız rampaları, yön değişimi,
+  analog giriş/çıkışlar, sabit hızlar ve hata bilgileri.
+- Dashboarddaki dört V20 atölyesinden başlayabilirsiniz.
+- Cihazlara tıklamak serbest; çarpılma uyarısı kablo ve terminal temaslarında.
+- Ayrıntılar ve model sınırları: V20_KILAVUZU.md, YENILIKLER_v1.16.0.md.
+
+ÖNCEKİ SÜRÜM (v1.15.2)
+- TX11: 0–10 V için V/G, 4–20 mA için I/G uçlarını kullanın. T/R köprüsü de
+  gerilim çıkışını seçer. Terminal kabloları 3D ürün görselinin üstünde görünür.
+- TX11 ve Kobastar SB2 EX/SIG kablolarının renkleri serbesttir.
+- Yan menüde 20 renk; her renge hat ve gerilim/kullanım etiketi seçebilirsiniz.
+- PNP/NPN çıkış renkleri pozitif/negatif hat seçimine göre belirlenir.
+- UNI-T: tek prob / tek yuva; Özellikler > Kırmızı prob yuvası ile giriş değişir.
+- mA, mV, kΩ ve MΩ değerleri doğru ölçektedir; 20 mA, 20.000 mA gösterilir.
+Deneme: Ornekler/TX11_0_10V_Prob_Olcumu_v1.15.2.odsdevre → 5.00 V.
+Deneme: Ornekler/TX11_4_20mA_Prob_Olcumu_v1.15.2.odsdevre → 20.000 mA.
+Ayrıntılar: YENILIKLER_v1.15.2.md. Doğrulama: DOGRULAMA_v1.15.2.json.
+
+ÖNCEKİ SÜRÜM (v1.15.1)
+- 24 V güç kaynağının L/N girişlerini 220 V AC faz/nötr hattına bağlayın.
+- Bir rengin son devre kablosunu silince renk kilidi kalkar. Kablo ayarlarından
+  bu rengin hat türünü yeniden seçebilirsiniz. Kullanılan farklı hatlar korunur.
+- Multimetre ve problar grid dışında serbestçe taşınır. Kalın kırmızı/siyah
+  prob kablolarını tutup sürükleyerek geniş kıvrımlarını değiştirebilirsiniz.
+- Probun metal ucunu bir terminale veya mevcut kablonun herhangi bir yerine
+  yaklaştırın. Mavi/beyaz temas işareti ölçüm noktasını gösterir. Uzaklaştırınca
+  temas kesilir. Ölçülen kablo silinirse temas da otomatik kaldırılır.
+- Ölçüm hareketleri devre elemanlarını ve normal kablo güzergâhlarını değiştirmez.
+- Prob kablosunun rengi devre hattının rengi/kimliği ile karışmaz.
+Örnek: Ornekler/220V_24V_Esnek_Prob_v1.15.1.odsdevre dosyasını açın.
+3D görünümde SİMÜLE ET'e basın. Ölçü aleti 200 V DC kademesinde 24.0 V gösterir.
+Detaylar: YENILIKLER_v1.15.1.md.
+
+ÖNCEKİ ÖLÇÜM ATÖLYESİ
+Dashboard üzerindeki “Ölçüm atölyesi · yeni” bölümünden sekiz hazır devreyi açın.
+Örnekler 3D görünümde açılır. Simülasyon düğmesine basıp sensör değerlerini veya
+multimetre problarını değiştirerek deneyin. Detaylar: YENILIKLER_v1.15.0.md.
+PLC aile fotoğrafları ile gerçek modelin birebir fotoğrafı aynı değildir;
+kalan görsel farklar ve sayısal model sınırları bu dosyada açıklanmıştır.
+
+ELEKTRİK TEHLİKESİ
+Elektrik gözle görülmez. Elektrik çarpması ölümcül olabilir.
+Gerçek devre, pano veya kabloya dokunmadan önce enerjiyi kesin. Enerjisizliği
+öğretmeniniz veya yetkili kişi uygun ölçü aletiyle doğrulasın. Yeniden enerji
+verilmesini önleyin. Gerçek elektrik işlerini tek başınıza yapmayın.
+Programdaki DURDUR düğmesi gerçek bir panonun enerjisini kesmez.
+
+İLK AÇILIŞ VE DASHBOARD
+• Açılışta Yakub'a özel elektrik uyarısı gösterilir. Uyarıyı okuyup alttaki
+  düğmeyle devam edin. “Bir daha gösterme” yalnızca açılış mesajını kapatır.
+• Dashboard altındaki “Elektrik uyarısını her açılışta göster” işaretiyle
+  yeniden etkinleştirebilir veya “Açılış mesajını göster” ile tekrar açabilirsiniz.
+• Dashboarddaki sarı uyarı levhası ve kırmızı zeminli siyah uyarı sürekli kalır.
+• Beş ana karttan Kumanda, Tesisat, Pano, Arduino veya Öğretici Modu'nu seçin.
+• Üst çubuktaki “Dashboard” düğmesi her tasarım alanından ana ekrana döndürür.
+  Çalışmanız tarayıcı taslağı olarak korunur. “Son taslağa devam et” geri açar.
+
+BEŞ ÇALIŞMA ALANI
+1) KUMANDA DEVRELERİ TASARIMI
+   Önceki kumanda editörü, kablo yönlendirmesi, motorlar, sensörler ve PLC
+   kütüphanesi buradadır. Bina tesisatı grupları burada gösterilmez.
+   PLC ve görsel I/O bulunan projelerde elektriksel simülasyon kapalıdır.
+
+2) TESİSAT VE DAĞITIM DEVRELERİ TASARIMI
+   Aydınlatma, priz ve fişler, duy, buat, anahtar, vavien, topraklama, N/PE
+   baraları, klemensler, sigortalar, sayaçlar ve A.G. dağıtım elemanlarını içerir.
+   Elektrik bağlantılarını aynı çizim ve kablolama araçlarıyla kurabilirsiniz.
+   Anahtar–vavien–lamba gibi modellenmiş devreler simüle edilebilir. Kartında
+   “Çizim ve bağlantı” yazan tesisat/KNX/sayaç kayıtlarının sayısal modeli yoktur.
+   Kesit hesabı, koruma koordinasyonu ve mevzuata uygunluk hesabı yapılmaz.
+
+3) PANO TASARIMI
+   Tüm kütüphane burada kullanılabilir. Fiziksel yerleşim için 3D pano,
+   montaj plakası, DIN rayları, kablo kanalları ve açılır kapak bulunur.
+   • “Pano ölçüleri”: genişlik, yükseklik ve derinliği mm cinsinden değiştirin.
+   • “+ DIN rayı”: 35 mm ray ekler. Kontaktör, sigorta, röle ve PLC'yi rayın
+     üzerine sürükleyin. Rayı taşıdığınızda bağlı malzemeler birlikte taşınır.
+   • “+ Kablo kanalı”: kanal ekler; konumunu, enini, uzunluğunu ve yönünü
+     sağdaki özelliklerden ayarlayın. Ray ve kanalı da tutup taşıyabilirsiniz.
+   • “Pano içi”: ön görünüşte iç montajı düzenleyin.
+   • “Kapak”: sinyal lambası, buton, voltmetre, ampermetre ve 1/2/3/4 kutuplu
+     aç–kapa şalterleri kapağa yerleştirin.
+   • “Yerleşim” menüsü otomatik, DIN rayı, montaj plakası veya kapak seçer.
+     Malzemeyi seçip sağdaki “Montaj yeri” ile de yüzeyini değiştirebilirsiniz.
+   • “3D görünüm”, “Kapağı aç/kapat”, açı sürgüsü ve Bakış düğmeleri ile
+     panoyu inceleyin. Tekerlek yakınlaştırır, sağ tuşla sürükleme taşır.
+   • Seçili malzemenin adı, X/Y konumu, eni, boyu ve derinliği değiştirilebilir.
+     Malzemelerde üst üste yerleşim ve pano dışına taşma engellenir. Ray ve
+     kanal eklerken boş alan aranmaz; yeni nesne hemen seçili olarak yerleşir.
+     Ardından sürükleyerek konumunu düzenleyebilirsiniz. Geri al/yinele çalışır.
+   • Ray silinirse üzerindeki malzemeler silinmez; aynı konumda plakaya geçer.
+   • Pano bölümünde yerleşim ve kablolama yapılır. Elektriksel simülasyon için
+     devre şemasını Kumanda veya Tesisat alanında kurun.
+   Pano gövdesi ve kapak geometrisi üç boyutlu gösterilir; ürünler mevcut yerel
+   görsellerle temsil edilir. Başlangıç ölçüleri eğitim için yaklaşık değerlerdir;
+   üretici ölçülerine göre düzenleyin. Tam üretici CAD modelleri, delik delme,
+   sac işleme, çarpışan kapak derinlik hesabı veya imalat çıktısı değildir.
+
+4) ARDUINO ATÖLYESİ
+   Arduino UNO, sensörler, motorlar, ekranlar ve desteklenen Arduino kod akışları
+   için ayrı çalışma alanıdır. Kütüphane ve simülasyon Arduino çalışma alanına
+   göre süzülür.
+
+5) ÖĞRETİCİ MODU
+   Kaynak temelli dersleri açar. Çalışan örneği inceleyip devreyi terminal
+   terminal yeniden kurabilir, ölçüm ve açıklamaları aynı normal simülasyon
+   motorunda doğrulayabilirsiniz.
+
+PANO KABLOLAMA VE YÜKSÜKLER (v1.7.2)
+• Bir malzemenin terminaline, ardından diğer malzemenin terminaline tıklayın.
+  “Kablo bağla” düğmesiyle bağlantı modunu da seçebilirsiniz. Küçük PLC uçları
+  için malzemeyi seçip Özellikler → Bağlantı terminalleri düğmelerini kullanın.
+• Kabloyu başlattıktan sonra boş alanlara tıklayarak ara güzergâh noktaları
+  koyabilirsiniz. Hedef terminale tıklamak bağlantıyı bitirir. Backspace son
+  ara noktayı kaldırır; Esc/İptal tamamlanmamış işlemi iptal eder.
+• Uçlarda metal manşon ve mavi yalıtımlı yüksük görünümü otomatik eklenir.
+  Malzeme veya ray taşınırken bağlantılar terminali takip eder. Yakınlaştırma
+  ve bakış değişikliği proje dosyasındaki terminal/ara nokta konumunu değiştirmez.
+• Kabloyu sol tuşla seçin veya sağ tıklayın. Özelliklerden renk, kesit ve
+  uçları değiştirin; “Güzergâhı yeniden çiz” ya da “Otomatik güzergâh” kullanın.
+  Ucu değiştirme işlemi iptal edilirse eski kablo yerinde kalır. Delete kabloyu
+  siler; bağlı terminal yeniden kullanılabilir. Geri al/yinele desteklenir.
+• Pano kablolarında hat adı bağlantıdan alınır; renk ve kesit serbesttir.
+  Seçilen kablonun rengi ve kesiti diğer kabloları değiştirmez. Farklı besleme
+  hatlarının doğrudan birleştirilmesi yine reddedilir.
+• Kapak ile pano içini 3D görünümde bağlayabilir veya bağlantıyı başlatıp
+  görünüm değiştirerek tamamlayabilirsiniz. Kapak geçişinde esnek kablo kıvrımı
+  görünür. Tek yüzey görünümünde diğer uç “Kapak / Pano içi” etiketiyle belirtilir.
+• Rayı silmek kabloları koparmaz; üzerindeki cihazlar plakada kalır. Malzeme
+  silinirse ona bağlı kablolar da kaldırılır. Bağlantılar proje ile kaydedilir.
+
+PROJELERİNİ BİLGİSAYARA KAYDET
+• Dashboard → “Proje klasörü seç”: bilgisayarınızda istediğiniz klasörü seçin.
+  Paketteki Kaydedilen_Projeler klasörünü seçerseniz üç örnek dosya listelenir.
+• Tarayıcı ilk seferde kendi klasör izin penceresini açar. Uygulama bu izni
+  atlayamaz ve ilk açılışta bilgisayar klasörlerini kendiliğinden okuyamaz.
+• Güncel Chrome/Edge, izin ve yerel depolama devam ettiği sürece seçtiğiniz
+  klasörü hatırlar. İzin yeniden istenirse dashboarddaki “Yenile”yi kullanın.
+  Klasör taşınırsa veya tarayıcı verileri silinirse klasörü tekrar seçin.
+• “Kaydet” / Ctrl+S: açık dosyayı günceller. Yeni projeyi seçilmiş proje
+  klasörüne kaydeder; klasör seçilmediyse kaydetme penceresi açar.
+• “Farklı kaydet” / Ctrl+Shift+S: başka klasör veya dosya adı seçer.
+• Yeni projeyle aynı adlı bir dosya varsa otomatik numaralı yeni dosya oluşturur.
+  Açık dosya başka uygulamada değişmişse üzerine yazmaz; Farklı kaydet kullanın.
+• “Dosyadan aç” veya editörde “Aç”: .odsdevre / .dtsproj / .json projesini açar.
+  Önceki sürüm projeleri yeni sürüme alınır. Tanınmayan malzeme veya bozuk veri
+  varsa dosya değiştirilmeden hata gösterilir.
+• Dashboard “Klasör dosyası” ve “Tarayıcı taslağı” ayrımını gösterir. Taslaklar
+  otomatik tutulur; bilgisayarda dosya oluşması için mutlaka Kaydet'e basın.
+• Dosya/klasör API'sinin kullanılamadığı tarayıcılarda normal dosya seçme ve
+  indirme kullanılır. Klasör seçimi salt okunurdur; kayıt İndirilenler'e gider.
+  Tarayıcıdaki “İndirmeden önce nereye kaydedileceğini sor” ayarıyla yer seçin.
+• Klasörün doğrudan içindeki proje dosyaları listelenir. Alt klasörleri güncel
+  Chrome/Edge klasör modunda ayrı seçin. Proje dosyaları en fazla 20 MB olabilir.
+
+NOTLAR VE ENERJİ GÖSTERİMİ (v1.7.1)
+Kumanda / tesisat sayfasında elemanı seçin; sağdaki Özellikler → Not alanına
+ yazarken metin anında görünür. Notun kendisini sol tuşla tutup istediğiniz
+ yere sürükleyin. Notlar elemanlardan ve kablolardan üstte çizilir; satır
+ sonları korunur. Not seçiliyken ok tuşlarıyla da taşıyabilirsiniz.
+“Notu sayfada göster” kutusunu kaldırmak metni silmez; yalnızca gizler.
+Yeniden işaretlediğinizde aynı konumda görünür. Metin, görünürlük ve konum
+proje dosyasına kaydedilir. Enerjili kablo ve terminal ışımaları artırılmıştır;
+simülasyon durduğunda neon etkisi kalkar.
+
+KÜTÜPHANE VE FAVORİLER
+Toplam 493 kayıt: 285 elektrik/yerleşim elemanı ve 208 PLC/modül.
+Kumanda: 195 elektrik + 208 PLC; tesisat/dağıtım: 169 elektrik;
+pano: 493 kayıt. Ortak malzemeler birden fazla alanda gösterilir.
+• “Görünüm”: şema sembolleri veya 3D malzeme. TSE / IEC / ANSI normu ayrıca
+  seçilebilir. Pano yerleşimi fiziksel görünümdedir; sol kütüphanenin önizleme
+  tarzını yine seçebilirsiniz. Belgeye ait yeni kayıtlar da temsili 3D çizilir.
+• Malzemeyi çalışma alanına sürükleyin. Klavyeyle kartı seçip Enter'a basmak
+  görünür alanın ortasına ekler. Pano malzemesi uygun ray/yüzey ister.
+• Kartın sol altındaki yıldızı seçin: içi sarıysa favoridir. “Malzeme grubu”
+  menüsünün en üstünde “★ Favorilerim” bulunur. Favoriler Türkçe harf sırasındadır
+  ve seçili tasarım alanına göre süzülür. Favoriler tarayıcıda saklanır.
+• Malzeme grupları alfabetiktir. Aynı tür elemanlar kendi başlığı altındadır.
+• Marka ve PLC aile filtreleri yalnızca “PLC / Otomasyon” sekmesinde görünür.
+• Norm ve sembol rehberi bağlantısı aynı çizimleri ve belge kaynaklarını açar.
+
+KUMANDA / TESİSAT ÇİZİMİ
+• Sol tıklama: seç. Boş alanda sol sürükleme: kutuyla seç. Shift/Ctrl+tıklama:
+  seçime ekle/çıkar. Ctrl+A veya Tümünü seç: tüm elemanlar. Delete: seçileni sil.
+  Birden fazla seçili elemanın gövdesini sürüklemek bütün grubu taşır.
+• Sağ sürükleme: sayfayı dört yönde taşı. Tekerlek: mouse merkezinde %20–400
+  yakınlaştır. Zoom sırasında kablo güzergâhları ve terminal bağları değişmez.
+• Bir terminale tıklayın, boş alana tıklayarak dönüş noktaları verin, hedef
+  terminale veya mevcut kabloya tıklayın. Birleşim yerinde nokta oluşur.
+• Kabloyu seçip parçasını/kare tutamacını sürükleyin; terminal kopmaz.
+  Uçtaki daireyi sürükleyerek terminalden ayırıp başka terminale/kabloya bağlayın.
+  Esc iptal eder, bağlantı çizerken Backspace son güzergâh noktasını siler.
+• Kablo, terminal yakınındaki kısa kısmı koruyarak elemanların çevresinden
+  yönlenir. Dönüşler 90 derece ve hafif yuvarlaktır. Grid 2 mm'dir.
+• Kabloya kısa sağ tıklayın: renk ve kesiti ayarlayın. Sağdaki Özellikler
+  panelinin altındaki Kablo ayarları da seçilen rengi yönetir; gri dahildir.
+• Bağlandığınız hat adı/rengi otomatik alınır. İlk kullanımda rengin hat kimliği
+  kilitlenir. Farklı hatlar doğrudan birleşemez. Bağlantı silindiğinde terminal
+  varsayılan haline döner. Kesit, o rengin ekrandaki kalınlığını orantılı değiştirir.
+• Cihaz adı, açıklama, adres, terminal yazıları ve notlar ayrı ayrı taşınabilir.
+  Döndürme bu etiketleri okunur yönde tutar. NO/NC, tüm kontaklı malzemelerde
+  veya ayrı kontak gruplarında sağ panelden seçilebilir; kablolar bağlı kalır.
+
+SİMÜLASYON VE GÜVENLİ ÇALIŞMA
+• SİMÜLE ET'e basın. Enerji yolu tamamlanmadan lamba, bobin, güç kaynağı veya
+  trafo enerjilenmez. Aynı cihaz adına sahip bobin/kontaklar birlikte çalışır.
+  NO yardımcı kontakla mühürleme devresi kurulabilir.
+• Butonun başlığı hemen basılır; iki çizim karesi ve başlık hareketi geçmeden
+  elektriksel kontak değiştirilmez. Buton klik, kontaktör tak, motor çalışma
+  sesi çıkarır. Üst çubuktan sesleri kapatabilirsiniz.
+• Simülasyon sırasında desteklenen canlı malzeme ekleme/silme ve düzenleme işlemleri
+  uygulanabilir; enerjili terminal/kabloya doğrudan dokunmak yeni bağlantı başlatmaz
+  ve engellemeyen güvenlik uyarısı gösterir. Çarpılma uyarısı yalnız kablo/terminal/ek noktasına
+  doğrudan temasta açılır. Cihazları seçme ve kumandalarını kullanma serbesttir. “Bir daha gösterme” bu uyarıyı kapatmaz.
+• Butona basma, şalter çalıştırma ve sensör hedefi hareketi normal simülasyon
+  işlemleridir; uyarıyla kesilmez. Yakınlaştırma ve kamera taşıma da serbesttir.
+• Motor yön oku hem şemada hem 3D'de görünür. Üç fazda iki fazı, DC motorda
+  kutupları değiştirince yön ters döner. Sağ panelden referans yönünü seçebilirsiniz.
+• Sensör Özellikleri → hedef malzemesi / algılama mesafesi / algılama yüzü.
+  Simülasyonda hedefi sürükleyin veya otomatik ileri–geri hareketi açın.
+  İndüktif metal algılar; kapasitif dolu hedefleri; optik uygun opak/reflektif
+  hedefi algılar. Çıkış için sensörün besleme bağlantıları da gerekir.
+
+GÖRSELLERİN KAPSAMI
+Siemens SIRIUS kontaktör ve yardımcı kontak, Weidmüller güç kaynağı,
+SICK/Autonics sensör ve diğer yerel ürün görselleri korunur. Kontaktörlerde
+ön yardımcı kontak bloğu yoktur. Başlat/durdur ortak gövdelidir. Harici beyaz
+arka zemin gizlidir; ürünün kendi beyaz plastik gövdesi korunur.
+208 PLC kaydının 89'unda model kodu eşleşen, 113'ünde aile/varyant görseli,
+6'sında temsili görsel bulunur. Bütün ürünler birebir üretici CAD modeli değildir.
+Yeni belge/tesisat kayıtlarında fiziksel görünüm temsili vektör çizimidir.
+TSE/IEC/ANSI çizimleri yüklenen eğitim belgelerine göre uyarlanmıştır; resmî
+standart veri tabanı veya uygunluk belgesi değildir. Kaynaklar rehberdedir.
+
+ÖRNEKLER
+Dashboarddan üç örneği çalışma kopyası olarak açabilirsiniz. Aynı dosyalar
+Kaydedilen_Projeler klasöründedir. Ornekler klasöründe önceki mühürleme,
+NO/NC, trafo/güç kaynağı, ileri–geri motor, sensör hedefi, norm/etiket ve
+PLC görsel projeleri de bulunur. Eski tesisat/pano çizim dosyaları şema olarak
+açılır; 3D pano örneği “03_Egitim_Panosu.odsdevre” dosyasıdır.
+
+Doğrulama bilgileri: DOGRULAMA_v1.13.0.json
+Kaynak/yenilik notları: YENILIKLER_v1.13.0.txt; önceki sürüm notları da pakettedir.
+
+
+v1.10 YENİ KONTROLLER
+Analog görsel üzerindeki şamandırayı veya çubuğu tutup sürükleyin.
+Seçiciyi seçin: Özellikler > Çıkış / kademe sayısı (1–12). Simülasyonda her tıklama sonraki kademeye geçer.
+Flaşör: Özellikler > Yanma süresi / Sönme süresi (saniye).
+Buton, lamba ve LED: Özellikler > Buton / lamba rengi.
+Sesli uyarıcıları iki uçtan besleyin ve üstte Ses açık seçeneğini etkinleştirin.
+Dashboard örnekleri: Analog sensör çubukları; Seçici ve üç lamba; Flaşör ve sesli uyarılar; Yeni ürün görselleri.
+Ayrıntılar: YENILIKLER_v1.13.0.md ve GORSEL_KAYNAKLARI_v1.13.0.md.
+
+
+V1.11 YENİ KUMANDALAR
+Yeni özellikler ve bağlantı örnekleri: YENILIKLER_v1.13.0.md
+Görsel ve üretici kaynakları: GORSEL_KAYNAKLARI_v1.11.0.md
+Dashboard: v1.11 malzemeler / Akım trafosu / Faz röleleri / Sigortalar ve NH.
+
+
+V1.12 NTC VE YÜK HÜCRESİ
+NTC sıcaklık çubuğu, ortak PT100/termokupl görseli ve Kobastar SB2 yükleme oku eklendi.
+Dashboard: NTC ve sıcaklık probları / Kobastar SB2 yük hücresi.
+10 V besleme ve 1000 kg kapasitede 500 kg = 10 mV, 1000 kg = 20 mV.
+Ayrıntılı kullanım ve kaynak: YENILIKLER_v1.13.0.md
+
+
+PLC ÖN GÖRÜNÜŞLERİ — v1.14.0
+146 doğrulanmış donanım varyantı eklendi. Bu, tüm PLC ailelerinin tamamlandığı anlamına gelmez.
+Tam kapsam ve kalan işler: YENILIKLER_v1.14.0.md
+Model karşılaştırma dosyaları: Ornekler klasöründeki v1.14.odsdevre dosyaları.
+Doğrulama: DOGRULAMA_v1.14.0.json ve final-v114-all.txt

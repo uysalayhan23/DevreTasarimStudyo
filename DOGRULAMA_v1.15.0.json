@@ -1,0 +1,46 @@
+{
+  "version": "1.15.0",
+  "date": "2026-09-19",
+  "baseVersion": "1.14.0",
+  "scopeComplete": false,
+  "scopeNotes": "YENILIKLER_v1.15.0.md",
+  "tests": {
+    "total": 188,
+    "passed": 188,
+    "failed": 0,
+    "skipped": 0,
+    "command": "node --test tests/*.test.cjs",
+    "log": "final-v115-all.txt"
+  },
+  "newExamples": 8,
+  "offlineAssets": {
+    "definitionsRendered": 695,
+    "localReferencesChecked": 154,
+    "missingFiles": 0
+  },
+  "plcPhotos": {
+    "documentedVariants": 146,
+    "basis": "Original family photographs with a separate model-specific terminal layer",
+    "photoIdenticalForEverySKU": false,
+    "otherFamilies": "Existing v1.14 appearances retained"
+  },
+  "instruments": [
+    "Gentek HT-2",
+    "ORDEL HMT-R / HMT-T",
+    "Weidmuller WAZ5 8540300000",
+    "ENDA ET4420",
+    "Baykon TX11",
+    "UNI-T UT33D+"
+  ],
+  "visualVerification": "SVG rendered with sharp; eight instruments and eight representative PLCs inspected; photo mesh seam overlap corrected and rendered again.",
+  "uiVerification": "Real app events exercised with deterministic DOM adapter: probe dragging, cancel, live readings, terminal count, ENDA front-key lock, persistence.",
+  "windowsBrowserVerification": false,
+  "limitations": [
+    "Family images are not exact photos of all hardware variants",
+    "Some instrument fronts are adaptations recovered from the supplied previous work",
+    "ENDA educational controller behavior is not manufacturer firmware",
+    "DIN 43710 type L numerical curve is unavailable and selection is disabled",
+    "Electrical calculation is a simplified steady-state resistive model",
+    "PLC program simulation is intentionally unsupported"
+  ]
+}

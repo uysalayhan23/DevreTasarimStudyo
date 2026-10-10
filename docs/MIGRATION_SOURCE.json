@@ -1,0 +1,2697 @@
+{
+  "version": "1.18.0",
+  "importedOn": "2026-09-28",
+  "archive": "Devre_Tasarim_Studyosu_v1.18.0_Windows.zip",
+  "archiveBytes": 84068506,
+  "archiveSha256": "ca3590cfc66f8b9e10114acddd38de337f1828d593abd4c4849dcb8e6c8efcf8",
+  "originalFileCount": 537,
+  "originalFileBytes": 103904441,
+  "originalFilesUnchanged": true,
+  "files": [
+    {
+      "path": "ACS800_KILAVUZU.md",
+      "bytes": 9561,
+      "sha256": "1aead5426a885968ffecf673dbb1069881ac9af32c6ac6349ad40119102ce18c"
+    },
+    {
+      "path": "BASLAT.bat",
+      "bytes": 42,
+      "sha256": "d50a9e7ac611b32a044ecec826e66a4fc91feef7bc5fc1d46b569f2d5a911b0a"
+    },
+    {
+      "path": "Belgeler/ABB_ACS800_FW_RevL.pdf",
+      "bytes": 2883584,
+      "sha256": "56602899e3dfd094a00c304cd0b3e5bce33de2c26d56878bf216ca3cd9bcee71"
+    },
+    {
+      "path": "Belgeler/ABB_ACS800_HW_RevF.pdf",
+      "bytes": 5247353,
+      "sha256": "291849ea54f186c3bc0fed9fe51fd42bf85c213d25b9a01b319e414f219eace2"
+    },
+    {
+      "path": "Belgeler/v1.18_referanslar/ara_vaviyen.png",
+      "bytes": 18077,
+      "sha256": "e1116e1bdca66e3ba83aa0208355fa338dd7895c02a658c98c02d1664850295d"
+    },
+    {
+      "path": "Belgeler/v1.18_referanslar/komutator.png",
+      "bytes": 4196,
+      "sha256": "226d4196892ff0f0a008efc46a00c01c746219fed213a1379ef31bb5a54fede4"
+    },
+    {
+      "path": "Belgeler/v1.18_referanslar/kutuphane_onizleme.png",
+      "bytes": 89167,
+      "sha256": "1602b57cc84e032f52c99e7c6aca19780dd7b0d4c1c3d270b37492526b4e1d71"
+    },
+    {
+      "path": "Belgeler/v1.18_referanslar/zil_acik_semalar_s142.png",
+      "bytes": 195989,
+      "sha256": "2c994026226f1eba63f0024d980b6d67f2c763e60d359e326077e6fc407f9fd3"
+    },
+    {
+      "path": "DOGRULAMA_v1.10.0.json",
+      "bytes": 1720,
+      "sha256": "53abf60380898904cf8c1b5a7bbc0e9b6c58ac2e6174f557fdf8ac03cefcd32b"
+    },
+    {
+      "path": "DOGRULAMA_v1.11.0.json",
+      "bytes": 1237,
+      "sha256": "8320c4528fbad762f434c6b0e4511a015e390a204ba49c63627a7a5857933688"
+    },
+    {
+      "path": "DOGRULAMA_v1.12.0.json",
+      "bytes": 1105,
+      "sha256": "99f73222bd3b719c691a95451812f376e49e8c8fa4c808d4760ad69752d342a3"
+    },
+    {
+      "path": "DOGRULAMA_v1.13.0.json",
+      "bytes": 2266,
+      "sha256": "b62143402e2deff075fbfd147997d3ac981a528e7d93c1a64d4a3182023b1657"
+    },
+    {
+      "path": "DOGRULAMA_v1.14.0.json",
+      "bytes": 1128,
+      "sha256": "c7e392829ecc43344c508c4c2f2b7ca0d8709a5428731505d3585211f01c2b1a"
+    },
+    {
+      "path": "DOGRULAMA_v1.15.0.json",
+      "bytes": 1691,
+      "sha256": "8a991b71d2c4cfbfa95e1ecdd3f28cfd4cec68d2a48711d070837c358a4a51d0"
+    },
+    {
+      "path": "DOGRULAMA_v1.15.1.json",
+      "bytes": 1345,
+      "sha256": "df5565f5e340114792c2a59ea1dd922728044f78df6b572f44f68c5f49b54ee1"
+    },
+    {
+      "path": "DOGRULAMA_v1.15.2.json",
+      "bytes": 1682,
+      "sha256": "732f6601a0fc1932efae2cf62b5ec6d91e0a165851c180ca13dcb989fc2eba15"
+    },
+    {
+      "path": "DOGRULAMA_v1.16.0.json",
+      "bytes": 969,
+      "sha256": "4d16e5f32720397d2c4e7c7763c87d9532069e2e595dc8cf667cf7b3bca26805"
+    },
+    {
+      "path": "DOGRULAMA_v1.17.0.json",
+      "bytes": 1224,
+      "sha256": "376038043ea31c2bdd10ba319ed3a315c6fc73b9640ede4f29ceefc668e553c3"
+    },
+    {
+      "path": "DOGRULAMA_v1.17.1.json",
+      "bytes": 1542,
+      "sha256": "5ed86b306860af1de7a6fa958aa8187f5fe520ae28b89a3f984910adef1e90a6"
+    },
+    {
+      "path": "DOGRULAMA_v1.18.0.json",
+      "bytes": 1142,
+      "sha256": "a0b7246e0753ff3dd705b7ecfdfdc14a32a7424200c5d8a5bf10ce6cc5228951"
+    },
+    {
+      "path": "DOGRULAMA_v1.6.3.json",
+      "bytes": 1006,
+      "sha256": "5e7427e00e64f30b21a96ec0b373f69796adf31684c7bd77ccef11238ab1fb51"
+    },
+    {
+      "path": "DOGRULAMA_v1.7.1.json",
+      "bytes": 1899,
+      "sha256": "064f0d7af9d1d313c8a358034ccfd8ed491aed9fa04b99e3bd94ec6cf71bbb61"
+    },
+    {
+      "path": "DOGRULAMA_v1.7.2.json",
+      "bytes": 2696,
+      "sha256": "78a718cd34c7b5afb43785f99a8e9648a2bed0296e687d8e3687a72109f0ce87"
+    },
+    {
+      "path": "DOGRULAMA_v1.7.json",
+      "bytes": 1388,
+      "sha256": "6f86c594620073e1347b275249db3e13b1c01f595a3edf6670154e3163746a3a"
+    },
+    {
+      "path": "DOGRULAMA_v1.8.0.json",
+      "bytes": 1122,
+      "sha256": "9025ddc816886591f14d3abbd31d3b7a0caf7aabfad956f68a20b2e004c55edb"
+    },
+    {
+      "path": "DOGRULAMA_v1.9.0.json",
+      "bytes": 955,
+      "sha256": "ce0d8c9664a91cc1f2989786eb726416fc91cbfb9caea5494ea5c1c49f2b0439"
+    },
+    {
+      "path": "DOSYA_LISTESI_v1.16.0.json",
+      "bytes": 82836,
+      "sha256": "4dbe9e35d99f08b7e80c564ccaa4d1dfefa8241f7c47ad41367c1e0a4bf46189"
+    },
+    {
+      "path": "DOSYA_LISTESI_v1.17.0.json",
+      "bytes": 85966,
+      "sha256": "86e6e1a41e2c20d35ae8e43e8e2e482c71032b6e5827475add2219b78bcd69c3"
+    },
+    {
+      "path": "DOSYA_LISTESI_v1.17.1.json",
+      "bytes": 86780,
+      "sha256": "83cbe3cd9172f8d1664a35a3e623c0e6767fdb8d2f94c9f98ce8f13c9a4bb4e3"
+    },
+    {
+      "path": "DOSYA_LISTESI_v1.18.0.json",
+      "bytes": 88995,
+      "sha256": "a7310b9a398390b12695d7b923d57cd1326efbf01d134e72d84bde72f78316e8"
+    },
+    {
+      "path": "GORSEL_KAYNAKLARI_v1.10.0.md",
+      "bytes": 3472,
+      "sha256": "c0677b1cf77503a5f5cb740bfb0df0e0d02fb4d015a582e0e1602eb7020e96fb"
+    },
+    {
+      "path": "GORSEL_KAYNAKLARI_v1.11.0.md",
+      "bytes": 4197,
+      "sha256": "b6538f30e69795b207a305e661e0ee0f96a6b0d95a1f194c7d2fb7a43bafa4d1"
+    },
+    {
+      "path": "GORSEL_KAYNAKLARI_v1.13.0.md",
+      "bytes": 2094,
+      "sha256": "b8e3b5ea7c09653980bd13983de36d69b3d2062a93bc136f4ee893609e2327d2"
+    },
+    {
+      "path": "GORSEL_KAYNAKLARI_v1.18.0.md",
+      "bytes": 2504,
+      "sha256": "ef07f3a7c04bf60eadfdd3ab82ee76648c142cd6474b11a762e00ef8710b51c4"
+    },
+    {
+      "path": "GORSEL_KAYNAKLARI_v1.9.0.md",
+      "bytes": 3250,
+      "sha256": "e393e7f21ebf990fdd666a56e313ec5261f399d1a7606fee4c4f5df3291e5cbf"
+    },
+    {
+      "path": "GORSEL_VE_TEKNIK_KAYNAKLAR_v1.15.md",
+      "bytes": 3744,
+      "sha256": "fdefcb834e030d25fe12d31780f7724869afa7db362927e4d22e68d1a4af66c5"
+    },
+    {
+      "path": "KULLANIM.txt",
+      "bytes": 21834,
+      "sha256": "bc24b4fc79e85b2876a339b871407d6e7858713afc82eea5a9ca1f74e8b0bf60"
+    },
+    {
+      "path": "Kaydedilen_Projeler/01_Kumanda_Muhurleme.odsdevre",
+      "bytes": 6358,
+      "sha256": "7c9ccade8e70072df52015111f53e7ef334ec8fc9d4803441e125281df2ef311"
+    },
+    {
+      "path": "Kaydedilen_Projeler/02_Tesisat_Vavien.odsdevre",
+      "bytes": 2293,
+      "sha256": "24531e8bf4a9d40eeee7510b5852f641b5bfc6775839564731741314398d8bae"
+    },
+    {
+      "path": "Kaydedilen_Projeler/03_Egitim_Panosu.odsdevre",
+      "bytes": 4712,
+      "sha256": "b9f7a5dec99f5c661282db8162260c6f51f7587fd7940eb0e30ea1781eaf85f4"
+    },
+    {
+      "path": "Ornekler/220V_24V_Esnek_Prob_v1.15.1.odsdevre",
+      "bytes": 3779,
+      "sha256": "9f50309eb6efff97fbe17a7e032fbc72bfc259e00c54f580976d21d2956e9902"
+    },
+    {
+      "path": "Ornekler/3D_Buton_Kontaktor_Motor.odsdevre",
+      "bytes": 12381,
+      "sha256": "e096bd555f52d585e15044c191ce8cb3a859a22ad3b358d7169210e57c6a259c"
+    },
+    {
+      "path": "Ornekler/ACS800_R5_4_20mA_ve_Roleler_v1.17.odsdevre",
+      "bytes": 9822,
+      "sha256": "ece71d1e44a9e1a1d35e239a70670d398fa6aa2d27014aa8e412af462cca8c6d"
+    },
+    {
+      "path": "Ornekler/ACS800_R5_PID_Kontrol_v1.17.odsdevre",
+      "bytes": 8521,
+      "sha256": "b96d4b0519bc3232852cade9b2d60fef278e60392fec244a05bfea51071ff9a7"
+    },
+    {
+      "path": "Ornekler/ACS800_R5_Panel_ve_Yon_v1.17.odsdevre",
+      "bytes": 5471,
+      "sha256": "d360be725ee3abfefd3c56d62fd3bad382f27433e1ad47d6c346fd7b825df212"
+    },
+    {
+      "path": "Ornekler/ACS800_R5_RMIO_Potansiyometre_v1.17.odsdevre",
+      "bytes": 7670,
+      "sha256": "2b29052b7c43f8642f76f33efa30c9da714ef522f848b6da5190a496582fdcb0"
+    },
+    {
+      "path": "Ornekler/Akim_Trafosu_100_5_v1.11.odsdevre",
+      "bytes": 1637,
+      "sha256": "d9b54eb2abb4aca75e585c213d9317ad7911981b6246d86aeb77a999839561b8"
+    },
+    {
+      "path": "Ornekler/Analog_Cubuklar_v1.10.odsdevre",
+      "bytes": 1846,
+      "sha256": "287b14b7a4e49f96135b7ac45ba14967f6a26f1512ee4e521f786f0b2f130f43"
+    },
+    {
+      "path": "Ornekler/Analog_Sensorler_v1.9.odsdevre",
+      "bytes": 1977,
+      "sha256": "b987358a1a13ed05dd1cc73befbdc09582fc1fa7c18278de6bc58a58c14780e7"
+    },
+    {
+      "path": "Ornekler/Bagimsiz_Sigortalar_ve_NH_Kapak_v1.11.odsdevre",
+      "bytes": 4288,
+      "sha256": "31cf56a675bda6a3f47cf95fc9da5481b3a379c2af3e912b228363d77f9b831a"
+    },
+    {
+      "path": "Ornekler/Baykon_TX11_Loadcell_Analog_v1.15.odsdevre",
+      "bytes": 2494,
+      "sha256": "fb8b54a84a44b0ac0c37aef07d4429e6dabe977ca5cc3d3172ba275e65c59362"
+    },
+    {
+      "path": "Ornekler/Belgeli_PLC_Terminalleri_v1.8.odsdevre",
+      "bytes": 933,
+      "sha256": "1c97400dae5d05b3b9c022456c21b261129b60649787cd03e142d5aa90fb2790"
+    },
+    {
+      "path": "Ornekler/Birakmada_Gecikme_v1.9.odsdevre",
+      "bytes": 2603,
+      "sha256": "e09739ec7182f583cd16d44c9f72b23ed4ed1fac7acb3c95b6fb52220bb3ee16"
+    },
+    {
+      "path": "Ornekler/Cekmede_Gecikme_v1.9.odsdevre",
+      "bytes": 2594,
+      "sha256": "b7d3efef2f8b64c118a65d3ac65dafcb06fd719aac8147933aec9b357cc69920"
+    },
+    {
+      "path": "Ornekler/Darbe_Rolesi_v1.9.odsdevre",
+      "bytes": 3124,
+      "sha256": "7ca0706524b19a3b0ec54a77f542a906cb205f0e4d6af176f0b7337db2cf3563"
+    },
+    {
+      "path": "Ornekler/Delta_SE_Varyantlari_v1.14.odsdevre",
+      "bytes": 1125,
+      "sha256": "2263829950d8866b43b1d09e5c9224351f5e1457496a4f765cf1be6f6367caf7"
+    },
+    {
+      "path": "Ornekler/ENDA_ET4420_PT100_Kontrol_v1.15.odsdevre",
+      "bytes": 2575,
+      "sha256": "4a43cec4534a5baa1a7c8599135a49bd7f3aa097ab291cca5ce5cb4cd7c3d736"
+    },
+    {
+      "path": "Ornekler/Faz_Roleleri_v1.11.odsdevre",
+      "bytes": 3086,
+      "sha256": "e40dd8c613025868aacead6e6899fc7631ccffe6998caf166454f308829b646f"
+    },
+    {
+      "path": "Ornekler/Flasor_Rolesi_v1.9.odsdevre",
+      "bytes": 3129,
+      "sha256": "137647c6f315c7148d53e4abd31cf7b03983cf5b81634af3ced0b90c4eeb75f9"
+    },
+    {
+      "path": "Ornekler/Flasor_ve_Sesli_Uyarilar_v1.10.odsdevre",
+      "bytes": 5200,
+      "sha256": "c08574a0284d3d02520b56aa266cbc1a7a76af6b06cc65d9a68195e8d08a199c"
+    },
+    {
+      "path": "Ornekler/GMTCNT_Ornekleri_v1.14.odsdevre",
+      "bytes": 1443,
+      "sha256": "bd78a12227c4bec1555d331105ca948487fb929f0254cfb91f89cbcb47600009"
+    },
+    {
+      "path": "Ornekler/Gentek_HT2_Sicaklik_ve_Nem_v1.15.odsdevre",
+      "bytes": 2159,
+      "sha256": "95a3091b27087de1a0f3b843b6114213d5551adfeb5caed8d53f7089ccc7fc60"
+    },
+    {
+      "path": "Ornekler/Ileri_Geri_Motor_v1.6.3.odsdevre",
+      "bytes": 10941,
+      "sha256": "06b93ca65d8c0318e1c10a5903077436012a5303d13f558bb75d7cfc7fbbc457"
+    },
+    {
+      "path": "Ornekler/Isikli_Buton_Bagimsiz_Lamba_v1.15.odsdevre",
+      "bytes": 1708,
+      "sha256": "fc46a91de4fc735cc2c0d97d57f141f4b37728078bc2d58ed15908f1e6a936d2"
+    },
+    {
+      "path": "Ornekler/K1_NO_NC.odsdevre",
+      "bytes": 7877,
+      "sha256": "f525052abaec217babc17482863d60fb03013c2892f6bc3a3a659b17a9d1aa81"
+    },
+    {
+      "path": "Ornekler/K1_S2_Muhurleme.odsdevre",
+      "bytes": 8186,
+      "sha256": "b0076a322f00a8a9a42d9dda07e0d121cdbc6c9cdd6e9c242e1fd04477123070"
+    },
+    {
+      "path": "Ornekler/Kobastar_SB2_Yuk_Hucresi_v1.12.odsdevre",
+      "bytes": 1363,
+      "sha256": "217a7b8dab580dfc2033ffcbac03c8c774b2bcce73c3949d94c84ffcfe6d79a9"
+    },
+    {
+      "path": "Ornekler/NTC_Sicaklik_ve_Prob_Gorselleri_v1.12.odsdevre",
+      "bytes": 708,
+      "sha256": "97af48f63406d0ff8dd9e3f9f99e80c5b349d289cac888897afe8d2dcb77804d"
+    },
+    {
+      "path": "Ornekler/Norm_Etiket_Yerlesimi.odsdevre",
+      "bytes": 9393,
+      "sha256": "d2c873eaaa0056006abb3fad7f2ce0df8ac901de3990deaffe4554527b3adef1"
+    },
+    {
+      "path": "Ornekler/ORDEL_HMTR_PT100_Dongusu_v1.15.odsdevre",
+      "bytes": 2121,
+      "sha256": "9702c3108d097f83b9ef8eae506d62ff95bed163b2562fcd2f031f0b35056a4d"
+    },
+    {
+      "path": "Ornekler/ORDEL_HMTT_Termokupl_Dongusu_v1.15.odsdevre",
+      "bytes": 2052,
+      "sha256": "5d8162745d324e7f8567f10768dfd3a2eb3b9e49985392400abb664eda91a4c8"
+    },
+    {
+      "path": "Ornekler/Omron_CP_Ornekleri_v1.14.odsdevre",
+      "bytes": 1333,
+      "sha256": "5c16e0ada85ee8e19271858f2aa61cd671f6bb35dff05a37dc9f7f5fd177ae4b"
+    },
+    {
+      "path": "Ornekler/PLC_Marka_Gorselleri.odsdevre",
+      "bytes": 2328,
+      "sha256": "8fe316ba144783bf1b80a820cbb8fa33a8ae69e64b31c748f2dc69fc8c420684"
+    },
+    {
+      "path": "Ornekler/Pano_Rekor_Kapak_v1.9.odsdevre",
+      "bytes": 2706,
+      "sha256": "e103c625342a664b76103de6a45a5b8198af670fb9e73d84908f5c6a72ba51b6"
+    },
+    {
+      "path": "Ornekler/Pano_ve_Kumanda_v1.6.2.odsdevre",
+      "bytes": 17024,
+      "sha256": "02bf07073a583b89bf604abba320472f2483606e3851a714599cfe22daf8a339"
+    },
+    {
+      "path": "Ornekler/Reed_Miknatis_NO_NC_v1.13.odsdevre",
+      "bytes": 2115,
+      "sha256": "68e39ecb04890b9bd9036276866b66cb71f73275adc8303a6203fe85f03bdeec"
+    },
+    {
+      "path": "Ornekler/Secici_3_Kademe_v1.10.odsdevre",
+      "bytes": 2043,
+      "sha256": "d169129bfb24f833437f67a307f04f2d265cceb93419a3ddde899574a3a6cff4"
+    },
+    {
+      "path": "Ornekler/Sensor_Hedefleri_v1.6.3.odsdevre",
+      "bytes": 8219,
+      "sha256": "24b70af203734d8cf317072f75d76ee44df33bc2a761950c48ca9912cec20e4b"
+    },
+    {
+      "path": "Ornekler/Sensorler_v1.6.2.odsdevre",
+      "bytes": 15695,
+      "sha256": "91bdb401d218aa8802ca4ba016ec12f06fdf78afb84b6ec91951d37241614c59"
+    },
+    {
+      "path": "Ornekler/Siemens_S71200_Ornekleri_v1.14.odsdevre",
+      "bytes": 1213,
+      "sha256": "26127abbaee3ea67851b96968130ec22eeefd37067200f595aa85d749924deb4"
+    },
+    {
+      "path": "Ornekler/Siemens_ve_Mekanik_Gorseller_v1.13.odsdevre",
+      "bytes": 1806,
+      "sha256": "04b0d5f2a3c00a64a3cfa3ae43bde3ca80b434464bbf2fc2deb20ed871071422"
+    },
+    {
+      "path": "Ornekler/Sinamics_V20_Kontrol_v1.8.odsdevre",
+      "bytes": 4579,
+      "sha256": "211ca9058d5d1a6e627994baa46ec65b68881c32b60221df157406e3e4abf00b"
+    },
+    {
+      "path": "Ornekler/TX11_0_10V_Prob_Olcumu_v1.15.2.odsdevre",
+      "bytes": 6055,
+      "sha256": "9fce1d20d50ff0b543bca86bc3f0c9ba6814cf25f595d36fb75d267d389da38d"
+    },
+    {
+      "path": "Ornekler/TX11_4_20mA_Prob_Olcumu_v1.15.2.odsdevre",
+      "bytes": 6080,
+      "sha256": "ede8c953878647f208ee784af3864b9d5d09e5158f82a9ac5b4bd79bf5824d16"
+    },
+    {
+      "path": "Ornekler/Tesisat_ve_KNX_v1.6.2.odsdevre",
+      "bytes": 14930,
+      "sha256": "9b011c12b6ec07d2aeedfb82b54eae97420058305feddbeef7877b2e50b25aaa"
+    },
+    {
+      "path": "Ornekler/Trafo_Guc_Kaynagi.odsdevre",
+      "bytes": 5575,
+      "sha256": "207059aa49c945151f3caae1e2d654ed9f03b9895fadfbcb49314c08e7c8e0e9"
+    },
+    {
+      "path": "Ornekler/UT33D_Hareketli_Problar_v1.15.odsdevre",
+      "bytes": 1667,
+      "sha256": "3365461d0bd03a560dae57a2ec80c6fa6e7af5e015e0bfc8a5acc7bf3edb36da"
+    },
+    {
+      "path": "Ornekler/V20_4_20mA_ve_Cikis_Olcumu_v1.16.odsdevre",
+      "bytes": 7595,
+      "sha256": "d35a203048087f5c42b2908a38e1443ff0232db701de1c8504b690c07e491bc6"
+    },
+    {
+      "path": "Ornekler/V20_NPN_Sabit_Hiz_v1.16.odsdevre",
+      "bytes": 5708,
+      "sha256": "bed2cce333c7a1372f6beff4fb1cd1c19ca8cb757fe819622da2e62a66a07ed2"
+    },
+    {
+      "path": "Ornekler/V20_PNP_Potansiyometre_v1.16.odsdevre",
+      "bytes": 6598,
+      "sha256": "9065faed6a8b9bb6b0996b0f3705b2cb1179befd78ead6ea6ee4b1f1b802bcce"
+    },
+    {
+      "path": "Ornekler/V20_Panel_ve_Rampalar_v1.16.odsdevre",
+      "bytes": 4431,
+      "sha256": "8346d1b5477e964da492bd9640320339f784881a7020a47983d5200a0acbab1a"
+    },
+    {
+      "path": "Ornekler/WAZ5_0_10V_4_20mA_v1.15.odsdevre",
+      "bytes": 1597,
+      "sha256": "cdd90c296f0e76095e581dcc5aab5ee14446bbfaa6b3221e88c758332f9f5560"
+    },
+    {
+      "path": "Ornekler/Yeni_Gorseller_v1.10.odsdevre",
+      "bytes": 2584,
+      "sha256": "b7dac759cda1be500c24a12501fa302bddcecdf75880e168e9b8a049c4ae4b52"
+    },
+    {
+      "path": "Ornekler/Yeni_Malzeme_Kumandalari_v1.11.odsdevre",
+      "bytes": 4719,
+      "sha256": "14d2fdc55eabc998767deeaea5f1a0f75ed12d5d0a20ea05574859b972f32171"
+    },
+    {
+      "path": "Ornekler/Yildiz_Ucgen_Paket_v1.8.odsdevre",
+      "bytes": 2939,
+      "sha256": "f841f6bccf80a59eb98580d0e32104471b5c1cd3952f48b0f67db77e39b618a8"
+    },
+    {
+      "path": "SEMBOL_ESLESTIRMELERI.json",
+      "bytes": 370787,
+      "sha256": "fe4e29b667b37e86253549d6650aac688fd343bb9df6a883a32f4d0f82f19597"
+    },
+    {
+      "path": "SEMBOL_KAYNAKLARI.txt",
+      "bytes": 6364,
+      "sha256": "59a028908a2fecf36a5914b37c971dca9384e42c4868d09edd56e037182eaf49"
+    },
+    {
+      "path": "URUN_GORSEL_KAYNAKLARI.txt",
+      "bytes": 94592,
+      "sha256": "da95566ad9a169fdbb15e7fc93ea3461adfa389c65a62c81dddd947a1997d373"
+    },
+    {
+      "path": "V20_KILAVUZU.md",
+      "bytes": 8805,
+      "sha256": "9325030ebf339d6a6b0e8ffa4b8a6c97e0151a6fd1647a1b956e5969c1d0f013"
+    },
+    {
+      "path": "YENILIKLER_v1.10.0.md",
+      "bytes": 4054,
+      "sha256": "4106c9f8215701ce226c1ad3598edd4e921b0396aaad16806465b04ab6836b8d"
+    },
+    {
+      "path": "YENILIKLER_v1.11.0.md",
+      "bytes": 4865,
+      "sha256": "e935597401d731e610551488ee7554c08b82af336d16ed9fb59a1f748785dbdd"
+    },
+    {
+      "path": "YENILIKLER_v1.12.0.md",
+      "bytes": 3261,
+      "sha256": "97a45b456389cf883ebddd1dffb755663645e74713a0a0e5d77abc5ff3225991"
+    },
+    {
+      "path": "YENILIKLER_v1.13.0.md",
+      "bytes": 2801,
+      "sha256": "c44e1624c016a3df4755d4f2690259a8a7064ec0cbb99e6b2a87963bd5a3391e"
+    },
+    {
+      "path": "YENILIKLER_v1.14.0.md",
+      "bytes": 3000,
+      "sha256": "17fed7d4984b1395496d886f0b61eb189512b2758ab4e713ed6e6fecb8217752"
+    },
+    {
+      "path": "YENILIKLER_v1.15.0.md",
+      "bytes": 6605,
+      "sha256": "3420c8822095193213dc4ed22b89a05386a15f17ecd19fc4495f063c745259ec"
+    },
+    {
+      "path": "YENILIKLER_v1.15.1.md",
+      "bytes": 2938,
+      "sha256": "2fa0a1247d409822cb7f017c25488a68e57b29eb6a6235710ad4393568949516"
+    },
+    {
+      "path": "YENILIKLER_v1.15.2.md",
+      "bytes": 3630,
+      "sha256": "c56da0b55554337ce0f2724903c8e295ab11d7639cb9248fdffbbada733919fe"
+    },
+    {
+      "path": "YENILIKLER_v1.16.0.md",
+      "bytes": 1437,
+      "sha256": "b2844d764acb98ec3d96fb2fdc7063207ed52256294a12eec6a8215b29640fce"
+    },
+    {
+      "path": "YENILIKLER_v1.17.0.md",
+      "bytes": 1261,
+      "sha256": "ba694fcba62fcf1705737c45d1d22923a85be3a7c908ea304e7d742a92849ad0"
+    },
+    {
+      "path": "YENILIKLER_v1.17.1.md",
+      "bytes": 1598,
+      "sha256": "7692ffc4f546e5117af82a1d8c899ad7fb9ec42b422763566782821d7a2d83fb"
+    },
+    {
+      "path": "YENILIKLER_v1.18.0.md",
+      "bytes": 3868,
+      "sha256": "b3c15f73295488e8a6fac0b5cefdde87fa67e3ec36b283ad76a0020552b34977"
+    },
+    {
+      "path": "YENILIKLER_v1.9.0.md",
+      "bytes": 4642,
+      "sha256": "ca9cdfc145f469b0bab09757fee91445654e5e4b1360146e27b1f94be172b534"
+    },
+    {
+      "path": "dist/acs800-art.js",
+      "bytes": 2447,
+      "sha256": "ebef4dd35dc993a121b88e6565817bc0b1cac92bdd6e4e4df4828414d88fbf21"
+    },
+    {
+      "path": "dist/acs800-terminals.json",
+      "bytes": 1246,
+      "sha256": "85a58338e468c8aef08620518a98160a96a0eff34fec93310757346d98f192da"
+    },
+    {
+      "path": "dist/acs800-ui.js",
+      "bytes": 14483,
+      "sha256": "fac93975f28eae12ddc40eb48a3d6fb31d2b14d12bb1fb2878ceced4f0ed59ef"
+    },
+    {
+      "path": "dist/acs800.css",
+      "bytes": 1336,
+      "sha256": "48ca087cb7d543e89575497699e1827ae3c0b4cb89174a749698668bbcb42e03"
+    },
+    {
+      "path": "dist/acs800.js",
+      "bytes": 21577,
+      "sha256": "496b0e4bb9c47c4a78c54bc5ba772cd5708e64cab89951706097669974f1b816"
+    },
+    {
+      "path": "dist/actuation.js",
+      "bytes": 3229,
+      "sha256": "ebf5c3d901dd44a146c037dedc164a19a6d049346c3d7c7892517713ca858a3a"
+    },
+    {
+      "path": "dist/app.js",
+      "bytes": 117680,
+      "sha256": "7fd55fd371935adad7af14e49407d047186d9de6a76d64621a461e03c7f8ef63"
+    },
+    {
+      "path": "dist/assemblies.js",
+      "bytes": 3927,
+      "sha256": "77ea65da1c8ab3525ebd1f9c4c0f030d37697e58c9c3edaeed205c0cf4f5b68f"
+    },
+    {
+      "path": "dist/assets/atlas-a.png",
+      "bytes": 1201772,
+      "sha256": "8ae2c5f8a21d8600c48819388daa0c6bdc86384e6f558611b9c5c96a9e741866"
+    },
+    {
+      "path": "dist/assets/atlas-b.png",
+      "bytes": 1270631,
+      "sha256": "667c70c9d28d517b76f881d5acbc7ba9b31a534f5de9e63713577886b62d0f0d"
+    },
+    {
+      "path": "dist/assets/atlas-c.png",
+      "bytes": 1288311,
+      "sha256": "88d53f1bab9d4ca5354955312c1e8eacd815235a7a33c8c5d3b4810a520cbf9e"
+    },
+    {
+      "path": "dist/assets/atlas-manifest.json",
+      "bytes": 23909,
+      "sha256": "e45961f6af98b9932dff0b870fe59c22ce5d7df4213a5d5e81b5d2cef2f8a6d5"
+    },
+    {
+      "path": "dist/assets/plc/manifest.json",
+      "bytes": 240522,
+      "sha256": "57dd2d7c25b3654cf4cd5c1d78ba61e4f9233ce401d5537affe65537b5821244"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-E10.jpg",
+      "bytes": 14847,
+      "sha256": "44e510d2f26fa4fdd213b4961232280ccd286df727d6774c894c06d6f71e973c"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-E14.jpg",
+      "bytes": 66786,
+      "sha256": "4292870381ed9187af54b555ec77185c9a4403b548b5e39fbe96f403135cee8c"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-E20.jpg",
+      "bytes": 50615,
+      "sha256": "369cb64638ce5b18cbafdd187e285903817b1cdddfa4f5f172919c872c97a21e"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-E30.jpg",
+      "bytes": 43478,
+      "sha256": "1e2e40cf3cf95f5dc3af833a97dae048d127df8322ff4233ccb240ff3dd4c8da"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-E40.jpg",
+      "bytes": 40689,
+      "sha256": "b9b3eb1b04860d8eff08fe966e9cf1cdd000a59967c485d233924f47e2a7a1c1"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-N14.jpg",
+      "bytes": 61095,
+      "sha256": "7679c4ab00a53e579e8f02b740933db54337e29da5c28adac2e2e52a6d047d1c"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-N20.jpg",
+      "bytes": 49616,
+      "sha256": "00040be48e2f9bacf1a8600b4097660be85a278eb29047b0732b00f120d56d7c"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-N30.jpg",
+      "bytes": 51699,
+      "sha256": "5eb9cc855f1b78a5056a7147f3aff91320be03e78ee9884aeb0c5a56bf8dcedf"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-N40.jpg",
+      "bytes": 46849,
+      "sha256": "214073d0918f70c0844fceb750ba799aeefd30f51eca16a5a2871431f2f85398"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-N60.jpg",
+      "bytes": 43111,
+      "sha256": "51aee372706b07f1eb5a1dd9dd872bca1140c137de134526324b2d63092b11b0"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP1E-NA20.jpg",
+      "bytes": 51195,
+      "sha256": "c2850966082b03f2630d462664bb89315e8e1b7d38539478e5299624ac4fa2a4"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-E20DR-A.jpg",
+      "bytes": 13386,
+      "sha256": "d195466b0279f1d620efc432fd8080050d46f4664d0cc59a7e23bd4e827baaac"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-E30DT-A.jpg",
+      "bytes": 16116,
+      "sha256": "f922066a1c802aec237f1c62d31bbb2810ac5e21874e88489c1427203f120d87"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-E40DT-A.jpg",
+      "bytes": 13796,
+      "sha256": "886ab960dbf246339e8a61e983766fdd66f40cc5470f54b2707ae6370b1dc32a"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-E60DT-A.jpg",
+      "bytes": 11769,
+      "sha256": "0424c913f9389160a0e1b8e341c1e6d390f6b91d37c1c9d563d68130eb7298a1"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-N20DR-A.jpg",
+      "bytes": 14155,
+      "sha256": "7afb80aa451bc62fca7f583d75c7591f85bbcdc64de3e908bde7361d9e15eaa9"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-N30DT-A.jpg",
+      "bytes": 16616,
+      "sha256": "c52319543fcfa69ba0bff5b40cb9c002ba9269b96cdb898b28de5a96c8e82818"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-N40DT-A.jpg",
+      "bytes": 15998,
+      "sha256": "fcf69736853cea83e7a12778209092fb92b989d072751fa151105e750b2a7b29"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-N60DT-A.jpg",
+      "bytes": 13431,
+      "sha256": "e45061faf2652bb188936ac948272f882c86e31372314978909d1487ebc68e9f"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-S30DT-A.jpg",
+      "bytes": 15669,
+      "sha256": "985cd9652473d1e91d84b2a5c7c8ca5623889ae932b86b00bbba2a42374fe5a7"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-S40DT-A.jpg",
+      "bytes": 13755,
+      "sha256": "7168fe0720c679c621c0f922edc8d4283c6738dd0c5d24c985f150cdd86ab89b"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/CP2E-S60DT-A.jpg",
+      "bytes": 11920,
+      "sha256": "b5917c3beef4160a4305f5a8b6dcf15973c50c939f02671b0dc3d2520aef7c5e"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/dvp12se-front.png",
+      "bytes": 292696,
+      "sha256": "50c0e3ad9bd63ca1a5657950fd18189ac0e38cdb379a85ea1ed226fd9dacd3c2"
+    },
+    {
+      "path": "dist/assets/plc/original-v115/dvp26se-original.png",
+      "bytes": 31965,
+      "sha256": "73486f7e7ff09477509ee83d95d83be62a608b399f604b4f2709d1fb3961248d"
+    },
+    {
+      "path": "dist/assets/plc/outline-overrides.json",
+      "bytes": 1727,
+      "sha256": "6cdf6f9fe1a7fd5ff5bdc514df042756e646b400e1f4bd236606060abad95847"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-0.jpg",
+      "bytes": 99660,
+      "sha256": "f47fbbd84abeafdd4f669b3225c1cd964e343be53b15d216d28ed59e301ee2cd"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-1.png",
+      "bytes": 179224,
+      "sha256": "7947d9405515b24f97e43a195f281edd3d4089959dfa9f9856e7f1cf0861fa10"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-10.jpg",
+      "bytes": 9856,
+      "sha256": "14c5dc0634b7afd00f4dfe8b19427ad6e732d5d9e37f455962fed7198d594984"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-11.jpg",
+      "bytes": 24884,
+      "sha256": "151d9227886b5efeb835ea7d793d419a482036dff7001d9c30a4fad359a01247"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-12.jpg",
+      "bytes": 33279,
+      "sha256": "149546bb7effd8c33dd3ace72a17dea729b9eeb5fbd3d94fa73557e8a76107b0"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-13.jpg",
+      "bytes": 24075,
+      "sha256": "45cdf85d5f481995b081326e9eda4e0bd045c4037ce88bf6a07025bbdd495d64"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-14.jpg",
+      "bytes": 55354,
+      "sha256": "4ea05863b4da05a5695cea730e144a2bda530bf1da95e0e73895bf393b1ab071"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-15.jpg",
+      "bytes": 8610,
+      "sha256": "22b9776a7c9ecc33deb32b1bb9bc1ef1a65bdb0936981590f504330db1d8ccbb"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-16.jpg",
+      "bytes": 17935,
+      "sha256": "16714cf8ff7dd6531040fc6d856454711700b1788ff067ed9b3ea5d1b018b195"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-17.jpg",
+      "bytes": 19640,
+      "sha256": "4ae8f6a532ec4c3b74963f729209c3a4c609e6939d28136573e5d0eb484ef658"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-18.jpg",
+      "bytes": 20287,
+      "sha256": "97eb0ac88eb0dba55997b3aa356052dde66f9763f3a5b7e96a3da015fe0b7c9f"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-19.jpg",
+      "bytes": 26156,
+      "sha256": "64b3c804fc691bdc8714ee16f7d7cb09580fc6d24ecbb830f0c0bad25053853b"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-2.jpg",
+      "bytes": 99757,
+      "sha256": "03c0f3f78fc1bfc9748fc2e1d3564ea01e275d32004414bba236446ef26538e2"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-3.png",
+      "bytes": 216200,
+      "sha256": "7bd561c6f0f8aaf5ec033ebc1af11b68dbbf6ffbe211d8784a6d33fc2813d29b"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-4.jpg",
+      "bytes": 29528,
+      "sha256": "8c1012e3d7a5f15069fddcf9af9e5e48b2fcfe26200d0df6e4dee05814383a5a"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-5.jpg",
+      "bytes": 19727,
+      "sha256": "8b248ce90ab85021ee63a558bb6e7fdbd3d133db215f10383a7e5bc981dedb45"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-6.jpg",
+      "bytes": 24125,
+      "sha256": "69da70040bfbfd7c3ba68c17c65ffb50f431eec3c36da587e6e7e1c63bead7fe"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-7.jpg",
+      "bytes": 29916,
+      "sha256": "00b66411eddf0ff0ba0e1d57a61c4965814f242b0c14a4b938556d387c56df4d"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-8.jpg",
+      "bytes": 26860,
+      "sha256": "e7db79e66f6df44ba86a6f3d512be76611c918651ca2ec7689cd966685fb7d0a"
+    },
+    {
+      "path": "dist/assets/plc/plc-0-9.jpg",
+      "bytes": 24864,
+      "sha256": "3b6cc11a8f71994464a0c561778aae6613c72d721777b78c6b7bfe9f97ba7c52"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-0.jpg",
+      "bytes": 18555,
+      "sha256": "6e1e88c6c2971cd6514ec8904bf690b476a8f689155c41a289e8a9055ed1c1cc"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-1.jpg",
+      "bytes": 18966,
+      "sha256": "7b684537f500494124b0e230d486252e2c71a21a21f2168f05fcd67a9e641098"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-10.jpg",
+      "bytes": 16964,
+      "sha256": "060343e78e952d073a57638ed91439639bb7bfe0df9cc306c0fd95c3e9bba778"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-11.jpg",
+      "bytes": 17004,
+      "sha256": "5730b4a3d82e7041b182637abbcfe49aa87f63c7d255915502fd0fea8e6b4438"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-12.jpg",
+      "bytes": 13360,
+      "sha256": "497c61aff84f5e76027bfe72fe947a6130b69444b7f973bd8401f3a47453e3e9"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-13.jpg",
+      "bytes": 13374,
+      "sha256": "0d7df2f9f596434f910f56be097f616e8b78df701c8785ce713dd786aa5a2407"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-14.jpg",
+      "bytes": 48517,
+      "sha256": "f1d9a81044ef1ad70922e09b4298538617b59f38851ef35bc1c7b63d8f1550b3"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-15.jpg",
+      "bytes": 12737,
+      "sha256": "be4f678cff0473d198e8c2498f4358617db14ef0eb4b67ced92883f93cdf456e"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-2.jpg",
+      "bytes": 25755,
+      "sha256": "0e1209119cd8ebffb8014f17c866afbd3a66892cbd2f5323b490cdc945a96980"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-3.jpg",
+      "bytes": 23954,
+      "sha256": "d4020ab89da5a5e7b0c4b9d328d75805231e893239d4c6ad608ef962130fa4bb"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-4.jpg",
+      "bytes": 29492,
+      "sha256": "fef16abafc48d4dfd4626df273b6b414161530c4a5ece59bb3260f3d3ef93c1d"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-5.jpg",
+      "bytes": 18131,
+      "sha256": "e7647c58837e65f3eccbdd2f6b5122cc99f083687ae460577361c6c38e3aa5ef"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-6.jpg",
+      "bytes": 18721,
+      "sha256": "f23c7eecf7f47eebb2016b4e03d8b96071118e6bcec195203c05db8bc85b73ab"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-7.jpg",
+      "bytes": 69620,
+      "sha256": "9a99b276a032c6a8c5bf74ae98975971949bd8c9353c3c65a382c94c5123687d"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-8.jpg",
+      "bytes": 72298,
+      "sha256": "433703707ebe06a89d142fde837829a9d7fba3b92c2343c843782b3cfcec04cb"
+    },
+    {
+      "path": "dist/assets/plc/plc-1-9.jpg",
+      "bytes": 58796,
+      "sha256": "f6c327ac6d5c6f16b078f2747c2ca553562d219f16da42792436cbaa28f7762e"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-0.jpg",
+      "bytes": 760403,
+      "sha256": "dddc61865487a7a74322df9f0ca6c5c234e2a732b1a3c5b45ed98949d4475ca5"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-1.jpg",
+      "bytes": 556660,
+      "sha256": "8dc3d79037f004b50b6afeace84cd3c1c4a920d0f99bee4197ae7bb86b338045"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-10.jpg",
+      "bytes": 135390,
+      "sha256": "11fe4549de0b73ab9a9b3edee2e3550f5c145f5561fed42754462b8e2a6ebaea"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-11.jpg",
+      "bytes": 133278,
+      "sha256": "70ac22cad32b1241f93c77161eb33345704f2c0222c2aaf6b558166f2b2e22d1"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-12.jpg",
+      "bytes": 133560,
+      "sha256": "3c7c3c0b3d95ff3a9903e985af5409121f4bc835b156adaf318c70eb838a50eb"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-13.jpg",
+      "bytes": 110085,
+      "sha256": "6b7359feb6357ef18950d4b8fc65d7f0d6a8cd4d0272042b31ccbd1eb01b2044"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-14.jpg",
+      "bytes": 142056,
+      "sha256": "ce8e941f02e625f79395b4a8dcda7b66b34394ca2ebab70830a2338f782da20e"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-2.jpg",
+      "bytes": 591255,
+      "sha256": "6f73fcce14557df1d922d601c749b20bc967d3715c4c6ecf054020567f699097"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-3.jpg",
+      "bytes": 637904,
+      "sha256": "7fbff6329d55c0b66c46ccc1a734f5447f98934723826f43d125a01f46e4d5ea"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-4.jpg",
+      "bytes": 298528,
+      "sha256": "1651c200b4bbe57ba79a98eb8cb75f70c7081df242638fce759166cf3a41e788"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-5.jpg",
+      "bytes": 300994,
+      "sha256": "df29005f508f90e0122234ce4d8b9ee2f621767f17223237d6867b06cc5b83a9"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-6.jpg",
+      "bytes": 37303,
+      "sha256": "6327932567118e3cecf3c11c8526abeb21a2261142054846b21b8c25479805f5"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-7.jpg",
+      "bytes": 777287,
+      "sha256": "fd6dac06743319e7c4bdea2d82748822ad7a39c967bcb614fa021f77e739a638"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-8.jpg",
+      "bytes": 226923,
+      "sha256": "b0d282d5e5e586f0428f45a2dd65fa9072173f66e854f4898462c6d01aefe180"
+    },
+    {
+      "path": "dist/assets/plc/plc-10-9.jpg",
+      "bytes": 445054,
+      "sha256": "f43baf60460c399f99e6c64e43ab134ce82d718eedc5ff557620ce7176eeafa0"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-0.png",
+      "bytes": 650425,
+      "sha256": "7500b3a385bbc9c15791250f1a3866b0c6506d62f34eef04f10fb7ff578a91b9"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-1.png",
+      "bytes": 609792,
+      "sha256": "69d59eb71498e962e977dd42d12e0067b2011dfb8193f5e5a52ad6f50e254a9f"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-10.png",
+      "bytes": 598759,
+      "sha256": "aaf99cbe769f853c34bc64e0acf8991f8b6af80a7697aca61de18a2e921da167"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-11.png",
+      "bytes": 963174,
+      "sha256": "2aae1b4b7e9726a79097c27c9dc4d0c3b60a2e5f9c1de5f94805b26cd696324d"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-2.png",
+      "bytes": 2863727,
+      "sha256": "d7ee4b9764e177b3afc6f18c2c276b57d9d39b68bfe9652bc31c4a330e952c8b"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-3.png",
+      "bytes": 699718,
+      "sha256": "1968f0067f48c1516e32665cfc16202f17d4988d0b9df51b56ab497813c40993"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-4.png",
+      "bytes": 702224,
+      "sha256": "71075929f0eed08336f568de6beb7e095acb299cca6683bf2bd2432ca2872862"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-5.png",
+      "bytes": 700368,
+      "sha256": "d7b4f3af118f96faa32536a81a0d324358609b3a332cd1c2b864f436d626972b"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-6.png",
+      "bytes": 697352,
+      "sha256": "f26b31dc7afd8ba8e5792aa921525bdd275da2a0bda05d8c1f3319c0723de915"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-7.png",
+      "bytes": 699703,
+      "sha256": "7165768bc477319bdc990ca8e65fe23f5ef670432338660926e3393df7293da2"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-8.png",
+      "bytes": 698725,
+      "sha256": "b192a601bf8d7548b317978880288c80851dfe103ff7919d22770bbd2aab91b7"
+    },
+    {
+      "path": "dist/assets/plc/plc-11-9.png",
+      "bytes": 592083,
+      "sha256": "f1add729434a0a602e0705bf299439c0d9d21427fbff610fd7532b707b4fb406"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-0.webp",
+      "bytes": 17050,
+      "sha256": "42eeb9ab996123a4ef83d51b3a2d7d58c8d05ebab8f2c3731699761491254f49"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-1.jpg",
+      "bytes": 80379,
+      "sha256": "2f06379e92dfdf1b3fce27f90dff60c6bc18a62d137bf5394c64ea29f346c7af"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-10.jpg",
+      "bytes": 42359,
+      "sha256": "a67d0b789bc24e27fec2923ffc0f281ecdfd1d2bc3cf9d0fda6cec07b251c13e"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-11.jpg",
+      "bytes": 22221,
+      "sha256": "fe42c38f7542ac14af81735b854db50aa0a249b133bd1849385db42bae342d1c"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-12.jpg",
+      "bytes": 15473,
+      "sha256": "31471e640cbc88038bde89a0d48b436d4b05dfdcd511bba90e5279a790da5f9b"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-13.jpg",
+      "bytes": 16678,
+      "sha256": "0d6886f9b55243195346a8a09070dc08cce455ac05fc21b7bce9f7dda3f0b8af"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-2.jpg",
+      "bytes": 95906,
+      "sha256": "13013357d06c37c65d3c326c2ee88f5fccab7a8532d1b032cea80bf7205a3ffe"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-3.webp",
+      "bytes": 10908,
+      "sha256": "bffdf4b8143109d7932a062dd479fbd0bd004113da4e6112505b62b0ef83944a"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-4.jpg",
+      "bytes": 59460,
+      "sha256": "98285b08f5ae78b3426062145772f3c3ff9fac75eeda801fb173aa559ebb9614"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-5.jpg",
+      "bytes": 89341,
+      "sha256": "67d13281068ca67bbf247bf98624f8e6e0c73b960a48d795b33f8c456967d493"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-6.jpg",
+      "bytes": 33144,
+      "sha256": "0d237e6c5b114eccd458bbe53bdc0099c1f6589bc51dd4a67f84341e4bcdb125"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-7.jpg",
+      "bytes": 92797,
+      "sha256": "70dce9f0eea04c108a2534da5a13ce53a0b4d35d5f97a70f917761895964d8d8"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-8.jpg",
+      "bytes": 82791,
+      "sha256": "13144f5feb00266b736661d800d40efd7382b531a3f7851554e15c3ef816be95"
+    },
+    {
+      "path": "dist/assets/plc/plc-12-9.jpg",
+      "bytes": 101268,
+      "sha256": "2819ab8215fe5dd1c0035888c890958e2f66732d1c5d99f48cd5c1c63fcb5126"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-0.jpg",
+      "bytes": 139082,
+      "sha256": "6d8823a4353b25cac8828c78e0131e1d3bffce97b2be75bb34ead066fd4a4f2a"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-1.jpg",
+      "bytes": 121712,
+      "sha256": "223d57df22c22028536dad59792ddcea4d29c756a60851c7d818adf0194c5b4d"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-10.jpg",
+      "bytes": 197584,
+      "sha256": "195379ca2ac53664dfceff9c72c4c4e3e6661564c9d393291ba9f42da47e3f34"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-11.jpg",
+      "bytes": 206873,
+      "sha256": "9150332535dbcdbd14d1dffe0b19c90b8d1349d96ee4b492a604093a1589d261"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-12.jpg",
+      "bytes": 235004,
+      "sha256": "497dc952afb88c8336192338653f44670bcf134b983805df9ae44dbe5f1b5a47"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-13.jpg",
+      "bytes": 492627,
+      "sha256": "3f90c50714ce97acf22b8f3d9f09b9bb23cbe81faa4647d472c875f739f15f72"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-14.jpg",
+      "bytes": 385583,
+      "sha256": "54a05b9f527369332d6834301d2ea738941e85fe1e06e41c32c7f7db8b11d2cc"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-2.jpg",
+      "bytes": 293843,
+      "sha256": "6873b882dd7b1337cdb8c4b4c269ce5b6d96095625cce810c763889b95365a67"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-3.jpg",
+      "bytes": 207600,
+      "sha256": "11a0c2ba00b3960b4e7b6228e8a197bef11caac7aee18a52d8e99c720d34502c"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-4.jpg",
+      "bytes": 207600,
+      "sha256": "11a0c2ba00b3960b4e7b6228e8a197bef11caac7aee18a52d8e99c720d34502c"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-5.jpg",
+      "bytes": 207600,
+      "sha256": "11a0c2ba00b3960b4e7b6228e8a197bef11caac7aee18a52d8e99c720d34502c"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-6.jpg",
+      "bytes": 294640,
+      "sha256": "d9bae6bda0fbb40a98a2bf88a1a26e9c6bfd2699a8fb0cdda0d659b5aebbcbfb"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-7.jpg",
+      "bytes": 128962,
+      "sha256": "a83f231be33044ba6d106c78a2241f8a1159732339ee636cc5647fd5833885cc"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-8.jpg",
+      "bytes": 126367,
+      "sha256": "385d225696950aa573dd69ae164a000e2cf555bda911b1d8ce95803e2c94abb5"
+    },
+    {
+      "path": "dist/assets/plc/plc-13-9.jpg",
+      "bytes": 156967,
+      "sha256": "f0a7ce726cfffb919079c95d6683c2ac6c828b79f26d7f1cdf5c4a7d23727ee8"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-0.png",
+      "bytes": 365953,
+      "sha256": "44048009e7c31cd09b6420ce0e4f1171da203be6b10a5b0857c21933e98594e2"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-0.webp",
+      "bytes": 38140,
+      "sha256": "8d84d64ba5e0b95e6734211d9625ab6e6d74bab070c876e5f9742e2c2c47cb3f"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-1.png",
+      "bytes": 364752,
+      "sha256": "2ce6c27994ffade4307fde8a93e44d474be2be593e0e7b2c127694e049f79c82"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-1.webp",
+      "bytes": 38984,
+      "sha256": "cd8c430f767aa584581d590a1202d5d8af3989f1d770ece7c27d6eb41ffa439e"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-10.png",
+      "bytes": 228254,
+      "sha256": "2f8c008843f7f2ec530851f516e05002d95089615b3ec8cccbcddc99eedc3e02"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-10.webp",
+      "bytes": 20344,
+      "sha256": "3369ca3f37ea7de5b3369a8dd64cfc6316f73376bddb6f5c748010a7f1b574b1"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-11.png",
+      "bytes": 248572,
+      "sha256": "595cd7d38ebc27387c5fac97c07d8e0911a9d864f225d643ab793f9227810cde"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-11.webp",
+      "bytes": 27930,
+      "sha256": "a54de832e30a7ff64c49236f7eff6075aface892b0ee00db89ebb6dd9471861e"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-12.png",
+      "bytes": 215991,
+      "sha256": "37cf6c6aa7ada041b31b5048efdb736c654802a6a797c18adddff2ff9b53969d"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-12.webp",
+      "bytes": 19864,
+      "sha256": "e64425a5527366a443b896051a4d8c60dca6757e775a8744c259b2693cc9a781"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-13.png",
+      "bytes": 226460,
+      "sha256": "f352f34b40f786edbcf5e49ef526e7acd4b28475781dd6599d202499472fc67b"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-13.webp",
+      "bytes": 19820,
+      "sha256": "734f242ba2498235492bc0067c1f96ef3cbe2399c9e55b3e37d6cc0d5e378371"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-14.png",
+      "bytes": 252377,
+      "sha256": "19be2469b21fb832c442936eb13087db9df940daa4eb21efe5997613b7ae4ced"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-14.webp",
+      "bytes": 25788,
+      "sha256": "7998457f12b9c7a6393333e2f42104fecd5983c18a3fefb08fa4283e5c395887"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-15.png",
+      "bytes": 241969,
+      "sha256": "5fc5f3cd7eab1fd2ae9dd057ee7d5f2d86ee39240701703d934ce27dc0867952"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-15.webp",
+      "bytes": 22060,
+      "sha256": "7bcbd5d13fe4e189334d56a74e457fbb3c74c594e795f538f535337437b449f2"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-16.png",
+      "bytes": 252361,
+      "sha256": "cdda42ec1dd86e3390bbdb20e8fb9861a5ebaf21fa24de8c80ebaf9a1f02bb4b"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-16.webp",
+      "bytes": 28290,
+      "sha256": "6286d7382f7a830b6c230e6edd1d58edbf50ae2a3542896b9def62e36f5cff8a"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-17.png",
+      "bytes": 236571,
+      "sha256": "dc8bc896e964c4252d0f584eb19bc42328c7720d71ea7c757aa309b5d54746c0"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-17.webp",
+      "bytes": 21422,
+      "sha256": "75ba858982d2c046e95751ed50359c9da01fa875e8ef24daa3cfade05f9652b9"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-18.png",
+      "bytes": 246504,
+      "sha256": "29d9da43a8c6f80aea4cd4b56628b720c45969bc5365a29f6896c801e576e0f7"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-18.webp",
+      "bytes": 26972,
+      "sha256": "fffc0b7a3583b266673ca467524141467ed5d051dee87fbad756f3d6935fee80"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-19.png",
+      "bytes": 200594,
+      "sha256": "8ed161ef36c1a228f977f4eea3e00031e701ff21c08e1722bcee721770fd5789"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-19.webp",
+      "bytes": 23838,
+      "sha256": "ab263a08fcbf3bb687faeb8cc4754e0399e61fc80f9a11ceaaf19d69837a34e6"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-2.png",
+      "bytes": 358287,
+      "sha256": "27c0bc3331c06d41dcdb859ef838a06b84c3c4015898bc5e2627b6be2255fd39"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-2.webp",
+      "bytes": 39138,
+      "sha256": "169e9f7e73496213a33a637fc3b48fdeaece8ae808719fa6a0960863972e7eaf"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-20.png",
+      "bytes": 233966,
+      "sha256": "dafb5cc4e84c2c35a43a224c3761d2da544965c37dcb2770a0570ed070ee98c3"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-20.webp",
+      "bytes": 27152,
+      "sha256": "f372de6b8bfa5d91d9e7bc8cb9595db71bee9ca4212f2a891808a7ea8f31fd0b"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-21.png",
+      "bytes": 179962,
+      "sha256": "6ac5646a2d766a8637d46f6e04f1ebe28b5a851e28ebdb3b0bde4c615409dd41"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-21.webp",
+      "bytes": 20552,
+      "sha256": "8cd9f8f5830a00038251e9fb838396bfac06dd8774b529f526cc548dc9495caa"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-22.png",
+      "bytes": 221113,
+      "sha256": "129fbafb853870b51a61fa7199d566823484ffd5a5f438f01939c4b1352a1328"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-22.webp",
+      "bytes": 24454,
+      "sha256": "80ee8f8794e36b5caeae8829c6965afb20315cbb3b4420eedf701161f2e68ddc"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-3.png",
+      "bytes": 367885,
+      "sha256": "63ae65cba9a61c3ae436e62aff799a95abff2435594852ebbea3c0e293447dee"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-3.webp",
+      "bytes": 38998,
+      "sha256": "502a7f259bc0357c65d570100a9db14426dac8bf9d94d43ec62b6422e49a6089"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-4.png",
+      "bytes": 357024,
+      "sha256": "5824109e5f1a2518726af571efdcba5b3170d16693971ded5c598eee1a1c83fb"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-4.webp",
+      "bytes": 38010,
+      "sha256": "b4c87d70dd1f933cf9290a69581638753b026cf1c1eb736e8b5d1dbf56ec50a8"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-5.png",
+      "bytes": 354592,
+      "sha256": "c6e99cd2b9c42b464f119d5d7ce9b6930e379bd10f71baf487ca677c79c7e275"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-5.webp",
+      "bytes": 37822,
+      "sha256": "57ce074a9b76f59835ae30eafb8e7581ec670126cdbb08581b47c2fb6f053b8c"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-6.png",
+      "bytes": 365068,
+      "sha256": "579f38c152de6e54daa33aaf48a19a9d43f53483d06c2057c8fe1207e037d6be"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-6.webp",
+      "bytes": 40890,
+      "sha256": "8af015432b28e4f2164f2abc737297382308df9cc24195b184f27c11d26cb487"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-7.png",
+      "bytes": 352654,
+      "sha256": "c914ab05501d68dc6446716b380334a1414f7be581c4345dd1e7c780f720fef8"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-7.webp",
+      "bytes": 39696,
+      "sha256": "a3e1b57f3b74699577fa3d372c5ac91e7c5db2cb93f38cf397fc2dd884eb2d0d"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-8.png",
+      "bytes": 216277,
+      "sha256": "823ab4158b7d00b07fc507f05c87054d466a28d67e9621b215adb4d98b4a9055"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-8.webp",
+      "bytes": 19020,
+      "sha256": "6b42d0b51c08bb81b8036e7ba974b7ae5a3255c22459a38d4db8efbc0978558f"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-9.png",
+      "bytes": 393895,
+      "sha256": "84dd776ccad8a7ad5776ecb26b78a20ea694f7243cfa1d71a2c4114c077613c2"
+    },
+    {
+      "path": "dist/assets/plc/plc-14-9.webp",
+      "bytes": 99202,
+      "sha256": "91d98e9c32fa5293735c4b23068cd87a49d6600ab9eed4b2ff8b1a78170ee435"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-0.jpg",
+      "bytes": 14656,
+      "sha256": "7eef018c80a6f5bd7affe58a0522832d54b124b7858954e26328b66c5438045b"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-1.jpg",
+      "bytes": 21836,
+      "sha256": "3224fd92ee45fba6d06af46bfdfbad391849fe6c24cfb0cbe2c84f76177743b3"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-10.jpg",
+      "bytes": 14414,
+      "sha256": "dec6fca33b76045323666ac06def2eadd3216f48d38237f67431d2221eb6d14a"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-11.jpg",
+      "bytes": 17189,
+      "sha256": "ad0ef3ce210b7eb28d85d347d29564b49b372eaccf2357742b411d7cf2b7c220"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-12.jpg",
+      "bytes": 17522,
+      "sha256": "55e51cd78c3e8535bb8106d664e31103222d699bea2a4ebe9d194c5c3cf766de"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-13.jpg",
+      "bytes": 15123,
+      "sha256": "9262fe476168fb9f59a7a2a4e648ab7c47586f650b5e45e51ad02af05a4c4d6b"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-14.jpg",
+      "bytes": 13007,
+      "sha256": "64cd070962201269134317913d38a7cac670ba9756cd99a1c36442319ceee1f2"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-2.jpg",
+      "bytes": 27255,
+      "sha256": "cd06d1a06cf001a6d3856a354b42ebe7dca8d955ebf13fe958eafede238043e3"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-3.jpg",
+      "bytes": 17212,
+      "sha256": "4138e45910dd026389a805e29bdada872d58d5c6ba63436645c731f5a8ada593"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-4.jpg",
+      "bytes": 17252,
+      "sha256": "5f5ffb0ab9adcd06f8dfb6219f888ad8a2d867efffa1548cd1dda3ea242d4c6b"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-5.jpg",
+      "bytes": 16714,
+      "sha256": "d1b76749ac3d85217255b7c9cf59c1fda215fe55e40fa377119544f9e311977e"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-6.jpg",
+      "bytes": 15106,
+      "sha256": "88682c9fb5ebbc63a6685935e390cbc4b11a385ee138a920cb07478fc9e42bc8"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-7.jpg",
+      "bytes": 14863,
+      "sha256": "047f2e9efc709b226c1f6456ad9e886ad29bbf3e3ffc6701a3e68ddc2b18e751"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-8.jpg",
+      "bytes": 16883,
+      "sha256": "4154de5c9fd42eb481247506b17015979c299c363eabc3e432767b7da09f8345"
+    },
+    {
+      "path": "dist/assets/plc/plc-2-9.jpg",
+      "bytes": 30135,
+      "sha256": "ec9c42c09d219249373d44a1bb05f9316ecb7d1cd480314a0e9765d813f6d926"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-0.jpg",
+      "bytes": 22148,
+      "sha256": "7e585ba5ce5c73ddfd9184dd9fb9065e74d369caaccc7df5f873a4f548b9bfaf"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-1.jpg",
+      "bytes": 20155,
+      "sha256": "30ca31568fff88245f4e7b3511a1b6aaf7eb0b48e7068dcff4c87b241aa9cc7b"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-10.jpg",
+      "bytes": 21404,
+      "sha256": "24ace34de742f08b8001ce874ec7f3cd620dd714f65005d446cd110eef8ae3e7"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-11.jpg",
+      "bytes": 20574,
+      "sha256": "244418fa4d6b77ff26a7eaf8a9a31e9c846cfc34cac4555017635d66befe38e6"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-2.jpg",
+      "bytes": 16959,
+      "sha256": "83338b80b1ecb63d71509598e74038ca4b6aecd8ee233795f20b7d2c8ece8c41"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-3.jpg",
+      "bytes": 17994,
+      "sha256": "0cf0d6c7d18defd9c052900b35bf646e4ceef453cc0e21c5300af21451c69d7f"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-4.jpg",
+      "bytes": 18714,
+      "sha256": "239dac04c240c6ceb6fa1598cab9980b4604622e5e851c56bdc0fbd8f3c5a2b7"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-5.jpg",
+      "bytes": 14853,
+      "sha256": "c8203cb382cf26148da8a68aaef2b0becbceef141a6f80e0f58daa6a3da32f0c"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-6.jpg",
+      "bytes": 18119,
+      "sha256": "27fbf5e8ee33c312288cce393919331b2c1a213c752a669df123ac1bd5a90a13"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-7.jpg",
+      "bytes": 16968,
+      "sha256": "2da2b496e1133ae9e3c5830891e8c597a3749c29d2b8d49f9b3ba58b89329037"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-8.jpg",
+      "bytes": 14521,
+      "sha256": "e98b5303f0a633618299f4586a82fe3c47c2403d1d0a1e30c1283aa346275eef"
+    },
+    {
+      "path": "dist/assets/plc/plc-3-9.jpg",
+      "bytes": 14006,
+      "sha256": "95e93b00cd5813ded271f308349a2e036f87b8c934bc67c3bb7ef4b1f5e779ec"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-0.jpg",
+      "bytes": 6395,
+      "sha256": "ec4432b435edb49122f63b6d94b17bd08c886bf641dfe9125e04a52be8c16fd5"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-1.jpg",
+      "bytes": 6907,
+      "sha256": "db8dfc4f547773ab960a3cdf5a43a4013ffee00bbb82558b5886b1ed7bc86b3c"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-11.jpg",
+      "bytes": 15910,
+      "sha256": "9c8d3d2c056bdb2d058975a53a2c94a4df4ab8d4a5cb60405960fe0ed1f289c6"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-12.jpg",
+      "bytes": 6234,
+      "sha256": "d48b0f131e6fef088854443dabae032b8914b0ebe57776d13ee9435837a0c848"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-2.jpg",
+      "bytes": 10711,
+      "sha256": "d271feead5609ac4c2f4051fff518e9c36fa399c0f24eee86aa84fb83aa80b1b"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-3.jpg",
+      "bytes": 7720,
+      "sha256": "332b4cc0dc45aaf2b1171c37273e948d889b9efca691028e481070a1321ec6bc"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-4.jpg",
+      "bytes": 10138,
+      "sha256": "7a77a6e5dccb0a646de0f1a597df3cac320d53c53917c8f74731edfc6ca0d5af"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-5.jpg",
+      "bytes": 59206,
+      "sha256": "3dbb1cc14639c8a5d41c471cabf594384675f46700d209b6a34e817685d552c3"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-6.jpg",
+      "bytes": 21848,
+      "sha256": "062ff2067f07020fc7f366c8da275c3ead617a46eb5ad24c277858a05bdec064"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-7.jpg",
+      "bytes": 21848,
+      "sha256": "062ff2067f07020fc7f366c8da275c3ead617a46eb5ad24c277858a05bdec064"
+    },
+    {
+      "path": "dist/assets/plc/plc-4-8.jpg",
+      "bytes": 53967,
+      "sha256": "a3b422a9acb734d84dc9b7add24a95b4b97599429e15edebd53e7c339c2699b3"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-0.jpg",
+      "bytes": 31443,
+      "sha256": "fa564ce436b5b4f94c33dcbfb8579461cb9d35d8e2806edfb5e3942d0c67d413"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-1.jpg",
+      "bytes": 31443,
+      "sha256": "fa564ce436b5b4f94c33dcbfb8579461cb9d35d8e2806edfb5e3942d0c67d413"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-10.jpg",
+      "bytes": 21874,
+      "sha256": "e124361ab2c045c8ec9356588e377e4dd6ade398c429119227791cdc258e03df"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-2.jpg",
+      "bytes": 33708,
+      "sha256": "efea100cd6b435ffa2dc8f6282a33215c86a6be1d5c6f01b3ef142ba5f758409"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-3.jpg",
+      "bytes": 33708,
+      "sha256": "efea100cd6b435ffa2dc8f6282a33215c86a6be1d5c6f01b3ef142ba5f758409"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-4.jpg",
+      "bytes": 24629,
+      "sha256": "9f68afb215289faef43c6af77638af40616a9e8a3d4801558010356a17a07f78"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-5.jpg",
+      "bytes": 23358,
+      "sha256": "2d30e2f43f7db067234dca62d333a78b0871c95cdb8528ce544279666e17bb60"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-7.jpg",
+      "bytes": 22590,
+      "sha256": "159fa9e64a62473f97179fba8cfea49ccd9ebe632bcb36be708df38b5fdacb73"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-8.jpg",
+      "bytes": 21606,
+      "sha256": "8cea4245b89e00274584b17072a85220989393e3328f5615f91ce84db4252ac7"
+    },
+    {
+      "path": "dist/assets/plc/plc-5-9.jpg",
+      "bytes": 14005,
+      "sha256": "c30d248d022651bdf3925bfb6b35b04b38da5a87963685da99f5cbe95ee7be20"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-0.jpg",
+      "bytes": 17693,
+      "sha256": "d12f96106bf1e9642b354589dc55531b619572570c5a62f3548478b04e03ce2a"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-1.jpg",
+      "bytes": 17066,
+      "sha256": "63263be5f35361c9361b6e6b2d854edc6517662c1ab282c733fce89121b14173"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-2.jpg",
+      "bytes": 17733,
+      "sha256": "5454c46c7f567d642a25727aa4543e48064959b353502c0f8d3f67e0ad7cc9d1"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-6.jpg",
+      "bytes": 16126,
+      "sha256": "435ae974376b1c57ffc297306af2b1b2f451fe42347505ce7afa79e2f422b132"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-7.jpg",
+      "bytes": 14183,
+      "sha256": "cbdf9316fa09b0d8648335a1be80edeeaeb3c54dd24277f420bc6abea77d69ef"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-8.jpg",
+      "bytes": 14183,
+      "sha256": "cbdf9316fa09b0d8648335a1be80edeeaeb3c54dd24277f420bc6abea77d69ef"
+    },
+    {
+      "path": "dist/assets/plc/plc-6-9.jpg",
+      "bytes": 14183,
+      "sha256": "cbdf9316fa09b0d8648335a1be80edeeaeb3c54dd24277f420bc6abea77d69ef"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-0.jpg",
+      "bytes": 10276,
+      "sha256": "8f87a6ea0d65af8b15ccf3b2e9447ed4a5d3ff20666e1b81f64221ba1bb4afd7"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-1.jpg",
+      "bytes": 338920,
+      "sha256": "0c0bd2bf3990716bf5bcd684175f144a5783693b45003c13d36b81625836c257"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-2.jpg",
+      "bytes": 749218,
+      "sha256": "10782c611185ddd1d29766f0d040584b498b6e22c5577bb9c99e81f4d7af9fa6"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-3.jpg",
+      "bytes": 72373,
+      "sha256": "becf636644fd8f74bc0faeebb8a499a2fb828ac92543d9cabc1ea8bdb20a70e6"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-4.jpg",
+      "bytes": 315617,
+      "sha256": "5e1e1a1c25895de00bfff53eab4d546e1b910845d0e5df97bfdffddd77c380b0"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-5.jpg",
+      "bytes": 108679,
+      "sha256": "a596ae11c4ed9e3b84b7fe4d8a52dd6f93a74b314a1edc716d02f1eac17115a8"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-6.jpg",
+      "bytes": 62430,
+      "sha256": "86a5f0a7e63cf06c7a829207bbc35720ce2a3414b24c27fe18b08a43c4369d12"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-7.jpg",
+      "bytes": 61982,
+      "sha256": "f7c0768e6562599b956e80f7c23d1b525822c27017693dcece047ca5efa7292b"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-8.jpg",
+      "bytes": 334417,
+      "sha256": "d9d5cdd3ff29222a987a9b4f5f7172c8e589774ff4e1686c302cb2cd81da9e44"
+    },
+    {
+      "path": "dist/assets/plc/plc-7-9.jpg",
+      "bytes": 474079,
+      "sha256": "0a9895bbc1550cebf8ced337c4da2d2b21e74155dd90ee428a9b495e34899583"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-0.jpg",
+      "bytes": 58757,
+      "sha256": "734fead3ddd531fea220aa1e853bd3822aecc4914018c4665a907f9183623781"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-1.jpg",
+      "bytes": 58757,
+      "sha256": "734fead3ddd531fea220aa1e853bd3822aecc4914018c4665a907f9183623781"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-2.jpg",
+      "bytes": 59318,
+      "sha256": "66e6262f5e839e95f3a512b52be21c7cef26d6ec87e26a2252445a82b2ae2817"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-3.jpg",
+      "bytes": 65250,
+      "sha256": "aa506f3734f609ba96ce7c4f5d70af3ab72ada7ceb88578a5a6d4b2bc01b56cb"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-4.jpg",
+      "bytes": 171801,
+      "sha256": "9d9ec1ca74f44b4ad9f2b30cb93026488b9d05eb0412c6551fe2112c2494f6a5"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-5.jpg",
+      "bytes": 56183,
+      "sha256": "7c1f193099117747ccd434801362086e5cfcda59c44082be978b3d41612dc995"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-6.jpg",
+      "bytes": 43721,
+      "sha256": "bc4190154323882cc367a10d513f0bc30a87e451de4336f088395c898e5076e6"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-7.jpg",
+      "bytes": 56285,
+      "sha256": "3058c8ead0914b13c9e5c25f3f43ce15978ff7cef525d0b9b3922d0b37d0b2ec"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-8.jpg",
+      "bytes": 51759,
+      "sha256": "6476e7329c6897e6b85ecd59a75aa23520783c3118c1abda4bcd8c86532769d1"
+    },
+    {
+      "path": "dist/assets/plc/plc-8-9.jpg",
+      "bytes": 18348,
+      "sha256": "eb08dc83c76e1a2641ffe049fcf8e45f3541b6dcba746c011b1d0673be0414f8"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-0.jpg",
+      "bytes": 654579,
+      "sha256": "1a19903966f22aac415b9415caa20e45ecfd69b61ecfcae15c19fe47764e8b81"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-1.jpg",
+      "bytes": 312555,
+      "sha256": "a0f0dd60deaf1ec3d79b58badc3c5ff7af22c4eadf559e319a6f93884022af64"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-10.jpg",
+      "bytes": 133239,
+      "sha256": "77a6534c580b5f428c9e5bb03fbb5635a6078657634dbb70e5be66552355d925"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-11.jpg",
+      "bytes": 133389,
+      "sha256": "beae2321c6279a3fac5bfa9133f4577799f9b81ff5a8572248c580d1f8c7433c"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-2.jpg",
+      "bytes": 531982,
+      "sha256": "139df89b171b3ca293457ffd1a50f9388456b7e80557bc1024c7b05b5d3dacb8"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-3.jpg",
+      "bytes": 604499,
+      "sha256": "ec43feafd7f45abda4a84504edcf4d7281f4ec5c2ce297dc9740c03becfdf6bf"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-4.jpg",
+      "bytes": 204904,
+      "sha256": "921ba9e2428f44e7ecd14e4b3d3566c36b95fd894b1a6f10e104c45024d59651"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-5.jpg",
+      "bytes": 199153,
+      "sha256": "8edb2d90405acd8ce81424631fd4dbe359b1bda42e0d74e5b104afa324eb8435"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-6.jpg",
+      "bytes": 205675,
+      "sha256": "ab6092225e8c1cc3e3a4b8c5ba844cab88b0ac6047063e0262fb80244167e7ed"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-7.jpg",
+      "bytes": 143805,
+      "sha256": "da57ffd94221ff5f733d143ec7bf7076147c6a2567daa9e1b037c32705587928"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-8.jpg",
+      "bytes": 580573,
+      "sha256": "0cb719b294ee22f39fde9b5a1c57826cf6174ee6abd8c34ea86c902b78432b5d"
+    },
+    {
+      "path": "dist/assets/plc/plc-9-9.jpg",
+      "bytes": 87190,
+      "sha256": "64ad7a360e1643033559a226ad3753c5f386392e3c5623c2031c6706a80feb57"
+    },
+    {
+      "path": "dist/assets/products/abb-acs800-reference.png",
+      "bytes": 2163682,
+      "sha256": "5fe433996dcc2d2b668525ac4abbc45b81639906e6c1c7fcfeed92cdb92ea0f6"
+    },
+    {
+      "path": "dist/assets/products/alarm-v111.jpg",
+      "bytes": 356694,
+      "sha256": "2e09ebaf88e5b5a708738840bda786ddd959305d30274a34e55375037e780abe"
+    },
+    {
+      "path": "dist/assets/products/autonics-bj100-ddt.webp",
+      "bytes": 9692,
+      "sha256": "c451588710f63d50c87c25a0ee66a624f9459d4adb4ede2b1225bfb5183df0fe"
+    },
+    {
+      "path": "dist/assets/products/autonics-pr12-4dn.webp",
+      "bytes": 8122,
+      "sha256": "e72698899912d663f66cabbbe9019589ef3295c069efb83f2b23d182fb2639a9"
+    },
+    {
+      "path": "dist/assets/products/baykon-front-v115.png",
+      "bytes": 1308955,
+      "sha256": "96df762e73781a81f252810be0eebc6bc0ace0dd6587198ba999278e23f79756"
+    },
+    {
+      "path": "dist/assets/products/buzzer-v111.png",
+      "bytes": 43647,
+      "sha256": "c1ab4ce155830b4512d8c52f9064fc9f3b06facd10ced02d64940ea2ab414e29"
+    },
+    {
+      "path": "dist/assets/products/enda-front-v115.png",
+      "bytes": 1781106,
+      "sha256": "b562f7a9979b30b52201fca8742a0b2b214af73f95ef490ba0ab16ea8c7cebf3"
+    },
+    {
+      "path": "dist/assets/products/erv03-front-v110.png",
+      "bytes": 1347764,
+      "sha256": "bf44793eada9bc3a6a19d19b1483c0b0c0952b534485f93567a7d95deccefc3d"
+    },
+    {
+      "path": "dist/assets/products/ervdg-front-v110.png",
+      "bytes": 1341268,
+      "sha256": "9d5c9cd630086ab6bbca79adc8cf2b52ddda836717c5553663fa20aaf882334d"
+    },
+    {
+      "path": "dist/assets/products/finder20-front-v19.png",
+      "bytes": 1705516,
+      "sha256": "cc164d4f36c7036294cf1c12ad1f68f6775b6d76b786af291042b331db4259df"
+    },
+    {
+      "path": "dist/assets/products/finder80-front-v19.png",
+      "bytes": 1997167,
+      "sha256": "c0e0eb9e4e5748d60422362213775896c39efe0a2dedd00bf3dfa0c0f854076d"
+    },
+    {
+      "path": "dist/assets/products/fkv-front-v111.png",
+      "bytes": 1898251,
+      "sha256": "1fecae9ae81bfbac877aa9c75cb0d8340e75038f927e489a75e49a9e283418bd"
+    },
+    {
+      "path": "dist/assets/products/fsr-front-v111.png",
+      "bytes": 1850635,
+      "sha256": "860d4d70216c98a5f210f2e430f0fe8ae14073d4bee3da4fb502fe2770091429"
+    },
+    {
+      "path": "dist/assets/products/gentek-front-v115.png",
+      "bytes": 1677755,
+      "sha256": "4308c879c31316fdd4ee70b698655e57adac79f0e5b12bb49540f48c3c27ae0e"
+    },
+    {
+      "path": "dist/assets/products/kobastar-sb2-v112.webp",
+      "bytes": 8348,
+      "sha256": "fb560aae37b74da238aef36a43fb83ca9d15b1567d744d241c169c12bf51893c"
+    },
+    {
+      "path": "dist/assets/products/level-reference-v19.jpg",
+      "bytes": 19847,
+      "sha256": "e1846e4922f5491f43b7957d230d578d22173896d64e645942b4066e63f9c7c7"
+    },
+    {
+      "path": "dist/assets/products/limit-sem121-v113.jpg",
+      "bytes": 85903,
+      "sha256": "7d7301c172422df9c5f5ae4ce887f2c22f21c03dc7aa536146aea94b1190b6ca"
+    },
+    {
+      "path": "dist/assets/products/maintained-front-v110.png",
+      "bytes": 1318272,
+      "sha256": "91f4363863f4e6d81bfde5ac81b69b8ded9fb5ec045534b36f48e59f9aa401d8"
+    },
+    {
+      "path": "dist/assets/products/manifest.json",
+      "bytes": 9119,
+      "sha256": "e91297f72b5dd82cfbf9768d97ec2846f9f2a5cb16fbcc6051f266d1574c23cd"
+    },
+    {
+      "path": "dist/assets/products/nh-holder-front-v111.png",
+      "bytes": 1619716,
+      "sha256": "eab4ad073233dfb7e3581341e39121b0b4340cf9bb3c1421e452814cfbeb9699"
+    },
+    {
+      "path": "dist/assets/products/nh-reference-v111.png",
+      "bytes": 493967,
+      "sha256": "b816029f2a87925a96fe4eb76e1a4b26eaf6be6c3e4d333f60cbd4f96c0629c8"
+    },
+    {
+      "path": "dist/assets/products/ntc-reference-v19.jpg",
+      "bytes": 30149,
+      "sha256": "cf15bcefb525babda03a7ed6503b94c8172835de48d0651160993c58d0b8e5c9"
+    },
+    {
+      "path": "dist/assets/products/ordel-top-v115.png",
+      "bytes": 2407169,
+      "sha256": "76b73960873c7b5b553effeba7ef87949627808648733f1f74818375afa1bf17"
+    },
+    {
+      "path": "dist/assets/products/pot-front-v111.png",
+      "bytes": 2225848,
+      "sha256": "97de49a18f209c94066060ca6e87fd4e49ca8e8532c24f67b5b24e2f67fe1c6b"
+    },
+    {
+      "path": "dist/assets/products/ptc-reference-v19.png",
+      "bytes": 462952,
+      "sha256": "2f7a3774ffd354d573ab03f289e4e3cf028ced1d26d9b51a708431ad29c2af5d"
+    },
+    {
+      "path": "dist/assets/products/reed-mr228b-v113.jpg",
+      "bytes": 32927,
+      "sha256": "546bcf5dd2c40c04b6451d049d45b253373758e93a2f0e725a1663832fb0a761"
+    },
+    {
+      "path": "dist/assets/products/relay-socket-v110.png",
+      "bytes": 2032385,
+      "sha256": "d6ae8bc2418111d99305626a4ba1a390e9ca875e2d57e8d6dbe9ad6e25ba7a47"
+    },
+    {
+      "path": "dist/assets/products/rittal-3241100.jpg",
+      "bytes": 12002,
+      "sha256": "110074b0e66ceeff02e2395eab0f8be5a9e75cf79cf203423f982ea87ea0b779"
+    },
+    {
+      "path": "dist/assets/products/selector-front-v110.png",
+      "bytes": 1508475,
+      "sha256": "377919b0a5b000c326d6848f2e22aed8d11a6ced7ae006a6326f2e39ad6848fc"
+    },
+    {
+      "path": "dist/assets/products/sick-wtb4.jpg",
+      "bytes": 48410,
+      "sha256": "345ae1efdf82ad7a434772df1ba13b16fa561f67b9bcfed4a22b0ebc7096cfb0"
+    },
+    {
+      "path": "dist/assets/products/siemens-3rh2911.jpg",
+      "bytes": 43233,
+      "sha256": "5e097c0fcd0657c032d75379734703cb9e5782779e4c96683b0319118828d0d6"
+    },
+    {
+      "path": "dist/assets/products/siemens-3rt2016-1bb41-bare.jpg",
+      "bytes": 123854,
+      "sha256": "00bbb15a9fea9829a6a298a29ea2237cddeada18f54cc90cc92bcb0a904bdec4"
+    },
+    {
+      "path": "dist/assets/products/siemens-3su1051-0ab40-0aa0.webp",
+      "bytes": 12172,
+      "sha256": "ed59bf3a771099a133348c73065efb1607eb3c7c6362c5ba4a8de25513ccbe7d"
+    },
+    {
+      "path": "dist/assets/products/siemens-isolator-v113.png",
+      "bytes": 703365,
+      "sha256": "5f4c1b11c04df1409bc07c51b922eb168a91b4a3cdc989e45b1416cee3197e88"
+    },
+    {
+      "path": "dist/assets/products/siemens-mcb1-v113.png",
+      "bytes": 848174,
+      "sha256": "10c7fb836c05ce4ef6c3174d60de673c52d1f7a5668c8a7229fe06a62b8a1e9b"
+    },
+    {
+      "path": "dist/assets/products/siemens-mcb2-v113.png",
+      "bytes": 1616301,
+      "sha256": "fd2357f63d3419662cd4df597cceaeb8d405dfcf1c404a87bca8d94cfead81a8"
+    },
+    {
+      "path": "dist/assets/products/siemens-mcb3-v113.png",
+      "bytes": 2380428,
+      "sha256": "6ac455e4888438a0f39dfe4fb6642dc355188e057a4f0831e3066ba85cb64029"
+    },
+    {
+      "path": "dist/assets/products/siemens-thermal-v113.png",
+      "bytes": 833523,
+      "sha256": "5e7b6731fdb912b1be8764ca50e250fa9661dc481101ee03f4c85181ba21e23a"
+    },
+    {
+      "path": "dist/assets/products/sinamics-v20-book.png",
+      "bytes": 1015688,
+      "sha256": "1a748bd49cb8ae58f6d5c55a6846879ff346f94ae6b4fde92952ae9df3edeb50"
+    },
+    {
+      "path": "dist/assets/products/siren-v111.jpg",
+      "bytes": 257842,
+      "sha256": "cb4d98d5845eedf135d2f5c1baf4354d03e780457bc514fe3208270ed18709e4"
+    },
+    {
+      "path": "dist/assets/products/speaker-v111.jpg",
+      "bytes": 19258,
+      "sha256": "17c474699821111d11411b104e15482c4615b96db37a5cab72df82801c56a5f7"
+    },
+    {
+      "path": "dist/assets/products/ssr-reference-v19.jpg",
+      "bytes": 133108,
+      "sha256": "85d6bba264e161f24041aa91ad512e03008c68d1d95d8f091f9f67679f8e86e4"
+    },
+    {
+      "path": "dist/assets/products/tc-reference-v19.jpg",
+      "bytes": 34079,
+      "sha256": "548f8f13ea4ec73f86fcdd7f39bb09cb50d545a2fa1978a790d4a104eff45b38"
+    },
+    {
+      "path": "dist/assets/products/tense-cap-v115.png",
+      "bytes": 112151,
+      "sha256": "1130fe40bab5ae197af108c2ddc49f0a8693f258fc1ede89668877e340af260e"
+    },
+    {
+      "path": "dist/assets/products/thermal-v110.webp",
+      "bytes": 80700,
+      "sha256": "a6f873c8c144288909824ffdbe3f9c55a336dade43e1ee361e981521e5889ff2"
+    },
+    {
+      "path": "dist/assets/products/ultrasonic-v110.webp",
+      "bytes": 15038,
+      "sha256": "09323d51f3a4d5b2ade22dbf07057f70c6e02405e61f91e0401365da5d924382"
+    },
+    {
+      "path": "dist/assets/products/unit-v115.jpg",
+      "bytes": 48408,
+      "sha256": "0d0573293b2de04ff43455dc89c8f140eda6a019779ba7321633dfbe31390d8f"
+    },
+    {
+      "path": "dist/assets/products/weid-front-v115.png",
+      "bytes": 1116722,
+      "sha256": "f821a7c8e3364f2ba63631ff381f94d672adaf170dc36c32916f065fb9d02caa"
+    },
+    {
+      "path": "dist/assets/products/weidmuller-pro-top-2466870000.jpg",
+      "bytes": 64680,
+      "sha256": "73374b3242a4b54ad994fc096d7c0f9257aeabc1f5bd6200e34dd8b73771ce09"
+    },
+    {
+      "path": "dist/assets/products/wsi-top-v111.png",
+      "bytes": 1322207,
+      "sha256": "4fb768ec135ff96a99de4671d5858af2692dd07dd23826a8c3504de5d5390a03"
+    },
+    {
+      "path": "dist/assets/prompts.txt",
+      "bytes": 15103,
+      "sha256": "9c707dc452811da291d1cd03444e1e75e31e59547c37c349614ff2cb9829c663"
+    },
+    {
+      "path": "dist/audio.js",
+      "bytes": 6935,
+      "sha256": "ea89979f828abc8ad19019082f6de5d20148fdcc2d1ddcca71583ed2a741e37e"
+    },
+    {
+      "path": "dist/book-symbols.js",
+      "bytes": 15639,
+      "sha256": "acbf7a83f82dcfa2e1ac5e74428e24353b8985752bacba38f8e484333f327b41"
+    },
+    {
+      "path": "dist/catalog.js",
+      "bytes": 7932,
+      "sha256": "a8d9d9c2b91dcbcb0bd29021e9f55eec64b38527f6a965d71aba6301ef74d00a"
+    },
+    {
+      "path": "dist/components.js",
+      "bytes": 6160,
+      "sha256": "54466797567075b59572765f1c77ffe0a3da89f327878468978cbbf566474fb0"
+    },
+    {
+      "path": "dist/conductors.js",
+      "bytes": 15177,
+      "sha256": "36d69691974f8ed2213813b877176bc917ee3eb9adafaa14e4ec356ca181395d"
+    },
+    {
+      "path": "dist/current-model.js",
+      "bytes": 7707,
+      "sha256": "7f4e111904aed955a0d335c15bfddc50303dd0174ee6a4ad48c047d44185ec64"
+    },
+    {
+      "path": "dist/design-library.js",
+      "bytes": 4150,
+      "sha256": "f3dc151bb7a22df51c202659f31cdd3a123d637ddc9d121c0e399226976c7cf4"
+    },
+    {
+      "path": "dist/design-visuals.js",
+      "bytes": 5231,
+      "sha256": "18e170c0b5bc5a60e8267b7db1e9182fe994ec1f868d7e24252710656ec433d2"
+    },
+    {
+      "path": "dist/device-behavior.js",
+      "bytes": 8740,
+      "sha256": "7758860a1e2477897a44afdcdbbb60794748fef487ae5d87ffb9548996bba79e"
+    },
+    {
+      "path": "dist/index.html",
+      "bytes": 31392,
+      "sha256": "74a008bbcc14c85fb50a29b250ddf0d18d0bdfd1f1b7314e02e26aff6beed656"
+    },
+    {
+      "path": "dist/installation-v118.js",
+      "bytes": 13244,
+      "sha256": "9e75af4a060b0b1670110125fc4d38da3a1d8ed70e7134286d3cc0e39778575d"
+    },
+    {
+      "path": "dist/instrument-ui.js",
+      "bytes": 11394,
+      "sha256": "33e693d2b79657c6abda6d2485b1695f4a597f83ea30e3b0e4ee59daaef48e48"
+    },
+    {
+      "path": "dist/instruments.js",
+      "bytes": 11408,
+      "sha256": "b42032c8b8b4e9cd5ae3f666a4e76c42937fc6d786d55193eaa092492d28649b"
+    },
+    {
+      "path": "dist/labels.js",
+      "bytes": 1385,
+      "sha256": "35fc93da89f91e42389e23780a23b2cb73493f72e9f4a0be3a30e504d6fb1a50"
+    },
+    {
+      "path": "dist/library.js",
+      "bytes": 1788887,
+      "sha256": "1d0fc04b543d931d4df2ff2c6e90a9c13d5cd98bb938efa8e1fd28ad9799c528"
+    },
+    {
+      "path": "dist/material-assets.js",
+      "bytes": 8020,
+      "sha256": "1262e96c9e397bb18dcc01aad47880ff0a5f52e64a94a6d3305e5ad71784aa5d"
+    },
+    {
+      "path": "dist/materials-v111.js",
+      "bytes": 7331,
+      "sha256": "61689dc85da33cc784df904cd4e3599962caa1dd3150ce93f89aac6df682f579"
+    },
+    {
+      "path": "dist/materials-v113.js",
+      "bytes": 3988,
+      "sha256": "e59b4bf61c861ed20f9fb95fdc8846f57c10c8a22034400fac3baae09fa02114"
+    },
+    {
+      "path": "dist/materials-v115.js",
+      "bytes": 6938,
+      "sha256": "1d3ca6c083021da158afcc7ad7166197fc1c1796e056f2b2c26e184e4e7d7536"
+    },
+    {
+      "path": "dist/materials.js",
+      "bytes": 17900,
+      "sha256": "a8af78be600f64709b38e0cd16396d49409c00036dc51a944f9b9c17f6213b7a"
+    },
+    {
+      "path": "dist/modern-materials.js",
+      "bytes": 4111,
+      "sha256": "e501783d96961a95d50d2ba184808eaa4af39a66939e8631be9e59eafb383694"
+    },
+    {
+      "path": "dist/multimeter.js",
+      "bytes": 4743,
+      "sha256": "93690e2ef131d7ec7942654db2420fdd63658c71a3261fc9869bc951231dc1da"
+    },
+    {
+      "path": "dist/normlar.html",
+      "bytes": 5259352,
+      "sha256": "072dd6a1c80fc91b7821c49cb7717c334ce33b5f3d215e4e28b21d76ab18d9dd"
+    },
+    {
+      "path": "dist/norms.js",
+      "bytes": 19898,
+      "sha256": "02a075129c9af5dc4859bd39142c5026497c5877dcbc7d872cb08ff4ba31fae4"
+    },
+    {
+      "path": "dist/panel-editor.js",
+      "bytes": 25144,
+      "sha256": "4c63ae85c5d9c86f68e2a8ad378ab1d0af480232eacf59e1b3c47e6afc07ddf6"
+    },
+    {
+      "path": "dist/panel-wiring.js",
+      "bytes": 15787,
+      "sha256": "71d2232d30222967673bf3b58f05b11c0f25506d3e63158cb4ace4eb21c0e662"
+    },
+    {
+      "path": "dist/panel.js",
+      "bytes": 21312,
+      "sha256": "b3f097670fe0de36220a1968b40ea2dda4f8af0fc6ab77dfa3014218b153a8ac"
+    },
+    {
+      "path": "dist/photo-plane.js",
+      "bytes": 1958,
+      "sha256": "10232d3221348408144bac04e279229f284877504e897902a304bcc021872091"
+    },
+    {
+      "path": "dist/plc-assets.js",
+      "bytes": 216801,
+      "sha256": "88f9a42abef087060c282f411d47e4d95a12345706184b7772b34afe05be1a73"
+    },
+    {
+      "path": "dist/plc-front.js",
+      "bytes": 9027,
+      "sha256": "4fef152bd4671b0c1c0066791fdd1ef30a4c7ed8a5a5ce5aa0a3de9ba2a70e9c"
+    },
+    {
+      "path": "dist/plc-photo-data.js",
+      "bytes": 122138,
+      "sha256": "df5e6103bc923529dfea1489a43ecb11d42f61411fc2e41748d2d4a4e8cfa6eb"
+    },
+    {
+      "path": "dist/probe-leads.js",
+      "bytes": 7202,
+      "sha256": "92dd48bb2d0f60025230185af20f6837693a07d370a2cb7f1352415d0b28c3eb"
+    },
+    {
+      "path": "dist/product-assets-v110.js",
+      "bytes": 2883,
+      "sha256": "0fbf2b7bd7c6ac250fe425d5a507d6969b63874c23398a52baf065d0039c049e"
+    },
+    {
+      "path": "dist/product-assets.js",
+      "bytes": 8254,
+      "sha256": "7132a2f6f2845ab77cf0beac34ffe6e0d4b9e058f8513994cd3a8f69726572a2"
+    },
+    {
+      "path": "dist/project-store.js",
+      "bytes": 10950,
+      "sha256": "e450db1a87aaf800eae287e357758f7db4a8ac5b2744c9910819bc45a6cc155b"
+    },
+    {
+      "path": "dist/safety.js",
+      "bytes": 3576,
+      "sha256": "a2e2a8cd17f3933c83b2d66ac8b6c3082320e2ebf2ef70a3a2c1f0380a5277aa"
+    },
+    {
+      "path": "dist/selection.js",
+      "bytes": 3967,
+      "sha256": "be08b2fe51da2d5dfb51072e4f1f4d9e8d78714b15530fe10f79ff0b16ecaef6"
+    },
+    {
+      "path": "dist/sensors.js",
+      "bytes": 6824,
+      "sha256": "75ec48bcb82d0c1cde2fe415419f34c2a09e1f925a52efec718cbc2fb007f79d"
+    },
+    {
+      "path": "dist/simulation.js",
+      "bytes": 27927,
+      "sha256": "c26cd2f0b4f9d577fd39397fc2bce0540a2b2874c1484eed43f928b22f4a085d"
+    },
+    {
+      "path": "dist/starter-projects.js",
+      "bytes": 7074,
+      "sha256": "15bb1454c256316b8f3858dc1b6d61ce47f2a39b7a7c8d6b9a69ab3271efe45c"
+    },
+    {
+      "path": "dist/starter-v110.js",
+      "bytes": 6230,
+      "sha256": "1f555979de2be9cf114d6b7de7750b47db2a644e2f6a77319e5f26d4ac6289c5"
+    },
+    {
+      "path": "dist/starter-v111.js",
+      "bytes": 6981,
+      "sha256": "2899f59ebe68db84f8743a3c7d341cc842759a8dc3ddf296e3d1396e5f882f61"
+    },
+    {
+      "path": "dist/starter-v112.js",
+      "bytes": 1179,
+      "sha256": "4bf89945f60f6509a0e8af51b8dbbb2a95a9869ceb46d9e32412debd28b814e3"
+    },
+    {
+      "path": "dist/starter-v113.js",
+      "bytes": 2191,
+      "sha256": "2ce8c2527b033d0881b6829a35bdcf4851b6a31256029f9b4c78c808c4faed32"
+    },
+    {
+      "path": "dist/starter-v115.js",
+      "bytes": 9027,
+      "sha256": "8f37a0b34a43a1dcf0ea587664d5beaf33353e1499a9b0361b913586738ef0d4"
+    },
+    {
+      "path": "dist/starter-v116.js",
+      "bytes": 12987,
+      "sha256": "85659658d5c7ebe45c44b107be35bb9300bd7f468f421f86d3f4d7eceabaa86d"
+    },
+    {
+      "path": "dist/starter-v117.js",
+      "bytes": 16655,
+      "sha256": "aa449f596ddd69e2b7e61ca5c673f999d2ad17adfee269443d109575e4d3a414"
+    },
+    {
+      "path": "dist/studio.css",
+      "bytes": 15867,
+      "sha256": "86b1e23dc393897424567081ff796cf8f8155b569c0e980b5ca1c5070753f559"
+    },
+    {
+      "path": "dist/studio.js",
+      "bytes": 10475,
+      "sha256": "a6a6b9f7e48f774f0956f0d09cfd8d0a8339d60058e3bb3cb6802b6b51677246"
+    },
+    {
+      "path": "dist/styles.css",
+      "bytes": 26723,
+      "sha256": "2010058e405ae27385b909c45d77f510e5f460e4dc253e468de87f6b0c82e7ce"
+    },
+    {
+      "path": "dist/symbols.js",
+      "bytes": 13019,
+      "sha256": "ceccc3a054b490b0db3ad2aa046dad26111dbe12a32fbef3a24145f4118dd5cc"
+    },
+    {
+      "path": "dist/thermal.js",
+      "bytes": 4041,
+      "sha256": "a9c2cad0b24dfd54247ec09c39cd72ca00f25ec85df765e809e8774cdf5b2200"
+    },
+    {
+      "path": "dist/v20-ui.js",
+      "bytes": 14778,
+      "sha256": "4451bd161d00bfd3d69a13757ce16e5bcfa8ba3940808c56cce9f02b620942af"
+    },
+    {
+      "path": "dist/v20.css",
+      "bytes": 4807,
+      "sha256": "40197d9960aeed57c02cbe624dd81ce01e450f5d2d63c299dcada00d31e1d1f8"
+    },
+    {
+      "path": "dist/v20.js",
+      "bytes": 17442,
+      "sha256": "69f7f3984fff0fc1bc656767d28ff4adf3373c67d663f0c1ac42014aa1c84abd"
+    },
+    {
+      "path": "dist/viewport.js",
+      "bytes": 603,
+      "sha256": "636d937e15a7fcf086b6092b5648fe45cef16c6cfc2cc3a26676cd5aef5c148f"
+    },
+    {
+      "path": "dist/workspaces.js",
+      "bytes": 1894,
+      "sha256": "265d745b01b2082f1226b84fbf08eced64e0595e94e1bd1b39ced894f71825e4"
+    },
+    {
+      "path": "final-v114-all.txt",
+      "bytes": 34908,
+      "sha256": "5f185e4ec5c659bbd7a1aad0100704cf2e601c1a27e12c2a3c54b15b57b9a685"
+    },
+    {
+      "path": "final-v115-all.txt",
+      "bytes": 19836,
+      "sha256": "e933b4410f8b77973ba1f83bb3a148f08bf336f725a2e2423240eda647cf6f42"
+    },
+    {
+      "path": "final-v1151-all.txt",
+      "bytes": 20473,
+      "sha256": "816df9773c92c85441e89a92f12a39f835e14906c4ca03d1fddb1b68e32cb5e3"
+    },
+    {
+      "path": "final-v1152-all.txt",
+      "bytes": 50060,
+      "sha256": "b3ebf0baccf6bf2820f615513a84b3172f621e6d355c7f0f25525e1f61d7e5a7"
+    },
+    {
+      "path": "scripts/create-v114-examples.cjs",
+      "bytes": 1022,
+      "sha256": "eeb199cee5620bbb2e8416e841eda56b6e4527d0f04eed5c584b69966003fde0"
+    },
+    {
+      "path": "scripts/preview.cjs",
+      "bytes": 852,
+      "sha256": "55620458aa4f0c897ca38f593a99adb4afe510aa3a61f1939969730c4b23cc8f"
+    },
+    {
+      "path": "tests/SONUC_v1.18.0.tap",
+      "bytes": 62502,
+      "sha256": "d250f629b5d69557dd860cd1a0fbe6c54d231bd8900001dfd532ba74c22ab5b9"
+    },
+    {
+      "path": "tests/acs800-interface.test.cjs",
+      "bytes": 3524,
+      "sha256": "82ee745ad486609ead3e557672d3dfc89525d3a7b78672ecbfc54847dabbde93"
+    },
+    {
+      "path": "tests/acs800.test.cjs",
+      "bytes": 12148,
+      "sha256": "d934a026bbd1977da16ab84b4320fce8ca2037ddc1af994abb78848cdd0fa35d"
+    },
+    {
+      "path": "tests/app-flow.test.cjs",
+      "bytes": 5906,
+      "sha256": "efff80c65a63f29e52623de8226288fe6645f6a59e0323f5690e45f543e69a80"
+    },
+    {
+      "path": "tests/book-symbols.test.cjs",
+      "bytes": 5540,
+      "sha256": "eb92c546947f0eca21a7dd3ae39273878f1d740d4f7909927746a771e282b002"
+    },
+    {
+      "path": "tests/conductors-sensors.test.cjs",
+      "bytes": 10170,
+      "sha256": "315142cf769c6047bff1f09f40a5a93f2f94cfa1b8381f9d12ea56e3fae4d525"
+    },
+    {
+      "path": "tests/devices-v110.test.cjs",
+      "bytes": 10189,
+      "sha256": "3b93d35d4c93dd305284015d37975bd488de0056f38b9403929a457dcfe58c5b"
+    },
+    {
+      "path": "tests/devices-v111.test.cjs",
+      "bytes": 10195,
+      "sha256": "239e3d0c1cacde6ee5f2f51d053aa2d3ed3bc35cafdc0859b9cdff13519e78ce"
+    },
+    {
+      "path": "tests/devices-v112.test.cjs",
+      "bytes": 5019,
+      "sha256": "dbd02964f23f61d36c1587d2ae8b779459b5e16f744c2939b5d957cdae05f143"
+    },
+    {
+      "path": "tests/devices-v113.test.cjs",
+      "bytes": 4877,
+      "sha256": "195cb72f68ea6338d6b6378413d25d8587dee94415968fa868ffbf8d4966ad5e"
+    },
+    {
+      "path": "tests/devices-v19.test.cjs",
+      "bytes": 6668,
+      "sha256": "c21875a843061c07b13df9c81302ceefb1a736fbb10468dff88bb7d0b99120d3"
+    },
+    {
+      "path": "tests/examples-v115.test.cjs",
+      "bytes": 1860,
+      "sha256": "2f80700450381011731f6a2c0cab74efb473ec3afcf97c6870bfc423286c0364"
+    },
+    {
+      "path": "tests/helpers/offline-dom.cjs",
+      "bytes": 9076,
+      "sha256": "7128ca948fb3254b3138146b492f8b3e422892bd49a3e8b762370631ed8244f5"
+    },
+    {
+      "path": "tests/installation-v118.test.cjs",
+      "bytes": 4400,
+      "sha256": "a18d75a294e1e1a93ebc2ddefdeadce33b85e69d8b44fb8ed2f185f18b412bf9"
+    },
+    {
+      "path": "tests/instruments-lines-v1152.test.cjs",
+      "bytes": 8809,
+      "sha256": "4809ce20d5d8e9d6d1460f5e39fbbd9aef0b923ba94710f6c358741d01a334cb"
+    },
+    {
+      "path": "tests/instruments-v115.test.cjs",
+      "bytes": 9590,
+      "sha256": "b9e498b7662d623ba0f53d7fbf61e2404c211d8cbe6a1a11f14404405264b5c3"
+    },
+    {
+      "path": "tests/interaction.test.cjs",
+      "bytes": 8810,
+      "sha256": "09d0996c7eda7db8e084e758ae05bdb0977787f4f9ecbb22d5007dc4356c2c58"
+    },
+    {
+      "path": "tests/interface-v115.test.cjs",
+      "bytes": 4376,
+      "sha256": "b19a1ba446a84fccde1cf4ee7a08f5679019ec33bdaa4384a732a6e131aab1a1"
+    },
+    {
+      "path": "tests/interface-v1152.test.cjs",
+      "bytes": 6602,
+      "sha256": "31ecb79eea414db43b864d5f0a692285725303a943a574b1874ba921e1cc50c1"
+    },
+    {
+      "path": "tests/interface-v1171.test.cjs",
+      "bytes": 4440,
+      "sha256": "6da6842b15fd9c27df89020ff1d8c1d0ee106d59f865d1eba68269368b8f28bf"
+    },
+    {
+      "path": "tests/interface-v19.test.cjs",
+      "bytes": 3148,
+      "sha256": "4ff910ea44f9f61842181c3db010787829474f154fb85ed3fd90f77919553c94"
+    },
+    {
+      "path": "tests/leads-v1151.test.cjs",
+      "bytes": 5293,
+      "sha256": "4759532a8007053858b4ea1a1640ab50b2b4ac7b0bdd036c99917bcf90fcd795"
+    },
+    {
+      "path": "tests/live-touch-v118.test.cjs",
+      "bytes": 1737,
+      "sha256": "6331b1f16105943ace0b5c2200082c3f652e3a4434c202226a90b3b6f5482752"
+    },
+    {
+      "path": "tests/motor-upgrade.test.cjs",
+      "bytes": 6464,
+      "sha256": "c2f4c009b50a40dcd52cc3c901a2203f215a57f973809e9f5d251ddab6f7ae95"
+    },
+    {
+      "path": "tests/norms-labels.test.cjs",
+      "bytes": 5089,
+      "sha256": "b033081f0608f42b652431d6d16add5368aa6d0564b8f989abdc6b5672ce2286"
+    },
+    {
+      "path": "tests/notes.test.cjs",
+      "bytes": 5521,
+      "sha256": "06cd529c507770b7cac4adfc946df9715ee318e6cb3c72650411a49d94f35d8d"
+    },
+    {
+      "path": "tests/panel-route-independence.test.cjs",
+      "bytes": 2950,
+      "sha256": "09c7e766f2d0305aa042222726ef1a1904a911f316124a4f7859ed57234060cb"
+    },
+    {
+      "path": "tests/panel-wiring.test.cjs",
+      "bytes": 11743,
+      "sha256": "6f6075c01b36938d50c3ffab8219f9e0dde32e53c6cd6b2b15db899e41c7ecd8"
+    },
+    {
+      "path": "tests/panel-workspaces.test.cjs",
+      "bytes": 4317,
+      "sha256": "e2f3fc9d314248bf49e31b53d4d1ef26953a7fb71d20a97724acfc497315416e"
+    },
+    {
+      "path": "tests/plc-hardware-v114.test.cjs",
+      "bytes": 7376,
+      "sha256": "e042c72640a88f3c4f70d1ed1951236d6f26fb37926c78d366606f343cb9d7a0"
+    },
+    {
+      "path": "tests/probe-interface-v1151.test.cjs",
+      "bytes": 5548,
+      "sha256": "7d5bb953dc0ce8a48f49090e9b3ef3401d59517e709c0877e14f2ff526e6b216"
+    },
+    {
+      "path": "tests/project-store.test.cjs",
+      "bytes": 6667,
+      "sha256": "e9f3d73f545148c64c3ac981e62aa9f3f812c21dbd61ff292d70fdaaafaff7e9"
+    },
+    {
+      "path": "tests/protected-examples-v118.test.cjs",
+      "bytes": 5325,
+      "sha256": "64f53ced79ab5068d2cdc6f018aa530894ba218dedc8100c6c335dd22ff2434e"
+    },
+    {
+      "path": "tests/regression.test.cjs",
+      "bytes": 21020,
+      "sha256": "65e702c96517bc9d7196f1c7813c4f81cb8085925e2ab5e0eef68dccaa44dcfd"
+    },
+    {
+      "path": "tests/selection.test.cjs",
+      "bytes": 3716,
+      "sha256": "d7e9b35282d7bb56107b38d11329b6de59411cf744a383bd0784eff26c9b49e4"
+    },
+    {
+      "path": "tests/studio.test.cjs",
+      "bytes": 9038,
+      "sha256": "61f2427c338dabaa3d7c5e30fffd4e8bb217982ebe3a2ec8dd5ebbce4c5316c1"
+    },
+    {
+      "path": "tests/upgrade-interface.test.cjs",
+      "bytes": 1995,
+      "sha256": "8e8280ce183dce2ca141ca237bcc82508ea9c7d70704655700aea871187cb4e6"
+    },
+    {
+      "path": "tests/v20-interface.test.cjs",
+      "bytes": 3450,
+      "sha256": "514ea2c784f31fe2158998155331e44ef66b998270f7ba048219371a54ba52fb"
+    },
+    {
+      "path": "tests/v20.test.cjs",
+      "bytes": 10946,
+      "sha256": "5c023ca209be830fcdcd48bbad749c6eb39d667ecb6e1d03b551d76c042ad6e7"
+    },
+    {
+      "path": "tools/plc-v114/build-cp.cjs",
+      "bytes": 6698,
+      "sha256": "18459d7ea8dc800b8a2c72aa77f1f1e5607ac6af05162409223da2b44f60a7c2"
+    },
+    {
+      "path": "tools/plc-v114/cp-models.json",
+      "bytes": 3239405,
+      "sha256": "f8df429327cb6036dc17c1780cf63c82f002fde07ebac66264e31c1e1bc3b502"
+    },
+    {
+      "path": "tools/plc-v114/delta-models.cjs",
+      "bytes": 2865,
+      "sha256": "285a2a7b7b4912f21a6ce0305994151fd01cf14c4ab36f22ea021d98f12231a3"
+    },
+    {
+      "path": "tools/plc-v114/gmt-models.cjs",
+      "bytes": 2199,
+      "sha256": "ab15f785cb0fb3f47446f58264c2fccc2b57ed79bfc5cd898fd457bb4dc5e189"
+    },
+    {
+      "path": "tools/plc-v114/gxm-models.cjs",
+      "bytes": 3232,
+      "sha256": "1ac5d529a09a7b4239c2fd7208ff5bd1a5dba87e2a4c21bf7daabde3f626ca5d"
+    },
+    {
+      "path": "tools/plc-v114/inventory.cjs",
+      "bytes": 963,
+      "sha256": "c9fccc6df2da3f561fdc5bb2f2611d1459be3d3d797607ec5de319388bc4912d"
+    },
+    {
+      "path": "tools/plc-v114/s7-models.cjs",
+      "bytes": 3139,
+      "sha256": "8e443e3a91cc3f46739f155d5379142b2133634b7dac19766dac1fcd6c4170ef"
+    },
+    {
+      "path": "tools/v115/create-examples.cjs",
+      "bytes": 5648,
+      "sha256": "95571f9589916990c0ef284c630cc8ad4132d81aab671ffb89b2d2f605ea7aae"
+    },
+    {
+      "path": "tools/v115/photo-data.json",
+      "bytes": 172605,
+      "sha256": "4a02c6d9451242d89514b356d50d3f1f14f2d99f9888e7792dc8f95a5e80240a"
+    }
+  ]
+}

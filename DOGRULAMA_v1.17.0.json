@@ -1,0 +1,34 @@
+{
+  "version": "1.17.0",
+  "date": "2026-09-26T21:36:00.791453+00:00",
+  "baseline": "1.16.0",
+  "full_suite": {
+    "tests": 242,
+    "pass": 242,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "command": "node --test --test-reporter=tap tests/*.test.cjs"
+  },
+  "acs800": {
+    "model": "ACS800-04-0075-3",
+    "frame": "R5",
+    "parameters": 105,
+    "terminals": 47,
+    "examples": 4,
+    "new_domain_tests": 18,
+    "new_interface_tests": 2
+  },
+  "visual_check": "Şema ve malzeme SVG görünümleri incelendi. RMIO soketleri fotoğraftaki klemenslerle, alt güç soketleri R5 klemens çizimiyle hizalandı. Döndürülmüş etiket görünümü regresyon testinden geçti.",
+  "browser_validation": "Deterministik DOM adaptörüyle gerçek uygulama olayları doğrulandı. Yerel Windows Chrome/Edge görsel testi bu ortamda yapılmadı.",
+  "static_assets": {
+    "html_local_references": 62,
+    "missing": [],
+    "javascript_syntax": "passed"
+  },
+  "source_documents": [
+    "Belgeler/ABB_ACS800_HW_RevF.pdf",
+    "Belgeler/ABB_ACS800_FW_RevL.pdf"
+  ],
+  "model_limits": "ACS800_KILAVUZU.md — eğitim modeli; tam ABB firmware, DTC, ID Run, fieldbus, PWM veya fren kıyıcı emülasyonu değildir."
+}
