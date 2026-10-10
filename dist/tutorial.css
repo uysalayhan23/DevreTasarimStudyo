@@ -394,3 +394,20 @@ body.tutorial-reference-format #tutorialCoach.tutorial-ohm-coach{background:rgba
 .tutorial-energy-why{display:grid;grid-template-columns:1fr 1fr;gap:7px}.tutorial-energy-why>div{padding:10px 11px;border:1px solid #d7e1e6;border-radius:10px;background:#fafcfd}.tutorial-energy-why h3,.tutorial-energy-check h3{margin:0 0 7px;font-size:11px;color:#285368}.tutorial-energy-why p{margin:0;font-size:8.2px;line-height:1.45;color:#61747d}
 .tutorial-energy-check{padding:11px 12px;border:1px solid #e4d59a;border-radius:11px;background:linear-gradient(135deg,#fffbe8,#fffdf7)}.tutorial-energy-check ol{margin:0;padding-left:18px;display:grid;gap:4px}.tutorial-energy-check li{font-size:8.3px;line-height:1.42;color:#635c48}.tutorial-energy-actions{margin-top:0}
 @media(max-width:760px){#tutorialCoach.tutorial-energy-analyzer-coach{width:calc(100vw - 16px);left:8px}.tutorial-energy-purpose,.tutorial-energy-live,.tutorial-energy-presets>div,.tutorial-energy-equations,.tutorial-energy-why{grid-template-columns:1fr}.tutorial-energy-flow{grid-template-columns:1fr;text-align:center}}
+
+/* MQ-07 readable floating coach text — 2026-10-10
+   Improve instructional readability by roughly 2–3 points. Change typography only:
+   existing floating dimensions, resize/drag/minimize and internal scroll remain intact.
+   Canvas annotations, reference-stage cards and the right properties panel are untouched. */
+#tutorialCoach{font-size:13px;line-height:1.5}
+#tutorialCoach :is(p,li,.tutorial-feedback,.tutorial-safety,.tutorial-why,.tutorial-source,.tutorial-correct-answer){font-size:13px;line-height:1.5;overflow-wrap:break-word}
+#tutorialCoach :is(h3,h4){font-size:14px;line-height:1.35}
+#tutorialCoach small{font-size:11px;line-height:1.4}
+#tutorialCoach .tutorial-float-bar strong{font-size:12.5px}
+#tutorialCoach .tutorial-float-bar span{font-size:11px}
+#tutorialCoach :is(.tutorial-materials li strong,.tutorial-materials li span,.tutorial-beginner-steps li,.tutorial-learning-goal strong){font-size:12.5px;line-height:1.45}
+#tutorialCoach :is(.tutorial-actions button,.tutorial-current-step button,.tutorial-coach-panel-control button){font-size:12px}
+#tutorialCoach [class$="-rich"] :is(span,em){font-size:11.5px;line-height:1.42}
+#tutorialCoach [class$="-rich"] button{font-size:12px;line-height:1.42}
+#tutorialCoach [class$="-rich"] button :is(b,strong,em){font-size:12px;line-height:1.42}
+#tutorialCoach [class$="-flow"]{font-size:12px;line-height:1.4}

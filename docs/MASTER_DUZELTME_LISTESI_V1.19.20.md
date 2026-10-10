@@ -1538,3 +1538,15 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - ORDEL 1254×1254, WAZ5 1024×1536, ENDA 1254×1254, Baykon 1024×1536, FKV 1024×1536, FSR 1024×1536, NH-holder 996×1580 ürün PNG'leri Pillow ile açılarak incelendi: **7/7 RGB, kaynak alfa kanalı yok**. Uygulamadaki `clipPath` şeffaf kaynak pixel alfa kanıtı değildir; piksel kenar/örtü kalitesi ve tüm cihazlarda terminal ekran hizası **OPEN** kalır.
 - Yerel Linux headless Chromium `file:///` ile gerçek ekran denemesi yine **TIMEOUT / NOT PASSED**; Windows `BASLAT.bat` gerçek kullanıcı kabulünün yerini tutmaz. ZIP'de gerçek `.git` klasörü bulunmadığından 3 native Git integrity testi **NOT PASSED**; GitHub API kökenli ancestor ve 8 protected file kontrolünün ayrı kanıtları korunur.
 - **MQ-00:** Kullanıcıya henüz son Windows ZIP testi istenmez. Sonraki kapı, GitHub'ın yeniden tesis belgesiyle tam SHA-eş kaynakta final Node regresyonu; native Git geçmişi testi gerçek checkout; OS/browser UI ve piksel kenar görsel kabulüdür. MQ-13: GitHub Actions **çalıştırılmadı**, commit `[skip ci]`.
+
+
+## 2026-10-10 — Yüzer öğretici pencere metni okunabilirlik iyileştirmesi (MQ-07)
+
+- Kullanıcının yeni kilitli isteği: yüzer penceredeki konu anlatımı yazıları birkaç punto büyütülecek; çalışma sahnesi daraltılmayacak.
+- `dist/tutorial.css`: `#tutorialCoach` kapsamına özel gövde metni 13px; h3/h4 14px; küçük etiketler 11px; düğmeler 12px. Eski 7–11px açıklamalar daha okunabilir oldu. Pencere boyutu, drag, minimize, resize ve scroll ayarları değiştirilmedi.
+- `dist/index.html`: stylesheet cache rev `20261010-coach-readable1`. `tests/tutorial-coach-readable-v11920.test.cjs`: metin, kapsam, boyut davranışları ve önbellek anahtarını doğrulayan **3/3 yerel PASS**.
+- `node scripts/check.cjs`: **PASS**, 219 JS syntax, 106 local dependencies, 728 library definitions, 58 protected examples.
+- `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md`: bölüm 21 ile kalıcı okunabilirlik ve çalışma alanı ilkesi eklendi.
+- İlk sahne tıklamasıyla küçük açıklamaların kaybolup hover ile dönmesi **bu font değişikliğinin kapsamında değildir; henüz kapatılmadı**. Öğretim serisi 45/45 QA ve gerçek Windows/Edge ekran onayı açık; başarı uydurulmaz.
+- GitHub Actions kullanılmadı, commit `[skip ci]`.
+

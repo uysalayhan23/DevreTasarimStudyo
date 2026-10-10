@@ -106,6 +106,17 @@ Enerji analizörü, akım trafosu ve gerçek simülasyon eğitim yükü kullanı
 
 ---
 
+
+## 21. Yüzer ders anlatımı okunabilirlik ve çalışma alanı kilidi
+
+**Kullanıcı kararı (10 Ekim 2026):** Yüzer konu anlatımı penceresindeki küçük açıklama yazıları birkaç punto büyütülür. Açıklama gövdesi yaklaşık **13 px**, bölüm başlıkları **14 px**, kısa yardımcı etiketler **11–12,5 px** düzeyinde okunabilir kalır. Bu, eski 7–11 px düzeyindeki metinlerden belirgin bir iyileştirmedir.
+
+- Yalnız `#tutorialCoach` içindeki metinler etkilenir. Sahne üzerindeki küçük mikro açıklamalar ve sağ özellik paneli bu tipografi değişikliğinden etkilenmez.
+- **Pencerenin genişliği, yüksekliği, pozisyonu artırılmaz.** Mevcut sürükle, yeniden boyutlandır, küçült/büyüt ve dikey içerik kaydırma kuralları korunur.
+- Öğrenciye devreyi kurup ölçüm yapacağı yeterli boş sahne bırakılır; açıklamalar taşarsa pencereyi büyütmek yerine pencerenin kendi kaydırma alanı kullanılır.
+- **Akıllı mikro açıklama kuralı ayrı kalite kapısı olarak açıktır:** İlk açılışta görünme, ilk sahne tıklamasında gizlenme, malzemeye hover ile geri görünme ve fare ayrıldığında yeniden gizlenme; yüzer ders penceresini kapatmaz.
+- MQ-12 kontrolü pencere davranışı, seçicilerin kapsamı ve önbellek sürümünün güncelliğini kapsar; Windows ekran denetimi olmadan tüm dersler nihai görsel kabul almış sayılmaz.
+
 ## MQ-00 kaynak/provenans ve kapanış kuralı
 
 Bu dosya **yeniden tesis edilmiş bir kilit sözleşmesidir; özgün tarihsel metnin birebir kopyası olarak sunulamaz**. Mevcut kod ve kabul testlerinden doğrulanan maddeleri işler, başka kilitleri gevşetmez. Orijinal metin ortaya çıkarsa karşılaştırma yapılır. Bu dokümanın regresyon testlerini geçmesi, gerçek Windows/Edge görüntü kabulünün veya bütün sistem testlerinin geçtiğini tek başına kanıtlamaz. GitHub Actions çalıştırılmayacak ve commitlerde [skip ci] kullanılacaktır.
