@@ -2,7 +2,7 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
-Kod kapsamı: **132/1655**, henüz zengin kod formatına yükseltilmemiş: **1523**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+Kod kapsamı: **136/1655**, henüz zengin kod formatına yükseltilmemiş: **1519**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
 Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
 
@@ -50,7 +50,7 @@ Kod kapsamı: **132/1655**, henüz zengin kod formatına yükseltilmemiş: **152
 | `bero` | 4 | 4 | 0 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
 | `motor-forward-reverse` | 4 | 4 | 0 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
 | `motor-star-delta` | 4 | 4 | 0 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
-| `dual-dc` | 4 | 0 | 4 | 4 | 0 | 0 | İki tamamen izole DC devre |
+| `dual-dc` | 4 | 4 | 0 | 4 | 0 | 0 | İki tamamen izole DC devre |
 
 **Yeni doğrulanmış kod kapsamı:** 45 elektriksel ölçme + 10 doğru akım + 5 buton/LED + 4 buton/röle + 4 mühürleme + 4 zaman rölesi = **72 ders**. Son 13 kontrol dersi için özgün kablo dizileri birebir korundu ve konuya özel açıklama ile soru eklendi. Başlıkların görsel/Windows ve kullanıcı pedagojik kabulü açık kalır. Zaman rölesi 4/4 sanal titreşim modelleri 1/1, 0,5/1,5 ve 1,5/0,5 saniye olarak düzeltildi. Sıradaki konular tesisat anahtar devreleri, güvenli sanal zil ve 4–20 mA, ardından motor kumanda senaryolarıdır.
 
@@ -77,3 +77,8 @@ MQ-07 (lider) öğretim metnini, MQ-04 (çapraz) terminal koruma şartını, MQ-
 ## 2026-10-10 — Batch K BERO ve motor kumanda kod kapsamı
 
 BERO 4, motor ileri/geri 4, yıldız/üçgen 4 (toplam 12) dersin mevcut komponent, bağlantı ve terminal adımları değiştirilmeden konuya özel sanal öğrenme hedefleri ve sorular eklendi. Kod kapsamı 132/1655; kalan 1523. MQ-07 lider, MQ-04/MQ-05 çapraz inceleme, MQ-12 test, MQ-13 süreklilik ve MQ-00 son karar. `tests/tutorial-motor-batch-k-v11920.test.cjs` iki Node test tanımı içerir ancak **Node ve solver bu turda çalıştırılmadı**. Kontaktör kilitleme, faz sırası ve yıldız-üçgen geçişi gerçek simülasyonda doğrulanmadı; görsel ve simülasyon kabulü false. Geliştirme tamamlandı etiketi yalnız kod kapsamını belirtir. GitHub Actions kullanılmadı; commit `[skip ci]`.
+
+
+## 2026-10-10 — Batch L, Dual-DC (kod tamamlandı; test kabulü açık)
+
+İki izole DC, ortak referans, kuru kontakla izolasyon ve NPN ile G2 yük kontrolünden oluşan 4 canonical dersin bileşen, bağlantı ve guided step kayıtları değiştirilmeden zenginleştirildi. `tests/tutorial-dual-dc-batch-l-v11920.test.cjs` iki Node test tanımı eklendi. Kapsam 136/1655, kalan 1519. MQ-07 lider, MQ-04/MQ-05 çapraz, MQ-12 regresyon, MQ-13 süreklilik, MQ-00 kabul. GitHub yerel klonlaması DNS hatasıyla bloklandı; **H–L son HEAD Node suite, elektriksel solver, Windows Edge görsel acceptance RUN/PASS değildir**. Yalnız mevcut kaynak ve loader bağımlılıkları gözden geçirildi. Testler ayrı koşulmadıkça simulationAcceptance=false/visualAcceptance=false. Actions kullanılmadı; `[skip ci]`.
