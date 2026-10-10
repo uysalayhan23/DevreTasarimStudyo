@@ -1,0 +1,90 @@
+{
+  "model": "ACS800-04-0075-3 · R5 · 75 kW",
+  "blocks": [
+    {
+      "block": "X20",
+      "labels": [
+        "VREF−",
+        "AGND"
+      ]
+    },
+    {
+      "block": "X21",
+      "labels": [
+        "VREF+",
+        "AGND",
+        "AI1+",
+        "AI1−",
+        "AI2+",
+        "AI2−",
+        "AI3+",
+        "AI3−",
+        "AO1+",
+        "AO1−",
+        "AO2+",
+        "AO2−"
+      ]
+    },
+    {
+      "block": "X22",
+      "labels": [
+        "DI1",
+        "DI2",
+        "DI3",
+        "DI4",
+        "DI5",
+        "DI6",
+        "+24VD",
+        "+24VD",
+        "DGND1",
+        "DGND2",
+        "DIIL"
+      ]
+    },
+    {
+      "block": "X23",
+      "labels": [
+        "+24V",
+        "GND"
+      ]
+    },
+    {
+      "block": "X25",
+      "labels": [
+        "RO11 NC",
+        "RO12 C",
+        "RO13 NO"
+      ]
+    },
+    {
+      "block": "X26",
+      "labels": [
+        "RO21 NC",
+        "RO22 C",
+        "RO23 NO"
+      ]
+    },
+    {
+      "block": "X27",
+      "labels": [
+        "RO31 NC",
+        "RO32 C",
+        "RO33 NO"
+      ]
+    }
+  ],
+  "powerOrder": [
+    "PE",
+    "U1",
+    "V1",
+    "W1",
+    null,
+    "R−",
+    "R+",
+    "UDC−",
+    "U2",
+    "V2",
+    "W2",
+    "PE2"
+  ]
+}

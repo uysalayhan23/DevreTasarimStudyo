@@ -1,0 +1,26 @@
+.acs800-key{cursor:pointer;pointer-events:all}.acs800-key:hover rect,.acs800-key:focus rect{stroke:#00776d;stroke-width:2;fill:#e1f7ee}.acs800-modal .v20-dialog>header{background:linear-gradient(125deg,#7b1520,#c82d3c);color:white}.acs800-modal .v20-dialog>header small{color:#ffe9df}.acs800-modal .v20-param-row{gap:16px}.acs800-modal .v20-param-row select{min-width:215px}.acs800-modal .v20-big-frequency{color:#ad1c2e}.acs800-modal #acs800Error{margin:12px 24px;background:#ffe5e5;color:#a41525;border:1px solid #e69999;padding:10px;border-radius:7px}.acs800-jumper{display:flex!important;gap:10px;align-items:center;padding:9px 0}.acs800-jumper input{width:auto!important}.acs800-modal table{border-collapse:collapse;width:100%;font-size:13px}.acs800-modal td,.acs800-modal th{padding:9px;text-align:left;border-bottom:1px solid #d7dfdf}.acs800-modal td:first-child{font-weight:600;white-space:nowrap}.acs800-modal details{margin-top:15px;padding:12px;background:#f1f5f4;border-radius:8px}.acs800-modal details label{margin-top:8px}.acs800-modal a{color:#007d76}.acs800-modal footer{display:flex;justify-content:space-between;font-size:12px;color:#5f6b6b}@media(max-width:600px){.acs800-modal .v20-param-row{grid-template-columns:1fr}.acs800-modal .v20-param-row select{min-width:0}.acs800-modal td:first-child{white-space:normal}}
+
+
+/* v1.19.0 premium 3D treatment for ACS800 dialog. */
+.acs800-modal .v20-dialog>header{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.13),transparent 42%),
+    linear-gradient(125deg,#8c1c29,#c83242 58%,#8f1827);
+  box-shadow:inset 0 1px rgba(255,255,255,.20),inset 0 -1px rgba(72,5,14,.45),0 4px 12px rgba(101,16,28,.20);
+}
+.acs800-modal .v20-big-frequency{
+  text-shadow:0 1px #fff,0 2px 4px rgba(139,20,39,.12);
+}
+.acs800-modal #acs800Error{
+  background:linear-gradient(180deg,#fff0f0,#ffdcdc);
+  border-color:#d78c96;
+  box-shadow:inset 0 1px #fff,0 3px 8px rgba(128,21,38,.10);
+}
+.acs800-modal details{
+  border:1px solid #cbd7d5;
+  background:linear-gradient(160deg,#f7faf9,#e8efed);
+  box-shadow:inset 0 1px #fff,0 3px 8px rgba(34,67,65,.07);
+}
+.acs800-key:hover rect,.acs800-key:focus rect{
+  filter:drop-shadow(0 2px 2px rgba(0,90,83,.15));
+}

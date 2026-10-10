@@ -1,0 +1,9 @@
+(function(root){
+ 'use strict';
+ // Display a quadrilateral from the original photo on a flat plane. No pixels
+ // are generated or replaced; SVG triangles preserve the source photograph.
+ function projective(q){const [a,b,c,d]=q,dx1=b[0]-c[0],dx2=d[0]-c[0],dx3=a[0]-b[0]+c[0]-d[0],dy1=b[1]-c[1],dy2=d[1]-c[1],dy3=a[1]-b[1]+c[1]-d[1],det=dx1*dy2-dx2*dy1,g=det?(dx3*dy2-dx2*dy3)/det:0,h=det?(dx1*dy3-dx3*dy1)/det:0;return (u,v)=>[(a[0]+(b[0]-a[0]+g*b[0])*u+(d[0]-a[0]+h*d[0])*v)/(1+g*u+h*v),(a[1]+(b[1]-a[1]+g*b[1])*u+(d[1]-a[1]+h*d[1])*v)/(1+g*u+h*v)]}
+ function affine(src,dst){const [p,q,r]=src,[a,b,c]=dst,dx=q[0]-p[0],dy=q[1]-p[1],ex=r[0]-p[0],ey=r[1]-p[1],det=dx*ey-ex*dy,A=((b[0]-a[0])*ey-(c[0]-a[0])*dy)/det,C=(dx*(c[0]-a[0])-ex*(b[0]-a[0]))/det,B=((b[1]-a[1])*ey-(c[1]-a[1])*dy)/det,D=(dx*(c[1]-a[1])-ex*(b[1]-a[1]))/det;return [A,B,C,D,a[0]-A*p[0]-C*p[1],a[1]-B*p[0]-D*p[1]]}
+ function markup(file,iw,ih,quad,x,y,w,h,scope){const p=projective(quad),n=3,id='plane-'+String(scope).replace(/[^\w-]/g,'_');let out='';for(let j=0;j<n;j++)for(let i=0;i<n;i++){const uv=[[i/n,j/n],[(i+1)/n,j/n],[(i+1)/n,(j+1)/n],[i/n,(j+1)/n]];for(const [k,index] of [[0,[0,1,2]],[1,[0,2,3]]]){const src=index.map(t=>p(...uv[t])),dst=index.map(t=>[x+uv[t][0]*w,y+uv[t][1]*h]),cent=[dst.reduce((s,t)=>s+t[0],0)/3,dst.reduce((s,t)=>s+t[1],0)/3],expanded=dst.map(t=>{const dx=t[0]-cent[0],dy=t[1]-cent[1],r=Math.hypot(dx,dy);return [t[0]+3*dx/r,t[1]+3*dy/r]}),clip=id+'-'+i+'-'+j+'-'+k,m=affine(src,dst).map(v=>v.toFixed(6)).join(' ');out+=`<defs><clipPath id="${clip}"><path fill="#fff" stroke="none" d="M${expanded.map(t=>t.join(' ')).join('L')}Z"/></clipPath></defs><g clip-path="url(#${clip})"><image href="${file}" width="${iw}" height="${ih}" transform="matrix(${m})"/></g>`}}return out}
+ const api={markup,projective,affine};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPhotoPlane=api;
+})(typeof window==='undefined'?globalThis:window);

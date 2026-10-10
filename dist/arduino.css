@@ -1,0 +1,150 @@
+/* v1.19.0 — Arduino Atölyesi / gömülü eğitim IDE'si. */
+/* LOCKED contrast policy: açık buton=koyu yazı, koyu buton=açık yazı. .simulate bu dosyada hedeflenmez. */
+.arduino-ide-launch{
+  display:block;width:calc(100% - 20px);margin:0 10px 9px;min-height:40px;padding:7px 10px;
+  border:1px solid #0e6370!important;border-radius:7px!important;
+  background:linear-gradient(180deg,#207f8d,#145e6a)!important;
+  color:#f5fcfd!important;-webkit-text-fill-color:#f5fcfd!important;text-shadow:0 1px 1px #062e35!important;
+  font-weight:900;letter-spacing:.02em;
+  box-shadow:inset 0 1px rgba(255,255,255,.25),0 2px 0 #0a4952,0 5px 10px rgba(13,71,80,.18)!important;
+}
+.arduino-ide-launch:hover{background:linear-gradient(180deg,#288c99,#176875)!important}
+.arduino-ide-launch:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.2),0 1px 0 #0a4952!important}
+.arduino-terminal-socket{fill:#10181c;stroke:#bdc8cc;stroke-width:1.1;pointer-events:none}
+.component.material .breadboard-material+.component-annotations .port-label{display:none}
+.arduino-mode .sheetbar{border-bottom-color:#92bcc3}
+.arduino-mode .mode-badge{background:#d9eff1;color:#174d57;border-color:#9bc6cc}
+
+.arduino-ide-modal{position:fixed;inset:0;z-index:1350;display:grid;place-items:center;padding:16px;background:rgba(6,20,29,.78);backdrop-filter:blur(4px)}
+.arduino-ide-modal[hidden]{display:none!important}
+.arduino-ide-window{width:min(1240px,97vw);height:min(830px,95vh);display:flex;flex-direction:column;overflow:hidden;border:2px solid #49636f;border-radius:13px;background:#e7edf0;box-shadow:0 30px 95px rgba(0,0,0,.58),inset 0 1px #fff}
+.arduino-ide-header{min-height:61px;display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:linear-gradient(180deg,#176d79,#0d515d);color:#f5ffff;border-bottom:1px solid #063d46}
+.arduino-ide-header>div{display:flex;flex-direction:column;gap:3px}.arduino-ide-header strong{font-size:16px}.arduino-ide-header small{font-size:10px;color:#d6eef1}
+.arduino-ide-header button{width:35px;height:35px;border:1px solid #8cb4bc!important;border-radius:7px!important;background:linear-gradient(#315c66,#193e47)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:0 1px #000!important;font-size:22px;line-height:1}
+.arduino-ide-toolbar,.arduino-ide-actions{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding:8px 11px;background:linear-gradient(#f8fafb,#dce5e9);border-bottom:1px solid #b5c5cc}
+.arduino-ide-toolbar label{display:flex;flex-direction:column;gap:3px;font-size:10px;font-weight:800;color:#2e4a56}
+.arduino-ide-toolbar select,.arduino-ide-toolbar input{min-height:31px;border:1px solid #9db1ba;border-radius:5px;padding:5px 7px;background:#fff!important;color:#173640!important;-webkit-text-fill-color:#173640!important}
+#arduinoBoardSelect{min-width:180px}#arduinoProgramName{min-width:210px}#arduinoExampleSelect{min-width:260px;max-width:360px}
+.arduino-ide-toolbar button,.arduino-ide-actions button{
+  min-height:32px;border:1px solid #94aab3!important;border-radius:6px!important;padding:6px 10px;
+  background:linear-gradient(#fff,#d9e2e6)!important;color:#173744!important;-webkit-text-fill-color:#173744!important;text-shadow:0 1px rgba(255,255,255,.85)!important;font-weight:850;
+  box-shadow:inset 0 1px #fff,0 2px 0 #879da6,0 3px 6px rgba(31,56,67,.12)!important
+}
+.arduino-ide-toolbar button:hover,.arduino-ide-actions button:hover{background:linear-gradient(#fff,#e3ecef)!important}
+.arduino-ide-actions #arduinoUpload{
+  background:linear-gradient(#248c98,#145d69)!important;border-color:#0b5965!important;
+  color:#f6ffff!important;-webkit-text-fill-color:#f6ffff!important;text-shadow:0 1px #062f35!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.25),0 2px 0 #094a54,0 4px 7px rgba(11,78,88,.2)!important
+}
+#arduinoSaveBoard{background:linear-gradient(#f8f3df,#ddd2aa)!important;border-color:#b8a96f!important;color:#42391d!important;-webkit-text-fill-color:#42391d!important}
+#arduinoIdeStatus{margin-left:auto;font-size:11px;font-weight:850;color:#385763;max-width:430px}
+#arduinoIdeStatus[data-kind="ok"]{color:#176342}#arduinoIdeStatus[data-kind="error"]{color:#9b2632}
+#arduinoExampleInfo{width:100%;font-size:10px;color:#49616b;padding:0 2px 2px}
+#arduinoIdeRunState{display:inline-flex;align-items:center;min-height:26px;padding:3px 8px;border:1px solid #b6c2c7;border-radius:5px;background:#f7fafb;color:#3d555f;font-size:10px;font-weight:800}
+#arduinoIdeRunState[data-running="1"]{background:#e1f5e7;color:#1b663b;border-color:#9fc8aa}
+
+.arduino-ide-body{display:grid;grid-template-columns:minmax(0,1fr) 320px;flex:1;min-height:0;background:#152129}
+.arduino-code-pane,.arduino-console-pane{display:flex;flex-direction:column;min-height:0}
+.arduino-console-pane{border-left:1px solid #8296a0;background:#0f191f}
+.arduino-pane-title{padding:6px 10px;background:#273943;color:#edf8fa;font-size:11px;font-weight:850;border-bottom:1px solid #0c171c;display:flex;justify-content:space-between}
+.arduino-editor-wrap{display:grid;grid-template-columns:48px minmax(0,1fr);flex:1;min-height:0}
+#arduinoLineNumbers{margin:0;padding:13px 8px;overflow:hidden;background:#101a20;color:#728891;text-align:right;font:12px/1.55 Consolas,"Courier New",monospace;user-select:none;border-right:1px solid #30424b}
+#arduinoCode{min-width:0;min-height:0;resize:none;border:0!important;outline:0;padding:13px 15px;background:#17242c!important;color:#dceef2!important;-webkit-text-fill-color:#dceef2!important;box-shadow:none!important;font:13px/1.55 Consolas,"Courier New",monospace;tab-size:2;white-space:pre;overflow:auto}
+#arduinoConsole{flex:1;margin:0;overflow:auto;padding:11px;background:#0b151a;color:#8ff5b7;font:12px/1.45 Consolas,"Courier New",monospace;white-space:pre-wrap}
+.arduino-ide-foot{padding:7px 11px;background:#d9e3e7;color:#49616b;font-size:10px;border-top:1px solid #b7c6cc}
+.arduino-component-settings{display:flex;flex-direction:column;gap:7px;padding:9px;border:1px solid #a4c8cf;border-radius:7px;background:#eaf6f7}
+.arduino-component-settings[hidden]{display:none!important}.arduino-component-settings strong{color:#1d5260}
+.arduino-component-settings button{min-height:32px;background:linear-gradient(#fff,#dbe6e9)!important;color:#173744!important;-webkit-text-fill-color:#173744!important;border-color:#9bb2ba!important}
+.arduino-component-settings label{display:flex;flex-direction:column;gap:4px;font-size:10px;color:#36525d}
+.arduino-saved-section{border-color:#b7cda7}.arduino-saved-card{outline:1px solid rgba(120,150,89,.16)}
+@media(max-width:820px){.arduino-ide-body{grid-template-columns:1fr}.arduino-console-pane{height:180px;border-left:0;border-top:1px solid #8296a0}.arduino-ide-window{height:97vh}.arduino-ide-toolbar label{flex:1 1 170px}#arduinoIdeStatus{margin-left:0;width:100%}}
+
+
+/* v1.19.0 — official Arduino examples are protected like ready-made project examples. */
+.modal.arduino-save-prompt{z-index:1460}
+.arduino-official-banner{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 11px;
+  border-bottom:1px solid #d2bd77;background:#fff7d9;color:#473b16;font-size:11px;
+}
+.arduino-official-banner[hidden]{display:none!important}
+.arduino-official-banner span{font-weight:700}.arduino-official-banner small{flex:1 1 320px;color:#6c5e2a}
+.arduino-official-banner button{
+  min-height:30px;border:1px solid #b4a05a!important;border-radius:6px!important;padding:5px 10px;
+  background:linear-gradient(#fffdf2,#e7ddb8)!important;color:#3f3515!important;-webkit-text-fill-color:#3f3515!important;text-shadow:0 1px #fff!important;font-weight:850
+}
+.arduino-ide-window.official-example-open #arduinoCode{background:#131d23!important}
+.arduino-ide-window.official-example-open #arduinoProgramName{background:#eef1f2!important;color:#596a72!important;-webkit-text-fill-color:#596a72!important}
+#arduinoSaveProgram:disabled{opacity:.52;cursor:not-allowed}
+#arduinoSaveAsProgram{background:linear-gradient(#f8f3df,#ddd2aa)!important;border-color:#b8a96f!important;color:#42391d!important;-webkit-text-fill-color:#42391d!important}
+.official-source{font-weight:700;color:#285c67}
+
+
+/* v1.19.0 — realistic Serial Monitor + HC-05 bridge.
+   Locked contrast policy preserved; .simulate is intentionally untouched. */
+.arduino-serial-toolbar{display:flex;align-items:end;gap:8px;padding:7px 8px;background:#17252d;border-bottom:1px solid #31444d}
+.arduino-serial-toolbar label,.hc05-bridge-panel label{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:800;color:#dcebee}
+.arduino-serial-toolbar select,.hc05-bridge-panel select,.arduino-serial-send select{
+  min-height:29px;border:1px solid #8fa3ab;border-radius:5px;background:#f8fbfc!important;color:#193844!important;-webkit-text-fill-color:#193844!important;padding:4px 6px
+}
+.arduino-serial-toolbar button,.arduino-serial-send button,.hc05-bridge-panel button{
+  min-height:30px;border:1px solid #91a7af!important;border-radius:6px!important;background:linear-gradient(#fff,#dce6e9)!important;
+  color:#173744!important;-webkit-text-fill-color:#173744!important;text-shadow:0 1px #fff!important;font-weight:850;padding:5px 9px
+}
+.arduino-serial-toolbar button:disabled,.arduino-serial-send button:disabled,.hc05-bridge-panel button:disabled{opacity:.5;cursor:not-allowed}
+#arduinoConsole{min-height:150px}
+.arduino-serial-send{display:grid;grid-template-columns:minmax(0,1fr) 145px auto;gap:6px;padding:7px;background:#132129;border-top:1px solid #31444d}
+.arduino-serial-send input,.hc05-virtual-send input{
+  min-width:0;min-height:31px;border:1px solid #8298a1;border-radius:5px;background:#f7fafb!important;color:#163540!important;-webkit-text-fill-color:#163540!important;padding:5px 7px
+}
+#arduinoSerialBaudState[data-mismatch="1"]{color:#ffd166}
+.hc05-bridge-panel{display:flex;flex-direction:column;gap:6px;padding:8px;background:#0e1b22;border-top:1px solid #38505a;color:#d8e8ec}
+.hc05-bridge-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}
+#hc05BridgeStatus{padding:2px 6px;border:1px solid #506872;border-radius:10px;color:#bed0d5;background:#17272e}
+#hc05BridgeStatus[data-connected="1"]{border-color:#4f9463;color:#c9f3d3;background:#173322}
+#hc05BridgeStatus[data-error="1"]{border-color:#a35b63;color:#ffd8dc;background:#3d1d22}
+.hc05-bridge-actions,.hc05-virtual-send{display:flex;gap:6px;flex-wrap:wrap}.hc05-virtual-send input{flex:1 1 170px}
+#hc05PcConnect{background:linear-gradient(#277e8b,#145965)!important;border-color:#0b5661!important;color:#f7ffff!important;-webkit-text-fill-color:#f7ffff!important;text-shadow:0 1px #052e34!important}
+#hc05Terminal{height:105px;margin:0;overflow:auto;padding:7px;border:1px solid #2f434c;border-radius:5px;background:#091217;color:#7ff2b2;font:10px/1.35 Consolas,"Courier New",monospace;white-space:pre-wrap}
+.hc05-material,.lcd1602-material{filter:drop-shadow(1px 2px 2px rgba(0,0,0,.3))}
+@media(max-width:820px){.arduino-serial-send{grid-template-columns:1fr}.hc05-bridge-actions button{flex:1 1 150px}}
+
+
+/* v1.19.0 — HC-05 çalışma notu / sağ özellikler paneli. */
+.hc05-work-note-button{
+  width:100%;min-height:34px;border:1px solid #b8a66a!important;border-radius:7px!important;
+  background:linear-gradient(#fff8dc,#dfd1a2)!important;color:#3c3317!important;-webkit-text-fill-color:#3c3317!important;
+  text-shadow:0 1px #fff!important;font-weight:900;box-shadow:inset 0 1px #fff,0 2px 0 #aa995e!important
+}
+.hc05-work-note-button[hidden]{display:none!important}
+.hc05-guide-modal{position:fixed;inset:0;z-index:1490;display:grid;place-items:center;padding:16px;background:rgba(5,17,24,.78);backdrop-filter:blur(4px)}
+.hc05-guide-modal[hidden]{display:none!important}
+.hc05-guide-card{width:min(900px,96vw);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;border:2px solid #55717c;border-radius:13px;background:#eef3f5;box-shadow:0 28px 90px rgba(0,0,0,.58)}
+.hc05-guide-card>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;background:linear-gradient(#276d79,#164f5a);color:#f7ffff;border-bottom:1px solid #0b3d46}
+.hc05-guide-card>header>div{display:flex;flex-direction:column;gap:3px}.hc05-guide-card>header strong{font-size:16px}.hc05-guide-card>header small{font-size:10px;color:#d9edf0}
+.hc05-guide-card>header button{width:34px;height:34px;border:1px solid #89abb2!important;border-radius:7px!important;background:linear-gradient(#315d67,#1b414a)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:21px}
+.hc05-guide-body{overflow:auto;padding:13px 16px;color:#203b46}
+.hc05-guide-body section{margin:0 0 12px;padding:11px 12px;border:1px solid #c5d3d8;border-radius:8px;background:#fff}
+.hc05-guide-body h3{margin:0 0 7px;color:#154f5c;font-size:13px}.hc05-guide-body p,.hc05-guide-body li{font-size:11px;line-height:1.55}.hc05-guide-body ol,.hc05-guide-body ul{padding-left:22px}
+.hc05-guide-body code,.hc05-guide-body pre{font-family:Consolas,"Courier New",monospace}.hc05-guide-body code{background:#e9eff1;padding:1px 4px;border-radius:3px}
+.hc05-guide-body pre{margin:7px 0;padding:9px 10px;border-radius:6px;background:#122027;color:#8ff1b5;white-space:pre-wrap;font-size:11px}
+.hc05-guide-card>footer{display:flex;justify-content:flex-end;padding:9px 13px;background:#dde6e9;border-top:1px solid #bdcbd0}
+.hc05-guide-card>footer button{min-width:90px;min-height:33px;border:1px solid #8fa5ad!important;border-radius:6px!important;background:linear-gradient(#fff,#dbe5e8)!important;color:#173642!important;-webkit-text-fill-color:#173642!important;font-weight:850}
+
+
+/* v1.19.0 — bağımsız, devreyi kapatmayan Serial Monitor. */
+.serial-monitor-launch{background:linear-gradient(180deg,#eaf3f5,#cbdde2)!important;border-color:#8faab3!important;color:#173744!important;-webkit-text-fill-color:#173744!important;text-shadow:0 1px #fff!important;font-weight:850}
+.serial-monitor-popup{position:fixed;right:18px;bottom:38px;z-index:1340;width:400px;height:330px;min-width:315px;min-height:220px;max-width:calc(100vw - 18px);max-height:calc(100vh - 68px);display:flex;flex-direction:column;overflow:hidden;resize:both;border:2px solid #526a74;border-radius:10px;background:#101b21;box-shadow:0 18px 55px rgba(0,0,0,.4)}
+.serial-monitor-popup[hidden]{display:none!important}
+.serial-monitor-popup-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;background:linear-gradient(#246f7b,#14515c);color:#f6ffff;cursor:move;user-select:none}
+.serial-monitor-popup-header>div{display:flex;align-items:center;gap:9px;min-width:0}.serial-monitor-popup-header strong{font-size:12px}
+#serialPopupRunState{font-size:9px;font-weight:900;padding:2px 6px;border:1px solid #89aab0;border-radius:9px;background:#314c55;color:#dcebee}#serialPopupRunState[data-running="1"]{background:#173d27;border-color:#5b966b;color:#ccf2d4}
+.serial-monitor-popup-header button{width:28px;height:28px;border:1px solid #8fb2b9!important;border-radius:6px!important;background:#294d56!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-size:18px;line-height:1}
+.serial-monitor-popup-tools{display:grid;grid-template-columns:minmax(0,1fr) 108px auto;gap:6px;padding:7px;background:#17262d;border-bottom:1px solid #344850}
+.serial-monitor-popup-tools label{display:flex;flex-direction:column;gap:2px;font-size:9px;font-weight:800;color:#d7e8ec}
+.serial-monitor-popup-tools select,.serial-monitor-popup-send select,.serial-monitor-popup-send input{min-width:0;min-height:29px;border:1px solid #8499a2;border-radius:5px;background:#f7fafb!important;color:#173640!important;-webkit-text-fill-color:#173640!important;padding:4px 6px}
+.serial-monitor-popup-tools button,.serial-monitor-popup-send button{min-height:29px;align-self:end;border:1px solid #8fa4ad!important;border-radius:5px!important;background:linear-gradient(#fff,#dbe5e8)!important;color:#173744!important;-webkit-text-fill-color:#173744!important;text-shadow:0 1px #fff!important;font-weight:850;padding:4px 8px}
+#serialPopupConsole{flex:1;min-height:80px;margin:0;overflow:auto;padding:9px;background:#081217;color:#88f3b4;font:11px/1.4 Consolas,"Courier New",monospace;white-space:pre-wrap}
+.serial-monitor-popup-send{display:grid;grid-template-columns:minmax(0,1fr) 88px auto;gap:6px;padding:7px;background:#14242b;border-top:1px solid #334952}
+.serial-monitor-popup>footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;background:#263941;color:#d6e5e8;font-size:9px}
+#serialPopupBaudState[data-mismatch="1"]{color:#ffd166}.serial-monitor-popup>footer small{color:#9fb5bc}
+@media(max-width:720px){.serial-monitor-popup{left:8px!important;right:8px!important;bottom:8px;top:auto!important;width:auto;height:300px;max-width:none;resize:none}.serial-monitor-popup-tools{grid-template-columns:1fr 100px}.serial-monitor-popup-tools button{grid-column:1/-1}.serial-monitor-popup-send{grid-template-columns:1fr 80px}.serial-monitor-popup-send button{grid-column:1/-1}}
