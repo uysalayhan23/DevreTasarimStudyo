@@ -198,7 +198,7 @@ test('minimized lesson coach always keeps a working restore control',()=>{
  assert.match(mode,/data-tutorial-coach-minimize/);assert.match(mode,/minimized\?'□':'−'/);assert.match(mode,/toggleCoachMinimize/);assert.match(mode,/data-tutorial-float-bar/);
  assert.match(enh,/data-tutorial-coach-minimize/);assert.match(enh,/querySelector\('\.tutorial-float-bar'\)/);assert.match(enh,/classList\.contains\('is-minimized'\)/);
  assert.match(css,/#tutorialCoach\.is-minimized\{height:46px!important/);assert.match(css,/#tutorialCoach\.is-minimized>:not\(\.tutorial-float-bar\)/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);assert.match(boot,/tutorial-enhancements\.js\?v=1\.19\.20-coach-restore1/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-a1/);assert.match(boot,/tutorial-enhancements\.js\?v=1\.19\.20-coach-restore1/);
 });
 
 test('quiz answers randomize on lesson entry and show dash, green tick, red cross and correct answer',()=>{
