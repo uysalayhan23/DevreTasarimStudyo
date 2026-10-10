@@ -2,7 +2,7 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
-Kod kapsamı: **104/1655**, henüz zengin kod formatına yükseltilmemiş: **1551**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+Kod kapsamı: **120/1655**, henüz zengin kod formatına yükseltilmemiş: **1535**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
 Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
 
@@ -43,10 +43,10 @@ Kod kapsamı: **104/1655**, henüz zengin kod formatına yükseltilmemiş: **155
 | `loop-420` | 4 | 4 | 0 | 4 | 0 | 0 | 2 telli transmitter + ampermetre |
 | `loop-powered` | 4 | 4 | 0 | 4 | 0 | 0 | İki telli loop-powered transmitter |
 | `active-passive` | 4 | 4 | 0 | 4 | 0 | 0 | Harici beslemeli pasif loop |
-| `pnp-npn` | 4 | 0 | 4 | 4 | 0 | 0 | PNP sensör → 0 V’a bağlı yük |
-| `inductive-capacitive` | 4 | 0 | 4 | 4 | 0 | 0 | PNP endüktif metal algılama |
-| `source-sink` | 4 | 0 | 4 | 4 | 0 | 0 | Sourcing PNP çıkış |
-| `open-collector` | 4 | 0 | 4 | 4 | 0 | 0 | NPN open collector yük sürme |
+| `pnp-npn` | 4 | 4 | 0 | 4 | 0 | 0 | PNP sensör → 0 V’a bağlı yük |
+| `inductive-capacitive` | 4 | 4 | 0 | 4 | 0 | 0 | PNP endüktif metal algılama |
+| `source-sink` | 4 | 4 | 0 | 4 | 0 | 0 | Sourcing PNP çıkış |
+| `open-collector` | 4 | 4 | 0 | 4 | 0 | 0 | NPN open collector yük sürme |
 | `bero` | 4 | 0 | 4 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
 | `motor-forward-reverse` | 4 | 0 | 4 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
 | `motor-star-delta` | 4 | 0 | 4 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
@@ -67,3 +67,8 @@ MQ-07 (lider) öğretim metnini, MQ-04 (çapraz) terminal koruma şartını, MQ-
 ## 2026-10-10 — Batch I, kontrol ve analog loop (kaynak kod ilerleme, kabul açık)
 
 `dist/tutorial-next-batch-i.js` ile 4 kumanda kombinasyonu, 4 adet 4–20 mA loop, 4 loop-powered ve 4 aktif/pasif örneği için ayrı amaç, görev ve konu sorusu yazıldı. Kablolar, komponentler ve guided steps kasıtlı olarak değiştirilmedi. `tests/tutorial-next-batch-i-v11920.test.cjs` Node regresyonu eklendi; **bu oturumda gerçek Node testi ve elektriksel solver çalışma kanıtı elde edilemedi**. Bu nedenle henüz PASS veya MQ-00 DONE değil; gerçek simülasyon, terminal geometri, Windows file launch ve pedagojik kabul açıklığı sürüyor. İlgili lider MQ-07; çapraz MQ-04/MQ-05, test MQ-12, repo MQ-13, nihai MQ-00. Kod kapsamı 104/1655, henüz rich olmayan 1551. GitHub Actions çalıştırılmadı; commit `[skip ci]`.
+
+
+## 2026-10-10 — Batch J, sensör dersleri
+
+4 PNP/NPN + 4 endüktif/kapasitif + 4 source/sink + 4 open-collector kaynak dersine kanonik devreye dokunmayan amaç, adım ve soru eklendi. Rich kod hedefi 120/1655; 1535 ders hâlâ eski formatta. MQ-07 lider, MQ-04 çapraz terminal kontrol, MQ-05 elektriksel simülasyon, MQ-12 test, MQ-13 GitHub süreklilik ve MQ-00 son kabul zinciri geçerlidir. `tests/tutorial-sensor-batch-j-v11920.test.cjs` eklendi ancak Node/gerçek solver çalıştırıldığına dair kanıt yoktur. Özellikle PNP/NPN farklı sensör modelindeki algılama, NC/NO ve açık kolektör durumları doğrulanmadığı için simulationAcceptance=false ve visualAcceptance=false korunur. Actions kullanılmadı, `[skip ci]`.
