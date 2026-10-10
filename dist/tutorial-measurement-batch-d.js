@@ -26,9 +26,9 @@ function display(l,project){
   formula='E = P × t; t = '+n+' dakika';caveat='Gerçek sanal enerji analizörünün biriken Wh modeli, hızlandırılmış eğitim süresi.';
  }else if(mode==='sensor'){
   const s=project?.components?.find(c=>c.typeId==='proximity');
-  const supply=s?._sensorSupply==='ok',closed=!!s?._contactStates?.output;
-  value='Metal hedef '+n+' mm · besleme: '+(supply?'doğru':'yok/yanlış')+' · PNP BK çıkışı: '+(supply?(closed?'AKTİF':'PASİF'):'ölçüm geçersiz');
-  formula='Gerçek sensör temas modeli: algılama aralığı 4 mm';caveat='BK çıkışının model durumu gösterilir. UNI-T sayısal voltajı modelde doğrulanmadığı için uydurulmaz.';
+  const supply=s?._sensorSupply==='ok',closed=!!s?._contactStates?.output,mm=project?.components?.find(c=>c.typeId==='unit-ut33d-plus'),v=mm?._meter?.value,valid=supply&&mm?._meter?.mode==='DCV'&&Number.isFinite(v)&&!mm._meter.warning;
+  value='Metal hedef '+n+' mm · PNP BK: '+(supply?(closed?'AKTİF':'PASİF'):'geçersiz')+' · UNI-T DCV: '+(valid?v.toFixed(1)+' V':'ölçüm bekleniyor');
+  formula='Gerçek sensör temas modeli: algılama aralığı 4 mm';caveat='UNI-T değeri gerçek sanal prob temaslarından ve PNP kontak/supply modelinden okunur; yalnız simülasyon laboratuvarıdır.';
  }else if(mode==='ruler'||mode==='caliper'||mode==='micrometer'){
   value=n.toLocaleString('tr-TR',{minimumFractionDigits:mode==='ruler'?0:2,maximumFractionDigits:2})+' mm · '+(n/10).toLocaleString('tr-TR')+' cm';
   formula=mode==='ruler'?'mm / 10 = cm':mode==='caliper'?'tam mm + verniyer payı':'gövde mm + tambur (0,01 mm)';
@@ -65,6 +65,11 @@ for(const [suffix,mode,heading,goal,task,question,answers] of entries){
  }else if(mode==='sensor'){
   p=clone(l.project);workbench='sensor';l.kind='explore';l.steps=p.wires.filter(w=>!w.probeLead).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Sensör terminalini bağla',why:w.tutorialWhy||'Sensör çıkışını incele'}));
   const sensor=p.components.find(c=>c.typeId==='proximity');if(!sensor)throw Error('PNP sensor missing');sensor.sensing={target:'metal',distance:10,range:4,offset:0};
+  p.components=p.components.filter(c=>!['mr','mb'].includes(c.id));
+  p.wires=p.wires.filter(w=>!['mr','mb'].includes(w.from?.c)&&!['mr','mb'].includes(w.to?.c));
+  const m=p.components.find(c=>c.typeId==='unit-ut33d-plus'),red=p.components.find(c=>c.id==='mm-red'),black=p.components.find(c=>c.id==='mm-black');
+  if(!m||!red||!black)throw Error('PNP UNI-T probe model incomplete');
+  m.meterPosition=4;m.multimeterMode='DCV';red.probeTarget={c:sensor.id,p:'BK'};black.probeTarget={c:sensor.id,p:'BU'};
  }else if(mode.startsWith('electrical:')){
   const token=mode.split(':')[1],source=token.startsWith('outline-')?L.byId['measurement-workshop-'+token]:L.byId['measurement-workshop-'+token];
   if(!source?.project?.components?.length)throw Error('Electrical reference missing '+token);
