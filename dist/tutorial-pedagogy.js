@@ -1965,6 +1965,40 @@ function upgradeTutorialDcSupplies(){
 }
 upgradeTutorialDcSupplies();
 
+
+/* Gerçek elektronik parça kapanışı: fiziksel devre elemanı gerektiren tutorial kutuları
+   satın alınabilir gerçek paket/model tanımlarıyla değiştirilir. Kablolu endpoint taşıyan
+   komponentler fail-closed bırakılır; otomatik remap yalnız kavram panolarına uygulanır. */
+const REAL_ELECTRONICS_REPLACEMENTS={
+ 'tutorial-mosfet':'irf540n-mosfet','tutorial-igbt':'fga25n120antd-igbt','tutorial-scr':'tyn612rg-scr',
+ 'tutorial-triac':'bta16-600b-triac','tutorial-diac':'db3-diac','tutorial-opamp':'lm358p-dip8',
+ 'tutorial-logic-and':'sn74hc08n','tutorial-logic-or':'sn74hc32n','tutorial-logic-not':'sn74hc04n',
+ 'tutorial-logic-buffer':'sn74hc125n','tutorial-logic-nand':'sn74hc00n','tutorial-logic-nor':'sn74hc02n',
+ 'tutorial-logic-xor':'sn74hc86n','tutorial-logic-xnor':'cd4077be','tutorial-ff-rs':'sn74hc00n',
+ 'tutorial-ff-jk':'cd4027be','tutorial-ff-d':'sn74hc74n','tutorial-ff-t':'cd4027be',
+ 'tutorial-adc':'adc0804lcn','tutorial-dac':'dac0808lcn','tutorial-logic-mux':'sn74hc151n',
+ 'tutorial-logic-demux':'sn74hc138n','tutorial-logic-decoder':'sn74hc138n','tutorial-logic-encoder':'sn74hc148n',
+ 'tutorial-full-adder':'cd74hc283e','tutorial-comparator':'cd74hc85e','tutorial-fet':'j113-jfet',
+ 'tutorial-crystal':'hc49-4mhz-crystal','tutorial-microphone':'electret-9767-mic','tutorial-speaker':'speaker-8ohm-1w'
+};
+for(const l of L.lessons){
+ const title=l.title.toLocaleLowerCase('tr-TR');let changed=false;
+ for(const comp of l.project?.components||[]){
+  const wired=(l.project.wires||[]).some(w=>w.from.c===comp.id||w.to.c===comp.id);if(wired)continue;
+  let next=REAL_ELECTRONICS_REPLACEMENTS[comp.typeId]||null;
+  if(comp.typeId==='tutorial-diode'){
+   if(/foto diyot/.test(title))next='bpw34-photodiode';
+   else if(/röleler için koruma diyot|doğrult/.test(title))next='1n4007-do41';
+   else next='1n4148-do35';
+  }
+  if(next){comp.typeId=next;comp.realElectronicsReplacement=true;changed=true}
+ }
+ if(changed){
+  l.materials=materialRows(l.project);l.realElectronicsParts=true;
+  l.pedagogyReview={...(l.pedagogyReview||{}),realElectronicsParts:true,realPackagePolicy:'orthographic-top-pin-aligned'};
+ }
+}
+
 L.count=L.lessons.length;
-L.pedagogy={version:'v1.19.20-pedagogy31',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
+L.pedagogy={version:'v1.19.20-pedagogy63-real-parts',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
