@@ -1550,3 +1550,14 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - İlk sahne tıklamasıyla küçük açıklamaların kaybolup hover ile dönmesi **bu font değişikliğinin kapsamında değildir; henüz kapatılmadı**. Öğretim serisi 45/45 QA ve gerçek Windows/Edge ekran onayı açık; başarı uydurulmaz.
 - GitHub Actions kullanılmadı, commit `[skip ci]`.
 
+
+
+## 2026-10-10 — Öğretici bütün derslerde mikro açıklama davranışı (MQ-07 / MQ-12)
+
+- Kullanıcı isteği: küçük prob/malzeme açıklamaları ilk sayfa açılışında görünür, ilk tıklamada gizlenir, yalnız fare ilgili gerçek elemana geldiğinde yeniden açılır ve fare ayrıldığında kapanır. Yüzer konu anlatımı aynen kalır; çalışma alanı daraltılmaz.
+- `dist/tutorial-micro-hints.js` yeni ortak ve veri odaklı davranış: zengin referans sahnelerin 5 mevcut kartı korunur; diğer öğretici derslere gerçek projedeki en çok 4 malzemeden ilk tanıtım gelir. İlk tıklama sonrası yalnız `g.component` veya `g.component-backdrop` hover/focus bilgisini gösterir. Kırmızı/siyah prob eşlemesi özeldir; kaynak uydurulmaz.
+- `dist/tutorial-mode.js` ve `dist/tutorial-bootstrap.js` entegrasyonu, `dist/tutorial.css` ek sınıflar, `dist/index.html` güncel CSS önbellek anahtarı. Alt soru/formül/gözlem bölümleri ve yüzer konu anlatımı etkilenmez. Yeni `tests/tutorial-micro-hints-v11920.test.cjs` regresyonu.
+- Yerel güncel çalışma ağacında `node --test --test-concurrency=4 tests/tutorial-*.test.cjs`: **101/101 PASS** (önceki cache beklentileri güncel sürüme hizalandı). `node scripts/check.cjs`: **PASS** (221 JS dosyası, 106 bağımlılık, 728 malzeme, 58 örnek). Bu kanıt gerçek Windows/UI piksel kabulünün yerini tutmaz.
+- Aynı standart 45/45 ölçüm dersinin dışındaki derslerin arayüz davranışına da uygulanır; bu 45 dersin özel içerik/görsel/ölçüm dönüşümünün pedagojik olarak bitirildiği iddiası değildir.
+- Actions çalıştırılmadı, commit `[skip ci]`; MQ-00 nihai release kabulü açık.
+

@@ -120,3 +120,12 @@ Enerji analizörü, akım trafosu ve gerçek simülasyon eğitim yükü kullanı
 ## MQ-00 kaynak/provenans ve kapanış kuralı
 
 Bu dosya **yeniden tesis edilmiş bir kilit sözleşmesidir; özgün tarihsel metnin birebir kopyası olarak sunulamaz**. Mevcut kod ve kabul testlerinden doğrulanan maddeleri işler, başka kilitleri gevşetmez. Orijinal metin ortaya çıkarsa karşılaştırma yapılır. Bu dokümanın regresyon testlerini geçmesi, gerçek Windows/Edge görüntü kabulünün veya bütün sistem testlerinin geçtiğini tek başına kanıtlamaz. GitHub Actions çalıştırılmayacak ve commitlerde [skip ci] kullanılacaktır.
+
+## 22. Tüm derslerde bağlamsal mikro açıklamalar — 2026-10-10
+
+Mikro açıklama davranışı yalnız özel ölçüm derslerinde değil **tüm öğretici derslerde** ortak olarak kullanılır. Sayfa ilk açıldığında, zengin referans derslerde mevcut beş numaralı kart; diğer derslerde gerçek devre elemanlarından elde edilen en fazla dört kısa tanıtım görünür. Öğrencinin sayfaya ilk tıklaması bunları gizler. Fare bir probun veya malzemenin üzerine gelince yalnız o malzemenin açıklaması gösterilir ve fare ayrıldığında kaybolur. Aynı SVG bileşeni içindeki alt parçalar arasında geçiş gereksiz titremeye neden olmaz.
+
+Kırmızı ve siyah prob açıklamaları karışmaz; açıklamalar malzeme ve mevcut ders bilgisinden türetilir, fiziksel olmayan veri uydurulmaz. Aynı ders içindeki yeniden çizimler ilk tıklama durumunu sıfırlamaz; yeni ders açılışında ilk tanıtım geri gelir. Mikro açıklamalar imleç olaylarını yakalamaz (`pointer-events:none`); çalışma alanının boyutunu değiştirmez. Yüzer konu anlatımı penceresi, alt soru/formül/gözlem kartları, sağ panel ve simülasyon davranışları aynı kalır.
+
+`dist/tutorial-micro-hints.js` ortak olayları yönetir; `tests/tutorial-micro-hints-v11920.test.cjs` ilk gösterim, gizleme, hover ve ders değişimi korumasını test eder. Bu genel davranışın tamamlanması, 45 dersin özel pedagojik içerik ve görsel kalite kabulünün tamamlandığı anlamına gelmez. Windows görsel kabulü ayrı kalite kapısıdır.
+
