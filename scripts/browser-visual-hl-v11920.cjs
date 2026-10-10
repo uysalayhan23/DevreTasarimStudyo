@@ -244,7 +244,7 @@ async function main(){
         await cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:tx,y:ty,button:'left',clickCount:1});
         const geometry=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach'),r=p.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,bounded:r.left>=7&&r.top>=57&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1}})()`);
         const reachesEdge=(name.includes('left')?geometry.left<=12:geometry.right>=GOLDEN.viewport.width-12)&&
-          (name.includes('top')?geometry.top<=62:geometry.top<=GOLDEN.viewport.height-48+1);
+          (name.includes('top')?geometry.top<=62:geometry.bottom>=GOLDEN.viewport.height-12);
         cornerChecks.push({name,...geometry,reachesEdge});
        }
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerChecks=cornerChecks;
