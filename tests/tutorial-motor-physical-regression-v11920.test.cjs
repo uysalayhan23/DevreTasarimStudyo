@@ -61,3 +61,42 @@ test('all star/delta canonical projects have nonshorted rest-state solver',()=>{
   assert.equal(res.blocked,false,'star/delta '+n);
  }
 });
+
+test('forward/reverse sequential START release STOP and opposite START: never energize opposing coils together',()=>{
+ const defs=library();
+ for(let n=1;n<=4;n++){
+  const p=lesson('motor-forward-reverse',n);
+  const byId=Object.fromEntries(p.components.map(c=>[c.id,c]));
+  const steps=[
+   [false,false,false,'rest'],
+   [true,false,false,'forward-start'],
+   [false,false,false,'forward-held'],
+   [false,false,true,'stop-forward'],
+   [false,true,false,'reverse-start'],
+   [false,false,false,'reverse-held'],
+   [false,false,true,'stop-reverse']
+  ];
+  for(let i=0;i<steps.length;i++){
+   const [f,r,stop,name]=steps[i];
+   byId.startF.state=f;byId.startR.state=r;byId.stop.state=stop;
+   const result=S.solve(p,defs,{now:i*300+100});
+   assert.equal(result.blocked,false,n+' '+name);
+   assert.equal(result.shortCircuit,false,n+' '+name);
+   assert.equal(!!byId.coilF._active&&!!byId.coilR._active,false,n+' both coils energized '+name);
+  }
+ }
+});
+test('automatic star/delta transition: K2 and K3 coils are mutually exclusive around timing boundary and STOP',()=>{
+ const defs=library();
+ for(let n=2;n<=4;n++){
+  const p=lesson('motor-star-delta',n),byId=Object.fromEntries(p.components.map(c=>[c.id,c]));
+  const delay=byId.timer.delayValue*1000;
+  for(const [now,start,stop,phase] of [[0,false,false,'rest'],[100,true,false,'start'],[300,false,false,'latched'],[delay-1,false,false,'before'],[delay+100,false,false,'after'],[delay+300,false,true,'stop']]){
+   byId.start.state=start;byId.stop.state=stop;
+   const result=S.solve(p,defs,{now});
+   assert.equal(result.shortCircuit,false,n+' '+phase);
+   assert.equal(result.blocked,false,n+' '+phase);
+   assert.equal(!!byId.coilStar._active&&!!byId.coilDelta._active,false,n+' K2/K3 overlap at '+phase);
+  }
+ }
+});
