@@ -14,7 +14,7 @@ function syncCoachPanelControl(){
  const shown=coach&&!coach.hidden;btn.setAttribute('aria-expanded',String(shown));btn.textContent=shown?'▣ Konu anlatımını kapat':'▣ Konu anlatımını aç';
 }
 function applyCoachUi(coach){
- if(!coach)return;const d=coachDefaultBox(),st=coachUiState(),width=Math.max(280,Math.min(Number(st.width)||d.width,(root.innerWidth||1280)-16)),height=Math.max(220,Math.min(Number(st.height)||d.height,(root.innerHeight||800)-16));
+ if(!coach)return;const d=coachDefaultBox(),st=coachUiState(),width=Math.max(280,Math.min(Number(st.width)||d.width,(root.innerWidth||1280)-16)),height=Math.max(120,Math.min(Number(st.height)||d.height,(root.innerHeight||800)-66));
  const left=Math.max(8,Math.min(Number.isFinite(Number(st.left))?Number(st.left):d.left,(root.innerWidth||1280)-width-8)),top=Math.max(58,Math.min(Number.isFinite(Number(st.top))?Number(st.top):d.top,(root.innerHeight||800)-(st.minimized?44:height)-8));
  coach.style.width=width+'px';coach.style.height=height+'px';coach.style.left=left+'px';coach.style.top=top+'px';coach.classList.toggle('is-minimized',!!st.minimized);coach.hidden=!!st.hidden;syncCoachPanelControl();
 }
