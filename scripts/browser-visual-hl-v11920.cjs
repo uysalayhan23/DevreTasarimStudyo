@@ -209,9 +209,10 @@ async function main(){
         await sleep(70);
       }
       const coach=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach'),r=p?.getBoundingClientRect();return {visible:!!p&&!p.hidden&&r.width>100&&r.height>100,text:p?.textContent?.trim()?.length||0}})()`);
-      assert(coach.visible&&coach.text>60,'Tutorial coach not rendered: '+id);
+      // Capture a screenshot before asserting coach text so a failing lesson is inspectable.
       const screen=await shot(cdp,'hl-'+id);
       report.states.hlLessons.items.push({id,...details,coach,screenshot:screen});
+      assert(coach.visible&&coach.text>60,'Tutorial coach not rendered: '+id);
       report.states.hlLessons.checked++;
       await evaluate(cdp,`(async()=>{await window.DTSStudio.home();await window.DTSTutorialMode.openHub();return true})()`);
       await sleep(80);
@@ -223,6 +224,11 @@ async function main(){
     assert(report.exceptions.length===0,'Tarayıcı runtime exception: '+report.exceptions.join(' | '));
     fs.writeFileSync(path.join(BUILD,'report.json'),JSON.stringify(report,null,2)+'\n');
     console.log(JSON.stringify(report,null,2));
+  }catch(err){
+    report.failure={message:String(err?.message||err),stack:String(err?.stack||'')};
+    // Preserve completed screenshots and failure metadata even when a lesson fails.
+    try{fs.writeFileSync(path.join(BUILD,'report.json'),JSON.stringify(report,null,2)+'\n')}catch{}
+    throw err;
   }finally{
     try{await cdp?.call('Browser.close')}catch{}
     cdp?.close();child.kill('SIGKILL');await new Promise(r=>server.close(r));
