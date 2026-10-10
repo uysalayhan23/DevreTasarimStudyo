@@ -951,6 +951,7 @@ function measurementUpgradeCard(l,session,project){
     const position=model.choices.length>1?(selected/(model.choices.length-1)*100):0;
     scope+='<div class="measurement-workbench-panel"><strong>Adım adım sanal deney</strong>'+
       '<div class="measurement-workbench-options">'+choices+'</div>'+
+      '<div class="measurement-workbench-figure">'+(root.DTSMeasurementWorkbench?.diagram?.(l,project)||'')+'</div>'+
       '<div class="measurement-workbench-gauge" role="img" aria-label="Seçilen sanal referans seviyesi"><i style="width:'+position+'%"></i></div>'+
       '<output class="measurement-workbench-result">'+esc(model.label)+'</output>'+
       '<p class="measurement-workbench-equation">'+esc(model.formula)+'</p>'+
