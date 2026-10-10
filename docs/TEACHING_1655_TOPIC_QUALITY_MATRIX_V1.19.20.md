@@ -99,3 +99,12 @@ Node v22.16.0 ve Git v2.47.3 yerel ortamda kullanılabilir; ancak `git ls-remote
 ## 2026-10-10 — Actions onaylı ilk canlı regresyon kanıtı
 
 Kullanıcının bu oturumda verdiği açık Actions izniyle `motor-qa-once.yml` özel `main` test workflow'u çalıştırıldı. Run 38070814263: 18 test, 15 PASS / 3 FAIL; üç hata Batch J sensör BN terminal yönünü yanlış denetleyen koşuldan kaynaklandı. `dist/tutorial-sensor-batch-j.js` denetimi gerçek canonical `g1/P → s/BN` yönüne düzeltildi; commit `2a83b7e`. Run **38070861990**, `main` SHA `84023be5185ee312fa8ab38567807377d34d6843`: **18/18 PASS, 0 FAIL**. Link: https://github.com/uysalayhan23/DevreTasarimStudyo/actions/runs/38070861990 . H–L kaynak değişmezliği ve motorun mevcut kontrol/regresyon testleri başarıyla yürütüldü. Bu başarı tüm durum kombinasyonlarının fiziksel kesinliğini, Windows görsel QA'sını veya kapsam dışı tam suite'i kapsamaz; MQ-00 son sistem kabulü hâlâ açık. Bu kayıt commit'i `[skip ci]` kullanır; tekrar Actions tetiklemez.
+
+
+## 2026-10-10 — MQ-00 H–L post-PASS statik / Windows görsel kapsam denetimi
+
+**Korunan regresyon kanıtı:** Actions run 38070861990, commit 84023be5, 18/18 PASS; yeni Actions tetiklenmedi. Sonraki dokümantasyon ve regresyon-koruma değişiklikleri için tekrar Node veya görüntü PASS iddia edilmez.
+
+**İncelenen kod:** `BASLAT.bat`, `scripts/browser-visual-v11920.cjs`, `dist/tutorial-mode.js`, H–L lazy modülleri. Başlatıcı `file:///.../dist/index.html` ile dosya açıyor, localhost başlatıcısı eklenmedi. Mevcut Chromium browser-visual script'i test amaçlı geçici HTTP sunucusu açıp dört genel yüzeyin (dashboard, editör, pano, öğretici konu ana sayfası) geometrisini ve ekran görüntüsünü denetler. Bu test *Windows file launcher* veya H–L derslerinin tek tek render, probe, motor zaman serisi, gövde/terminal gerçek ölçeği ve öğretim kabulü yerine geçmez.
+
+**MQ-12 kapsam testi:** `tests/tutorial-hl-visual-contract-v11920.test.cjs` eklendi: file launcher sözleşmesi, browser test kapsam sınırı ve H–L yükleme sırası. Bu yeni test bu oturumda **çalıştırılmadı**, PASS verilmez. MQ-13 dosyaların `main` dalında bulunmasını sağlar; MQ-00 gerçek Windows/Edge file launch, 136 rich dersin tek tek pedagojik görsel denetimi ve kapsam dışı elektriksel geçiş senaryolarını **OPEN** tutar. Kaynakta kanıtlanmış yeni runtime hatası görülmediğinden canonical/simülasyon devre bağlantılarına müdahale edilmedi. Tüm commitler `[skip ci]`, Actions sıfır yeni run.
