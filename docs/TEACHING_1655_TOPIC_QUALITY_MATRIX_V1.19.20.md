@@ -2,7 +2,7 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
-Kod kapsamı: **120/1655**, henüz zengin kod formatına yükseltilmemiş: **1535**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+Kod kapsamı: **132/1655**, henüz zengin kod formatına yükseltilmemiş: **1523**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
 Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
 
@@ -47,9 +47,9 @@ Kod kapsamı: **120/1655**, henüz zengin kod formatına yükseltilmemiş: **153
 | `inductive-capacitive` | 4 | 4 | 0 | 4 | 0 | 0 | PNP endüktif metal algılama |
 | `source-sink` | 4 | 4 | 0 | 4 | 0 | 0 | Sourcing PNP çıkış |
 | `open-collector` | 4 | 4 | 0 | 4 | 0 | 0 | NPN open collector yük sürme |
-| `bero` | 4 | 0 | 4 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
-| `motor-forward-reverse` | 4 | 0 | 4 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
-| `motor-star-delta` | 4 | 0 | 4 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
+| `bero` | 4 | 4 | 0 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
+| `motor-forward-reverse` | 4 | 4 | 0 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
+| `motor-star-delta` | 4 | 4 | 0 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
 | `dual-dc` | 4 | 0 | 4 | 4 | 0 | 0 | İki tamamen izole DC devre |
 
 **Yeni doğrulanmış kod kapsamı:** 45 elektriksel ölçme + 10 doğru akım + 5 buton/LED + 4 buton/röle + 4 mühürleme + 4 zaman rölesi = **72 ders**. Son 13 kontrol dersi için özgün kablo dizileri birebir korundu ve konuya özel açıklama ile soru eklendi. Başlıkların görsel/Windows ve kullanıcı pedagojik kabulü açık kalır. Zaman rölesi 4/4 sanal titreşim modelleri 1/1, 0,5/1,5 ve 1,5/0,5 saniye olarak düzeltildi. Sıradaki konular tesisat anahtar devreleri, güvenli sanal zil ve 4–20 mA, ardından motor kumanda senaryolarıdır.
@@ -72,3 +72,8 @@ MQ-07 (lider) öğretim metnini, MQ-04 (çapraz) terminal koruma şartını, MQ-
 ## 2026-10-10 — Batch J, sensör dersleri
 
 4 PNP/NPN + 4 endüktif/kapasitif + 4 source/sink + 4 open-collector kaynak dersine kanonik devreye dokunmayan amaç, adım ve soru eklendi. Rich kod hedefi 120/1655; 1535 ders hâlâ eski formatta. MQ-07 lider, MQ-04 çapraz terminal kontrol, MQ-05 elektriksel simülasyon, MQ-12 test, MQ-13 GitHub süreklilik ve MQ-00 son kabul zinciri geçerlidir. `tests/tutorial-sensor-batch-j-v11920.test.cjs` eklendi ancak Node/gerçek solver çalıştırıldığına dair kanıt yoktur. Özellikle PNP/NPN farklı sensör modelindeki algılama, NC/NO ve açık kolektör durumları doğrulanmadığı için simulationAcceptance=false ve visualAcceptance=false korunur. Actions kullanılmadı, `[skip ci]`.
+
+
+## 2026-10-10 — Batch K BERO ve motor kumanda kod kapsamı
+
+BERO 4, motor ileri/geri 4, yıldız/üçgen 4 (toplam 12) dersin mevcut komponent, bağlantı ve terminal adımları değiştirilmeden konuya özel sanal öğrenme hedefleri ve sorular eklendi. Kod kapsamı 132/1655; kalan 1523. MQ-07 lider, MQ-04/MQ-05 çapraz inceleme, MQ-12 test, MQ-13 süreklilik ve MQ-00 son karar. `tests/tutorial-motor-batch-k-v11920.test.cjs` iki Node test tanımı içerir ancak **Node ve solver bu turda çalıştırılmadı**. Kontaktör kilitleme, faz sırası ve yıldız-üçgen geçişi gerçek simülasyonda doğrulanmadı; görsel ve simülasyon kabulü false. Geliştirme tamamlandı etiketi yalnız kod kapsamını belirtir. GitHub Actions kullanılmadı; commit `[skip ci]`.
