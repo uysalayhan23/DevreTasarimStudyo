@@ -41,18 +41,25 @@ test('PNG envelope and failure JSON are checked before visual acceptance',()=>{
   assert.ok(a<b, 'screenshot must precede acceptance gate: '+capture);
  }
 });
-test('PNG validator rejects malformed signature, IHDR and missing IEND',()=>{
- const a=browser.indexOf('function pngSize(data){'),b=browser.indexOf('function findBrowser()',a);
+test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>{
+ const a=browser.indexOf('function pngCrc(data){'),b=browser.indexOf('function findBrowser()',a);
  assert.ok(a>=0&&b>a,'PNG parser source unavailable');
  const png=vm.runInNewContext(browser.slice(a,b)+';pngSize',{Buffer});
- const valid=Buffer.alloc(45);Buffer.from([137,80,78,71,13,10,26,10]).copy(valid,0);
- valid.write('IHDR',12);valid.writeUInt32BE(1440,16);valid.writeUInt32BE(1000,20);valid.write('IEND',37);
- assert.equal(png(valid).width,1440);assert.equal(png(valid).height,1000);
- const brokenSig=Buffer.from(valid);brokenSig[0]=0;assert.throws(()=>png(brokenSig));
- const brokenHdr=Buffer.from(valid);brokenHdr.write('ABCD',12);assert.throws(()=>png(brokenHdr));
- const missingEnd=Buffer.from(valid);missingEnd.write('ABCD',37);assert.throws(()=>png(missingEnd));
- const truncated=Buffer.from(valid.subarray(0,24));assert.throws(()=>png(truncated));
- const zeroWidth=Buffer.from(valid);zeroWidth.writeUInt32BE(0,16);assert.throws(()=>png(zeroWidth));
- const zeroHeight=Buffer.from(valid);zeroHeight.writeUInt32BE(0,20);assert.throws(()=>png(zeroHeight));
+ const crc=vm.runInNewContext(browser.slice(a,b)+';pngCrc',{Buffer});
+ function chunk(type,data=Buffer.alloc(0)){
+  const b=Buffer.alloc(12+data.length);b.writeUInt32BE(data.length,0);b.write(type,4);
+  data.copy(b,8);b.writeUInt32BE(crc(b.subarray(4,8+data.length)),8+data.length);
+  return b;
+ }
+ function sample(w=1440,h=1000){
+  const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(w,0);ihdr.writeUInt32BE(h,4);ihdr[9]=6;
+  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',Buffer.from([1,2,3])),chunk('IEND')]);
+ }
+ const valid=sample();assert.equal(png(valid).width,1440);assert.equal(png(valid).height,1000);
+ const sig=Buffer.from(valid);sig[0]=0;assert.throws(()=>png(sig));
+ const crcError=Buffer.from(valid);crcError[29]^=1;assert.throws(()=>png(crcError));
+ assert.throws(()=>png(valid.subarray(0,valid.length-3)));
+ const noData=Buffer.concat([valid.subarray(0,33),chunk('IEND')]);assert.throws(()=>png(noData));
+ const trailing=Buffer.concat([valid,Buffer.from([0])]);assert.throws(()=>png(trailing));
+ assert.throws(()=>png(sample(0,1000)));assert.throws(()=>png(sample(1440,0)));
 });
-
