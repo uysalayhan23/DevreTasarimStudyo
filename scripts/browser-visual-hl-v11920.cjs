@@ -234,8 +234,8 @@ async function main(){
        // Four corner stress positions, using real CDP mouse events.
        const cornerChecks=[];
        for(const [name,tx,ty] of [
-        ['top-left',-5000,-5000],['top-right',5000,-5000],
-        ['bottom-left',-5000,5000],['bottom-right',5000,5000]
+        ['top-left',1,1],['top-right',GOLDEN.viewport.width-2,1],
+        ['bottom-left',1,GOLDEN.viewport.height-2],['bottom-right',GOLDEN.viewport.width-2,GOLDEN.viewport.height-2]
        ]){
         const origin=await evaluate(cdp,`(()=>{const r=document.querySelector('#tutorialCoach .tutorial-float-bar').getBoundingClientRect();return{x:r.left+Math.min(24,r.width/3),y:r.top+Math.min(16,r.height/2)}})()`);
         await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:origin.x,y:origin.y});
@@ -246,6 +246,8 @@ async function main(){
         cornerChecks.push({name,...geometry});
        }
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerChecks=cornerChecks;
+       const cornerShot=await shot(cdp,'hl-corners-'+id);
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerScreenshot=cornerShot;
        assert(cornerChecks.every(c=>c.bounded),'Panel corner out of viewport: '+id+' '+JSON.stringify(cornerChecks));
        // Return panel to a known position before the regular drag test.
        await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach');p.style.left='${setup.left}px';p.style.top='${setup.top}px';return true})()`);
