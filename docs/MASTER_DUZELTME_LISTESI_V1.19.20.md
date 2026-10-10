@@ -1611,3 +1611,13 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 **21/45 henüz gelişmiş laboratuvar standardında değil:** enerji sayacı/kWh, motor devir takometresi, sensör analog ölçümü, dijital LCR, elektronik devre ölçümleri, metre/kumpas/mikrometre/lüksmetre/desibelmetre/termometre ve genel ölçüm teorisi. Özellikle enerji sayacı veya takometre için gerçek ölçüm runtime'ı doğrulanmadan başka cihazın ekranıyla sahte sonuç gösterilmeyecek. Bunlar sonraki ayrı paketlere bölünür.
 
 MQ-13: Repo `uysalayhan23/DevreTasarimStudyo` `main`; GitHub Actions kullanılmadı. Commitlerde `[skip ci]`. MQ-00 final DONE değil; 24/45 yalnız kod düzeyinde geliştirilmiş ders kapsamıdır.
+
+
+## 2026-10-10 — Ölçüm batch B son yerel 841-test regresyonu
+
+- Özel beş ders ve güncellenen gerçek osiloskop UI/presetleri üzerine kurulu son yerel çalışma ağacı: `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs` **841 TOPLAM / 838 PASS / 3 FAIL / 0 SKIP / 289997.89 ms**. Üç başarısızlığın tümü `tests/repo-lock-integrity-v11920.test.cjs` içindeki (1) WP-017 pinned baseline, (2) normalized workflow self-reference, (3) integrity checker mutation digest vakalarıdır; kullanıcı ZIP'inde gerçek `.git` geçmişi bulunmadığından `git show/merge-base` çalışmaz. Bu üç vaka **PASS değildir**.
+- Bu turdan önce, yeni `tutorial-measurement-batch-b-v11920.test.cjs` (5/5) ve diğer öğretici/lesson-circuit testleri toplam **120/120 PASS**. Tam koşuda öğretici/simülasyon için ek FAIL oluşmadı. `node scripts/check.cjs` **PASS** (225 JS dosya syntax, 106 bağımlılık, 728 malzeme, 58 korunan örnek).
+- Son cache düzeltmesi: `dist/index.html` içindeki `tutorial-bootstrap.js` rev `20261010-measure-batch-b1`; eski HTML'in önbellekten geçen yükleyiciyi çağırması önlendi, 7 ilgili test mevcut sürüme hizalandı, öğretici grup yeniden **120/120 PASS**.
+- Kaynak eşitliği sınırı: Yerel test ağacı kullanıcı ZIP'i üzerinde yeni modül/UI/testler uygulanarak oluşturulmuştur; GitHub son HEAD ile root-tree SHA birebir eşitliği bu turda ispatlanmadı. GitHub `main` üzerinde ayrı dosya sözdizimi/yükleme kontrolleri yapılmıştır. Yerel 838/841 sayısı **GitHub son HEAD üzerinde çalışan Actions ya da Windows testi değildir**.
+- GitHub Actions tetiklenmedi; commitler `[skip ci]`. Eski Windows `BASLAT.bat` `file:///` başlatma kilidi, gerçek pano fiziksel boyutları ve kaynak maskesi kuralları korunur.
+- MQ-00 final kararı: **24/45 gelişmiş ders kodu hazır; 21/45 dönüşüm bekliyor; nihai Windows/Edge görsel ve her dersin pedagojik kullanıcılı kabulü açık.** Üç native Git testi uygun checkout olmadan geçmiş sayılamaz.
