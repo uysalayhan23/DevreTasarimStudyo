@@ -191,6 +191,14 @@ test('floating lesson coach can move, resize, close and reopen from the properti
  assert.match(css,/#tutorialCoach\{[\s\S]*resize:both/);assert.match(css,/tutorial-float-bar/);assert.match(css,/tutorial-coach-panel-control/);
 });
 
+test('minimized lesson coach always keeps a working restore control',()=>{
+ const mode=fs.readFileSync(require.resolve('../dist/tutorial-mode.js'),'utf8'),enh=fs.readFileSync(require.resolve('../dist/tutorial-enhancements.js'),'utf8'),css=fs.readFileSync(require.resolve('../dist/tutorial.css'),'utf8'),boot=fs.readFileSync(require.resolve('../dist/tutorial-bootstrap.js'),'utf8');
+ assert.match(mode,/data-tutorial-coach-minimize/);assert.match(mode,/minimized\?'□':'−'/);assert.match(mode,/toggleCoachMinimize/);assert.match(mode,/data-tutorial-float-bar/);
+ assert.match(enh,/data-tutorial-coach-minimize/);assert.match(enh,/querySelector\('\.tutorial-float-bar'\)/);assert.match(enh,/classList\.contains\('is-minimized'\)/);
+ assert.match(css,/#tutorialCoach\.is-minimized\{height:46px!important/);assert.match(css,/#tutorialCoach\.is-minimized>:\not\(\.tutorial-float-bar\)/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-coach-restore1/);assert.match(boot,/tutorial-enhancements\.js\?v=1\.19\.20-coach-restore1/);
+});
+
 test('quiz answers randomize on lesson entry and show dash, green tick, red cross and correct answer',()=>{
  const enh=fs.readFileSync(require.resolve('../dist/tutorial-enhancements.js'),'utf8'),css=fs.readFileSync(require.resolve('../dist/tutorial.css'),'utf8');
  assert.match(enh,/function shuffled/);assert.match(enh,/quizOrder/);assert.match(enh,/tutorial-quiz-dash/);assert.doesNotMatch(enh,/String\.fromCharCode/);
