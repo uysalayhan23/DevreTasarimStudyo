@@ -1397,3 +1397,13 @@ Durum: **KOD DÜZELTMESİ TESLİM / 11/11 HEDEFLİ STATİK DENETİM PASS / GÖRS
 - MQ-02/MQ-04 ve MQ-03 açık kabul: gerçek fotoğraf silueti, clipPath kaynak koordinatları, sahnede görünen ürünün doğrulanmış mm ölçeği ve terminal hizalaması; gerçek Windows/Edge tarayıcı kabulü ve tam `node scripts/run-tests.cjs` **NOT RUN / NOT PASSED**.
 - MQ-13: hedef repo/dal ve son teslim commit zinciri doğrulandı. GitHub Actions çalıştırılmadı, commitler `[skip ci]`.
 - MQ-00 kararı: **NİHAİ DONE DEĞİL**. Gerçek tarayıcı/siluet/terminal ve test çalıştırma kanıtı sağlanınca aynı başlık altında kapanış yapılacak. Bu kayıt eski backlog kimliklerini çoğaltmaz.
+
+### 2026-10-10 — MQ-12 kod-içi gerçek renderer smoke (Actions'sız)
+
+- Orijinal CommonJS renderer kaynakları GitHub `main` üzerinden okunup V8 JavaScript ortamında module.exports ile yüklenerek gerçek `markup(d,c)` çıktıları değerlendirildi; yalnız metin eşleştirme kullanılmadı.
+- Kapsam: FKV, FSR, NH, ENDA ET4420, Baykon TX11, Weidmüller WAZ5, genel productPhoto115 ve Siemens 3RV2011-1JA10 / 5TL1163-0 / 5SL6116-7 / 5SL6316-7 / 5SL6216-7.
+- İlk turda Siemens 5SL6216-7 varsayılan SVG meet değerine dayanıyordu; `dist/materials-v113.js` fallback viewBox'ına explicit `preserveAspectRatio="xMidYMid meet"` eklenerek kapatıldı (commit `13eac017087292fe52223d7d086611cc297f9527`).
+- Düzeltme sonrası **12/12 renderer smoke PASS**: üretilen SVG çıktısında oran koruma, hedeflenen clip-path ve hedefin `preserveAspectRatio="none"` içermemesi denetlendi.
+- Çalıştırılabilir Node testinin kaynak sözdizimi ayrıca V8 parser ile doğrulandı; test dosyası `tests/photo-background-runtime-v11920.test.cjs`, commit `240fe5c15f8f33141d0a63a8ea8caa82b7a448ed`. Bu testin Node test runner'da çalıştırıldığı iddia edilmez.
+- Çalışma ortamı GitHub DNS/clone erişimi sağlamadığından tam Node `node scripts/check.cjs`, `node scripts/run-tests.cjs`, fotoğraf piksel alpha analizi ve gerçek Chrome/Edge görsel onayı **NOT RUN**. Kullanıcı Windows ZIP kabulü öncesi bunlara yanlış PASS verilmez.
+- MQ-00: **KOD + HEDEFLİ RUNTIME SMOKE KABUL; NİHAİ GÖRSEL/PİKSEL + FİZİKSEL TERMİNAL + TAM TEST KAPISI AÇIK**. GitHub Actions kullanılmadı, commitler `[skip ci]`.
