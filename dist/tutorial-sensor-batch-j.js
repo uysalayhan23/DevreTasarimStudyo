@@ -19,7 +19,7 @@ for(const [topic,config] of Object.entries(specs)){
   for(const w of wires){if(!ids.has(w.from?.c)||!ids.has(w.to?.c))throw Error('Missing component '+id);}
   for(const s of steps){if(!keys.has(JSON.stringify([s.from?.c,s.from?.p,s.to?.c,s.to?.p])))throw Error('Invalid guided terminal '+id);}
   const sensor=components.find(c=>c.id==='s'),lamp=components.find(c=>c.id==='h');
-  if(!sensor||!lamp||!wires.some(w=>w.from?.c==='s'&&w.from?.p==='BN')||!wires.some(w=>w.from?.c==='s'&&w.from?.p==='BU'))throw Error('Source sensor terminals missing '+id);
+  if(!sensor||!lamp||!wires.some(w=>w.from?.c==='g1'&&w.from?.p==='P'&&w.to?.c==='s'&&w.to?.p==='BN')||!wires.some(w=>w.from?.c==='s'&&w.from?.p==='BU'))throw Error('Source sensor terminals missing '+id);
   const expected=topic==='open-collector'&&n>=3?6:4;
   if(wires.length!==expected)throw Error('Unexpected sensor wiring '+id);
   const pnp=!!wires.find(w=>w.from?.c==='s'&&w.from?.p==='BK'&&w.to?.c==='h');
