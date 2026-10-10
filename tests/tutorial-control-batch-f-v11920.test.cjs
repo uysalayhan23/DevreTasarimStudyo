@@ -77,7 +77,7 @@ test('loader, coach questions and micro descriptions remain wired, with no extra
  assert.match(mode,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
  assert.match(mode,/data-measurement-upgrade-answer/);
  assert.match(mode,/DTSTutorialMicroHints\?\.sync/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-control-batch-f1/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-control-batch-f1/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-timer-batch-g1/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-timer-batch-g1/);
  assert.doesNotMatch(read('tutorial-control-batch-f.js'),/\.innerHTML|#viewport|#tutorialCoach/);
 });
