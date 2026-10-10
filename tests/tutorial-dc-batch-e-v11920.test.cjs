@@ -49,8 +49,8 @@ test('full tutorial loader, contextual micro explanations and readable coach are
  const mode=read('tutorial-mode.js'),boot=read('tutorial-bootstrap.js'),html=read('index.html'),css=read('tutorial.css');
  assert.match(mode,/tutorial-dc-batch-e\.js\?v=1\.19\.20-dc-batch-e1/);
  assert.match(mode,/tutorial-measurement-batch-d\.js\?v=1\.19\.20-batch-d2/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-control-batch-f1/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-control-batch-f1/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-timer-batch-g1/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261010-timer-batch-g1/);
  assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
  assert.match(mode,/DTSTutorialMicroHints\?\.sync/);
  assert.match(mode,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
