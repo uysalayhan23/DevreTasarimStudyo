@@ -29,7 +29,7 @@
     return 'plc-accessories';
   }
   const arduinoSharedTools=new Set(['unit-ut33d-plus','unit-ut61e-plus','unit-ut200a','test-probe-red','test-probe-black','encoder-incremental']);
-  const arduinoBasic=d=>arduinoSharedTools.has(d.id)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.kind)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.id);
+  const arduinoBasic=d=>d.arduinoShared===true||arduinoSharedTools.has(d.id)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.kind)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.id);
   function classification(d){
     if(['unit-ut33d-plus','unit-ut61e-plus','unit-ut200a'].includes(d.id))return {group:'measurement',areas:['control','panel','building','automation','measurement','electronics','motor']};
     if(d.arduinoGroup)return {group:d.arduinoGroup,areas:['electronics','automation','control']};
