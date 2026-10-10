@@ -17,7 +17,7 @@ async function ensure(){
  if(loading)return loading;
  loading=(async()=>{
   await load('tutorial-lessons.js?v=1.19.1-dashboard3');
-  await load('tutorial-mode.js?v=1.19.20-energy-rich1');
+  await load('tutorial-mode.js?v=1.19.20-real-parts1');
   await load('tutorial-enhancements.js?v=1.19.1-dashboard3');
   if(!root.DTSTutorialMode)throw new Error('Öğretici Modu başlatılamadı');
   return root.DTSTutorialMode;
