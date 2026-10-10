@@ -44,4 +44,28 @@ test('legacy LM358 A-unit is hidden and project migration maps it to full PDIP-8
  assert.match(app,/legacyLm358/);assert.match(app,/'OUT':'1','IN-':'2','IN\+':'3','V-':'4','V\+':'8'/);
 });
 
+
+test('Arduino IC and optocoupler packages use the same transparent orthographic physical standard',()=>{
+ const ctx={window:{COMPONENT_LIBRARY:[]}};
+ vm.runInNewContext(fs.readFileSync(path.join(DIST,'arduino-library.js'),'utf8'),ctx);
+ const parts=ctx.window.COMPONENT_LIBRARY.filter(d=>d.arduinoRole==='ne555'||d.kind==='arduino-ic'||d.arduinoRole==='opto'||d.arduinoRole==='transistor-to126'||d.arduinoRole==='transistor-to92');
+ assert.ok(parts.length>=14,parts.length);
+ for(const d of parts){
+  assert.equal(d.realPackage?.topView,true,d.id+' top view');
+  assert.equal(d.realPackage?.orthographic,true,d.id+' orthographic');
+  assert.equal(d.realPackage?.transparentBackground,true,d.id+' transparent');
+  for(const p of d.pins)assert.ok(Number.isFinite(Number(p.physicalPin)),d.id+' physical pin '+p.id);
+ }
+ const source=fs.readFileSync(path.join(DIST,'arduino-library.js'),'utf8');
+ assert.doesNotMatch(source,/transistor-to126-real-photo/);
+ assert.doesNotMatch(source,/vistronica\.com\/.*bd13|vistronica\.com\/.*bd14/i);
+});
+
+test('active electronics libraries have no external product-photo dependency',()=>{
+ const electronics=fs.readFileSync(path.join(DIST,'electronics-library-v119.js'),'utf8');
+ const physical=fs.readFileSync(path.join(DIST,'electronics-ics-v11920.js'),'utf8');
+ assert.doesNotMatch(electronics,/productVisualUrl\s*:/);
+ assert.doesNotMatch(physical,/productVisualUrl\s*:/);
+});
+
 test('browser boot order loads real IC library and runtime',()=>{const html=fs.readFileSync(path.join(DIST,'index.html'),'utf8');assert.ok(html.indexOf('electronics-ics-v11920.js')>0);assert.ok(html.indexOf('digital-ic-runtime-v11920.js')>0);assert.ok(html.indexOf('digital-ic-runtime-v11920.js')<html.indexOf('simulation.js'))});
