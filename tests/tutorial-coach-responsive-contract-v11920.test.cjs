@@ -64,5 +64,7 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
  assert.throws(()=>png(valid.subarray(0,valid.length-3)));
  const noData=Buffer.concat([valid.subarray(0,33),chunk('IEND')]);assert.throws(()=>png(noData));
  const trailing=Buffer.concat([valid,Buffer.from([0])]);assert.throws(()=>png(trailing));
+ const emptyIdat=Buffer.concat([valid.subarray(0,33),chunk('IDAT'),chunk('IEND')]);assert.throws(()=>png(emptyIdat));
+ const interrupted=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1])),chunk('tEXt',Buffer.from('x')),chunk('IDAT',Buffer.from([2])),chunk('IEND')]);assert.throws(()=>png(interrupted));
  assert.throws(()=>png(sample(0,1)));assert.throws(()=>png(sample(1,0)));
 });
