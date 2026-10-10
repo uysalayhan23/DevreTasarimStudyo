@@ -23,7 +23,7 @@ function pngCrc(data){
 function pngSize(data){
  const sig=Buffer.from([137,80,78,71,13,10,26,10]);
  if(!Buffer.isBuffer(data)||!data.subarray(0,8).equals(sig))throw Error('PNG signature invalid');
- let offset=8,width=0,height=0,ihdr=false,idat=false,iend=false;
+ let offset=8,width=0,height=0,ihdr=false,idat=false,idatClosed=false,iend=false;
  while(offset+12<=data.length){
   const len=data.readUInt32BE(offset),end=offset+12+len;
   if(end>data.length)throw Error('PNG chunk truncated');
@@ -35,11 +35,12 @@ function pngSize(data){
    width=payload.readUInt32BE(0);height=payload.readUInt32BE(4);
    if(!width||!height)throw Error('PNG dimensions zero');
    ihdr=true;
-  }else if(type==='IDAT'){idat=true}
+  }else if(type==='IDAT'){if(idatClosed||len===0)throw Error('PNG IDAT empty or nonconsecutive');idat=true}
   else if(type==='IEND'){
    if(len!==0||!idat||end!==data.length)throw Error('PNG IEND/IDAT invalid');
    iend=true;break;
   }else if(type==='IHDR')throw Error('Duplicate IHDR');
+  if(idat&&type!=='IDAT')idatClosed=true;
   offset=end;
  }
  if(!ihdr||!idat||!iend)throw Error('PNG missing required chunks');
