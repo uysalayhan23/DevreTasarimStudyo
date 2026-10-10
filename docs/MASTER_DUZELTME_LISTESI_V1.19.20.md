@@ -1468,3 +1468,29 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - **Açık kalanlar:** Tam 817+ regresyonun son `main` HEAD üzerinde yeniden koşulması, 2 görsel yan kayıt piksel denetimi, özgün eksik LOCKED öğretici belgesinin kurtarılması, diğer öğretici regresyon bulguları ve gerçek Windows/Edge son kabulü. Eski 764/817 tam koşu bu yeni commitlerden önceki duruma aittir; güncel geçme oranı olarak kullanılamaz.
 - MQ-13: Aktif repo `uysalayhan23/DevreTasarimStudyo`, dal `main`. **GitHub Actions 0 çalıştırma**, tüm commitler `[skip ci]`.
 - MQ-00 kararı: **Bu öğretici/PLC alt paketi hedefli kabul, proje genelinde DONE değil.** Kullanıcıya nihai Windows ZIP kabulü henüz istenmemelidir.
+
+
+## 2026-10-10 — Öğretici regresyon yenileme, RS NAND doğruluğu ve ZIP tanı kabulü
+
+**Durum: YEREL TARGET TESTLER PASS / GENEL REGRESYON 805/820 / 15 AÇIK, SON MQ-00 KABULÜ YAPILMADI.**
+
+### MQ-07 / MQ-12 öğretici kanıtı
+- Kullanıcının sağladığı proje ZIP'i üzerinde yerel `node --test --test-concurrency=4 tests/tutorial-*.test.cjs` çalıştırıldı: **93 toplam, 83 PASS, 10 FAIL**. Tüm 10 FAIL aynı eksik kaynak `docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md` belgesinin ENOENT hatasından kaynaklandı; özgün LOCKED belge yaratılarak sahte bir PASS üretilmedi.
+- Alt gruplar: eski pil/DC/Ohm cache etiketleri ve Node VM farklı realm prob karşılaştırmaları düzeltildi, **23/23 PASS**; öğretici modu içeriği son pedagogy pass üzerinden ve restore kontrolleriyle test edildi, **23/23 PASS**; RS latch fiziksel NAND kapısı ayrımı ve fiziki prob devre/ölçüm testleri korunarak `tutorial-pedagogy-v119.test.cjs` **18/18 PASS**.
+- `digital-sequential-apps-src-01` ve ilgili RS konsept derslerinde SN74HC00N'nin dört NAND kapısı içerdiği, tek başına tamamlanmış RS flip-flop olmadığı ve kablolu RS devresi bulunmadığından bu derste çalışır latch simülasyonu yapılmadığı açıklandı. T/F ve diğer entegre kimlikleri değiştirilmedi.
+- GitHub commitleri: `19b63e06a4dbbdda63518a531044f14d00f94215`, `39e86582d0db737f46b3e335ce460df648f3bcc0`, `549b9ecd173a8672e812f17349fafa65e759f52d`.
+
+### MQ-03 / MQ-02 görsel ve fiziksel denetim
+- ORDEL `ordel-top-v115.png` kaynak PNG **1254×1254 RGB colorType=2**; WAZ5 `weid-front-v115.png` kaynak PNG **1024×1536 RGB colorType=2**. Her ikisinin kaynak resminde alfa kanalı yoktur; SVG `clipPath` maskeleme bu gerçeklikten ayrı tutulur.
+- Görsel kaynak boyutu, maskeli runtime markup ve WAZ5'in 17.5×92.4 mm fiziksel metadata'sı `tests/visual-ordel-waz5-mask-v11920.test.cjs` testinde **2/2 PASS**, commit `33043280a9448a76780b7bc320ed798bacb5c90d`. Bu testler piksel kenarı kalitesinin/ortografik görsel kabulünün tam testi değildir; mapped sidecar pixelAuditPending **2** korunur, kanıtsız verified yapılmaz.
+
+### MQ-12 / MQ-13 bütünlük ve büyük regresyon
+- `node scripts/check.cjs` **PASS**: 217 kaynak JS, 106 yerel bağımlılık, 728 kütüphane tanımı, 58 korunan örnek.
+- `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs` yerel tam test: **820 toplam / 805 PASS / 15 FAIL / 0 SKIP**, yaklaşık 292 saniye. Bu tam koşudan sonra iki fiziksel sembol/asset beklentisi düzeltildi: `regression.test.cjs` testlerindeki onaylı fiziksel sub-grid pinler ve ürün fotoğrafının lokal asset referansı kontrolü; hedefli yeniden koşu **2/2 PASS**. Commit `1eb7679ec79dd273dad7f80812ea76a99f51e1e0`. Dolayısıyla 805/820 eski tam koşuya aittir, son HEAD'deki yeni tam test sonucu değildir.
+- Kalan başarısızlıkların kanıtlı dağılımı: 10 eksik özgün öğretici LOCKED dosya; 3 ZIP içinde `.git` geçmişi bulunmadığı için `git show/merge-base` gerektiren repository integrity testleri; 2 sonraki hedefli yeniden koşuda düzeltilmiş önceki ölçek/asset beklentisi.
+- GitHub deposu değil ZIP ağacı test edildi; korunmuş tarihsel commit geçmişi ZIP'den türetilemez. Son HEAD 820/820 PASS değildir.
+- `python3 scripts/package.py --output /mnt/data/dts_diagnostic_runtime_v1.19.20.zip`: tanı paketi **503 dosya**, **84,024,362 bayt**, **ZIP CRC PASS, çıkarılan bütün dosyalarda SHA-256 PASS**. Bu tanı paketi, kullanıcıya nihai Windows kabul paketi olarak sunulmadı.
+- Linux headless Chromium ile doğrudan `file:///.../dist/index.html` açılış denemesi **TIMEOUT / NOT PASSED**; Windows üzerinde gerçek UI, fiziksel ürün silueti ve terminaller son kabulü bekliyor. Localhost/HTTP başlatıcıya geçilmedi.
+- GitHub API üzerinden Actions workflow run sayısı **0** görüldü. **GitHub Actions çalıştırılmadı**; tüm commitlerde `[skip ci]` korundu.
+
+**MQ-00 kararı:** Hedefli değişiklikler kabul, GENEL DONE değil. Önce özgün LOCKED belgenin güvenilir kaynaktan kurtarılması ve Git commit geçmişi üstünde branch-lock testleri, sonra tam HEAD regresyonu ve son ZIP/Windows görsel kabulü yapılır. Kaynağı bulunmayan belgeyi yeniden yazarak eski kilidin orijinali gibi göstermeyin.
