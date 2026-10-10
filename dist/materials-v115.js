@@ -4,6 +4,7 @@
  function markup(d,c,sprite){
   const text=(x,y,s,size=10,color='#234')=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" fill="${color}" stroke="none">${esc(s)}</text>`;
   const photo=(file,vb,x,y,w,h,iw,ih)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="none" overflow="hidden"><image href="assets/products/${file}" width="${iw}" height="${ih}"/></svg>`;
+  const maskedPhoto=(file,vb,x,y,w,h,iw,ih,id,shape)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="none" overflow="hidden"><defs><clipPath id="${id}">${shape}</clipPath></defs><image href="assets/products/${file}" width="${iw}" height="${ih}" clip-path="url(#${id})"/></svg>`;
   if(d.probeColor)return `<g class="material-layer"><path d="M0 20h25" stroke="${d.probeColor}" stroke-width="4"/><path d="M100 20h40" stroke="#a8b3b9" stroke-width="3"/><rect x="25" y="12" width="75" height="16" rx="5" fill="${d.probeColor}" stroke="#394953"/><path d="M96 7v26" stroke="${d.probeColor}" stroke-width="6"/></g>`;
   if(d.kind==='clamp-meter'){
    const M=typeof module==='object'&&module.exports?require('./clamp-meter.js'):root.DTSClampMeter,open=!!c._clampCandidate&&!c.clampedWireId,read=c._clamp||{},display=read.display??'—',unit=read.unit||'',jawShift=open?18:0;
@@ -56,7 +57,7 @@
   if(['coil-relay','coil-relay-dc','misc-relay'].includes(d.id)&&d.materialAsset==='omron-my-relay-v11920'){
     return `<g class="material-layer" data-material="omron-my-relay-v11920"><svg x="0" y="0" width="${d.w}" height="${d.h}" viewBox="0 0 180 240" preserveAspectRatio="xMidYMid meet" overflow="visible"><image href="assets/products/omron-my-relay-v11920.webp?rev=20261008-omron7" x="0" y="0" width="180" height="240"/></svg></g>`;
   }
-  if(d.productPhoto115)return `<g class="material-layer" data-material="design-${d.id}">${photo(d.productPhoto115,'145 0 160 450',10,0,100,280,450,450)}</g>`;
+  if(d.productPhoto115){const bg='p115-bg-'+String(c.id||d.id).replace(/[^\w-]/g,'_');return `<g class="material-layer" data-material="design-${d.id}">${maskedPhoto(d.productPhoto115,'145 0 160 450',10,0,100,280,450,450,bg,'<rect x="151" y="6" width="148" height="438" rx="10"/>')}</g>`}
   if(d.instrument){const s=c._instrument,q=c._controller,uid='instrument-'+String(c.id||d.id).replace(/[^\w-]/g,'_');let art='';
    if(d.instrument==='ht2'){
     art=`<defs><clipPath id="${uid}"><path d="M210 154Q210 94 280 94H972Q1047 94 1047 164V617Q1047 685 973 685H694V1095Q694 1169 628 1169Q564 1169 564 1095V685H281Q210 685 210 610Z"/></clipPath></defs><svg x="0" y="15" width="180" height="225" viewBox="210 94 837 1075" preserveAspectRatio="none"><image href="assets/products/gentek-front-v115.png" width="1254" height="1254" clip-path="url(#${uid})"/></svg>`;
@@ -67,18 +68,18 @@
     art+=text(120,222,(c.instrumentSettings?.input||'PT100')==='PT100'?'HMT-R · PT100 · 4–20 mA':'HMT-T · '+c.instrumentSettings.input+' · 4–20 mA',9);
    }else if(d.instrument==='et4420'){
     const sx=d.w/240,sy=d.h/240;
-    art=photo('enda-front-v115.png','85 93 1085 1080',0,0,d.w,d.h,1254,1254);
+    art=maskedPhoto('enda-front-v115.png','85 93 1085 1080',0,0,d.w,d.h,1254,1254,uid+'-body','<rect x="96" y="101" width="1062" height="1058" rx="22"/>');
     let overlay='';
     if(q?.on){const f=v=>c.instrumentSettings?.unit==='F'?v*1.8+32:v;overlay+=`<rect x="78" y="40" width="132" height="98" fill="#111"/>`+text(143,78,q.error?'PFA':f(q.pv).toFixed(c.instrumentSettings?.decimal==='on'?1:0),26,'#ff5547')+text(143,126,f(q.sp).toFixed(c.instrumentSettings?.decimal==='on'?1:0),25,'#ebe447');for(const [i,k] of ['main','ssr','alarm1'].entries())if(q[k])overlay+=`<circle cx="36" cy="${58+i*29}" r="5" fill="#ff503f"/>`}
     for(const [i,k] of ['set','function','up','down'].entries())overlay+=`<rect data-instrument-key="${k}" x="${26+i*46}" y="167" width="35" height="28" fill="transparent" style="cursor:pointer"/>`;
     art+=`<g class="et4420-face-overlay" transform="scale(${sx} ${sy})">${overlay}</g>`;
     // ET4420 terminals are rendered once, as the real interactive d.pins rows in symbols.js.
    }else if(d.instrument==='tx11'){
-    art=photo('baykon-front-v115.png','326 40 373 1440',0,0,d.w,d.h,1024,1536);
+    art=maskedPhoto('baykon-front-v115.png','326 40 373 1440',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="334" y="48" width="357" height="1424" rx="24"/>');
     if(s?.on)art+=`<circle cx="43" cy="205" r="4" fill="#60dc58"/><circle cx="93" cy="205" r="4" fill="${s.error?'#f55':'#382d2d'}"/>`;
    }else if(d.instrument==='waz5'){
     // The old asset is preserved, but its visible frame now fills the verified physical envelope.
-    art=photo('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536);
+    art=maskedPhoto('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="401" y="34" width="212" height="1466" rx="16"/>');
     art+=text(d.w/2,d.h*(205/460),'2 + 0–10V − 3',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(225/460),'V → I',Math.max(5,d.w*(12/180)))+text(d.w/2,d.h*(245/460),'7 + 4–20mA − 8',Math.max(4,d.w*(7/180)))+text(d.w/2,d.h*(280/460),'4/10 +24V',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(298/460),'5/11 0V',Math.max(4,d.w*(8/180)));
    }
    if(d.instrument==='hmt'&&(d.w!==240||d.h!==240))art=`<g class="instrument-scale-only" transform="scale(${d.w/240} ${d.h/240})">${art}</g>`;
