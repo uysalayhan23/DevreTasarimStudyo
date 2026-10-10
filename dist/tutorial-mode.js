@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy65-lm358-output');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy65-lm358-output');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -933,6 +933,15 @@ function measurementUpgradeCard(l,session,project){
     (ok?'f ≈ '+esc(stats.freq.toFixed(1))+' Hz · Vpp ≈ '+esc(stats.vpp.toFixed(2))+' V · T ≈ '+esc((1000/stats.freq).toFixed(3))+' ms':'Ölçüm bekleniyor: simülasyonu çalıştır ve CH1/GND bağlantısını doğrula.')+'</div>'+
     '<div class="measurement-scope-presets">'+[50,1000,10000].map(hz=>'<button type="button" data-measurement-scope-hz="'+hz+'"'+(Number(fg?.generatorFrequency||1000)===hz?' aria-pressed="true"':'')+'>'+esc(hz>=1000?(hz/1000)+' kHz':hz+' Hz')+'</button>').join('')+'</div>';
  }
+ if(u.tachometer){
+  const motor=project?.components?.find(c=>c.id==='m1'),tach=project?.components?.find(c=>c.id==='t1');
+  const measured=tach?.tachometerTargetId===motor?.id&&motor?._active&&Number.isFinite(motor?._motorRPM);
+  const rpm=measured?Math.abs(motor._motorRPM):null;
+  scope='<div class="measurement-tacho-observation"><strong>Canlı sanal takometre:</strong> '+
+    (measured?esc(rpm.toFixed(0))+' rpm · '+esc((rpm/60).toFixed(2))+' tur/s':'Motor çalışmıyor veya ölçüm modeli henüz çalıştırılmadı; RPM gösterilmiyor.')+
+    '<small>Bu, simüle edilen motorun _motorRPM durumundan türetilen model okumasıdır; gerçek bir optik cihaz kalibrasyonu değildir.</small></div>'+
+    '<div class="measurement-tacho-presets">'+[750,1500,3000].map(n=>'<button type="button" data-measurement-tacho-rpm="'+n+'"'+(Number(motor?.motorRatedRpm)===n?' aria-pressed="true"':'')+'>'+n+' rpm</button>').join('')+'</div>';
+ }
  return '<section class="measurement-upgrade-card"><small>ÖZEL UYGULAMA · '+esc(l.title)+'</small><h3>'+esc(u.heading)+'</h3>'+
  '<p>'+esc(u.goal)+'</p><div><strong>Şimdi sen ölç:</strong> '+esc(u.task)+'</div>'+
  '<p><b>Konu kontrolü:</b> '+esc(u.question)+'</p><div class="measurement-upgrade-answers">'+
@@ -989,6 +998,14 @@ function bind(){
    const backBtn=e.target.closest?.('[data-tutorial-back]');if(backBtn){e.preventDefault();closeHub();return}
    const openBtn=e.target.closest?.('[data-tutorial-open]');if(openBtn){e.preventDefault();open(openBtn.dataset.tutorialOpen);return}
    const group=e.target.closest?.('[data-tutorial-group]');if(group){filter=group.dataset.tutorialGroup;renderDashboard();return}
+   const tachoRpm=e.target.closest?.('[data-measurement-tacho-rpm]');
+   if(tachoRpm){e.preventDefault();const project=root.DTSEditor?.getProject?.(),lesson=lessonFor(project);
+    if(lesson?.measurementUpgrade?.tachometer){const rpm=Number(tachoRpm.dataset.measurementTachoRpm),motor=project.components.find(c=>c.id==='m1');
+     if([750,1500,3000].includes(rpm)&&motor){motor.motorRatedRpm=rpm;
+      root.CCSSimulation?.solve?.(project,root.DTSEditor?.byId,{now:Date.now()});
+      root.DTSEditor?.render?.();sync(project)}
+    }return;
+   }
    const scopeHz=e.target.closest?.('[data-measurement-scope-hz]');
    if(scopeHz){e.preventDefault();const project=root.DTSEditor?.getProject?.(),lesson=lessonFor(project);
     if(lesson?.measurementUpgrade?.scope){const hz=Number(scopeHz.dataset.measurementScopeHz),preset=project.tutorialExplore?.presets?.find(p=>p.hz===hz);
