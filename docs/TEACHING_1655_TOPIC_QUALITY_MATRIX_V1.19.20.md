@@ -2,7 +2,7 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
-Kod kapsamı: **55/1655**, henüz zengin kod formatına yükseltilmemiş: **1600**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+Kod kapsamı: **68/1655**, henüz zengin kod formatına yükseltilmemiş: **1587**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
 Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
 
@@ -31,9 +31,9 @@ Kod kapsamı: **55/1655**, henüz zengin kod formatına yükseltilmemiş: **1600
 | `dc-circuits` | 10 | 10 | 0 | 7 | 2 | 1 | Doğru akım ve kullanım alanları |
 | `motor-sequence` | 10 | 0 | 10 | 10 | 0 | 0 | İki motorun sıralı çalıştırılması |
 | `number-systems` | 8 | 0 | 8 | 0 | 0 | 8 | 6.1.1. Sayı Sistemleri |
-| `button-led` | 5 | 0 | 5 | 5 | 0 | 0 | 24 VDC NO buton ile yeşil LED yakma |
-| `button-relay` | 4 | 0 | 4 | 4 | 0 | 0 | 24 V buton-röle bobini |
-| `seal-in` | 4 | 0 | 4 | 4 | 0 | 0 | Start/Stop ile temel mühürleme |
+| `button-led` | 5 | 5 | 0 | 5 | 0 | 0 | 24 VDC NO buton ile yeşil LED yakma |
+| `button-relay` | 4 | 4 | 0 | 4 | 0 | 0 | 24 V buton-röle bobini |
+| `seal-in` | 4 | 4 | 0 | 4 | 0 | 0 | Start/Stop ile temel mühürleme |
 | `timer-flipflop` | 4 | 0 | 4 | 4 | 0 | 0 | 1 s / 1 s flip-flop |
 | `commutator` | 4 | 0 | 4 | 4 | 0 | 0 | İki ayrı tavan lambası |
 | `two-way` | 4 | 0 | 4 | 4 | 0 | 0 | İki noktadan tavan lambası |
@@ -51,5 +51,7 @@ Kod kapsamı: **55/1655**, henüz zengin kod formatına yükseltilmemiş: **1600
 | `motor-forward-reverse` | 4 | 0 | 4 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
 | `motor-star-delta` | 4 | 0 | 4 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
 | `dual-dc` | 4 | 0 | 4 | 4 | 0 | 0 | İki tamamen izole DC devre |
+
+**Yeni doğrulanmış kod kapsamı:** 45 elektriksel ölçme + 10 doğru akım + 5 buton/LED + 4 buton/röle + 4 mühürleme = **68 ders**. Son 13 kontrol dersi için özgün kablo dizileri birebir korundu ve konuya özel açıklama ile soru eklendi. Başlıkların görsel/Windows ve kullanıcı pedagojik kabulü açık kalır. Sıradaki konular zaman rölesi, 4–20 mA, tesisat devreleri ve motor kumanda senaryolarıdır.
 
 **Kabul uyarısı:** Bir derse yalnız `designStandard` eklemek kabul değildir. Gerçek devre, görsel, ölçüm/model kaynağı, uygulama adımı ve çocukların anlayacağı neden-sonuç açıklaması mevcut değilse pedagojik DONE sayılmaz. Ders düzeyindeki ekran kabulü ve gerçek donanım ön görünüşü özel QA gerektirir. Üretim GitHub Actions kullanmadan, commitlerde `[skip ci]` kuralıyla yürütülür.
