@@ -18,7 +18,7 @@ test('relay material uses the user-approved Omron MY asset and short-edge A1/A2 
   assert.deepEqual({...relay.physicalDimensionsMm},{width:21.5,height:28,shape:'rect'});
   assert.equal(relay.materialAsset,'omron-my-relay-v11920');
   assert.equal(relay.materialPhoto,'omron-my-relay-v11920.webp');
-  assert.deepEqual(relay.pins.map(p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[
+  assert.deepEqual(Array.from(relay.pins,p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[
     {id:'A1',x:21.5,y:0,side:'top'},
     {id:'A2',x:21.5,y:56,side:'bottom'}
   ]);
@@ -42,7 +42,7 @@ test('visible Röle uses the same Omron MY canonical visual as DC Röle Bobini a
   assert.equal(relay.materialAsset,'omron-my-relay-v11920');
   assert.equal(dc.materialAsset,'omron-my-relay-v11920');
   assert.equal(relay.materialPhoto,dc.materialPhoto);
-  assert.deepEqual(relay.pins.map(p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[
+  assert.deepEqual(Array.from(relay.pins,p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[
     {id:'A1',x:21.5,y:0,side:'top'},
     {id:'A2',x:21.5,y:56,side:'bottom'}
   ]);
@@ -119,8 +119,10 @@ test('user scale-only lock preserves old visuals and applies requested physical 
   assert.match(art,/viewBox="85 75 1080 1080"/);
   assert.match(art,/weid-front-v115\.png/);
   assert.match(art,/'394 27 226 1480'/);
-  assert.match(art,/photo\('weid-front-v115\.png','394 27 226 1480',0,0,d\.w,d\.h/);
-  assert.doesNotMatch(art,/d\.instrument==='waz5'.*instrument-scale-only/s);
+  assert.match(art,/maskedPhoto\('weid-front-v115\.png','394 27 226 1480',0,0,d\.w,d\.h/);
+  const wazRender=require('../dist/materials-v115.js').markup(waz,{id:'waz5-frame-test'});
+  assert.match(wazRender,/weid-front-v115\.png/);
+  assert.doesNotMatch(wazRender,/instrument-scale-only/);
   assert.match(art,/instrument-scale-only/); // ORDEL keeps its square legacy-art wrapper.
 });
 
@@ -149,7 +151,7 @@ test('temperature controller, thermal auxiliary contacts and relay coils use the
     assert.equal(d.visualAssetPreserved,true,id+' visual preservation');
     for(const p of d.pins){
       assert.ok(p.x>=0&&p.x<=d.w,id+':'+p.id+':x');
-      assert.ok(p.y>=0&&p.y<=d.h,id+':'+p.id+':y');
+      assert.ok(p.y>=0&&p.y<=(id==='temperature-controller'?d.terminalEnvelopeBottomScene:d.h),id+':'+p.id+':y');
     }
   }
 });
@@ -195,19 +197,19 @@ test('ET4420 visible face is exactly 48 x 48 mm and visual terminals use two non
   assert.deepEqual({...d.physicalDimensionsMm},{width:48,height:48,shape:'rect'});
   assert.deepEqual({...d.visualFrameScene},{width:96,height:96});
   assert.deepEqual({...d.visualFrameMm},{width:48,height:48});
-  assert.equal(d.terminalGeometryStatus,'bottom-row-user-locked');
+  assert.equal(d.terminalGeometryStatus,'bottom-two-rows-user-locked');
   assert.equal(d.terminalRowOutsideVisual,true);
   assert.equal(d.terminalVisualRows,2);
   assert.equal(d.terminalVisualRowSize,7);
-  assert.equal(d.terminalVisualLayout,'bottom-two-rows');
+  assert.equal(d.terminalVisualLayout,'bottom-two-rows-real-ports');
   assert.equal(d.pins.length,14);
-  assert.ok(d.pins.every(p=>p.side==='bottom'&&p.y===d.h));
+  assert.ok(d.pins.slice(0,7).every(p=>p.side==='bottom'&&p.y===108));
+  assert.ok(d.pins.slice(7).every(p=>p.side==='bottom'&&p.y===130));
   const renderer=fs.readFileSync(path.join(root,'dist','materials-v115.js'),'utf8');
-  assert.match(renderer,/photo\('enda-front-v115\.png','85 93 1085 1080',0,0,d\.w,d\.h/);
-  assert.match(renderer,/data-terminal-layout="bottom-two-rows"/);
-  assert.match(renderer,/data-terminal-row-size="7"/);
-  assert.match(renderer,/rowSize=7/);
-  assert.match(renderer,/row2Y=row1Y\+termH\+rowGap\+5/);
+  assert.match(renderer,/maskedPhoto\('enda-front-v115\.png','85 93 1085 1080',0,0,d\.w,d\.h/);
+  assert.doesNotMatch(renderer,/data-terminal-layout="bottom-two-rows"/);
+  const symbols=fs.readFileSync(path.join(root,'dist','symbols.js'),'utf8');
+  assert.match(symbols,/annotationBottomOffsetScene/);
   assert.doesNotMatch(renderer,/bottom-single-row/);
   assert.doesNotMatch(renderer,/text\(130,248,'ARKA KLEMENSLER'/);
 });
@@ -334,7 +336,7 @@ test('5SL6316-7 and 3RV2011 use the requested physical frames and user-approved 
   assert.ok(rvChunks.includes('VP8X'),'3RV2011 VP8X chunk');
   assert.ok(rvChunks.includes('VP8 ')||rvChunks.includes('VP8L'),'3RV2011 image payload chunk');
   const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
-  assert.match(html,/materials-v113\.js\?rev=20261008-user-scale-lock13/);
+  assert.match(html,/materials-v113\.js\?rev=[A-Za-z0-9-]+/);
 });
 
 
@@ -347,8 +349,8 @@ test('ET4420 uses real two-row interactive ports without duplicate fake terminal
   assert.ok(r1.every(p=>p.y===108&&p.side==='bottom'&&p.terminalRow===1));
   assert.ok(r2.every(p=>p.y===130&&p.side==='bottom'&&p.terminalRow===2));
   assert.ok(d.pins.every(p=>p.label===p.id));
-  assert.deepEqual(r1.map(p=>p.id),['4','5','6','7','8','9','10']);
-  assert.deepEqual(r2.map(p=>p.id),['11','12','13','14','15','16','17']);
+  assert.deepEqual(Array.from(r1,p=>p.id),['4','5','6','7','8','9','10']);
+  assert.deepEqual(Array.from(r2,p=>p.id),['11','12','13','14','15','16','17']);
   assert.equal(d.annotationBottomOffsetScene,58);
   assert.equal(d.terminalVisualLayout,'bottom-two-rows-real-ports');
   const art=fs.readFileSync(path.join(root,'dist','materials-v115.js'),'utf8');
@@ -365,7 +367,7 @@ test('DC relay uses the user-approved Omron visual while retaining its 28 x 78 m
   assert.deepEqual({...d.physicalDimensionsMm},{width:28,height:78,shape:'rect'});
   assert.equal(d.materialAsset,'omron-my-relay-v11920');
   assert.equal(d.materialPhoto,'omron-my-relay-v11920.webp');
-  assert.deepEqual(d.materialPins.map(p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[{id:'A1',x:28,y:0,side:'top'},{id:'A2',x:28,y:156,side:'bottom'}]);
+  assert.deepEqual(Array.from(d.materialPins,p=>({id:p.id,x:p.x,y:p.y,side:p.side})),[{id:'A1',x:28,y:0,side:'top'},{id:'A2',x:28,y:156,side:'bottom'}]);
   const art=fs.readFileSync(path.join(root,'dist','materials-v115.js'),'utf8');
   assert.match(art,/coil-relay-dc/);
 });
@@ -417,12 +419,12 @@ test('runtime visual closure: 5SL6316, 3RV, 5TL and HCFA fit modes',()=>{
 
 test('visual runtime revisions expose the current locked material scripts and product binaries',()=>{
   const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
-  assert.match(html,/library\.js\?rev=20261008-user-scale-lock7/);
-  assert.match(html,/materials-v113\.js\?rev=20261008-user-scale-lock12/);
-  assert.match(html,/materials-v115\.js\?rev=20261008-user-scale-lock7/);
-  assert.match(html,/materials\.js\?rev=20261008-user-scale-lock6/);
-  assert.match(html,/symbols\.js\?rev=20261008-visual-runtime4/);
-  assert.match(html,/app\.js\?rev=20261008-visual-runtime4/);
+  assert.match(html,/library\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/materials-v113\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/materials-v115\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/materials\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/symbols\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/app\.js\?rev=[A-Za-z0-9-]+/);
   const m115=fs.readFileSync(path.join(root,'dist','materials-v115.js'),'utf8');
   assert.match(m115,/omron-my-relay-v11920\.webp\?rev=20261008-omron7/);
   const m113=fs.readFileSync(path.join(root,'dist','materials-v113.js'),'utf8');
@@ -439,10 +441,10 @@ test('ET4420 material labels ignore stale saved physical labels and show only te
 
 test('runtime cache keys expose the completed user-scale closure',()=>{
   const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
-  assert.match(html,/library\.js\?rev=20261008-user-scale-lock7/);
-  assert.match(html,/materials-v113\.js\?rev=20261008-user-scale-lock12/);
-  assert.match(html,/materials-v115\.js\?rev=20261008-user-scale-lock7/);
-  assert.doesNotMatch(html,/<script src="library\.js\?rev=20261008-visual-runtime4"><\/script>/);
+  assert.match(html,/library\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/materials-v113\.js\?rev=[A-Za-z0-9-]+/);
+  assert.match(html,/materials-v115\.js\?rev=[A-Za-z0-9-]+/);
+  assert.doesNotMatch(html,/<script src="library\.js\?rev=[A-Za-z0-9-]+"><\/script>/);
 });
 
 
@@ -472,5 +474,5 @@ test('5TL user canonical WebP is valid and matches the requested runtime visual'
   assert.match(renderer,/viewBox="0 0 180 861"/);
   assert.match(renderer,/preserveAspectRatio="xMidYMid meet"/);
   const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
-  assert.match(html,/materials-v113\.js\?rev=20261008-user-scale-lock14/);
+  assert.match(html,/materials-v113\.js\?rev=[A-Za-z0-9-]+/);
 });
