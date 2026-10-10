@@ -10,7 +10,7 @@ const {spawn,spawnSync}=require('node:child_process');
 
 const ROOT=path.resolve(__dirname,'..');
 const DIST=path.join(ROOT,'dist');
-const BUILD=path.join(ROOT,'build',process.env.DTS_HL_VISUAL==='1'?'browser-visual-hl':'browser-visual');
+const BUILD=path.join(ROOT,'build','browser-visual-hl');
 const GOLDEN=JSON.parse(fs.readFileSync(path.join(ROOT,'tests','browser-visual-golden-v11920.json'),'utf8'));
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -182,7 +182,7 @@ async function main(){
     const tutorial=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialDashboard'),r=p.getBoundingClientRect();return{hidden:p.hidden,width:r.width,height:r.height,topics:document.querySelectorAll('#tutorialTopicGrid .tutorial-topic-card').length,dashboardHidden:document.querySelector('#dashboard')?.hidden}})()`);
     assert(tutorial.hidden===false&&tutorial.dashboardHidden===false,'Öğretici dashboard görünür değil.');assert(tutorial.topics>=GOLDEN.tutorial.minTopics,'Öğretici konu sayısı yetersiz: '+tutorial.topics);assert(tutorial.width>=GOLDEN.tutorial.minWidth&&tutorial.height>=GOLDEN.tutorial.minHeight,'Öğretici alanı çok küçük.');
     report.states.tutorial={geometry:tutorial,screenshot:await shot(cdp,'tutorial')};
-    // H-L 64 actual Chrome lesson openings: view, live drawing and coach rendering.\n    if(process.env.DTS_HL_VISUAL==='1'){
+    // H-L 64 actual Chrome lesson openings: view, live drawing and coach rendering.\n    {
     const hlTopics=['commutator','two-way','intermediate','bells','control-combinations','loop-420','loop-powered','active-passive','pnp-npn','inductive-capacitive','source-sink','open-collector','bero','motor-forward-reverse','motor-star-delta','dual-dc'];
     report.states.hlLessons={checked:0,items:[]};
     for(const topic of hlTopics)for(let n=1;n<=4;n++){
