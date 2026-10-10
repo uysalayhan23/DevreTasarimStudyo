@@ -14,6 +14,7 @@
   const Numeric=typeof module==='object'&&module.exports?require('./current-model.js'):root.DTSCurrentModel;
   const SignedFlow=typeof module==='object'&&module.exports?require('./signed-flow.js'):root.DTSSignedFlow;
   const PLC=typeof module==='object'&&module.exports?require('./plc-runtime.js'):root.DTSPLCRuntime;
+  const DigitalIC=typeof module==='object'&&module.exports?require('./digital-ic-runtime-v11920.js'):root.DTSDigitalICRuntime;
   const coils=new Set(['coil','timer','coil-valve','coil-flasher','coil-pulse','relay-protection']);
   const followers=new Set(['contact-no','contact-nc','contact-both','delay-on-no','delay-on-nc','delay-off-no','delay-off-nc','contactor3']);
   const breakers=new Set(['breaker','breaker2','breaker3','rcd2','rcd4','fuse-switch','overload','thermal-magnetic']);
@@ -25,9 +26,9 @@
   const endpointKey=r=>r?.j?JSON.stringify(['junction',r.j]):pinKey(r?.c,r?.p);
   const definition=(byId,c)=>byId[c.typeId];
   function clear(project){
-    for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;}
+    for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._bjtOn;delete c._mosfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -57,6 +58,7 @@
     if(groups.length)return groups.filter(g=>s.groups[g.id]).map(g=>[g.a,g.b]);
     if(['bjt-npn','bjt-pnp'].includes(k))return c._bjtOn?[['C','E']]:[];
     if(k==='mosfet-n'||k==='mosfet-p')return c._mosfetOn?[['D','S']]:[];
+    if(k==='jfet-n')return c._jfetOn?[['D','S']]:[];
     if(k==='igbt-n')return c._igbtOn?[['C','E']]:[];
     if(k==='scr')return c._thyristorOn?[['A','K']]:[];
     if(k==='triac')return c._thyristorOn?[['MT1','MT2']]:[];
@@ -158,6 +160,13 @@
         }
       }
       for(const c of project.components){
+        const d=definition(byId,c);if(!d?.digitalIc||!DigitalIC)continue;
+        for(const o of DigitalIC.outputSeeds(c,d,{dcVoltage})){
+          const domain='digital:'+c.id+':'+o.pin,leg=o.logic?'+':'0';
+          seed(c,o.pin,domain,leg,'dc',o.voltage);seed(c,o.ground,domain,'0','dc',o.voltage);
+        }
+      }
+      for(const c of project.components){
         const d=definition(byId,c);if(!d?.isPLC||!PLC)continue;
         const lessonId=String(project.tutorialLesson?.id||''),program=lessonId==='plc-hardware-programming-src-21'?'timed-stop':undefined;
         PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,{program});
@@ -202,6 +211,11 @@
       }
       // Passive thermocouples produce an EMF without an external supply.
       for(const c of project.components){const d=definition(byId,c);if(d?.id==='thermocouple'){const v=Devices.output(c,d).value/1000;for(let i=0;i+1<d.pins.length;i+=2){seed(c,d.pins[i].id,'tc:'+c.id+':'+i,'+','dc',v);seed(c,d.pins[i+1].id,'tc:'+c.id+':'+i,'0','dc',v)}}}
+      for(const c of project.components){const d=definition(byId,c);if(d?.digitalIc&&DigitalIC)DigitalIC.evaluate(c,d,{dcVoltage},now)}
+      for(const c of project.components){const d=definition(byId,c);if(d?.kind!=='electret-mic')continue;
+        const db=Number(c.soundLevelDb??d.defaultSoundDb??60),sens=Number(d.sensitivityDbvPa??-44),pa=Math.pow(10,(db-94)/20),vrms=Math.pow(10,sens/20)*pa,phase=((now%10)/10)*Math.PI*2,v=vrms*Math.SQRT2*Math.sin(phase);
+        seed(c,'+','mic:'+c.id,'+','dc',Math.max(0,Math.abs(v)));seed(c,'-','mic:'+c.id,'0','dc',Math.max(0,Math.abs(v)));c._microphoneVoltage=v;c._microphoneVrms=vrms;
+      }
       for(const [r,values] of potentials){
         const domains=new Map();for(const v of values.values()){
           if(domains.has(v.domain)&&domains.get(v.domain)!==v.leg){faultDomains.add(v.domain);faultRoots.add(r)}
@@ -237,7 +251,7 @@
           V20.tick(c,{voltage:inputVoltage,di,ai:[sample.dc(c,'2','5'),sample.dc(c,'3','5')],outputShort:new Set(roots).size<3,motorConnected},c._solveNow??Date.now());
         }
       }
-      const signals=JSON.stringify([[...potentials].map(([r,v])=>[r,[...v.values()]]),instruments.map(c=>c._instrument),drives.map(driveState)]);
+      const signals=JSON.stringify([[...potentials].map(([r,v])=>[r,[...v.values()]]),instruments.map(c=>c._instrument),drives.map(driveState),project.components.filter(c=>definition(byId,c)?.digitalIc).map(c=>DigitalIC?.signature?.(c)||'')]);
       if(equalSet(next,enabled)&&signals===previousSignals){settled=true;break}enabled=next;previousSignals=signals;
     }
     return {voltage,dcVoltage,threePhase,phaseDirection,dcDirection,at,find,potentials,faultDomains,faultRoots,enabled,settled};
@@ -251,8 +265,8 @@
     let net,firstNet,stable=false,cycle=null;
     const seen=new Map(),frames=[];
     for(let pass=0;pass<Math.max(16,project.components.length*4+8);pass++){
-      const semikinds=['bjt-npn','bjt-pnp','mosfet-n','mosfet-p','igbt-n','scr','triac','diac'];
-      const signature=JSON.stringify([[...actuators.keys()].sort(),[...sensors].sort(),project.components.filter(c=>semikinds.includes(definition(byId,c)?.kind)||definition(byId,c)?.isPLC).map(c=>definition(byId,c)?.isPLC?[c.id,c._plcRuntime?.inputs||{},c._plcRuntime?.outputs||{},!!c._plcLatch]:[c.id,!!c._bjtOn,!!c._mosfetOn,!!c._igbtOn,!!c._thyristorOn,!!c._diacOn])]);
+      const semikinds=['bjt-npn','bjt-pnp','mosfet-n','mosfet-p','jfet-n','igbt-n','scr','triac','diac'];
+      const signature=JSON.stringify([[...actuators.keys()].sort(),[...sensors].sort(),project.components.filter(c=>semikinds.includes(definition(byId,c)?.kind)||definition(byId,c)?.isPLC).map(c=>definition(byId,c)?.isPLC?[c.id,c._plcRuntime?.inputs||{},c._plcRuntime?.outputs||{},!!c._plcLatch]:[c.id,!!c._bjtOn,!!c._mosfetOn,!!c._jfetOn,!!c._igbtOn,!!c._thyristorOn,!!c._diacOn])]);
       if(seen.has(signature)){cycle=frames.slice(seen.get(signature));break}
       seen.set(signature,frames.length);frames.push(new Map(actuators));
       const plcBefore=JSON.stringify(project.components.filter(c=>definition(byId,c)?.isPLC).map(c=>[c.id,c._plcRuntime?.inputs||{},c._plcRuntime?.outputs||{},!!c._plcLatch]));
@@ -264,6 +278,7 @@
       let semiconductorChanged=false;
       for(const tc of project.components){const td=definition(byId,tc);if(!td)continue;let stateKey=null,on=false,v=null;
         if(td.kind==='mosfet-n'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');on=v!==null&&v>=4}
+        else if(td.kind==='jfet-n'){stateKey='_jfetOn';v=net.dcVoltage(tc,'G','S');const cutoff=Math.abs(Number(td.gateCutoffVoltage)||3);on=v===null?false:v>-cutoff}
         else if(td.kind==='mosfet-p'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'S','G');on=v!==null&&v>=4}
         else if(td.kind==='igbt-n'){stateKey='_igbtOn';v=net.dcVoltage(tc,'G','E');on=v!==null&&v>=4}
         else if(td.kind==='scr'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','K');on=v!==null&&v>=.7}
@@ -316,10 +331,12 @@
       if(coils.has(k)){c._active=timedStates.has(c.id)?!!actuators.get(normalizeRef(c.ref)):net.voltage(c,'A1','A2');if(timedStates.has(c.id))c._timing=timedStates.get(c.id)}
       else if(['bjt-npn','bjt-pnp'].includes(k))c._active=!!c._bjtOn;
       else if(k==='mosfet-n'||k==='mosfet-p')c._active=!!c._mosfetOn;
+      else if(k==='jfet-n')c._active=!!c._jfetOn;
       else if(k==='igbt-n')c._active=!!c._igbtOn;
       else if(k==='scr'||k==='triac')c._active=!!c._thyristorOn;
       else if(k==='diac')c._active=!!c._diacOn;
-      else if(k==='opamp')c._active=!!c._opampPowered;
+      else if(k==='opamp'||k==='dual-opamp')c._active=!!c._opampPowered;
+      else if(d.digitalIc){c._active=c._powered=!!c._digitalIc?.powered;}
       else if(['ssr','phase-monitor'].includes(k))c._active=!!actuators.get('@'+c.id);
       else if(followers.has(k))c._active=state.actuated;
       else if(d.id==='load-cell'){const ex=net.dcVoltage(c,'EX+','EX−');c._active=net.enabled.has(c.id)&&!net.faultDomains.has('load:'+c.id);c._loadExcitation=c._active?ex:0;c._loadStatus=c._active?ex.toFixed(1)+' V uyartım':ex!==null&&Math.abs(ex)>15?'15 V sınırı aşıldı':net.faultDomains.has('load:'+c.id)?'Çıkış kısa devre':'Besleme yok / geçersiz';c._analogOutput=Devices.output(c,d)}
@@ -371,14 +388,14 @@
     }
     for(const c of project.components){const d=definition(byId,c);if(!d?.incrementalEncoder38mm)continue;const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor)IncrementalEncoder.syncMotor(c,d,project,byId,now,true);else{delete c._encoderMotorId;delete c._encoderMotorRef;}}
     let numericState=null;
-    if(project.components.some(c=>['current-transformer','meter-a','meter-v','multimeter','clamp-meter','resistor','capacitor','reactor','opamp','ldr'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.instrument||isDrive(definition(byId,c)))){
+    if(project.components.some(c=>['current-transformer','meter-a','meter-v','multimeter','clamp-meter','resistor','capacitor','reactor','opamp','dual-opamp','crystal','speaker','ldr'].includes(definition(byId,c)?.kind)||definition(byId,c)?.digitalIc==='dac0808'||definition(byId,c)?.id==='winding'||definition(byId,c)?.instrument||isDrive(definition(byId,c)))){
       const numeric=typeof module==='object'&&module.exports?require('./current-model.js'):root.DTSCurrentModel;
       numericState=numeric.update(project,byId,network(project,byId,actuators,sensors,true,now),{now});
     }
     for(const c of project.components){const d=definition(byId,c),current=Math.abs(Number(c._currentValue)||0);if(d?.kind==='resistor'&&current>1e-6)c._active=c._powered=true;if(d?.kind==='led'){c._active=c._lampActive=c._powered=current>1e-6;if(c._active&&!c._hot.includes('A'))c._hot.push('A')}}
     for(const w of project.wires){if(w.mechanical||w.role==='MECHANICAL'){w._fault=false;w._active=false;continue}const r=net.find(endpointKey(w.from)),atPotential=[...(net.potentials.get(r)?.values()||[])].some(p=>!net.faultDomains.has(p.domain)&&hot(p)),atSolvedVoltage=endpoint=>{if(!numericState||!endpoint?.c)return false;const c=project.components.find(x=>x.id===endpoint.c);if(!c)return false;const v=numericState.voltages.get(numericState.pin(c,endpoint.p));return !!v&&Math.hypot(v[0],v[1])>.25};w._fault=net.faultRoots.has(r);w._active=atPotential||atSolvedVoltage(w.from)||atSolvedVoltage(w.to);}
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
-    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0))),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
+    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0))),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
   }
   const api={solve,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
