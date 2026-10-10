@@ -108,7 +108,9 @@ async function evaluate(cdp,expression){
   return r.result?.value;
 }
 async function shot(cdp,name){
-  const r=await cdp.call('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:false});
+  let r;
+  try{r=await cdp.call('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:false})}
+  catch(e){throw Error('Screenshot capture failed ['+name+']: '+(e?.message||e))}
   const data=Buffer.from(r.data,'base64'),size=pngSize(data);
   if(size.width!==GOLDEN.viewport.width||size.height!==GOLDEN.viewport.height)throw Error(name+' screenshot boyutu yanlış: '+size.width+'x'+size.height);
   if(data.length<10000)throw Error(name+' screenshot beklenenden küçük.');
@@ -227,6 +229,25 @@ async function main(){
        })()`);
        assert(setup.ok&&setup.minimized&&setup.restored,'Panel minimize/restore failed: '+id+' '+JSON.stringify(setup));
        const x=setup.x,y=setup.y;
+       // Four corner stress positions, using real CDP mouse events.
+       const cornerChecks=[];
+       for(const [name,tx,ty] of [
+        ['top-left',-5000,-5000],['top-right',5000,-5000],
+        ['bottom-left',-5000,5000],['bottom-right',5000,5000]
+       ]){
+        const origin=await evaluate(cdp,`(()=>{const r=document.querySelector('#tutorialCoach .tutorial-float-bar').getBoundingClientRect();return{x:r.left+Math.min(24,r.width/3),y:r.top+Math.min(16,r.height/2)}})()`);
+        await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:origin.x,y:origin.y});
+        await cdp.call('Input.dispatchMouseEvent',{type:'mousePressed',x:origin.x,y:origin.y,button:'left',clickCount:1});
+        await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:tx,y:ty,buttons:1});
+        await cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:tx,y:ty,button:'left',clickCount:1});
+        const geometry=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach'),r=p.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,bounded:r.left>=7&&r.top>=57&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1}})()`);
+        cornerChecks.push({name,...geometry});
+       }
+       report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerChecks=cornerChecks;
+       assert(cornerChecks.every(c=>c.bounded),'Panel corner out of viewport: '+id+' '+JSON.stringify(cornerChecks));
+       // Return panel to a known position before the regular drag test.
+       await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach');p.style.left='${setup.left}px';p.style.top='${setup.top}px';return true})()`);
+
        await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x,y});
        await cdp.call('Input.dispatchMouseEvent',{type:'mousePressed',x,y,button:'left',clickCount:1});
        await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:x+45,y:y+28,buttons:1});
@@ -234,7 +255,7 @@ async function main(){
        const interaction=await evaluate(cdp,`(()=>{
         const p=document.querySelector('#tutorialCoach'),btn=document.querySelector('#tutorialCoachReopen'),r=p.getBoundingClientRect();
         const dragged=Math.abs(r.left-${setup.left})>2||Math.abs(r.top-${setup.top})>2;
-        const bounded=r.left>=7&&r.top>=57&&r.right<=window.innerWidth+1&&r.top<=window.innerHeight-48+1;
+        const bounded=r.left>=7&&r.top>=57&&r.right<=window.innerWidth+1&&r.bottom<=window.innerHeight+1;
         btn.click();const hidden=p.hidden;btn.click();const visible=!p.hidden;
         return {dragged,bounded,hidden,visible,ok:dragged&&bounded&&hidden&&visible};
        })()`);
