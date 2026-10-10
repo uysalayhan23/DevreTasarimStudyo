@@ -223,11 +223,13 @@ async function main(){
         if(!panel||!bar||!mini||!reopen)return {ok:false,reason:'Panel controls missing'};
         if(panel.classList.contains('is-minimized'))mini.click();
         mini.click();const minimized=panel.classList.contains('is-minimized');
+        const minimizedHeight=panel.getBoundingClientRect().height;
         mini.click();const restored=!panel.classList.contains('is-minimized');
+        const restoredHeight=panel.getBoundingClientRect().height;
         const rect=bar.getBoundingClientRect(),p=panel.getBoundingClientRect();
-        return {ok:true,minimized,restored,x:rect.left+Math.min(24,rect.width/3),y:rect.top+Math.min(16,rect.height/2),left:p.left,top:p.top};
+        return {ok:true,minimized,restored,minimizedHeight,restoredHeight,x:rect.left+Math.min(24,rect.width/3),y:rect.top+Math.min(16,rect.height/2),left:p.left,top:p.top};
        })()`);
-       assert(setup.ok&&setup.minimized&&setup.restored,'Panel minimize/restore failed: '+id+' '+JSON.stringify(setup));
+       assert(setup.ok&&setup.minimized&&setup.restored&&setup.minimizedHeight<setup.restoredHeight,'Panel minimize/restore height failed: '+id+' '+JSON.stringify(setup));
        const x=setup.x,y=setup.y;
        // Four corner stress positions, using real CDP mouse events.
        const cornerChecks=[];
