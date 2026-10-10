@@ -25,14 +25,14 @@
    const f=d.phaseProtection,scope='phase-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
    const vb=f?'325 120 370 1400':'130 200 760 1290';
    const clip=f?'<rect x="336" y="130" width="348" height="1378" rx="18"/>':'<rect x="145" y="212" width="730" height="1264" rx="20"/>';
-   a=`<svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="${vb}" preserveAspectRatio="none"><defs><clipPath id="${scope}">${clip}</clipPath></defs><image href="assets/products/${f?'fkv':'fsr'}-front-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></svg>`;
+   a=`<svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${scope}">${clip}</clipPath></defs><image href="assets/products/${f?'fkv':'fsr'}-front-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></svg>`;
    a+=circle(f?75:124,f?150:177,3,c._active?'#4ff461':'#35513a');
    if(c._phaseFault)a+=text(c._phaseFault,x,h+8,8);
   }else if(d.id==='nh-fuse-holder'){
    a=rect(10,10,w-20,h-20,'#74868f')+rect(18,24,w-36,h-54,'#383f42');
    for(let i=0;i<3;i++)a+=rect(28+i*50,32,24,18,'#c5a770')+rect(28+i*50,164,24,18,'#c5a770');
    const nhScope='nh-holder-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
-   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="none"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
+   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
    for(let i=0;i<3;i++)if(c.nhFuses?.[i])a+=rect(34+i*50,88,12,77,'#b8bdc0')+rect(28+i*50,104,24,46,'#eee9dc')+text('NH',40+i*50,130,8);
    a+='</g>'+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
   }else if(d.id==='nh-fuse'){
