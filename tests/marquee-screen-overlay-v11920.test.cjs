@@ -15,7 +15,8 @@ test('marquee visual uses viewport screen space instead of transformed SVG works
  assert.match(app,/Object\.assign\(box\.style,\{left:screenRect\.left\+'px'/);
  assert.match(css,/\.selection-box\{position:absolute;z-index:8;pointer-events:none;/);
  assert.match(html,/styles\.css\?rev=20261008-marquee-screen-overlay2/);
- assert.match(html,/app\.js\?rev=20261008-marquee-screen-overlay1/);
+ assert.match(html,/app\.js\?rev=[A-Za-z0-9-]+/);
+ assert.doesNotMatch(html,/app\.js\?rev=20261008-marquee-screen-overlay1/);
 });
 
 test('marquee selection membership still uses world coordinates',()=>{
