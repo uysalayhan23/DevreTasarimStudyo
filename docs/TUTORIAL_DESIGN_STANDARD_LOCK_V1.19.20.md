@@ -154,3 +154,12 @@ Enerji analizi derslerinde konuya özgü wattmetre/cosφ kazanımları farklı s
 Temassız takometre öğreniminde cihaz motorun elektrik terminallerine bağlanmaz. Bu sürüm, bağımsız gerçek optik algılayıcı değil, sanal `motor-3p` modelinden türeyen `_motorRPM` ölçümünü gösterir. Yalnız motor çalışırken hedeflenen motorun RPM'si geçerli sayılır; enerji kesildiğinde eski okuma saklanmaz. 750/1500/3000 rpm kontrolü ve rpm/60 tur/s karşılaştırması mevcut yüzer ders penceresi içine yerleşir; çalışma alanı ve mikro açıklama davranışı değiştirilmez.
 
 Her 6 dersin özgün öğrenme hedefi, ölçüm görevi ve konu kontrolü ayrı tutulur. İlk 24 gelişmiş dersin üçü zaten enerji analizi dersidir; C paketinde 3 takometre dersinin yükseltilmesiyle toplam gelişmiş kod kapsamı 27/45 olur. Her dersin gerçek Windows/Edge ekran, piksel, terminal ve çocukların anlayacağı pedagojik son kabulü ayrıca yapılacaktır.
+
+
+## 26. 45/45 ölçüm dersinde kaynak dürüstlüğü, sanal ölçek ve açıklama sunumu
+
+45 elektriksel ölçme ve ölçü aletleri dersi geliştirilmiş öğretim kodunu kullanır. Gerçek fiziksel simülasyonun desteklemediği araçlarda üretici modeline benzeyen ama çalışmayan sahte alet yerine, **açıkça etiketlenmiş sanal ölçüm ve ölçek okuma eğitimi** kullanılır. Cetvel, kumpas, mikrometre, lüks, desibel, sıcaklık ve LCR hesaplama örnekleri için formül, birim, örnek seçimi, şema ve sonuç ayrı gösterilir; gerçek cihaz kalibrasyonu iddia edilmez. PNP sensor BK çıkışı ve UNI-T girişleri gerçek simülasyon/devre bağlantısıyla ölçülür; enerji Wh bilgisi gerçek sanal enerji analizöründen türetilir.
+
+**Pencere ilkesi:** Öğretici kartları yalnız mevcut sürüklenebilir yüzer anlatım içinde tutulur; 13–14 px metinler, mevcut pencere boyutları ve çalışma alanı korunur. Küçük malzeme/prob açıklamaları ilk açılışta görünür, sahne ilk tıklamasında gizlenir, yalnız ilgili cisme hover ile tekrar görünür. Görsel eğitim şemalarının gerçek cihaz fotoğrafı olmadığı belirtilir.
+
+`docs/MEASUREMENT_45_LESSON_ACCEPTANCE_MATRIX_V1.19.20.md` ders başına kanıt ve açık görsel QA kontrolüdür. Gelişmiş kod kapsamı 45/45 olmuş olsa bile doğru fiziksel ürün, terminal, Windows canlı ekran ve gerçek öğretim yeterliliği tek tek onaylanmadan MQ-00 DONE denmez.
