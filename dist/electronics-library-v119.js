@@ -16,7 +16,7 @@ add({
 add({
  id:'lm358p-opamp-a',name:'LM358P İşlemsel Yükselteç · A · ESKİ PROJE UYUMU',model:'LM358P · legacy unit alias',brand:'Texas Instruments',category:'Yarı İletkenler',catalogGroup:'electronics-ics',kind:'opamp',liveMaterial:true,materialSymbol:false,catalogHidden:true,legacyAliasTo:'lm358p-dip8',refPrefix:'U',w:180,h:130,
  pins:[P('IN+','3 · IN+',0,42,'left'),P('IN-','2 · IN−',0,88,'left'),P('OUT','1 · OUT',180,65,'right'),P('V+','8 · V+',90,0,'top'),P('V-','4 · V−',90,130,'bottom')],
- opampUnit:'A',openLoopGain:100000,outputResistance:20,productVisualUrl:'https://aionfx.com/app/files/components/texas-instruments-lm358p.jpg',productVisualExact:true,productVisualSource:'Gerçek Texas Instruments LM358P PDIP-8 fotoğrafı · Aion FX; TI LM358 datasheet pinout ve paket doğrulaması',datasheetUrl:'https://www.ti.com/lit/ds/symlink/lm358.pdf'
+ opampUnit:'A',openLoopGain:100000,outputResistance:20,deprecatedVisual:true,productVisualSource:'Legacy logical A-unit retained only for project migration; physical rendering uses lm358p-dip8',datasheetUrl:'https://www.ti.com/lit/ds/symlink/lm358.pdf'
 });
 add({
  id:'ldr-gl5528',name:'GL5528 LDR Foto Direnç',model:'GL5528 · CdS · 10–20 kΩ @ 10 lux · ≥1 MΩ karanlık',category:'Sensörler',catalogGroup:'sensors',kind:'ldr',liveMaterial:true,materialSymbol:false,arduinoShared:true,refPrefix:'R',w:140,h:135,
