@@ -10,7 +10,9 @@ test('Öğretici Modu expanded curriculum keeps every topic populated',()=>{
 });
 
 test('button and LED course puts the 24 VDC NC shutoff lesson second and keeps existing lessons',()=>{
- const ls=Lessons.lessons.filter(l=>l.topicId==='button-led');assert.equal(ls.length,5);
+ const finalized={window:{DTSTutorialLessons:JSON.parse(JSON.stringify(Lessons))}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../dist/tutorial-pedagogy.js'),'utf8'),finalized);
+ const ls=finalized.window.DTSTutorialLessons.lessons.filter(l=>l.topicId==='button-led');assert.equal(ls.length,5);
  assert.match(ls[0].title,/24 VDC NO buton.*LED yakma/i);assert.match(ls[1].title,/24 VDC NC buton.*LED.*söndürme/i);
  const normallyOpen=ls[0],normallyClosed=ls[1];
  assert.doesNotMatch(byId.resistor.visualInfo.model,/1\s*kΩ/i,'generic resistor artwork must not claim every resistor is 1 kΩ');
@@ -195,8 +197,8 @@ test('minimized lesson coach always keeps a working restore control',()=>{
  const mode=fs.readFileSync(require.resolve('../dist/tutorial-mode.js'),'utf8'),enh=fs.readFileSync(require.resolve('../dist/tutorial-enhancements.js'),'utf8'),css=fs.readFileSync(require.resolve('../dist/tutorial.css'),'utf8'),boot=fs.readFileSync(require.resolve('../dist/tutorial-bootstrap.js'),'utf8');
  assert.match(mode,/data-tutorial-coach-minimize/);assert.match(mode,/minimized\?'□':'−'/);assert.match(mode,/toggleCoachMinimize/);assert.match(mode,/data-tutorial-float-bar/);
  assert.match(enh,/data-tutorial-coach-minimize/);assert.match(enh,/querySelector\('\.tutorial-float-bar'\)/);assert.match(enh,/classList\.contains\('is-minimized'\)/);
- assert.match(css,/#tutorialCoach\.is-minimized\{height:46px!important/);assert.match(css,/#tutorialCoach\.is-minimized>:\not\(\.tutorial-float-bar\)/);
- assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-coach-restore1/);assert.match(boot,/tutorial-enhancements\.js\?v=1\.19\.20-coach-restore1/);
+ assert.match(css,/#tutorialCoach\.is-minimized\{height:46px!important/);assert.match(css,/#tutorialCoach\.is-minimized>:not\(\.tutorial-float-bar\)/);
+ assert.match(boot,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);assert.match(boot,/tutorial-enhancements\.js\?v=1\.19\.20-coach-restore1/);
 });
 
 test('quiz answers randomize on lesson entry and show dash, green tick, red cross and correct answer',()=>{
@@ -236,5 +238,5 @@ test('guided rebuild runtime defensively repairs a stale lesson whose wires exis
  assert.match(mode,/function ensureGuidedLesson/);
  assert.match(mode,/guided=l\.kind==='wiring'\|\|l\.project\?\.tutorialLesson\?\.phase==='demo'/);
  assert.match(mode,/if\(wires\.length&&guided\)\{l\.kind='wiring';if\(!Array\.isArray\(l\.steps\)\|\|l\.steps\.length!==wires\.length\)l\.steps=stepsFromWires\(l\)\}/);
- assert.match(mode,/tutorial-pedagogy\.js\?v=1\.19\.1-pedagogy15/);
+ assert.match(mode,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy65-lm358-output/);
 });
