@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy65-lm358-output');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy65-lm358-output');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d1');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -942,6 +942,21 @@ function measurementUpgradeCard(l,session,project){
     '<small>Bu, simüle edilen motorun _motorRPM durumundan türetilen model okumasıdır; gerçek bir optik cihaz kalibrasyonu değildir.</small></div>'+
     '<div class="measurement-tacho-presets">'+[750,1500,3000].map(n=>'<button type="button" data-measurement-tacho-rpm="'+n+'"'+(Number(motor?.motorRatedRpm)===n?' aria-pressed="true"':'')+'>'+n+' rpm</button>').join('')+'</div>';
  }
+ if(u.workbench){
+  const model=root.DTSMeasurementWorkbench?.display?.(l,project);
+  if(model){
+    const selected=model.index;
+    const label=n=>u.workbench==='energy'?n+' dakika':u.workbench==='sensor'?n+' mm':u.workbench==='lux'?n+' m':u.workbench==='sound'?n+' Pa':u.workbench==='temperature'?n+' °C':u.workbench==='lcr'?n+' Hz':n+' mm';
+    const choices=model.choices.map((n,i)=>'<button type="button" data-measurement-workbench-index="'+i+'" aria-pressed="'+(selected===i)+'">'+esc(label(n))+'</button>').join('');
+    const position=model.choices.length>1?(selected/(model.choices.length-1)*100):0;
+    scope+='<div class="measurement-workbench-panel"><strong>Adım adım sanal deney</strong>'+
+      '<div class="measurement-workbench-options">'+choices+'</div>'+
+      '<div class="measurement-workbench-gauge" role="img" aria-label="Seçilen sanal referans seviyesi"><i style="width:'+position+'%"></i></div>'+
+      '<output class="measurement-workbench-result">'+esc(model.label)+'</output>'+
+      '<p class="measurement-workbench-equation">'+esc(model.formula)+'</p>'+
+      '<small>'+esc(model.caveat)+'</small></div>';
+  }
+ }
  return '<section class="measurement-upgrade-card"><small>ÖZEL UYGULAMA · '+esc(l.title)+'</small><h3>'+esc(u.heading)+'</h3>'+
  '<p>'+esc(u.goal)+'</p><div><strong>Şimdi sen ölç:</strong> '+esc(u.task)+'</div>'+
  '<p><b>Konu kontrolü:</b> '+esc(u.question)+'</p><div class="measurement-upgrade-answers">'+
@@ -998,6 +1013,14 @@ function bind(){
    const backBtn=e.target.closest?.('[data-tutorial-back]');if(backBtn){e.preventDefault();closeHub();return}
    const openBtn=e.target.closest?.('[data-tutorial-open]');if(openBtn){e.preventDefault();open(openBtn.dataset.tutorialOpen);return}
    const group=e.target.closest?.('[data-tutorial-group]');if(group){filter=group.dataset.tutorialGroup;renderDashboard();return}
+   const wb=e.target.closest?.('[data-measurement-workbench-index]');
+   if(wb){e.preventDefault();const p=root.DTSEditor?.getProject?.(),lesson=lessonFor(p);
+     if(lesson?.measurementUpgrade?.workbench&&p){
+       root.DTSMeasurementWorkbench?.choose?.(lesson,p,wb.dataset.measurementWorkbenchIndex,root.CCSSimulation?.solve,root.DTSEditor?.byId);
+       root.DTSEditor?.render?.();sync(p);
+     }
+     return;
+   }
    const tachoRpm=e.target.closest?.('[data-measurement-tacho-rpm]');
    if(tachoRpm){e.preventDefault();const project=root.DTSEditor?.getProject?.(),lesson=lessonFor(project);
     if(lesson?.measurementUpgrade?.tachometer){const rpm=Number(tachoRpm.dataset.measurementTachoRpm),motor=project.components.find(c=>c.id==='m1');
