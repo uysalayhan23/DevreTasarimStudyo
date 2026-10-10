@@ -26,5 +26,6 @@ test('wire preview still tracks pointermove through canvasPoint',()=>{
 
 test('pointer alignment cache revision is current',()=>{
  const html=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
- assert.match(html,/app\.js\?rev=20261008-sim-audit1/);
+ assert.match(html,/app\.js\?rev=[A-Za-z0-9-]+/);
+ assert.doesNotMatch(html,/app\.js\?rev=20261008-sim-audit1/);
 });
