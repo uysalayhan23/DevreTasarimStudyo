@@ -1303,3 +1303,43 @@ Durum: **DONE / LOCKED / ENERGY ANALYZER POWER LAB**
 - Sayfa simülasyon-only uyarısı taşır; gerçek şebeke bağlantısı veya uygulama talimatı içermez.
 - Yüzer/sürüklenebilir/yeniden boyutlandırılabilir Konu Anlatımı ve aç/kapa sağ panel standardı korunur.
 - GitHub Actions çalıştırılmadı.
+
+
+## 2026-10-10 — Yeni repo geçiş auditi + gerçek elektronik/Arduino shared kapanışı
+
+Durum: **DONE / TARGET REPO MAIN / ACTIONS NOT USED**
+
+- Yeni aktif çalışma reposu: `uysalayhan23/DevreTasarimStudyo`, dal: `main`.
+- Repo izinleri doğrulandı: admin/maintain/push/pull/triage = true; collaborator permission = admin.
+- Yeni repo 2026-10-10 05:10–05:12 UTC civarında yüklenmiş proje snapshotını içerir; önceki büyük iyileştirmelerin çoğu snapshotta mevcut bulundu.
+- Korunduğu doğrulanan başlıca kapanışlar: Windows file-based launcher, Arduino Atölyesi/dashboard, V20 ve Siemens 3RV gerçek görsel katmanları, pointer/SVG kablo hizalama, PLC global simülasyon blok kaldırma, rich-reference-v1 Öğretici standardı, UT33D+/UT200A/UT61E+ ölçüm dersleri, enerji analizörü ve DC/seri/paralel/Kirchhoff kabul kilitleri.
+- Eksik ana delta: gerçek elektronik komponent + Arduino shared simulation kapanışıydı.
+
+### Bu repoya eklenen eksik delta
+- `dist/electronics-ics-v11920.js`: 33 gerçek/shared elektronik komponent; PDIP, TO-220/TO-3P, TO-92, DO-35/DO-41, HC-49, elektret, hoparlör ve BPW34 paket metadata/pinout tanımları.
+- `dist/digital-ic-runtime-v11920.js`: 74HC/CD40xx lojik, sequential state, MUX/decoder/encoder, ADC0804 ve DAC0808 runtime modeli.
+- `dist/simulation.js`: dijital IC ağ sürüşü, state settle, J113 ve elektret transdüser entegrasyonu.
+- `dist/current-model.js`: LM358 çift kanal bağımsız state, DAC0808 current-output, BPW34 photocurrent, kristal BVD eşdeğeri ve hoparlör yük modeli.
+- `dist/materials.js`: realPackage tanımları için orthographic üstten paket rendererları.
+- `dist/workspaces.js` + `dist/catalog.js`: `arduinoShared=true` komponentlerin Arduino Atölyesinde aynı ID/model ile görünmesi.
+- `dist/tutorial-pedagogy.js`: fiziksel `tutorial-*` elektronik placeholderlarının gerçek parçalarla fail-closed remap'i; kablolu endpoint sahibi komponentler otomatik değiştirilmez.
+- `tests/electronics-real-ics-v11920.test.cjs`: gerçek paket/Arduino shared + NAND/D-FF/74HC595/ADC/DAC davranış kilidi.
+- Mevcut tutorial audit test yardımcıları yeni gerçek IC kütüphanesini yükleyecek şekilde güncellendi.
+- Browser cache anahtarları real-ics1 olarak yenilendi.
+
+### Actions'sız doğrulama
+- Değiştirilen JS/test dosyaları sözdizimi: **PASS**.
+- Gerçek/shared parça sayısı: **33**.
+- Arduino workspace + catalog kabulü: **PASS**.
+- SN74HC00 NAND truth-table: **PASS**.
+- SN74HC74 rising-edge D-FF: **PASS**.
+- SN74HC595 shift/latch: **PASS**.
+- ADC0804 2,5 V / 5 V midscale: **128**, PASS.
+- DAC0808 full-scale reference-current örneği: **0,99609375 mA**, PASS.
+- Fiziksel tutorial placeholder offender: **0**.
+- Pedagoji sürümü: `v1.19.20-pedagogy63-real-parts`.
+- GitHub Actions **çalıştırılmadı**. Actions gerekirse kullanıcıdan önceden izin alınacaktır.
+
+### Fidelity sınırı
+- Modeller datasheet odaklı pinout, besleme, logic/state ve temel analog/eşdeğer davranış sağlar.
+- Solver transistor-level SPICE değildir; üretim toleransı, tüm parasitikler, EMI ve tam semiconductor I-V/thermal breakdown ayrıntıları birebir fiziksel cihaz simülasyonu olarak iddia edilmez.
