@@ -1,0 +1,11 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'..');
+const tests=fs.readdirSync(path.join(root,'tests')).filter(f=>f.endsWith('.test.cjs')).sort().map(f=>'tests/'+f);
+if(!tests.length)throw Error('Test dosyası bulunamadı.');
+const result=spawnSync(process.execPath,['--test','--test-reporter=tap',...tests],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});
+fs.mkdirSync(path.join(root,'build'),{recursive:true});
+fs.writeFileSync(path.join(root,'build','tests.tap'),result.stdout||'');
+process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
+if(result.error)console.error(result.error);
+process.exitCode=typeof result.status==='number'?result.status:1;
