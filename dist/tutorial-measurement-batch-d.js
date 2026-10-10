@@ -70,6 +70,7 @@ for(const [suffix,mode,heading,goal,task,question,answers] of entries){
   const m=p.components.find(c=>c.typeId==='unit-ut33d-plus'),red=p.components.find(c=>c.id==='mm-red'),black=p.components.find(c=>c.id==='mm-black');
   if(!m||!red||!black)throw Error('PNP UNI-T probe model incomplete');
   m.meterPosition=4;m.multimeterMode='DCV';red.probeTarget={c:sensor.id,p:'BK'};black.probeTarget={c:sensor.id,p:'BU'};
+  l.steps=p.wires.filter(w=>w.role!=='MEASURE'&&!w.probeLead).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Sensörü besleme terminaline bağla',why:w.tutorialWhy||'Besleme referansı'}));
  }else if(mode.startsWith('electrical:')){
   const token=mode.split(':')[1],source=token.startsWith('outline-')?L.byId['measurement-workshop-'+token]:L.byId['measurement-workshop-'+token];
   if(!source?.project?.components?.length)throw Error('Electrical reference missing '+token);
