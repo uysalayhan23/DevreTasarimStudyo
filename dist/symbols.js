@@ -15,7 +15,7 @@
   const verticalSide={top:'right',right:'bottom',bottom:'left',left:'top'};
   function prepareLibrary(lib){
   lib.forEach(d=>{
-    const oldW=d.w,oldH=d.h,precise=!!d.preservePinGeometry,newW=precise?oldW:Math.max(40,Math.round(oldW/20)*20),newH=precise?oldH:Math.max(40,Math.round(oldH/20)*20);
+    const oldW=d.w,oldH=d.h,precise=!!d.preservePinGeometry||String(d.physicalScaleSource||'').startsWith('workspace-space-v1:'),newW=precise?oldW:Math.max(40,Math.round(oldW/20)*20),newH=precise?oldH:Math.max(40,Math.round(oldH/20)*20);
     const sourcePins=d.pins.map(p=>precise?{...p}:{...p,x:p.x===0?0:p.x===oldW?newW:Math.round(p.x/GRID)*GRID,y:p.y===0?0:p.y===oldH?newH:Math.round(p.y/GRID)*GRID});
     const source={w:newW,h:newH,pins:sourcePins};
     const horizontalPins=sourcePins.filter(p=>p.side==='left'||p.side==='right').length;
