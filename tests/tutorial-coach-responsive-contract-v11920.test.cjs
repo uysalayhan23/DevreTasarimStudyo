@@ -32,6 +32,25 @@ test('PNG envelope and failure JSON are checked before visual acceptance',()=>{
  assert.match(browser,/data\.readUInt32BE\(16\)/);
  assert.match(browser,/report\.failure=\{message:/);
  assert.match(browser,/fs\.writeFileSync\(path\.join\(BUILD,'report\.json'\)/);
- assert.ok(browser.indexOf("const cornerShot=await shot")<browser.indexOf("assert(cornerChecks.every"));
- assert.ok(browser.indexOf("const panelShot=await shot")<browser.indexOf("assert(interaction.ok"));
+ for(const [capture,gate] of [
+  ["const cornerShot=await shot","assert(cornerChecks.every"],
+  ["const panelShot=await shot","assert(interaction.ok"]
+ ]){
+  const a=browser.indexOf(capture),b=browser.indexOf(gate);
+  assert.ok(a>=0&&b>=0, 'missing required screenshot/acceptance gate: '+capture+' / '+gate);
+  assert.ok(a<b, 'screenshot must precede acceptance gate: '+capture);
+ }
 });
+test('PNG validator rejects malformed signature, IHDR and missing IEND',()=>{
+ const a=browser.indexOf('function pngSize(data){'),b=browser.indexOf('function findBrowser()',a);
+ assert.ok(a>=0&&b>a,'PNG parser source unavailable');
+ const png=vm.runInNewContext(browser.slice(a,b)+';pngSize',{Buffer});
+ const valid=Buffer.alloc(45);Buffer.from([137,80,78,71,13,10,26,10]).copy(valid,0);
+ valid.write('IHDR',12);valid.writeUInt32BE(1440,16);valid.writeUInt32BE(1000,20);valid.write('IEND',37);
+ assert.equal(png(valid).width,1440);assert.equal(png(valid).height,1000);
+ const brokenSig=Buffer.from(valid);brokenSig[0]=0;assert.throws(()=>png(brokenSig));
+ const brokenHdr=Buffer.from(valid);brokenHdr.write('ABCD',12);assert.throws(()=>png(brokenHdr));
+ const missingEnd=Buffer.from(valid);missingEnd.write('ABCD',37);assert.throws(()=>png(missingEnd));
+ const truncated=Buffer.from(valid.subarray(0,24));assert.throws(()=>png(truncated));
+});
+
