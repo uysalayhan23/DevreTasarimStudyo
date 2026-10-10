@@ -1561,3 +1561,19 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - Aynı standart 45/45 ölçüm dersinin dışındaki derslerin arayüz davranışına da uygulanır; bu 45 dersin özel içerik/görsel/ölçüm dönüşümünün pedagojik olarak bitirildiği iddiası değildir.
 - Actions çalıştırılmadı, commit `[skip ci]`; MQ-00 nihai release kabulü açık.
 
+
+
+## 2026-10-10 — Tüm öğretici derslerde mikro açıklama kapanış regresyonu (831 test)
+
+**MQ-07 ortak arayüz davranışı KODLANDI ve HEDEFLİ TESTLERDE KABUL; GENEL MQ-00 SON WINDOWS/UI KABULÜ AÇIK.**
+
+- Kullanıcı: mikro açıklama kartları ilk açılışta görünür; ilk tıklamada kalkar; fare kırmızı veya siyah proba/malzemeye geldiğinde yalnız eşleşen bilgi görünür; fare ayrılınca kapanır. `tutorialCoach`, alt öğrenci görevleri ve sağ panel korunur; çalışma sahnesi daraltılmaz.
+- `dist/tutorial-micro-hints.js` ortak olay modülü, `tutorial-mode.js` senkronizasyonu, lazy-loader `tutorial-bootstrap.js`, `tutorial.css` görünürlük/tooltip kuralları, `index.html` CSS cache yenilemesi repoya işlendi; eski CSS revizyon bekleyen sekiz test dosyası güncellendi. Bütün commitlerde `[skip ci]`.
+- Yerel `node --test --test-concurrency=4 tests/tutorial-*.test.cjs`: **101/101 PASS** (mikro kart testleri dahil, o koşuda 5 test). Sonrasında 45 ölçüm dersi dahil **1.655/1.655 öğretici proje kaydı** için gerçek bileşen varlığı doğrulandı ve her dersi başlangıçta gösterip ilk tıklamada gizleyen ortak kontrol 1.655 ayrı ders üzerinde hatasız çalıştırıldı. En son hedefli `tests/tutorial-micro-hints-v11920.test.cjs`: **7/7 PASS**; bu 7. test kapsamlı full run başlatıldıktan sonra eklendi, ayrı doğrulandı.
+- Yerel `node scripts/check.cjs`: **PASS**, 221 JS sözdizimi, 106 local dependency, 728 library material, 58 protected examples.
+- **Tam yerel regresyon** `node --test --test-concurrency=6 --test-reporter=tap tests/*.test.cjs`: **831 toplam / 828 PASS / 3 FAIL / 0 SKIP**, yaklaşık 286,8 saniye. Kalan üç başarısızlık yalnız `tests/repo-lock-integrity-v11920.test.cjs`: `WP-017 pinned baseline`, `workflow baseline self-reference`, `integrity checker mutation digest`. Üçü de ZIP içinde gerçek `.git` klasörü olmadığından `git merge-base`/`git show` çalıştıramıyor. **Bu üç test PASSED sayılmadı**.
+- Yeni GitHub `main` üzerindeki gerçek kodlu modül ayrıca doğrudan JavaScript smoke kontrolünden geçti (ilk kart görünümü, click-dismiss, kırmızı/siyah doğru hover, mouse ayrılınca hide, lazy loader + CSS cache eşleşmesi). Bu smoke, Windows görsel kabulünün yerine geçmez. GitHub'ın gerçek commit geçmişi REST compare ile doğrulandı: `d0187ef...` baseline son `main`'in atası; ZIP'deki native Git testlerinin çalıştığı iddiası değildir.
+- **Kapsam sınırı:** 1.655/1.655 ders için mikro açıklama arayüz motoru vardır; bu, 45 ölçüm dersinin veya bütün öğretici konuların özel görsel + devre + ölçüm + pedagojik dönüşümünün 45/45 nihai kabulü değildir. RGB kaynak alfa/maske görsel kalite ve Windows/Edge `file:///` son kullanıcı kabulü hâlâ AÇIK.
+- GitHub Actions `actions/runs=0` doğrulandı; hiçbir Actions işlemi tetiklenmedi.
+
+**MQ-00 kararı:** Mikro açıklama ortak davranışı kod/test düzeyinde hedefli kabul. Kullanıcıdan ZIP kabulü istenmeden önce gerçek Windows GUI ve Git geçmişi gerektiren üç native test uygun checkout üzerinde tamamlanmalıdır.
