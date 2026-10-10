@@ -76,3 +76,18 @@ test('terminals without material descriptions fail safely instead of inventing e
  assert.equal(desc.title,'Test elemanı');assert.match(desc.detail,/Malzemenin devredeki görevini inceleyin/);
  assert.ok(f.api.matchScore({id:'pb1',typeId:'test-probe-black'},{title:'Kırmızı prob'})<0);
 });
+
+test('shared explanations cover every existing tutorial project, including all 45 measurement lessons',()=>{
+ require('../dist/tutorial-lessons.js');
+ const source=require('../dist/tutorial-source-outline.js');
+ const ctx={window:{DTSTutorialLessons:source}};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/tutorial-pedagogy.js'),'utf8'),ctx);
+ const lessons=ctx.window.DTSTutorialLessons.lessons;
+ assert.ok(lessons.length>=1600,'full curriculum must remain present');
+ const measurement=lessons.filter(l=>l.topicId==='measurement-workshop');
+ assert.equal(measurement.length,45);
+ for(const lesson of lessons){
+  assert.ok(lesson.project?.components?.length>0,'No visible explanation target '+lesson.id);
+  for(const part of lesson.project.components)assert.ok(part.id&&part.typeId,lesson.id+' invalid part identity');
+ }
+});
