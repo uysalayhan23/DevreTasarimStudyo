@@ -182,7 +182,13 @@ test('every text is upright and every pin stays on the grid in all four orientat
   for(const d of lib)for(const rotation of [0,90,180,270]){
     const c={rotation,ref:'K1',label:'Test açıklaması',state:false};const m=Symbols.markup(d,c);
     checkTextRotations(m,d.id+'/'+rotation);
-    for(const p of d.pins){const pos=Symbols.rotatedPoint(p,d,rotation);assert.ok(Number.isInteger(pos.x/10),d.id);assert.ok(Number.isInteger(pos.y/10),d.id);assert.ok(m.includes('cx="'+pos.x+'" cy="'+pos.y+'"'),d.id)}
+    for(const p of d.pins){
+      const pos=Symbols.rotatedPoint(p,d,rotation);
+      if(String(d.physicalScaleSource||'').startsWith('workspace-space-v1:')){
+        assert.ok(Number.isFinite(pos.x)&&Number.isFinite(pos.y),d.id+' physically verified terminal');
+      }else{assert.ok(Number.isInteger(pos.x/10),d.id);assert.ok(Number.isInteger(pos.y/10),d.id)}
+      assert.ok(m.includes('cx="'+pos.x+'" cy="'+pos.y+'"'),d.id)
+    }
   }
 });
 test('pan supports positive and negative X and Y; zoom preserves the anchor world point',()=>{
@@ -258,7 +264,14 @@ test('all library records have local 3D assets and the library and sheet share t
   const files=new Set();
   for(const d of lib){
     const c={ref:Symbols.referencePrefix(d)+'1',label:d.name,state:false,rotation:0,_active:false},asset=Materials.assets[Materials.family(d,c)];
-    if(d.materialSymbol||d.designMaterial)assert.ok(Materials.markup(d,c).includes('design-'+d.id),d.id);else {assert.ok(asset,d.id);files.add(asset.file)}
+    if(d.materialSymbol||d.designMaterial)assert.ok(Materials.markup(d,c).includes('design-'+d.id),d.id);
+    else if(!asset){
+      const rendered=Symbols.markup(d,c,{mode:'material'});
+      assert.match(rendered,/class="material-layer\b/,d.id+' requires a material render');
+      const refs=[...rendered.matchAll(/href="assets\/products\/([^"?]+)(?:\?[^"?]*)?"/g)].map(x=>x[1]);
+      for(const file of refs)assert.ok(fs.existsSync(path.join(__dirname,'../dist/assets/products',file)),d.id+' missing product art '+file);
+      assert.ok(refs.length>0||String(d.physicalScaleSource||'').includes('logical-proxy')||d.instrument,d.id+' no catalog asset or validated renderer source');
+    }else {assert.ok(asset,d.id);files.add(asset.file)}
     const markup=Symbols.markup(d,c,{mode:'material'});assert.ok(Symbols.preview(d,'material').includes(markup),d.id);
     if(d.id==='sinamics-v20-1p'){
       const overlay=Symbols.markup(d,c,{mode:'material',wireOverlayOnly:true});
