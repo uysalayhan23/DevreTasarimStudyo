@@ -82,3 +82,10 @@ BERO 4, motor ileri/geri 4, yıldız/üçgen 4 (toplam 12) dersin mevcut kompone
 ## 2026-10-10 — Batch L, Dual-DC (kod tamamlandı; test kabulü açık)
 
 İki izole DC, ortak referans, kuru kontakla izolasyon ve NPN ile G2 yük kontrolünden oluşan 4 canonical dersin bileşen, bağlantı ve guided step kayıtları değiştirilmeden zenginleştirildi. `tests/tutorial-dual-dc-batch-l-v11920.test.cjs` iki Node test tanımı eklendi. Kapsam 136/1655, kalan 1519. MQ-07 lider, MQ-04/MQ-05 çapraz, MQ-12 regresyon, MQ-13 süreklilik, MQ-00 kabul. GitHub yerel klonlaması DNS hatasıyla bloklandı; **H–L son HEAD Node suite, elektriksel solver, Windows Edge görsel acceptance RUN/PASS değildir**. Yalnız mevcut kaynak ve loader bağımlılıkları gözden geçirildi. Testler ayrı koşulmadıkça simulationAcceptance=false/visualAcceptance=false. Actions kullanılmadı; `[skip ci]`.
+
+
+## 2026-10-10 — H–L gerçek regresyon kapısı ve motor elektriksel kilit denetimi
+
+**MQ-00: OPEN / TEST DEFINED, NOT EXECUTED.** Son `main` kaynağındaki `motorForwardReverseCircuit` ve `motorStarDeltaCircuit` gözle incelendi: STOP iki yönün önünde; ileri/geri birbirinin NC yardımcı kontak kilidine bağlı; ileri ana güç U/V/W, geri ana güçte iki faz yer değiştiriyor. Otomatik yıldız/üçgen devresinde zaman NC/NO, K2/K3 çapraz NC kilitleri, yıldız ortak üç çıkış ve üçgen W2/U2/V2 faz eşleşmeleri tanımlıdır. Bu **kaynak denetimi**, solver davranışını ispatlamaz.
+
+`tests/tutorial-motor-physical-regression-v11920.test.cjs` dört test ekler: 4 ileri/geri kablo/stop/interlock/faz eşleşmesi, 3 otomatik yıldız-üçgen interlock/geçiş güç bağlantısı, 4 ileri/geri rest-state solver, 4 yıldız/üçgen rest-state solver. **H–L mevcut Node testleri ve bu dört yeni test güncel HEAD için çalıştırılmadı**, hiçbirine PASS verilmedi. Geri-yön motor dönüşü, START/STOP, mühürleme, faz geçişi, K2/K3 eşzamanlı kapama ve fiziki Windows/Edge görünümü halen açık. Kaynakta kanıtlanmış elektriksel kök neden bulunmadan kilitli devre bağlantıları değiştirilmedi. MQ-07 öğretim, MQ-05 elektrik, MQ-04 terminal çapraz doğrulama, MQ-12 test, MQ-13 repo, MQ-00 kararı. Actions çalıştırılmadı; `[skip ci]`.
