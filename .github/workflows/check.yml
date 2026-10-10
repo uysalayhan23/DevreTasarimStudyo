@@ -36,7 +36,7 @@ jobs:
       - name: v1.19.20 repo kilidi — integrity, dosya ve dal politikası
         env:
           GH_TOKEN: ${{ github.token }}
-          DTS_LOCK_BASELINE_COMMIT: f18ec71686a6e198d7470885c47e8b91622fabe4
+          DTS_LOCK_BASELINE_COMMIT: 95f813a96a0d600e87617b45540c300e5bc16a34
         run: |
           set -euo pipefail
           node scripts/check-v11920-integrity.cjs
