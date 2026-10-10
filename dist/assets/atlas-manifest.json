@@ -1,0 +1,974 @@
+{
+  "version": 1,
+  "coordinateSystem": "Source PNG pixel coordinates, origin at top left; x/y inclusive, width/height exclusive extents.",
+  "boundsMethod": {
+    "alphaThreshold": 2,
+    "paddingPixels": 4,
+    "description": "Largest alpha >= 2 connected component at each visually verified subject position, expanded by 4 px on every side. This retains visible silhouette and shadow. Alpha=1 (0.4% opacity) detached/connected cutout haze is ignored only while deriving rectangles; source PNG pixels are unmodified."
+  },
+  "order": "Each atlas contains 16 subjects in the requested row-major order. No subject-order deviations.",
+  "compositionNotes": [
+    "Actual outputs are 1254 by 1254 pixels.",
+    "Use per-object rectangles rather than equal quarter-grid cells; some physical silhouettes cross nominal cell boundaries.",
+    "Atlas A is mostly straight-on; some Atlas B and C objects use visible three-quarter perspective.",
+    "Original outputs contain occasional white/colored fringe pixels at cutout edges.",
+    "Atlas C changeover contact body has two clearly visible front screw terminals; all app electrical ports/labels should be overlaid independently."
+  ],
+  "atlases": [
+    {
+      "id": "atlas-a",
+      "file": "atlas-a.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "hasAlpha": true,
+      "nominalGrid": {
+        "rows": 4,
+        "columns": 4
+      },
+      "sprites": [
+        {
+          "index": 0,
+          "cell": "R1C1",
+          "row": 1,
+          "column": 1,
+          "id": "single-pole-breaker",
+          "name": "Single-pole breaker",
+          "x": 114,
+          "y": 34,
+          "width": 84,
+          "height": 260,
+          "viewBox": "114 34 84 260",
+          "contentBounds": {
+            "x": 118,
+            "y": 38,
+            "width": 76,
+            "height": 252
+          }
+        },
+        {
+          "index": 1,
+          "cell": "R1C2",
+          "row": 1,
+          "column": 2,
+          "id": "three-pole-breaker",
+          "name": "Three-pole breaker",
+          "x": 367,
+          "y": 31,
+          "width": 202,
+          "height": 264,
+          "viewBox": "367 31 202 264",
+          "contentBounds": {
+            "x": 371,
+            "y": 35,
+            "width": 194,
+            "height": 256
+          }
+        },
+        {
+          "index": 2,
+          "cell": "R1C3",
+          "row": 1,
+          "column": 3,
+          "id": "two-pole-rcd",
+          "name": "Two-pole RCD",
+          "x": 710,
+          "y": 33,
+          "width": 154,
+          "height": 261,
+          "viewBox": "710 33 154 261",
+          "contentBounds": {
+            "x": 714,
+            "y": 37,
+            "width": 146,
+            "height": 253
+          }
+        },
+        {
+          "index": 3,
+          "cell": "R1C4",
+          "row": 1,
+          "column": 4,
+          "id": "power-contactor",
+          "name": "Three-pole power contactor",
+          "x": 983,
+          "y": 20,
+          "width": 233,
+          "height": 290,
+          "viewBox": "983 20 233 290",
+          "contentBounds": {
+            "x": 987,
+            "y": 24,
+            "width": 225,
+            "height": 282
+          }
+        },
+        {
+          "index": 4,
+          "cell": "R2C1",
+          "row": 2,
+          "column": 1,
+          "id": "green-pushbutton",
+          "name": "Green industrial pushbutton",
+          "x": 53,
+          "y": 337,
+          "width": 206,
+          "height": 248,
+          "viewBox": "53 337 206 248",
+          "contentBounds": {
+            "x": 57,
+            "y": 341,
+            "width": 198,
+            "height": 240
+          }
+        },
+        {
+          "index": 5,
+          "cell": "R2C2",
+          "row": 2,
+          "column": 2,
+          "id": "red-pushbutton",
+          "name": "Red industrial pushbutton",
+          "x": 367,
+          "y": 336,
+          "width": 205,
+          "height": 249,
+          "viewBox": "367 336 205 249",
+          "contentBounds": {
+            "x": 371,
+            "y": 340,
+            "width": 197,
+            "height": 241
+          }
+        },
+        {
+          "index": 6,
+          "cell": "R2C3",
+          "row": 2,
+          "column": 3,
+          "id": "emergency-stop",
+          "name": "Emergency stop on yellow collar",
+          "x": 669,
+          "y": 336,
+          "width": 233,
+          "height": 262,
+          "viewBox": "669 336 233 262",
+          "contentBounds": {
+            "x": 673,
+            "y": 340,
+            "width": 225,
+            "height": 254
+          }
+        },
+        {
+          "index": 7,
+          "cell": "R2C4",
+          "row": 2,
+          "column": 4,
+          "id": "rotary-selector",
+          "name": "Black rotary selector",
+          "x": 999,
+          "y": 339,
+          "width": 199,
+          "height": 260,
+          "viewBox": "999 339 199 260",
+          "contentBounds": {
+            "x": 1003,
+            "y": 343,
+            "width": 191,
+            "height": 252
+          }
+        },
+        {
+          "index": 8,
+          "cell": "R3C1",
+          "row": 3,
+          "column": 1,
+          "id": "limit-switch",
+          "name": "Lever roller limit switch",
+          "x": 92,
+          "y": 599,
+          "width": 137,
+          "height": 320,
+          "viewBox": "92 599 137 320",
+          "contentBounds": {
+            "x": 96,
+            "y": 603,
+            "width": 129,
+            "height": 312
+          }
+        },
+        {
+          "index": 9,
+          "cell": "R3C2",
+          "row": 3,
+          "column": 2,
+          "id": "cube-relay",
+          "name": "Clear relay on DIN socket",
+          "x": 356,
+          "y": 636,
+          "width": 227,
+          "height": 270,
+          "viewBox": "356 636 227 270",
+          "contentBounds": {
+            "x": 360,
+            "y": 640,
+            "width": 219,
+            "height": 262
+          }
+        },
+        {
+          "index": 10,
+          "cell": "R3C3",
+          "row": 3,
+          "column": 3,
+          "id": "din-timer",
+          "name": "Electronic DIN timer",
+          "x": 710,
+          "y": 636,
+          "width": 149,
+          "height": 285,
+          "viewBox": "710 636 149 285",
+          "contentBounds": {
+            "x": 714,
+            "y": 640,
+            "width": 141,
+            "height": 277
+          }
+        },
+        {
+          "index": 11,
+          "cell": "R3C4",
+          "row": 3,
+          "column": 4,
+          "id": "auxiliary-contact",
+          "name": "Small auxiliary contact block",
+          "x": 1057,
+          "y": 636,
+          "width": 88,
+          "height": 270,
+          "viewBox": "1057 636 88 270",
+          "contentBounds": {
+            "x": 1061,
+            "y": 640,
+            "width": 80,
+            "height": 262
+          }
+        },
+        {
+          "index": 12,
+          "cell": "R4C1",
+          "row": 4,
+          "column": 1,
+          "id": "transformer",
+          "name": "Open-core transformer",
+          "x": 29,
+          "y": 946,
+          "width": 258,
+          "height": 262,
+          "viewBox": "29 946 258 262",
+          "contentBounds": {
+            "x": 33,
+            "y": 950,
+            "width": 250,
+            "height": 254
+          }
+        },
+        {
+          "index": 13,
+          "cell": "R4C2",
+          "row": 4,
+          "column": 2,
+          "id": "din-power-supply",
+          "name": "Vented DIN power supply",
+          "x": 382,
+          "y": 942,
+          "width": 177,
+          "height": 282,
+          "viewBox": "382 942 177 282",
+          "contentBounds": {
+            "x": 386,
+            "y": 946,
+            "width": 169,
+            "height": 274
+          }
+        },
+        {
+          "index": 14,
+          "cell": "R4C3",
+          "row": 4,
+          "column": 3,
+          "id": "incandescent-bulb-off",
+          "name": "Incandescent bulb unlit",
+          "x": 705,
+          "y": 934,
+          "width": 158,
+          "height": 290,
+          "viewBox": "705 934 158 290",
+          "contentBounds": {
+            "x": 709,
+            "y": 938,
+            "width": 150,
+            "height": 282
+          }
+        },
+        {
+          "index": 15,
+          "cell": "R4C4",
+          "row": 4,
+          "column": 4,
+          "id": "incandescent-bulb-on",
+          "name": "Incandescent bulb lit",
+          "x": 1016,
+          "y": 931,
+          "width": 162,
+          "height": 290,
+          "viewBox": "1016 931 162 290",
+          "contentBounds": {
+            "x": 1020,
+            "y": 935,
+            "width": 154,
+            "height": 282
+          }
+        }
+      ]
+    },
+    {
+      "id": "atlas-b",
+      "file": "atlas-b.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "hasAlpha": true,
+      "nominalGrid": {
+        "rows": 4,
+        "columns": 4
+      },
+      "sprites": [
+        {
+          "index": 0,
+          "cell": "R1C1",
+          "row": 1,
+          "column": 1,
+          "id": "induction-motor",
+          "name": "Finned induction motor",
+          "x": 15,
+          "y": 29,
+          "width": 316,
+          "height": 252,
+          "viewBox": "15 29 316 252",
+          "contentBounds": {
+            "x": 19,
+            "y": 33,
+            "width": 308,
+            "height": 244
+          }
+        },
+        {
+          "index": 1,
+          "cell": "R1C2",
+          "row": 1,
+          "column": 2,
+          "id": "solenoid-valve",
+          "name": "Brass solenoid valve",
+          "x": 381,
+          "y": 16,
+          "width": 232,
+          "height": 283,
+          "viewBox": "381 16 232 283",
+          "contentBounds": {
+            "x": 385,
+            "y": 20,
+            "width": 224,
+            "height": 275
+          }
+        },
+        {
+          "index": 2,
+          "cell": "R1C3",
+          "row": 1,
+          "column": 3,
+          "id": "proximity-sensor",
+          "name": "Cylindrical proximity sensor",
+          "x": 653,
+          "y": 92,
+          "width": 316,
+          "height": 164,
+          "viewBox": "653 92 316 164",
+          "contentBounds": {
+            "x": 657,
+            "y": 96,
+            "width": 308,
+            "height": 156
+          }
+        },
+        {
+          "index": 3,
+          "cell": "R1C4",
+          "row": 1,
+          "column": 4,
+          "id": "photoelectric-sensor",
+          "name": "Photoelectric sensor",
+          "x": 1050,
+          "y": 35,
+          "width": 144,
+          "height": 251,
+          "viewBox": "1050 35 144 251",
+          "contentBounds": {
+            "x": 1054,
+            "y": 39,
+            "width": 136,
+            "height": 243
+          }
+        },
+        {
+          "index": 4,
+          "cell": "R2C1",
+          "row": 2,
+          "column": 1,
+          "id": "beacon-buzzer",
+          "name": "Red beacon/buzzer",
+          "x": 72,
+          "y": 331,
+          "width": 172,
+          "height": 268,
+          "viewBox": "72 331 172 268",
+          "contentBounds": {
+            "x": 76,
+            "y": 335,
+            "width": 164,
+            "height": 260
+          }
+        },
+        {
+          "index": 5,
+          "cell": "R2C2",
+          "row": 2,
+          "column": 2,
+          "id": "fuse-carrier",
+          "name": "Cylindrical fuse carrier",
+          "x": 414,
+          "y": 323,
+          "width": 126,
+          "height": 278,
+          "viewBox": "414 323 126 278",
+          "contentBounds": {
+            "x": 418,
+            "y": 327,
+            "width": 118,
+            "height": 270
+          }
+        },
+        {
+          "index": 6,
+          "cell": "R2C3",
+          "row": 2,
+          "column": 3,
+          "id": "terminal-block",
+          "name": "Gray DIN terminal block",
+          "x": 663,
+          "y": 349,
+          "width": 240,
+          "height": 234,
+          "viewBox": "663 349 240 234",
+          "contentBounds": {
+            "x": 667,
+            "y": 353,
+            "width": 232,
+            "height": 226
+          }
+        },
+        {
+          "index": 7,
+          "cell": "R2C4",
+          "row": 2,
+          "column": 4,
+          "id": "earth-terminal",
+          "name": "Earth DIN terminal block",
+          "x": 994,
+          "y": 350,
+          "width": 233,
+          "height": 231,
+          "viewBox": "994 350 233 231",
+          "contentBounds": {
+            "x": 998,
+            "y": 354,
+            "width": 225,
+            "height": 223
+          }
+        },
+        {
+          "index": 8,
+          "cell": "R3C1",
+          "row": 3,
+          "column": 1,
+          "id": "distribution-bus",
+          "name": "Copper distribution bus on blue base",
+          "x": 19,
+          "y": 698,
+          "width": 301,
+          "height": 146,
+          "viewBox": "19 698 301 146",
+          "contentBounds": {
+            "x": 23,
+            "y": 702,
+            "width": 293,
+            "height": 138
+          }
+        },
+        {
+          "index": 9,
+          "cell": "R3C2",
+          "row": 3,
+          "column": 2,
+          "id": "panel-meter",
+          "name": "Digital panel meter",
+          "x": 350,
+          "y": 626,
+          "width": 251,
+          "height": 244,
+          "viewBox": "350 626 251 244",
+          "contentBounds": {
+            "x": 354,
+            "y": 630,
+            "width": 243,
+            "height": 236
+          }
+        },
+        {
+          "index": 10,
+          "cell": "R3C3",
+          "row": 3,
+          "column": 3,
+          "id": "power-resistor",
+          "name": "Ceramic power resistor",
+          "x": 624,
+          "y": 690,
+          "width": 345,
+          "height": 141,
+          "viewBox": "624 690 345 141",
+          "contentBounds": {
+            "x": 628,
+            "y": 694,
+            "width": 337,
+            "height": 133
+          }
+        },
+        {
+          "index": 11,
+          "cell": "R3C4",
+          "row": 3,
+          "column": 4,
+          "id": "capacitor",
+          "name": "Metal-can capacitor",
+          "x": 1040,
+          "y": 608,
+          "width": 153,
+          "height": 276,
+          "viewBox": "1040 608 153 276",
+          "contentBounds": {
+            "x": 1044,
+            "y": 612,
+            "width": 145,
+            "height": 268
+          }
+        },
+        {
+          "index": 12,
+          "cell": "R4C1",
+          "row": 4,
+          "column": 1,
+          "id": "power-diode",
+          "name": "Stud power diode",
+          "x": 98,
+          "y": 892,
+          "width": 146,
+          "height": 319,
+          "viewBox": "98 892 146 319",
+          "contentBounds": {
+            "x": 102,
+            "y": 896,
+            "width": 138,
+            "height": 311
+          }
+        },
+        {
+          "index": 13,
+          "cell": "R4C2",
+          "row": 4,
+          "column": 2,
+          "id": "vfd",
+          "name": "Variable frequency drive",
+          "x": 359,
+          "y": 886,
+          "width": 226,
+          "height": 340,
+          "viewBox": "359 886 226 340",
+          "contentBounds": {
+            "x": 363,
+            "y": 890,
+            "width": 218,
+            "height": 332
+          }
+        },
+        {
+          "index": 14,
+          "cell": "R4C3",
+          "row": 4,
+          "column": 3,
+          "id": "plc-cpu",
+          "name": "Wide PLC CPU",
+          "x": 640,
+          "y": 943,
+          "width": 359,
+          "height": 241,
+          "viewBox": "640 943 359 241",
+          "contentBounds": {
+            "x": 644,
+            "y": 947,
+            "width": 351,
+            "height": 233
+          }
+        },
+        {
+          "index": 15,
+          "cell": "R4C4",
+          "row": 4,
+          "column": 4,
+          "id": "plc-io",
+          "name": "Narrow PLC I/O module",
+          "x": 1073,
+          "y": 910,
+          "width": 121,
+          "height": 304,
+          "viewBox": "1073 910 121 304",
+          "contentBounds": {
+            "x": 1077,
+            "y": 914,
+            "width": 113,
+            "height": 296
+          }
+        }
+      ]
+    },
+    {
+      "id": "atlas-c",
+      "file": "atlas-c.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "hasAlpha": true,
+      "nominalGrid": {
+        "rows": 4,
+        "columns": 4
+      },
+      "sprites": [
+        {
+          "index": 0,
+          "cell": "R1C1",
+          "row": 1,
+          "column": 1,
+          "id": "mains-terminal",
+          "name": "Three-terminal mains connection box",
+          "x": 26,
+          "y": 91,
+          "width": 276,
+          "height": 171,
+          "viewBox": "26 91 276 171",
+          "contentBounds": {
+            "x": 30,
+            "y": 95,
+            "width": 268,
+            "height": 163
+          }
+        },
+        {
+          "index": 1,
+          "cell": "R1C2",
+          "row": 1,
+          "column": 2,
+          "id": "three-phase-terminal",
+          "name": "Five-terminal three-phase connection block",
+          "x": 339,
+          "y": 77,
+          "width": 276,
+          "height": 178,
+          "viewBox": "339 77 276 178",
+          "contentBounds": {
+            "x": 343,
+            "y": 81,
+            "width": 268,
+            "height": 170
+          }
+        },
+        {
+          "index": 2,
+          "cell": "R1C3",
+          "row": 1,
+          "column": 3,
+          "id": "blue-pushbutton",
+          "name": "Blue industrial pushbutton",
+          "x": 682,
+          "y": 42,
+          "width": 194,
+          "height": 239,
+          "viewBox": "682 42 194 239",
+          "contentBounds": {
+            "x": 686,
+            "y": 46,
+            "width": 186,
+            "height": 231
+          }
+        },
+        {
+          "index": 3,
+          "cell": "R1C4",
+          "row": 1,
+          "column": 4,
+          "id": "float-switch",
+          "name": "Yellow float switch",
+          "x": 960,
+          "y": 57,
+          "width": 273,
+          "height": 232,
+          "viewBox": "960 57 273 232",
+          "contentBounds": {
+            "x": 964,
+            "y": 61,
+            "width": 265,
+            "height": 224
+          }
+        },
+        {
+          "index": 4,
+          "cell": "R2C1",
+          "row": 2,
+          "column": 1,
+          "id": "pressure-switch",
+          "name": "Pressure switch",
+          "x": 39,
+          "y": 347,
+          "width": 242,
+          "height": 255,
+          "viewBox": "39 347 242 255",
+          "contentBounds": {
+            "x": 43,
+            "y": 351,
+            "width": 234,
+            "height": 247
+          }
+        },
+        {
+          "index": 5,
+          "cell": "R2C2",
+          "row": 2,
+          "column": 2,
+          "id": "thermal-overload",
+          "name": "Thermal overload relay",
+          "x": 371,
+          "y": 325,
+          "width": 210,
+          "height": 289,
+          "viewBox": "371 325 210 289",
+          "contentBounds": {
+            "x": 375,
+            "y": 329,
+            "width": 202,
+            "height": 281
+          }
+        },
+        {
+          "index": 6,
+          "cell": "R2C3",
+          "row": 2,
+          "column": 3,
+          "id": "motor-protection",
+          "name": "Motor protection breaker",
+          "x": 687,
+          "y": 320,
+          "width": 188,
+          "height": 297,
+          "viewBox": "687 320 188 297",
+          "contentBounds": {
+            "x": 691,
+            "y": 324,
+            "width": 180,
+            "height": 289
+          }
+        },
+        {
+          "index": 7,
+          "cell": "R2C4",
+          "row": 2,
+          "column": 4,
+          "id": "changeover-contact",
+          "name": "Changeover auxiliary contact block",
+          "x": 1042,
+          "y": 333,
+          "width": 104,
+          "height": 272,
+          "viewBox": "1042 333 104 272",
+          "contentBounds": {
+            "x": 1046,
+            "y": 337,
+            "width": 96,
+            "height": 264
+          }
+        },
+        {
+          "index": 8,
+          "cell": "R3C1",
+          "row": 3,
+          "column": 1,
+          "id": "bridge-rectifier",
+          "name": "Bridge rectifier",
+          "x": 26,
+          "y": 667,
+          "width": 264,
+          "height": 245,
+          "viewBox": "26 667 264 245",
+          "contentBounds": {
+            "x": 30,
+            "y": 671,
+            "width": 256,
+            "height": 237
+          }
+        },
+        {
+          "index": 9,
+          "cell": "R3C2",
+          "row": 3,
+          "column": 2,
+          "id": "green-led-off",
+          "name": "Green panel LED unlit",
+          "x": 353,
+          "y": 688,
+          "width": 245,
+          "height": 186,
+          "viewBox": "353 688 245 186",
+          "contentBounds": {
+            "x": 357,
+            "y": 692,
+            "width": 237,
+            "height": 178
+          }
+        },
+        {
+          "index": 10,
+          "cell": "R3C3",
+          "row": 3,
+          "column": 3,
+          "id": "reactor",
+          "name": "Copper reactor coil",
+          "x": 640,
+          "y": 654,
+          "width": 286,
+          "height": 250,
+          "viewBox": "640 654 286 250",
+          "contentBounds": {
+            "x": 644,
+            "y": 658,
+            "width": 278,
+            "height": 242
+          }
+        },
+        {
+          "index": 11,
+          "cell": "R3C4",
+          "row": 3,
+          "column": 4,
+          "id": "current-transformer",
+          "name": "Ring current transformer",
+          "x": 984,
+          "y": 637,
+          "width": 228,
+          "height": 264,
+          "viewBox": "984 637 228 264",
+          "contentBounds": {
+            "x": 988,
+            "y": 641,
+            "width": 220,
+            "height": 256
+          }
+        },
+        {
+          "index": 12,
+          "cell": "R4C1",
+          "row": 4,
+          "column": 1,
+          "id": "generator",
+          "name": "Small industrial generator",
+          "x": 20,
+          "y": 961,
+          "width": 299,
+          "height": 233,
+          "viewBox": "20 961 299 233",
+          "contentBounds": {
+            "x": 24,
+            "y": 965,
+            "width": 291,
+            "height": 225
+          }
+        },
+        {
+          "index": 13,
+          "cell": "R4C2",
+          "row": 4,
+          "column": 2,
+          "id": "plc-communication",
+          "name": "PLC communication module",
+          "x": 415,
+          "y": 921,
+          "width": 119,
+          "height": 295,
+          "viewBox": "415 921 119 295",
+          "contentBounds": {
+            "x": 419,
+            "y": 925,
+            "width": 111,
+            "height": 287
+          }
+        },
+        {
+          "index": 14,
+          "cell": "R4C3",
+          "row": 4,
+          "column": 3,
+          "id": "electronic-enclosure",
+          "name": "Gray electronic enclosure",
+          "x": 654,
+          "y": 945,
+          "width": 265,
+          "height": 250,
+          "viewBox": "654 945 265 250",
+          "contentBounds": {
+            "x": 658,
+            "y": 949,
+            "width": 257,
+            "height": 242
+          }
+        },
+        {
+          "index": 15,
+          "cell": "R4C4",
+          "row": 4,
+          "column": 4,
+          "id": "terminal-screw",
+          "name": "Silver Phillips terminal screw head",
+          "x": 994,
+          "y": 978,
+          "width": 205,
+          "height": 201,
+          "viewBox": "994 978 205 201",
+          "contentBounds": {
+            "x": 998,
+            "y": 982,
+            "width": 197,
+            "height": 193
+          }
+        }
+      ]
+    }
+  ],
+  "overlappingCropRectangles": []
+}

@@ -1,0 +1,98 @@
+=== atlas-a.png ===
+Use case: product-mockup
+Asset type: production raster sprite atlas for an offline electrical circuit editor.
+Primary request: Generate one 2048 by 2048 pixel PNG with TRUE ALPHA TRANSPARENCY, containing exactly sixteen separate realistic electrical component icons in a STRICT invisible 4 by 4 grid. The four equal rows and four equal columns each measure 512 pixels. Each listed object belongs to its exact row-column cell, in row-major order. Cell center coordinates are x = 256, 768, 1280, 1792 and y = 256, 768, 1280, 1792. Center each object's full silhouette on its own cell center and leave at least 12 percent empty margin on every side of that cell. Every object including projections, screws and shadows must stay within its own cell. Object scale is individually adjusted to make the main body easy to read. Never split one object into separate cells; never add extra objects.
+Style/medium: matching polished realistic 3D catalog cutouts, in the visual style of front-view components in an electrical wiring simulator: off-white and pale neutral gray molded plastic, realistic black controls, brushed metal screw faces, subtle plastic bevels and recesses, finely restrained texture. Straight front/elevation camera, useful control face square to the viewer, no isometric camera, no tilted or diagonal objects, no dramatic perspective. The object can have slight natural relief/depth while maintaining front-view clarity.
+Lighting: consistent soft studio lighting from the upper left, tiny restrained soft shadows hugging each object, clear silhouettes, no vignette. Light switches, breakers and instruments should look like physically tangible real components. Maintain the same material treatment throughout.
+Background: actual empty transparent alpha pixels across the entire canvas wherever there are no object pixels; no white/gray background, no checkerboard printed into the image, no floor, no board.
+Text: NONE. All device faces, LCD screens, knobs and plates must be completely unlettered. No numerals, terminal labels, brand names, logos, labels, schematic symbols, diagrams, captions or watermarks. Any LCD is blank dark gray or green-black. The application will add all text and connection overlays separately.
+Avoid: grid lines, frames, cell borders, row headings, wires or circuit lines, DIN mounting rail spanning cells, extra loose parts, cropped objects, merged objects, overlapping cells, duplicate unintended objects, written typography. Physical terminal screws and clamps built into component bodies are welcome.
+Exact cell contents follow. Read the cell positions carefully and draw precisely one listed object at every position.
+ROW 1:
+R1C1: A narrow single-pole miniature circuit breaker, ivory rectangular DIN body with one black toggle and metal top/bottom terminal screws.
+R1C2: A three-pole miniature circuit breaker, three ivory pole housings side by side with mechanically linked three black toggles.
+R1C3: A two-pole residual-current device, ivory double-width DIN body with blue toggle and yellow test key.
+R1C4: A three-pole power contactor, gray block body with three power screw terminals along the top and three along the bottom, dark central mechanism.
+ROW 2:
+R2C1: A green industrial pushbutton, green circular convex button in dark metal/black bezel on a small gray mounting body.
+R2C2: A matching red industrial pushbutton, red circular button with identical bezel/body styling.
+R2C3: A red mushroom emergency stop, large red mushroom button on a yellow circular collar and gray mounting body.
+R2C4: A black rotary selector switch, black lever/handle on a circular dark bezel and compact gray mounting body.
+ROW 3:
+R3C1: A lever roller limit switch, gray rectangular housing with a straight metal lever rising upward to a small black roller.
+R3C2: A transparent cube electromechanical relay on a dark DIN socket, visible copper coil and metal contacts through its clear shell.
+R3C3: An electronic DIN timer, off-white tall body with a blank dark LCD near the top, a few blue rectangular keys and top/bottom screw terminals.
+R3C4: A small auxiliary contact block, slim gray/off-white snap-on rectangular component with recessed terminals and subtle dark actuator.
+ROW 4:
+R4C1: An open-core electrical transformer, laminated dark steel rectangular core surrounding visible warm copper windings, small terminal block on its base.
+R4C2: A vented DIN power supply, tall metallic gray/off-white body with fine ventilation slots, simple terminal strips top/bottom, no writing.
+R4C3: A clear incandescent light bulb UNLIT in a simple white cylindrical socket; transparent glass, visible delicate filament, no yellow glow.
+R4C4: An otherwise identical incandescent bulb and white socket, warmly LIT with a yellow glowing filament and soft golden glass illumination. This is the lit state matching R4C3.
+These are all sixteen objects; preserve exact order.
+
+
+=== atlas-b.png ===
+Use case: product-mockup
+Asset type: production raster sprite atlas for an offline electrical circuit editor.
+Primary request: Generate one 2048 by 2048 pixel PNG with TRUE ALPHA TRANSPARENCY, containing exactly sixteen separate realistic electrical component icons in a STRICT invisible 4 by 4 grid. The four equal rows and four equal columns each measure 512 pixels. Each listed object belongs to its exact row-column cell, in row-major order. Cell center coordinates are x = 256, 768, 1280, 1792 and y = 256, 768, 1280, 1792. Center each object's full silhouette on its own cell center and leave at least 12 percent empty margin on every side of that cell. Every object including projections, screws and shadows must stay within its own cell. Object scale is individually adjusted to make the main body easy to read. Never split one object into separate cells; never add extra objects.
+Style/medium: matching polished realistic 3D catalog cutouts, in the visual style of front-view components in an electrical wiring simulator: off-white and pale neutral gray molded plastic, realistic black controls, brushed metal screw faces, subtle plastic bevels and recesses, finely restrained texture. Straight front/elevation camera, useful control face square to the viewer, no isometric camera, no tilted or diagonal objects, no dramatic perspective. The object can have slight natural relief/depth while maintaining front-view clarity.
+Lighting: consistent soft studio lighting from the upper left, tiny restrained soft shadows hugging each object, clear silhouettes, no vignette. Light switches, breakers and instruments should look like physically tangible real components. Maintain the same material treatment throughout.
+Background: actual empty transparent alpha pixels across the entire canvas wherever there are no object pixels; no white/gray background, no checkerboard printed into the image, no floor, no board.
+Text: NONE. All device faces, LCD screens, knobs and plates must be completely unlettered. No numerals, terminal labels, brand names, logos, labels, schematic symbols, diagrams, captions or watermarks. Any LCD is blank dark gray or green-black. The application will add all text and connection overlays separately.
+Avoid: grid lines, frames, cell borders, row headings, wires or circuit lines, DIN mounting rail spanning cells, extra loose parts, cropped objects, merged objects, overlapping cells, duplicate unintended objects, written typography. Physical terminal screws and clamps built into component bodies are welcome.
+Exact cell contents follow. Read the cell positions carefully and draw precisely one listed object at every position.
+ROW 1:
+R1C1: A gray finned industrial induction motor, solid cylindrical body with ribbed metal housing, mounting feet and short shaft, clear straight product elevation.
+R1C2: A brass solenoid valve, compact brass plumbing valve body with a black rectangular coil on top and metal threaded ports.
+R1C3: A cylindrical metal proximity sensor, short threaded silver cylinder with dark sensing end and compact terminal/connector rear, no cable.
+R1C4: A small black photoelectric sensor, rectangular black body with red lens window on the front and compact mounting holes.
+ROW 2:
+R2C1: A red industrial beacon/buzzer, small translucent red dome on a gray cylindrical base with subtle sound slots.
+R2C2: A cylindrical fuse carrier, ivory compact DIN holder for a cylindrical fuse, with central vertical cap/handle and integrated terminals.
+R2C3: A gray DIN terminal block, compact single feed-through block with two visible metal screw clamps.
+R2C4: A green/yellow earth DIN terminal block, same compact family, green and yellow molded insulating body and metal screw clamps.
+ROW 3:
+R3C1: A copper screw distribution bus on a blue insulating base, one compact vertical copper bar with a neat line of integral silver screw heads.
+R3C2: A digital panel meter, square black bezel and dark blank LCD window, simple gray rear body just visible.
+R3C3: A white ceramic rectangular power resistor, chalk white rectangular ceramic body with two short rigid metal terminal tabs, no writing.
+R3C4: A metal-can capacitor, upright brushed aluminum cylinder with two terminal connectors on top.
+ROW 4:
+R4C1: A black stud power diode, one compact black cylindrical semiconductor body with metal threaded stud and rigid connector terminal.
+R4C2: A gray variable-frequency motor drive, tall rectangular industrial gray housing with vent slots, blank dark display and a few small keys on the front.
+R4C3: A wide generic PLC CPU, gray and muted teal modular body, clearly wider than tall, front terminal strips and small unlettered status details, no brand marks.
+R4C4: A narrow generic PLC input/output module, slim gray industrial module with front terminal strips and tiny unlettered indicator windows.
+These are all sixteen objects; preserve exact order.
+
+
+=== atlas-c.png ===
+Use case: product-mockup
+Asset type: production raster sprite atlas for an offline electrical circuit editor.
+Primary request: Generate one 2048 by 2048 pixel PNG with TRUE ALPHA TRANSPARENCY, containing exactly sixteen separate realistic electrical component icons in a STRICT invisible 4 by 4 grid. The four equal rows and four equal columns each measure 512 pixels. Each listed object belongs to its exact row-column cell, in row-major order. Cell center coordinates are x = 256, 768, 1280, 1792 and y = 256, 768, 1280, 1792. Center each object's full silhouette on its own cell center and leave at least 12 percent empty margin on every side of that cell. Every object including projections, screws and shadows must stay within its own cell. Object scale is individually adjusted to make the main body easy to read. Never split one object into separate cells; never add extra objects.
+Style/medium: matching polished realistic 3D catalog cutouts, in the visual style of front-view components in an electrical wiring simulator: off-white and pale neutral gray molded plastic, realistic black controls, brushed metal screw faces, subtle plastic bevels and recesses, finely restrained texture. Straight front/elevation camera, useful control face square to the viewer, no isometric camera, no tilted or diagonal objects, no dramatic perspective. The object can have slight natural relief/depth while maintaining front-view clarity.
+Lighting: consistent soft studio lighting from the upper left, tiny restrained soft shadows hugging each object, clear silhouettes, no vignette. Light switches, breakers and instruments should look like physically tangible real components. Maintain the same material treatment throughout.
+Background: actual empty transparent alpha pixels across the entire canvas wherever there are no object pixels; no white/gray background, no checkerboard printed into the image, no floor, no board.
+Text: NONE. All device faces, LCD screens, knobs and plates must be completely unlettered. No numerals, terminal labels, brand names, logos, labels, schematic symbols, diagrams, captions or watermarks. Any LCD is blank dark gray or green-black. The application will add all text and connection overlays separately.
+Avoid: grid lines, frames, cell borders, row headings, wires or circuit lines, DIN mounting rail spanning cells, extra loose parts, cropped objects, merged objects, overlapping cells, duplicate unintended objects, written typography. Physical terminal screws and clamps built into component bodies are welcome.
+Exact cell contents follow. Read the cell positions carefully and draw precisely one listed object at every position.
+ROW 1:
+R1C1: A small white mains terminal connection box containing three simple integral screw terminals suitable for line/neutral/earth, but absolutely NO text or letters.
+R1C2: A three-phase mains connection block with exactly five integral metal screw terminals in a pale gray insulating housing, no lettering.
+R1C3: A blue industrial pushbutton, blue circular convex button in dark metal/black bezel on a small gray mounting body.
+R1C4: A yellow float switch, a compact smooth yellow buoyant oval switch body with a SHORT black lead that curls closely alongside the body and remains fully within the cell; this short integral lead is the only allowed cable in this atlas.
+ROW 2:
+R2C1: A pressure switch, small gray rectangular housing with a short brass threaded pressure fitting centered beneath it.
+R2C2: A thermal overload relay, compact gray three-pole component with terminal screws, a small blue reset key and an unlettered setting dial.
+R2C3: A motor protection breaker, compact off-white/gray three-pole body with a black rotary dial on its front and integral terminals top/bottom.
+R2C4: A changeover auxiliary contact block, small narrow gray molded block with three integral terminal positions and a subtle dark actuator.
+ROW 3:
+R3C1: A metal bridge rectifier unit, square aluminum block with a central mounting recess and four short rigid flat electrical connector tabs.
+R3C2: A small green panel LED indicator UNLIT, dark green translucent round lens in a silver/dark bezel, short compact gray mounting body, no glow.
+R3C3: A copper reactor coil on a laminated core, one visible thick copper winding on a dark gray laminated iron core with mounting feet.
+R3C4: A ring current transformer, a compact black/gray toroidal ring body with a clearly open circular center and a small integral two-screw terminal connector.
+ROW 4:
+R4C1: A small industrial generator, gray electromechanical machine on a short mounting base with vented casing and compact shaft/end housing, useful straight product elevation.
+R4C2: A narrow gray PLC communication module, tall slim modular body with two recognizable empty Ethernet sockets on the front, no labels.
+R4C3: A generic gray electronic enclosure, compact pale gray closed rectangular plastic project box with subtle seam and four corner screws, otherwise blank.
+R4C4: ONE large silver Phillips terminal screw head, perfectly straight-on circular metal face with clean cross-shaped recess, isolated centered in this cell. Show only one screw head, no panel or other parts.
+These are all sixteen objects; preserve exact order.
+
