@@ -2,9 +2,9 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
-Kod kapsamı: **49/1655**, henüz zengin kod formatına yükseltilmemiş: **1606**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 4 DC dersi daha rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+Kod kapsamı: **55/1655**, henüz zengin kod formatına yükseltilmemiş: **1600**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
-Çalışma sırası: (1) kalan **6/10 Doğru akım/DC dersinin zenginleştirilmesi**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
+Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
 
 | Konu kimliği | Ders | Rich kod | Kalan | Kablolu | Etkileşimli | Soru/quiz | İlk başlık |
 |---|---:|---:|---:|---:|---:|---:|---|
@@ -28,7 +28,7 @@ Kod kapsamı: **49/1655**, henüz zengin kod formatına yükseltilmemiş: **1606
 | `motor-braking` | 24 | 0 | 24 | 24 | 0 | 0 | Frenleme sisteminin amacı ve çeşitleri |
 | `motor-special` | 22 | 0 | 22 | 20 | 0 | 2 | Bir fazlı yardımcı sargılı asenkron motor |
 | `circuit-simulation-pcb` | 19 | 0 | 19 | 0 | 0 | 19 | 4. ÖĞRENME BİRİMİ 4.1. ELEKTRONİK DEVRE SİMÜLASYON YAZILIMI |
-| `dc-circuits` | 10 | 4 | 6 | 7 | 2 | 1 | Doğru akım ve kullanım alanları |
+| `dc-circuits` | 10 | 10 | 0 | 7 | 2 | 1 | Doğru akım ve kullanım alanları |
 | `motor-sequence` | 10 | 0 | 10 | 10 | 0 | 0 | İki motorun sıralı çalıştırılması |
 | `number-systems` | 8 | 0 | 8 | 0 | 0 | 8 | 6.1.1. Sayı Sistemleri |
 | `button-led` | 5 | 0 | 5 | 5 | 0 | 0 | 24 VDC NO buton ile yeşil LED yakma |

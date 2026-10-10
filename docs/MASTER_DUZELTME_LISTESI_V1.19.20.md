@@ -1668,3 +1668,15 @@ Takometre laboratuvarlarında sanal `supply-3p` ile `motor-3p` güç yolunun 4 g
 - Mevcut günlük `844/847` sonucu **önceki batch C yerel ZIP ağacına aittir**; bu yeni D2 head'e mal edilmez. Actions çalıştırılmadı; commitlerde `[skip ci]`. Repo ve dal: `uysalayhan23/DevreTasarimStudyo` / `main`.
 
 **Sonraki otomatik çalışma sırası:** 45 dersin her biri için gerçek ekran akışları/görsel kaynak QA → açık gerçek cihaz modelleri ve screenshot düzeltmeleri → mevcut motor/termal ve sensör çalışma güvenilirliği → Git geçmişi olan checkout'ta tam Node+Windows file launcher kabulü → standart modeli diğer Temel Elektrik başlıklarından başlayarak kalan öğretim müfredatına yayma. Her kapı kaynak kanıtıyla kapanır; yeniden izin istenmez ve Actions kullanımı için ayrı açık yetki şartı korunur.
+
+
+## 2026-10-10 — Doğru akım kod kapsamı 10/10 ve 2S2P gerçek pil deneyleri
+
+**MQ-07 yeni konu grubu:** `dc-circuits` bölümünde mevcut 4 rich devreye ek 6 ders `dist/tutorial-dc-batch-e.js` ile farklı öğrenme hedefi, uygulama sırası ve konu soruları taşıyan `rich-reference-v1` oldu. Gerçek Github ders üreticisi üzerinde **10/10 DC, 45/45 ölçme, toplam 55/1.655 rich kod** doğrulandı. Kalan 1.600 dersin zengin öğretim üretimi ve 55 dersin gerçek Windows/görsel kabulü henüz açık.
+
+**Gerçek ölçüm bulgusu:** Eski seri-paralel pil kartı dört adet 1,5 V hücreyi yalnız sembolik gösteriyordu. Gerçek `Simulation.solve` deneyinde paket bilgisi olmadan kablolu 2S2P 1,5 V okunabildiği tespit edildi; her seri koldaki hücreye ayrı `seriesPackId`/index verildiğinde **3,00 V**, 100 Ω dirençte **0,030 A**, gerçek `unit-ut33d-plus` + hareketli prob bağlantısında **3,00 V DCV** doğrulandı; `blocked=false`, `stable=true`, `shortCircuit=false`. Bu teknik kimlik zorunludur; yalnız teller çizilerek 3 V sonucu uydurulamaz.
+
+Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest hareket eden UNI-T prob bağlantısı kullanılır; eski iki pilli seri/paralel canonical projeler değiştirilmez. DC-01, DC-02, DC-03, DC-04 ve DC-06 için mevcut kabul edilmiş devrelerde konuya özgü ölçüm/yeniden kurma adımları genişletildi.
+
+**MQ-12:** Gerçek GitHub müfredatındaki dokuz kaynak modül + E zinciri JS ile yüklendi: 1.655 kurs, 45 ölçüm, 10 DC, 55 rich, altı farklı yeni DC sorusu, model paketleri ve bağlantılar için **8/8 kaynak smoke PASS**. Fiziksel 2S2P sonuçları GitHub ile SHA-eş `simulation.js`, `tutorial-components.js` ve `tutorial-pedagogy.js` kullanan yerel çalışma ağacında ölçüldü. `tests/tutorial-dc-batch-e-v11920.test.cjs` içinde **5 Node test tanımı** kaynak regresyonuna eklendi; **gerçek son GitHub HEAD'de Node suite çalıştırılmadı**, dolayısıyla bu beş test için Node PASS raporlanmaz. 
+**MQ-00 NOT DONE:** Her dersin gerçek ekran/arayüz, tüm üretici front görselleri, pil klemens geometri tutarlılığı, Windows file launch, tüm SHA-eş Git testleri ve geniş öğretim dönüştürmesinin kalan 1.600 dersi açık. GitHub Actions sıfır, commitler `[skip ci]`.

@@ -163,3 +163,8 @@ Her 6 dersin özgün öğrenme hedefi, ölçüm görevi ve konu kontrolü ayrı 
 **Pencere ilkesi:** Öğretici kartları yalnız mevcut sürüklenebilir yüzer anlatım içinde tutulur; 13–14 px metinler, mevcut pencere boyutları ve çalışma alanı korunur. Küçük malzeme/prob açıklamaları ilk açılışta görünür, sahne ilk tıklamasında gizlenir, yalnız ilgili cisme hover ile tekrar görünür. Görsel eğitim şemalarının gerçek cihaz fotoğrafı olmadığı belirtilir.
 
 `docs/MEASUREMENT_45_LESSON_ACCEPTANCE_MATRIX_V1.19.20.md` ders başına kanıt ve açık görsel QA kontrolüdür. Gelişmiş kod kapsamı 45/45 olmuş olsa bile doğru fiziksel ürün, terminal, Windows canlı ekran ve gerçek öğretim yeterliliği tek tek onaylanmadan MQ-00 DONE denmez.
+
+
+## 27. Seri-paralel pil modelinde gerçek seri paket kimliği
+
+Sanal pil derslerinde iki eş 1,5 V hücre seri bağlandığında toplam 3 V verir. **2S2P** birleşiminde iki ayrı seri kola kendi `seriesPackId` ve `seriesIndex` tanımlanır; yalnız uçları bağlamak bazı model koşullarında doğru gerilimi vermez. İki 3 V seri kolu aynı kutuplardan paralel bağlandığında yük uçlarında yaklaşık **3 V**, 100 Ω için yaklaşık **30 mA** elde edilmeli, UNI-T DCV ölçümü gerçek simülasyon çıktısıyla doğrulanmalıdır. Aksi durum PASS kabul edilemez. Uydurma prob okuması yerine gerçek sanal DCA/DCV modeli kullanılmalıdır. İki pilli önceki kabul edilmiş canonical dersler değiştirilmez; çocukların göreceği adımlar neden-sonuç ve yeniden kurma biçiminde öğretilir.
