@@ -189,12 +189,17 @@ async function main(){
     for(const topic of hlTopics)for(let n=1;n<=4;n++){
       const id=topic+'-'+n;
       await evaluate(cdp,`(async()=>{const api=window.DTSTutorialMode;if(!api?.open)throw Error('Tutorial API missing');await api.open('${id}');return true})()`);
-      await sleep(160);
-      const details=await evaluate(cdp,`(()=>{
+      // A delayed renderer/coach sync must not produce a false visual failure.
+      let details;
+      for(let attempt=0;attempt<40;attempt++){
+       details=await evaluate(cdp,`(()=>{
         const p=window.DTSEditor?.getProject?.(),v=document.querySelector('#viewport'),w=document.querySelector('#workspace'),coach=document.querySelector('#tutorialCoach');
         const vr=v?.getBoundingClientRect(),cr=coach?.getBoundingClientRect();
         return {id:p?.tutorialLesson?.id,components:p?.components?.length||0,wires:p?.wires?.length||0,svgBytes:w?.innerHTML?.length||0,viewportVisible:!!v&&!v.hidden&&vr.width>400&&vr.height>250,coachExists:!!coach,coachVisible:!!coach&&!coach.hidden&&cr.width>100&&cr.height>100,coachChars:coach?.textContent?.trim()?.length||0}
       })()`);
+       if(details.id===id&&details.viewportVisible&&details.svgBytes>500)break;
+       await sleep(100);
+      }
       assert(details.id===id,'Lesson opened wrong project: '+id+' -> '+details.id);
       assert(details.components>0&&details.wires>0,'Missing lesson schematic: '+id);
       assert(details.viewportVisible&&details.svgBytes>500,'Lesson diagram not rendered: '+id);
