@@ -187,7 +187,7 @@ async function main(){
     report.states.hlLessons={checked:0,items:[]};
     for(const topic of hlTopics)for(let n=1;n<=4;n++){
       const id=topic+'-'+n;
-      await evaluate(cdp,`(()=>{const b=[...document.querySelectorAll('[data-tutorial-open]')].find(x=>x.dataset.tutorialOpen==='${id}');if(!b)throw Error('Lesson button missing: ${id}');b.click();return true})()`);
+      await evaluate(cdp,`(async()=>{const api=window.DTSTutorialMode;if(!api?.open)throw Error('Tutorial API missing');await api.open('${id}');return true})()`);
       await sleep(160);
       const details=await evaluate(cdp,`(()=>{
         const p=window.DTSEditor?.getProject?.(),v=document.querySelector('#viewport'),w=document.querySelector('#workspace'),coach=document.querySelector('#tutorialCoach');
@@ -207,7 +207,7 @@ async function main(){
       const screen=await shot(cdp,'hl-'+id);
       report.states.hlLessons.items.push({id,...details,coach,screenshot:screen});
       report.states.hlLessons.checked++;
-      await evaluate(cdp,`(async()=>{await window.DTSStudio.home();await window.DTSTutorialBootstrap.ensure();await window.DTSTutorialMode.openHub();return true})()`);
+      await evaluate(cdp,`(async()=>{await window.DTSStudio.home();await window.DTSTutorialMode.openHub();return true})()`);
       await sleep(80);
     }
     assert(report.states.hlLessons.checked===64,'H-L lesson count mismatch');\n    }
