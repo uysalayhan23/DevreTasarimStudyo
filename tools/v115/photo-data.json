@@ -1,0 +1,7310 @@
+{
+  "plc-0-5": {
+    "file": "assets/plc/plc-0-5.jpg",
+    "width": 425,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        410,
+        16
+      ],
+      [
+        410,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1221 DI 8",
+    "photoModel": "SM 1221 DI 8",
+    "source": "https://www.santaclarasystems.com/siemens/6es7221-1bf32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-6": {
+    "file": "assets/plc/plc-0-6.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        193,
+        20
+      ],
+      [
+        580,
+        20
+      ],
+      [
+        580,
+        580
+      ],
+      [
+        193,
+        580
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1221 DI 16",
+    "photoModel": "SM 1221 DI 16",
+    "source": "https://www.santaclarasystems.com/siemens/6es7221-1bh32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-7": {
+    "file": "assets/plc/plc-0-7.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        239,
+        195
+      ],
+      [
+        565,
+        195
+      ],
+      [
+        565,
+        599
+      ],
+      [
+        239,
+        599
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1222 DO 8 Rly",
+    "photoModel": "SM 1222 DO 8 Rly",
+    "source": "https://plc-direct.com/products/6es7222-1hf32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-8": {
+    "file": "assets/plc/plc-0-8.jpg",
+    "width": 1067,
+    "height": 600,
+    "quad": [
+      [
+        343,
+        24
+      ],
+      [
+        725,
+        24
+      ],
+      [
+        725,
+        577
+      ],
+      [
+        343,
+        577
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1222 DO 16",
+    "photoModel": "SM 1222 DO 16",
+    "source": "https://www.santaclarasystems.com/siemens/6es7222-1bh32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-9": {
+    "file": "assets/plc/plc-0-9.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        281,
+        203
+      ],
+      [
+        515,
+        203
+      ],
+      [
+        515,
+        599
+      ],
+      [
+        281,
+        599
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1223 DI8/DO8",
+    "photoModel": "SM 1223 DI8/DO8",
+    "source": "https://plc-direct.com/products/6es7223-1bh32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-10": {
+    "file": "assets/plc/plc-0-10.jpg",
+    "width": 440,
+    "height": 561,
+    "quad": [
+      [
+        101,
+        80
+      ],
+      [
+        340,
+        80
+      ],
+      [
+        340,
+        483
+      ],
+      [
+        101,
+        483
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1231 AI 4",
+    "photoModel": "SM 1231 AI 4",
+    "source": "https://plc-direct.com/products/6es7231-4hd32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-11": {
+    "file": "assets/plc/plc-0-11.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        270,
+        179
+      ],
+      [
+        533,
+        179
+      ],
+      [
+        533,
+        626
+      ],
+      [
+        270,
+        626
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1231 RTD 4",
+    "photoModel": "SM 1231 RTD 4",
+    "source": "https://plc-direct.com/products/6es7231-5pd32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-12": {
+    "file": "assets/plc/plc-0-12.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        202,
+        197
+      ],
+      [
+        592,
+        197
+      ],
+      [
+        592,
+        603
+      ],
+      [
+        202,
+        603
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1232 AO 4",
+    "photoModel": "SM 1232 AO 4",
+    "source": "https://plc-direct.com/products/6es7232-4hd32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-13": {
+    "file": "assets/plc/plc-0-13.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        251,
+        140
+      ],
+      [
+        543,
+        140
+      ],
+      [
+        543,
+        652
+      ],
+      [
+        251,
+        652
+      ]
+    ],
+    "match": "family",
+    "model": "SM 1234 AI4/AO2",
+    "photoModel": "SM 1234 AI4/AO2",
+    "source": "https://plc-direct.com/products/6es7234-4he32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-14": {
+    "file": "assets/plc/plc-0-14.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        253,
+        67
+      ],
+      [
+        771,
+        67
+      ],
+      [
+        771,
+        957
+      ],
+      [
+        253,
+        957
+      ]
+    ],
+    "match": "family",
+    "model": "CM 1241 RS232",
+    "photoModel": "CM 1241 RS232",
+    "source": "https://shop.ima-tec.com/en/products/6es7241-1ah32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-15": {
+    "file": "assets/plc/plc-0-15.jpg",
+    "width": 440,
+    "height": 561,
+    "quad": [
+      [
+        135,
+        94
+      ],
+      [
+        307,
+        94
+      ],
+      [
+        307,
+        468
+      ],
+      [
+        135,
+        468
+      ]
+    ],
+    "match": "family",
+    "model": "CM 1241 RS485",
+    "photoModel": "CM 1241 RS485",
+    "source": "https://plc-direct.com/products/6es7241-1ch32-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-16": {
+    "file": "assets/plc/plc-0-16.jpg",
+    "width": 323,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        308,
+        15
+      ],
+      [
+        308,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CM 1243-5 PROFIBUS",
+    "photoModel": "CM 1243-5 PROFIBUS",
+    "source": "https://www.santaclarasystems.com/siemens/6gk7243-5dx30-0xe0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-17": {
+    "file": "assets/plc/plc-0-17.jpg",
+    "width": 265,
+    "height": 600,
+    "quad": [
+      [
+        3,
+        5
+      ],
+      [
+        262,
+        5
+      ],
+      [
+        262,
+        597
+      ],
+      [
+        3,
+        597
+      ]
+    ],
+    "match": "family",
+    "model": "CP 1243-1 Ethernet",
+    "photoModel": "CP 1243-1 Ethernet",
+    "source": "https://www.santaclarasystems.com/siemens/6gk7243-1bx30-0xe0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-18": {
+    "file": "assets/plc/plc-0-18.jpg",
+    "width": 368,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        352,
+        15
+      ],
+      [
+        352,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CSM 1277 Switch",
+    "photoModel": "CSM 1277 Switch",
+    "source": "https://www.santaclarasystems.com/siemens/6gk7277-1aa10-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-0-19": {
+    "file": "assets/plc/plc-0-19.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        26
+      ],
+      [
+        598,
+        26
+      ],
+      [
+        598,
+        580
+      ],
+      [
+        2,
+        580
+      ]
+    ],
+    "match": "family",
+    "model": "PM 1207 Güç Kaynağı",
+    "photoModel": "PM 1207 Güç Kaynağı",
+    "source": "https://www.santaclarasystems.com/siemens/6ep1332-1sh71",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-0": {
+    "file": "assets/plc/plc-1-0.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        5
+      ],
+      [
+        598,
+        5
+      ],
+      [
+        598,
+        595
+      ],
+      [
+        2,
+        595
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1511-1 PN",
+    "photoModel": "CPU 1511-1 PN",
+    "source": "https://www.santaclarasystems.com/siemens/6es7511-1ak02-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-1": {
+    "file": "assets/plc/plc-1-1.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        5
+      ],
+      [
+        598,
+        5
+      ],
+      [
+        598,
+        595
+      ],
+      [
+        2,
+        595
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1513-1 PN",
+    "photoModel": "CPU 1513-1 PN",
+    "source": "https://www.santaclarasystems.com/siemens/6es7513-1al02-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-2": {
+    "file": "assets/plc/plc-1-2.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        361,
+        196
+      ],
+      [
+        605,
+        196
+      ],
+      [
+        605,
+        604
+      ],
+      [
+        361,
+        604
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1515-2 PN",
+    "photoModel": "CPU 1515-2 PN",
+    "source": "https://plc-direct.com/products/6es7515-2am01-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-3": {
+    "file": "assets/plc/plc-1-3.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        273,
+        186
+      ],
+      [
+        527,
+        186
+      ],
+      [
+        527,
+        614
+      ],
+      [
+        273,
+        614
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1516-3 PN/DP",
+    "photoModel": "CPU 1516-3 PN/DP",
+    "source": "https://plc-direct.com/products/6es7516-3an01-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-4": {
+    "file": "assets/plc/plc-1-4.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        190,
+        216
+      ],
+      [
+        610,
+        216
+      ],
+      [
+        610,
+        583
+      ],
+      [
+        190,
+        583
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1517-3 PN/DP",
+    "photoModel": "CPU 1517-3 PN/DP",
+    "source": "https://plc-direct.com/products/6es7517-3ap00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-5": {
+    "file": "assets/plc/plc-1-5.jpg",
+    "width": 570,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        555,
+        15
+      ],
+      [
+        555,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1518-4 PN/DP",
+    "photoModel": "CPU 1518-4 PN/DP",
+    "source": "https://www.santaclarasystems.com/siemens/6es7518-4ap00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-6": {
+    "file": "assets/plc/plc-1-6.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        5
+      ],
+      [
+        598,
+        5
+      ],
+      [
+        598,
+        595
+      ],
+      [
+        2,
+        595
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 1511F-1 PN",
+    "photoModel": "CPU 1511F-1 PN",
+    "source": "https://www.santaclarasystems.com/siemens/6es7511-1fk02-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-7": {
+    "file": "assets/plc/plc-1-7.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        284,
+        65
+      ],
+      [
+        740,
+        65
+      ],
+      [
+        740,
+        959
+      ],
+      [
+        284,
+        959
+      ]
+    ],
+    "match": "family",
+    "model": "DI 32x24VDC",
+    "photoModel": "DI 32x24VDC",
+    "source": "https://shop.ima-tec.com/en/products/6es7521-1bl00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-8": {
+    "file": "assets/plc/plc-1-8.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        282,
+        60
+      ],
+      [
+        746,
+        60
+      ],
+      [
+        746,
+        965
+      ],
+      [
+        282,
+        965
+      ]
+    ],
+    "match": "family",
+    "model": "DQ 32x24VDC",
+    "photoModel": "DQ 32x24VDC",
+    "source": "https://shop.ima-tec.com/en/products/6es7522-1bl01-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-9": {
+    "file": "assets/plc/plc-1-9.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        290,
+        66
+      ],
+      [
+        737,
+        66
+      ],
+      [
+        737,
+        957
+      ],
+      [
+        290,
+        957
+      ]
+    ],
+    "match": "family",
+    "model": "AI 8xU/I/RTD",
+    "photoModel": "AI 8xU/I/RTD",
+    "source": "https://shop.ima-tec.com/en/products/6es7531-7kf00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-10": {
+    "file": "assets/plc/plc-1-10.jpg",
+    "width": 402,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        387,
+        15
+      ],
+      [
+        387,
+        584
+      ],
+      [
+        15,
+        584
+      ]
+    ],
+    "match": "family",
+    "model": "AQ 8xU/I HS",
+    "photoModel": "AQ 8xU/I HS",
+    "source": "https://www.santaclarasystems.com/siemens/6es7532-5hf00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-11": {
+    "file": "assets/plc/plc-1-11.jpg",
+    "width": 402,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        387,
+        15
+      ],
+      [
+        387,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "TM Count 2x24V",
+    "photoModel": "TM Count 2x24V",
+    "source": "https://www.santaclarasystems.com/siemens/6es7550-1aa00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-12": {
+    "file": "assets/plc/plc-1-12.jpg",
+    "width": 402,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        387,
+        16
+      ],
+      [
+        387,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CM PtP RS232",
+    "photoModel": "CM PtP RS232",
+    "source": "https://www.santaclarasystems.com/siemens/6es7540-1ad00-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-13": {
+    "file": "assets/plc/plc-1-13.jpg",
+    "width": 402,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        387,
+        15
+      ],
+      [
+        387,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CM PtP RS422/485",
+    "photoModel": "CM PtP RS422/485",
+    "source": "https://www.santaclarasystems.com/siemens/6es7540-1ab00-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-14": {
+    "file": "assets/plc/plc-1-14.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        285,
+        52
+      ],
+      [
+        748,
+        52
+      ],
+      [
+        748,
+        971
+      ],
+      [
+        285,
+        971
+      ]
+    ],
+    "match": "family",
+    "model": "CP 1543-1",
+    "photoModel": "CP 1543-1",
+    "source": "https://shop.ima-tec.com/en/products/6gk7543-1ax00-0xe0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-1-15": {
+    "file": "assets/plc/plc-1-15.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        378,
+        261
+      ],
+      [
+        540,
+        261
+      ],
+      [
+        540,
+        540
+      ],
+      [
+        378,
+        540
+      ]
+    ],
+    "match": "family",
+    "model": "PS 60W 24/48/60VDC",
+    "photoModel": "PS 60W 24/48/60VDC",
+    "source": "https://plc-direct.com/products/6es7505-0ra00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-0": {
+    "file": "assets/plc/plc-2-0.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 312",
+    "photoModel": "CPU 312",
+    "source": "https://www.santaclarasystems.com/siemens/6es7312-1ae14-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-1": {
+    "file": "assets/plc/plc-2-1.jpg",
+    "width": 534,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        519,
+        15
+      ],
+      [
+        519,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 313C",
+    "photoModel": "CPU 313C",
+    "source": "https://www.santaclarasystems.com/siemens/6es7313-5bg04-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-2": {
+    "file": "assets/plc/plc-2-2.jpg",
+    "width": 557,
+    "height": 600,
+    "quad": [
+      [
+        16,
+        15
+      ],
+      [
+        542,
+        15
+      ],
+      [
+        542,
+        585
+      ],
+      [
+        16,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 314C-2 PN/DP",
+    "photoModel": "CPU 314C-2 PN/DP",
+    "source": "https://www.santaclarasystems.com/siemens/6es7314-6eh04-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-3": {
+    "file": "assets/plc/plc-2-3.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 315-2 PN/DP",
+    "photoModel": "CPU 315-2 PN/DP",
+    "source": "https://www.santaclarasystems.com/siemens/6es7315-2eh14-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-4": {
+    "file": "assets/plc/plc-2-4.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 317-2 PN/DP",
+    "photoModel": "CPU 317-2 PN/DP",
+    "source": "https://www.santaclarasystems.com/siemens/6es7317-2ek14-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-5": {
+    "file": "assets/plc/plc-2-5.jpg",
+    "width": 533,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        518,
+        16
+      ],
+      [
+        518,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CPU 319-3 PN/DP",
+    "photoModel": "CPU 319-3 PN/DP",
+    "source": "https://www.santaclarasystems.com/siemens/6es7318-3el01-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-6": {
+    "file": "assets/plc/plc-2-6.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "SM 321 DI 16",
+    "photoModel": "SM 321 DI 16",
+    "source": "https://www.santaclarasystems.com/siemens/6es7321-1bh02-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-7": {
+    "file": "assets/plc/plc-2-7.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "SM 322 DO 16",
+    "photoModel": "SM 322 DO 16",
+    "source": "https://www.santaclarasystems.com/siemens/6es7322-1bh01-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-8": {
+    "file": "assets/plc/plc-2-8.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "SM 323 DI16/DO16",
+    "photoModel": "SM 323 DI16/DO16",
+    "source": "https://www.santaclarasystems.com/siemens/6es7323-1bl00-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-9": {
+    "file": "assets/plc/plc-2-9.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        20
+      ],
+      [
+        598,
+        20
+      ],
+      [
+        598,
+        590
+      ],
+      [
+        2,
+        590
+      ]
+    ],
+    "match": "family",
+    "model": "SM 331 AI 8",
+    "photoModel": "SM 331 AI 8",
+    "source": "https://www.santaclarasystems.com/siemens/6es7331-7kf02-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-10": {
+    "file": "assets/plc/plc-2-10.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "SM 332 AO 4",
+    "photoModel": "SM 332 AO 4",
+    "source": "https://www.santaclarasystems.com/siemens/6es7332-5hd01-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-11": {
+    "file": "assets/plc/plc-2-11.jpg",
+    "width": 314,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        299,
+        15
+      ],
+      [
+        299,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CP 343-1",
+    "photoModel": "CP 343-1",
+    "source": "https://www.santaclarasystems.com/siemens/6gk7343-1ex30-0xe0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-12": {
+    "file": "assets/plc/plc-2-12.jpg",
+    "width": 312,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        297,
+        15
+      ],
+      [
+        297,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "CP 342-5",
+    "photoModel": "CP 342-5",
+    "source": "https://www.santaclarasystems.com/siemens/6gk7342-5da03-0xe0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-13": {
+    "file": "assets/plc/plc-2-13.jpg",
+    "width": 422,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        16
+      ],
+      [
+        407,
+        16
+      ],
+      [
+        407,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "FM 350-1 Counter",
+    "photoModel": "FM 350-1 Counter",
+    "source": "https://www.santaclarasystems.com/siemens/6es7350-1ah03-0ae0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-2-14": {
+    "file": "assets/plc/plc-2-14.jpg",
+    "width": 374,
+    "height": 600,
+    "quad": [
+      [
+        16,
+        15
+      ],
+      [
+        359,
+        15
+      ],
+      [
+        359,
+        585
+      ],
+      [
+        16,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "PS 307 5A",
+    "photoModel": "PS 307 5A",
+    "source": "https://www.santaclarasystems.com/siemens/6es7307-1ea01-0aa0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-0": {
+    "file": "assets/plc/plc-3-0.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        8
+      ],
+      [
+        598,
+        8
+      ],
+      [
+        598,
+        594
+      ],
+      [
+        2,
+        594
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200SP IM155-6 PN ST",
+    "photoModel": "ET 200SP IM155-6 PN ST",
+    "source": "https://www.santaclarasystems.com/siemens/6es7155-6au01-0bn0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-1": {
+    "file": "assets/plc/plc-3-1.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        286,
+        213
+      ],
+      [
+        529,
+        213
+      ],
+      [
+        529,
+        593
+      ],
+      [
+        286,
+        593
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200SP IM155-6 PN HF",
+    "photoModel": "ET 200SP IM155-6 PN HF",
+    "source": "https://plc-direct.com/products/6es7155-6au01-0cn0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-2": {
+    "file": "assets/plc/plc-3-2.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        13
+      ],
+      [
+        598,
+        13
+      ],
+      [
+        598,
+        587
+      ],
+      [
+        2,
+        587
+      ]
+    ],
+    "match": "family",
+    "model": "DI 8x24VDC ST",
+    "photoModel": "DI 8x24VDC ST",
+    "source": "https://www.santaclarasystems.com/siemens/6es7131-6bf01-0ba0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-3": {
+    "file": "assets/plc/plc-3-3.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        8
+      ],
+      [
+        598,
+        8
+      ],
+      [
+        598,
+        595
+      ],
+      [
+        2,
+        595
+      ]
+    ],
+    "match": "family",
+    "model": "DQ 8x24VDC ST",
+    "photoModel": "DQ 8x24VDC ST",
+    "source": "https://www.santaclarasystems.com/siemens/6es7132-6bf01-0ba0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-4": {
+    "file": "assets/plc/plc-3-4.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        328,
+        214
+      ],
+      [
+        470,
+        214
+      ],
+      [
+        470,
+        590
+      ],
+      [
+        328,
+        590
+      ]
+    ],
+    "match": "family",
+    "model": "AI 4xI 2-wire ST",
+    "photoModel": "AI 4xI 2-wire ST",
+    "source": "https://plc-direct.com/products/6es7134-6gd01-0ba1",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-5": {
+    "file": "assets/plc/plc-3-5.jpg",
+    "width": 266,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        251,
+        15
+      ],
+      [
+        251,
+        584
+      ],
+      [
+        15,
+        584
+      ]
+    ],
+    "match": "family",
+    "model": "AQ 4xU/I ST",
+    "photoModel": "AQ 4xU/I ST",
+    "source": "https://www.santaclarasystems.com/siemens/6es7135-6hd00-0ba1",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-6": {
+    "file": "assets/plc/plc-3-6.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        5
+      ],
+      [
+        598,
+        5
+      ],
+      [
+        598,
+        595
+      ],
+      [
+        2,
+        595
+      ]
+    ],
+    "match": "family",
+    "model": "F-DI 8x24VDC HF",
+    "photoModel": "F-DI 8x24VDC HF",
+    "source": "https://www.santaclarasystems.com/siemens/6es7136-6ba01-0ca0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-7": {
+    "file": "assets/plc/plc-3-7.jpg",
+    "width": 383,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        17
+      ],
+      [
+        368,
+        17
+      ],
+      [
+        368,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "F-DQ 4x24VDC HF",
+    "photoModel": "F-DQ 4x24VDC HF",
+    "source": "https://www.santaclarasystems.com/siemens/6es7136-6db00-0ca0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-8": {
+    "file": "assets/plc/plc-3-8.jpg",
+    "width": 318,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        15
+      ],
+      [
+        302,
+        15
+      ],
+      [
+        302,
+        585
+      ],
+      [
+        15,
+        585
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200M IM153-1",
+    "photoModel": "ET 200M IM153-1",
+    "source": "https://www.santaclarasystems.com/siemens/6es7153-1aa03-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-9": {
+    "file": "assets/plc/plc-3-9.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        127,
+        9
+      ],
+      [
+        503,
+        9
+      ],
+      [
+        503,
+        556
+      ],
+      [
+        127,
+        556
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200M IM153-2",
+    "photoModel": "ET 200M IM153-2",
+    "source": "https://www.santaclarasystems.com/siemens/6es7153-2ba10-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-10": {
+    "file": "assets/plc/plc-3-10.jpg",
+    "width": 600,
+    "height": 600,
+    "quad": [
+      [
+        2,
+        13
+      ],
+      [
+        598,
+        13
+      ],
+      [
+        598,
+        587
+      ],
+      [
+        2,
+        587
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200S IM151-1",
+    "photoModel": "ET 200S IM151-1",
+    "source": "https://www.santaclarasystems.com/siemens/6es7151-1aa05-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-3-11": {
+    "file": "assets/plc/plc-3-11.jpg",
+    "width": 263,
+    "height": 600,
+    "quad": [
+      [
+        16,
+        21
+      ],
+      [
+        248,
+        21
+      ],
+      [
+        248,
+        584
+      ],
+      [
+        16,
+        584
+      ]
+    ],
+    "match": "family",
+    "model": "ET 200eco PN",
+    "photoModel": "ET 200eco PN",
+    "source": "https://www.santaclarasystems.com/siemens/6es7141-6bg00-0ab0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-0": {
+    "file": "assets/plc/plc-4-0.jpg",
+    "width": 145,
+    "height": 140,
+    "quad": [
+      [
+        50,
+        11
+      ],
+      [
+        96,
+        11
+      ],
+      [
+        96,
+        133
+      ],
+      [
+        50,
+        133
+      ]
+    ],
+    "match": "family",
+    "model": "DVP-SS2 CPU",
+    "photoModel": "DVP-SS2 CPU",
+    "source": "https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/253",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-1": {
+    "file": "assets/plc/plc-4-1.jpg",
+    "width": 145,
+    "height": 140,
+    "quad": [
+      [
+        46,
+        27
+      ],
+      [
+        97,
+        27
+      ],
+      [
+        97,
+        130
+      ],
+      [
+        46,
+        130
+      ]
+    ],
+    "match": "family",
+    "model": "DVP-SA2 CPU",
+    "photoModel": "DVP-SA2 CPU",
+    "source": "https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/252",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-2": {
+    "file": "assets/plc/plc-4-2.jpg",
+    "width": 145,
+    "height": 140,
+    "quad": [
+      [
+        28,
+        15
+      ],
+      [
+        119,
+        15
+      ],
+      [
+        119,
+        129
+      ],
+      [
+        28,
+        129
+      ]
+    ],
+    "match": "family",
+    "model": "DVP-SX2 CPU",
+    "photoModel": "DVP-SX2 CPU",
+    "source": "https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/168",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-4": {
+    "file": "assets/plc/plc-4-4.jpg",
+    "width": 145,
+    "height": 140,
+    "quad": [
+      [
+        6,
+        37
+      ],
+      [
+        137,
+        37
+      ],
+      [
+        137,
+        120
+      ],
+      [
+        6,
+        120
+      ]
+    ],
+    "match": "family",
+    "model": "DVP-EH3 CPU",
+    "photoModel": "DVP-EH3 CPU",
+    "source": "https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/241",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-5": {
+    "file": "assets/plc/plc-4-5.jpg",
+    "width": 800,
+    "height": 533,
+    "quad": [
+      [
+        51,
+        41
+      ],
+      [
+        749,
+        41
+      ],
+      [
+        749,
+        494
+      ],
+      [
+        51,
+        494
+      ]
+    ],
+    "match": "family",
+    "model": "DVP-ES3 CPU",
+    "photoModel": "DVP-ES3 CPU",
+    "source": "https://www.deltaww.com/en-US/products/PLC-Programmable-Logic-Controllers/DVP-ES3",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-6": {
+    "file": "assets/plc/plc-4-6.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        163,
+        41
+      ],
+      [
+        332,
+        41
+      ],
+      [
+        332,
+        384
+      ],
+      [
+        163,
+        384
+      ]
+    ],
+    "match": "family",
+    "model": "DVP16SP11R",
+    "photoModel": "DVP16SP11R",
+    "source": "https://www.em.co.za/DVP16SP11R",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-7": {
+    "file": "assets/plc/plc-4-7.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        163,
+        41
+      ],
+      [
+        332,
+        41
+      ],
+      [
+        332,
+        384
+      ],
+      [
+        163,
+        384
+      ]
+    ],
+    "match": "family",
+    "model": "DVP16SP11T",
+    "photoModel": "DVP16SP11T",
+    "source": "https://www.em.co.za/DVP16SP11T",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-8": {
+    "file": "assets/plc/plc-4-8.jpg",
+    "width": 1067,
+    "height": 1067,
+    "quad": [
+      [
+        309,
+        27
+      ],
+      [
+        722,
+        27
+      ],
+      [
+        722,
+        1035
+      ],
+      [
+        309,
+        1035
+      ]
+    ],
+    "match": "exact",
+    "model": "DVP04AD-S",
+    "photoModel": "DVP04AD-S",
+    "source": "https://deltavina.com/dvp04ad-s/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-11": {
+    "file": "assets/plc/plc-4-11.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        155,
+        36
+      ],
+      [
+        344,
+        36
+      ],
+      [
+        344,
+        387
+      ],
+      [
+        155,
+        387
+      ]
+    ],
+    "match": "exact",
+    "model": "DVPEN01-SL",
+    "photoModel": "DVPEN01-SL",
+    "source": "https://www.em.co.za/DVPEN01-SL",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-4-12": {
+    "file": "assets/plc/plc-4-12.jpg",
+    "width": 145,
+    "height": 140,
+    "quad": [
+      [
+        42,
+        12
+      ],
+      [
+        102,
+        12
+      ],
+      [
+        102,
+        131
+      ],
+      [
+        42,
+        131
+      ]
+    ],
+    "match": "exact",
+    "model": "DVPPF02-SL",
+    "photoModel": "DVPPF02-SL",
+    "source": "https://www.deltaww.com/en-US/products/Industrial-Fieldbus-Solution/197",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-0": {
+    "file": "assets/plc/plc-5-0.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        89,
+        47
+      ],
+      [
+        410,
+        47
+      ],
+      [
+        410,
+        363
+      ],
+      [
+        89,
+        363
+      ]
+    ],
+    "match": "family",
+    "model": "AS228T-A CPU",
+    "photoModel": "AS228T-A CPU",
+    "source": "https://www.em.co.za/AS228T-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-1": {
+    "file": "assets/plc/plc-5-1.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        89,
+        47
+      ],
+      [
+        410,
+        47
+      ],
+      [
+        410,
+        363
+      ],
+      [
+        89,
+        363
+      ]
+    ],
+    "match": "family",
+    "model": "AS228P-A CPU",
+    "photoModel": "AS228P-A CPU",
+    "source": "https://www.em.co.za/AS228P-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-2": {
+    "file": "assets/plc/plc-5-2.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        89,
+        41
+      ],
+      [
+        413,
+        41
+      ],
+      [
+        413,
+        384
+      ],
+      [
+        89,
+        384
+      ]
+    ],
+    "match": "family",
+    "model": "AS332T-A CPU",
+    "photoModel": "AS332T-A CPU",
+    "source": "https://www.em.co.za/AS332T-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-3": {
+    "file": "assets/plc/plc-5-3.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        89,
+        41
+      ],
+      [
+        413,
+        41
+      ],
+      [
+        413,
+        384
+      ],
+      [
+        89,
+        384
+      ]
+    ],
+    "match": "family",
+    "model": "AS324MT-A CPU",
+    "photoModel": "AS324MT-A CPU",
+    "source": "https://www.em.co.za/AS324MT-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-4": {
+    "file": "assets/plc/plc-5-4.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        141,
+        28
+      ],
+      [
+        353,
+        28
+      ],
+      [
+        353,
+        385
+      ],
+      [
+        141,
+        385
+      ]
+    ],
+    "match": "family",
+    "model": "AS16AM10N-A",
+    "photoModel": "AS16AM10N-A",
+    "source": "https://www.em.co.za/AS16AM10N-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-5": {
+    "file": "assets/plc/plc-5-5.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        140,
+        39
+      ],
+      [
+        343,
+        39
+      ],
+      [
+        343,
+        385
+      ],
+      [
+        140,
+        385
+      ]
+    ],
+    "match": "family",
+    "model": "AS16AN01T-A",
+    "photoModel": "AS16AN01T-A",
+    "source": "https://www.em.co.za/AS16AN01T-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-7": {
+    "file": "assets/plc/plc-5-7.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        146,
+        28
+      ],
+      [
+        356,
+        28
+      ],
+      [
+        356,
+        379
+      ],
+      [
+        146,
+        379
+      ]
+    ],
+    "match": "family",
+    "model": "AS04DA-A",
+    "photoModel": "AS04DA-A",
+    "source": "https://www.em.co.za/AS04DA-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-8": {
+    "file": "assets/plc/plc-5-8.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        145,
+        23
+      ],
+      [
+        362,
+        23
+      ],
+      [
+        362,
+        386
+      ],
+      [
+        145,
+        386
+      ]
+    ],
+    "match": "family",
+    "model": "AS06XA-A",
+    "photoModel": "AS06XA-A",
+    "source": "https://www.em.co.za/AS06XA-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-9": {
+    "file": "assets/plc/plc-5-9.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        129,
+        104
+      ],
+      [
+        371,
+        104
+      ],
+      [
+        371,
+        308
+      ],
+      [
+        129,
+        308
+      ]
+    ],
+    "match": "exact",
+    "model": "AS-FCOPM",
+    "photoModel": "AS-FCOPM",
+    "source": "https://www.em.co.za/AS-FCOPM",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-5-10": {
+    "file": "assets/plc/plc-5-10.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        152,
+        55
+      ],
+      [
+        345,
+        55
+      ],
+      [
+        345,
+        368
+      ],
+      [
+        152,
+        368
+      ]
+    ],
+    "match": "exact",
+    "model": "AS01DNET-A",
+    "photoModel": "AS01DNET-A",
+    "source": "https://www.em.co.za/AS01DNET-A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-0": {
+    "file": "assets/plc/plc-6-0.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        159,
+        37
+      ],
+      [
+        345,
+        37
+      ],
+      [
+        345,
+        371
+      ],
+      [
+        159,
+        371
+      ]
+    ],
+    "match": "exact",
+    "model": "AHCPU500-RS2",
+    "photoModel": "AHCPU500-RS2",
+    "source": "https://www.em.co.za/AHCPU500-RS2",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-1": {
+    "file": "assets/plc/plc-6-1.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        165,
+        46
+      ],
+      [
+        348,
+        46
+      ],
+      [
+        348,
+        373
+      ],
+      [
+        165,
+        373
+      ]
+    ],
+    "match": "exact",
+    "model": "AHCPU510-EN",
+    "photoModel": "AHCPU510-EN",
+    "source": "https://www.em.co.za/AHCPU510-EN",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-2": {
+    "file": "assets/plc/plc-6-2.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        159,
+        37
+      ],
+      [
+        345,
+        37
+      ],
+      [
+        345,
+        371
+      ],
+      [
+        159,
+        371
+      ]
+    ],
+    "match": "family",
+    "model": "AHCPU530-EN",
+    "photoModel": "AHCPU530-EN",
+    "source": "https://www.em.co.za/AHCPU530-EN",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-6": {
+    "file": "assets/plc/plc-6-6.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        153,
+        44
+      ],
+      [
+        327,
+        44
+      ],
+      [
+        327,
+        367
+      ],
+      [
+        153,
+        367
+      ]
+    ],
+    "match": "family",
+    "model": "AH04DA-5A",
+    "photoModel": "AH04DA-5A",
+    "source": "https://www.em.co.za/AH04DA-5A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-7": {
+    "file": "assets/plc/plc-6-7.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        159,
+        52
+      ],
+      [
+        339,
+        52
+      ],
+      [
+        339,
+        367
+      ],
+      [
+        159,
+        367
+      ]
+    ],
+    "match": "family",
+    "model": "AH10SCM-5A",
+    "photoModel": "AH10SCM-5A",
+    "source": "https://www.em.co.za/AH10SCM-5A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-8": {
+    "file": "assets/plc/plc-6-8.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        159,
+        52
+      ],
+      [
+        339,
+        52
+      ],
+      [
+        339,
+        367
+      ],
+      [
+        159,
+        367
+      ]
+    ],
+    "match": "family",
+    "model": "AH10EN-5A",
+    "photoModel": "AH10EN-5A",
+    "source": "https://www.em.co.za/AH10EN-5A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-6-9": {
+    "file": "assets/plc/plc-6-9.jpg",
+    "width": 500,
+    "height": 410,
+    "quad": [
+      [
+        159,
+        52
+      ],
+      [
+        339,
+        52
+      ],
+      [
+        339,
+        367
+      ],
+      [
+        159,
+        367
+      ]
+    ],
+    "match": "family",
+    "model": "AH10DNET-5A",
+    "photoModel": "AH10DNET-5A",
+    "source": "https://www.em.co.za/AH10DNET-5A",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-1": {
+    "file": "assets/plc/plc-7-1.jpg",
+    "width": 2800,
+    "height": 2800,
+    "quad": [
+      [
+        76,
+        267
+      ],
+      [
+        2714,
+        267
+      ],
+      [
+        2714,
+        2538
+      ],
+      [
+        76,
+        2538
+      ]
+    ],
+    "match": "family",
+    "model": "CP1L-EM CPU",
+    "photoModel": "CP1L-EM CPU",
+    "source": "https://industrial.omron.eu/en/products/CP1L-EM30DR-D",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-3": {
+    "file": "assets/plc/plc-7-3.jpg",
+    "width": 1314,
+    "height": 1314,
+    "quad": [
+      [
+        62,
+        178
+      ],
+      [
+        1256,
+        178
+      ],
+      [
+        1256,
+        1133
+      ],
+      [
+        62,
+        1133
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-20EDR1",
+    "photoModel": "CP1W-20EDR1",
+    "source": "https://industrial.omron.eu/en/products/CP1W-20EDR1",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-4": {
+    "file": "assets/plc/plc-7-4.jpg",
+    "width": 3800,
+    "height": 3800,
+    "quad": [
+      [
+        92,
+        819
+      ],
+      [
+        3708,
+        819
+      ],
+      [
+        3708,
+        2985
+      ],
+      [
+        92,
+        2985
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-32ER",
+    "photoModel": "CP1W-32ER",
+    "source": "https://industrial.omron.eu/en/products/CP1W-32ER",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-5": {
+    "file": "assets/plc/plc-7-5.jpg",
+    "width": 1800,
+    "height": 1800,
+    "quad": [
+      [
+        59,
+        407
+      ],
+      [
+        1737,
+        407
+      ],
+      [
+        1737,
+        1394
+      ],
+      [
+        59,
+        1394
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-40EDR",
+    "photoModel": "CP1W-40EDR",
+    "source": "https://industrial.omron.eu/en/products/CP1W-40EDR",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-6": {
+    "file": "assets/plc/plc-7-6.jpg",
+    "width": 1300,
+    "height": 1300,
+    "quad": [
+      [
+        54,
+        172
+      ],
+      [
+        1251,
+        172
+      ],
+      [
+        1251,
+        1130
+      ],
+      [
+        54,
+        1130
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-AD041",
+    "photoModel": "CP1W-AD041",
+    "source": "https://industrial.omron.eu/en/products/CP1W-AD041",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-7": {
+    "file": "assets/plc/plc-7-7.jpg",
+    "width": 1324,
+    "height": 1324,
+    "quad": [
+      [
+        67,
+        184
+      ],
+      [
+        1264,
+        184
+      ],
+      [
+        1264,
+        1143
+      ],
+      [
+        67,
+        1143
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-DA041",
+    "photoModel": "CP1W-DA041",
+    "source": "https://industrial.omron.eu/en/products/CP1W-DA041",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-8": {
+    "file": "assets/plc/plc-7-8.jpg",
+    "width": 2800,
+    "height": 2800,
+    "quad": [
+      [
+        60,
+        408
+      ],
+      [
+        2717,
+        408
+      ],
+      [
+        2717,
+        2399
+      ],
+      [
+        60,
+        2399
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-MAD44",
+    "photoModel": "CP1W-MAD44",
+    "source": "https://industrial.omron.eu/en/products/CP1W-MAD44",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-7-9": {
+    "file": "assets/plc/plc-7-9.jpg",
+    "width": 1200,
+    "height": 1200,
+    "quad": [
+      [
+        149,
+        107
+      ],
+      [
+        1040,
+        107
+      ],
+      [
+        1040,
+        1112
+      ],
+      [
+        149,
+        1112
+      ]
+    ],
+    "match": "exact",
+    "model": "CP1W-CIF11",
+    "photoModel": "CP1W-CIF11",
+    "source": "https://www.fa.omron.co.jp/product/item/CP1W-CIF11/en/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-0": {
+    "file": "assets/plc/plc-8-0.jpg",
+    "width": 1000,
+    "height": 1000,
+    "quad": [
+      [
+        105,
+        46
+      ],
+      [
+        893,
+        46
+      ],
+      [
+        893,
+        965
+      ],
+      [
+        105,
+        965
+      ]
+    ],
+    "match": "family",
+    "model": "CJ2M-CPU31",
+    "photoModel": "CJ2M-CPU31",
+    "source": "https://industrial.omron.eu/en/products/CJ2M-CPU31",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-1": {
+    "file": "assets/plc/plc-8-1.jpg",
+    "width": 1000,
+    "height": 1000,
+    "quad": [
+      [
+        105,
+        46
+      ],
+      [
+        893,
+        46
+      ],
+      [
+        893,
+        965
+      ],
+      [
+        105,
+        965
+      ]
+    ],
+    "match": "family",
+    "model": "CJ2M-CPU33",
+    "photoModel": "CJ2M-CPU33",
+    "source": "https://industrial.omron.eu/en/products/CJ2M-CPU33",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-2": {
+    "file": "assets/plc/plc-8-2.jpg",
+    "width": 1000,
+    "height": 1000,
+    "quad": [
+      [
+        84,
+        40
+      ],
+      [
+        919,
+        40
+      ],
+      [
+        919,
+        940
+      ],
+      [
+        84,
+        940
+      ]
+    ],
+    "match": "family",
+    "model": "CJ2H-CPU64-EIP",
+    "photoModel": "CJ2H-CPU64-EIP",
+    "source": "https://industrial.omron.eu/en/products/CJ2H-CPU64-EIP",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-3": {
+    "file": "assets/plc/plc-8-3.jpg",
+    "width": 1200,
+    "height": 1200,
+    "quad": [
+      [
+        329,
+        40
+      ],
+      [
+        899,
+        40
+      ],
+      [
+        899,
+        1146
+      ],
+      [
+        329,
+        1146
+      ]
+    ],
+    "match": "exact",
+    "model": "CJ1W-ID211",
+    "photoModel": "CJ1W-ID211",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-ID211",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-4": {
+    "file": "assets/plc/plc-8-4.jpg",
+    "width": 2459,
+    "height": 2460,
+    "quad": [
+      [
+        548,
+        161
+      ],
+      [
+        1869,
+        161
+      ],
+      [
+        1869,
+        2293
+      ],
+      [
+        548,
+        2293
+      ]
+    ],
+    "match": "family",
+    "model": "CJ1W-OD211",
+    "photoModel": "CJ1W-OD211",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-OD211",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-5": {
+    "file": "assets/plc/plc-8-5.jpg",
+    "width": 1200,
+    "height": 1200,
+    "quad": [
+      [
+        311,
+        53
+      ],
+      [
+        891,
+        53
+      ],
+      [
+        891,
+        1160
+      ],
+      [
+        311,
+        1160
+      ]
+    ],
+    "match": "family",
+    "model": "CJ1W-AD081-V1",
+    "photoModel": "CJ1W-AD081-V1",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-AD081-V1",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-6": {
+    "file": "assets/plc/plc-8-6.jpg",
+    "width": 1000,
+    "height": 1000,
+    "quad": [
+      [
+        212,
+        60
+      ],
+      [
+        789,
+        60
+      ],
+      [
+        789,
+        945
+      ],
+      [
+        212,
+        945
+      ]
+    ],
+    "match": "family",
+    "model": "CJ1W-DA041",
+    "photoModel": "CJ1W-DA041",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-DA041",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-7": {
+    "file": "assets/plc/plc-8-7.jpg",
+    "width": 1050,
+    "height": 1050,
+    "quad": [
+      [
+        234,
+        36
+      ],
+      [
+        823,
+        36
+      ],
+      [
+        823,
+        1011
+      ],
+      [
+        234,
+        1011
+      ]
+    ],
+    "match": "exact",
+    "model": "CJ1W-SCU42",
+    "photoModel": "CJ1W-SCU42",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-SCU42",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-8": {
+    "file": "assets/plc/plc-8-8.jpg",
+    "width": 1000,
+    "height": 1000,
+    "quad": [
+      [
+        241,
+        75
+      ],
+      [
+        757,
+        75
+      ],
+      [
+        757,
+        932
+      ],
+      [
+        241,
+        932
+      ]
+    ],
+    "match": "exact",
+    "model": "CJ1W-ETN21",
+    "photoModel": "CJ1W-ETN21",
+    "source": "https://industrial.omron.eu/en/products/CJ1W-ETN21",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-8-9": {
+    "file": "assets/plc/plc-8-9.jpg",
+    "width": 198,
+    "height": 198,
+    "quad": [
+      [
+        49,
+        12
+      ],
+      [
+        150,
+        12
+      ],
+      [
+        150,
+        187
+      ],
+      [
+        49,
+        187
+      ]
+    ],
+    "match": "family",
+    "model": "CJ1W-EIP21",
+    "photoModel": "CJ1W-EIP21",
+    "source": "https://www.omron-ap.com/products/family/1995/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-0": {
+    "file": "assets/plc/plc-9-0.jpg",
+    "width": 4500,
+    "height": 4500,
+    "quad": [
+      [
+        330,
+        958
+      ],
+      [
+        4187,
+        958
+      ],
+      [
+        4187,
+        3723
+      ],
+      [
+        330,
+        3723
+      ]
+    ],
+    "match": "family",
+    "model": "NX1P2 CPU",
+    "photoModel": "NX1P2 CPU",
+    "source": "https://industrial.omron.eu/en/products/NX1P2-1040DT1",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-1": {
+    "file": "assets/plc/plc-9-1.jpg",
+    "width": 2400,
+    "height": 2400,
+    "quad": [
+      [
+        311,
+        154
+      ],
+      [
+        2087,
+        154
+      ],
+      [
+        2087,
+        2276
+      ],
+      [
+        311,
+        2276
+      ]
+    ],
+    "match": "family",
+    "model": "NX102 CPU",
+    "photoModel": "NX102 CPU",
+    "source": "https://industrial.omron.eu/en/products/NX102-1000",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-2": {
+    "file": "assets/plc/plc-9-2.jpg",
+    "width": 4800,
+    "height": 4800,
+    "quad": [
+      [
+        166,
+        1118
+      ],
+      [
+        4554,
+        1118
+      ],
+      [
+        4554,
+        3799
+      ],
+      [
+        166,
+        3799
+      ]
+    ],
+    "match": "family",
+    "model": "NJ101 CPU",
+    "photoModel": "NJ101 CPU",
+    "source": "https://industrial.omron.eu/en/products/NJ101-1000",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-3": {
+    "file": "assets/plc/plc-9-3.jpg",
+    "width": 4600,
+    "height": 4600,
+    "quad": [
+      [
+        103,
+        967
+      ],
+      [
+        4489,
+        967
+      ],
+      [
+        4489,
+        3646
+      ],
+      [
+        103,
+        3646
+      ]
+    ],
+    "match": "family",
+    "model": "NJ501 CPU",
+    "photoModel": "NJ501 CPU",
+    "source": "https://industrial.omron.eu/en/products/NJ501-1500",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-4": {
+    "file": "assets/plc/plc-9-4.jpg",
+    "width": 3454,
+    "height": 3454,
+    "quad": [
+      [
+        995,
+        164
+      ],
+      [
+        2461,
+        164
+      ],
+      [
+        2461,
+        3288
+      ],
+      [
+        995,
+        3288
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-ID3343",
+    "photoModel": "NX-ID3343",
+    "source": "https://industrial.omron.eu/en/products/NX-ID3343",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-5": {
+    "file": "assets/plc/plc-9-5.jpg",
+    "width": 3434,
+    "height": 3434,
+    "quad": [
+      [
+        1001,
+        152
+      ],
+      [
+        2398,
+        152
+      ],
+      [
+        2398,
+        3283
+      ],
+      [
+        1001,
+        3283
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-OD3256",
+    "photoModel": "NX-OD3256",
+    "source": "https://industrial.omron.eu/en/products/NX-OD3256",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-6": {
+    "file": "assets/plc/plc-9-6.jpg",
+    "width": 3434,
+    "height": 3434,
+    "quad": [
+      [
+        1024,
+        148
+      ],
+      [
+        2446,
+        148
+      ],
+      [
+        2446,
+        3269
+      ],
+      [
+        1024,
+        3269
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-AD4203",
+    "photoModel": "NX-AD4203",
+    "source": "https://industrial.omron.eu/en/products/NX-AD4203",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-7": {
+    "file": "assets/plc/plc-9-7.jpg",
+    "width": 3000,
+    "height": 3000,
+    "quad": [
+      [
+        893,
+        107
+      ],
+      [
+        2123,
+        107
+      ],
+      [
+        2123,
+        2891
+      ],
+      [
+        893,
+        2891
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-DA2603",
+    "photoModel": "NX-DA2603",
+    "source": "https://industrial.omron.eu/en/products/NX-DA2603",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-8": {
+    "file": "assets/plc/plc-9-8.jpg",
+    "width": 3000,
+    "height": 3000,
+    "quad": [
+      [
+        622,
+        99
+      ],
+      [
+        2381,
+        99
+      ],
+      [
+        2381,
+        2922
+      ],
+      [
+        622,
+        2922
+      ]
+    ],
+    "match": "family",
+    "model": "NX-ECC203",
+    "photoModel": "NX-ECC203",
+    "source": "https://www.fa.omron.co.jp/product/item/NX-ECC203/en/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-9": {
+    "file": "assets/plc/plc-9-9.jpg",
+    "width": 1600,
+    "height": 1600,
+    "quad": [
+      [
+        429,
+        57
+      ],
+      [
+        1169,
+        57
+      ],
+      [
+        1169,
+        1543
+      ],
+      [
+        429,
+        1543
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-SL5500",
+    "photoModel": "NX-SL5500",
+    "source": "https://industrial.omron.eu/en/products/NX-SL5500",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-10": {
+    "file": "assets/plc/plc-9-10.jpg",
+    "width": 2500,
+    "height": 2500,
+    "quad": [
+      [
+        749,
+        100
+      ],
+      [
+        1764,
+        100
+      ],
+      [
+        1764,
+        2397
+      ],
+      [
+        749,
+        2397
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-SIH400",
+    "photoModel": "NX-SIH400",
+    "source": "https://industrial.omron.eu/en/products/NX-SIH400",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-9-11": {
+    "file": "assets/plc/plc-9-11.jpg",
+    "width": 2500,
+    "height": 2500,
+    "quad": [
+      [
+        749,
+        100
+      ],
+      [
+        1764,
+        100
+      ],
+      [
+        1764,
+        2397
+      ],
+      [
+        749,
+        2397
+      ]
+    ],
+    "match": "exact",
+    "model": "NX-SOD400",
+    "photoModel": "NX-SOD400",
+    "source": "https://industrial.omron.eu/en/products/NX-SOD400",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n14dr-a": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N14DR-A",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n14dt-a": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N14DT-A",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n14dr-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N14DR-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n14dt-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N14DT-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n14dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N14DT1-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n20dr-a": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N20DR-A",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n20dt-a": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N20DT-A",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n20dr-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N20DR-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n20dt-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N20DT-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n20dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-N20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        49,
+        105.75
+      ],
+      [
+        270.19,
+        151.23
+      ],
+      [
+        270.19,
+        390
+      ],
+      [
+        49,
+        321.78
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N20DT1-D",
+    "photoModel": "CP2E-N20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n30dr-a": {
+    "file": "assets/plc/original-v115/CP2E-N30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        6,
+        111.25
+      ],
+      [
+        337.96,
+        154.09
+      ],
+      [
+        337.96,
+        379
+      ],
+      [
+        6,
+        314.74
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N30DR-A",
+    "photoModel": "CP2E-N30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n30dt-a": {
+    "file": "assets/plc/original-v115/CP2E-N30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        6,
+        111.25
+      ],
+      [
+        337.96,
+        154.09
+      ],
+      [
+        337.96,
+        379
+      ],
+      [
+        6,
+        314.74
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N30DT-A",
+    "photoModel": "CP2E-N30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n30dr-d": {
+    "file": "assets/plc/original-v115/CP2E-N30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        6,
+        111.25
+      ],
+      [
+        337.96,
+        154.09
+      ],
+      [
+        337.96,
+        379
+      ],
+      [
+        6,
+        314.74
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N30DR-D",
+    "photoModel": "CP2E-N30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n30dt-d": {
+    "file": "assets/plc/original-v115/CP2E-N30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        6,
+        111.25
+      ],
+      [
+        337.96,
+        154.09
+      ],
+      [
+        337.96,
+        379
+      ],
+      [
+        6,
+        314.74
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N30DT-D",
+    "photoModel": "CP2E-N30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n30dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-N30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        6,
+        111.25
+      ],
+      [
+        337.96,
+        154.09
+      ],
+      [
+        337.96,
+        379
+      ],
+      [
+        6,
+        314.74
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N30DT1-D",
+    "photoModel": "CP2E-N30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n40dr-a": {
+    "file": "assets/plc/original-v115/CP2E-N40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        7,
+        119.5
+      ],
+      [
+        338.1,
+        158.14
+      ],
+      [
+        338.1,
+        361
+      ],
+      [
+        7,
+        303.04
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N40DR-A",
+    "photoModel": "CP2E-N40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n40dt-a": {
+    "file": "assets/plc/original-v115/CP2E-N40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        7,
+        119.5
+      ],
+      [
+        338.1,
+        158.14
+      ],
+      [
+        338.1,
+        361
+      ],
+      [
+        7,
+        303.04
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N40DT-A",
+    "photoModel": "CP2E-N40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n40dr-d": {
+    "file": "assets/plc/original-v115/CP2E-N40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        7,
+        119.5
+      ],
+      [
+        338.1,
+        158.14
+      ],
+      [
+        338.1,
+        361
+      ],
+      [
+        7,
+        303.04
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N40DR-D",
+    "photoModel": "CP2E-N40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n40dt-d": {
+    "file": "assets/plc/original-v115/CP2E-N40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        7,
+        119.5
+      ],
+      [
+        338.1,
+        158.14
+      ],
+      [
+        338.1,
+        361
+      ],
+      [
+        7,
+        303.04
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N40DT-D",
+    "photoModel": "CP2E-N40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n40dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-N40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        7,
+        119.5
+      ],
+      [
+        338.1,
+        158.14
+      ],
+      [
+        338.1,
+        361
+      ],
+      [
+        7,
+        303.04
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N40DT1-D",
+    "photoModel": "CP2E-N40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n60dr-a": {
+    "file": "assets/plc/original-v115/CP2E-N60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        8,
+        133.5
+      ],
+      [
+        338.24,
+        165.42
+      ],
+      [
+        338.24,
+        333
+      ],
+      [
+        8,
+        285.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N60DR-A",
+    "photoModel": "CP2E-N60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n60dt-a": {
+    "file": "assets/plc/original-v115/CP2E-N60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        8,
+        133.5
+      ],
+      [
+        338.24,
+        165.42
+      ],
+      [
+        338.24,
+        333
+      ],
+      [
+        8,
+        285.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N60DT-A",
+    "photoModel": "CP2E-N60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n60dr-d": {
+    "file": "assets/plc/original-v115/CP2E-N60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        8,
+        133.5
+      ],
+      [
+        338.24,
+        165.42
+      ],
+      [
+        338.24,
+        333
+      ],
+      [
+        8,
+        285.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N60DR-D",
+    "photoModel": "CP2E-N60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n60dt-d": {
+    "file": "assets/plc/original-v115/CP2E-N60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        8,
+        133.5
+      ],
+      [
+        338.24,
+        165.42
+      ],
+      [
+        338.24,
+        333
+      ],
+      [
+        8,
+        285.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N60DT-D",
+    "photoModel": "CP2E-N60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-n60dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-N60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        8,
+        133.5
+      ],
+      [
+        338.24,
+        165.42
+      ],
+      [
+        338.24,
+        333
+      ],
+      [
+        8,
+        285.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-N60DT1-D",
+    "photoModel": "CP2E-N60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s30dr-a": {
+    "file": "assets/plc/original-v115/CP2E-S30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        116.0
+      ],
+      [
+        330.18,
+        156.32
+      ],
+      [
+        330.18,
+        368
+      ],
+      [
+        18,
+        307.52
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S30DR-A",
+    "photoModel": "CP2E-S30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s30dt-d": {
+    "file": "assets/plc/original-v115/CP2E-S30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        116.0
+      ],
+      [
+        330.18,
+        156.32
+      ],
+      [
+        330.18,
+        368
+      ],
+      [
+        18,
+        307.52
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S30DT-D",
+    "photoModel": "CP2E-S30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s30dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-S30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        116.0
+      ],
+      [
+        330.18,
+        156.32
+      ],
+      [
+        330.18,
+        368
+      ],
+      [
+        18,
+        307.52
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S30DT1-D",
+    "photoModel": "CP2E-S30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s40dr-a": {
+    "file": "assets/plc/original-v115/CP2E-S40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        124.0
+      ],
+      [
+        330.18,
+        160.48
+      ],
+      [
+        330.18,
+        352
+      ],
+      [
+        18,
+        297.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S40DR-A",
+    "photoModel": "CP2E-S40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s40dt-d": {
+    "file": "assets/plc/original-v115/CP2E-S40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        124.0
+      ],
+      [
+        330.18,
+        160.48
+      ],
+      [
+        330.18,
+        352
+      ],
+      [
+        18,
+        297.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S40DT-D",
+    "photoModel": "CP2E-S40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s40dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-S40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        124.0
+      ],
+      [
+        330.18,
+        160.48
+      ],
+      [
+        330.18,
+        352
+      ],
+      [
+        18,
+        297.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S40DT1-D",
+    "photoModel": "CP2E-S40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s60dr-a": {
+    "file": "assets/plc/original-v115/CP2E-S60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        136.5
+      ],
+      [
+        330.18,
+        166.98
+      ],
+      [
+        330.18,
+        327
+      ],
+      [
+        18,
+        281.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S60DR-A",
+    "photoModel": "CP2E-S60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s60dt-d": {
+    "file": "assets/plc/original-v115/CP2E-S60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        136.5
+      ],
+      [
+        330.18,
+        166.98
+      ],
+      [
+        330.18,
+        327
+      ],
+      [
+        18,
+        281.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S60DT-D",
+    "photoModel": "CP2E-S60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-s60dt1-d": {
+    "file": "assets/plc/original-v115/CP2E-S60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        136.5
+      ],
+      [
+        330.18,
+        166.98
+      ],
+      [
+        330.18,
+        327
+      ],
+      [
+        18,
+        281.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-S60DT1-D",
+    "photoModel": "CP2E-S60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-e14dr-a": {
+    "file": "assets/plc/original-v115/CP2E-E20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        56,
+        109.5
+      ],
+      [
+        266.24,
+        152.94
+      ],
+      [
+        266.24,
+        381
+      ],
+      [
+        56,
+        315.84
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-E14DR-A",
+    "photoModel": "CP2E-E20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-e20dr-a": {
+    "file": "assets/plc/original-v115/CP2E-E20DR-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        56,
+        109.5
+      ],
+      [
+        266.24,
+        152.94
+      ],
+      [
+        266.24,
+        381
+      ],
+      [
+        56,
+        315.84
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-E20DR-A",
+    "photoModel": "CP2E-E20DR-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-e30dr-a": {
+    "file": "assets/plc/original-v115/CP2E-E30DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        116.0
+      ],
+      [
+        330.18,
+        156.32
+      ],
+      [
+        330.18,
+        368
+      ],
+      [
+        18,
+        307.52
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-E30DR-A",
+    "photoModel": "CP2E-E30DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-e40dr-a": {
+    "file": "assets/plc/original-v115/CP2E-E40DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        123.75
+      ],
+      [
+        330.18,
+        160.11
+      ],
+      [
+        330.18,
+        351
+      ],
+      [
+        18,
+        296.46
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-E40DR-A",
+    "photoModel": "CP2E-E40DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp2e-e60dr-a": {
+    "file": "assets/plc/original-v115/CP2E-E60DT-A.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        18,
+        137.75
+      ],
+      [
+        330.18,
+        167.87
+      ],
+      [
+        330.18,
+        326
+      ],
+      [
+        18,
+        280.82
+      ]
+    ],
+    "match": "family",
+    "model": "CP2E-E60DR-A",
+    "photoModel": "CP2E-E60DT-A.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp2e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dr-a": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DR-A",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dt-a": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DT-A",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DT1-A",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dr-d": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DR-D",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dt-d": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DT-D",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e10dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-E10.jpg",
+    "width": 400,
+    "height": 400,
+    "quad": [
+      [
+        55,
+        81.2
+      ],
+      [
+        267.43,
+        108.22
+      ],
+      [
+        267.43,
+        390
+      ],
+      [
+        55,
+        359.12
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E10DT1-D",
+    "photoModel": "CP1E-E10.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e14dr-a": {
+    "file": "assets/plc/original-v115/CP1E-E14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        48,
+        163.0
+      ],
+      [
+        564.11,
+        217.25
+      ],
+      [
+        564.11,
+        783
+      ],
+      [
+        48,
+        721.0
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E14DR-A",
+    "photoModel": "CP1E-E14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e20dr-a": {
+    "file": "assets/plc/original-v115/CP1E-E20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        59,
+        163.8
+      ],
+      [
+        570.0,
+        216.58
+      ],
+      [
+        570.0,
+        767
+      ],
+      [
+        59,
+        706.68
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E20DR-A",
+    "photoModel": "CP1E-E20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e30dr-a": {
+    "file": "assets/plc/original-v115/CP1E-E30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        228.8
+      ],
+      [
+        663.96,
+        270.38
+      ],
+      [
+        663.96,
+        704
+      ],
+      [
+        31,
+        656.48
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E30DR-A",
+    "photoModel": "CP1E-E30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e40dr-a": {
+    "file": "assets/plc/original-v115/CP1E-E40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        36,
+        240.0
+      ],
+      [
+        674.12,
+        277.8
+      ],
+      [
+        674.12,
+        672
+      ],
+      [
+        36,
+        628.8
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E40DR-A",
+    "photoModel": "CP1E-E40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e14sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-E14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        48,
+        163.0
+      ],
+      [
+        564.11,
+        217.25
+      ],
+      [
+        564.11,
+        783
+      ],
+      [
+        48,
+        721.0
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E14SDR-A",
+    "photoModel": "CP1E-E14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e20sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-E20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        59,
+        163.8
+      ],
+      [
+        570.0,
+        216.58
+      ],
+      [
+        570.0,
+        767
+      ],
+      [
+        59,
+        706.68
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E20SDR-A",
+    "photoModel": "CP1E-E20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e30sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-E30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        228.8
+      ],
+      [
+        663.96,
+        270.38
+      ],
+      [
+        663.96,
+        704
+      ],
+      [
+        31,
+        656.48
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E30SDR-A",
+    "photoModel": "CP1E-E30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e40sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-E40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        36,
+        240.0
+      ],
+      [
+        674.12,
+        277.8
+      ],
+      [
+        674.12,
+        672
+      ],
+      [
+        36,
+        628.8
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E40SDR-A",
+    "photoModel": "CP1E-E40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-e60sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        666.3,
+        221.44
+      ],
+      [
+        666.3,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-E60SDR-A",
+    "photoModel": "CP1E-E60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DR-A",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dt-a": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DT-A",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DT1-A",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dr-d": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DR-D",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DT-D",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n14dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N14.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        50,
+        169.4
+      ],
+      [
+        555.16,
+        222.39
+      ],
+      [
+        555.16,
+        775
+      ],
+      [
+        50,
+        714.44
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N14DT1-D",
+    "photoModel": "CP1E-N14.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DR-A",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dt-a": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DT-A",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DT1-A",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dr-d": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DR-D",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DT-D",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n20dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        60,
+        167.4
+      ],
+      [
+        574.65,
+        221.44
+      ],
+      [
+        574.65,
+        785
+      ],
+      [
+        60,
+        723.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N20DT1-D",
+    "photoModel": "CP1E-N20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DR-A",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dt-a": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DT-A",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DT1-A",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dr-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DR-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DT-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30DT1-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DR-A",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dt-a": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DT-A",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DT1-A",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dr-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DR-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DT-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40DT1-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DR-A",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dt-a": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DT-A",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dt1-a": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DT1-A",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dr-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DR-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DT-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60DT1-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30SDR-A",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30sdt-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30SDT-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30sdt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30SDT1-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30s1dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30S1DR-A",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30s1dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30S1DT-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n30s1dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N30.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        31,
+        213.6
+      ],
+      [
+        671.7,
+        255.81
+      ],
+      [
+        671.7,
+        696
+      ],
+      [
+        31,
+        647.76
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N30S1DT1-D",
+    "photoModel": "CP1E-N30.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40SDR-A",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40sdt-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40SDT-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40sdt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40SDT1-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40s1dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40S1DR-A",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40s1dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40S1DT-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n40s1dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N40.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        28,
+        234.4
+      ],
+      [
+        672.14,
+        272.69
+      ],
+      [
+        672.14,
+        672
+      ],
+      [
+        28,
+        628.24
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N40S1DT1-D",
+    "photoModel": "CP1E-N40.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60sdr-a": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60SDR-A",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60sdt-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60SDT-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60sdt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60SDT1-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60s1dr-a": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60S1DR-A",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60s1dt-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60S1DT-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-n60s1dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-N60.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        16,
+        259.0
+      ],
+      [
+        678.2,
+        291.9
+      ],
+      [
+        678.2,
+        635
+      ],
+      [
+        16,
+        597.4
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-N60S1DT1-D",
+    "photoModel": "CP1E-N60.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-na20dr-a": {
+    "file": "assets/plc/original-v115/CP1E-NA20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        33,
+        214.8
+      ],
+      [
+        570.28,
+        257.43
+      ],
+      [
+        570.28,
+        702
+      ],
+      [
+        33,
+        653.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-NA20DR-A",
+    "photoModel": "CP1E-NA20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-na20dt-d": {
+    "file": "assets/plc/original-v115/CP1E-NA20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        33,
+        214.8
+      ],
+      [
+        570.28,
+        257.43
+      ],
+      [
+        570.28,
+        702
+      ],
+      [
+        33,
+        653.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-NA20DT-D",
+    "photoModel": "CP1E-NA20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-cp1e-na20dt1-d": {
+    "file": "assets/plc/original-v115/CP1E-NA20.jpg",
+    "width": 800,
+    "height": 800,
+    "quad": [
+      [
+        33,
+        214.8
+      ],
+      [
+        570.28,
+        257.43
+      ],
+      [
+        570.28,
+        702
+      ],
+      [
+        33,
+        653.28
+      ]
+    ],
+    "match": "family",
+    "model": "CP1E-NA20DT1-D",
+    "photoModel": "CP1E-NA20.jpg",
+    "source": "https://industrial.omron.eu/en/products/cp1e",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-196r": {
+    "file": "assets/plc/plc-14-0.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        408.7,
+        155.12
+      ],
+      [
+        745,
+        114.47
+      ],
+      [
+        745,
+        805.44
+      ],
+      [
+        408.7,
+        835
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-196R",
+    "photoModel": "GLC-196R CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-196r/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-196t": {
+    "file": "assets/plc/plc-14-1.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        418.26,
+        149.96
+      ],
+      [
+        750,
+        109.42
+      ],
+      [
+        750,
+        798.52
+      ],
+      [
+        418.26,
+        828
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-196T",
+    "photoModel": "GLC-196T CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-196t/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-296r": {
+    "file": "assets/plc/plc-14-2.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        404.94,
+        164.6
+      ],
+      [
+        723,
+        125.0
+      ],
+      [
+        723,
+        798.2
+      ],
+      [
+        404.94,
+        827
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-296R",
+    "photoModel": "GLC-296R CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-296r/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-296t": {
+    "file": "assets/plc/plc-14-3.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        426.92,
+        162.68
+      ],
+      [
+        737,
+        123.03
+      ],
+      [
+        737,
+        797.16
+      ],
+      [
+        426.92,
+        826
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-296T",
+    "photoModel": "GLC-296T CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-296t/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-396r": {
+    "file": "assets/plc/plc-14-4.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        410.11,
+        160.32
+      ],
+      [
+        739,
+        120.22
+      ],
+      [
+        739,
+        801.84
+      ],
+      [
+        410.11,
+        831
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-396R",
+    "photoModel": "GLC-396R CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-396r/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-396t": {
+    "file": "assets/plc/plc-14-5.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        412.07,
+        167.2
+      ],
+      [
+        725,
+        127.88
+      ],
+      [
+        725,
+        796.4
+      ],
+      [
+        412.07,
+        825
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-396T",
+    "photoModel": "GLC-396T CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-396t/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-496r": {
+    "file": "assets/plc/plc-14-6.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        421.64,
+        163.96
+      ],
+      [
+        734,
+        124.8
+      ],
+      [
+        734,
+        790.52
+      ],
+      [
+        421.64,
+        819
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-496R",
+    "photoModel": "GLC-496R CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-496r/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-glc-496t": {
+    "file": "assets/plc/plc-14-7.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        410.81,
+        161.36
+      ],
+      [
+        734,
+        121.92
+      ],
+      [
+        734,
+        792.32
+      ],
+      [
+        410.81,
+        821
+      ]
+    ],
+    "match": "family",
+    "model": "GLC-496T",
+    "photoModel": "GLC-496T CPU",
+    "source": "https://gmtcontrol.com/en/urunler/plc-cpu-modules-glc-496t/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-44ra": {
+    "file": "assets/plc/plc-14-8.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        449.0,
+        157.6
+      ],
+      [
+        641,
+        154.05
+      ],
+      [
+        641,
+        782.4
+      ],
+      [
+        449.0,
+        825
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-44RA",
+    "photoModel": "GXM-44RA 4DI/4RO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-44ra/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-80ia": {
+    "file": "assets/plc/plc-14-9.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        450.5,
+        159.3
+      ],
+      [
+        656,
+        155.78
+      ],
+      [
+        656,
+        779.7
+      ],
+      [
+        450.5,
+        822
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-80IA",
+    "photoModel": "GXM-80IA 8DI",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-80ia/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-08ta": {
+    "file": "assets/plc/plc-14-10.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        461.0,
+        152.9
+      ],
+      [
+        658,
+        149.32
+      ],
+      [
+        658,
+        782.1
+      ],
+      [
+        461.0,
+        825
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-08TA",
+    "photoModel": "GXM-08TA 8TO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-08ta/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-88ra": {
+    "file": "assets/plc/plc-14-11.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        432.0,
+        163.06
+      ],
+      [
+        631,
+        159.56
+      ],
+      [
+        631,
+        779.94
+      ],
+      [
+        432.0,
+        822
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-88RA",
+    "photoModel": "GXM-88RA 8DI/8RO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-88ra/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-88ta": {
+    "file": "assets/plc/plc-14-12.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        451.0,
+        157.06
+      ],
+      [
+        649,
+        153.56
+      ],
+      [
+        649,
+        773.94
+      ],
+      [
+        451.0,
+        816
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-88TA",
+    "photoModel": "GXM-88TA 8DI/8TO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-88ta/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-16ia": {
+    "file": "assets/plc/plc-14-13.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        461.0,
+        149.5
+      ],
+      [
+        664,
+        145.88
+      ],
+      [
+        664,
+        787.5
+      ],
+      [
+        461.0,
+        831
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-16IA",
+    "photoModel": "GXM-16IA 16DI",
+    "source": "https://gmtcontrol.com/en/urunler/plc-dijital-modul-gxm-16ia/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-16ta": {
+    "file": "assets/plc/plc-14-14.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        434.5,
+        146.56
+      ],
+      [
+        576,
+        142.93
+      ],
+      [
+        576,
+        785.44
+      ],
+      [
+        434.5,
+        829
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-16TA",
+    "photoModel": "GXM-16TA 16TO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-digital-modules-gxm-16ta/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-40an": {
+    "file": "assets/plc/plc-14-15.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        442.0,
+        160.0
+      ],
+      [
+        641,
+        156.5
+      ],
+      [
+        641,
+        776.0
+      ],
+      [
+        442.0,
+        818
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-40AN",
+    "photoModel": "GXM-40AN 4AI",
+    "source": "https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-40an/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-42an": {
+    "file": "assets/plc/plc-14-16.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        450.5,
+        157.48
+      ],
+      [
+        652,
+        153.94
+      ],
+      [
+        652,
+        780.52
+      ],
+      [
+        450.5,
+        823
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-42AN",
+    "photoModel": "GXM-42AN 4AI/2AO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-42an/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-02an": {
+    "file": "assets/plc/plc-14-17.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        452.5,
+        153.08
+      ],
+      [
+        636,
+        149.49
+      ],
+      [
+        636,
+        784.92
+      ],
+      [
+        452.5,
+        828
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-02AN",
+    "photoModel": "GXM-02AN 2AO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-02an/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-06an": {
+    "file": "assets/plc/plc-14-18.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        446.5,
+        153.02
+      ],
+      [
+        664,
+        149.44
+      ],
+      [
+        664,
+        783.98
+      ],
+      [
+        446.5,
+        827
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-06AN",
+    "photoModel": "GXM-06AN 6AO",
+    "source": "https://gmtcontrol.com/en/urunler/plc-analog-modules-gxm-06an/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-10l": {
+    "file": "assets/plc/plc-14-19.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        438.0,
+        147.56
+      ],
+      [
+        657,
+        143.93
+      ],
+      [
+        657,
+        786.44
+      ],
+      [
+        438.0,
+        830
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-10L",
+    "photoModel": "GXM-10L Load Cell",
+    "source": "https://gmtcontrol.com/en/urunler/plc-load-cell-modules-gxm-10l/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-20l": {
+    "file": "assets/plc/plc-14-20.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        463.0,
+        151.26
+      ],
+      [
+        695,
+        147.66
+      ],
+      [
+        695,
+        785.74
+      ],
+      [
+        463.0,
+        829
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-20L",
+    "photoModel": "GXM-20L Load Cell",
+    "source": "https://gmtcontrol.com/en/urunler/plc-load-cell-moduesl-gxm-20l/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-20ua": {
+    "file": "assets/plc/plc-14-21.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        471.0,
+        161.06
+      ],
+      [
+        665,
+        157.56
+      ],
+      [
+        665,
+        777.94
+      ],
+      [
+        471.0,
+        820
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-20UA",
+    "photoModel": "GXM-20UA Sıcaklık",
+    "source": "https://gmtcontrol.com/en/urunler/plc-temperature-modules-gxm-20ua/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-gxm-40ua": {
+    "file": "assets/plc/plc-14-22.png",
+    "width": 900,
+    "height": 900,
+    "quad": [
+      [
+        456.0,
+        155.6
+      ],
+      [
+        667,
+        152.05
+      ],
+      [
+        667,
+        780.4
+      ],
+      [
+        456.0,
+        823
+      ]
+    ],
+    "match": "family",
+    "model": "GXM-40UA",
+    "photoModel": "GXM-40UA Sıcaklık",
+    "source": "https://gmtcontrol.com/en/urunler/plc-temperature-modules-gxm-40ua/",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7211-1ae40-0xb0": {
+    "file": "assets/plc/plc-0-0.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        77.0,
+        199.38
+      ],
+      [
+        736.68,
+        208.05
+      ],
+      [
+        736.68,
+        945
+      ],
+      [
+        94.36,
+        892.98
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7211-1AE40-0XB0",
+    "photoModel": "CPU 1211C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7211-1ae40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7211-1be40-0xb0": {
+    "file": "assets/plc/plc-0-0.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        77.0,
+        199.38
+      ],
+      [
+        736.68,
+        208.05
+      ],
+      [
+        736.68,
+        945
+      ],
+      [
+        94.36,
+        892.98
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7211-1BE40-0XB0",
+    "photoModel": "CPU 1211C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7211-1ae40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7211-1he40-0xb0": {
+    "file": "assets/plc/plc-0-0.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        77.0,
+        199.38
+      ],
+      [
+        736.68,
+        208.05
+      ],
+      [
+        736.68,
+        945
+      ],
+      [
+        94.36,
+        892.98
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7211-1HE40-0XB0",
+    "photoModel": "CPU 1211C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7211-1ae40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7212-1ae40-0xb0": {
+    "file": "assets/plc/plc-0-1.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        299,
+        128.26
+      ],
+      [
+        621.92,
+        266.76
+      ],
+      [
+        621.92,
+        577
+      ],
+      [
+        299,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7212-1AE40-0XB0",
+    "photoModel": "CPU 1212C AC/DC/Rly",
+    "source": "https://www.santaclarasystems.com/siemens/6es7212-1be40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7212-1be40-0xb0": {
+    "file": "assets/plc/plc-0-1.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        299,
+        128.26
+      ],
+      [
+        621.92,
+        266.76
+      ],
+      [
+        621.92,
+        577
+      ],
+      [
+        299,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7212-1BE40-0XB0",
+    "photoModel": "CPU 1212C AC/DC/Rly",
+    "source": "https://www.santaclarasystems.com/siemens/6es7212-1be40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7212-1he40-0xb0": {
+    "file": "assets/plc/plc-0-1.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        299,
+        128.26
+      ],
+      [
+        621.92,
+        266.76
+      ],
+      [
+        621.92,
+        577
+      ],
+      [
+        299,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7212-1HE40-0XB0",
+    "photoModel": "CPU 1212C AC/DC/Rly",
+    "source": "https://www.santaclarasystems.com/siemens/6es7212-1be40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7214-1ag40-0xb0": {
+    "file": "assets/plc/plc-0-2.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        53.0,
+        223.42
+      ],
+      [
+        750.68,
+        231.45
+      ],
+      [
+        750.68,
+        914
+      ],
+      [
+        71.36,
+        865.82
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7214-1AG40-0XB0",
+    "photoModel": "CPU 1214C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7214-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7214-1bg40-0xb0": {
+    "file": "assets/plc/plc-0-2.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        53.0,
+        223.42
+      ],
+      [
+        750.68,
+        231.45
+      ],
+      [
+        750.68,
+        914
+      ],
+      [
+        71.36,
+        865.82
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7214-1BG40-0XB0",
+    "photoModel": "CPU 1214C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7214-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7214-1hg40-0xb0": {
+    "file": "assets/plc/plc-0-2.jpg",
+    "width": 1024,
+    "height": 1024,
+    "quad": [
+      [
+        53.0,
+        223.42
+      ],
+      [
+        750.68,
+        231.45
+      ],
+      [
+        750.68,
+        914
+      ],
+      [
+        71.36,
+        865.82
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7214-1HG40-0XB0",
+    "photoModel": "CPU 1214C DC/DC/DC",
+    "source": "https://shop.ima-tec.com/en/products/6es7214-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7215-1ag40-0xb0": {
+    "file": "assets/plc/plc-0-3.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        269,
+        128.26
+      ],
+      [
+        632.63,
+        266.76
+      ],
+      [
+        632.63,
+        577
+      ],
+      [
+        269,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7215-1AG40-0XB0",
+    "photoModel": "CPU 1215C DC/DC/DC",
+    "source": "https://www.santaclarasystems.com/siemens/6es7215-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7215-1bg40-0xb0": {
+    "file": "assets/plc/plc-0-3.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        269,
+        128.26
+      ],
+      [
+        632.63,
+        266.76
+      ],
+      [
+        632.63,
+        577
+      ],
+      [
+        269,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7215-1BG40-0XB0",
+    "photoModel": "CPU 1215C DC/DC/DC",
+    "source": "https://www.santaclarasystems.com/siemens/6es7215-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7215-1hg40-0xb0": {
+    "file": "assets/plc/plc-0-3.png",
+    "width": 1065,
+    "height": 600,
+    "quad": [
+      [
+        269,
+        128.26
+      ],
+      [
+        632.63,
+        266.76
+      ],
+      [
+        632.63,
+        577
+      ],
+      [
+        269,
+        394.18
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7215-1HG40-0XB0",
+    "photoModel": "CPU 1215C DC/DC/DC",
+    "source": "https://www.santaclarasystems.com/siemens/6es7215-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-6es7217-1ag40-0xb0": {
+    "file": "assets/plc/plc-0-4.jpg",
+    "width": 599,
+    "height": 600,
+    "quad": [
+      [
+        15,
+        124.11
+      ],
+      [
+        407.61,
+        266.36
+      ],
+      [
+        407.61,
+        585
+      ],
+      [
+        15,
+        397.23
+      ]
+    ],
+    "match": "family",
+    "model": "6ES7217-1AG40-0XB0",
+    "photoModel": "CPU 1217C DC/DC/DC",
+    "source": "https://www.santaclarasystems.com/siemens/6es7217-1ag40-0xb0",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-dvp12se11r": {
+    "file": "assets/plc/original-v115/dvp12se-front.png",
+    "width": 870,
+    "height": 580,
+    "quad": [
+      [
+        373,
+        51
+      ],
+      [
+        557,
+        51
+      ],
+      [
+        557,
+        493
+      ],
+      [
+        373,
+        493
+      ]
+    ],
+    "match": "family",
+    "model": "DVP12SE11R",
+    "photoModel": "DVP12SE11R",
+    "source": "Kullanıcının paylaştığı çalışma · Delta DVP-SE ürün fotoğrafı",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-dvp12se11t": {
+    "file": "assets/plc/original-v115/dvp12se-front.png",
+    "width": 870,
+    "height": 580,
+    "quad": [
+      [
+        373,
+        51
+      ],
+      [
+        557,
+        51
+      ],
+      [
+        557,
+        493
+      ],
+      [
+        373,
+        493
+      ]
+    ],
+    "match": "family",
+    "model": "DVP12SE11T",
+    "photoModel": "DVP12SE11T",
+    "source": "Kullanıcının paylaştığı çalışma · Delta DVP-SE ürün fotoğrafı",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-dvp26se11r": {
+    "file": "assets/plc/original-v115/dvp26se-original.png",
+    "width": 468,
+    "height": 600,
+    "quad": [
+      [
+        178,
+        102
+      ],
+      [
+        390,
+        83
+      ],
+      [
+        390,
+        513
+      ],
+      [
+        178,
+        540
+      ]
+    ],
+    "match": "family",
+    "model": "DVP26SE11R",
+    "photoModel": "DVP26SE11R",
+    "source": "Kullanıcının paylaştığı çalışma · Delta DVP-SE ürün fotoğrafı",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-dvp26se11t": {
+    "file": "assets/plc/original-v115/dvp26se-original.png",
+    "width": 468,
+    "height": 600,
+    "quad": [
+      [
+        178,
+        102
+      ],
+      [
+        390,
+        83
+      ],
+      [
+        390,
+        513
+      ],
+      [
+        178,
+        540
+      ]
+    ],
+    "match": "family",
+    "model": "DVP26SE11T",
+    "photoModel": "DVP26SE11T",
+    "source": "Kullanıcının paylaştığı çalışma · Delta DVP-SE ürün fotoğrafı",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  },
+  "plc-hw-dvp26se11s": {
+    "file": "assets/plc/original-v115/dvp26se-original.png",
+    "width": 468,
+    "height": 600,
+    "quad": [
+      [
+        178,
+        102
+      ],
+      [
+        390,
+        83
+      ],
+      [
+        390,
+        513
+      ],
+      [
+        178,
+        540
+      ]
+    ],
+    "match": "family",
+    "model": "DVP26SE11S",
+    "photoModel": "DVP26SE11S",
+    "source": "Kullanıcının paylaştığı çalışma · Delta DVP-SE ürün fotoğrafı",
+    "note": "Orijinal ürün fotoğrafı; ön yüz perspektif düzeltmesi. Terminal katmanı modelin belgesine göre ayrı çizilir. Aile görseli, donanım varyantının birebir fotoğrafı değildir."
+  }
+}
