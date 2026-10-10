@@ -29,7 +29,10 @@ test('minimize, re-open and resize hooks re-clamp panel',()=>{
 test('PNG envelope and failure JSON are checked before visual acceptance',()=>{
  assert.match(browser,/Buffer\.from\(\[137,80,78,71,13,10,26,10\]\)/);
  assert.match(browser,/IHDR/);assert.match(browser,/IEND/);
- assert.match(browser,/data\.readUInt32BE\(16\)/);
+ assert.match(browser,/payload\.readUInt32BE\(0\)/);
+ assert.match(browser,/payload\.readUInt32BE\(4\)/);
+ assert.match(browser,/PNG chunk CRC invalid/);
+ assert.match(browser,/PNG missing required chunks/);
  assert.match(browser,/report\.failure=\{message:/);
  assert.match(browser,/fs\.writeFileSync\(path\.join\(BUILD,'report\.json'\)/);
  for(const [capture,gate] of [
