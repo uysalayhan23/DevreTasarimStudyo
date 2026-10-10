@@ -44,7 +44,9 @@
   }
   if(d.kind==='multimeter'){
    const bgId='ut33d-bg-'+String(c.id||d.id).replace(/[^\w-]/g,'_');
-   let art=`<svg x="0" y="0" width="180" height="340" viewBox="110 45 320 548" preserveAspectRatio="none" overflow="hidden"><defs><clipPath id="${bgId}"><rect x="116" y="49" width="308" height="540" rx="34"/></clipPath></defs><image href="assets/products/unit-v115.jpg" width="600" height="600" clip-path="url(#${bgId})"/></svg>`;
+   /* Keep the exact UT33D+ source photo; remove only its white backdrop by
+      clipping to the verified outer silhouette of the meter body. */
+   let art=`<svg x="0" y="0" width="180" height="340" viewBox="110 45 320 548" preserveAspectRatio="none" overflow="hidden"><defs><clipPath id="${bgId}"><path d="M176 50C158 50 149 61 145 81L126 508C123 544 137 568 164 579C225 595 324 592 382 580C402 570 414 548 410 515L397 82C395 62 384 50 365 50Z"/></clipPath></defs><image href="assets/products/unit-v115.jpg" width="600" height="600" clip-path="url(#${bgId})"/></svg>`;
    art+=`<rect x="28" y="49" width="126" height="52" rx="2" fill="${c.meterBacklight?'#d9efb4':'#98b7a4'}"/>`+text(93,81,c._meter?.display??'',22,'#122823')+text(130,96,c._meter?.unit||'',8);
    art+=`<circle cx="90" cy="198" r="49" fill="#202021" stroke="#484649" stroke-width="3"/><g transform="rotate(${(c.meterPosition||0)*18} 90 198)"><rect x="81" y="155" width="18" height="86" rx="5" fill="#414042" stroke="#191919"/><path d="M90 157v17" stroke="#dad9d7" stroke-width="3"/></g>`;
    for(let i=0;i<20;i++){const a=(i*18-99)*Math.PI/180,b=(i*18-81)*Math.PI/180,r=68;art+=`<path data-meter-position="${i}" d="M90 198L${90+Math.cos(a)*r} ${198+Math.sin(a)*r}A${r} ${r} 0 0 1 ${90+Math.cos(b)*r} ${198+Math.sin(b)*r}Z" fill="transparent" style="cursor:pointer"/>`}
