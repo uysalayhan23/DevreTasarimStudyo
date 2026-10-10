@@ -16,7 +16,7 @@ const GOLDEN=JSON.parse(fs.readFileSync(path.join(ROOT,'tests','browser-visual-g
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function sha256(data){return crypto.createHash('sha256').update(data).digest('hex')}
 function pngSize(data){
-  if(!Buffer.isBuffer(data)||data.length<24||data.toString('ascii',1,4)!=='PNG')throw Error('Geçersiz PNG çıktısı.');
+  if(!Buffer.isBuffer(data)||data.length<45||!data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||data.toString('ascii',12,16)!=='IHDR'||data.toString('ascii',data.length-8,data.length-4)!=='IEND')throw Error('Eksik veya geçersiz PNG imzası/IHDR/IEND.');
   return {width:data.readUInt32BE(16),height:data.readUInt32BE(20)};
 }
 function findBrowser(){
@@ -243,12 +243,14 @@ async function main(){
         await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:tx,y:ty,buttons:1});
         await cdp.call('Input.dispatchMouseEvent',{type:'mouseReleased',x:tx,y:ty,button:'left',clickCount:1});
         const geometry=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach'),r=p.getBoundingClientRect();return{left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height,bounded:r.left>=7&&r.top>=57&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1}})()`);
-        cornerChecks.push({name,...geometry});
+        const reachesEdge=(name.includes('left')?geometry.left<=12:geometry.right>=GOLDEN.viewport.width-12)&&
+          (name.includes('top')?geometry.top<=62:geometry.top<=GOLDEN.viewport.height-48+1);
+        cornerChecks.push({name,...geometry,reachesEdge});
        }
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerChecks=cornerChecks;
        const cornerShot=await shot(cdp,'hl-corners-'+id);
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].cornerScreenshot=cornerShot;
-       assert(cornerChecks.every(c=>c.bounded),'Panel corner out of viewport: '+id+' '+JSON.stringify(cornerChecks));
+       assert(cornerChecks.every(c=>c.bounded&&c.reachesEdge),'Panel corner position/bounds failed: '+id+' '+JSON.stringify(cornerChecks));
        // Return panel to a known position before the regular drag test.
        await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialCoach');p.style.left='${setup.left}px';p.style.top='${setup.top}px';return true})()`);
 
