@@ -435,3 +435,9 @@ body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibil
 #tutorialCoach .measurement-upgrade-answers button{min-height:31px;padding:6px 9px;text-align:left;font-size:12px;border:1px solid #c1d3e0;background:#fff;color:#26485f;border-radius:7px;cursor:pointer}
 #tutorialCoach .measurement-upgrade-answers button:hover{border-color:#1677bd;background:#f1f9ff}
 #tutorialCoach .measurement-upgrade-feedback{font-weight:700;color:#14754d}
+
+/* MQ-07 scope learning controls inside existing floating coach; no canvas growth. */
+#tutorialCoach .measurement-scope-observation{font-size:12.5px;margin-top:9px;line-height:1.45;color:#1d5267}
+#tutorialCoach .measurement-scope-presets{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
+#tutorialCoach .measurement-scope-presets button{padding:6px 9px;border:1px solid #9bc0db;border-radius:8px;background:#fff;color:#145984;font-size:12px;cursor:pointer}
+#tutorialCoach .measurement-scope-presets button[aria-pressed="true"]{background:#e3f2ff;border-color:#2484c9;font-weight:800}
