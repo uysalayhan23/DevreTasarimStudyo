@@ -52,5 +52,7 @@ test('PNG validator rejects malformed signature, IHDR and missing IEND',()=>{
  const brokenHdr=Buffer.from(valid);brokenHdr.write('ABCD',12);assert.throws(()=>png(brokenHdr));
  const missingEnd=Buffer.from(valid);missingEnd.write('ABCD',37);assert.throws(()=>png(missingEnd));
  const truncated=Buffer.from(valid.subarray(0,24));assert.throws(()=>png(truncated));
+ const zeroWidth=Buffer.from(valid);zeroWidth.writeUInt32BE(0,16);assert.throws(()=>png(zeroWidth));
+ const zeroHeight=Buffer.from(valid);zeroHeight.writeUInt32BE(0,20);assert.throws(()=>png(zeroHeight));
 });
 
