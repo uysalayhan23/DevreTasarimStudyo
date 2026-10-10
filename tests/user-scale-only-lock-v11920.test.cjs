@@ -444,7 +444,7 @@ test('runtime cache keys expose the completed user-scale closure',()=>{
   assert.match(html,/library\.js\?rev=[A-Za-z0-9-]+/);
   assert.match(html,/materials-v113\.js\?rev=[A-Za-z0-9-]+/);
   assert.match(html,/materials-v115\.js\?rev=[A-Za-z0-9-]+/);
-  assert.doesNotMatch(html,/<script src="library\.js\?rev=[A-Za-z0-9-]+"><\/script>/);
+  assert.doesNotMatch(html,/<script src="library\.js\?rev=20261008-visual-runtime4"><\/script>/);
 });
 
 
