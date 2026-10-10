@@ -1999,6 +1999,35 @@ for(const l of L.lessons){
  }
 }
 
+
+/* Legacy LM358 unit-photo closure.
+   Every lesson that still uses lm358p-opamp-a is upgraded to the full physical
+   LM358P PDIP-8 component. Existing logical wire endpoints are translated to the
+   actual package pins: OUT=1, IN-=2, IN+=3, V-=4, V+=8. */
+const LM358_A_PIN_MAP={'OUT':'1','IN-':'2','IN+':'3','V-':'4','V+':'8'};
+function upgradeLegacyLm358PhysicalPackage(l){
+ const p=l.project;if(!p?.components)return false;
+ const ids=new Set();
+ for(const comp of p.components){
+  if(comp.typeId!=='lm358p-opamp-a')continue;
+  comp.typeId='lm358p-dip8';
+  if(comp.ref==='U1A')comp.ref='U1';
+  comp.label=String(comp.label||'LM358P').replace(/A kanalı|Unit A/gi,'').replace(/\s+·\s*$/,'').trim()||'LM358P';
+  comp.realElectronicsReplacement=true;comp.physicalPackageUpgrade='PDIP-8';
+  ids.add(comp.id);
+ }
+ if(!ids.size)return false;
+ for(const w of p.wires||[]){
+  if(ids.has(w.from?.c)&&LM358_A_PIN_MAP[w.from.p])w.from.p=LM358_A_PIN_MAP[w.from.p];
+  if(ids.has(w.to?.c)&&LM358_A_PIN_MAP[w.to.p])w.to.p=LM358_A_PIN_MAP[w.to.p];
+ }
+ l.materials=materialRows(p);
+ l.realElectronicsParts=true;
+ l.pedagogyReview={...(l.pedagogyReview||{}),realElectronicsParts:true,lm358PhysicalPackage:true,realPackagePolicy:'orthographic-top-pin-aligned'};
+ return true;
+}
+for(const l of L.lessons)upgradeLegacyLm358PhysicalPackage(l);
+
 L.count=L.lessons.length;
-L.pedagogy={version:'v1.19.20-pedagogy63-real-parts',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
+L.pedagogy={version:'v1.19.20-pedagogy64-real-ic-visuals',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
