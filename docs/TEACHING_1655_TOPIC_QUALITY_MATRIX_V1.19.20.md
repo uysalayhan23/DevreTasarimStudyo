@@ -1,0 +1,55 @@
+# Öğretici müfredatı — 1.655 derslik konu-bazlı kalite matrisi
+
+**10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
+
+Kod kapsamı: **49/1655**, henüz zengin kod formatına yükseltilmemiş: **1606**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 4 DC dersi daha rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
+
+Çalışma sırası: (1) kalan **6/10 Doğru akım/DC dersinin zenginleştirilmesi**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
+
+| Konu kimliği | Ders | Rich kod | Kalan | Kablolu | Etkileşimli | Soru/quiz | İlk başlık |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `motor-direct-power` | 260 | 0 | 260 | 259 | 0 | 1 | Motor etiketi ve klemens kutusu |
+| `installation-systems` | 150 | 0 | 150 | 21 | 0 | 129 | Adi anahtarlı aydınlatma |
+| `sensor-analog-apps` | 142 | 0 | 142 | 46 | 0 | 96 | NTC ile sıcaklıkta çalışan devre |
+| `workshop-safety-mechanics` | 141 | 0 | 141 | 7 | 0 | 134 | Atölye ve iş güvenliği kuralları |
+| `electronic-component-basics` | 130 | 0 | 130 | 7 | 0 | 123 | 1.1. ARIZA ARAMA YÖNTEMLERİ |
+| `electronic-switching` | 91 | 0 | 91 | 25 | 0 | 66 | Röle uçlarının bulunması |
+| `oscillator-filter-apps` | 85 | 0 | 85 | 7 | 0 | 78 | Colpitts osilatör |
+| `panel-power-systems` | 72 | 0 | 72 | 0 | 0 | 72 | Pano bağlantı şemasının çizilmesi |
+| `plc-hardware-programming` | 61 | 0 | 61 | 7 | 0 | 54 | PLC tanımı ve röleli sistemle karşılaştırma |
+| `opamp-apps` | 55 | 0 | 55 | 47 | 0 | 8 | Eviren yükselteç AC giriş |
+| `digital-logic-apps` | 50 | 0 | 50 | 0 | 0 | 50 | AND (VE) kapısı |
+| `motor-start-speed` | 50 | 0 | 50 | 41 | 0 | 9 | Yıldız-üçgen paket şalterle yol verme |
+| `installation-grounding` | 47 | 0 | 47 | 4 | 0 | 43 | Temel topraklama iletkeni bağlantısı |
+| `measurement-workshop` | 45 | 45 | 0 | 21 | 24 | 0 | Voltmetre ile gerilim ölçümü |
+| `digital-sequential-apps` | 40 | 0 | 40 | 0 | 0 | 40 | RS flip-flop |
+| `microcontroller-apps` | 32 | 0 | 32 | 0 | 0 | 32 | İlk program ve dijital çıkış LED |
+| `vfd-servo-control` | 30 | 0 | 30 | 0 | 0 | 30 | Frekans invertörünün temel yapısı ve parametreleri |
+| `motor-braking` | 24 | 0 | 24 | 24 | 0 | 0 | Frenleme sisteminin amacı ve çeşitleri |
+| `motor-special` | 22 | 0 | 22 | 20 | 0 | 2 | Bir fazlı yardımcı sargılı asenkron motor |
+| `circuit-simulation-pcb` | 19 | 0 | 19 | 0 | 0 | 19 | 4. ÖĞRENME BİRİMİ 4.1. ELEKTRONİK DEVRE SİMÜLASYON YAZILIMI |
+| `dc-circuits` | 10 | 4 | 6 | 7 | 2 | 1 | Doğru akım ve kullanım alanları |
+| `motor-sequence` | 10 | 0 | 10 | 10 | 0 | 0 | İki motorun sıralı çalıştırılması |
+| `number-systems` | 8 | 0 | 8 | 0 | 0 | 8 | 6.1.1. Sayı Sistemleri |
+| `button-led` | 5 | 0 | 5 | 5 | 0 | 0 | 24 VDC NO buton ile yeşil LED yakma |
+| `button-relay` | 4 | 0 | 4 | 4 | 0 | 0 | 24 V buton-röle bobini |
+| `seal-in` | 4 | 0 | 4 | 4 | 0 | 0 | Start/Stop ile temel mühürleme |
+| `timer-flipflop` | 4 | 0 | 4 | 4 | 0 | 0 | 1 s / 1 s flip-flop |
+| `commutator` | 4 | 0 | 4 | 4 | 0 | 0 | İki ayrı tavan lambası |
+| `two-way` | 4 | 0 | 4 | 4 | 0 | 0 | İki noktadan tavan lambası |
+| `intermediate` | 4 | 0 | 4 | 4 | 0 | 0 | Üç noktadan aydınlatma |
+| `bells` | 4 | 0 | 4 | 4 | 0 | 0 | 1 buton + 1 zil |
+| `control-combinations` | 4 | 0 | 4 | 4 | 0 | 0 | Start/Stop mühürleme |
+| `loop-420` | 4 | 0 | 4 | 4 | 0 | 0 | 2 telli transmitter + ampermetre |
+| `loop-powered` | 4 | 0 | 4 | 4 | 0 | 0 | İki telli loop-powered transmitter |
+| `active-passive` | 4 | 0 | 4 | 4 | 0 | 0 | Harici beslemeli pasif loop |
+| `pnp-npn` | 4 | 0 | 4 | 4 | 0 | 0 | PNP sensör → 0 V’a bağlı yük |
+| `inductive-capacitive` | 4 | 0 | 4 | 4 | 0 | 0 | PNP endüktif metal algılama |
+| `source-sink` | 4 | 0 | 4 | 4 | 0 | 0 | Sourcing PNP çıkış |
+| `open-collector` | 4 | 0 | 4 | 4 | 0 | 0 | NPN open collector yük sürme |
+| `bero` | 4 | 0 | 4 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
+| `motor-forward-reverse` | 4 | 0 | 4 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
+| `motor-star-delta` | 4 | 0 | 4 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
+| `dual-dc` | 4 | 0 | 4 | 4 | 0 | 0 | İki tamamen izole DC devre |
+
+**Kabul uyarısı:** Bir derse yalnız `designStandard` eklemek kabul değildir. Gerçek devre, görsel, ölçüm/model kaynağı, uygulama adımı ve çocukların anlayacağı neden-sonuç açıklaması mevcut değilse pedagojik DONE sayılmaz. Ders düzeyindeki ekran kabulü ve gerçek donanım ön görünüşü özel QA gerektirir. Üretim GitHub Actions kullanmadan, commitlerde `[skip ci]` kuralıyla yürütülür.
