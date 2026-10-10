@@ -49,7 +49,13 @@ test('document library records have unique IDs, valid grid terminals, shared pre
   for(const d of lib.filter(d=>d.bookSymbol)){
     assert.ok(N.reference(d,'IEC').file&&N.reference(d,'IEC').pages,d.id);
     assert.equal(new Set(d.pins.map(p=>p.id)).size,d.pins.length,d.id);
-    const coords=new Set();for(const p of d.pins){assert.equal(p.x%10,0,d.id);assert.equal(p.y%10,0,d.id);assert.ok(!coords.has(p.x+','+p.y),d.id);coords.add(p.x+','+p.y)}
+    const coords=new Set();for(const p of d.pins){
+      if(d.physicalScaleSource==='workspace-space-v1:user-locked'){
+        assert.ok(Number.isFinite(p.x)&&p.x>=0&&p.x<=d.w,d.id+':'+p.id+':physical-x');
+        assert.ok(Number.isFinite(p.y)&&p.y>=0&&p.y<=Math.max(d.h,d.terminalEnvelopeBottomScene||d.h),d.id+':'+p.id+':physical-y');
+      }else{assert.equal(p.x%10,0,d.id);assert.equal(p.y%10,0,d.id)}
+      assert.ok(!coords.has(p.x+','+p.y),d.id);coords.add(p.x+','+p.y)
+    }
     const c={ref:S.referencePrefix(d)+'1',label:d.name,state:false,rotation:0,_active:false};
     for(const norm of ['TSE','IEC','ANSI']){
       const m=S.markup(d,c,{mode:'iec',norm});assert.ok(m.includes('data-book-symbol="'+d.bookSymbol+'"'),d.id);assert.ok(S.preview(d,'iec',norm).includes(m),d.id);
