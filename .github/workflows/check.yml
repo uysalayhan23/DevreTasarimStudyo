@@ -1,0 +1,185 @@
+name: Test ve Windows ZIP
+
+on:
+  pull_request:
+    branches: [v1.19.20]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dts-check-${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  fast-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+      reason: ${{ steps.scope.outputs.reason }}
+    steps:
+      - name: Kaynakları al
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: v1.19.20 repo kilidi — integrity, dosya ve dal politikası
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DTS_LOCK_BASELINE_COMMIT: f18ec71686a6e198d7470885c47e8b91622fabe4
+        run: |
+          set -euo pipefail
+          node scripts/check-v11920-integrity.cjs
+          node scripts/check-v11920-lock.cjs
+
+          declare -A expected
+          expected[main]="aa62ddeb68de4211d66e92ecc8e0adebc3f901fa"
+          expected[v1.19.0]="faeef90ef3ed037c71a1715610ee0f9d33913aa4"
+          expected[v1.19.1]="ddd822ea124072a43a6a7bd501b73290110e3480"
+
+          mapfile -t branches < <(gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name')
+          allowed_re='^(main|v1\.19\.0|v1\.19\.1|v1\.19\.20)$'
+
+          for b in "${branches[@]}"; do
+            if [[ ! "$b" =~ $allowed_re ]]; then
+              echo "::error::İzin verilmeyen branch tespit edildi: $b"
+              exit 1
+            fi
+          done
+
+          for b in main v1.19.0 v1.19.1; do
+            actual="$(gh api "repos/${GITHUB_REPOSITORY}/branches/$b" --jq '.commit.sha')"
+            if [[ "$actual" != "${expected[$b]}" ]]; then
+              echo "::error::$b kilitli referansı değişmiş. Beklenen ${expected[$b]}, gerçek $actual"
+              exit 1
+            fi
+            echo "[LOCK] $b = $actual"
+          done
+
+          echo "[LOCK] İzinli branch listesi ve sabit sürüm referansları doğrulandı."
+
+      - name: Hızlı doküman bütünlük kontrolü
+        run: node scripts/check-docs-fast-v11920.cjs
+
+      - name: Değişiklik kapsamını belirle
+        id: scope
+        env:
+          DTS_EVENT_NAME: ${{ github.event_name }}
+          DTS_BEFORE_SHA: ${{ github.event.before }}
+          DTS_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DTS_HEAD_SHA: ${{ github.sha }}
+        run: node scripts/ci-scope-v11920.cjs
+
+  validate-and-package:
+    needs: fast-gate
+    if: needs.fast-gate.outputs.full == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Kaynakları al
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Sözdizimi, yerel bağımlılıklar ve örnek kilitleri
+        run: |
+          mkdir -p build
+          set -o pipefail
+          node scripts/check.cjs 2>&1 | tee build/check.log
+
+      - name: G1–G4 Master Quality kapıları
+        run: node scripts/quality-gates-v11920.cjs
+
+      - name: İlk açılış ve güvenlik uyarısı smoke testi
+        run: |
+          node --test --test-name-pattern="first launch opens dashboard" tests/studio.test.cjs
+
+      - name: Regresyon testleri
+        run: |
+          set -o pipefail
+          node scripts/run-tests.cjs 2>&1 | tee build/test-run.log
+
+      - name: Windows ZIP ve çıkarma doğrulaması
+        run: python3 scripts/package.py
+
+      - name: İndirilebilir paket ve test sonuçları
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: Devre-Tasarim-Studyosu-Windows
+          path: |
+            build/*_Windows.zip
+            build/*_Windows.sha256
+            build/*_Windows.json
+            build/check.json
+            build/quality-gates.json
+            build/check.log
+            build/tests.tap
+            build/test-run.log
+          if-no-files-found: warn
+          retention-days: 14
+
+  windows-launcher-smoke:
+    needs: fast-gate
+    if: needs.fast-gate.outputs.full == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Kaynakları al
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: BASLAT.bat gerçek Windows cmd.exe smoke testi
+        shell: cmd
+        run: |
+          set DTS_LAUNCHER_TEST=1
+          call BASLAT.bat
+          if errorlevel 1 exit /b 1
+
+  browser-visual-smoke:
+    needs: fast-gate
+    if: needs.fast-gate.outputs.full == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Kaynakları al
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Gerçek Chrome/Chromium dashboard-editor-pano-öğretici visual smoke
+        run: node scripts/browser-visual-v11920.cjs
+
+      - name: Browser visual kanıtları
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: Devre-Tasarim-Studyosu-Browser-Visual
+          path: build/browser-visual/**
+          if-no-files-found: warn
+          retention-days: 14
+
