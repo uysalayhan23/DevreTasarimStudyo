@@ -39,7 +39,7 @@ test('parallel rich coach teaches voltage current capacity and measurement',()=>
 
 test('parallel page cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
- assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-d1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d1/);
+ assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-d2/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d2/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d2/);
 });

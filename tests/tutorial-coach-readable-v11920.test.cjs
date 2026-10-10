@@ -22,6 +22,6 @@ test('floating tutorial window keeps its original size, resize, minimize and scr
  assert.match(css,/#tutorialCoach\{[^}]*resize:both;overflow:auto/);
 });
 test('runtime loads the updated tutorial CSS with a distinct cache key',()=>{
- assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d1/);
+ assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
  assert.doesNotMatch(html,/tutorial\.css\?rev=20261009-energy-rich1/);
 });

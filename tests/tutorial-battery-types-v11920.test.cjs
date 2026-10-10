@@ -38,9 +38,9 @@ test('rich battery-type page includes measurement load comparison and clear navi
 
 test('battery type cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
- assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-d1/);
+ assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-d2/);
  assert.match(h,/tutorial-components\.js\?rev=20261009-energy-rich1/);
  assert.match(h,/materials\.js\?rev=20261010-real-visuals1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-d2/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-d2/);
 });
