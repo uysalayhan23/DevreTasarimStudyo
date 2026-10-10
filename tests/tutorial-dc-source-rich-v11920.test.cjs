@@ -34,6 +34,6 @@ test('rich source coach contains prediction measurement errors applications and 
 test('source rich CSS and cache chain are current',()=>{
  const c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8'),h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
  for(const t of ['tutorial-source-mission','tutorial-source-predict','tutorial-source-measure-grid','tutorial-source-compare','tutorial-source-errors'])assert.ok(c.includes(t),t);
- assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-a1/);assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-a1/);
+ assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-b1/);assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-b1/);
 });
