@@ -27,9 +27,9 @@ test('rich DC lesson coach exposes the requested learning format',()=>{
 test('DC rich lesson CSS and cache chain are delivered',()=>{
  const c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8'),h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
  for(const token of ['tutorial-dc-probe-note','tutorial-dc-steps','tutorial-dc-law','tutorial-dc-observe','tutorial-dc-uses'])assert.ok(c.includes(token),token);
- assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-b1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-b1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-b1/);
+ assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-c1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-measure-batch-c1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-measure-batch-c1/);
 });
 
 
