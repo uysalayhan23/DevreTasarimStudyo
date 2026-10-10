@@ -3,8 +3,8 @@
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  function markup(d,c,sprite){
   const text=(x,y,s,size=10,color='#234')=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" fill="${color}" stroke="none">${esc(s)}</text>`;
-  const photo=(file,vb,x,y,w,h,iw,ih)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="none" overflow="hidden"><image href="assets/products/${file}" width="${iw}" height="${ih}"/></svg>`;
-  const maskedPhoto=(file,vb,x,y,w,h,iw,ih,id,shape)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="none" overflow="hidden"><defs><clipPath id="${id}">${shape}</clipPath></defs><image href="assets/products/${file}" width="${iw}" height="${ih}" clip-path="url(#${id})"/></svg>`;
+  const photo=(file,vb,x,y,w,h,iw,ih)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/${file}" width="${iw}" height="${ih}"/></svg>`;
+  const maskedPhoto=(file,vb,x,y,w,h,iw,ih,id,shape)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="${id}">${shape}</clipPath></defs><image href="assets/products/${file}" width="${iw}" height="${ih}" clip-path="url(#${id})"/></svg>`;
   if(d.probeColor)return `<g class="material-layer"><path d="M0 20h25" stroke="${d.probeColor}" stroke-width="4"/><path d="M100 20h40" stroke="#a8b3b9" stroke-width="3"/><rect x="25" y="12" width="75" height="16" rx="5" fill="${d.probeColor}" stroke="#394953"/><path d="M96 7v26" stroke="${d.probeColor}" stroke-width="6"/></g>`;
   if(d.kind==='clamp-meter'){
    const M=typeof module==='object'&&module.exports?require('./clamp-meter.js'):root.DTSClampMeter,open=!!c._clampCandidate&&!c.clampedWireId,read=c._clamp||{},display=read.display??'—',unit=read.unit||'',jawShift=open?18:0;
