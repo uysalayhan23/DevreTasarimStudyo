@@ -182,7 +182,8 @@ async function main(){
     const tutorial=await evaluate(cdp,`(()=>{const p=document.querySelector('#tutorialDashboard'),r=p.getBoundingClientRect();return{hidden:p.hidden,width:r.width,height:r.height,topics:document.querySelectorAll('#tutorialTopicGrid .tutorial-topic-card').length,dashboardHidden:document.querySelector('#dashboard')?.hidden}})()`);
     assert(tutorial.hidden===false&&tutorial.dashboardHidden===false,'Öğretici dashboard görünür değil.');assert(tutorial.topics>=GOLDEN.tutorial.minTopics,'Öğretici konu sayısı yetersiz: '+tutorial.topics);assert(tutorial.width>=GOLDEN.tutorial.minWidth&&tutorial.height>=GOLDEN.tutorial.minHeight,'Öğretici alanı çok küçük.');
     report.states.tutorial={geometry:tutorial,screenshot:await shot(cdp,'tutorial')};
-    // H-L 64 actual Chrome lesson openings: view, live drawing and coach rendering.\n    {
+    // H-L 64 actual Chrome lesson openings: view, live drawing and coach rendering.
+    {
     const hlTopics=['commutator','two-way','intermediate','bells','control-combinations','loop-420','loop-powered','active-passive','pnp-npn','inductive-capacitive','source-sink','open-collector','bero','motor-forward-reverse','motor-star-delta','dual-dc'];
     report.states.hlLessons={checked:0,items:[]};
     for(const topic of hlTopics)for(let n=1;n<=4;n++){
@@ -210,7 +211,8 @@ async function main(){
       await evaluate(cdp,`(async()=>{await window.DTSStudio.home();await window.DTSTutorialMode.openHub();return true})()`);
       await sleep(80);
     }
-    assert(report.states.hlLessons.checked===64,'H-L lesson count mismatch');\n    }
+    assert(report.states.hlLessons.checked===64,'H-L lesson count mismatch');
+    }
 
 
     assert(report.exceptions.length===0,'Tarayıcı runtime exception: '+report.exceptions.join(' | '));
