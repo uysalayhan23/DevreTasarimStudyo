@@ -411,3 +411,16 @@ body.tutorial-reference-format #tutorialCoach.tutorial-ohm-coach{background:rgba
 #tutorialCoach [class$="-rich"] button{font-size:12px;line-height:1.42}
 #tutorialCoach [class$="-rich"] button :is(b,strong,em){font-size:12px;line-height:1.42}
 #tutorialCoach [class$="-flow"]{font-size:12px;line-height:1.4}
+
+/* MQ-07 global contextual micro-explanations; independent from draggable tutorial coach. */
+body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-top,
+body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibility:hidden;opacity:0;pointer-events:none}
+.tutorial-micro-intro{position:absolute;z-index:12;left:18px;right:18px;top:12px;display:flex;justify-content:space-evenly;align-items:flex-start;gap:9px;pointer-events:none;flex-wrap:wrap;max-height:140px;overflow:hidden}
+.tutorial-micro-intro[hidden],.tutorial-micro-tooltip[hidden]{display:none!important}
+.tutorial-micro-intro article{display:grid;grid-template-columns:25px 1fr;gap:7px;flex:1 1 160px;max-width:235px;min-width:125px;padding:7px 9px;background:rgba(255,255,255,.95);border:1px solid #92badd;border-radius:10px;box-shadow:0 3px 11px rgba(20,58,88,.14);font-size:11px;line-height:1.35}
+.tutorial-micro-intro article>b{display:grid;place-items:center;width:24px;height:24px;background:#167bd0;color:white;border-radius:50%}
+.tutorial-micro-intro strong,.tutorial-micro-tooltip strong{display:block;font-size:12px;color:#18548b}
+.tutorial-micro-intro span,.tutorial-micro-tooltip span{display:block;font-size:11px;color:#355467;line-height:1.4;overflow-wrap:anywhere}
+.tutorial-micro-tooltip{position:absolute;z-index:17;width:225px;max-width:calc(100% - 16px);padding:10px 12px;background:#fff;border:1px solid #73a6d1;border-radius:10px;box-shadow:0 7px 20px rgba(24,64,95,.20);pointer-events:none}
+.tutorial-micro-tooltip small{display:block;margin-top:4px;font-size:10px;color:#647d8b}
+@media(max-width:700px){.tutorial-micro-intro{left:8px;right:8px;max-height:102px;gap:5px}.tutorial-micro-intro article{padding:5px;flex-basis:135px;max-width:190px;font-size:10px}.tutorial-micro-tooltip{width:195px}}
