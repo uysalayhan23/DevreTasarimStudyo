@@ -39,6 +39,28 @@ function display(l,project){
  else if(mode==='lcr'){const f=n,xl=2*Math.PI*f*.01,xc=1/(2*Math.PI*f*.000001);value='f='+f+' Hz · XL='+xl.toFixed(2)+' Ω · XC='+xc.toFixed(2)+' Ω · |Z|='+Math.hypot(100,xl-xc).toFixed(2)+' Ω';formula='XL=2πfL; XC=1/(2πfC); |Z|=√(R²+(XL−XC)²)';caveat='R=100 Ω, L=10 mH, C=1 µF seri RLC teorik hesap; LCR metre cihazının ölçtüğü iddia edilmez.';}
  return {label:value,formula,index:idx,choices:options,caveat};
 }
+/* Compact model illustrations, not manufacturer photos or instrument calibration images. */
+function diagram(l,p){
+ const u=l?.measurementUpgrade,mode=u?.workbench;
+ if(!mode)return '';
+ const st=display(l,p),index=st?.index||0,v=p?.tutorialExplore?.choices?.[index]||0;
+ const open='<svg class="measurement-workbench-sketch" viewBox="0 0 244 74" role="img" aria-label="Sanal ölçümün kavramsal çizimi" xmlns="http://www.w3.org/2000/svg">';
+ const close='</svg>';
+ const base='<rect width="244" height="74" rx="9" fill="#eaf5fa"/>';
+ if(['ruler','caliper','micrometer'].includes(mode)){
+  const ticks=Array.from({length:21},(_,i)=>'<line x1="'+(24+i*9.8)+'" x2="'+(24+i*9.8)+'" y1="43" y2="'+(i%5===0?24:32)+'" stroke="#225a78" stroke-width="'+(i%5===0?2:1)+'"/>').join('');
+  const pos=24+Math.min(19.6,Math.max(0,index*9.8))*10;
+  const jaws=mode==='caliper'?'<path d="M24 15v36h8V34h148v17h8V15" fill="none" stroke="#3c617a" stroke-width="3"/>':mode==='micrometer'?'<path d="M26 16h8v36h-8m150-36h10v36h-10" fill="none" stroke="#3c617a" stroke-width="3"/>':'';
+  return open+base+jaws+'<path d="M24 44h196" stroke="#245a80" stroke-width="2"/>'+ticks+'<path d="M'+pos+' 10v52" stroke="#cc433b" stroke-width="2.5"/><text x="23" y="68" font-size="10" fill="#214d66">Sanal ölçek · '+mode+'</text>'+close;
+ }
+ if(mode==='lux')return open+base+'<circle cx="43" cy="35" r="12" fill="#fbbf24"/><path d="M56 35l130-24v48z" fill="#fde68a" opacity=".55"/><rect x="188" y="13" width="7" height="47" rx="2" fill="#447b99"/><text x="70" y="69" font-size="11" fill="#214d66">100 cd → '+v+' m</text>'+close;
+ if(mode==='sound')return open+base+'<path d="M12 40h220" stroke="#a8c5d6"/><path d="M12 40Q27 5 42 40T72 40T102 40T132 40T162 40T192 40T222 40" stroke="#2b83b4" stroke-width="2.5" fill="none"/><text x="22" y="68" font-size="10" fill="#214d66">Sanal ses basıncı · '+v+' Pa</text>'+close;
+ if(mode==='temperature')return open+base+'<rect x="39" y="10" width="11" height="44" rx="5" fill="#d5e6ef" stroke="#376682"/><rect x="42" y="'+(50-v*.3)+'" width="5" height="'+(v*.3+4)+'" fill="#d74e4b"/><circle cx="44" cy="57" r="8" fill="#e05d52"/><text x="69" y="38" font-size="16" font-weight="700" fill="#245b79">'+v+' °C</text>'+close;
+ if(mode==='lcr')return open+base+'<path d="M12 37h24l8-13 9 26 9-26 9 26 8-13h22m3 0h6m9-13v26m9-26v26m0-13h10m0-13c4-9 8-9 12 0s8 9 12 0s8-9 12 0h20" fill="none" stroke="#235c7c" stroke-width="2"/><text x="22" y="68" font-size="10" fill="#245b79">R · C · L · f='+v+' Hz</text>'+close;
+ if(mode==='sensor')return open+base+'<rect x="15" y="23" width="67" height="30" rx="6" fill="#beddeb" stroke="#38718e"/><text x="25" y="42" font-size="12" fill="#214d66">PNP B1</text><path d="M83 37h80" stroke="#27798d" stroke-dasharray="6 4"/><rect x="'+(172+index*7)+'" y="24" width="23" height="27" fill="#9aa8b2" stroke="#486273"/><text x="20" y="66" font-size="10" fill="#245b79">Metal hedef: '+v+' mm</text>'+close;
+ if(mode==='energy')return open+base+'<rect x="14" y="17" width="66" height="40" rx="5" fill="#edf8ff" stroke="#3580a4"/><text x="25" y="33" font-size="9" fill="#286684">Wh → kWh</text><text x="24" y="48" font-size="11" font-weight="700" fill="#245b79">'+v+' dk</text><path d="M87 39h138" stroke="#aac8d8" stroke-width="7"/><path d="M87 39h'+(87+138*index/3)+'" stroke="#22806f" stroke-width="7"/>'+close;
+ return '';
+}
 function choose(l,p,index,solve,byId){
  const u=l?.measurementUpgrade;if(!u?.workbench||!p?.tutorialExplore)return null;
  const options=p.tutorialExplore.choices||[];const i=Number(index);
@@ -92,5 +114,5 @@ for(const [suffix,mode,heading,goal,task,question,answers] of entries){
  l.pedagogyReview={version:'v1.19.20-measure-batch-d',reviewed:true,codeImplemented:true,visualAcceptance:false,model:workbench||mode,source:workbench==='energy'?'verified energy analyzer':workbench==='sensor'?'verified proximity switch contact':'explicit simulated educational calculation / existing lab'};
 }
 L._measurementBatchD=true;
-root.DTSMeasurementWorkbench={display,choose};
+root.DTSMeasurementWorkbench={display,choose,diagram};
 })(typeof window==='undefined'?globalThis:window);
