@@ -459,3 +459,7 @@ body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibil
 #tutorialCoach .measurement-workbench-result{display:block;margin:7px 0;font-size:13px;font-weight:800;line-height:1.55;color:#134962;overflow-wrap:anywhere}
 #tutorialCoach .measurement-workbench-equation{font-size:12px;margin:5px 0}
 #tutorialCoach .measurement-workbench-panel>small{display:block;font-size:11px;line-height:1.5;color:#596e7b}
+
+/* Compact instructional vector diagram: illustrative, not a real photographed device. */
+#tutorialCoach .measurement-workbench-figure{margin:8px 0;max-width:100%;overflow:hidden}
+#tutorialCoach .measurement-workbench-sketch{display:block;width:100%;max-width:265px;height:auto;margin:0 auto;border:1px solid #cee3ed;border-radius:9px}
