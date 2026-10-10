@@ -6,7 +6,7 @@
   const buildingOnly=new Set(['power-receptacle','wall-light-outlet','blind-motor','surge-arrester','standard-light']);
   const sharedBuilding=new Set(['protection','sources','transformers','terminals','measurement','contactors','auxiliary','relays','timers','lamps','alarms','switches']);
   const arduinoSharedTools=new Set(['unit-ut33d-plus','test-probe-red','test-probe-black','encoder-incremental']);
-  const arduinoBasic=d=>arduinoSharedTools.has(d.id)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.kind)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.id);
+  const arduinoBasic=d=>d.arduinoShared===true||arduinoSharedTools.has(d.id)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.kind)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.id);
   const physical=()=>typeof module==='object'&&module.exports?require('./physical-metadata.js'):root.DTSPhysicalMetadata;
   function includes(d,mode){
     mode=normalize(mode);const group=d.classification?.group||d.catalogGroup;
