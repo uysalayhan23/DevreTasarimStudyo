@@ -1,0 +1,707 @@
+{
+  "version": 5,
+  "name": "3D · Buton, kontaktör, motor ve fan",
+  "components": [
+    {
+      "typeId": "supply-3p",
+      "id": "source",
+      "ref": "G1",
+      "x": 600,
+      "y": 80,
+      "label": "3 Faz Besleme",
+      "rotation": 180,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "push-nc",
+      "id": "stop",
+      "ref": "S0",
+      "x": 200,
+      "y": 80,
+      "label": "Durdur",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "push-no",
+      "id": "start",
+      "ref": "S2",
+      "x": 320,
+      "y": 260,
+      "label": "Başlat — basıp bırakın",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "contact-no",
+      "id": "hold",
+      "ref": "K1",
+      "x": 120,
+      "y": 260,
+      "label": "Mühürleme kontağı",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil",
+      "ref": "K1",
+      "x": 200,
+      "y": 500,
+      "label": "Kontaktör bobini",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "main-contact",
+      "id": "main",
+      "ref": "K1",
+      "x": 600,
+      "y": 300,
+      "label": "Üç faz güç kontakları",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "motor-3p",
+      "id": "motor",
+      "ref": "M1",
+      "x": 600,
+      "y": 540,
+      "label": "Faz sırasına göre döner",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "fan-1p",
+      "id": "fan",
+      "ref": "M2",
+      "x": 860,
+      "y": 540,
+      "label": "Pano fanı",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "smps",
+      "id": "ps",
+      "ref": "G2",
+      "x": 390,
+      "y": 470,
+      "label": "Weidmüller 24 V",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "lamp",
+      "ref": "H1",
+      "x": 400,
+      "y": 720,
+      "label": "Çalışma lambası",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "source",
+        "p": "L1"
+      },
+      "to": {
+        "j": "l1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w2",
+      "from": {
+        "j": "l1"
+      },
+      "to": {
+        "c": "main",
+        "p": "1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "source",
+        "p": "L2"
+      },
+      "to": {
+        "c": "main",
+        "p": "3"
+      },
+      "color": "#f97316",
+      "role": "L2",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "source",
+        "p": "L3"
+      },
+      "to": {
+        "c": "main",
+        "p": "5"
+      },
+      "color": "#f4c430",
+      "role": "L3",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w5",
+      "from": {
+        "j": "l1"
+      },
+      "to": {
+        "c": "stop",
+        "p": "21"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 530,
+          "y": 240
+        },
+        {
+          "x": 530,
+          "y": 20
+        },
+        {
+          "x": 240,
+          "y": 20
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "stop",
+        "p": "22"
+      },
+      "to": {
+        "j": "feed"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w7",
+      "from": {
+        "j": "feed"
+      },
+      "to": {
+        "c": "start",
+        "p": "13"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 360,
+          "y": 220
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w8",
+      "from": {
+        "j": "feed"
+      },
+      "to": {
+        "c": "hold",
+        "p": "13"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 160,
+          "y": 220
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "start",
+        "p": "14"
+      },
+      "to": {
+        "j": "load"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 360,
+          "y": 420
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "hold",
+        "p": "14"
+      },
+      "to": {
+        "j": "load"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 160,
+          "y": 420
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w11",
+      "from": {
+        "j": "load"
+      },
+      "to": {
+        "c": "coil",
+        "p": "A1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w12",
+      "from": {
+        "j": "load"
+      },
+      "to": {
+        "c": "ps",
+        "p": "L"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 460,
+          "y": 420
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w13",
+      "from": {
+        "c": "source",
+        "p": "N"
+      },
+      "to": {
+        "j": "neutral"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 710,
+          "y": 220
+        },
+        {
+          "x": 1120,
+          "y": 220
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w14",
+      "from": {
+        "c": "coil",
+        "p": "A2"
+      },
+      "to": {
+        "j": "neutral"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 240,
+          "y": 840
+        },
+        {
+          "x": 1120,
+          "y": 840
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w15",
+      "from": {
+        "c": "ps",
+        "p": "N"
+      },
+      "to": {
+        "j": "neutral"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 430,
+          "y": 450
+        },
+        {
+          "x": 520,
+          "y": 450
+        },
+        {
+          "x": 520,
+          "y": 800
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w16",
+      "from": {
+        "c": "ps",
+        "p": "P"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X1"
+      },
+      "color": "#8b5a2b",
+      "role": "+24V",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w17",
+      "from": {
+        "c": "ps",
+        "p": "M"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X2"
+      },
+      "color": "#111827",
+      "role": "0V",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 430,
+          "y": 650
+        },
+        {
+          "x": 350,
+          "y": 650
+        },
+        {
+          "x": 350,
+          "y": 820
+        },
+        {
+          "x": 440,
+          "y": 820
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w18",
+      "from": {
+        "c": "main",
+        "p": "2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "U"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w19",
+      "from": {
+        "c": "main",
+        "p": "4"
+      },
+      "to": {
+        "c": "motor",
+        "p": "V"
+      },
+      "color": "#f97316",
+      "role": "L2",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w20",
+      "from": {
+        "c": "main",
+        "p": "6"
+      },
+      "to": {
+        "c": "motor",
+        "p": "W"
+      },
+      "color": "#f4c430",
+      "role": "L3",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w21",
+      "from": {
+        "c": "main",
+        "p": "2"
+      },
+      "to": {
+        "c": "fan",
+        "p": "U"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 630,
+          "y": 470
+        },
+        {
+          "x": 890,
+          "y": 470
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w22",
+      "from": {
+        "c": "fan",
+        "p": "N"
+      },
+      "to": {
+        "j": "neutral"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 930,
+          "y": 500
+        },
+        {
+          "x": 1120,
+          "y": 500
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    }
+  ],
+  "junctions": [
+    {
+      "id": "l1",
+      "x": 630,
+      "y": 240
+    },
+    {
+      "id": "feed",
+      "x": 240,
+      "y": 220
+    },
+    {
+      "id": "load",
+      "x": 240,
+      "y": 420
+    },
+    {
+      "id": "neutral",
+      "x": 1120,
+      "y": 800
+    }
+  ],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#16a34a": "PE"
+  },
+  "defaultTemplate": {
+    "id": "file:3D_Buton_Kontaktor_Motor",
+    "readOnly": true
+  }
+}

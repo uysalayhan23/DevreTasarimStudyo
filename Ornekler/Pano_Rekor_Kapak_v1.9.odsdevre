@@ -1,0 +1,140 @@
+{
+  "version": 7,
+  "name": "Pano · Rekor, kanal kapağı ve spiral",
+  "projectId": "pano-v19",
+  "workspaceMode": "panel",
+  "components": [],
+  "wires": [],
+  "junctions": [],
+  "panel": {
+    "width": 600,
+    "height": 800,
+    "depth": 220,
+    "doorAngle": 105,
+    "rails": [],
+    "ducts": [
+      {
+        "id": "g",
+        "kind": "gland",
+        "x": 5,
+        "y": 90,
+        "length": 50,
+        "width": 30,
+        "vertical": false
+      },
+      {
+        "id": "d",
+        "x": 90,
+        "y": 85,
+        "length": 380,
+        "width": 40,
+        "vertical": false,
+        "coverClosed": false
+      },
+      {
+        "id": "sp",
+        "kind": "spiral",
+        "x": 230,
+        "y": 270,
+        "width": 25,
+        "length": 180,
+        "vertical": true
+      }
+    ],
+    "items": [
+      {
+        "id": "s",
+        "typeId": "supply-1p",
+        "ref": "G1",
+        "x": -120,
+        "y": 80,
+        "w": 80,
+        "h": 60,
+        "depth": 10,
+        "mount": "external",
+        "_terminalLines": {
+          "L": {
+            "role": "L1",
+            "color": "#e53935",
+            "size": "2,5 mm²"
+          }
+        }
+      },
+      {
+        "id": "q",
+        "typeId": "mcb-1p",
+        "ref": "Q1",
+        "x": 100,
+        "y": 180,
+        "w": 25,
+        "h": 80,
+        "depth": 50,
+        "mount": "plate",
+        "_terminalLines": {
+          "1": {
+            "role": "L1",
+            "color": "#e53935",
+            "size": "2,5 mm²"
+          }
+        }
+      }
+    ],
+    "wires": [
+      {
+        "id": "pw-mu52cy0j5wc69",
+        "from": {
+          "c": "s",
+          "p": "L"
+        },
+        "to": {
+          "c": "q",
+          "p": "1"
+        },
+        "color": "#ec4899",
+        "role": "L1",
+        "size": "2,5 mm²",
+        "points": [
+          {
+            "x": 10,
+            "y": 105,
+            "surface": "plate"
+          },
+          {
+            "x": 50,
+            "y": 105,
+            "surface": "plate"
+          }
+        ],
+        "_lineConflict": false,
+        "styleColor": "#ec4899",
+        "styleSize": "2,5 mm²",
+        "accessoryId": "g"
+      }
+    ],
+    "colorRoles": {
+      "#e53935": "L1",
+      "#f97316": "L2",
+      "#f4c430": "L3",
+      "#1e88e5": "N",
+      "#16a34a": "PE",
+      "#8b5a2b": "+24V",
+      "#111827": "0V",
+      "#8b5cf6": "SIGNAL",
+      "#808080": "CONTROL"
+    },
+    "colorLocks": {
+      "#e53935": "L1"
+    },
+    "lineColors": {
+      "L1": "#e53935"
+    },
+    "colorSizes": {
+      "#e53935": "2,5 mm²"
+    },
+    "conductorVersion": 1
+  },
+  "defaultTemplate": {
+    "id": "file:Pano_Rekor_Kapak_v1.9",
+    "readOnly": true
+  }
+}

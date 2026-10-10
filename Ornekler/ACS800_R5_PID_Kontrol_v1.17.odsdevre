@@ -1,0 +1,447 @@
+{
+  "version": 7,
+  "name": "ACS800_R5_PID_Kontrol",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-3p",
+      "x": 80,
+      "y": 90,
+      "ref": "G1",
+      "label": "3~ 400 V"
+    },
+    {
+      "id": "motor",
+      "typeId": "motor-3p",
+      "x": 1570,
+      "y": 1240,
+      "ref": "M1",
+      "motorConnection": "star",
+      "label": "400 V Y · 75 kW"
+    },
+    {
+      "id": "acs",
+      "typeId": "abb-acs800-r5",
+      "x": 700,
+      "y": 220,
+      "ref": "U1",
+      "label": "ABB ACS800 R5 · 75 kW",
+      "showNote": true,
+      "labelOffsets": {
+        "note": {
+          "x": 0,
+          "y": 60
+        }
+      },
+      "acs800": {
+        "schema": 1,
+        "params": {
+          "10.01": 2,
+          "10.02": 7,
+          "10.03": 1,
+          "10.06": 1,
+          "11.01": 1,
+          "11.02": 8,
+          "11.03": 2,
+          "11.04": 0,
+          "11.05": 1500,
+          "11.06": 2,
+          "11.07": 0,
+          "11.08": 100,
+          "12.01": 5,
+          "12.02": 300,
+          "12.03": 600,
+          "12.04": 900,
+          "12.05": 300,
+          "12.06": 0,
+          "12.07": 0,
+          "12.08": 0,
+          "12.09": 0,
+          "12.10": 0,
+          "12.11": 0,
+          "12.12": 0,
+          "12.13": 0,
+          "12.14": 0,
+          "12.15": 0,
+          "12.16": 0,
+          "13.01": 1,
+          "13.02": 1,
+          "13.03": 100,
+          "13.04": 0.1,
+          "13.05": 0,
+          "13.06": 1,
+          "13.07": 1,
+          "13.08": 100,
+          "13.09": 0.1,
+          "13.10": 0,
+          "13.11": 1,
+          "13.12": 1,
+          "13.13": 100,
+          "13.14": 0.1,
+          "13.15": 0,
+          "14.01": 2,
+          "14.04": 0,
+          "14.05": 0,
+          "14.02": 3,
+          "14.06": 0,
+          "14.07": 0,
+          "14.03": 5,
+          "14.08": 0,
+          "14.09": 0,
+          "15.01": 3,
+          "15.02": 0,
+          "15.03": 1,
+          "15.04": 0.1,
+          "15.05": 100,
+          "15.06": 5,
+          "15.07": 0,
+          "15.08": 1,
+          "15.09": 2,
+          "15.10": 100,
+          "16.01": 6,
+          "16.02": 0,
+          "16.03": 0,
+          "16.04": 1,
+          "16.06": 0,
+          "16.09": 1,
+          "20.01": -1500,
+          "20.02": 1500,
+          "20.03": 170,
+          "20.07": -50,
+          "20.08": 50,
+          "21.03": 1,
+          "21.07": 2,
+          "21.09": 1,
+          "22.01": 1,
+          "22.02": 20,
+          "22.03": 20,
+          "22.04": 60,
+          "22.05": 60,
+          "22.07": 3,
+          "30.01": 1,
+          "30.03": 1,
+          "40.01": 1,
+          "40.02": 60,
+          "40.03": 0,
+          "40.04": 1,
+          "40.05": 0,
+          "40.06": 1,
+          "40.07": 2,
+          "40.08": 3,
+          "40.09": 0,
+          "40.10": 100,
+          "40.11": 0,
+          "40.12": 100,
+          "40.13": 1,
+          "40.19": 0.04,
+          "99.02": 3,
+          "99.04": 0,
+          "99.05": 400,
+          "99.06": 141,
+          "99.07": 50,
+          "99.08": 1480,
+          "99.09": 75
+        },
+        "local": false,
+        "run": false,
+        "reverse": false,
+        "reference": 0,
+        "reset": 0,
+        "load": 50,
+        "temperature": 30,
+        "j1": true,
+        "diilBridge": true,
+        "users": {}
+      },
+      "note": "PID makrosu, EXT2. DI5 çalışma izni köprülü; DI6 başlatır. AI1 referans, AI2 geri besleme. 40.13=OFF: önce oransal tepkiyi gözleyin; sonra ON seçerek integral etkisini ekleyin. Sensör sıcaklığı arttıkça hedef hız azalır."
+    },
+    {
+      "id": "run",
+      "typeId": "selector-no",
+      "x": 200,
+      "y": 410,
+      "ref": "RUN",
+      "label": "PID çalıştır · DI6"
+    },
+    {
+      "id": "pot",
+      "typeId": "potentiometer",
+      "x": 220,
+      "y": 950,
+      "ref": "POT",
+      "potentiometer": 50,
+      "potMax": 1000,
+      "label": "AI1 · PID referansı %50"
+    },
+    {
+      "id": "sensor",
+      "typeId": "sensor-temperature-humidity",
+      "x": 1550,
+      "y": 440,
+      "ref": "SENSOR",
+      "instrumentSettings": {
+        "temperature": 0,
+        "humidity": 50,
+        "measurement": "both",
+        "output": "0-20mA"
+      },
+      "label": "AI2 · geri besleme"
+    }
+  ],
+  "wires": [
+    {
+      "id": "wire0",
+      "from": {
+        "c": "g",
+        "p": "L1"
+      },
+      "to": {
+        "c": "acs",
+        "p": "U1"
+      },
+      "color": "#e53935",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire1",
+      "from": {
+        "c": "g",
+        "p": "L2"
+      },
+      "to": {
+        "c": "acs",
+        "p": "V1"
+      },
+      "color": "#f97316",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire2",
+      "from": {
+        "c": "g",
+        "p": "L3"
+      },
+      "to": {
+        "c": "acs",
+        "p": "W1"
+      },
+      "color": "#f4c430",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire3",
+      "from": {
+        "c": "acs",
+        "p": "U2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "U"
+      },
+      "color": "#e53935",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire4",
+      "from": {
+        "c": "acs",
+        "p": "V2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "V"
+      },
+      "color": "#f97316",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire5",
+      "from": {
+        "c": "acs",
+        "p": "W2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "W"
+      },
+      "color": "#f4c430",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire6",
+      "from": {
+        "c": "g",
+        "p": "PE"
+      },
+      "to": {
+        "c": "acs",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire7",
+      "from": {
+        "c": "acs",
+        "p": "PE2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire8",
+      "from": {
+        "c": "acs",
+        "p": "X22:7"
+      },
+      "to": {
+        "c": "run",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire9",
+      "from": {
+        "c": "run",
+        "p": "14"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X22:6"
+      },
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire10",
+      "from": {
+        "c": "acs",
+        "p": "X22:8"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X22:5"
+      },
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire11",
+      "from": {
+        "c": "acs",
+        "p": "X21:1"
+      },
+      "to": {
+        "c": "pot",
+        "p": "1"
+      },
+      "color": "#b57b40",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire12",
+      "from": {
+        "c": "acs",
+        "p": "X21:2"
+      },
+      "to": {
+        "c": "pot",
+        "p": "3"
+      },
+      "color": "#111827",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire13",
+      "from": {
+        "c": "pot",
+        "p": "2"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X21:3"
+      },
+      "color": "#8b5cf6",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire14",
+      "from": {
+        "c": "acs",
+        "p": "X21:4"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X21:2"
+      },
+      "color": "#111827",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire15",
+      "from": {
+        "c": "acs",
+        "p": "X23:1"
+      },
+      "to": {
+        "c": "sensor",
+        "p": "+"
+      },
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire16",
+      "from": {
+        "c": "acs",
+        "p": "X23:2"
+      },
+      "to": {
+        "c": "sensor",
+        "p": "−"
+      },
+      "color": "#111827",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire17",
+      "from": {
+        "c": "sensor",
+        "p": "T"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X21:5"
+      },
+      "color": "#8b5cf6",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "wire18",
+      "from": {
+        "c": "sensor",
+        "p": "−"
+      },
+      "to": {
+        "c": "acs",
+        "p": "X21:6"
+      },
+      "color": "#111827",
+      "size": "1,5 mm²"
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:ACS800_R5_PID_Kontrol_v1.17",
+    "readOnly": true
+  }
+}

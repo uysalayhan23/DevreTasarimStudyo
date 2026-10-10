@@ -1,0 +1,58 @@
+{
+  "version": 7,
+  "name": "Delta_SE_Varyantlari_v1.14",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "plc0",
+      "typeId": "plc-hw-dvp12se11r",
+      "x": 120,
+      "y": 100,
+      "ref": "PLC1",
+      "label": "DVP12SE11R",
+      "materialScale": 1
+    },
+    {
+      "id": "plc1",
+      "typeId": "plc-hw-dvp12se11t",
+      "x": 820,
+      "y": 100,
+      "ref": "PLC2",
+      "label": "DVP12SE11T",
+      "materialScale": 1
+    },
+    {
+      "id": "plc2",
+      "typeId": "plc-hw-dvp26se11r",
+      "x": 1520,
+      "y": 100,
+      "ref": "PLC3",
+      "label": "DVP26SE11R",
+      "materialScale": 1
+    },
+    {
+      "id": "plc3",
+      "typeId": "plc-hw-dvp26se11t",
+      "x": 120,
+      "y": 600,
+      "ref": "PLC4",
+      "label": "DVP26SE11T",
+      "materialScale": 1
+    },
+    {
+      "id": "plc4",
+      "typeId": "plc-hw-dvp26se11s",
+      "x": 820,
+      "y": 600,
+      "ref": "PLC5",
+      "label": "DVP26SE11S",
+      "materialScale": 1
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Delta_SE_Varyantlari_v1.14",
+    "readOnly": true
+  }
+}

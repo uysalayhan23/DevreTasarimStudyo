@@ -1,0 +1,328 @@
+{
+  "version": 7,
+  "name": "Flasor_ve_Sesli_Uyarilar",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-dc-plus",
+      "x": 100,
+      "y": 100,
+      "ref": "G1"
+    },
+    {
+      "id": "sw0",
+      "typeId": "push-maintained",
+      "x": 300,
+      "y": 200,
+      "ref": "S1",
+      "state": false
+    },
+    {
+      "id": "h0",
+      "typeId": "flasher",
+      "x": 300,
+      "y": 470,
+      "ref": "H1",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#8b35ed"
+    },
+    {
+      "id": "sw1",
+      "typeId": "push-maintained",
+      "x": 500,
+      "y": 200,
+      "ref": "S2",
+      "state": false
+    },
+    {
+      "id": "h1",
+      "typeId": "beacon-flashing",
+      "x": 500,
+      "y": 470,
+      "ref": "H2",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#ff6b22"
+    },
+    {
+      "id": "sw2",
+      "typeId": "push-maintained",
+      "x": 700,
+      "y": 200,
+      "ref": "S3",
+      "state": false
+    },
+    {
+      "id": "h2",
+      "typeId": "speaker",
+      "x": 700,
+      "y": 470,
+      "ref": "H3",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#ff6b22"
+    },
+    {
+      "id": "sw3",
+      "typeId": "push-maintained",
+      "x": 900,
+      "y": 200,
+      "ref": "S4",
+      "state": false
+    },
+    {
+      "id": "h3",
+      "typeId": "buzzer",
+      "x": 900,
+      "y": 470,
+      "ref": "H4",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#ff6b22"
+    },
+    {
+      "id": "sw4",
+      "typeId": "push-maintained",
+      "x": 1100,
+      "y": 200,
+      "ref": "S5",
+      "state": false
+    },
+    {
+      "id": "h4",
+      "typeId": "annunciation",
+      "x": 1100,
+      "y": 470,
+      "ref": "H5",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#ff6b22"
+    },
+    {
+      "id": "sw5",
+      "typeId": "push-maintained",
+      "x": 1300,
+      "y": 200,
+      "ref": "S6",
+      "state": false
+    },
+    {
+      "id": "h5",
+      "typeId": "siren",
+      "x": 1300,
+      "y": 470,
+      "ref": "H6",
+      "flashOn": 0.25,
+      "flashOff": 0.75,
+      "deviceColor": "#ff6b22"
+    }
+  ],
+  "wires": [
+    {
+      "id": "s-P-sw0-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw0",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw0-14-h0-1",
+      "from": {
+        "c": "sw0",
+        "p": "14"
+      },
+      "to": {
+        "c": "h0",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h0-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h0",
+        "p": "2"
+      }
+    },
+    {
+      "id": "s-P-sw1-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw1",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw1-14-h1-1",
+      "from": {
+        "c": "sw1",
+        "p": "14"
+      },
+      "to": {
+        "c": "h1",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h1-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h1",
+        "p": "2"
+      }
+    },
+    {
+      "id": "s-P-sw2-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw2",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw2-14-h2-1",
+      "from": {
+        "c": "sw2",
+        "p": "14"
+      },
+      "to": {
+        "c": "h2",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h2-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h2",
+        "p": "2"
+      }
+    },
+    {
+      "id": "s-P-sw3-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw3",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw3-14-h3-1",
+      "from": {
+        "c": "sw3",
+        "p": "14"
+      },
+      "to": {
+        "c": "h3",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h3-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h3",
+        "p": "2"
+      }
+    },
+    {
+      "id": "s-P-sw4-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw4",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw4-14-h4-1",
+      "from": {
+        "c": "sw4",
+        "p": "14"
+      },
+      "to": {
+        "c": "h4",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h4-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h4",
+        "p": "2"
+      }
+    },
+    {
+      "id": "s-P-sw5-13",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sw5",
+        "p": "13"
+      }
+    },
+    {
+      "id": "sw5-14-h5-1",
+      "from": {
+        "c": "sw5",
+        "p": "14"
+      },
+      "to": {
+        "c": "h5",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-h5-2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h5",
+        "p": "2"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Flasor_ve_Sesli_Uyarilar_v1.10",
+    "readOnly": true
+  }
+}

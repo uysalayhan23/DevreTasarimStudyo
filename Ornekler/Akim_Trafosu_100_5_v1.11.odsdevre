@@ -1,0 +1,103 @@
+{
+  "version": 7,
+  "name": "Akim_Trafosu_100_5",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-1p",
+      "x": 160,
+      "y": 220,
+      "ref": "S"
+    },
+    {
+      "id": "ct",
+      "typeId": "current-transformer",
+      "x": 470,
+      "y": 220,
+      "ref": "CT",
+      "ctPrimary": 100,
+      "ctSecondary": 5
+    },
+    {
+      "id": "r",
+      "typeId": "resistor",
+      "x": 470,
+      "y": 600,
+      "ref": "R",
+      "resistance": 23,
+      "note": "23 Ω yük: 230 V / 23 Ω = 10 A"
+    },
+    {
+      "id": "a",
+      "typeId": "meter-ammeter",
+      "x": 850,
+      "y": 220,
+      "ref": "A",
+      "note": "100/5 oranında 10 A → 0,5 A"
+    }
+  ],
+  "wires": [
+    {
+      "id": "sLctP1",
+      "from": {
+        "c": "s",
+        "p": "L"
+      },
+      "to": {
+        "c": "ct",
+        "p": "P1"
+      }
+    },
+    {
+      "id": "ctP2r1",
+      "from": {
+        "c": "ct",
+        "p": "P2"
+      },
+      "to": {
+        "c": "r",
+        "p": "1"
+      }
+    },
+    {
+      "id": "r2sN",
+      "from": {
+        "c": "r",
+        "p": "2"
+      },
+      "to": {
+        "c": "s",
+        "p": "N"
+      }
+    },
+    {
+      "id": "ctS1a1",
+      "from": {
+        "c": "ct",
+        "p": "S1"
+      },
+      "to": {
+        "c": "a",
+        "p": "1"
+      }
+    },
+    {
+      "id": "a2ctS2",
+      "from": {
+        "c": "a",
+        "p": "2"
+      },
+      "to": {
+        "c": "ct",
+        "p": "S2"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Akim_Trafosu_100_5_v1.11",
+    "readOnly": true
+  }
+}

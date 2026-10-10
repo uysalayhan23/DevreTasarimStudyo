@@ -1,0 +1,274 @@
+{
+  "version": 7,
+  "name": "Yeni_Malzeme_Kumandalari",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "v0",
+      "typeId": "speaker",
+      "x": 140,
+      "y": 100,
+      "ref": "V0",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v1",
+      "typeId": "buzzer",
+      "x": 420,
+      "y": 100,
+      "ref": "V1",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v2",
+      "typeId": "annunciation",
+      "x": 700,
+      "y": 100,
+      "ref": "V2",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v3",
+      "typeId": "siren",
+      "x": 980,
+      "y": 100,
+      "ref": "V3",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v4",
+      "typeId": "sensor-pt100-4wire",
+      "x": 1260,
+      "y": 100,
+      "ref": "V4",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v5",
+      "typeId": "thermocouple",
+      "x": 140,
+      "y": 430,
+      "ref": "V5",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v6",
+      "typeId": "potentiometer",
+      "x": 420,
+      "y": 430,
+      "ref": "V6",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v7",
+      "typeId": "limit-no",
+      "x": 700,
+      "y": 430,
+      "ref": "V7",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v8",
+      "typeId": "thermal-magnetic",
+      "x": 980,
+      "y": 430,
+      "ref": "V8",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v9",
+      "typeId": "mcb-1p",
+      "x": 1260,
+      "y": 430,
+      "ref": "V9",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v10",
+      "typeId": "fuse-switch-3",
+      "x": 140,
+      "y": 760,
+      "ref": "V10",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v11",
+      "typeId": "nh-fuse-holder",
+      "x": 420,
+      "y": 760,
+      "ref": "V11",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v12",
+      "typeId": "nh-fuse",
+      "x": 700,
+      "y": 760,
+      "ref": "V12",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v13",
+      "typeId": "door-isolator-1p",
+      "x": 980,
+      "y": 760,
+      "ref": "V13",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v14",
+      "typeId": "packet-star-delta",
+      "x": 1260,
+      "y": 760,
+      "ref": "V14",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v15",
+      "typeId": "phase-sequence-relay",
+      "x": 140,
+      "y": 1090,
+      "ref": "V15",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v16",
+      "typeId": "motor-protection-relay",
+      "x": 420,
+      "y": 1090,
+      "ref": "V16",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v17",
+      "typeId": "resistor",
+      "x": 700,
+      "y": 1090,
+      "ref": "V17",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v18",
+      "typeId": "winding",
+      "x": 980,
+      "y": 1090,
+      "ref": "V18",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    {
+      "id": "v19",
+      "typeId": "current-transformer",
+      "x": 1260,
+      "y": 1090,
+      "ref": "V19",
+      "potMax": 100000,
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    }
+  ],
+  "wires": [],
+  "defaultTemplate": {
+    "id": "file:Yeni_Malzeme_Kumandalari_v1.11",
+    "readOnly": true
+  }
+}

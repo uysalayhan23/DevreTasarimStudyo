@@ -1,0 +1,67 @@
+{
+  "version": 7,
+  "name": "Omron_CP_Ornekleri_v1.14",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "plc0",
+      "typeId": "plc-hw-cp1e-e10dr-a",
+      "x": 120,
+      "y": 100,
+      "ref": "PLC1",
+      "label": "CP1E-E10DR-A",
+      "materialScale": 1
+    },
+    {
+      "id": "plc1",
+      "typeId": "plc-hw-cp1e-n30s1dt1-d",
+      "x": 820,
+      "y": 100,
+      "ref": "PLC2",
+      "label": "CP1E-N30S1DT1-D",
+      "materialScale": 1
+    },
+    {
+      "id": "plc2",
+      "typeId": "plc-hw-cp1e-na20dr-a",
+      "x": 1520,
+      "y": 100,
+      "ref": "PLC3",
+      "label": "CP1E-NA20DR-A",
+      "materialScale": 1
+    },
+    {
+      "id": "plc3",
+      "typeId": "plc-hw-cp2e-n14dr-a",
+      "x": 120,
+      "y": 600,
+      "ref": "PLC4",
+      "label": "CP2E-N14DR-A",
+      "materialScale": 1
+    },
+    {
+      "id": "plc4",
+      "typeId": "plc-hw-cp2e-n30dt-d",
+      "x": 820,
+      "y": 600,
+      "ref": "PLC5",
+      "label": "CP2E-N30DT-D",
+      "materialScale": 1
+    },
+    {
+      "id": "plc5",
+      "typeId": "plc-hw-cp2e-n60dt1-d",
+      "x": 1520,
+      "y": 600,
+      "ref": "PLC6",
+      "label": "CP2E-N60DT1-D",
+      "materialScale": 1
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Omron_CP_Ornekleri_v1.14",
+    "readOnly": true
+  }
+}

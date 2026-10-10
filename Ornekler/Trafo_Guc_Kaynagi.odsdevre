@@ -1,0 +1,301 @@
+{
+  "version": 5,
+  "name": "Anahtar → trafo → güç kaynağı → lamba",
+  "components": [
+    {
+      "typeId": "supply-1p",
+      "id": "source",
+      "ref": "G1",
+      "x": 40,
+      "y": 260,
+      "label": "1 Faz Besleme",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "selector-no",
+      "id": "switch",
+      "ref": "S1",
+      "x": 220,
+      "y": 230,
+      "label": "Giriş beslemesini aç / kapat",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "transformer",
+      "id": "transformer",
+      "ref": "T1",
+      "x": 190,
+      "y": 410,
+      "label": "Giriş 1–2 / çıkış 3–4",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "smps",
+      "id": "supply",
+      "ref": "G2",
+      "x": 190,
+      "y": 620,
+      "label": "Giriş L–N / çıkış +24V–0V",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "lamp",
+      "ref": "H1",
+      "x": 220,
+      "y": 820,
+      "label": "24 V çıkış lambası",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    },
+    {
+      "typeId": "lamp-red",
+      "id": "unconnected",
+      "ref": "H2",
+      "x": 440,
+      "y": 820,
+      "label": "Bağlantısız: sönük kalır",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "source",
+        "p": "L"
+      },
+      "to": {
+        "c": "switch",
+        "p": "13"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 110,
+          "y": 180
+        },
+        {
+          "x": 260,
+          "y": 180
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "switch",
+        "p": "14"
+      },
+      "to": {
+        "c": "transformer",
+        "p": "1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "source",
+        "p": "N"
+      },
+      "to": {
+        "c": "transformer",
+        "p": "2"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 80,
+          "y": 170
+        },
+        {
+          "x": 20,
+          "y": 170
+        },
+        {
+          "x": 20,
+          "y": 390
+        },
+        {
+          "x": 230,
+          "y": 390
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "transformer",
+        "p": "3"
+      },
+      "to": {
+        "c": "supply",
+        "p": "L"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "transformer",
+        "p": "4"
+      },
+      "to": {
+        "c": "supply",
+        "p": "N"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "supply",
+        "p": "P"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X1"
+      },
+      "color": "#8b5a2b",
+      "role": "+24V",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "supply",
+        "p": "M"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X2"
+      },
+      "color": "#111827",
+      "role": "0V",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 230,
+          "y": 770
+        },
+        {
+          "x": 160,
+          "y": 770
+        },
+        {
+          "x": 160,
+          "y": 960
+        },
+        {
+          "x": 260,
+          "y": 960
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V"
+  },
+  "defaultTemplate": {
+    "id": "file:Trafo_Guc_Kaynagi",
+    "readOnly": true
+  }
+}

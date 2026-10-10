@@ -1,0 +1,205 @@
+{
+  "version": 7,
+  "name": "Faz_Roleleri",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-3p",
+      "x": 120,
+      "y": 220,
+      "ref": "S",
+      "note": "Sağ menüde L2 = 100 V: FKV-03 bırakır. L2 = 0 V: iki röle de bırakır."
+    },
+    {
+      "id": "fs",
+      "typeId": "phase-sequence-relay",
+      "x": 520,
+      "y": 180,
+      "ref": "FS"
+    },
+    {
+      "id": "fk",
+      "typeId": "motor-protection-relay",
+      "x": 900,
+      "y": 180,
+      "ref": "FK"
+    },
+    {
+      "id": "l1",
+      "typeId": "lamp-green",
+      "x": 520,
+      "y": 700,
+      "ref": "L1"
+    },
+    {
+      "id": "l2",
+      "typeId": "lamp-green",
+      "x": 900,
+      "y": 700,
+      "ref": "L2"
+    }
+  ],
+  "wires": [
+    {
+      "id": "sNfsN",
+      "from": {
+        "c": "s",
+        "p": "N"
+      },
+      "to": {
+        "c": "fs",
+        "p": "N"
+      }
+    },
+    {
+      "id": "sL1fsL1",
+      "from": {
+        "c": "s",
+        "p": "L1"
+      },
+      "to": {
+        "c": "fs",
+        "p": "L1"
+      }
+    },
+    {
+      "id": "sL2fsL2",
+      "from": {
+        "c": "s",
+        "p": "L2"
+      },
+      "to": {
+        "c": "fs",
+        "p": "L2"
+      }
+    },
+    {
+      "id": "sL3fsL3",
+      "from": {
+        "c": "s",
+        "p": "L3"
+      },
+      "to": {
+        "c": "fs",
+        "p": "L3"
+      }
+    },
+    {
+      "id": "sL1fs11",
+      "from": {
+        "c": "s",
+        "p": "L1"
+      },
+      "to": {
+        "c": "fs",
+        "p": "11"
+      }
+    },
+    {
+      "id": "fs14l1X1",
+      "from": {
+        "c": "fs",
+        "p": "14"
+      },
+      "to": {
+        "c": "l1",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "l1X2sN",
+      "from": {
+        "c": "l1",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "N"
+      }
+    },
+    {
+      "id": "sNfkN",
+      "from": {
+        "c": "s",
+        "p": "N"
+      },
+      "to": {
+        "c": "fk",
+        "p": "N"
+      }
+    },
+    {
+      "id": "sL1fkL1",
+      "from": {
+        "c": "s",
+        "p": "L1"
+      },
+      "to": {
+        "c": "fk",
+        "p": "L1"
+      }
+    },
+    {
+      "id": "sL2fkL2",
+      "from": {
+        "c": "s",
+        "p": "L2"
+      },
+      "to": {
+        "c": "fk",
+        "p": "L2"
+      }
+    },
+    {
+      "id": "sL3fkL3",
+      "from": {
+        "c": "s",
+        "p": "L3"
+      },
+      "to": {
+        "c": "fk",
+        "p": "L3"
+      }
+    },
+    {
+      "id": "sL1fk11",
+      "from": {
+        "c": "s",
+        "p": "L1"
+      },
+      "to": {
+        "c": "fk",
+        "p": "11"
+      }
+    },
+    {
+      "id": "fk14l2X1",
+      "from": {
+        "c": "fk",
+        "p": "14"
+      },
+      "to": {
+        "c": "l2",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "l2X2sN",
+      "from": {
+        "c": "l2",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "N"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Faz_Roleleri_v1.11",
+    "readOnly": true
+  }
+}

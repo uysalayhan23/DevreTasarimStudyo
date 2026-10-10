@@ -1,0 +1,534 @@
+{
+  "version": 6,
+  "name": "TSE · Bağımsız etiket yerleşimi",
+  "components": [
+    {
+      "typeId": "supply-1p",
+      "id": "source",
+      "ref": "G1",
+      "x": 40,
+      "y": 260,
+      "label": "1 Faz Besleme",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    },
+    {
+      "typeId": "selector-no",
+      "id": "switch",
+      "ref": "S1",
+      "x": 180,
+      "y": 230,
+      "label": "K1 bobinine enerji",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil",
+      "ref": "K1",
+      "x": 180,
+      "y": 440,
+      "label": "Kontaktör bobini",
+      "rotation": 0,
+      "state": false,
+      "address": "Q0.0",
+      "note": "Pano A\nEtiketler ayrı taşınabilir",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        },
+        "address": {
+          "x": 130,
+          "y": 44
+        },
+        "note": {
+          "x": 130,
+          "y": 63
+        },
+        "pin:A1": {
+          "x": 56,
+          "y": 8
+        },
+        "pin:A2": {
+          "x": 56,
+          "y": 97
+        }
+      }
+    },
+    {
+      "typeId": "contact-no",
+      "id": "no",
+      "ref": "K1",
+      "x": 400,
+      "y": 230,
+      "label": "NO yardımcı kontak",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    },
+    {
+      "typeId": "contact-nc",
+      "id": "nc",
+      "ref": "K1",
+      "x": 620,
+      "y": 230,
+      "label": "NC yardımcı kontak",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "green",
+      "ref": "H1",
+      "x": 400,
+      "y": 450,
+      "label": "K1 çektiğinde yanar",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    },
+    {
+      "typeId": "lamp-red",
+      "id": "red",
+      "ref": "H2",
+      "x": 620,
+      "y": 450,
+      "label": "K1 bırakınca yanar",
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "_actuated": false,
+      "_closed": null,
+      "_contactStates": {},
+      "_powered": false,
+      "_hot": [],
+      "_fault": false,
+      "_active": false,
+      "_spin": 0,
+      "labelPositions": {
+        "ref": {
+          "x": -20,
+          "y": 45
+        },
+        "label": {
+          "x": 45,
+          "y": 145
+        }
+      }
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "source",
+        "p": "L"
+      },
+      "to": {
+        "j": "L0"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 110,
+          "y": 190
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w2",
+      "from": {
+        "j": "L0"
+      },
+      "to": {
+        "j": "L1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w3",
+      "from": {
+        "j": "L1"
+      },
+      "to": {
+        "j": "L2"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w4",
+      "from": {
+        "j": "L0"
+      },
+      "to": {
+        "c": "switch",
+        "p": "13"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w5",
+      "from": {
+        "j": "L1"
+      },
+      "to": {
+        "c": "no",
+        "p": "13"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w6",
+      "from": {
+        "j": "L2"
+      },
+      "to": {
+        "c": "nc",
+        "p": "21"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "switch",
+        "p": "14"
+      },
+      "to": {
+        "c": "coil",
+        "p": "A1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "no",
+        "p": "14"
+      },
+      "to": {
+        "c": "green",
+        "p": "X1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "nc",
+        "p": "22"
+      },
+      "to": {
+        "c": "red",
+        "p": "X1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "source",
+        "p": "N"
+      },
+      "to": {
+        "j": "N0"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [
+        {
+          "x": 80,
+          "y": 170
+        },
+        {
+          "x": 20,
+          "y": 170
+        },
+        {
+          "x": 20,
+          "y": 620
+        }
+      ],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w11",
+      "from": {
+        "j": "N0"
+      },
+      "to": {
+        "j": "N1"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w12",
+      "from": {
+        "j": "N1"
+      },
+      "to": {
+        "j": "N2"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w13",
+      "from": {
+        "c": "coil",
+        "p": "A2"
+      },
+      "to": {
+        "j": "N0"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w14",
+      "from": {
+        "c": "green",
+        "p": "X2"
+      },
+      "to": {
+        "j": "N1"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    },
+    {
+      "id": "w15",
+      "from": {
+        "c": "red",
+        "p": "X2"
+      },
+      "to": {
+        "j": "N2"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": [],
+      "_fault": false,
+      "_active": false
+    }
+  ],
+  "junctions": [
+    {
+      "id": "L0",
+      "x": 220,
+      "y": 190
+    },
+    {
+      "id": "L1",
+      "x": 440,
+      "y": 190
+    },
+    {
+      "id": "L2",
+      "x": 660,
+      "y": 190
+    },
+    {
+      "id": "N0",
+      "x": 220,
+      "y": 620
+    },
+    {
+      "id": "N1",
+      "x": 440,
+      "y": 620
+    },
+    {
+      "id": "N2",
+      "x": 660,
+      "y": 620
+    }
+  ],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V"
+  },
+  "symbolNorm": "TSE",
+  "defaultTemplate": {
+    "id": "file:Norm_Etiket_Yerlesimi",
+    "readOnly": true
+  }
+}

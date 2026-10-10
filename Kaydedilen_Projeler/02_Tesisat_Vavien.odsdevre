@@ -1,0 +1,131 @@
+{
+  "version": 7,
+  "workspaceMode": "building",
+  "projectId": "dts-example-building",
+  "name": "İki noktadan vavien aydınlatma",
+  "symbolNorm": "TSE",
+  "components": [
+    {
+      "typeId": "supply-1p",
+      "id": "source",
+      "x": 100,
+      "y": 60,
+      "rotation": 0,
+      "ref": "X0",
+      "label": "1 Faz Besleme",
+      "state": false
+    },
+    {
+      "typeId": "wall-vavien",
+      "id": "s1",
+      "x": 280,
+      "y": 240,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "Vaviyen Anahtar",
+      "state": false
+    },
+    {
+      "typeId": "wall-vavien",
+      "id": "s2",
+      "x": 520,
+      "y": 240,
+      "rotation": 0,
+      "ref": "S2",
+      "label": "Vaviyen Anahtar",
+      "state": false
+    },
+    {
+      "typeId": "ceiling-light",
+      "id": "light",
+      "x": 760,
+      "y": 240,
+      "rotation": 0,
+      "ref": "H1",
+      "label": "Tavan Armatürü",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "source",
+        "p": "L"
+      },
+      "to": {
+        "c": "s1",
+        "p": "11"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "points": [],
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "s1",
+        "p": "12"
+      },
+      "to": {
+        "c": "s2",
+        "p": "12"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "points": [],
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "s1",
+        "p": "14"
+      },
+      "to": {
+        "c": "s2",
+        "p": "14"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "points": [],
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "s2",
+        "p": "11"
+      },
+      "to": {
+        "c": "light",
+        "p": "X1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "points": [],
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "light",
+        "p": "X2"
+      },
+      "to": {
+        "c": "source",
+        "p": "N"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "points": [],
+      "size": "1,5 mm²"
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:02_Tesisat_Vavien",
+    "readOnly": true
+  }
+}

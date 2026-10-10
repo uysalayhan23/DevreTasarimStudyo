@@ -1,0 +1,282 @@
+{
+  "version": 7,
+  "name": "Bagimsiz_Sigortalar_ve_NH_Kapak",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-dc-plus",
+      "x": 150,
+      "y": 170,
+      "ref": "S"
+    },
+    {
+      "id": "f",
+      "typeId": "fuse-switch-3",
+      "x": 500,
+      "y": 200,
+      "ref": "F"
+    },
+    {
+      "id": "nh",
+      "typeId": "nh-fuse-holder",
+      "x": 1050,
+      "y": 200,
+      "ref": "NH",
+      "nhFuses": {
+        "0": true,
+        "1": true,
+        "2": true
+      },
+      "note": "Kapağı açınca üç faz ayrılır. Açıkken sigortalar sağ menüden takılır."
+    },
+    {
+      "id": "fl0",
+      "typeId": "lamp-green",
+      "x": 350,
+      "y": 650,
+      "ref": "FL0"
+    },
+    {
+      "id": "fl1",
+      "typeId": "lamp-green",
+      "x": 530,
+      "y": 650,
+      "ref": "FL1"
+    },
+    {
+      "id": "fl2",
+      "typeId": "lamp-green",
+      "x": 710,
+      "y": 650,
+      "ref": "FL2"
+    },
+    {
+      "id": "nhl0",
+      "typeId": "lamp-green",
+      "x": 900,
+      "y": 650,
+      "ref": "NHL0"
+    },
+    {
+      "id": "nhl1",
+      "typeId": "lamp-green",
+      "x": 1080,
+      "y": 650,
+      "ref": "NHL1"
+    },
+    {
+      "id": "nhl2",
+      "typeId": "lamp-green",
+      "x": 1260,
+      "y": 650,
+      "ref": "NHL2"
+    }
+  ],
+  "wires": [
+    {
+      "id": "sPf1",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "f",
+        "p": "1"
+      }
+    },
+    {
+      "id": "f2fl0X1",
+      "from": {
+        "c": "f",
+        "p": "2"
+      },
+      "to": {
+        "c": "fl0",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "fl0X2sM",
+      "from": {
+        "c": "fl0",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "sPf3",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "f",
+        "p": "3"
+      }
+    },
+    {
+      "id": "f4fl1X1",
+      "from": {
+        "c": "f",
+        "p": "4"
+      },
+      "to": {
+        "c": "fl1",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "fl1X2sM",
+      "from": {
+        "c": "fl1",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "sPf5",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "f",
+        "p": "5"
+      }
+    },
+    {
+      "id": "f6fl2X1",
+      "from": {
+        "c": "f",
+        "p": "6"
+      },
+      "to": {
+        "c": "fl2",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "fl2X2sM",
+      "from": {
+        "c": "fl2",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "sPnh1",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "nh",
+        "p": "1"
+      }
+    },
+    {
+      "id": "nh2nhl0X1",
+      "from": {
+        "c": "nh",
+        "p": "2"
+      },
+      "to": {
+        "c": "nhl0",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "nhl0X2sM",
+      "from": {
+        "c": "nhl0",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "sPnh3",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "nh",
+        "p": "3"
+      }
+    },
+    {
+      "id": "nh4nhl1X1",
+      "from": {
+        "c": "nh",
+        "p": "4"
+      },
+      "to": {
+        "c": "nhl1",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "nhl1X2sM",
+      "from": {
+        "c": "nhl1",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "sPnh5",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "nh",
+        "p": "5"
+      }
+    },
+    {
+      "id": "nh6nhl2X1",
+      "from": {
+        "c": "nh",
+        "p": "6"
+      },
+      "to": {
+        "c": "nhl2",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "nhl2X2sM",
+      "from": {
+        "c": "nhl2",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Bagimsiz_Sigortalar_ve_NH_Kapak_v1.11",
+    "readOnly": true
+  }
+}

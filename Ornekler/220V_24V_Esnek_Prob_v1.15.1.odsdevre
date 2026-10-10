@@ -1,0 +1,210 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "name": "220V_24V_Kablo_Uzerinden_Olcum",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-3p",
+      "ref": "220 VAC",
+      "x": 160,
+      "y": 70,
+      "phaseVoltages": {
+        "L1": 220,
+        "L2": 220,
+        "L3": 220
+      }
+    },
+    {
+      "id": "ps",
+      "typeId": "smps",
+      "ref": "G1",
+      "x": 590,
+      "y": 190,
+      "label": "24 VDC güç kaynağı"
+    },
+    {
+      "id": "lamp",
+      "typeId": "lamp-green",
+      "ref": "H1",
+      "x": 890,
+      "y": 580
+    },
+    {
+      "id": "m",
+      "typeId": "unit-ut33d-plus",
+      "ref": "UT33D+",
+      "x": 230,
+      "y": 300,
+      "meterPosition": 4
+    },
+    {
+      "id": "k",
+      "typeId": "test-probe-black",
+      "probeFor": "m",
+      "x": 505.2,
+      "y": 650,
+      "probeTarget": {
+        "w": "negative",
+        "t": 0.56
+      }
+    },
+    {
+      "id": "r",
+      "typeId": "test-probe-red",
+      "probeFor": "m",
+      "x": 520,
+      "y": 549.2,
+      "probeTarget": {
+        "w": "positive",
+        "t": 0.48
+      }
+    }
+  ],
+  "wires": [
+    {
+      "id": "inputL",
+      "from": {
+        "c": "s",
+        "p": "L1"
+      },
+      "to": {
+        "c": "ps",
+        "p": "L"
+      },
+      "points": [],
+      "role": "L1",
+      "roleBound": true,
+      "color": "#e53935",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "inputN",
+      "from": {
+        "c": "s",
+        "p": "N"
+      },
+      "to": {
+        "c": "ps",
+        "p": "N"
+      },
+      "points": [],
+      "role": "N",
+      "roleBound": true,
+      "color": "#1e88e5",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "positive",
+      "from": {
+        "c": "ps",
+        "p": "P"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X1"
+      },
+      "points": [],
+      "role": "+24V",
+      "roleBound": true,
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "negative",
+      "from": {
+        "c": "ps",
+        "p": "M"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X2"
+      },
+      "points": [],
+      "role": "0V",
+      "roleBound": true,
+      "color": "#111827",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "redlead",
+      "from": {
+        "c": "m",
+        "p": "V"
+      },
+      "to": {
+        "c": "r",
+        "p": "PLUG"
+      },
+      "flexOffset": {
+        "x": 20,
+        "y": 65
+      },
+      "points": [],
+      "role": "MEASURE",
+      "probeLead": true,
+      "color": "#e53935",
+      "size": "6 mm²"
+    },
+    {
+      "id": "blacklead",
+      "from": {
+        "c": "m",
+        "p": "COM"
+      },
+      "to": {
+        "c": "k",
+        "p": "PLUG"
+      },
+      "flexOffset": {
+        "x": -40,
+        "y": 120
+      },
+      "points": [],
+      "role": "MEASURE",
+      "probeLead": true,
+      "color": "#111827",
+      "size": "6 mm²"
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#1e88e5": "N",
+    "#16a34a": "PE",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL",
+    "#808080": "CONTROL",
+    "#b57b40": "DC+"
+  },
+  "projectId": "dts-mu98w3ze-h2vv3sv",
+  "symbolNorm": "IEC",
+  "colorLocks": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V"
+  },
+  "lineColors": {
+    "L1": "#e53935",
+    "N": "#1e88e5",
+    "+24V": "#8b5a2b",
+    "0V": "#111827"
+  },
+  "colorSizes": {
+    "#e53935": "1,5 mm²",
+    "#1e88e5": "1,5 mm²",
+    "#8b5a2b": "1,5 mm²",
+    "#111827": "1,5 mm²"
+  },
+  "conductorVersion": 1,
+  "updatedAt": "2026-09-20T03:16:51.507Z",
+  "defaultTemplate": {
+    "id": "file:220V_24V_Esnek_Prob_v1.15.1",
+    "readOnly": true
+  }
+}

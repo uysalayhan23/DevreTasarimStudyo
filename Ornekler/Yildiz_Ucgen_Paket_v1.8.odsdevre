@@ -1,0 +1,177 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "Paket Şalter ile Yıldız Üçgen",
+  "symbolNorm": "IEC",
+  "name": "Paket Şalter ile Yıldız Üçgen",
+  "components": [
+    {
+      "typeId": "supply-3p",
+      "id": "g1",
+      "x": 120,
+      "y": 100,
+      "rotation": 0,
+      "label": "3 Faz Besleme",
+      "ref": "G1",
+      "state": false
+    },
+    {
+      "typeId": "packet-star-delta",
+      "id": "s1",
+      "x": 400,
+      "y": 170,
+      "rotation": 0,
+      "label": "Yıldız / Üçgen Paket Şalter",
+      "ref": "S1",
+      "state": false
+    },
+    {
+      "typeId": "motor-y-d",
+      "id": "m1",
+      "x": 850,
+      "y": 470,
+      "rotation": 0,
+      "label": "Üç Faz Yıldız-Üçgen Motor",
+      "ref": "M1",
+      "state": false,
+      "motorConnection": "external"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "L1"
+      },
+      "to": {
+        "c": "s1",
+        "p": "L1"
+      },
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g1",
+        "p": "L2"
+      },
+      "to": {
+        "c": "s1",
+        "p": "L2"
+      },
+      "color": "#f97316",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "g1",
+        "p": "L3"
+      },
+      "to": {
+        "c": "s1",
+        "p": "L3"
+      },
+      "color": "#f4c430",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "s1",
+        "p": "U1"
+      },
+      "to": {
+        "c": "m1",
+        "p": "U1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "s1",
+        "p": "V1"
+      },
+      "to": {
+        "c": "m1",
+        "p": "V1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "s1",
+        "p": "W1"
+      },
+      "to": {
+        "c": "m1",
+        "p": "W1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "s1",
+        "p": "U2"
+      },
+      "to": {
+        "c": "m1",
+        "p": "U2"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "s1",
+        "p": "V2"
+      },
+      "to": {
+        "c": "m1",
+        "p": "V2"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "s1",
+        "p": "W2"
+      },
+      "to": {
+        "c": "m1",
+        "p": "W2"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "g1",
+        "p": "PE"
+      },
+      "to": {
+        "c": "m1",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Yildiz_Ucgen_Paket_v1.8",
+    "readOnly": true
+  }
+}

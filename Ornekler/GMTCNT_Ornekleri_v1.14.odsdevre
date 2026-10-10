@@ -1,0 +1,76 @@
+{
+  "version": 7,
+  "name": "GMTCNT_Ornekleri_v1.14",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "plc0",
+      "typeId": "plc-hw-glc-196r",
+      "x": 120,
+      "y": 100,
+      "ref": "PLC1",
+      "label": "GLC-196R",
+      "materialScale": 1
+    },
+    {
+      "id": "plc1",
+      "typeId": "plc-hw-glc-296t",
+      "x": 820,
+      "y": 100,
+      "ref": "PLC2",
+      "label": "GLC-296T",
+      "materialScale": 1
+    },
+    {
+      "id": "plc2",
+      "typeId": "plc-hw-glc-496r",
+      "x": 1520,
+      "y": 100,
+      "ref": "PLC3",
+      "label": "GLC-496R",
+      "materialScale": 1
+    },
+    {
+      "id": "plc3",
+      "typeId": "plc-hw-gxm-16ia",
+      "x": 120,
+      "y": 600,
+      "ref": "PLC4",
+      "label": "GXM-16IA",
+      "materialScale": 1
+    },
+    {
+      "id": "plc4",
+      "typeId": "plc-hw-gxm-42an",
+      "x": 820,
+      "y": 600,
+      "ref": "PLC5",
+      "label": "GXM-42AN",
+      "materialScale": 1
+    },
+    {
+      "id": "plc5",
+      "typeId": "plc-hw-gxm-20l",
+      "x": 1520,
+      "y": 600,
+      "ref": "PLC6",
+      "label": "GXM-20L",
+      "materialScale": 1
+    },
+    {
+      "id": "plc6",
+      "typeId": "plc-hw-gxm-40ua",
+      "x": 120,
+      "y": 1100,
+      "ref": "PLC7",
+      "label": "GXM-40UA",
+      "materialScale": 1
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:GMTCNT_Ornekleri_v1.14",
+    "readOnly": true
+  }
+}

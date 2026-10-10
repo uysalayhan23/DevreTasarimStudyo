@@ -1,0 +1,99 @@
+{
+  "version": 7,
+  "name": "Isikli_Buton_Bagimsiz_Lamba",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "illuminated-push",
+      "x": 520,
+      "y": 260,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Işıklı Buton",
+      "deviceColor": "#16a34a",
+      "note": "X1/X2 bağımsız lamba beslemesidir. Buton ışığı sürekli yanar; butona basılı tutulurken H1 yanar."
+    },
+    {
+      "id": "h",
+      "typeId": "lamp-green",
+      "x": 1000,
+      "y": 360,
+      "rotation": 0,
+      "ref": "H1",
+      "label": "Yeşil Sinyal Lambası"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "13"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "b",
+        "p": "14"
+      },
+      "to": {
+        "c": "h",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "h",
+        "p": "X2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "X2"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Isikli_Buton_Bagimsiz_Lamba_v1.15",
+    "readOnly": true
+  }
+}

@@ -1,0 +1,131 @@
+{
+  "version": 7,
+  "name": "Secici_3_Kademe",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-dc-plus",
+      "x": 100,
+      "y": 100,
+      "ref": "G1"
+    },
+    {
+      "id": "sel",
+      "typeId": "selector-3",
+      "x": 420,
+      "y": 180,
+      "ref": "S1",
+      "position": 0
+    },
+    {
+      "id": "h1",
+      "typeId": "lamp-green",
+      "x": 460,
+      "y": 540,
+      "ref": "H1",
+      "deviceColor": "#ef4444"
+    },
+    {
+      "id": "h2",
+      "typeId": "lamp-green",
+      "x": 680,
+      "y": 540,
+      "ref": "H2",
+      "deviceColor": "#22c55e"
+    },
+    {
+      "id": "h3",
+      "typeId": "lamp-green",
+      "x": 900,
+      "y": 540,
+      "ref": "H3",
+      "deviceColor": "#3b82f6"
+    }
+  ],
+  "wires": [
+    {
+      "id": "s-P-sel-11",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "sel",
+        "p": "11"
+      }
+    },
+    {
+      "id": "sel-13-h1-X1",
+      "from": {
+        "c": "sel",
+        "p": "13"
+      },
+      "to": {
+        "c": "h1",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "s-M-h1-X2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h1",
+        "p": "X2"
+      }
+    },
+    {
+      "id": "sel-14-h2-X1",
+      "from": {
+        "c": "sel",
+        "p": "14"
+      },
+      "to": {
+        "c": "h2",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "s-M-h2-X2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h2",
+        "p": "X2"
+      }
+    },
+    {
+      "id": "sel-15-h3-X1",
+      "from": {
+        "c": "sel",
+        "p": "15"
+      },
+      "to": {
+        "c": "h3",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "s-M-h3-X2",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "h3",
+        "p": "X2"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Secici_3_Kademe_v1.10",
+    "readOnly": true
+  }
+}

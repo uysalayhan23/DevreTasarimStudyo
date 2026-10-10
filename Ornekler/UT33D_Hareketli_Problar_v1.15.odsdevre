@@ -1,0 +1,85 @@
+{
+  "version": 7,
+  "name": "UT33D_Hareketli_Problar",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 900,
+      "y": 280,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "m",
+      "typeId": "unit-ut33d-plus",
+      "x": 320,
+      "y": 200,
+      "rotation": 0,
+      "ref": "M",
+      "label": "UNI-T UT33D+ Multimetre",
+      "meterPosition": 4,
+      "note": "DC 200 V kademesi: 24 V. Simülasyonda prob gövdesini tutup terminale yaklaştır veya uzaklaştır. Problar boşta iken ölçüm değişir."
+    },
+    {
+      "id": "red",
+      "typeId": "test-probe-red",
+      "x": 800,
+      "y": 260,
+      "rotation": 0,
+      "ref": "+",
+      "label": "Kırmızı Ölçüm Probu",
+      "probeFor": "m",
+      "probeTarget": {
+        "c": "g",
+        "p": "P"
+      }
+    },
+    {
+      "id": "black",
+      "typeId": "test-probe-black",
+      "x": 800,
+      "y": 360,
+      "rotation": 0,
+      "ref": "COM",
+      "label": "Siyah Ölçüm Probu",
+      "probeFor": "m",
+      "probeTarget": {
+        "c": "g",
+        "p": "M"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "m",
+        "p": "V"
+      },
+      "to": {
+        "c": "red",
+        "p": "PLUG"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "m",
+        "p": "COM"
+      },
+      "to": {
+        "c": "black",
+        "p": "PLUG"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:UT33D_Hareketli_Problar_v1.15",
+    "readOnly": true
+  }
+}

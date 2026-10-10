@@ -1,0 +1,124 @@
+{
+  "version": 7,
+  "name": "ORDEL_HMTR_PT100_Dongusu",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "converter-temperature",
+      "x": 550,
+      "y": 220,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Sıcaklık Sinyal Dönüştürücü",
+      "instrumentSettings": {
+        "input": "PT100",
+        "low": 0,
+        "high": 100
+      },
+      "note": "PT100: 4–5; köprü: 5–6. 50 °C → 119.397 Ω → 12 mA."
+    },
+    {
+      "id": "r",
+      "typeId": "sensor-pt100-2wire",
+      "x": 180,
+      "y": 570,
+      "rotation": 0,
+      "ref": "PT100",
+      "label": "PT100 Direnç Termometresi · 2 Telli",
+      "temperature": 50
+    },
+    {
+      "id": "i",
+      "typeId": "meter-ammeter",
+      "x": 1050,
+      "y": 300,
+      "rotation": 0,
+      "ref": "Döngü · mA",
+      "label": "Ampermetre"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "2"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "b",
+        "p": "1"
+      },
+      "to": {
+        "c": "i",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "i",
+        "p": "2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "4"
+      },
+      "to": {
+        "c": "r",
+        "p": "A"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "b",
+        "p": "5"
+      },
+      "to": {
+        "c": "r",
+        "p": "B1"
+      }
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "b",
+        "p": "5"
+      },
+      "to": {
+        "c": "b",
+        "p": "6"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:ORDEL_HMTR_PT100_Dongusu_v1.15",
+    "readOnly": true
+  }
+}

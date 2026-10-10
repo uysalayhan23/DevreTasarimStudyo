@@ -1,0 +1,91 @@
+{
+  "version": 7,
+  "name": "WAZ5_0_10V_4_20mA",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "converter-pressure",
+      "x": 500,
+      "y": 180,
+      "rotation": 0,
+      "ref": "B",
+      "label": "mA/V Sinyal Dönüştürücü",
+      "instrumentSettings": {
+        "source": "manual",
+        "inputValue": 5
+      },
+      "note": "Giriş değerini 0–10 V arasında değiştir. 0 V → 4 mA; 5 V → 12 mA; 10 V → 20 mA."
+    },
+    {
+      "id": "i",
+      "typeId": "meter-ammeter",
+      "x": 960,
+      "y": 330,
+      "rotation": 0,
+      "ref": "Çıkış · mA",
+      "label": "Ampermetre"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "4"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "5"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "7"
+      },
+      "to": {
+        "c": "i",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "i",
+        "p": "2"
+      },
+      "to": {
+        "c": "b",
+        "p": "8"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:WAZ5_0_10V_4_20mA_v1.15",
+    "readOnly": true
+  }
+}

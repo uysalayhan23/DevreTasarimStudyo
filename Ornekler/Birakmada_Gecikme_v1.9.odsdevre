@@ -1,0 +1,147 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "Birakmada_Gecikme · v1.9",
+  "symbolNorm": "IEC",
+  "name": "Birakmada_Gecikme · v1.9",
+  "components": [
+    {
+      "typeId": "supply-dc-plus",
+      "id": "g1",
+      "x": 150,
+      "y": 100,
+      "rotation": 0,
+      "label": "Pozitif DC Besleme",
+      "ref": "G1",
+      "state": false
+    },
+    {
+      "typeId": "selector-no",
+      "id": "s1",
+      "x": 150,
+      "y": 320,
+      "rotation": 0,
+      "label": "Bobin beslemesini aç/kapat",
+      "ref": "S1",
+      "state": false
+    },
+    {
+      "typeId": "coil-delay-off",
+      "id": "k1",
+      "x": 450,
+      "y": 300,
+      "rotation": 0,
+      "label": "Bırakmada Gecikmeli Bobin",
+      "ref": "K1",
+      "state": false,
+      "delayValue": 2,
+      "delayUnit": "sec",
+      "note": "Süre: 2 saniye. Simülasyonu başlatıp S1 ile kumanda edin."
+    },
+    {
+      "typeId": "contact-no",
+      "id": "aux",
+      "x": 700,
+      "y": 300,
+      "rotation": 0,
+      "label": "Yardımcı Kontak",
+      "ref": "K1",
+      "state": false
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "h1",
+      "x": 1000,
+      "y": 450,
+      "rotation": 0,
+      "label": "Yeşil Sinyal Lambası",
+      "ref": "H1",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "P"
+      },
+      "to": {
+        "c": "s1",
+        "p": "13"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "s1",
+        "p": "14"
+      },
+      "to": {
+        "c": "k1",
+        "p": "A1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "g1",
+        "p": "M"
+      },
+      "to": {
+        "c": "k1",
+        "p": "A2"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "g1",
+        "p": "P"
+      },
+      "to": {
+        "c": "aux",
+        "p": "13"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "aux",
+        "p": "14"
+      },
+      "to": {
+        "c": "h1",
+        "p": "X1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "g1",
+        "p": "M"
+      },
+      "to": {
+        "c": "h1",
+        "p": "X2"
+      },
+      "color": "#808080",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Birakmada_Gecikme_v1.9",
+    "readOnly": true
+  }
+}

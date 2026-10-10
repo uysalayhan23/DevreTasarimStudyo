@@ -1,0 +1,129 @@
+{
+  "version": 7,
+  "name": "Reed_Miknatis_NO_NC",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-dc-plus",
+      "x": 160,
+      "y": 260,
+      "ref": "24 VDC"
+    },
+    {
+      "id": "b0",
+      "typeId": "reed-no",
+      "x": 460,
+      "y": 120,
+      "ref": "B1",
+      "sensing": {
+        "face": "right",
+        "range": 10,
+        "distance": 20,
+        "offset": 0
+      },
+      "note": "Mıknatısı gövdeye yaklaştırın. Varsayılan 10 mm eğitim eşiğidir."
+    },
+    {
+      "id": "h0",
+      "typeId": "lamp-green",
+      "x": 920,
+      "y": 120,
+      "ref": "NO"
+    },
+    {
+      "id": "b1",
+      "typeId": "reed-nc",
+      "x": 460,
+      "y": 440,
+      "ref": "B2",
+      "sensing": {
+        "face": "right",
+        "range": 10,
+        "distance": 20,
+        "offset": 0
+      },
+      "note": "Mıknatısı gövdeye yaklaştırın. Varsayılan 10 mm eğitim eşiğidir."
+    },
+    {
+      "id": "h1",
+      "typeId": "lamp-green",
+      "x": 920,
+      "y": 440,
+      "ref": "NC"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b0",
+        "p": "13"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "b0",
+        "p": "14"
+      },
+      "to": {
+        "c": "h0",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "h0",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b1",
+        "p": "21"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "b1",
+        "p": "22"
+      },
+      "to": {
+        "c": "h1",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "h1",
+        "p": "X2"
+      },
+      "to": {
+        "c": "s",
+        "p": "M"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Reed_Miknatis_NO_NC_v1.13",
+    "readOnly": true
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "version": 7,
+  "name": "Yeni_Gorseller",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "v0",
+      "typeId": "sensor-level-analog",
+      "x": 120,
+      "y": 120,
+      "ref": "D1",
+      "analogPosition": 50
+    },
+    {
+      "id": "v1",
+      "typeId": "sensor-linear-position",
+      "x": 460,
+      "y": 120,
+      "ref": "D2",
+      "analogPosition": 50
+    },
+    {
+      "id": "v2",
+      "typeId": "ultrasonic-switch",
+      "x": 800,
+      "y": 120,
+      "ref": "D3",
+      "analogPosition": 50
+    },
+    {
+      "id": "v3",
+      "typeId": "overload",
+      "x": 1140,
+      "y": 120,
+      "ref": "D4",
+      "analogPosition": 50
+    },
+    {
+      "id": "v4",
+      "typeId": "coil-relay-dc",
+      "x": 120,
+      "y": 510,
+      "ref": "D5",
+      "analogPosition": 50
+    },
+    {
+      "id": "v5",
+      "typeId": "coil-delay-on",
+      "x": 460,
+      "y": 510,
+      "ref": "D6",
+      "analogPosition": 50
+    },
+    {
+      "id": "v6",
+      "typeId": "coil-delay-off",
+      "x": 800,
+      "y": 510,
+      "ref": "D7",
+      "analogPosition": 50
+    },
+    {
+      "id": "v7",
+      "typeId": "jog-4pin",
+      "x": 1140,
+      "y": 510,
+      "ref": "D8",
+      "analogPosition": 50,
+      "deviceColor": "#c238cb"
+    },
+    {
+      "id": "v8",
+      "typeId": "push-maintained",
+      "x": 120,
+      "y": 900,
+      "ref": "D9",
+      "analogPosition": 50
+    },
+    {
+      "id": "v9",
+      "typeId": "selector-1",
+      "x": 460,
+      "y": 900,
+      "ref": "D10",
+      "analogPosition": 50
+    },
+    {
+      "id": "v10",
+      "typeId": "selector-2",
+      "x": 800,
+      "y": 900,
+      "ref": "D11",
+      "analogPosition": 50
+    },
+    {
+      "id": "v11",
+      "typeId": "selector-3",
+      "x": 1140,
+      "y": 900,
+      "ref": "D12",
+      "analogPosition": 50
+    },
+    {
+      "id": "v12",
+      "typeId": "door-isolator-1p",
+      "x": 120,
+      "y": 1290,
+      "ref": "D13",
+      "analogPosition": 50
+    },
+    {
+      "id": "v13",
+      "typeId": "door-isolator-2p",
+      "x": 460,
+      "y": 1290,
+      "ref": "D14",
+      "analogPosition": 50
+    },
+    {
+      "id": "v14",
+      "typeId": "door-isolator-3p",
+      "x": 800,
+      "y": 1290,
+      "ref": "D15",
+      "analogPosition": 50
+    },
+    {
+      "id": "v15",
+      "typeId": "packet-switch-3p",
+      "x": 1140,
+      "y": 1290,
+      "ref": "D16",
+      "analogPosition": 50
+    }
+  ],
+  "wires": [],
+  "defaultTemplate": {
+    "id": "file:Yeni_Gorseller_v1.10",
+    "readOnly": true
+  }
+}

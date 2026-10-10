@@ -1,0 +1,150 @@
+{
+  "version": 7,
+  "name": "ENDA_ET4420_PT100_Kontrol",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "temperature-controller",
+      "x": 520,
+      "y": 180,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Sıcaklık Kontrol Cihazı",
+      "instrumentSettings": {
+        "supply": "LV",
+        "input": "PT100",
+        "set": 100,
+        "pb": 0,
+        "filter": 1,
+        "hy": 2,
+        "controlOutput": "relay"
+      },
+      "note": "Sensörü 100 °C üstüne çıkar: C/A2 rölesi ve ısıtma lambası kapanır. 98 °C altına indir: yeniden açılır."
+    },
+    {
+      "id": "r",
+      "typeId": "sensor-pt100-2wire",
+      "x": 170,
+      "y": 630,
+      "rotation": 0,
+      "ref": "PT100",
+      "label": "PT100 Direnç Termometresi · 2 Telli",
+      "temperature": 25
+    },
+    {
+      "id": "h",
+      "typeId": "lamp-red",
+      "x": 1090,
+      "y": 370,
+      "rotation": 0,
+      "ref": "Isıtma",
+      "label": "Kırmızı Sinyal Lambası"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "11"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "12"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "9"
+      },
+      "to": {
+        "c": "r",
+        "p": "A"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "10"
+      },
+      "to": {
+        "c": "r",
+        "p": "B1"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "b",
+        "p": "8"
+      },
+      "to": {
+        "c": "b",
+        "p": "9"
+      }
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "14"
+      }
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "b",
+        "p": "15"
+      },
+      "to": {
+        "c": "h",
+        "p": "X1"
+      }
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "h",
+        "p": "X2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:ENDA_ET4420_PT100_Kontrol_v1.15",
+    "readOnly": true
+  }
+}

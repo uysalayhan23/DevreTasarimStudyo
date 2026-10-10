@@ -1,0 +1,83 @@
+{
+  "version": 7,
+  "name": "Kobastar_SB2_Yuk_Hucresi",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "s",
+      "typeId": "load-cell-excitation",
+      "x": 160,
+      "y": 220,
+      "ref": "EX",
+      "dcVoltage": 10
+    },
+    {
+      "id": "b",
+      "typeId": "load-cell",
+      "x": 460,
+      "y": 220,
+      "ref": "B1",
+      "loadCapacity": 1000,
+      "loadWeight": 0,
+      "note": "Ok: basılı tut veya aşağı sürükle. 500 kg → 10 mV; 1000 kg → 20 mV."
+    },
+    {
+      "id": "v",
+      "typeId": "meter-voltmeter",
+      "x": 930,
+      "y": 220,
+      "ref": "mV"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "EX+"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "EX−"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "SIG+"
+      },
+      "to": {
+        "c": "v",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "SIG−"
+      },
+      "to": {
+        "c": "v",
+        "p": "2"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Kobastar_SB2_Yuk_Hucresi_v1.12",
+    "readOnly": true
+  }
+}

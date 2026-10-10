@@ -1,0 +1,101 @@
+{
+  "version": 7,
+  "name": "Siemens_ve_Mekanik_Gorseller",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "v0",
+      "typeId": "mcb-1p",
+      "x": 140,
+      "y": 160,
+      "ref": "Q1",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v1",
+      "typeId": "mcb-2p",
+      "x": 410,
+      "y": 160,
+      "ref": "Q2",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v2",
+      "typeId": "mcb-3p",
+      "x": 680,
+      "y": 160,
+      "ref": "Q3",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v3",
+      "typeId": "disconnect-1p",
+      "x": 950,
+      "y": 160,
+      "ref": "Q4",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v4",
+      "typeId": "thermal-magnetic",
+      "x": 1220,
+      "y": 160,
+      "ref": "Q5",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v5",
+      "typeId": "thermal-magnetic-1p",
+      "x": 1490,
+      "y": 160,
+      "ref": "Q6",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v6",
+      "typeId": "limit-no",
+      "x": 140,
+      "y": 520,
+      "ref": "Q7",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v7",
+      "typeId": "limit-nc",
+      "x": 410,
+      "y": 520,
+      "ref": "Q8",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v8",
+      "typeId": "mechanical-control",
+      "x": 680,
+      "y": 520,
+      "ref": "Q9",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v9",
+      "typeId": "mechanical-latching",
+      "x": 950,
+      "y": 520,
+      "ref": "Q10",
+      "materialScale": 1.5
+    },
+    {
+      "id": "v10",
+      "typeId": "fuse-switch-3",
+      "x": 1220,
+      "y": 520,
+      "ref": "Q11",
+      "materialScale": 1.5
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Siemens_ve_Mekanik_Gorseller_v1.13",
+    "readOnly": true
+  }
+}

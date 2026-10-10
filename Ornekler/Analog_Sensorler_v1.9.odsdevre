@@ -1,0 +1,103 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "24 V Analog Sensörler · v1.9",
+  "symbolNorm": "IEC",
+  "name": "24 V Analog Sensörler · v1.9",
+  "components": [
+    {
+      "typeId": "supply-dc-plus",
+      "id": "g1",
+      "x": 120,
+      "y": 100,
+      "rotation": 0,
+      "label": "Pozitif DC Besleme",
+      "ref": "G1",
+      "state": false
+    },
+    {
+      "typeId": "sensor-level-analog",
+      "id": "b1",
+      "x": 450,
+      "y": 180,
+      "rotation": 0,
+      "label": "Analog Seviye Sensörü",
+      "ref": "B1",
+      "state": false,
+      "analogPosition": 50,
+      "analogMode": "current",
+      "note": "Şamandırayı sürükleyin. 0/50/100%: 4/12/20 mA. Sağ menüden 0–10 V seçilebilir."
+    },
+    {
+      "typeId": "sensor-linear-position",
+      "id": "b2",
+      "x": 900,
+      "y": 180,
+      "rotation": 0,
+      "label": "Doğrusal Konum Sensörü – Lineer Potansiyometre",
+      "ref": "B2",
+      "state": false,
+      "analogPosition": 50,
+      "note": "Çubuğu sürükleyin: 0–10 V."
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "P"
+      },
+      "to": {
+        "c": "b1",
+        "p": "+"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g1",
+        "p": "M"
+      },
+      "to": {
+        "c": "b1",
+        "p": "−"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "g1",
+        "p": "P"
+      },
+      "to": {
+        "c": "b2",
+        "p": "1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "g1",
+        "p": "M"
+      },
+      "to": {
+        "c": "b2",
+        "p": "3"
+      },
+      "color": "#808080",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Analog_Sensorler_v1.9",
+    "readOnly": true
+  }
+}

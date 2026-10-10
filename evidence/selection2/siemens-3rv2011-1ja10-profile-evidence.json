@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "productKey": "siemens-3rv2011-1ja10",
+  "exactArticle": "3RV2011-1JA10",
+  "sourceFile": "G_NSA0_XX_93051V.dxf",
+  "sourceSha256": "1a498a463cf58d2406ef86cbe1f3b2dc6f0301312344c35498336f57db8178b3",
+  "dxfVersion": "AC1015",
+  "layers": {
+    "front": {
+      "name": "10000_FRONT",
+      "rawBoundsMm": {
+        "width": 45,
+        "height": 97
+      }
+    },
+    "left": {
+      "name": "11000_LEFT",
+      "rawBoundsMm": {
+        "depth": 96.9,
+        "height": 97
+      }
+    },
+    "frontDimensions": {
+      "name": "10100_FRONT_DIM",
+      "labels": [
+        "45",
+        "97"
+      ]
+    },
+    "leftDimensions": {
+      "name": "11100_LEFT_DIM",
+      "labels": [
+        "96.9",
+        "5",
+        "49"
+      ]
+    }
+  },
+  "profileBoundsMm": {
+    "width": 45,
+    "height": 97,
+    "depth": 96.9
+  },
+  "method": "exact-article-dxf-front+left-dimensional-profile",
+  "collider": {
+    "status": "conservative-envelope",
+    "reason": "No exact top-view X/Z collision polygon is present in the supplied profile evidence; profile bounds are verified but collider polygon is not inferred."
+  }
+}

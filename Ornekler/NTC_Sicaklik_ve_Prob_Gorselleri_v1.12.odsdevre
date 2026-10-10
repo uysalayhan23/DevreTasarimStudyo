@@ -1,0 +1,36 @@
+{
+  "version": 7,
+  "name": "NTC_Sicaklik_ve_Prob_Gorselleri",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "ntc",
+      "typeId": "sensor-ntc",
+      "x": 180,
+      "y": 240,
+      "ref": "NTC",
+      "temperature": 25,
+      "note": "Sağdaki çubuğu sürükleyin: sıcaklık artınca direnç azalır."
+    },
+    {
+      "id": "pt",
+      "typeId": "sensor-pt100",
+      "x": 510,
+      "y": 240,
+      "ref": "PT100"
+    },
+    {
+      "id": "tc",
+      "typeId": "thermocouple",
+      "x": 890,
+      "y": 240,
+      "ref": "TC"
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:NTC_Sicaklik_ve_Prob_Gorselleri_v1.12",
+    "readOnly": true
+  }
+}

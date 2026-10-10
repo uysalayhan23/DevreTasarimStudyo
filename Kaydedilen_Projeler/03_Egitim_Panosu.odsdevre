@@ -1,0 +1,234 @@
+{
+  "version": 7,
+  "workspaceMode": "panel",
+  "projectId": "dts-example-panel",
+  "name": "Raylı eğitim panosu",
+  "symbolNorm": "IEC",
+  "components": [],
+  "wires": [],
+  "junctions": [],
+  "panel": {
+    "width": 600,
+    "height": 800,
+    "depth": 220,
+    "doorAngle": 105,
+    "rails": [
+      {
+        "id": "rail-mtz6fmrrjz19",
+        "x": 50,
+        "y": 180,
+        "length": 470
+      },
+      {
+        "id": "rail-mtz6fmrr8yeq",
+        "x": 50,
+        "y": 380,
+        "length": 470
+      },
+      {
+        "id": "rail-mtz6fmrr70i8",
+        "x": 50,
+        "y": 610,
+        "length": 470
+      }
+    ],
+    "ducts": [
+      {
+        "id": "duct1",
+        "x": 550,
+        "y": 40,
+        "width": 30,
+        "length": 720,
+        "vertical": true
+      },
+      {
+        "id": "duct2",
+        "x": 40,
+        "y": 490,
+        "width": 30,
+        "length": 490,
+        "vertical": false
+      }
+    ],
+    "items": [
+      {
+        "id": "part-mtz6fmrrkh2c",
+        "typeId": "mcb-3p",
+        "ref": "Q1",
+        "w": 54,
+        "h": 85,
+        "depth": 70,
+        "mount": "rail",
+        "x": 80,
+        "y": 137.5,
+        "railId": "rail-mtz6fmrrjz19"
+      },
+      {
+        "id": "part-mtz6fmrswmds",
+        "typeId": "mcb-1p",
+        "ref": "Q2",
+        "w": 18,
+        "h": 85,
+        "depth": 70,
+        "mount": "rail",
+        "x": 165,
+        "y": 137.5,
+        "railId": "rail-mtz6fmrrjz19"
+      },
+      {
+        "id": "part-mtz6fmrstyq7",
+        "typeId": "smps",
+        "ref": "G1",
+        "w": 60,
+        "h": 125,
+        "depth": 120,
+        "mount": "rail",
+        "x": 255,
+        "y": 117.5,
+        "railId": "rail-mtz6fmrrjz19"
+      },
+      {
+        "id": "part-mtz6fmrsjx1p",
+        "typeId": "main-contact",
+        "ref": "K1",
+        "w": 45,
+        "h": 85,
+        "depth": 75,
+        "mount": "rail",
+        "x": 90,
+        "y": 337.5,
+        "railId": "rail-mtz6fmrr8yeq"
+      },
+      {
+        "id": "part-mtz6fmrs0crc",
+        "typeId": "coil-contactor",
+        "ref": "K2",
+        "w": 45,
+        "h": 85,
+        "depth": 75,
+        "mount": "rail",
+        "x": 180,
+        "y": 337.5,
+        "railId": "rail-mtz6fmrr8yeq"
+      },
+      {
+        "id": "part-mtz6fmrsjvlw",
+        "typeId": "contact-no",
+        "ref": "K1",
+        "w": 40,
+        "h": 80,
+        "depth": 60,
+        "mount": "rail",
+        "x": 270,
+        "y": 340,
+        "railId": "rail-mtz6fmrr8yeq"
+      },
+      {
+        "id": "part-mtz6fmrs5jfc",
+        "typeId": "terminal-2",
+        "ref": "X1",
+        "w": 8,
+        "h": 50,
+        "depth": 45,
+        "mount": "rail",
+        "x": 95,
+        "y": 585,
+        "railId": "rail-mtz6fmrr70i8"
+      },
+      {
+        "id": "part-mtz6fmrsssgc",
+        "typeId": "terminal-2",
+        "ref": "X2",
+        "w": 8,
+        "h": 50,
+        "depth": 45,
+        "mount": "rail",
+        "x": 115,
+        "y": 585,
+        "railId": "rail-mtz6fmrr70i8"
+      },
+      {
+        "id": "part-mtz6fmrs9urw",
+        "typeId": "terminal-pe",
+        "ref": "PE",
+        "w": 8,
+        "h": 50,
+        "depth": 45,
+        "mount": "rail",
+        "x": 140,
+        "y": 585,
+        "railId": "rail-mtz6fmrr70i8"
+      },
+      {
+        "id": "part-mtz6fmrsau1i",
+        "typeId": "push-no",
+        "ref": "S1",
+        "w": 32,
+        "h": 32,
+        "depth": 50,
+        "mount": "door",
+        "x": 135,
+        "y": 395
+      },
+      {
+        "id": "part-mtz6fmrszhrx",
+        "typeId": "push-nc",
+        "ref": "S0",
+        "w": 32,
+        "h": 32,
+        "depth": 50,
+        "mount": "door",
+        "x": 235,
+        "y": 395
+      },
+      {
+        "id": "part-mtz6fmrs17t7",
+        "typeId": "lamp-green",
+        "ref": "H1",
+        "w": 32,
+        "h": 32,
+        "depth": 50,
+        "mount": "door",
+        "x": 335,
+        "y": 395
+      },
+      {
+        "id": "part-mtz6fmrsm1fd",
+        "typeId": "door-isolator-3p",
+        "ref": "Q0",
+        "w": 64,
+        "h": 64,
+        "depth": 80,
+        "mount": "door",
+        "x": 120,
+        "y": 500
+      },
+      {
+        "id": "part-mtz6fmrsrgvb",
+        "typeId": "meter-voltmeter",
+        "ref": "PV1",
+        "w": 96,
+        "h": 96,
+        "depth": 65,
+        "mount": "door",
+        "x": 120,
+        "y": 160
+      },
+      {
+        "id": "part-mtz6fmrsc7ld",
+        "typeId": "meter-ammeter",
+        "ref": "PA1",
+        "w": 96,
+        "h": 96,
+        "depth": 65,
+        "mount": "door",
+        "x": 280,
+        "y": 160
+      }
+    ]
+  },
+  "defaultTemplate": {
+    "id": "file:03_Egitim_Panosu",
+    "readOnly": true
+  }
+}

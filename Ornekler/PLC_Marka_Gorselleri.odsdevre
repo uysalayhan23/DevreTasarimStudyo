@@ -1,0 +1,118 @@
+{
+  "version": 6,
+  "symbolNorm": "IEC",
+  "name": "3D · PLC markaları",
+  "components": [
+    {
+      "id": "plc-demo-0",
+      "typeId": "plc-0-0",
+      "ref": "PLC1",
+      "label": "CPU 1211C DC/DC/DC",
+      "x": 100,
+      "y": 120,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "6ES7211-1AE40-0XB0",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-1",
+      "typeId": "plc-4-0",
+      "ref": "PLC2",
+      "label": "DVP-SS2 CPU",
+      "x": 460,
+      "y": 120,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-2",
+      "typeId": "plc-7-1",
+      "ref": "PLC3",
+      "label": "CP1L-EM CPU",
+      "x": 820,
+      "y": 120,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-3",
+      "typeId": "plc-10-0",
+      "ref": "PLC4",
+      "label": "M221 CPU",
+      "x": 1180,
+      "y": 120,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "TM221CE16R",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-4",
+      "typeId": "plc-11-0",
+      "ref": "PLC5",
+      "label": "PM573-ETH CPU",
+      "x": 100,
+      "y": 480,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-5",
+      "typeId": "plc-12-0",
+      "ref": "PLC6",
+      "label": "FX3U CPU",
+      "x": 460,
+      "y": 480,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-6",
+      "typeId": "plc-13-1",
+      "ref": "PLC7",
+      "label": "CompactLogix 5380",
+      "x": 820,
+      "y": 480,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "5069-L306ER",
+      "showNote": true
+    },
+    {
+      "id": "plc-demo-7",
+      "typeId": "plc-14-0",
+      "ref": "PLC8",
+      "label": "GLC-196R CPU",
+      "x": 1180,
+      "y": 480,
+      "rotation": 0,
+      "state": false,
+      "address": "",
+      "note": "",
+      "showNote": true
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "colorRoles": {},
+  "defaultTemplate": {
+    "id": "file:PLC_Marka_Gorselleri",
+    "readOnly": true
+  }
+}

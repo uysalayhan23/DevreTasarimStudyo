@@ -1,0 +1,115 @@
+{
+  "version": 7,
+  "name": "ORDEL_HMTT_Termokupl_Dongusu",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "converter-temperature",
+      "x": 550,
+      "y": 220,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Sıcaklık Sinyal Dönüştürücü",
+      "instrumentSettings": {
+        "input": "K",
+        "low": 0,
+        "high": 800
+      },
+      "note": "K tipi TC: 4(+)–5(−). 400 °C → 12 mA. Sensör ile dönüştürücü tipi aynı olmalı."
+    },
+    {
+      "id": "r",
+      "typeId": "thermocouple",
+      "x": 170,
+      "y": 580,
+      "rotation": 0,
+      "ref": "K TC",
+      "label": "Termokupl · Çift Elemanlı",
+      "temperature": 400,
+      "coldJunction": 25,
+      "thermocoupleType": "K"
+    },
+    {
+      "id": "i",
+      "typeId": "meter-ammeter",
+      "x": 1050,
+      "y": 300,
+      "rotation": 0,
+      "ref": "Döngü · mA",
+      "label": "Ampermetre"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "2"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "b",
+        "p": "1"
+      },
+      "to": {
+        "c": "i",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "i",
+        "p": "2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "4"
+      },
+      "to": {
+        "c": "r",
+        "p": "+"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "b",
+        "p": "5"
+      },
+      "to": {
+        "c": "r",
+        "p": "−"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:ORDEL_HMTT_Termokupl_Dongusu_v1.15",
+    "readOnly": true
+  }
+}

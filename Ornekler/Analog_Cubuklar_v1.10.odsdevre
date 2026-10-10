@@ -1,0 +1,115 @@
+{
+  "version": 7,
+  "name": "Analog_Cubuklar",
+  "workspaceMode": "control",
+  "symbolNorm": "IEC",
+  "junctions": [],
+  "components": [
+    {
+      "id": "s",
+      "typeId": "supply-dc-plus",
+      "x": 100,
+      "y": 100,
+      "ref": "G1"
+    },
+    {
+      "id": "b0",
+      "typeId": "sensor-level-analog",
+      "x": 400,
+      "y": 260,
+      "ref": "B1",
+      "analogPosition": 50,
+      "analogMode": "current"
+    },
+    {
+      "id": "b1",
+      "typeId": "sensor-linear-position",
+      "x": 730,
+      "y": 260,
+      "ref": "B2",
+      "analogPosition": 50,
+      "analogMode": "voltage"
+    },
+    {
+      "id": "b2",
+      "typeId": "sensor-ultrasonic-analog",
+      "x": 1060,
+      "y": 260,
+      "ref": "B3",
+      "analogPosition": 50,
+      "analogMode": "current"
+    }
+  ],
+  "wires": [
+    {
+      "id": "s-P-b0-+",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b0",
+        "p": "+"
+      }
+    },
+    {
+      "id": "s-M-b0-−",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "b0",
+        "p": "−"
+      }
+    },
+    {
+      "id": "s-P-b1-1",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b1",
+        "p": "1"
+      }
+    },
+    {
+      "id": "s-M-b1-3",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "b1",
+        "p": "3"
+      }
+    },
+    {
+      "id": "s-P-b2-BN",
+      "from": {
+        "c": "s",
+        "p": "P"
+      },
+      "to": {
+        "c": "b2",
+        "p": "BN"
+      }
+    },
+    {
+      "id": "s-M-b2-BU",
+      "from": {
+        "c": "s",
+        "p": "M"
+      },
+      "to": {
+        "c": "b2",
+        "p": "BU"
+      }
+    }
+  ],
+  "defaultTemplate": {
+    "id": "file:Analog_Cubuklar_v1.10",
+    "readOnly": true
+  }
+}

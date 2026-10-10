@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "productKey": "weidmuller-2466870000",
+  "exactArticle": "2466870000",
+  "sourcePackage": {
+    "suppliedFile": "2466870000_DXF.zip",
+    "sizeBytes": 62912,
+    "sha256": "e248de04fa18ab287e5bc3b1fb5ebd07e5e6de768af32ab30dff46aeae8f2f48",
+    "matchToOfficialDownload": "official Weidmuller downloads page advertises exact DXF CAD package at 61 KB"
+  },
+  "files": {
+    "front": {
+      "name": "2466870000_front.DXF",
+      "sha256": "17bd3bc956e6970c3915ab40d6a4158f0b05f1ac1f6f5db965c99af1ecf3c8c2",
+      "cadExtentsMm": {
+        "minX": -0.000183012,
+        "maxX": 34.000183012,
+        "minY": 0,
+        "maxY": 131.2000114231
+      }
+    },
+    "back": {
+      "name": "2466870000_back.DXF",
+      "sha256": "6440b0da3bab37dbaf0ca0066aa7688a91cbf554bedfe0ae03d661388fda3692"
+    },
+    "bottom": {
+      "name": "2466870000_bottom.DXF",
+      "sha256": "ab105f4793ffcb023811d5a12b82c9d5aec71ced5a1e8e6a3101bf2471feb6de"
+    },
+    "left": {
+      "name": "2466870000_left.DXF",
+      "sha256": "8216935724c417e09c51dbaf813a7705c77ed8dfc8e54808d863c34e155ce012"
+    },
+    "right": {
+      "name": "2466870000_right.DXF",
+      "sha256": "239023e5d8f21c3b1905b686d19db48b923c9583b1b7133f0859ff9a551e12a8"
+    },
+    "top": {
+      "name": "2466870000_top.DXF",
+      "sha256": "183feb0ba2dcc7e3adb3435035c586ebbc62e33c38dfcdc1e66f6c30baaa9a54"
+    }
+  },
+  "officialNominalDimensionsMm": {
+    "width": 35,
+    "height": 130,
+    "depth": 125
+  },
+  "cadObservedExtentsMm": {
+    "frontWidth": 34.000366024,
+    "frontHeight": 131.2000114231,
+    "sideDepth": 135.4
+  },
+  "normalization": {
+    "reason": "terminal centers are extracted from exact front DXF and normalized to the official 35 x 130 mm panel frame; CAD outer extents include protruding terminal/mechanical detail",
+    "xScale": 1.0294006827836613,
+    "yScale": 0.9908535722666202,
+    "yOrigin": "top"
+  },
+  "physicalTerminalRows": {
+    "output": {
+      "officialOrderLeftToRight": [
+        "P1",
+        "+",
+        "M1",
+        "M2",
+        "M3"
+      ],
+      "officialLabelPattern": "+ + / - - -",
+      "rawCentersMm": [
+        {
+          "id": "P1",
+          "x": 5.5,
+          "y": 127.400011423
+        },
+        {
+          "id": "P2",
+          "x": 10.5,
+          "y": 127.400011423
+        },
+        {
+          "id": "M1",
+          "x": 15.5,
+          "y": 127.400011423
+        },
+        {
+          "id": "M2",
+          "x": 20.5,
+          "y": 127.400011423
+        },
+        {
+          "id": "M3",
+          "x": 25.5,
+          "y": 127.400011423
+        }
+      ]
+    },
+    "input": {
+      "officialOrderLeftToRight": [
+        "L",
+        "N",
+        "PE"
+      ],
+      "officialLabelPattern": "L/N/PE",
+      "rawCentersMm": [
+        {
+          "id": "L",
+          "x": 11.7,
+          "y": 5.2339585769
+        },
+        {
+          "id": "N",
+          "x": 16.7,
+          "y": 5.2339585769
+        },
+        {
+          "id": "PE",
+          "x": 21.7,
+          "y": 5.2339585769
+        }
+      ]
+    }
+  },
+  "runtimeAnchorsMm": {
+    "P": {
+      "x": 5.7,
+      "y": 3.8,
+      "side": "top",
+      "mapsToPhysical": "P1"
+    },
+    "M": {
+      "x": 16,
+      "y": 3.8,
+      "side": "top",
+      "mapsToPhysical": "M1"
+    },
+    "L": {
+      "x": 12,
+      "y": 124.8,
+      "side": "bottom",
+      "mapsToPhysical": "L"
+    },
+    "N": {
+      "x": 17.2,
+      "y": 124.8,
+      "side": "bottom",
+      "mapsToPhysical": "N"
+    }
+  },
+  "extraction": {
+    "parser": "ezdxf 1.4.4",
+    "method": "exact-article-2d-dxf-mm-coordinate-extraction + nominal-frame normalization",
+    "toleranceMm": 0.5,
+    "terminalIdentitySource": "Weidmuller exact 2466870000 datasheet: input 3 for L/N/PE; output 5 (+ + / - - -)",
+    "inferredCoordinates": false
+  },
+  "colliderProfile": {
+    "sourceFile": "2466870000_top.DXF",
+    "sourceSha256": "183feb0ba2dcc7e3adb3435035c586ebbc62e33c38dfcdc1e66f6c30baaa9a54",
+    "rawMainBodyBoundsMm": {
+      "width": 34,
+      "depth": 124.9,
+      "rearReference": 10.5,
+      "frontReference": 135.4
+    },
+    "nominalRuntimeFrameMm": {
+      "width": 35,
+      "depth": 125
+    },
+    "method": "exact-article-top-dxf-main-body-silhouette+nominal-frame-normalization",
+    "normalizedXZMm": [
+      {
+        "x": 0,
+        "z": 0
+      },
+      {
+        "x": 35,
+        "z": 0
+      },
+      {
+        "x": 35,
+        "z": 125
+      },
+      {
+        "x": 0,
+        "z": 125
+      }
+    ],
+    "runtimeConsumer": "dist/panel.js::plateSection",
+    "status": "verified-profile",
+    "note": "Main-body CAD silhouette is consumed for collision; terminal protrusion/electrical geometry stays independently verified."
+  }
+}

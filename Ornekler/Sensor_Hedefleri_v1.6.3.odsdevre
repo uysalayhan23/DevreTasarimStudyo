@@ -1,0 +1,483 @@
+{
+  "version": 6,
+  "symbolNorm": "IEC",
+  "name": "Sensör hedefleri · metal / plastik / reflektör",
+  "components": [
+    {
+      "typeId": "supply-dc-plus",
+      "id": "supply",
+      "ref": "G1",
+      "x": 80,
+      "y": 350,
+      "label": "24 VDC sensör beslemesi",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "proximity",
+      "id": "sensor0",
+      "ref": "B1",
+      "x": 340,
+      "y": 320,
+      "label": "Endüktif Sensör",
+      "state": false,
+      "rotation": 0,
+      "sensing": {
+        "target": "metal",
+        "range": 4,
+        "distance": 6,
+        "offset": 0,
+        "face": "right",
+        "auto": false
+      }
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "lamp0",
+      "ref": "H1",
+      "x": 350,
+      "y": 610,
+      "label": "Algılama çıkışı",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "capacitive-switch",
+      "id": "sensor1",
+      "ref": "B2",
+      "x": 690,
+      "y": 320,
+      "label": "Kapasitif Şalter",
+      "state": false,
+      "rotation": 0,
+      "sensing": {
+        "target": "plastic",
+        "range": 10,
+        "distance": 15,
+        "offset": 0,
+        "face": "right",
+        "auto": true,
+        "travelDirection": 1
+      }
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "lamp1",
+      "ref": "H2",
+      "x": 700,
+      "y": 610,
+      "label": "Algılama çıkışı",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "sensor-retroreflective",
+      "id": "sensor2",
+      "ref": "B3",
+      "x": 1040,
+      "y": 320,
+      "label": "Reflektörlü Optik Sensör",
+      "state": false,
+      "rotation": 0,
+      "sensing": {
+        "target": "reflector",
+        "range": 10,
+        "distance": 15,
+        "offset": 0,
+        "face": "left",
+        "auto": false
+      }
+    },
+    {
+      "typeId": "lamp-green",
+      "id": "lamp2",
+      "ref": "H3",
+      "x": 1050,
+      "y": 610,
+      "label": "Algılama çıkışı",
+      "state": false,
+      "rotation": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "supply",
+        "p": "P"
+      },
+      "to": {
+        "j": "plus0"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": [
+        {
+          "x": 120,
+          "y": 220
+        }
+      ]
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "supply",
+        "p": "M"
+      },
+      "to": {
+        "j": "zero0"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 120,
+          "y": 810
+        }
+      ]
+    },
+    {
+      "id": "w3",
+      "from": {
+        "j": "plus0"
+      },
+      "to": {
+        "c": "sensor0",
+        "p": "BN"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "j": "zero0"
+      },
+      "to": {
+        "c": "sensor0",
+        "p": "BU"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 300,
+          "y": 280
+        },
+        {
+          "x": 350,
+          "y": 280
+        }
+      ]
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "sensor0",
+        "p": "BK"
+      },
+      "to": {
+        "c": "lamp0",
+        "p": "X1"
+      },
+      "role": "SIGNAL",
+      "color": "#8b5cf6",
+      "size": "0,75 mm²",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "lamp0",
+        "p": "X2"
+      },
+      "to": {
+        "j": "zero0"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 390,
+          "y": 810
+        }
+      ]
+    },
+    {
+      "id": "w7",
+      "from": {
+        "j": "plus0"
+      },
+      "to": {
+        "j": "plus1"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "j": "zero0"
+      },
+      "to": {
+        "j": "zero1"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "j": "plus1"
+      },
+      "to": {
+        "c": "sensor1",
+        "p": "BN"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w10",
+      "from": {
+        "j": "zero1"
+      },
+      "to": {
+        "c": "sensor1",
+        "p": "BU"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 650,
+          "y": 280
+        },
+        {
+          "x": 710,
+          "y": 280
+        }
+      ]
+    },
+    {
+      "id": "w11",
+      "from": {
+        "c": "sensor1",
+        "p": "BK"
+      },
+      "to": {
+        "c": "lamp1",
+        "p": "X1"
+      },
+      "role": "SIGNAL",
+      "color": "#8b5cf6",
+      "size": "0,75 mm²",
+      "points": []
+    },
+    {
+      "id": "w12",
+      "from": {
+        "c": "lamp1",
+        "p": "X2"
+      },
+      "to": {
+        "j": "zero1"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 740,
+          "y": 810
+        }
+      ]
+    },
+    {
+      "id": "w13",
+      "from": {
+        "j": "plus1"
+      },
+      "to": {
+        "j": "plus2"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w14",
+      "from": {
+        "j": "zero1"
+      },
+      "to": {
+        "j": "zero2"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w15",
+      "from": {
+        "j": "plus2"
+      },
+      "to": {
+        "c": "sensor2",
+        "p": "BN"
+      },
+      "role": "+24V",
+      "color": "#8b5a2b",
+      "size": "2,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w16",
+      "from": {
+        "j": "zero2"
+      },
+      "to": {
+        "c": "sensor2",
+        "p": "BU"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 1000,
+          "y": 490
+        },
+        {
+          "x": 1060,
+          "y": 490
+        }
+      ]
+    },
+    {
+      "id": "w17",
+      "from": {
+        "c": "sensor2",
+        "p": "BK"
+      },
+      "to": {
+        "c": "lamp2",
+        "p": "X1"
+      },
+      "role": "SIGNAL",
+      "color": "#8b5cf6",
+      "size": "0,75 mm²",
+      "points": [
+        {
+          "x": 1190,
+          "y": 380
+        },
+        {
+          "x": 1190,
+          "y": 570
+        },
+        {
+          "x": 1090,
+          "y": 570
+        }
+      ]
+    },
+    {
+      "id": "w18",
+      "from": {
+        "c": "lamp2",
+        "p": "X2"
+      },
+      "to": {
+        "j": "zero2"
+      },
+      "role": "0V",
+      "color": "#111827",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 1090,
+          "y": 810
+        }
+      ]
+    }
+  ],
+  "junctions": [
+    {
+      "id": "plus0",
+      "x": 400,
+      "y": 220
+    },
+    {
+      "id": "zero0",
+      "x": 300,
+      "y": 810
+    },
+    {
+      "id": "plus1",
+      "x": 750,
+      "y": 220
+    },
+    {
+      "id": "zero1",
+      "x": 650,
+      "y": 810
+    },
+    {
+      "id": "plus2",
+      "x": 1100,
+      "y": 220
+    },
+    {
+      "id": "zero2",
+      "x": 1000,
+      "y": 810
+    }
+  ],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#1e88e5": "N",
+    "#16a34a": "PE",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL",
+    "#808080": "CONTROL"
+  },
+  "colorLocks": {
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL"
+  },
+  "lineColors": {
+    "+24V": "#8b5a2b",
+    "0V": "#111827",
+    "SIGNAL": "#8b5cf6"
+  },
+  "colorSizes": {
+    "#8b5a2b": "2,5 mm²",
+    "#111827": "1,5 mm²",
+    "#8b5cf6": "0,75 mm²"
+  },
+  "conductorVersion": 1,
+  "defaultTemplate": {
+    "id": "file:Sensor_Hedefleri_v1.6.3",
+    "readOnly": true
+  }
+}

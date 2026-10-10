@@ -1,0 +1,324 @@
+{
+  "version": 7,
+  "name": "TX11_0_10V_Prob_Olcumu",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 180,
+      "y": 120,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "weighing-indicator",
+      "x": 620,
+      "y": 160,
+      "rotation": 0,
+      "ref": "TX11",
+      "label": "Tartım Göstergesi",
+      "instrumentSettings": {
+        "capacity": 1000,
+        "spanMv": 10,
+        "zeroMv": 0,
+        "output": "0-10V"
+      },
+      "note": "0–1000 kg → 0–10 V. V (+) / G (−) çıkışını DC 20 V kademesinde ölç.",
+      "showNote": false
+    },
+    {
+      "id": "r",
+      "typeId": "load-cell",
+      "x": 190,
+      "y": 450,
+      "rotation": 0,
+      "ref": "SB2 · 1000 kg",
+      "label": "Yük Hücresi · Kobastar SB2",
+      "loadWeight": 500,
+      "loadCapacity": 1000,
+      "showNote": false
+    },
+    {
+      "id": "x",
+      "typeId": "terminal-2-array-3",
+      "x": 1060,
+      "y": 170,
+      "ref": "X1 · I / V / G"
+    },
+    {
+      "id": "m",
+      "typeId": "unit-ut33d-plus",
+      "x": 1310,
+      "y": 250,
+      "ref": "UT33D+",
+      "meterPosition": 3
+    },
+    {
+      "id": "red",
+      "typeId": "test-probe-red",
+      "probeFor": "m",
+      "x": 1050,
+      "y": 330,
+      "rotation": 270,
+      "ref": "+",
+      "probeTarget": {
+        "c": "x",
+        "p": "4"
+      }
+    },
+    {
+      "id": "black",
+      "typeId": "test-probe-black",
+      "probeFor": "m",
+      "x": 1090,
+      "y": 330,
+      "rotation": 270,
+      "ref": "COM",
+      "probeTarget": {
+        "c": "x",
+        "p": "6"
+      }
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "+"
+      },
+      "points": [],
+      "role": "+24V",
+      "roleBound": true,
+      "color": "#8b5a2b",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "−"
+      },
+      "points": [],
+      "role": "0V",
+      "roleBound": true,
+      "color": "#111827",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "EX+"
+      },
+      "to": {
+        "c": "r",
+        "p": "EX+"
+      },
+      "color": "#e53935",
+      "points": [],
+      "role": "FREE",
+      "freeColor": true,
+      "roleBound": false,
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "EX−"
+      },
+      "to": {
+        "c": "r",
+        "p": "EX−"
+      },
+      "color": "#111827",
+      "points": [],
+      "role": "FREE",
+      "freeColor": true,
+      "roleBound": false,
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "r",
+        "p": "SIG+"
+      },
+      "to": {
+        "c": "b",
+        "p": "S+"
+      },
+      "color": "#ffffff",
+      "points": [],
+      "role": "FREE",
+      "freeColor": true,
+      "roleBound": false,
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "r",
+        "p": "SIG−"
+      },
+      "to": {
+        "c": "b",
+        "p": "S−"
+      },
+      "color": "#16a34a",
+      "points": [],
+      "role": "FREE",
+      "freeColor": true,
+      "roleBound": false,
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "iout",
+      "from": {
+        "c": "b",
+        "p": "I"
+      },
+      "to": {
+        "c": "x",
+        "p": "1"
+      },
+      "points": [],
+      "role": "CONTROL",
+      "roleBound": false,
+      "color": "#808080",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "vout",
+      "from": {
+        "c": "b",
+        "p": "V"
+      },
+      "to": {
+        "c": "x",
+        "p": "3"
+      },
+      "points": [],
+      "role": "CONTROL",
+      "roleBound": false,
+      "color": "#808080",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "ground",
+      "from": {
+        "c": "b",
+        "p": "G"
+      },
+      "to": {
+        "c": "x",
+        "p": "5"
+      },
+      "points": [],
+      "role": "CONTROL",
+      "roleBound": false,
+      "color": "#808080",
+      "size": "1,5 mm²"
+    },
+    {
+      "id": "redlead",
+      "from": {
+        "c": "m",
+        "p": "V"
+      },
+      "to": {
+        "c": "red",
+        "p": "PLUG"
+      },
+      "flexOffset": {
+        "x": 70,
+        "y": 10
+      },
+      "points": [],
+      "role": "MEASURE",
+      "probeLead": true,
+      "color": "#e53935",
+      "size": "6 mm²"
+    },
+    {
+      "id": "blacklead",
+      "from": {
+        "c": "m",
+        "p": "COM"
+      },
+      "to": {
+        "c": "black",
+        "p": "PLUG"
+      },
+      "flexOffset": {
+        "x": 110,
+        "y": 65
+      },
+      "points": [],
+      "role": "MEASURE",
+      "probeLead": true,
+      "color": "#111827",
+      "size": "6 mm²"
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#1e88e5": "N",
+    "#16a34a": "PE",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL",
+    "#808080": "CONTROL",
+    "#b57b40": "DC+",
+    "#ffffff": "SPARE",
+    "#f472b6": "SPARE",
+    "#22d3ee": "SPARE",
+    "#0d9488": "SPARE",
+    "#1e3a8a": "SPARE",
+    "#65a30d": "SPARE",
+    "#fbbf24": "SPARE",
+    "#7f1d1d": "SPARE",
+    "#c0c0c0": "SPARE",
+    "#d6b48c": "SPARE"
+  },
+  "symbolNorm": "IEC",
+  "colorLocks": {
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#808080": "CONTROL"
+  },
+  "colorPreferences": {},
+  "colorVoltages": {},
+  "lineColors": {
+    "+24V": "#8b5a2b",
+    "0V": "#111827",
+    "CONTROL": "#808080"
+  },
+  "colorSizes": {
+    "#8b5a2b": "1,5 mm²",
+    "#111827": "1,5 mm²",
+    "#808080": "1,5 mm²"
+  },
+  "conductorVersion": 1,
+  "updatedAt": "2026-09-20T14:47:59.957Z",
+  "defaultTemplate": {
+    "id": "file:TX11_0_10V_Prob_Olcumu_v1.15.2",
+    "readOnly": true
+  }
+}

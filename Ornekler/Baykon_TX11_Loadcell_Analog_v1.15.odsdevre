@@ -1,0 +1,148 @@
+{
+  "version": 7,
+  "name": "Baykon_TX11_Loadcell_Analog",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "weighing-indicator",
+      "x": 620,
+      "y": 180,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Tartım Göstergesi",
+      "instrumentSettings": {
+        "capacity": 1000,
+        "spanMv": 10,
+        "zeroMv": 0,
+        "output": "4-20mA"
+      },
+      "note": "250 kg → 2.5 mV → 8 mA. Yük hücresinin yük değerini değiştir."
+    },
+    {
+      "id": "r",
+      "typeId": "load-cell",
+      "x": 200,
+      "y": 570,
+      "rotation": 0,
+      "ref": "1000 kg / 2 mV/V",
+      "label": "Yük Hücresi · Kobastar SB2",
+      "loadWeight": 250,
+      "loadCapacity": 1000
+    },
+    {
+      "id": "i",
+      "typeId": "meter-ammeter",
+      "x": 1040,
+      "y": 240,
+      "rotation": 0,
+      "ref": "Çıkış · mA",
+      "label": "Ampermetre"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "+"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "−"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "EX+"
+      },
+      "to": {
+        "c": "r",
+        "p": "EX+"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "b",
+        "p": "EX−"
+      },
+      "to": {
+        "c": "r",
+        "p": "EX−"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "r",
+        "p": "SIG+"
+      },
+      "to": {
+        "c": "b",
+        "p": "S+"
+      }
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "r",
+        "p": "SIG−"
+      },
+      "to": {
+        "c": "b",
+        "p": "S−"
+      }
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "b",
+        "p": "I"
+      },
+      "to": {
+        "c": "i",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "i",
+        "p": "2"
+      },
+      "to": {
+        "c": "b",
+        "p": "G"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Baykon_TX11_Loadcell_Analog_v1.15",
+    "readOnly": true
+  }
+}

@@ -1,0 +1,656 @@
+{
+  "version": 6,
+  "symbolNorm": "IEC",
+  "name": "İleri / geri motor · faz sırası ve gri güç çıkışları",
+  "components": [
+    {
+      "typeId": "supply-3p",
+      "id": "supply",
+      "ref": "G1",
+      "x": 660,
+      "y": 80,
+      "label": "3 Faz Besleme",
+      "state": false,
+      "rotation": 180,
+      "labelPositions": {
+        "ref": {
+          "x": 60,
+          "y": 55
+        },
+        "symbol:source:N": {
+          "x": 110,
+          "y": 76
+        }
+      }
+    },
+    {
+      "typeId": "selector-3",
+      "id": "selector",
+      "ref": "S1",
+      "x": 170,
+      "y": 290,
+      "label": "0 → SAĞ → DUR → SOL",
+      "state": false,
+      "rotation": 0,
+      "note": "Her tıklama bir sonraki konuma geçer.",
+      "showNote": false,
+      "labelPositions": {
+        "ref": {
+          "x": -60,
+          "y": 130
+        },
+        "label": {
+          "x": -60,
+          "y": 146
+        }
+      },
+      "position": 0
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil1",
+      "ref": "K1",
+      "x": 120,
+      "y": 560,
+      "label": "Sağ yön bobini",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil2",
+      "ref": "K2",
+      "x": 340,
+      "y": 560,
+      "label": "Sol yön bobini",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "main-contact",
+      "id": "forward",
+      "ref": "K1",
+      "x": 570,
+      "y": 340,
+      "label": "Sağ yön güç kontakları",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "main-contact",
+      "id": "reverse",
+      "ref": "K2",
+      "x": 880,
+      "y": 340,
+      "label": "Sol yön güç kontakları",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "motor-3p",
+      "id": "motor",
+      "ref": "M1",
+      "x": 730,
+      "y": 700,
+      "label": "İki faz yer değiştirir",
+      "state": false,
+      "rotation": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "w1",
+      "from": {
+        "c": "supply",
+        "p": "L1"
+      },
+      "to": {
+        "c": "selector",
+        "p": "11"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 690,
+          "y": 220
+        },
+        {
+          "x": 220,
+          "y": 220
+        }
+      ]
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "selector",
+        "p": "13"
+      },
+      "to": {
+        "c": "coil1",
+        "p": "A1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 250,
+          "y": 490
+        },
+        {
+          "x": 160,
+          "y": 490
+        }
+      ]
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "selector",
+        "p": "15"
+      },
+      "to": {
+        "c": "coil2",
+        "p": "A1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 200,
+          "y": 460
+        },
+        {
+          "x": 380,
+          "y": 460
+        }
+      ]
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "supply",
+        "p": "N"
+      },
+      "to": {
+        "j": "neutral"
+      },
+      "role": "N",
+      "color": "#1e88e5",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 770,
+          "y": 210
+        },
+        {
+          "x": 1100,
+          "y": 210
+        }
+      ]
+    },
+    {
+      "id": "w5",
+      "from": {
+        "j": "neutral"
+      },
+      "to": {
+        "c": "coil1",
+        "p": "A2"
+      },
+      "role": "N",
+      "color": "#1e88e5",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 160,
+          "y": 860
+        }
+      ]
+    },
+    {
+      "id": "w6",
+      "from": {
+        "j": "neutral"
+      },
+      "to": {
+        "c": "coil2",
+        "p": "A2"
+      },
+      "role": "N",
+      "color": "#1e88e5",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 380,
+          "y": 860
+        }
+      ]
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "supply",
+        "p": "L1"
+      },
+      "to": {
+        "j": "phase0"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "j": "phase0"
+      },
+      "to": {
+        "c": "forward",
+        "p": "1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 600,
+          "y": 250
+        }
+      ]
+    },
+    {
+      "id": "w9",
+      "from": {
+        "j": "phase0"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 910,
+          "y": 250
+        }
+      ]
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "supply",
+        "p": "L2"
+      },
+      "to": {
+        "j": "phase1"
+      },
+      "role": "L2",
+      "color": "#f97316",
+      "size": "1,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w11",
+      "from": {
+        "j": "phase1"
+      },
+      "to": {
+        "c": "forward",
+        "p": "3"
+      },
+      "role": "L2",
+      "color": "#f97316",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 630,
+          "y": 270
+        }
+      ]
+    },
+    {
+      "id": "w12",
+      "from": {
+        "j": "phase1"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "3"
+      },
+      "role": "L2",
+      "color": "#f97316",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 940,
+          "y": 270
+        }
+      ]
+    },
+    {
+      "id": "w13",
+      "from": {
+        "c": "supply",
+        "p": "L3"
+      },
+      "to": {
+        "j": "phase2"
+      },
+      "role": "L3",
+      "color": "#f4c430",
+      "size": "1,5 mm²",
+      "points": []
+    },
+    {
+      "id": "w14",
+      "from": {
+        "j": "phase2"
+      },
+      "to": {
+        "c": "forward",
+        "p": "5"
+      },
+      "role": "L3",
+      "color": "#f4c430",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 660,
+          "y": 290
+        }
+      ]
+    },
+    {
+      "id": "w15",
+      "from": {
+        "j": "phase2"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "5"
+      },
+      "role": "L3",
+      "color": "#f4c430",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 970,
+          "y": 290
+        }
+      ]
+    },
+    {
+      "id": "w16",
+      "from": {
+        "c": "forward",
+        "p": "2"
+      },
+      "to": {
+        "j": "output0"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 600,
+          "y": 600
+        }
+      ]
+    },
+    {
+      "id": "w17",
+      "from": {
+        "c": "reverse",
+        "p": "6"
+      },
+      "to": {
+        "j": "output0"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 970,
+          "y": 600
+        }
+      ]
+    },
+    {
+      "id": "w18",
+      "from": {
+        "j": "output0"
+      },
+      "to": {
+        "c": "motor",
+        "p": "U"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": []
+    },
+    {
+      "id": "w19",
+      "from": {
+        "c": "forward",
+        "p": "4"
+      },
+      "to": {
+        "j": "output1"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 630,
+          "y": 630
+        }
+      ]
+    },
+    {
+      "id": "w20",
+      "from": {
+        "c": "reverse",
+        "p": "4"
+      },
+      "to": {
+        "j": "output1"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 940,
+          "y": 630
+        }
+      ]
+    },
+    {
+      "id": "w21",
+      "from": {
+        "j": "output1"
+      },
+      "to": {
+        "c": "motor",
+        "p": "V"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": []
+    },
+    {
+      "id": "w22",
+      "from": {
+        "c": "forward",
+        "p": "6"
+      },
+      "to": {
+        "j": "output2"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 660,
+          "y": 660
+        }
+      ]
+    },
+    {
+      "id": "w23",
+      "from": {
+        "c": "reverse",
+        "p": "2"
+      },
+      "to": {
+        "j": "output2"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": [
+        {
+          "x": 910,
+          "y": 660
+        }
+      ]
+    },
+    {
+      "id": "w24",
+      "from": {
+        "j": "output2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "W"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "size": "6 mm²",
+      "points": []
+    },
+    {
+      "id": "w25",
+      "from": {
+        "c": "supply",
+        "p": "PE"
+      },
+      "to": {
+        "c": "motor",
+        "p": "PE"
+      },
+      "role": "PE",
+      "color": "#16a34a",
+      "size": "1,5 mm²",
+      "points": [
+        {
+          "x": 780,
+          "y": 220
+        },
+        {
+          "x": 1140,
+          "y": 220
+        },
+        {
+          "x": 1140,
+          "y": 910
+        },
+        {
+          "x": 790,
+          "y": 910
+        }
+      ]
+    }
+  ],
+  "junctions": [
+    {
+      "id": "neutral",
+      "x": 1100,
+      "y": 860
+    },
+    {
+      "id": "phase0",
+      "x": 690,
+      "y": 250
+    },
+    {
+      "id": "phase1",
+      "x": 720,
+      "y": 270
+    },
+    {
+      "id": "phase2",
+      "x": 750,
+      "y": 290
+    },
+    {
+      "id": "output0",
+      "x": 760,
+      "y": 600
+    },
+    {
+      "id": "output1",
+      "x": 790,
+      "y": 630
+    },
+    {
+      "id": "output2",
+      "x": 820,
+      "y": 660
+    }
+  ],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#1e88e5": "N",
+    "#16a34a": "PE",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL",
+    "#808080": "CONTROL"
+  },
+  "colorLocks": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#808080": "CONTROL",
+    "#16a34a": "PE"
+  },
+  "lineColors": {
+    "L1": "#e53935",
+    "N": "#1e88e5",
+    "L2": "#f97316",
+    "L3": "#f4c430",
+    "CONTROL": "#808080",
+    "PE": "#16a34a"
+  },
+  "colorSizes": {
+    "#e53935": "1,5 mm²",
+    "#1e88e5": "1,5 mm²",
+    "#f97316": "1,5 mm²",
+    "#f4c430": "1,5 mm²",
+    "#808080": "6 mm²",
+    "#16a34a": "1,5 mm²"
+  },
+  "conductorVersion": 1,
+  "defaultTemplate": {
+    "id": "file:Ileri_Geri_Motor_v1.6.3",
+    "readOnly": true
+  }
+}

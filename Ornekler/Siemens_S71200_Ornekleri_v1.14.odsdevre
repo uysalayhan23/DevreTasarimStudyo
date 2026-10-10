@@ -1,0 +1,58 @@
+{
+  "version": 7,
+  "name": "Siemens_S71200_Ornekleri_v1.14",
+  "workspaceMode": "control",
+  "components": [
+    {
+      "id": "plc0",
+      "typeId": "plc-hw-6es7211-1ae40-0xb0",
+      "x": 120,
+      "y": 100,
+      "ref": "PLC1",
+      "label": "6ES7211-1AE40-0XB0",
+      "materialScale": 1
+    },
+    {
+      "id": "plc1",
+      "typeId": "plc-hw-6es7212-1be40-0xb0",
+      "x": 820,
+      "y": 100,
+      "ref": "PLC2",
+      "label": "6ES7212-1BE40-0XB0",
+      "materialScale": 1
+    },
+    {
+      "id": "plc2",
+      "typeId": "plc-hw-6es7214-1hg40-0xb0",
+      "x": 1520,
+      "y": 100,
+      "ref": "PLC3",
+      "label": "6ES7214-1HG40-0XB0",
+      "materialScale": 1
+    },
+    {
+      "id": "plc3",
+      "typeId": "plc-hw-6es7215-1ag40-0xb0",
+      "x": 120,
+      "y": 600,
+      "ref": "PLC4",
+      "label": "6ES7215-1AG40-0XB0",
+      "materialScale": 1
+    },
+    {
+      "id": "plc4",
+      "typeId": "plc-hw-6es7217-1ag40-0xb0",
+      "x": 820,
+      "y": 600,
+      "ref": "PLC5",
+      "label": "6ES7217-1AG40-0XB0",
+      "materialScale": 1
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Siemens_S71200_Ornekleri_v1.14",
+    "readOnly": true
+  }
+}

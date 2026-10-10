@@ -1,0 +1,45 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "Belgeye Göre PLC Terminal Örnekleri",
+  "symbolNorm": "IEC",
+  "name": "Belgeye Göre PLC Terminal Örnekleri",
+  "components": [
+    {
+      "typeId": "plc-0-0-documented",
+      "id": "plc1",
+      "x": 100,
+      "y": 140,
+      "rotation": 0,
+      "label": "CPU 1211C DC/DC/DC",
+      "ref": "PLC1",
+      "state": false
+    },
+    {
+      "typeId": "plc-0-2-documented",
+      "id": "plc2",
+      "x": 100,
+      "y": 500,
+      "rotation": 0,
+      "label": "CPU 1214C DC/DC/DC",
+      "ref": "PLC2",
+      "state": false
+    },
+    {
+      "typeId": "plc-4-3-documented",
+      "id": "plc3",
+      "x": 950,
+      "y": 140,
+      "rotation": 0,
+      "label": "DVP12SE11R",
+      "ref": "PLC3",
+      "state": false
+    }
+  ],
+  "wires": [],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Belgeli_PLC_Terminalleri_v1.8",
+    "readOnly": true
+  }
+}

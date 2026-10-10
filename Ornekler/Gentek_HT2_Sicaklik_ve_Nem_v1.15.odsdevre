@@ -1,0 +1,124 @@
+{
+  "version": 7,
+  "name": "Gentek_HT2_Sicaklik_ve_Nem",
+  "workspaceMode": "control",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 140,
+      "y": 200,
+      "rotation": 0,
+      "ref": "24 VDC",
+      "label": "Pozitif DC Besleme"
+    },
+    {
+      "id": "b",
+      "typeId": "sensor-temperature-humidity",
+      "x": 480,
+      "y": 240,
+      "rotation": 0,
+      "ref": "B",
+      "label": "Sıcaklık / Nem Sensörü",
+      "instrumentSettings": {
+        "temperature": 20,
+        "humidity": 25,
+        "measurement": "both",
+        "output": "4-20mA"
+      },
+      "note": "20 °C → 12 mA; %25 RH → 8 mA. Özelliklerden sıcaklık, nem ve çıkış türünü değiştir."
+    },
+    {
+      "id": "it",
+      "typeId": "meter-ammeter",
+      "x": 950,
+      "y": 160,
+      "rotation": 0,
+      "ref": "T · mA",
+      "label": "Ampermetre"
+    },
+    {
+      "id": "irh",
+      "typeId": "meter-ammeter",
+      "x": 950,
+      "y": 440,
+      "rotation": 0,
+      "ref": "RH · mA",
+      "label": "Ampermetre"
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "b",
+        "p": "+"
+      }
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "b",
+        "p": "−"
+      }
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "b",
+        "p": "T"
+      },
+      "to": {
+        "c": "it",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "it",
+        "p": "2"
+      },
+      "to": {
+        "c": "b",
+        "p": "−"
+      }
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "b",
+        "p": "RH"
+      },
+      "to": {
+        "c": "irh",
+        "p": "1"
+      }
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "irh",
+        "p": "2"
+      },
+      "to": {
+        "c": "b",
+        "p": "−"
+      }
+    }
+  ],
+  "junctions": [],
+  "defaultTemplate": {
+    "id": "file:Gentek_HT2_Sicaklik_ve_Nem_v1.15",
+    "readOnly": true
+  }
+}
