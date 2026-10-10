@@ -1,0 +1,7 @@
+{
+  "viewport": {"width": 1440, "height": 1000},
+  "dashboard": {"minCards": 5, "minCardWidth": 140, "minCardHeight": 100},
+  "editor": {"minWidth": 500, "minHeight": 350},
+  "panel": {"minWidth": 500, "minHeight": 350},
+  "tutorial": {"minTopics": 5, "minWidth": 500, "minHeight": 300}
+}
