@@ -13,8 +13,8 @@ test('Ohm Kanunu deneyi is an adjustable-source measurement laboratory',()=>{
  assert.equal(c.g.typeId,'arduino-bench-supply');assert.equal(c.g.dcVoltage,24);assert.equal(c.g.currentLimit,1);
  assert.equal(c.r.resistance,120);assert.equal(c.a.typeId,'unit-ut33d-plus');assert.equal(c.a.meterPosition,9);
  assert.equal(c.v.typeId,'unit-ut33d-plus');assert.equal(c.v.meterPosition,4);
- assert.deepEqual(c['a-red'].probeTarget,{c:'g',p:'P'});assert.deepEqual(c['a-black'].probeTarget,{c:'r',p:'1'});
- assert.deepEqual(c['v-red'].probeTarget,{c:'r',p:'1'});assert.deepEqual(c['v-black'].probeTarget,{c:'r',p:'2'});
+ assert.deepEqual(JSON.parse(JSON.stringify(c['a-red'].probeTarget)),{c:'g',p:'P'});assert.deepEqual(JSON.parse(JSON.stringify(c['a-black'].probeTarget)),{c:'r',p:'1'});
+ assert.deepEqual(JSON.parse(JSON.stringify(c['v-red'].probeTarget)),{c:'r',p:'1'});assert.deepEqual(JSON.parse(JSON.stringify(c['v-black'].probeTarget)),{c:'r',p:'2'});
  assert.equal(l.project.tutorialExplore.type,'ohm-law-rich');
  assert.deepEqual(Array.from(l.project.tutorialExplore.voltageSteps),[6,12,18,24]);
  assert.deepEqual(Array.from(l.project.tutorialExplore.resistanceSteps),[120,240,470]);
@@ -30,11 +30,11 @@ test('Ohm rich UI exposes voltage and resistance experiments',()=>{
  const m=fs.readFileSync(path.join(root,'dist','tutorial-mode.js'),'utf8'),c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8');
  for(const token of ['tutorial-ohm-rich','data-ohm-voltage','data-ohm-resistance','Ayarlanabilir DC güç kaynağı','I = V / R','setOhmVoltage','setOhmResistance'])assert.ok(m.includes(token),token);
  for(const token of ['.tutorial-ohm-live','.tutorial-ohm-choice','.tutorial-ohm-formulas','.tutorial-ohm-measure','.tutorial-ohm-observe'])assert.ok(c.includes(token),token);
- assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy21/);
+ assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy65-lm358-output/);
 });
 test('Ohm rich cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
- assert.match(h,/tutorial\.css\?rev=20261008-ohm-rich1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261008-ohm-rich1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-ohm-rich1/);
+ assert.match(h,/tutorial\.css\?rev=20261009-energy-rich1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);
 });

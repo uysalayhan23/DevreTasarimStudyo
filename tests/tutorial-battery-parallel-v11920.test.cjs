@@ -14,7 +14,7 @@ test('Pillerin paralel bağlanması is a functional two-cell guided lesson',()=>
  assert.equal(c.b1.typeId,'tutorial-battery');assert.equal(c.b1.cellVoltage,1.5);
  assert.equal(c.b2.typeId,'tutorial-battery');assert.equal(c.b2.cellVoltage,1.5);
  assert.equal(c.r1.resistance,100);assert.equal(c.v1.typeId,'unit-ut33d-plus');assert.equal(c.v1.meterPosition,3);
- assert.deepEqual(c['v1-red'].probeTarget,{c:'b1',p:'+'});assert.deepEqual(c['v1-black'].probeTarget,{c:'b1',p:'−'});
+ assert.deepEqual(JSON.parse(JSON.stringify(c['v1-red'].probeTarget)),{c:'b1',p:'+'});assert.deepEqual(JSON.parse(JSON.stringify(c['v1-black'].probeTarget)),{c:'b1',p:'−'});
  assert.equal(l.project.tutorialExplore.type,'battery-parallel');assert.equal(l.project.tutorialExplore.packVoltage,1.5);
  assert.equal(l.project.tutorialExplore.expectedCurrentA,.015);assert.equal(l.project.tutorialExplore.idealEqualCellShareA,.0075);
  assert.equal(l.steps.length,4);assert.equal(l.project.wires.filter(w=>w.probeLead).length,2);
@@ -34,12 +34,12 @@ test('parallel rich coach teaches voltage current capacity and measurement',()=>
  const m=fs.readFileSync(path.join(root,'dist','tutorial-mode.js'),'utf8'),c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8');
  for(const token of ['Paralelde gerilim toplanmaz','1,5 V || 1,5 V = 1,5 V','15 mA','7,5 mA + 7,5 mA','data-battery-parallel-measure="rails"','Paralel devreyi kendin kur','Seri‑paralel bağlanmaya geç'])assert.ok(m.includes(token),token);
  for(const token of ['tutorial-parallel-diagram','tutorial-parallel-equations','tutorial-parallel-compare','tutorial-parallel-measure','tutorial-parallel-real','tutorial-parallel-current'])assert.ok(c.includes(token),token);
- assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy21/);
+ assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy65-lm358-output/);
 });
 
 test('parallel page cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
- assert.match(h,/tutorial\.css\?rev=20261008-ohm-rich1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261008-ohm-rich1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-ohm-rich1/);
+ assert.match(h,/tutorial\.css\?rev=20261009-energy-rich1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);
 });

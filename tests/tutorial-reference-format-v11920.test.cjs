@@ -68,8 +68,8 @@ test('reference format cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
  const b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
  assert.match(h,/tutorial\.css\?rev=20261009-energy-rich1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261009-energy-rich1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-energy-rich1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);
 });
 
 
@@ -482,7 +482,7 @@ test('Energy analyzer replaces wattmeter and cosphi with functional rich lab',()
  assert.match(mat,/data-material="current-transformer-edu-vector"/);
  assert.match(mat,/data-material="energy-training-load-vector"/);
  assert.match(idx,/energy-analyzer\.js\?rev=20261009-energy-rich1/);
- assert.match(idx,/current-model\.js\?rev=20261009-energy-rich1/);
+ assert.match(idx,/current-model\.js\?rev=20261010-real-ics1/);
  assert.match(d,/## 20\. Wattmetre \/ güç faktörü → enerji analizörü referans kilidi/);
  assert.match(d,/Dirençli yük.*P≈230 W.*Q≈0 var.*PF≈1,00/);
  assert.match(d,/Endüktif yük.*P≈184 W.*Q≈\+138 var.*PF≈0,80/);

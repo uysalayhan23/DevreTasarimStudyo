@@ -33,14 +33,14 @@ test('rich battery-type page includes measurement load comparison and clear navi
  const m=fs.readFileSync(path.join(root,'dist','tutorial-mode.js'),'utf8'),c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8');
  for(const token of ['PİL VE AKÜ TİPLERİ','Üç büyüklüğü birbirine karıştırma','data-battery-type-measure="ba"','data-battery-type-load="bk"','Wh = V × Ah','Pillerin paralel bağlanmasına geç','dc-battery-types-rich'])assert.ok(m.includes(token),token);
  for(const token of ['tutorial-battery-types-grid','tutorial-battery-types-metrics','tutorial-battery-types-measure','tutorial-battery-types-load','tutorial-battery-types-safety'])assert.ok(c.includes(token),token);
- assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy21/);
+ assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy65-lm358-output/);
 });
 
 test('battery type cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
- assert.match(h,/tutorial\.css\?rev=20261008-ohm-rich1/);
- assert.match(h,/tutorial-components\.js\?rev=20261008-battery-types-rich1/);
- assert.match(h,/materials\.js\?rev=20261008-battery-types-rich1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261008-ohm-rich1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-ohm-rich1/);
+ assert.match(h,/tutorial\.css\?rev=20261009-energy-rich1/);
+ assert.match(h,/tutorial-components\.js\?rev=20261009-energy-rich1/);
+ assert.match(h,/materials\.js\?rev=20261010-real-visuals1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);
 });

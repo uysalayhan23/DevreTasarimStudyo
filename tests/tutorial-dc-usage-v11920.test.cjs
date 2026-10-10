@@ -21,15 +21,15 @@ test('rich DC lesson coach exposes the requested learning format',()=>{
  for(const token of ['Bu derste öğreneceksin','Devredeki elemanlar','Nasıl çalışır?','Problar serbesttir.','KISA BİLGİ · OHM KANUNU','Beklenen gözlem','Doğru akım nerelerde kullanılır?','Öğrenci görevi'])assert.ok(m.includes(token),token);
  assert.match(m,/l\.kind==='explore'\?'explore':'demo'/);
  assert.match(m,/data-tutorial-action="simulate"/);
- assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy21/);
+ assert.match(m,/tutorial-pedagogy\.js\?v=1\.19\.20-pedagogy65-lm358-output/);
 });
 
 test('DC rich lesson CSS and cache chain are delivered',()=>{
  const c=fs.readFileSync(path.join(root,'dist','tutorial.css'),'utf8'),h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8'),b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
  for(const token of ['tutorial-dc-probe-note','tutorial-dc-steps','tutorial-dc-law','tutorial-dc-observe','tutorial-dc-uses'])assert.ok(c.includes(token),token);
- assert.match(h,/tutorial\.css\?rev=20261008-ohm-rich1/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261008-ohm-rich1/);
- assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-ohm-rich1/);
+ assert.match(h,/tutorial\.css\?rev=20261009-energy-rich1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-lm358-output1/);
+ assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-lm358-output1/);
 });
 
 
