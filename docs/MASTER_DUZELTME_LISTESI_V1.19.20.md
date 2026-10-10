@@ -1343,3 +1343,44 @@ Durum: **DONE / TARGET REPO MAIN / ACTIONS NOT USED**
 ### Fidelity sınırı
 - Modeller datasheet odaklı pinout, besleme, logic/state ve temel analog/eşdeğer davranış sağlar.
 - Solver transistor-level SPICE değildir; üretim toleransı, tüm parasitikler, EMI ve tam semiconductor I-V/thermal breakdown ayrıntıları birebir fiziksel cihaz simülasyonu olarak iddia edilmez.
+
+
+## 2026-10-10 — Fiziksel IC görsel standardı + LM358 ekran düzeltmesi
+
+Durum: **DONE / LOCKED / ACTIONS NOT USED**
+
+Kullanıcı ekran kabulü doğrultusunda entegre ve benzeri elektronik malzemeler için aşağıdaki görünüm sözleşmesi zorunludur: **arka plansız gerçek paket görünümü + üstten/orthographic yön + fiziksel bacakların görünmesi + terminal hotspotlarının gerçek bacak konumlarıyla hizalanması + işlevsel simülasyon + Arduino erişimi**. Beyaz fonlu ürün fotoğrafı/kart görünümü kabul edilmez.
+
+### Ekran görüntüsündeki LM358 sorunu
+- Kök neden: `dist/symbols.js` içinde `productVisualUrl`, fiziksel `realPackage` renderer'ından önce seçiliyordu; legacy `lm358p-opamp-a` A-kanal kaydı beyaz kart içinde harici ürün fotoğrafı gösteriyordu.
+- Render önceliği değiştirildi: `realPackage → Materials.markup` artık ürün fotoğrafından önce gelir.
+- Ürün fotoğrafı fallback'indeki beyaz `<rect fill="#fff">` kaldırıldı.
+- Öğretici derslerde legacy `lm358p-opamp-a` kullanımı full `lm358p-dip8` fiziksel bileşenine migrate edilir.
+- LM358 A-kanal bağlantıları gerçek pinlere çevrildi: **OUT=1, IN−=2, IN+=3, V−=4, V+=8**.
+- Ekrandaki `Eviren yükselteç DC giriş` dersinde U1 artık `lm358p-dip8`, referans `U1`; bağlı pinler 1/2/3/4/8'dir. Kullanılmayan 5/6/7 pinleri de gerçek gövde üzerinde görünür.
+- Eski kayıt `catalogHidden=true` ve `legacyAliasTo='lm358p-dip8'` olarak tutulur; eski proje dosyaları `app.js:migrateProject` içinde fiziksel DIP-8'e otomatik dönüştürülür.
+- Legacy LM358 harici fotoğraf URL'si tamamen kaldırıldı.
+
+### Diğer fiziksel elektronik görseller
+- BD139 / BD140 harici beyaz-fon fotoğrafından gerçek **TO-126 orthographic** renderer'a geçirildi.
+- GL5528 LDR harici fotoğraf yerine arka plansız **LDR-5MM orthographic** renderer kullanır.
+- Aktif `electronics-library-v119.js` + `electronics-ics-v11920.js` içinde `productVisualUrl` bağımlılığı: **0**.
+
+### Arduino kütüphanesi
+- Mevcut Arduino parçalarının davranış/pin ID'leri değiştirilmeden fiziksel paket metadata'sı eklendi.
+- Ortak paket standardına alınan Arduino ailesi: NE555P; MAX485CPA; CD4511BE; SN74HC595N; CD4017BE; MCP23017-E/SP; MAX7219CNG; MAX232N; TLP521-1/-2/-4; BC327; BD139; BD140.
+- Denetlenen Arduino fiziksel paket sayısı: **14/14 PASS**.
+- Her birinde `topView=true`, `orthographic=true`, `transparentBackground=true` ve her terminalde sayısal `physicalPin` vardır.
+- Arduino BD139/BD140'ın eski beyaz kart + harici fotoğraf branch'i kaldırıldı.
+- Genel gerçek elektronik parçaları ayrıca `arduinoShared=true` ile Arduino Atölyesinde aynı ID/simülasyon modeliyle erişilebilir kalır.
+
+### MQ-12 Actions'sız kabul kanıtı
+- Değiştirilen JS/test dosyaları sözdizimi: **PASS**.
+- `Eviren yükselteç DC giriş`: U1=`lm358p-dip8`, gerçek pin endpointleri **1,2,2,3,4,8**.
+- LM358 material render: `data-real-package="PDIP"` = **true**; `<image>` = **false**; beyaz kart = **false**; pin-1 işareti = **true**.
+- Arduino physical package invalid: **0**.
+- Aktif elektronik harici product photo dependency: **0**.
+- `symbols.js` realPackage-first guard: **PASS**.
+- Pedagoji sürümü: `v1.19.20-pedagogy64-real-ic-visuals`.
+- Cache zinciri `real-ic-visuals1` / `real-visuals1` anahtarlarıyla yenilendi.
+- GitHub Actions **çalıştırılmadı**. Native full Node/browser smoke bu turda çalıştırılmadı ve PASS sayılmadı.
