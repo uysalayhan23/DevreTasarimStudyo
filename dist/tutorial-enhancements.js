@@ -61,10 +61,21 @@ function applyLayout(v=readLayout()){
  const c=coach();if(!c)return;const vw=Math.max(320,root.innerWidth||1200),vh=Math.max(320,root.innerHeight||800),w=clamp(Number(v.width)||430,300,Math.max(300,vw-16)),h=clamp(Number(v.height)||520,220,Math.max(220,vh-16)),left=clamp(Number(v.left)||8,8,Math.max(8,vw-w-8)),top=clamp(Number(v.top)||8,8,Math.max(8,vh-h-8));
  c.style.width=w+'px';c.style.height=h+'px';c.style.left=left+'px';c.style.top=top+'px';c.style.right='auto';c.style.bottom='auto';layoutReady=true;
 }
-function saveLayout(){const c=coach();if(!c||c.hidden)return;const r=c.getBoundingClientRect();try{root.localStorage?.setItem(LAYOUT_KEY,JSON.stringify({left:r.left,top:r.top,width:r.width,height:r.height}))}catch{}}
+function saveLayout(){const c=coach();if(!c||c.hidden||c.classList.contains('is-minimized'))return;const r=c.getBoundingClientRect();try{root.localStorage?.setItem(LAYOUT_KEY,JSON.stringify({left:r.left,top:r.top,width:r.width,height:r.height}))}catch{}}
 function ensureFloatBar(){
  const c=coach();if(!c||!lesson())return;
- if(!c.querySelector('[data-tutorial-float-bar]'))c.insertAdjacentHTML('afterbegin','<div class="tutorial-float-bar" data-tutorial-float-bar><strong>▣ Konu Anlatımı</strong><span>Sürükle · sağ alt köşeden boyutlandır</span><button type="button" data-tutorial-coach-close title="Kapat" aria-label="Konu anlatım penceresini kapat">×</button></div>');
+ let bar=c.querySelector('[data-tutorial-float-bar]')||c.querySelector('.tutorial-float-bar');
+ if(!bar){
+  c.insertAdjacentHTML('afterbegin','<div class="tutorial-float-bar" data-tutorial-float-bar role="toolbar" aria-label="Konu anlatımı pencere araçları"><strong>▣ Konu Anlatımı</strong><span>Sürükle · sağ alt köşeden boyutlandır</span><div class="tutorial-float-actions"><button type="button" data-tutorial-coach-minimize title="Küçült / büyüt" aria-label="Konu anlatımını küçült veya büyüt">−</button><button type="button" data-tutorial-coach-close title="Kapat" aria-label="Konu anlatım penceresini kapat">×</button></div></div>');
+  return;
+ }
+ bar.setAttribute('data-tutorial-float-bar','1');
+ let actions=bar.querySelector('.tutorial-float-actions');
+ const close=bar.querySelector('[data-tutorial-coach-close]');
+ if(!actions){actions=root.document.createElement('div');actions.className='tutorial-float-actions';if(close){close.before(actions);actions.appendChild(close)}else bar.appendChild(actions)}
+ if(!bar.querySelector('[data-tutorial-coach-minimize]')){
+  const b=root.document.createElement('button');b.type='button';b.setAttribute('data-tutorial-coach-minimize','');b.title='Küçült / büyüt';b.setAttribute('aria-label','Konu anlatımını küçült veya büyüt');b.textContent=c.classList.contains('is-minimized')?'□':'−';actions.prepend(b);
+ }
 }
 function enforce(){
  const c=coach();if(!c)return;sideControl();
