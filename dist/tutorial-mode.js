@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy31');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=1.19.20-pedagogy63-real-parts');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
