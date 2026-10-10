@@ -9,7 +9,7 @@
   const VALID_TERMINAL_IDENTITY_STATUS=new Set(['verified','partial','unverified']);
   const VALID_PROFILE_STATUS=new Set(['verified','unverified']);
   const VALID_COLLIDER_STATUS=new Set(['verified-profile','conservative-envelope']);
-  const VALID_ASSET_IDENTITY_FIELDS=new Set(['materialAsset','siemensPhoto']);
+  const VALID_ASSET_IDENTITY_FIELDS=new Set(['materialAsset','siemensPhoto','instrument']);
 
   const products=Object.freeze({
     'ordel-hmt-head-transmitter':Object.freeze({
@@ -348,6 +348,8 @@
     'converter-pressure':Object.freeze({
       productKey:'weidmuller-8540300000',
       assetKey:'weid-front-v115',
+      assetIdentityField:'instrument',
+      assetIdentityValue:'waz5',
       visualMatchStatus:'exact',
       visualOrientationStatus:'source-image-derived-front',
       visualSourceStatus:'repo-existing-product-visual',
