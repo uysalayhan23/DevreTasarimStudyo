@@ -17,7 +17,9 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function sha256(data){return crypto.createHash('sha256').update(data).digest('hex')}
 function pngSize(data){
   if(!Buffer.isBuffer(data)||data.length<45||!data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||data.toString('ascii',12,16)!=='IHDR'||data.toString('ascii',data.length-8,data.length-4)!=='IEND')throw Error('Eksik veya geçersiz PNG imzası/IHDR/IEND.');
-  return {width:data.readUInt32BE(16),height:data.readUInt32BE(20)};
+  const width=data.readUInt32BE(16),height=data.readUInt32BE(20);
+  if(!width||!height)throw Error('PNG boyutları sıfır olamaz.');
+  return {width,height};
 }
 function findBrowser(){
   const candidates=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium','chromium-browser'].filter(Boolean);
