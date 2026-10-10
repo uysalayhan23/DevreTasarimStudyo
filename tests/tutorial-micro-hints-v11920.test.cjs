@@ -91,3 +91,19 @@ test('shared explanations cover every existing tutorial project, including all 4
   for(const part of lesson.project.components)assert.ok(part.id&&part.typeId,lesson.id+' invalid part identity');
  }
 });
+
+test('every curriculum lesson initializes and dismisses its own real-component micro cards without errors',()=>{
+ require('../dist/tutorial-lessons.js');
+ const source=require('../dist/tutorial-source-outline.js');
+ const ctx={window:{DTSTutorialLessons:source}};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../dist/tutorial-pedagogy.js'),'utf8'),ctx);
+ const f=fixture();
+ for(const lesson of ctx.window.DTSTutorialLessons.lessons){
+  f.api.sync(lesson,lesson.project);
+  const intro=f.nodes.get('tutorialMicroIntro');
+  assert.ok(intro?.innerHTML?.includes('<article>'),lesson.id+' initial micro cards');
+  f.doc.emit('pointerdown',{closest(){return null}});
+  assert.equal(f.api.state.dismissed,true,lesson.id+' first click');
+  assert.equal(intro.hidden,true,lesson.id+' cards hidden');
+ }
+});
