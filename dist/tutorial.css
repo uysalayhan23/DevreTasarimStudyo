@@ -441,3 +441,10 @@ body.tutorial-micro-dismissed #tutorialReferenceStage .tutorial-ref-side{visibil
 #tutorialCoach .measurement-scope-presets{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}
 #tutorialCoach .measurement-scope-presets button{padding:6px 9px;border:1px solid #9bc0db;border-radius:8px;background:#fff;color:#145984;font-size:12px;cursor:pointer}
 #tutorialCoach .measurement-scope-presets button[aria-pressed="true"]{background:#e3f2ff;border-color:#2484c9;font-weight:800}
+
+/* MQ-07 simulation-derived energy and tachometer learning, in existing floating coach. */
+#tutorialCoach .measurement-tacho-observation{font-size:13px;line-height:1.45;margin:9px 0;color:#1b5269}
+#tutorialCoach .measurement-tacho-observation small{display:block;font-size:11px;margin-top:4px}
+#tutorialCoach .measurement-tacho-presets{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0}
+#tutorialCoach .measurement-tacho-presets button{font-size:12px;border:1px solid #9bc0db;border-radius:8px;background:#fff;padding:6px 9px;cursor:pointer}
+#tutorialCoach .measurement-tacho-presets button[aria-pressed="true"]{background:#e3f2ff;border-color:#2484c9;font-weight:800}
