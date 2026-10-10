@@ -15,11 +15,35 @@ const GOLDEN=JSON.parse(fs.readFileSync(path.join(ROOT,'tests','browser-visual-g
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function sha256(data){return crypto.createHash('sha256').update(data).digest('hex')}
+function pngCrc(data){
+ let crc=0xffffffff;
+ for(const byte of data){crc^=byte;for(let i=0;i<8;i++)crc=(crc>>>1)^(crc&1?0xedb88320:0)}
+ return (crc^0xffffffff)>>>0;
+}
 function pngSize(data){
-  if(!Buffer.isBuffer(data)||data.length<45||!data.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||data.toString('ascii',12,16)!=='IHDR'||data.toString('ascii',data.length-8,data.length-4)!=='IEND')throw Error('Eksik veya geçersiz PNG imzası/IHDR/IEND.');
-  const width=data.readUInt32BE(16),height=data.readUInt32BE(20);
-  if(!width||!height)throw Error('PNG boyutları sıfır olamaz.');
-  return {width,height};
+ const sig=Buffer.from([137,80,78,71,13,10,26,10]);
+ if(!Buffer.isBuffer(data)||!data.subarray(0,8).equals(sig))throw Error('PNG signature invalid');
+ let offset=8,width=0,height=0,ihdr=false,idat=false,iend=false;
+ while(offset+12<=data.length){
+  const len=data.readUInt32BE(offset),end=offset+12+len;
+  if(end>data.length)throw Error('PNG chunk truncated');
+  const type=data.toString('ascii',offset+4,offset+8),payload=data.subarray(offset+8,offset+8+len);
+  const actual=data.readUInt32BE(offset+8+len),expected=pngCrc(data.subarray(offset+4,offset+8+len));
+  if(actual!==expected)throw Error('PNG chunk CRC invalid: '+type);
+  if(!ihdr){
+   if(type!=='IHDR'||len!==13)throw Error('PNG IHDR invalid');
+   width=payload.readUInt32BE(0);height=payload.readUInt32BE(4);
+   if(!width||!height)throw Error('PNG dimensions zero');
+   ihdr=true;
+  }else if(type==='IDAT'){idat=true}
+  else if(type==='IEND'){
+   if(len!==0||!idat||end!==data.length)throw Error('PNG IEND/IDAT invalid');
+   iend=true;break;
+  }else if(type==='IHDR')throw Error('Duplicate IHDR');
+  offset=end;
+ }
+ if(!ihdr||!idat||!iend)throw Error('PNG missing required chunks');
+ return {width,height};
 }
 function findBrowser(){
   const candidates=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium','chromium-browser'].filter(Boolean);
