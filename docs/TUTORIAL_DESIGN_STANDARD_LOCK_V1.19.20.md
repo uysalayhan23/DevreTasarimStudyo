@@ -129,3 +129,10 @@ Kırmızı ve siyah prob açıklamaları karışmaz; açıklamalar malzeme ve me
 
 `dist/tutorial-micro-hints.js` ortak olayları yönetir; `tests/tutorial-micro-hints-v11920.test.cjs` ilk gösterim, gizleme, hover ve ders değişimi korumasını test eder. Bu genel davranışın tamamlanması, 45 dersin özel pedagojik içerik ve görsel kalite kabulünün tamamlandığı anlamına gelmez. Windows görsel kabulü ayrı kalite kapısıdır.
 
+
+
+## 23. Ölçme öğretiminde başlık bazında zengin laboratuvarın genişletilmesi
+
+Ölçme ve ölçü aletleri bölümündeki her başlık kendi kazanımına göre farklı öğrenci görevi, doğru prob yuvası ve kademe, gerçek devre/ölçüm değeri, birden fazla deney noktası, kendi konu kontrolü ve adım adım yeniden kurma içermelidir. Doğrulanmış kanonik gerilim/akım laboratuvarının kullanılmasına izin verilir; ancak dersin özgün hedefi ve neden açıklaması korunmalıdır. Başka bir dersten yalnız görüntü veya başlık kopyalamak tamamlanmış öğretim sayılmaz.
+
+Yüzer ders penceresi 13–14 px okunabilirliği ve serbest sürükleme/küçültme davranışını korur. İlk tıklamada gizlenen, hover ile açılan küçük kartlar sahnede sürekli alan kaplamaz. Dokuz alt konu için `tutorial-measurement-batch-a.js` ve `tutorial-measurement-batch-a-v11920.test.cjs` güvenlik ağıdır. Kod düzeyinde zengin laboratuvar bulunması, Windows görsel kabulünün tamamlandığı anlamına gelmez.

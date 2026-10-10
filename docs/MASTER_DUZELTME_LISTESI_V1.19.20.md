@@ -1577,3 +1577,18 @@ Durum: **HEDEFLİ YEREL TESTLER PASS / GENEL REGRESYON VE SON GÖRSEL KABUL AÇI
 - GitHub Actions `actions/runs=0` doğrulandı; hiçbir Actions işlemi tetiklenmedi.
 
 **MQ-00 kararı:** Mikro açıklama ortak davranışı kod/test düzeyinde hedefli kabul. Kullanıcıdan ZIP kabulü istenmeden önce gerçek Windows GUI ve Git geçmişi gerektiren üç native test uygun checkout üzerinde tamamlanmalıdır.
+
+
+## 2026-10-10 — Ölçüm öğretimi ilk alt konu dönüşüm grubu (9 ders)
+
+**MQ-07 dönüşüm kod aşaması:** Elektriksel ölçme ve ölçü aletleri toplamı **45 ders korunarak**, önceki 10 rich-reference laboratuvara ek olarak 9 alt konu laboratuvarı sağlandı: `outline-011`, `012`, `013`, `014`, `015`, `031`, `032`, `042`, `043`. **Gelişmiş laboratuvar kullanan ders sayısı 19/45; Windows/piksel/pedagojik tek tek nihai kabul 19/45 değildir.** Diğer 26 ders ayrı dönüşüm backlog'unda kalır.
+
+- Özelleştirilen konular: dijital multimetrenin yapısı ve kullanımı, uygun kademe seçimi, gerilim ölçme, akım ölçme, voltmetre/ampermetreyle devre analizi ve tekrar eden uygulama başlıkları. Her birine **farklı hedef, kendi öğrenci görevi, konu kontrol sorusu, gerçek terminalden rehberli bağlantı** eklendi.
+- `dist/tutorial-measurement-batch-a.js` eski pedagojik üreticiyi ve `LOCKS` içeriğini değiştirmeyen ek modüldür. Gerilim alanları `measurement-workshop-src-01`, akım alanları `measurement-workshop-src-02` kanonik onaylı devre/prob sistemlerini kopyalar. UNI-T UT33D+ ve ayarlı masa kaynağı, yük 1 kΩ; kaynak 24 V; voltmetre DCV ~24 V, ampermetre DCA ~0,024 A canlı `Simulation.solve` değerleriyle ölçülür. Kırmızı/siyah problar hareketlidir. Sahte hesaplanmış cihaz görüntüsü kullanılmaz.
+- `dist/tutorial-mode.js` rich koç, preset, gerçek ölçüm, genel ilk-tıklama/hover mikro açıklamalarını bu dokuz derste de etkinleştirir. `measurementUpgradeCard` her derse özgü bilgileri ve soruları **yalnız mevcut yüzer konu anlatımı penceresinde** gösterir. `dist/tutorial.css` çalışma alanını daraltan yeni sabit panel eklemez.
+- Tarayıcı önbelleğini doğru yenilemek için `dist/tutorial-bootstrap.js` tutorial-mode rev `1.19.20-measure-batch-a1` ve `dist/index.html` tutorial.css rev `20261010-measure-batch-a1`; bunları denetleyen 9 eski test dosyası güncellendi.
+- MQ-12 kanıt: yüklenen proje ZIP'i temelinden oluşturulan **yerel eşdeğer modül** ve son kod düzeni üzerinde `node scripts/check.cjs` **PASS** (223 JS, 106 dependency, 728 library materials, 58 protected examples); öğretici+devre odaklı `node --test --test-concurrency=4 tests/tutorial-*.test.cjs tests/lesson-circuit-audit-v119.test.cjs` **115/115 PASS, 0 FAIL**. İlk başarısız turda eski CSS/JS cache anahtarlarının beklendiği görüldü, ardından değerler güncellenip 115/115 yeniden çalıştırıldı. GitHub'daki **gerçek** `tutorial-measurement-batch-a.js` de başlatma ve 9/9 farklı konu içeriği için JS smoke testinden geçti. **Tam HEAD regresyonu ve Windows görsel kabulü bu turda koşulmadı; PASSED ilan edilmez.**
+- Yeni `tests/tutorial-measurement-batch-a-v11920.test.cjs` kanonik kaynak, 45 konu sayısı, her dokuz dersin ayırıcı kazanımı, terminal bağlantısı, gerçek `Simulation.solve` sonucu ve pencereyi büyütmeyen kartlar için guard sağlar.
+- MQ-13: Yeni repo `uysalayhan23/DevreTasarimStudyo`, dal `main`; GitHub Actions çalıştırılmadı, commit mesajları `[skip ci]`.
+
+**Sonraki gerçek iş:** 26 dönüşmemiş ders içinde sayaç/enerji, takometre, sensör, osiloskop, fiziksel ölçüm araçları ve LCR türlerini **cihazın gerçek davranışını taklit eden işlevsel laboratuvarlara** dönüştür. Sahte devre veya doğrulanmamış ölçüm sonucu üretme. Her ders için pedagojik ve görsel ekran kabulü ayrıca yapılır.
