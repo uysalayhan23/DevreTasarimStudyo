@@ -50,8 +50,8 @@ test('nine lab variants retain actual live measurement values, never fabricated 
 test('rich floating note, working answer feedback and guided rebuild are wired only to measurement variants',()=>{
  const m=read('tutorial-mode.js'),css=read('tutorial.css');
  assert.match(m,/tutorial-measurement-batch-a\.js\?v=1\.19\.20-batch-a1/);
- assert.match(m,/function measurementUpgradeCard\(l,session\)/);
- assert.match(m,/measurementUpgradeCard\(l,s\)\+noteHtml\(l,s,project\)/);
+ assert.match(m,/function measurementUpgradeCard\(l,session,project\)/);
+ assert.match(m,/measurementUpgradeCard\(l,s,project\)\+noteHtml\(l,s,project\)/);
  assert.match(m,/data-measurement-upgrade-answer/);
  assert.match(m,/measurementFeedback=answer===0/);
  assert.match(m,/l\.measurementUpgrade&&l\.project\?\.tutorialExplore\?\.type==='voltage-measurement-rich'/);
