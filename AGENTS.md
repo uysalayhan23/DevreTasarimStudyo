@@ -2,14 +2,14 @@
 
 Bu depo Ayhan Uysal'ın oğlu Yakub için geliştirdiği Türkçe, çevrimdışı eğitim uygulamasıdır. Mevcut uygulamayı koruyarak küçük ve ilgili değişiklikler yapın. Kullanıcının güncel açık talimatı bu belgelerden önce gelir; çelişki varsa eski kuralı sessizce doğru kabul etmeyin.
 
-## Golden sürüm ve aktif geliştirme dalı
+## Güncel aktif repo/dal ve tarihsel referanslar (2026-10-11)
 
-- `main` dalı v1.18.0 golden kopyasını temsil eder. Bu dala geliştirme commit'i yazmayın, refini ilerletmeyin ve force-push yapmayın.
-- Golden sabit commit: `e00b6fcf0ea3eb721eae8285beb7052573b61373`. Bu commit v1.18.0 geri dönüş/indirme referansıdır.
-- `v1.19.0` tamamlanmış ara sürüm dalıdır ve değiştirilmez.
-- `v1.19.1` tamamlanmış önceki sürüm dalıdır ve değiştirilmez.
-- **Aktif geliştirme ve kalite dalı yalnız `v1.19.20`'dir.** Açıkça başka kullanıcı kararı gelmedikçe sonraki kod, test, asset, veri ve belge değişiklikleri yalnız bu dalda yapılır.
-- Repo ayarı düzeyindeki branch-protection/ruleset bu bağlantıdan yazılamıyorsa bunu sunucu tarafı kilidi uygulanmış gibi göstermeyin.
+- Kullanıcının 2026-10-10 sonrasında verdiği açık talimata göre **tek aktif repo `uysalayhan23/DevreTasarimStudyo`, tek aktif çalışma dalı `main`**. Önceki belgelerde `main` dalını salt okunur ve `v1.19.20` dalını tek yazılabilir dal gösteren ifadeler **tarihsel talimattır**, bu repodaki güncel yönlendirme değildir.
+- Önceki v1.18.0 golden sabit commit `e00b6fcf0ea3eb721eae8285beb7052573b61373` tarihsel geri dönüş referansıdır; bu referansı, `v1.19.0` ve `v1.19.1` dallarını değiştirmeyin. Yeni `main` HEAD geçmiş golden SHA ile aynıymış gibi raporlamayın.
+- `v1.19.20` etiketli kilitli **teknik kalite standartları, çalışma uzayı, testler, ajan akışı ve tek backlog** yeni `main` dalında aynen uygulanmaya devam eder. Dokümanlardaki tarihsel dal adları teknik kilitlerin kaldırılması anlamına gelmez.
+- **GitHub Actions kullanıcının ayrı açık izni olmadan kesinlikle çalıştırılmaz**; `workflow_dispatch`, rerun, Actions dakika harcatan başka tetikleme yapılmaz. Commit mesajlarında `[skip ci]` kullanılır. Mevcut workflow dosyalarını tetiklemek amacıyla değiştirmeyin.
+- Normal ChatGPT + GitHub çalışma yöntemi geçerlidir; Codex/Work Mode kullanılmaz. Rutin okuma, inceleme, küçük güvenli değişiklik, test, commit ve push için tekrar onay istenmez; doğrulanmamış PASS/DONE kaydı verilmez.
+- Force-push ve gereksiz geçici `ci/*`, `debug/*`, `agent/*`, `tmp/*` dalları açılmaz. GitHub sunucu koruma ayarı uygulanmamışsa yalnız dosya içi 'lock' ile korunduğu iddia edilmez.
 
 ## Yeni oturumda
 
@@ -50,7 +50,7 @@ Bu dosya uygulama içindeki kilitleri belgeler; GitHub dal koruması veya Window
 - Bu dalda Master Quality Agent Program **LOCKED** durumundadır.
 - Normal ChatGPT sohbeti + GitHub dışında çalışma ortamına geçilmez; Codex ve Work Mode kullanılmaz.
 - Geçici `ci/*`, `debug/*`, `agent/*`, `tmp/*` branch oluşturulmaz.
-- GitHub Actions doğrudan `v1.19.20` veya `workflow_dispatch` üzerinden çalıştırılır.
+- GitHub Actions **çalıştırılmaz**; yalnız kullanıcının ayrı açık izniyle ilerlenebilir. Güncel çalışma dalı `main`dir.
 - Fiziksel ürün verisi uydurulmaz; üretici/CAD/katalog kaynak önceliği uygulanır.
 - Gerçek pano ölçeği için doğrulanmış mm ölçüleri, ortografik karşıdan görünüm ve terminal geometrisi release kriteridir.
 - P0/P1 kalite sorunları raporla bırakılmaz; güvenli ve uygulanabilir ise BUL → DÜZELT → TEST → REGRESYON → MASTER ONAY döngüsü tamamlanır.
