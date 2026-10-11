@@ -214,6 +214,21 @@ async function drag(cdp,from,to){
  for(let i=1;i<=14;i++)await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:from.x+(to.x-from.x)*i/14,y:from.y+(to.y-from.y)*i/14,buttons:1});
  await release(cdp,to);
 }
+function probePointerEnd(body,tip,target){
+ if(![body?.x,body?.y,tip?.x,tip?.y,target?.x,target?.y].every(Number.isFinite))
+  throw Error('Probe drag screen geometry missing');
+ return {x:body.x+(target.x-tip.x),y:body.y+(target.y-tip.y)};
+}
+async function dragProbeToTerminal(cdp,probeId,deviceId,terminalId){
+ const probeSelector='#scene .component[data-id="'+probeId+'"]',
+  deviceSelector='#scene .component[data-id="'+deviceId+'"]';
+ const body=await coords(cdp,probeSelector+' .body');
+ const tip=await coords(cdp,probeSelector+' [data-port="TIP"] .port');
+ const terminal=await coords(cdp,deviceSelector+' [data-port="'+terminalId+'"] .port');
+ const pointerEnd=probePointerEnd(body,tip,terminal);
+ await drag(cdp,body,pointerEnd);
+ return {probeId,deviceId,terminalId,body,tip,terminal,pointerEnd};
+}
 async function ensureReady(cdp){
  const bootstrap=await evaluate(cdp,expression(async()=>{if(!window.DTSTutorialBootstrap?.ensure)return false;await window.DTSTutorialBootstrap.ensure();return !!window.DTSTutorialMode}));
  check(bootstrap,'Tutorial lazy module did not initialize');
@@ -273,13 +288,13 @@ async function probe(cdp,report){
  let s=await read(cdp);
  check(!pick(s,'red')?.probeTarget&&!pick(s,'black')?.probeTarget,'Red and black probes must start free');
  const count=s.wires.length;report.states.probe_free=s;await shotEvidence(cdp,report,'probe-free');
- const blackFrom=await coords(cdp,'#scene .component[data-id="black"] .body');
- const blackTo=await coords(cdp,'#scene .component[data-id="g"] [data-port="M"] .port');
- await drag(cdp,blackFrom,blackTo);await sleep(160);
- s=await read(cdp);check(!!pick(s,'black')?.probeTarget,'Real pointer drag did not attach black probe');
+ const blackDrag=await dragProbeToTerminal(cdp,'black','g','M');await sleep(160);
+ s=await read(cdp);report.states.probe_black_drag={geometry:blackDrag,attached:pick(s,'black')?.probeTarget||null};
+ if(!pick(s,'black')?.probeTarget)await shotEvidence(cdp,report,'diagnostic-black-tip-alignment');
+ check(!!pick(s,'black')?.probeTarget,'Real pointer drag did not attach black probe (TIP not aligned with target terminal)');
  report.states.probe_black_attached=s;await shotEvidence(cdp,report,'probe-black-attached');
- const from=await coords(cdp,'#scene .component[data-id="red"] .body'),to=await coords(cdp,'#scene .component[data-id="g"] [data-port="P"] .port');
- await drag(cdp,from,to);await sleep(160);
+ const redDrag=await dragProbeToTerminal(cdp,'red','g','P');await sleep(160);
+ report.states.probe_red_drag_geometry=redDrag;
  s=await read(cdp);const m=pick(s,'m');
  check(!!pick(s,'red')?.probeTarget,'Real pointer drag did not attach red probe');
  check(!!pick(s,'black')?.probeTarget,'Black probe lost contact');
@@ -374,4 +389,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[MQ05]',e.stack||e.message);process.exitCode=1});
-module.exports={meterFixture,clampFixture,dcFixture,read,seal,probe,clamp,flow};
+module.exports={meterFixture,clampFixture,dcFixture,read,seal,probe,clamp,flow,probePointerEnd};
