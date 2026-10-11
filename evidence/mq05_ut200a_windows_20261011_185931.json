@@ -1,0 +1,106 @@
+{
+  "schema": "dts-ut200a-windows-qa-result-v1",
+  "timestamp": "2026-10-11",
+  "zip": {
+    "name": "QA_MQ05_UT200A_SONUC_20261011_185931.zip",
+    "sha256": "7fc2967d1913d2c3bb5c466de166fa9ad68b4af514adc6f790852ca54b370eb6",
+    "entries": 12,
+    "crc": "PASS"
+  },
+  "host": {
+    "node": "v24.21.0",
+    "chromium": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  "windows_node": {
+    "total": 115,
+    "pass": 115,
+    "fail": 0,
+    "skip": 0,
+    "exit_code": 0
+  },
+  "chromium": {
+    "exit_code": 1,
+    "started": true,
+    "result": "FAIL",
+    "failure_step": "ut200a_real_jaw_drag",
+    "error": "UT200A jaws did not visibly open as they approached the AC conductor",
+    "artifact_verification": "NOT_RUN"
+  },
+  "trace": {
+    "before": {
+      "jawOpen": false,
+      "clampedWireId": null,
+      "visualState": "closed",
+      "wireCount": 2,
+      "projectRunning": true,
+      "distanceToWirePixels": 178.7510070495915
+    },
+    "drag_geometry": {
+      "from": {
+        "x": 0,
+        "y": 0
+      },
+      "jaw": {
+        "x": 90,
+        "y": 65
+      },
+      "wire": {
+        "x": 494.62322998046875,
+        "y": 140
+      },
+      "end": {
+        "x": 404.62322998046875,
+        "y": 75
+      }
+    },
+    "opened": {
+      "jawOpen": false,
+      "clampedWireId": null,
+      "candidate": null
+    }
+  },
+  "screenshots": {
+    "count": 3,
+    "valid_crc_and_png": 3,
+    "size": "1440x1000",
+    "sha256_equal_to_json": 3,
+    "file_size_equal_to_json": 3,
+    "unique_sha256": 1,
+    "sha256": "cf940172f4591ea1956c137e8493daa1af844083471391ba6dd0efa0d6cdb332",
+    "human_inspection": "All three images show dashboard, not visible circuit editor."
+  },
+  "root_cause": {
+    "kind": "QA harness navigation defect",
+    "detail": "Test used DTSEditor.load for fixture, which populated model but left app in dashboard-open mode. Hidden SVG measured zero-size leading pointer origin at (0,0); mouse events never reached UT200A. Correct API is DTSStudio.load, which switches to visible editor.",
+    "physical_device_defect_proven": false
+  },
+  "fix": {
+    "chromium_source": "scripts/browser-mq05-ut200a-jaw-v11920.cjs",
+    "commit": "2e48aa5da39ad02e9daf070dcfee7a4643eaf187",
+    "changes": [
+      "DTSStudio.load fixture",
+      "verify dashboard hidden and editor/UT200A/wire visible",
+      "reject zero pointer geometry"
+    ],
+    "test_file": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "test_commit": "e3b3dd77ddedbae928f113689fd5bc5ac466aa79",
+    "isolated_editor_guard": "4/4 expected cases",
+    "full_updated_windows_node_suite": "NOT_RUN",
+    "updated_real_chromium": "NOT_RUN"
+  },
+  "accepted_historical": {
+    "mq05_node": "110/110 PASS",
+    "mq05_chromium": "4/4 PASS",
+    "mq05_png": "12/12 PASS",
+    "hl_lessons": "64/64 PASS",
+    "hl_png": "100/100 PASS"
+  },
+  "gates": {
+    "UT200A_physical_browser": "OPEN_PENDING_NEW_WINDOWS_RUN",
+    "MQ05_final": "OPEN",
+    "MQ00_final": "OPEN"
+  },
+  "actions_used": false,
+  "commits": "[skip ci]",
+  "note": "PNG byte/hash validity does not demonstrate a usable rendered test when dashboard remains open. This run is definitively FAIL, not 3/4 or partial live jaw success."
+}
