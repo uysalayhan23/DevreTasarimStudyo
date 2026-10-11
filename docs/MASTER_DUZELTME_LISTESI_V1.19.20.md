@@ -2,7 +2,7 @@
 
 Durum: **AKTİF / TEK KAYNAK / FULL G7 CLEAN / MQ-00 REVIEW COMPLETE WITH OPEN BLOCKERS**
 Tarih: 2026-10-04
-Aktif dal: `v1.19.20`
+Aktif dal: **`main`** (`uysalayhan23/DevreTasarimStudyo`, 2026-10-10 kullanıcı kararı); `v1.19.20` eski belgelere ait tarihsel dal adıdır, güncel çalışma dalı değildir.
 Kaynak auditler:
 - `docs/MASTER_QUALITY_AUDIT_V2.md`
 - `docs/MASTER_QUALITY_AUDIT_V3_AGENT_CROSSCHECK.md`
@@ -1746,3 +1746,24 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `tests/project-legacy-collector-pullup-v11920.test.cjs` eski-yeni ayırımı, ters tel uçları, kullanıcı kayıtlarının unchanged parse/roundtrip'i ve açılış uyarısı sözleşmesini kontrol eder. Windows H–L QA listesinin, SHA-256 kaynak izi listesinin ve QA sözleşme testinin içine eklendi.
 - **Gerçek çalışma kanıtı:** Bağlı GitHub `main` sürümünün `project-store.js` ve kanonik `tutorial-lessons.js` dosyaları V8'de yürütüldü. Eski şema algılandı; yeni şema algılanmadı; ters uçlu eski kablolar algılandı; eksik şema algılanmadı; `Projects.parse` ve `Projects.clean` kaynak kablo/direnç verisini eşit tuttu. QA dosyalarının JavaScript sözdizimi doğrulandı. Bu **bağımsız güncel HEAD Node `--test` / gerçek Windows UI kabulü değildir**.
 - **Kalan kabul:** Yeni QA Node testlerinin gerçek yürütmesi; Windows/Edge açılış modalının gerçek görüntüsü; 64 H–L ders / 100 ayrı PNG, UI ve pedagojik kabul; eski .odsdevre import + save file-on-disk davranışına ilişkin uçtan uca kanıt. Dolayısıyla MQ-P1-016 genel DONE / MQ-00 genel kapanış **açık**.
+
+
+## 2026-10-11 — Tek geçişte toplu müfredat ve kalite zinciri (MQ-00)
+
+**Aktif repo:** `uysalayhan23/DevreTasarimStudyo` · **dal:** `main` · GitHub Actions **çalıştırılmadı** · commitler `[skip ci]`.
+
+**Tamamlanan ve gerçek kaynakta yürütülen kod değişiklikleri:**
+- `dist/tutorial-topic-review-batch-m.js`: önceki 136 zengin dersle karışmadan, kalan **1.519** dersteki tekrar eden genel sorular yerine ders başlığına özgü ve **21 konu alanının teknik ilkelerine** dayalı 3 seçenekli sorular üretilir. `dist/tutorial-mode.js` yükleyicisine eklendi, bootstrap/index tarayıcı sürüm parametreleri güncellendi.
+- Mevcut `1.655` dersin `136` zengin ders ile `1.519` konu kontrolü şeklindeki **kalite ayrımı korunur**. **Kanonik 0 proje değişikliği**; `source-outline`, müfredat kimlikleri, MEB metadata ve locked devreler bozulmadı.
+- Bağlı GitHub `main` kaynaklarıyla 18 müfredat modülü V8 içinde gerçek sırayla yürütüldü: **1.655 ders, 1.519 farklı yeni konu sorusu, 136/136 önceki rich kayıt aynı, MEB `audit.invalid=[]`**. `meb.officialOutcomeVerified=0`; resmî kazanım doğrulanmamışsa doğrulanmış sayılmaz.
+- `tests/tutorial-topic-review-batch-m-v11920.test.cjs` 1.655 içerik bütünlüğü, 1.519 soru, 136 rich korunumu, projelerin değişmezliği ve idempotence için eklendi.
+- `scripts/qa-tutorial-1655-simulation-v11920.cjs` özgün katalog + gerçek `Simulation.solve` ile 1.655 dersi tek tek denetleyip **kablolu/sadece teori** sınıflarına ayıran, eksik tanımlar / devre adımları / başlangıç kısa devre / blokaj ve kararsızlığı raporlayan çalıştırılabilir fail-closed kontrolüdür. Sonuç `build/qa-tutorial-1655-simulation-report.json`. `tests/qa-tutorial-1655-simulation-v11920.test.cjs` tam Node kapısına alındı.
+- `QA_TAM_PROJE_CALISTIR.bat` + `scripts/qa-full-windows-v11920.ps1` tek Windows çalıştırmasında **tüm Node testleri → 1.655 solver raporu → H–L 64 ders/100 gerçek PNG → UT200A fiziksel çene/4 PNG** zincirini fail-closed toplar. Günlükler, kaynak SHA-256, ayrı H–L/UT200A kanıt ZIP'leri ve birleşik `run-summary.json` → `build/QA_TAM_PROJE_SONUC_*.zip` içine konur. Önceden oluşturulmuş/stale ZIP'ler yeni kanıt kabul edilmez.
+- `BASLAT.bat` üretim `file:///` başlangıcı, golden/locked koşullar, gerçek malzeme geometrileri, özel Windows servis yasağı ve mevcut simülasyon kabloları **değiştirilmedi**.
+
+**Açık kalan işler / kesinlikle DONE ilan edilmeyenler:**
+1. **1.519 dersin özgün, gerçek konu anlatımı, ihtiyaç duyulan fiziksel devre geliştirmesi, ölçüm/deney ve pedagojik/görsel kabulü.** Yeni soru katmanı bu 1.519 dersi `rich-reference-v1` yapmaz. Teori derslerine gerçek devre yoksa çalışma varmış gibi gösterilmez.
+2. En yeni `main` HEAD'in tam **Node --test**, tüm 1.655 dersin native solver kabulu ve Windows/Edge `file:///` açılış/görsel, 64 H–L / 100 PNG, UT200A / 4 PNG birleşik kabulü. Bu oturumda GitHub DNS yerel erişimi ve gerçek Windows çalıştırma ortamı olmadığı için sonuçlar **UNVERIFIED/OPEN**; henüz gerçek ZIP kanıtı oluşturulmadı.
+3. Açık kalan pano ürün W/H/D, terminal doğruluğu, donanım fiziksel model eşleme, kullanıcı akışları ve diğer MQ backlog maddeleri için bağımsız kalite kanıtları. Kapsam taranmadıkça kapatılmadı.
+
+**MQ-00 kapanış ilkesi:** Kod yükleme/V8 kaynak başarısı ≠ tam Node testi ≠ gerçek Windows kullanıcı/görsel kabulü ≠ bütün ders içeriğinin tamamlanması. Sahte kabul sayacı artırılmayacak.
