@@ -140,3 +140,42 @@ test('UT200A drag start rejects SVG movable labels and chooses drawable body',as
  assert.ok(src.includes('[data-label-key]'));
  assert.ok(src.includes('[data-meter-position]'));
 });
+
+
+test('UT200A remeasures SVG jaw target after panel selection, then releases at corrected pointer',()=>{
+ const qa=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
+ const start=qa.indexOf("const selected=await dragDiagnostics(cdp,geometry.from);");
+ const recalc=qa.indexOf("const selectedGeometry=await aimJaw(cdp);",start);
+ const press=qa.indexOf("await press(cdp,geometry.from);",recalc);
+ const align=qa.indexOf("await alignJawWhileDragging(cdp,geometry.end,report);",press);
+ const release=qa.indexOf("await release(cdp,alignedEnd);",align);
+ assert.ok(start>=0&&recalc>start&&press>recalc&&align>press&&release>align,
+  'Must recalculate live SVG matrices after selecting and release at aligned position');
+ assert.match(qa,/report\.states\.drag_geometry_after_selection=selectedGeometry/);
+ assert.match(qa,/report\.states\.jaw_alignment_attempts=attempts/);
+});
+test('UT200A live correction moves actual pressed pointer closer to wire; fails outside viewport',async()=>{
+ const src=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
+ const begin=src.indexOf('async function alignJawWhileDragging(cdp,screenPointer,report){');
+ const end=src.indexOf('async function inspectJaw(cdp){',begin);
+ assert.ok(begin>=0&&end>begin,'Jaw correction source missing');
+ let iterations=0;
+ const moves=[],report={states:{}};
+ const align= new Function('liveJawAlignment','inspectJaw','check','sleep',src.slice(begin,end)+';return alignJawWhileDragging;')(
+  async()=>({dx:-11,dy:-70,distance:70.84}),
+  async()=>++iterations===1?{jawOpen:false,candidate:null}:{jawOpen:true,candidate:{wireId:'w1'}},
+  (yes,msg)=>{if(!yes)throw Error(msg)},
+  async()=>{}
+ );
+ const cdp={call:async(command,args)=>{assert.equal(command,'Input.dispatchMouseEvent');moves.push(args)}};
+ const out=await align(cdp,{x:700,y:400},report);
+ assert.equal(out.x,689);assert.equal(out.y,330);
+ assert.equal(moves.length,8);
+ assert.equal(report.states.jaw_alignment_attempts.length,2);
+ assert.equal(report.states.jaw_alignment_attempts[1].candidate.wireId,'w1');
+ const failing= new Function('liveJawAlignment','inspectJaw','check','sleep',src.slice(begin,end)+';return alignJawWhileDragging;')(
+  async()=>({dx:-9999,dy:0,distance:9999}),async()=>({jawOpen:false,candidate:null}),
+  (yes,msg)=>{if(!yes)throw Error(msg)},async()=>{}
+ );
+ await assert.rejects(failing(cdp,{x:700,y:400},{states:{}}),/leave Chromium viewport/);
+});
