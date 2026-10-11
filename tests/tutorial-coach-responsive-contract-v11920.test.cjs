@@ -167,7 +167,6 @@ test('64 lessons and 100 screenshot categories are independently required for sa
  shouldReject(x=>x.states.hlLessons.items[0].id='not-a-lesson');
 });
 
-
 test('Chromium policy navigation block is reported before app-readiness assertion',()=>{
  const nav=browser.indexOf('const navigation=await evaluate(cdp');
  const blocked=browser.indexOf("navigation.url.startsWith('chrome-error://')",nav);
