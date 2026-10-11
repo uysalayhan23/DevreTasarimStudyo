@@ -198,6 +198,7 @@ test('capture-phase enhancement drag and restored layout clamp top to 58px at th
      height:Number.parseFloat(this.style.height)||640};
    }};
   const ctx={
+   c:box,
    root:{innerWidth:vw,innerHeight:vh,document:{addEventListener(name,fn,capture){
     assert.equal(capture,true);handlers[name]=fn;
    }}},
