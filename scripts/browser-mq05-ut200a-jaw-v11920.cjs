@@ -376,8 +376,16 @@ async function runJaw(cdp,report){
   if(i===8){report.states.pointer_mid_drag=await dragDiagnostics(cdp,geometry.from);}
  }
  await sleep(130);
+ const pointerLast=await dragDiagnostics(cdp,geometry.end);
+ report.states.pointer_last_drag=pointerLast;
  const opened=await inspectJaw(cdp);
  report.states.opened=opened;await shotEvidence(cdp,report,'jaw-open-over-live-wire');
+ const pointerDelta=pointerLast.devicePosition&&initial.devicePosition?
+  Math.hypot(pointerLast.devicePosition.x-initial.devicePosition.x,pointerLast.devicePosition.y-initial.devicePosition.y):0;
+ report.states.pointer_actual_world_displacement=pointerDelta;
+ check(pointerDelta>10&&pointerLast.gestureActive,
+  'UT200A mouse move did not reach active clamp drag: '+JSON.stringify({
+    initial,selected,pressed,mid:report.states.pointer_mid_drag,last:pointerLast,displacement:pointerDelta}));
  check(opened.jawOpen&&opened.visualState==='open'&&opened.visibleOpenMark,
   'UT200A jaws did not visibly open as they approached the AC conductor');
  check(opened.candidate?.wireId==='w1','Jaws must choose the intended live conductor before release');
