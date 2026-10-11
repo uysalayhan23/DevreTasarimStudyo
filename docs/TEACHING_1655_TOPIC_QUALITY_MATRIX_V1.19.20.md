@@ -249,3 +249,18 @@ MQ-12: Kaynak eşdeğeri yerel Node 30/30 PASS; repo içindeki gerçek node --te
 MQ-10: Gerçek 64 ders Chromium, 100 PNG ve bunların JSON/SHA-256 nihai kabulü OPEN.
 MQ-05: Gerçek simülasyon kabulü OPEN. MQ-00 FINAL: OPEN.
 GitHub Actions sıfır; commitlerde [skip ci]. Eski 18/18 Actions run 38070861990 yalnız eski SHA tarihsel delildir.
+
+
+
+## 2026-10-11 — GitHub Actions'sız tam kaynak edinimi ve kesin 100 PNG kategorisi QA
+
+Doğrudan yerel git erişimi denendi: github.com, api.github.com, raw.githubusercontent.com ve codeload.github.com için DNS başarısız; github.com sabit IP ile HTTPS bağlantısı da kurulamadı. Bu ortamda depo ZIP/clone yüklemesi başarıyla tamamlanamadı. GitHub bağlı connector üzerinden dosya okuma/yazma çalışır, ancak repo arşivini yerel container'a otomatik aktaran destekli action bu oturumda mevcut değildir. Yerel Node v22.16.0 ve Chromium 144 bulunuyor; tam kaynak yokken gerçek app Chromium QA veya repo içindeki test dosyasının birebir node --test koşusu yapılamaz.
+
+Actions olmadan /mnt/data/qa_png altındaki önceden hazırlanmış kaynak-eşdeğer iki yalıtılmış Node test dosyası yeniden gerçekten çalıştırıldı: node --test 30/30 PASS (exit 0), TAP raporu local_checks_2026-10-11.tap. Bu tam GitHub repo test paketi değildir.
+
+Kaynakta kabul açığı bulundu: verifyReportArtifacts(report) sadece benzersiz 100 PNG sayıyordu. Ders, köşe, panel ve genel görünüm kategorilerinin eksiksiz olması bu sayıyla garanti edilmez. Yeni verifyHLArtifactCoverage(report) 16 konu x 4 ders = 64 doğru ID, 16 köşe + 16 panel (konu ilk dersinde), 4 genel ekran ve bunlara ait geometry/resize/interaksiyon PASS kayıtlarını zorunlu kılar. Rapor diske yazılmadan önce ve JSON diskte yeniden okunduktan sonra çalışır (commit 342d94b, [skip ci]). Kalıcı Node testine 64/100 geçerli düzeni + eksik köşe, yanlış konum, yanlış resize, çift ID, eksik genel görünüm, yanlış ders ID için olumsuz durumlar eklendi (commit dbf8ed2, [skip ci]). GitHub'dan alınan güncel doğrulama fonksiyonunun yalıtılmış çalıştırmasında geçerli düzen kabul, 6 hatalı düzen red (7/7 beklenen sonuç); bu da gerçek Chromium kabulü değildir.
+
+MQ-12: yalıtılmış Node suite 30/30 PASS, doğrudan main tam Node suite OPEN.
+MQ-10: gerçek 64 ders / 100 PNG / JSON / SHA-256 üretimi ve kabulü OPEN.
+MQ-05: gerçek simülasyon OPEN. MQ-00 FINAL: OPEN.
+GitHub Actions çalıştırılmadı; yeni commitlerde [skip ci] kullanıldı.
