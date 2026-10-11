@@ -23,7 +23,7 @@ function FreshZip([string]$Pattern,[datetime]$After){
  return $null
 }
 try{
- foreach($Item in @('BASLAT.bat','dist\index.html','dist\app.js','dist\library.js','dist\tutorial-lessons.js','dist\tutorial-mode.js','dist\tutorial-topic-review-batch-m.js','dist\project-store.js','dist\studio.js','tests\tutorial-topic-review-batch-m-v11920.test.cjs','tests\project-legacy-collector-pullup-v11920.test.cjs','tests\tutorial-open-collector-pulldown-v11920.test.cjs','scripts\qa-full-windows-v11920.ps1','scripts\qa-hl64-windows-v11920.ps1','scripts\qa-mq05-ut200a-windows-v11920.ps1')){
+ foreach($Item in @('BASLAT.bat','dist\index.html','dist\app.js','dist\library.js','dist\tutorial-lessons.js','dist\tutorial-mode.js','dist\tutorial-topic-review-batch-m.js','dist\project-store.js','dist\studio.js','tests\tutorial-topic-review-batch-m-v11920.test.cjs','scripts\qa-tutorial-1655-simulation-v11920.cjs','tests\project-legacy-collector-pullup-v11920.test.cjs','tests\tutorial-open-collector-pulldown-v11920.test.cjs','scripts\qa-full-windows-v11920.ps1','scripts\qa-tutorial-1655-simulation-v11920.cjs','scripts\qa-hl64-windows-v11920.ps1','scripts\qa-mq05-ut200a-windows-v11920.ps1')){
   if(-not(Test-Path -LiteralPath (Join-Path $Root $Item) -PathType Leaf)){throw ('Missing file: '+$Item+'. Extract current main ZIP.')}
  }
  $N=(Get-Command node.exe -ErrorAction Stop).Source
@@ -37,6 +37,7 @@ try{
  $Report.node_version=$V
  $Report.node_full=Stage 'all-node-tests' $N @('scripts/run-tests.cjs')
  if(Test-Path -LiteralPath (Join-Path $Build 'tests.tap')){Copy-Item -LiteralPath (Join-Path $Build 'tests.tap') -Destination (Join-Path $Dir 'all-tests.tap') -Force}
+ if(Test-Path -LiteralPath (Join-Path $Build 'qa-tutorial-1655-simulation-report.json')){Copy-Item -LiteralPath (Join-Path $Build 'qa-tutorial-1655-simulation-report.json') -Destination (Join-Path $Dir 'qa-tutorial-1655-simulation-report.json') -Force}
  $PsExe=(Get-Command powershell.exe -ErrorAction Stop).Source
  $At=Get-Date
  $Report.hl64=Stage 'hl64-windows' $PsExe @('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $Root 'scripts\qa-hl64-windows-v11920.ps1')+'"'))
