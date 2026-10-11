@@ -1,6 +1,7 @@
 # One-click QA helper. This is not the application launcher.
 # BASLAT.bat / file:/// application startup remain untouched.
 $ErrorActionPreference = 'Stop'
+$Utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 $Root = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 Set-Location -LiteralPath $Root
 $Stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
@@ -98,7 +99,7 @@ try {
       'scripts\qa-hl64-artifact-verify-v11920.cjs','tests\tutorial-coach-responsive-contract-v11920.test.cjs','BASLAT.bat')) {
     $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
   }
-  $SourceHashes | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $RunDir 'source-hashes.json') -Encoding UTF8
+  [System.IO.File]::WriteAllText((Join-Path $RunDir 'source-hashes.json'),($SourceHashes | ConvertTo-Json -Depth 5),$Utf8NoBom)
   $Summary.node_exit_code = Invoke-QA -Exe $Node.Source -Argv (@('--test','--test-reporter=tap') + $Tests) -Label 'node-tests'
   if ($Summary.node_exit_code -ne 0) { throw 'Node tests FAILED. Chromium acceptance not attempted; inspect ZIP logs.' }
 
@@ -128,7 +129,7 @@ finally {
   if (Test-Path -LiteralPath $Visual) {
     Copy-Item -LiteralPath $Visual -Destination (Join-Path $RunDir 'browser-visual-hl') -Recurse -Force
   }
-  $Summary | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $RunDir 'run-summary.json') -Encoding UTF8
+  [System.IO.File]::WriteAllText((Join-Path $RunDir 'run-summary.json'),($Summary | ConvertTo-Json -Depth 8),$Utf8NoBom)
   @(
     'Devre Tasarim Studyosu - H-L 64 ders QA raporu'
     ('Status: '+$Summary.status)
