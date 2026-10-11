@@ -73,6 +73,19 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
  const fakeDeflate=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1,2,3])),chunk('IEND')]);
  assert.throws(()=>png(fakeDeflate),'CRC-correct but invalid compressed IDAT must fail');
  const invalidFilter=Buffer.concat([valid.subarray(0,33),chunk('IDAT',zlib.deflateSync(Buffer.from([5,255,0,0,255]))),chunk('IEND')]);
+ const unknownCritical=Buffer.concat([valid.subarray(0,33),chunk('JUNK',Buffer.from('x')),chunk('IDAT',compressed),chunk('IEND')]);
+ assert.throws(()=>png(unknownCritical),'unknown critical PNG chunk must fail');
+ function indexedHeader(){
+  const data=Buffer.alloc(13);data.writeUInt32BE(1,0);data.writeUInt32BE(1,4);data[8]=8;data[9]=3;
+  return chunk('IHDR',data);
+ }
+ const missingPalette=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),indexedHeader(),
+  chunk('IDAT',zlib.deflateSync(Buffer.from([0,0]))),chunk('IEND')]);
+ assert.throws(()=>png(missingPalette),'indexed PNG without PLTE must fail');
+ const validIndexed=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),indexedHeader(),
+  chunk('PLTE',Buffer.from([255,0,0])),chunk('IDAT',zlib.deflateSync(Buffer.from([0,0]))),chunk('IEND')]);
+ assert.equal(png(validIndexed).width,1,'indexed PNG with palette is valid');
+
  assert.throws(()=>png(invalidFilter),'Invalid PNG scanline filter must fail');
  const interrupted=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1])),chunk('tEXt',Buffer.from('x')),chunk('IDAT',Buffer.from([2])),chunk('IEND')]);assert.throws(()=>png(interrupted));
  assert.throws(()=>png(sample(0,1)));assert.throws(()=>png(sample(1,0)));
