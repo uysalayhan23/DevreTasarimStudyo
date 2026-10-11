@@ -1,0 +1,86 @@
+{
+  "schema": "dts-ut200a-windows-qa-v1",
+  "date": "2026-10-11",
+  "source": "User-uploaded real Windows UT200A QA ZIP",
+  "zip": {
+    "name": "QA_MQ05_UT200A_SONUC_20261011_200708.zip",
+    "sha256": "0df3655ce53bf82b584fe92b4b8a3eb14823825e3f86840f26c5f581e8dbe2e6",
+    "entries": 12,
+    "crc": "PASS"
+  },
+  "windows": {
+    "node_version": "v24.21.0",
+    "node": {
+      "total": 120,
+      "passed": 120,
+      "failed": 0,
+      "skipped": 0,
+      "exit": 0
+    },
+    "chromium": {
+      "started": true,
+      "exit": 1,
+      "status": "FAIL"
+    },
+    "artifact_verifier": "NOT_RUN",
+    "run_started": "2026-10-11T20:07:08.0333636+03:00",
+    "run_finished": "2026-10-11T20:08:45.9897179+03:00"
+  },
+  "observed": {
+    "device_drag_active": true,
+    "actual_world_displacement": 435.258354228632,
+    "initial_clamped_wire": null,
+    "after_clamped_wire": null,
+    "jaw_open": false,
+    "nearest_jaw_to_wire_px": 70.84331783085378,
+    "live_alignment_target_oscillated": true,
+    "alignment_attempts": 5,
+    "alignment_targets_approx_px": [
+      [
+        691,
+        305.5
+      ],
+      [
+        761.519,
+        234.667
+      ]
+    ],
+    "failure": "UT200A jaws did not visibly open as they approached the AC conductor"
+  },
+  "png_evidence": {
+    "files": 3,
+    "crc_valid": 3,
+    "sha256_match_report": 3,
+    "file_sizes_match_report": 3,
+    "pixel_dimensions": "1440x1000",
+    "success_images": 0
+  },
+  "diagnosis": {
+    "cause": "The conductor route is repeatedly regenerated as the clamp moves. componentObstacles included clamp-meter because Leads.floating excludes only multimeter and probeColor, so the noninvasive clamp itself repelled cable routing as it approached. Target jumped between opposite path positions.",
+    "classification": "Product route-obstacle interaction defect, observed through Windows browser logs and confirmed in source",
+    "test_replay_after_fix": "NOT_RUN"
+  },
+  "correction": {
+    "production_file": "dist/app.js",
+    "commit": "d30f898335296f2ea1f38b57501ad0b0535cc130",
+    "change": "Exclude clamp-meter components from componentObstacles while retaining supply/resistor/other obstacles",
+    "test_file": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "test_commit": "8f53a78245c2d3711915f43d872c06c13e9b72f3",
+    "actual_source_isolated_test": "4/4 PASS: movement of clamp to four different positions leaves other routing obstacles unchanged",
+    "local_node_replay": "27/27 PASS for clamp-meter and instruments tests in prior uploaded source tree patched with same obstacle fix",
+    "current_exact_main_full_node": "NOT_RUN",
+    "current_main_chromium": "NOT_RUN"
+  },
+  "previous_acceptances": {
+    "HL": "64 lessons / 100 PNG PASS preserved historical",
+    "MQ05": "110 Node / 4 Chrome stages / 12 PNG PASS preserved historical"
+  },
+  "mq_gates": {
+    "UT200A_physical_jaw": "OPEN_WINDOWS_RETEST",
+    "MQ05_final": "OPEN",
+    "MQ00_final": "OPEN"
+  },
+  "github_actions_used": false,
+  "commit_convention": "[skip ci]",
+  "notes": "Three PNGs passed integrity only, not physical jaw acceptance. Avoid claiming clamp snap or measured 1A from this run."
+}
