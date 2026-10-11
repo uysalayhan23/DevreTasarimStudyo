@@ -52,10 +52,9 @@ Kod kapsamı: **136/1655**, henüz zengin kod formatına yükseltilmemiş: **151
 | `motor-star-delta` | 4 | 4 | 0 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
 | `dual-dc` | 4 | 4 | 0 | 4 | 0 | 0 | İki tamamen izole DC devre |
 
-**Yeni doğrulanmış kod kapsamı:** 45 elektriksel ölçme + 10 doğru akım + 5 buton/LED + 4 buton/röle + 4 mühürleme + 4 zaman rölesi = **72 ders**. Son 13 kontrol dersi için özgün kablo dizileri birebir korundu ve konuya özel açıklama ile soru eklendi. Başlıkların görsel/Windows ve kullanıcı pedagojik kabulü açık kalır. Zaman rölesi 4/4 sanal titreşim modelleri 1/1, 0,5/1,5 ve 1,5/0,5 saniye olarak düzeltildi. Sıradaki konular tesisat anahtar devreleri, güvenli sanal zil ve 4–20 mA, ardından motor kumanda senaryolarıdır.
+**Tarihsel kapsam notu (Batch G):** 45 ölçüm + 10 DC + 13 kontrol + 4 timer = **72/1.655** idi. Bu sayı güncel değildir; yukarıdaki **136/1.655** Batch H–L sonrası kayıt geçerlidir. Zaman rölesi modellerinde 1/1, 0,5/1,5 ve 1,5/0,5 saniye ayarları kaynak kodda bulunmaktadır.
 
-**Kabul uyarısı:** Bir derse yalnız `designStandard` eklemek kabul değildir. Gerçek devre, görsel, ölçüm/model kaynağı, uygulama adımı ve çocukların anlayacağı neden-sonuç açıklaması mevcut değilse pedagojik DONE sayılmaz. Ders düzeyindeki ekran kabulü ve gerçek donanım ön görünüşü özel QA gerektirir. Üretim GitHub Actions kullanmadan, commitlerde `[skip ci]` kuralıyla yürütülür.
-
+**Güncel MQ-00 açık kalite kapıları:** H–L için HEAD-eş Node + solver regresyon kanıtı, gerçek tarayıcı/Windows görsel kabulü, cihaz fiziksel doğruluğu ve pedagojik değerlendirme tamamlanmadıkça alt dersler nihai DONE sayılmaz. UT200A çene kabulü farklı QA alanında 2026-10-11 20:47:41 Windows raporuyla PASS olmuş olup bu ders kabul sayacına otomatik eklenmez.
 
 ## 2026-10-10 — Batch H, 16 tesisat dersi (kod yükseltmesi; kabul açık)
 
