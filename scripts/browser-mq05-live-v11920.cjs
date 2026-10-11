@@ -260,7 +260,7 @@ const meterFixture={version:7,workspaceMode:'control',name:'MQ05 Probe QA',compo
  {id:'r',typeId:'resistor',x:540,y:330,ref:'R1',resistance:120},
  {id:'m',typeId:'unit-ut33d-plus',x:760,y:210,ref:'M1',meterPosition:4},
  {id:'red',typeId:'test-probe-red',x:850,y:500,ref:'PR',probeFor:'m'},
- {id:'black',typeId:'test-probe-black',x:850,y:615,ref:'PB',probeFor:'m',probeTarget:{c:'g',p:'M'}}
+ {id:'black',typeId:'test-probe-black',x:850,y:615,ref:'PB',probeFor:'m'}
 ],wires:[
  {id:'w1',from:{c:'g',p:'P'},to:{c:'r',p:'1'},color:'#e53935',role:'DC+',points:[]},
  {id:'w2',from:{c:'r',p:'2'},to:{c:'g',p:'M'},color:'#111827',role:'0V',points:[]},
@@ -270,8 +270,14 @@ const meterFixture={version:7,workspaceMode:'control',name:'MQ05 Probe QA',compo
 async function probe(cdp,report){
  await evaluate(cdp,expression(p=>{window.DTSEditor.load(p);return true},meterFixture));
  await sleep(150);await runSimulation(cdp);
- let s=await read(cdp);check(!pick(s,'red')?.probeTarget,'Probe initially must be free');
+ let s=await read(cdp);
+ check(!pick(s,'red')?.probeTarget&&!pick(s,'black')?.probeTarget,'Red and black probes must start free');
  const count=s.wires.length;report.states.probe_free=s;await shotEvidence(cdp,report,'probe-free');
+ const blackFrom=await coords(cdp,'#scene .component[data-id="black"] .body');
+ const blackTo=await coords(cdp,'#scene .component[data-id="g"] [data-port="M"] .port');
+ await drag(cdp,blackFrom,blackTo);await sleep(160);
+ s=await read(cdp);check(!!pick(s,'black')?.probeTarget,'Real pointer drag did not attach black probe');
+ report.states.probe_black_attached=s;await shotEvidence(cdp,report,'probe-black-attached');
  const from=await coords(cdp,'#scene .component[data-id="red"] .body'),to=await coords(cdp,'#scene .component[data-id="g"] [data-port="P"] .port');
  await drag(cdp,from,to);await sleep(160);
  s=await read(cdp);const m=pick(s,'m');
@@ -282,7 +288,7 @@ async function probe(cdp,report){
  check(Math.abs(Number(m?.meter?.value)-24)<1,'Multimeter expected 24 V, got '+JSON.stringify(m?.meter));
  check(s.overlays>=3,'Probe overlay or multimeter not visible');
  report.states.probe_attached=s;await shotEvidence(cdp,report,'probe-voltage');
- report.coverage.probes={free_then_attached:true,real_pointer_drag:true,wires_unchanged:true};
+ report.coverage.probes={free_then_attached:true,both_free_then_attached:true,real_pointer_drag:true,real_pointer_drags:2,wires_unchanged:true};
  report.coverage.multimeter={model:'UT33D+',dc_24v:true,red_black_physical_probes:true,display:m.meter.display};
  await stopSimulation(cdp);
 }
@@ -319,10 +325,12 @@ async function flow(cdp,report){
  const s=await read(cdp),reverse=s.wires.find(w=>w.id==='reverse');
  check(reverse?.mode==='dc'&&reverse?.direction===-1&&reverse?.certainty==='exact','DC wire must retain signed reverse direction');
  check((reverse.classes||'').includes('flow-reverse'),'Real rendered wire lacks reverse flow class');
- const ac=report.states.seal_latch?.wires?.some(w=>w.mode==='ac'&&w.active);
- check(ac,'Active AC feedback was not detected in seal-in');
+ const ac=report.states.seal_latch?.wires?.some(w=>w.mode==='ac'&&w.active&&(w.classes||'').includes('flow-ac'));
+ check(ac,'Rendered AC current flow was not detected in seal-in');
+ const ambiguous=report.states.seal_start?.wires?.some(w=>w.certainty==='ambiguous');
+ check(ambiguous,'Parallel AC paths should be direction-ambiguous while START is pressed');
  report.states.flow_reverse=s;await shotEvidence(cdp,report,'dc-reverse-flow');
- report.coverage.flow={dc_reverse:true,rendered_reverse:true,ac_in_seal_in:true};
+ report.coverage.flow={dc_reverse:true,rendered_reverse:true,ac_in_seal_in:true,ac_ambiguous_parallel:true};
  await stopSimulation(cdp);
 }
 async function main(){
