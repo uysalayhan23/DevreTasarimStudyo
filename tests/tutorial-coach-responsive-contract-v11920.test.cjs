@@ -1,5 +1,5 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),zlib=require('node:zlib');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),zlib=require('node:zlib'),os=require('node:os'),crypto=require('node:crypto');
 const ROOT=path.resolve(__dirname,'..'),ui=fs.readFileSync(path.join(ROOT,'dist/tutorial-mode.js'),'utf8'),browser=fs.readFileSync(path.join(ROOT,'scripts/browser-visual-hl-v11920.cjs'),'utf8');
 function fragment(start,end){const a=ui.indexOf(start),b=ui.indexOf(end,a);assert.ok(a>=0&&b>a);return ui.slice(a,b)}
 const source=fragment('function applyCoachUi(coach){','function persistCoachBox');
@@ -76,4 +76,37 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
  assert.throws(()=>png(invalidFilter),'Invalid PNG scanline filter must fail');
  const interrupted=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1])),chunk('tEXt',Buffer.from('x')),chunk('IDAT',Buffer.from([2])),chunk('IEND')]);assert.throws(()=>png(interrupted));
  assert.throws(()=>png(sample(0,1)));assert.throws(()=>png(sample(1,0)));
+});
+
+test('Chromium QA verifies screenshot file bytes and SHA against JSON and preserves invalid captures',()=>{
+ assert.match(browser,/function verifyReportArtifacts\(report\)/);
+ assert.match(browser,/report\.artifactIntegrity=verifyReportArtifacts\(report\)/);
+ assert.match(browser,/report\.artifactIntegrity\.files>=100/);
+ assert.match(browser,/name\+'\.invalid\.png'/);
+ const a=browser.indexOf('function pngCrc(data){'),b=browser.indexOf('function findBrowser()',a);
+ const crc=vm.runInNewContext(browser.slice(a,b)+';pngCrc',{Buffer,zlib});
+ const png=vm.runInNewContext(browser.slice(a,b)+';pngSize',{Buffer,zlib});
+ function chunk(type,data=Buffer.alloc(0)){
+  const out=Buffer.alloc(12+data.length);out.writeUInt32BE(data.length,0);out.write(type,4);
+  data.copy(out,8);out.writeUInt32BE(crc(out.subarray(4,8+data.length)),8+data.length);
+  return out;
+ }
+ const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(1,0);ihdr.writeUInt32BE(1,4);ihdr[8]=8;ihdr[9]=6;
+ const raw=Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),
+  chunk('IDAT',zlib.deflateSync(Buffer.from([0,255,0,0,255]))),chunk('IEND')]);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'dts-qa-json-')),build=path.join(root,'build','browser-visual-hl');
+ fs.mkdirSync(build,{recursive:true});
+ const file=path.join(build,'sample.png');fs.writeFileSync(file,raw);
+ const entry={file:'build/browser-visual-hl/sample.png',bytes:raw.length,width:1,height:1,sha256:crypto.createHash('sha256').update(raw).digest('hex')};
+ const start=browser.indexOf('function verifyReportArtifacts(report){'),end=browser.indexOf('function assert(cond,msg)',start);
+ assert.ok(start>=0&&end>start);
+ const verify=vm.runInNewContext(browser.slice(start,end)+';verifyReportArtifacts',{
+  fs,path,ROOT:root,BUILD:build,pngSize:png,sha256:data=>crypto.createHash('sha256').update(data).digest('hex')
+ });
+ try{
+  assert.equal(verify({states:{a:{screenshot:entry}}}).files,1);
+  assert.throws(()=>verify({states:{a:{screenshot:{...entry,sha256:'0'.repeat(64)}}}}),'modified digest must fail');
+  fs.writeFileSync(file,Buffer.from([0,1,2]));
+  assert.throws(()=>verify({states:{a:{screenshot:entry}}}),'corrupted screenshot must fail');
+ }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
