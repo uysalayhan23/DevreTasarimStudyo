@@ -122,7 +122,7 @@ try {
 
   # Prevent previous or partially completed PNGs from satisfying this run.
   if (Test-Path -LiteralPath $Visual) { Remove-Item -LiteralPath $Visual -Recurse -Force }
-  $Summary.chromium_exit_code = Invoke-QA -Exe $Node.Source -Argv @('scripts/mq05-browser-v11920.cjs') -Label 'chromium-mq05'
+  $Summary.chromium_exit_code = Invoke-QA -Exe $Node.Source -Argv @('scripts/browser-mq05-live-v11920.cjs') -Label 'chromium-mq05'
   if ($Summary.chromium_exit_code -ne 0) { throw 'Real MQ05 Chrome interaction failed; screenshot and JSON evidence will be included.' }
 
   $Summary.verification_exit_code = Invoke-QA -Exe $Node.Source -Argv @('scripts/qa-mq05-artifact-verify-v11920.cjs') -Label 'artifact-verification'
