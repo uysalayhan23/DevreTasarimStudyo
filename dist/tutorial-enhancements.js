@@ -2,7 +2,7 @@
 'use strict';
 const MODE=root.DTSTutorialMode,LESSONS=root.DTSTutorialLessons;
 if(!MODE||!LESSONS||root.DTSTutorialEnhancements)return;
-const KEY='dts-tutorial-progress-v119',LAYOUT_KEY='dts-tutorial-coach-layout-v119',lastOrders=new Map();
+const KEY='dts-tutorial-progress-v119',LAYOUT_KEY='dts-tutorial-coach-layout-v119',COACH_UI_KEY='dts-tutorial-coach-ui-v11920',lastOrders=new Map();
 let coachVisible=true,drag=null,layoutReady=false,resizeObserver=null,raf=0;
 
 const coach=()=>root.document?.querySelector('#tutorialCoach');
@@ -81,7 +81,7 @@ function enforce(){
  const c=coach();if(!c)return;sideControl();
  if(lesson()){ensureFloatBar();decorateQuiz();if(!layoutReady)applyLayout();if(c.hidden===coachVisible)c.hidden=!coachVisible}else if(!c.hidden)c.hidden=true;
 }
-function setVisible(v){coachVisible=!!v;const c=coach();if(c&&lesson()&&c.hidden===coachVisible)c.hidden=!coachVisible;sideControl();if(coachVisible){ensureFloatBar();if(!layoutReady)applyLayout()}}
+function setVisible(v){coachVisible=!!v;const c=coach();if(c&&lesson())c.hidden=!coachVisible;try{const state=JSON.parse(root.localStorage?.getItem(COACH_UI_KEY)||'{}');root.localStorage?.setItem(COACH_UI_KEY,JSON.stringify({...state,hidden:!coachVisible}))}catch{}sideControl();if(coachVisible){ensureFloatBar();if(!layoutReady)applyLayout()}}
 function refreshArrow(){
  const line=root.document?.querySelector('#tutorialLinkArrow'),ports=[...root.document?.querySelectorAll('.tutorial-next-port .port')||[]];
  if(!(line&&ports.length>=2))return;
@@ -92,8 +92,8 @@ function bind(){
  const c=coach();if(!c)return;applyLayout();ensureFloatBar();sideControl();
  let arrowObserver=null;if(root.MutationObserver){arrowObserver=new root.MutationObserver(ms=>{for(const m of ms)for(const n of m.addedNodes||[])if(n?.id==='tutorialLinkArrow'||n?.querySelector?.('#tutorialLinkArrow'))scheduleArrow()});arrowObserver.observe(root.document.body,{childList:true,subtree:false})}
  root.document.addEventListener('click',e=>{
-  const close=e.target.closest?.('[data-tutorial-coach-close]');if(close){e.preventDefault();setVisible(false);return}
-  const toggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(toggle){e.preventDefault();setVisible(!coachVisible);return}
+  const close=e.target.closest?.('[data-tutorial-coach-close]');if(close){e.preventDefault();e.stopImmediatePropagation();setVisible(false);return}
+  const toggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(toggle){e.preventDefault();e.stopImmediatePropagation();setVisible(!coachVisible);return}
  },true);
  root.document.addEventListener('click',e=>{
   const btn=e.target.closest?.('[data-tutorial-quiz]');if(!btn)return;const l=lesson(),s=session();if(!l?.quiz||!s)return;
