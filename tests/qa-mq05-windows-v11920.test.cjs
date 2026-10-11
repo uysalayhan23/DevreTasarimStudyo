@@ -22,6 +22,7 @@ test('MQ05 live QA bootstraps real Chromium and handles all four stages fail-clo
 test('UT33D+ fixture gives 24V through physical red and black probe contacts',()=>{
  const p=clone(Browser.meterFixture);
  p.components.find(c=>c.id==='red').probeTarget={c:'g',p:'P'};
+ p.components.find(c=>c.id==='black').probeTarget={c:'g',p:'M'};
  const r=S.solve(p,byId,{now:0}),m=p.components.find(c=>c.id==='m');
  assert.equal(r.blocked,false);assert.equal(r.shortCircuit,false);
  assert.equal(m._meter.warning,'');assert.ok(Math.abs(m._meter.value-24)<1);
