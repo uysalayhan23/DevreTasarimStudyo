@@ -101,6 +101,33 @@ try {
       'scripts\qa-hl64-artifact-verify-v11920.cjs','tests\tutorial-coach-responsive-contract-v11920.test.cjs','BASLAT.bat')) {
     $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
   }
+  # Trace every executed regression and every tutorial overlay to the exact ZIP source bytes.
+  # A prior source-hashes.json listed only five files, making H-L code/test provenance incomplete.
+  $TraceSources = @($Tests) + @(
+    'dist/tutorial-source-outline.js',
+    'dist/tutorial-lessons.js',
+    'dist/tutorial-pedagogy.js',
+    'dist/tutorial-measurement-batch-a.js',
+    'dist/tutorial-measurement-batch-b.js',
+    'dist/tutorial-measurement-batch-c.js',
+    'dist/tutorial-measurement-batch-d.js',
+    'dist/tutorial-dc-batch-e.js',
+    'dist/tutorial-control-batch-f.js',
+    'dist/tutorial-timer-batch-g.js',
+    'dist/tutorial-installation-batch-h.js',
+    'dist/tutorial-next-batch-i.js',
+    'dist/tutorial-sensor-batch-j.js',
+    'dist/tutorial-motor-batch-k.js',
+    'dist/tutorial-dual-dc-batch-l.js',
+    'dist/simulation.js'
+  )
+  foreach ($SourceFile in ($TraceSources | Sort-Object -Unique)) {
+    $Absolute = Join-Path $Root $SourceFile
+    if (-not (Test-Path -LiteralPath $Absolute -PathType Leaf)) {
+      throw ('Missing source required for reproducible H-L QA: '+$SourceFile)
+    }
+    $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath $Absolute -Algorithm SHA256).Hash.ToLowerInvariant()
+  }
   [System.IO.File]::WriteAllText((Join-Path $RunDir 'source-hashes.json'),($SourceHashes | ConvertTo-Json -Depth 5),$Utf8NoBom)
   $Summary.node_exit_code = Invoke-QA -Exe $Node.Source -Argv (@('--test','--test-reporter=tap') + $Tests) -Label 'node-tests'
   if ($Summary.node_exit_code -ne 0) { throw 'Node tests FAILED. Chromium acceptance not attempted; inspect ZIP logs.' }
