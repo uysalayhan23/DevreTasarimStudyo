@@ -405,3 +405,13 @@ Makinece okunabilir kaynak kanıtı `evidence/mq05_windows_20261011_174750.json`
 **Gerçekte yürütülen mevcut yerel test kanıtı:** Mevcut pens ampermetre ve ölçüm cihazı Node regresyon testleri `node --test tests/clamp-meter-v119.test.cjs tests/instruments-v115.test.cjs` ile yerelde **27/27 PASS**. Yeni app/Chromium/verifier/Node test kaynaklarının JavaScript sözdizimi PASS, Windows BAT→PowerShell→Chrome→Verifier→ZIP dosya ve test-listesi sözleşmesi kontrol edildi. Fakat yeni 19 dosyalık Node paketi ve çene sürüklemesinin gerçek Windows Chrome koşusu **henüz yapılmadı**. Önceki 110/110 Node / 4/4 Chromium kabulü bu yeni fiziksel çene testi için kanıt yerine kullanılmaz.
 
 **MQ-05 UT200A fiziksel çene final OPEN / REAL WINDOWS ZIP REQUIRED; MQ-05 full scope OPEN; MQ-00 FINAL OPEN.** H–L kanonik sahne/veri ve görsel kabul içeriklerine dokunulmadı; yeni `dist/app.js` kodu pens cihazına koşullu dar değişikliktir, geçmiş görsel kayıtlar yeni tam regresyonun yerine geçmez.
+
+
+
+## 2026-10-11 — UT200A ilk gerçek Windows QA sonucu: 114/115 Node; Chromium başlamadı
+
+Kullanıcı tarafından yüklenen `QA_MQ05_UT200A_SONUC_20261011_184931.zip` (SHA-256 `031ca302ff31f6c1fe9028ffa1b90c000ab55a42e85a2335c373f744048499aa`), **6 ZIP girdisi / CRC PASS**, Windows Node v24.21.0. Gerçek `node --test` koşusu **115 toplam / 114 PASS / 1 FAIL / 0 SKIP**, exit=1. Tek hata `tests/qa-mq05-ut200a-jaw-v11920.test.cjs:44` içindeki negatif kabul testinin `/did not finish/` hata metnini beklemesi; gerçek bağımsız doğrulayıcı bir FAIL raporunu doğru biçimde **`Real Chromium jaw run failed`** hatasıyla reddediyor. **Bu yanlış FAIL bir test beklentisi hatasıdır**, gerçek UT200A çenesinde doğrulanmış ürün hatası değildir.
+
+Sadece ilgili Node test regex'i doğrulayıcının mevcut reddetme mesajıyla eşleştirilerek düzeltildi (commit `361f9d1`, `[skip ci]`). Kaynak eşdeğeri izole Node hata-guard kontrolünde **2/2 PASS** elde edildi; **güncellenmiş tam 115 Node test paketi henüz yeniden çalıştırılmadı**. İlk Windows koşusunda Node başarısız olduğundan **Chromium aşaması hiç başlamadı; 0 gerçek çene ekran görüntüsü, report.json yok, bağımsız PNG/SHA-256 doğrulaması çalışmadı.** Fiziksel çenenin açılma, kabloya snap, 1 A gösterimi için bu yeni turdan PASS sonucu çıkarılmaz.
+
+Ham Windows çalışma raporu ve kaynak SHA'larının makinece okunabilir özeti `evidence/mq05_ut200a_windows_20261011_184931.json` içinde (commit `969c279`, `[skip ci]`). Önceki ayrı MQ-05 **110/110 Node + 4/4 Chrome + 12/12 PNG** PASS kanıtları korunur; H–L **64/64 ders + 100/100 PNG** PASS kanıtları korunur, `BASLAT.bat`/`file:///` değiştirilmedi. **UT200A fiziksel çene Windows E2E OPEN / yeniden QA gerekli. MQ-05 FINAL OPEN. MQ-00 FINAL OPEN.** Actions kullanılmadı.
