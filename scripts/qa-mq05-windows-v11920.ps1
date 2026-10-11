@@ -21,7 +21,7 @@ $Summary = [ordered]@{
   chromium_binary=$null
   chromium_exit_code=$null
   verification_exit_code=$null
-  screenshots_expected=8
+  screenshots_expected=12
   browser_stages_expected=4
   notes=@()
 }
