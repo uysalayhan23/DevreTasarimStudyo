@@ -63,3 +63,9 @@ test('file launcher has fresh revisions for the compatibility checker and warnin
  assert.match(html,/studio\.js\?rev=20261011-collector-legacy-warning1/);
  assert.doesNotMatch(html,/src="project-store\.js\?rev=20261004-wp014"/);
 });
+
+
+test('resuming a browser draft also displays compatibility notice',()=>{
+ const studio=fs.readFileSync(path.resolve(__dirname,'../dist/studio.js'),'utf8');
+ assert.match(studio,/\$\('#resumeProject'\)\.onclick=\(\)=>\{showEditor\(\);showLegacyCircuitWarning\(E\.getProject\(\)\)\}/);
+});
