@@ -166,3 +166,14 @@ test('64 lessons and 100 screenshot categories are independently required for sa
  shouldReject(x=>delete x.states.dashboard.screenshot);
  shouldReject(x=>x.states.hlLessons.items[0].id='not-a-lesson');
 });
+
+
+test('Chromium policy navigation block is reported before app-readiness assertion',()=>{
+ const nav=browser.indexOf('const navigation=await evaluate(cdp');
+ const blocked=browser.indexOf("navigation.url.startsWith('chrome-error://')",nav);
+ const record=browser.indexOf('report.navigationFailure=',blocked);
+ const ready=browser.indexOf('const ready=await evaluate(cdp',record);
+ assert.ok(nav>=0&&blocked>nav&&record>blocked&&ready>record,
+  'Chrome navigation policy error must be recorded before app ready polling');
+ assert.match(browser,/Chromium navigation blocked before app load/);
+});
