@@ -100,12 +100,43 @@ test('UT200A Chrome driver requires visible hit target, explicit selection and a
  const moves=qa.indexOf("for(let i=1;i<=16;i++)",pressed);
  assert.ok(begin>=0&&select>begin&&release>select&&selected>release&&rePress>selected&&pressed>rePress&&moves>pressed,
   'Physical clamp selection must precede actual pointer drag');
- assert.match(qa,/initial\.hitId==='cl'&&initial\.editable/);
+ assert.match(qa,/initial\.hitId==='cl'&&initial\.editable&&!initial\.labelKey/);
  assert.match(qa,/selected\.selected\.includes\('cl'\)&&!selected\.gestureActive/);
- assert.match(qa,/check\(pressed\.gestureActive/);
+ assert.match(qa,/check\(pressed\.gestureActive&&!pressed\.labelDragging/);
  assert.match(qa,/pointer_mid_drag=await dragDiagnostics\(cdp,geometry\.from\)/);
  assert.match(qa,/pointer_actual_world_displacement=pointerDelta/);
  assert.match(qa,/check\(pointerDelta>10&&pointerLast\.gestureActive/);
  assert.match(qa,/document\.elementFromPoint\(p\.x,p\.y\)/);
  assert.match(qa,/gestureActive:document\.body\.classList\.contains\('canvas-gesture'\)/);
+});
+
+
+test('UT200A drag start rejects SVG movable labels and chooses drawable body',async()=>{
+ const src=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
+ const begin=src.indexOf('async function aimJaw(cdp){'),end=src.indexOf('async function dragDiagnostics(cdp,point){',begin);
+ assert.ok(begin>=0&&end>begin,'Jaw targeting helper missing');
+ const component={getScreenCTM:()=>({})};
+ const label={tagName:'text',closest:selector=>selector==='.component'?component:{dataset:{labelKey:'ref'}}};
+ const graphic={tagName:'rect',closest:selector=>selector==='.component'?component:null};
+ let labelOnly=false;
+ const wire={getScreenCTM:()=>({}),getTotalLength:()=>200,
+  getPointAtLength:t=>({x:300+t/2,y:60})};
+ const document={
+  querySelector:selector=>selector.includes('data-id="cl"')?component:wire,
+  elementFromPoint:()=>labelOnly?label:graphic
+ };
+ component.querySelector=()=>({getBoundingClientRect:()=>({left:0,top:0,width:180,height:130})});
+ component.getBoundingClientRect=()=>({left:0,top:0,width:180,height:130});
+ const expression=fn=>fn,evaluate=async(_,fn)=>fn();
+ const DOMPoint=class{constructor(x,y){this.x=x;this.y=y}matrixTransform(){return this}};
+ const aim=new Function('evaluate','expression','document','DOMPoint',
+  src.slice(begin,end)+';return aimJaw;')(evaluate,expression,document,DOMPoint);
+ const position=await aim({});
+ assert.ok(position?.from&&position.fromHit);
+ assert.equal(position.fromHit.tag,'rect');
+ assert.ok(position.from.x>0);
+ labelOnly=true;
+ assert.equal(await aim({}),null,'Refuse to drag when only movable label is hit');
+ assert.ok(src.includes('[data-label-key]'));
+ assert.ok(src.includes('[data-meter-position]'));
 });
