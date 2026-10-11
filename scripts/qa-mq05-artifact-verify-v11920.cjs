@@ -17,9 +17,9 @@ function main(){
   coverage.probes?.free_then_attached&&coverage.probes?.both_free_then_attached&&coverage.probes?.real_pointer_drag&&coverage.probes?.real_pointer_drags===2&&coverage.probes?.wires_unchanged&&
   coverage.multimeter?.dc_24v&&coverage.multimeter?.red_black_physical_probes&&
   coverage.ut200a?.ac_1a&&coverage.ut200a?.noninvasive&&
-  coverage.flow?.dc_reverse&&coverage.flow?.rendered_reverse&&coverage.flow?.ac_in_seal_in&&coverage.flow?.ac_ambiguous_parallel))
+  coverage.flow?.dc_reverse&&coverage.flow?.rendered_reverse&&coverage.flow?.ac_in_seal_in&&coverage.flow?.ac_ambiguous_parallel&&coverage.flow?.ac_directional_after_release&&coverage.flow?.ac_stop_deenergizes))
   fail('MQ-05 functional coverage fields missing');
- if(!Array.isArray(report.screenshots)||report.screenshots.length<8)
+ if(!Array.isArray(report.screenshots)||report.screenshots.length<12)
   fail('Missing live browser screenshot evidence');
  const seen=new Set(),files=[];
  for(const e of report.screenshots){
