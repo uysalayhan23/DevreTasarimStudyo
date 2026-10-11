@@ -107,7 +107,7 @@ try {
   }
   $Summary.test_files = $Tests
   $SourceHashes = [ordered]@{}
-  foreach ($SourceFile in @('dist\tutorial-mode.js','scripts\browser-mq05-ut200a-jaw-v11920.cjs',
+  foreach ($SourceFile in @('dist\app.js','dist\tutorial-mode.js','scripts\browser-mq05-ut200a-jaw-v11920.cjs',
       'scripts\qa-mq05-ut200a-jaw-verify-v11920.cjs','tests\qa-mq05-ut200a-jaw-v11920.test.cjs','BASLAT.bat')) {
     $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
   }
@@ -129,7 +129,7 @@ try {
   $Summary.verification_exit_code = Invoke-QA -Exe $Node.Source -Argv @('scripts/qa-mq05-ut200a-jaw-verify-v11920.cjs') -Label 'artifact-verification'
   if ($Summary.verification_exit_code -ne 0) { throw 'UT200A jaw PNG JSON/SHA-256 verification FAILED.' }
   $Summary.status = 'PASS'
-  Note 'PASS: real Node and 4 browser stages with screenshot JSON SHA-256 verified.'
+  Note 'PASS: real UT200A jaw open/snap, live AC 1A and 4 PNG JSON SHA-256 verified.'
 }
 catch {
   $Message = $_.Exception.Message
