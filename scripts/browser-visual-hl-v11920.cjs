@@ -400,9 +400,17 @@ async function main(){
 
     assert(report.exceptions.length===0,'Tarayıcı runtime exception: '+report.exceptions.join(' | '));
     report.artifactIntegrity=verifyReportArtifacts(report);
-    assert(report.artifactIntegrity.files>=100,'Expected 64 lesson + 32 interaction + 4 global PNG artifacts');
-    fs.writeFileSync(path.join(BUILD,'report.json'),JSON.stringify(report,null,2)+'\n');
-    console.log(JSON.stringify(report,null,2));
+    assert(report.artifactIntegrity.files===100,'Expected exactly 64 lesson + 32 interaction + 4 global PNG artifacts');
+    const reportFile=path.join(BUILD,'report.json');
+    fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
+    const persisted=JSON.parse(fs.readFileSync(reportFile,'utf8'));
+    const lessons=persisted.states?.hlLessons;
+    assert(lessons?.checked===64&&lessons.items?.length===64&&new Set(lessons.items.map(x=>x.id)).size===64,
+      'Persisted JSON lacks exactly 64 unique completed H-L lessons');
+    const verified=verifyReportArtifacts(persisted);
+    assert(persisted.artifactIntegrity?.verified===true&&persisted.artifactIntegrity.files===100&&verified.files===100,
+      'Persisted JSON PNG SHA-256 verification failed');
+    console.log(JSON.stringify(persisted,null,2));
   }catch(err){
     report.failure={message:String(err?.message||err),stack:String(err?.stack||'')};
     // Preserve completed screenshots and failure metadata even when a lesson fails.
