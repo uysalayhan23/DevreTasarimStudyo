@@ -1,0 +1,76 @@
+{
+  "schema": "dts-mq05-node-runtime-v1",
+  "date": "2026-10-11",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "source_provenance": {
+    "source_archive": "DevreTasarimStudyo-main(1).zip",
+    "source_zip_is_pre_mq05_test_fixes": true,
+    "matched_production_github_blobs": 13,
+    "matched_final_node_test_github_blobs": 17,
+    "production_simulation_files_unchanged": true
+  },
+  "initial_run": {
+    "test_files": 16,
+    "total": 99,
+    "pass": 96,
+    "fail": 3,
+    "failure_cause": "Stale tutorial cache version checks and CSS scope regex covering later unrelated rules; no confirmed solver defect"
+  },
+  "fixes": [
+    "tests/tutorial-measurement-batch-b-v11920.test.cjs",
+    "tests/tutorial-measurement-batch-c-v11920.test.cjs",
+    "tests/tutorial-measurement-batch-d-v11920.test.cjs"
+  ],
+  "verified_runs": [
+    {
+      "name": "MQ05 simulation and measurement",
+      "test_files": 16,
+      "total": 99,
+      "pass": 99,
+      "fail": 0,
+      "skipped": 0,
+      "node_version": "v22.16.0",
+      "tap_sha256": "7f30796c26e1fd2cb51336c2600eb200fc0b36db689e44f9574a4e490932ecac"
+    },
+    {
+      "name": "MQ05 signed current flow",
+      "test_files": 1,
+      "total": 4,
+      "pass": 4,
+      "fail": 0,
+      "skipped": 0,
+      "node_version": "v22.16.0",
+      "tap_sha256": "97670f3f7b62d2d86ce836fa6ca0920a5c25e9d92f36b82b70b299acb009f99d"
+    }
+  ],
+  "totals": {
+    "tests": 103,
+    "passed": 103,
+    "failed": 0,
+    "skipped": 0
+  },
+  "covered": [
+    "Solver solves 600+ wiring lessons without global blocker",
+    "PLC latch/STOP output and motor response",
+    "Four seal-in START/release/STOP sequences",
+    "AC/DC modeled meter behaviour",
+    "UT200A noninvasive current AC clamp and DC warning",
+    "Physical red/black probes for voltage, resistance, continuity and diode",
+    "Live touch nonblocking warning",
+    "Signed DC direction/orientation and AC seal-in ambiguity",
+    "Motor forward/reverse interlock and star-delta changeover",
+    "Measurement teaching controls and constrained coach CSS"
+  ],
+  "acceptance": {
+    "MQ05_node_regression": "PASS",
+    "MQ05_live_Windows_browser_probe_placement": "OPEN_NOT_EXECUTED",
+    "MQ05_final": "OPEN",
+    "MQ12_HL_Node": "PASS_PRESERVED",
+    "MQ10_HL_Chromium_64_100": "PASS_PRESERVED",
+    "MQ00_final": "OPEN"
+  },
+  "actions_used": false,
+  "commit_convention": "[skip ci]",
+  "notes": "This audit provides actual executable Node tests, not manual/Chromium interactive meter and wire-flow end-to-end validation. 103/103 is not full app MQ-05 closure."
+}
