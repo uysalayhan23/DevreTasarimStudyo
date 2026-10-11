@@ -87,6 +87,7 @@ try {
     'tests/tutorial-next-batch-i-v11920.test.cjs',
     'tests/tutorial-sensor-batch-j-v11920.test.cjs',
     'tests/tutorial-open-collector-pulldown-v11920.test.cjs',
+    'tests/tutorial-topic-review-batch-m-v11920.test.cjs',
     'tests/project-legacy-collector-pullup-v11920.test.cjs',
     'tests/tutorial-motor-batch-k-v11920.test.cjs',
     'tests/tutorial-motor-physical-regression-v11920.test.cjs',
@@ -129,6 +130,7 @@ try {
     'dist/tutorial-sensor-batch-j.js',
     'dist/tutorial-motor-batch-k.js',
     'dist/tutorial-dual-dc-batch-l.js',
+    'dist/tutorial-topic-review-batch-m.js',
     'dist/simulation.js'
   )
   foreach ($SourceFile in ($TraceSources | Sort-Object -Unique)) {
