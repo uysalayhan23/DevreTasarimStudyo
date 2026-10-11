@@ -189,6 +189,31 @@ async function shot(cdp,name){
     throw Error('Screenshot validation failed ['+name+']: '+e.message+' (raw '+path.relative(ROOT,raw).replace(/\\/g,'/')+', bytes='+data.length+', sha256='+sha256(data)+')');
   }
 }
+function verifyHLArtifactCoverage(report){
+ const states=report.states||{},dir='build/browser-visual-hl/';
+ for(const name of ['dashboard','editor','panel','tutorial'])
+  assert(states[name]?.screenshot?.file===dir+name+'.png','Missing global screenshot: '+name);
+ const topics=['commutator','two-way','intermediate','bells','control-combinations','loop-420','loop-powered','active-passive',
+  'pnp-npn','inductive-capacitive','source-sink','open-collector','bero','motor-forward-reverse','motor-star-delta','dual-dc'];
+ const items=states.hlLessons?.items;
+ assert(states.hlLessons?.checked===64&&Array.isArray(items)&&items.length===64,'Expected exactly 64 completed H-L lesson entries');
+ const byId=new Map(items.map(item=>[item.id,item]));
+ assert(byId.size===64,'Duplicate H-L lesson IDs in screenshot report');
+ for(const topic of topics)for(let n=1;n<=4;n++){
+  const id=topic+'-'+n,item=byId.get(id);
+  assert(item?.screenshot?.file===dir+'hl-'+id+'.png','Missing lesson screenshot: '+id);
+  if(n===1){
+   assert(item.cornerScreenshot?.file===dir+'hl-corners-'+id+'.png','Missing corner screenshot: '+id);
+   assert(item.panelScreenshot?.file===dir+'hl-panel-'+id+'.png','Missing panel screenshot: '+id);
+   assert(item.cornerChecks?.length===4&&item.cornerChecks.every(x=>x.bounded&&x.reachesEdge),
+    'Invalid corner geometry result: '+id);
+   assert(item.resizeChecks?.length===2&&item.resizeChecks.every(x=>x.bounded),
+    'Invalid responsive geometry result: '+id);
+   assert(item.panelInteraction?.ok===true,'Invalid coach interaction result: '+id);
+  }else assert(!item.cornerScreenshot&&!item.panelScreenshot,'Unexpected interaction screenshot: '+id);
+ }
+ return {lessons:64,corners:16,panels:16,global:4,expectedTotal:100};
+}
 function verifyReportArtifacts(report){
  const seen=new Set();
  const visit=node=>{
@@ -401,16 +426,18 @@ async function main(){
 
 
     assert(report.exceptions.length===0,'Tarayıcı runtime exception: '+report.exceptions.join(' | '));
+    report.artifactCoverage=verifyHLArtifactCoverage(report);
     report.artifactIntegrity=verifyReportArtifacts(report);
-    assert(report.artifactIntegrity.files===100,'Expected exactly 64 lesson + 32 interaction + 4 global PNG artifacts');
+    assert(report.artifactIntegrity.files===report.artifactCoverage.expectedTotal,'Expected exactly 64 lesson + 32 interaction + 4 global PNG artifacts');
     const reportFile=path.join(BUILD,'report.json');
     fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
     const persisted=JSON.parse(fs.readFileSync(reportFile,'utf8'));
     const lessons=persisted.states?.hlLessons;
     assert(lessons?.checked===64&&lessons.items?.length===64&&new Set(lessons.items.map(x=>x.id)).size===64,
       'Persisted JSON lacks exactly 64 unique completed H-L lessons');
+    const coverage=verifyHLArtifactCoverage(persisted);
     const verified=verifyReportArtifacts(persisted);
-    assert(persisted.artifactIntegrity?.verified===true&&persisted.artifactIntegrity.files===100&&verified.files===100,
+    assert(persisted.artifactIntegrity?.verified===true&&persisted.artifactIntegrity.files===100&&verified.files===coverage.expectedTotal,
       'Persisted JSON PNG SHA-256 verification failed');
     console.log(JSON.stringify(persisted,null,2));
   }catch(err){
