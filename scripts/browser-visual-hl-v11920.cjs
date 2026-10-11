@@ -269,6 +269,11 @@ async function main(){
     await cdp.call('Page.enable');await cdp.call('Runtime.enable');
     await cdp.call('Emulation.setDeviceMetricsOverride',{width:GOLDEN.viewport.width,height:GOLDEN.viewport.height,deviceScaleFactor:1,mobile:false});
     const loaded=cdp.wait('Page.loadEventFired',15000);await cdp.call('Page.navigate',{url});await loaded;
+    const navigation=await evaluate(cdp,`(()=>({url:location.href,message:(document.body?.innerText||'').slice(0,300)}))()`);
+    if(navigation.url.startsWith('chrome-error://')){
+      report.navigationFailure={requestedUrl:url,...navigation};
+      throw Error('Chromium navigation blocked before app load: '+navigation.message);
+    }
     const ready=await evaluate(cdp,`(async()=>{for(let i=0;i<240;i++){if(window.DTSStudio&&window.DTSEditor){try{if(window.DTSStudio.ready)await window.DTSStudio.ready}catch{}return true}await new Promise(r=>setTimeout(r,50))}return false})()`);
     assert(ready,'Uygulama gerçek tarayıcıda hazır olmadı.');
     await evaluate(cdp,`(()=>{document.querySelector('#safetyAcknowledge')?.click();return true})()`);
