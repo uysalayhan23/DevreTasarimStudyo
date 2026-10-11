@@ -65,7 +65,7 @@ function Find-Chromium {
 }
 
 try {
-  foreach ($Required in @('dist\index.html','dist\tutorial-mode.js','scripts\mq05-browser-v11920.cjs',
+  foreach ($Required in @('dist\index.html','dist\tutorial-mode.js','scripts\browser-mq05-live-v11920.cjs',
       'scripts\qa-mq05-artifact-verify-v11920.cjs','tests\qa-mq05-windows-v11920.test.cjs')) {
     if (-not (Test-Path -LiteralPath (Join-Path $Root $Required) -PathType Leaf)) {
       throw ('Missing '+$Required+'. Extract the WHOLE current main ZIP before running this BAT.')
@@ -106,8 +106,8 @@ try {
   }
   $Summary.test_files = $Tests
   $SourceHashes = [ordered]@{}
-  foreach ($SourceFile in @('dist\tutorial-mode.js','scripts\mq05-browser-v11920.cjs',
-      'scripts\qa-hl64-artifact-verify-v11920.cjs','tests\tutorial-coach-responsive-contract-v11920.test.cjs','BASLAT.bat')) {
+  foreach ($SourceFile in @('dist\tutorial-mode.js','scripts\browser-mq05-live-v11920.cjs',
+      'scripts\qa-mq05-artifact-verify-v11920.cjs','tests\qa-mq05-windows-v11920.test.cjs','BASLAT.bat')) {
     $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
   }
   [System.IO.File]::WriteAllText((Join-Path $RunDir 'source-hashes.json'),($SourceHashes | ConvertTo-Json -Depth 5),$Utf8NoBom)
