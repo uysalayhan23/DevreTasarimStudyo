@@ -92,7 +92,7 @@
   }
   $('#projectFolderInput').onchange=async e=>{if(!e.target.files?.length)return;store.useFolderFiles(e.target.files);await renderProjects();$('#folderStatus').textContent+=' · Bu tarayıcıda klasör salt okunur; Kaydet dosya indirir.';e.target.value=''};
   $('#fileInput').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const raw=await f.text(),p=Projects.parse(raw);await preserve();load(p)}catch(e){E.toast('Proje açılamadı: '+e.message)}e.target.value=''};
-  $('#homeBtn').onclick=home;$('#dashboardOpen').onclick=open;$('#chooseProjectFolder').onclick=chooseFolder;$('#refreshProjects').onclick=()=>renderProjects(true);$('#resumeProject').onclick=showEditor;
+  $('#homeBtn').onclick=home;$('#dashboardOpen').onclick=open;$('#chooseProjectFolder').onclick=chooseFolder;$('#refreshProjects').onclick=()=>renderProjects(true);$('#resumeProject').onclick=()=>{showEditor();showLegacyCircuitWarning(E.getProject())};
   $('#newBtn').onclick=()=>createProject(E.getProject().workspaceMode);$('#openBtn').onclick=open;$('#saveBtn').onclick=()=>save();$('#exportBtn').onclick=()=>save(true);
   $('#dashboard').addEventListener('click',e=>{const b=e.target.closest?.('[data-new-mode]');if(!b||!$('#dashboard').contains(b))return;e.preventDefault();createProject(b.dataset.newMode)});
   for(const [id,p] of Object.entries(window.DTSStarterProjects)){p.defaultTemplate={id:'starter:'+id,readOnly:true};p.projectId='dts-default-'+id;const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value)}};freeze(p)}
