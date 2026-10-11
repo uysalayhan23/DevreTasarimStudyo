@@ -11,6 +11,6 @@ test('Batch K keeps twelve authentic BERO and motor graphs, 132 rich coding tags
  ids.forEach((id,i)=>{const x=L.byId[id];assert.equal(JSON.stringify({components:x.project.components,wires:x.project.wires,steps:x.steps}),before[i],id);assert.equal(x.pedagogyReview.visualAcceptance,false);assert.equal(x.pedagogyReview.simulationAcceptance,false);});
 });
 test('Batch K is loaded after J and keeps renderer untouched',()=>{
- const m=read('tutorial-mode.js');assert.ok(m.indexOf('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1')>m.indexOf('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j1'));
+ const m=read('tutorial-mode.js');assert.ok(m.indexOf('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1')>m.indexOf('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2'));
  assert.doesNotMatch(read('tutorial-motor-batch-k.js'),/\.innerHTML|#viewport|\.push\(W\(/);
 });
