@@ -43,7 +43,7 @@ for(const [topic,config] of Object.entries(specs)){
     {goal:'Üçüncü varyant PNP sensing çıkışı kullanır. + besleme ile BK arasındaki R1, sensörden bağımsız olarak H1 göstergesine dirençli besleme yolu oluşturabilir; bu devre doğrulanmış NPN pull-up örneği değildir.',
      question:'PNP üçüncü varyantında R1 neden kaynak düzeltmesi gerektirir?',
      options:['Sensör kapalı olsa da R1 üzerinden H1 yüküne akım yolu oluşabilir','R1 iki nötrü otomatik ayırır','R1 besleme gerilimini kendiliğinden sıfırlar'],
-     note:'Kanonik şemadaki PNP + R1 paralel besleme yolu fiziksel açıdan yeniden gözden geçirilmeli; H1 çıkışı gerçek solver ile sınanmadan kabul edilmez.',
+     note:'Kanonik şemadaki PNP + R1 bağlantısı sensörden bağımsız dirençli H1 besleme yolu oluşturabilir; fiziksel doğruluk gözden geçirilmeli ve gerçek solver ile sınanmadan kabul verilmemelidir.',
      correction:true},
     {goal:'Dördüncü varyant NPN sinking sensördür; H1 yükü ve R1 aynı + besleme ile BK düğümüne paralel bağlıdır. Bu, yalnız dijital giriş pull-up direncinden oluşan devre değildir.',
      question:'Dördüncü varyantta R1 ve H1 nasıl konumlanır?',
