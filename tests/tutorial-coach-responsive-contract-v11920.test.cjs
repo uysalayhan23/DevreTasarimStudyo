@@ -176,3 +176,50 @@ test('Chromium policy navigation block is reported before app-readiness assertio
   'Chrome navigation policy error must be recorded before app ready polling');
  assert.match(browser,/Chromium navigation blocked before app load/);
 });
+
+
+test('capture-phase enhancement drag and restored layout clamp top to 58px at three viewports',()=>{
+ const enhancement=fs.readFileSync(path.join(ROOT,'dist/tutorial-enhancements.js'),'utf8');
+ const start=enhancement.indexOf('function applyLayout(v=readLayout()){');
+ const end=enhancement.indexOf('function saveLayout(){',start);
+ const dragStart=enhancement.indexOf("root.document.addEventListener('pointermove',e=>{if(drag)");
+ const dragEnd=enhancement.indexOf('},true);',dragStart)+'},true);'.length;
+ assert.ok(start>=0&&end>start&&dragStart>=0&&dragEnd>dragStart,
+  'Enhanced coach layout and capture drag must be present');
+ assert.match(enhancement,/e\.stopPropagation\(\)/,
+  'Capture handler must be accounted for in geometry tests');
+ for(const [vw,vh] of [[1440,1000],[760,640],[400,320]]){
+  const handlers={};
+  const box={style:{},classList:{contains:()=>false},
+   getBoundingClientRect(){
+    return {left:Number.parseFloat(this.style.left)||0,
+     top:Number.parseFloat(this.style.top)||0,
+     width:Number.parseFloat(this.style.width)||460,
+     height:Number.parseFloat(this.style.height)||640};
+   }};
+  const ctx={
+   root:{innerWidth:vw,innerHeight:vh,document:{addEventListener(name,fn,capture){
+    assert.equal(capture,true);handlers[name]=fn;
+   }}},
+   coach:()=>box,readLayout:()=>({width:460,height:640,left:8,top:8}),
+   clamp:(v,min,max)=>Math.max(min,Math.min(max,v)),
+   drag:{dx:10,dy:12},scheduleArrow:()=>{}
+  };
+  vm.runInNewContext(enhancement.slice(start,end)+';this.applyLayoutTest=applyLayout',ctx);
+  ctx.applyLayoutTest({width:460,height:640,left:8,top:8});
+  assert.equal(Number.parseFloat(box.style.top),58,
+   'Saved top=8 must be repaired on '+vw+'x'+vh);
+  assert.ok(box.getBoundingClientRect().top+box.getBoundingClientRect().height<=vh,
+   'Layout bottom outside viewport on '+vw+'x'+vh);
+  vm.runInNewContext(enhancement.slice(dragStart,dragEnd),ctx);
+  assert.equal(typeof handlers.pointermove,'function');
+  handlers.pointermove({clientX:1,clientY:1});
+  assert.equal(Number.parseFloat(box.style.top),58,
+   'Captured top drag must stop at 58px on '+vw+'x'+vh);
+  assert.equal(Number.parseFloat(box.style.left),8);
+  handlers.pointermove({clientX:vw-1,clientY:vh-1});
+  const result=box.getBoundingClientRect();
+  assert.ok(result.left>=8&&result.top>=58&&result.left+result.width<=vw&&
+    result.top+result.height<=vh,'Bottom/right drag outside viewport on '+vw+'x'+vh);
+ }
+});
