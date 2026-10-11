@@ -2,6 +2,9 @@
 
 **10 Ekim 2026 · GitHub main gerçek müfredat üretici zinciri.** Bu rapor 43 kategori ve 1.655 dersin durumunu repo verisinden otomatik toplar. `rich-reference-v1` etiketi kod şablon kapsamıdır; kullanıcı görsel/Windows ve pedagojik son kabulü değildir.
 
+
+**11 Ekim 2026 toplu konu-sorusu iyileştirmesi:** `dist/tutorial-topic-review-batch-m.js`, 21 konudaki zengin olmayan **1.519 dersin 1.519 genel/tekrar sorusunu**, her ders başlığına özgü ve ilgili konu için doğrulanabilir temel kavrama dayalı soru/üç seçeneğe çevirdi. GitHub `main` modülleri V8 içinde gerçek sırayla yürütüldü: **1.655 ders, 1.519 benzersiz yeni soru, 136/136 rich içerik korunmuş, sıfır kanonik proje/kablo değişikliği, MEB metadata denetiminde sıfır hata**. Bu bir **konu kontrolü yenilemesidir**, otomatik `rich-reference-v1` seviyesine yükseltme veya 1.519 dersin gerçek ölçüm/simülasyon/pedagojik kabulü DEĞİLDİR. Kod kapsamı aşağıdaki gibi **136/1655** kalır. Birleşik `QA_TAM_PROJE_CALISTIR.bat` güncel kaynaklarla full Node → tüm derslerin `Simulation.solve` başlangıç QA → H–L 64/100 PNG → UT200A 4 PNG kanıtını birlikte toplamak için eklendi. **Windows ve tam Node güncel HEAD kabul sonuçları henüz yoktur; tüm bu QA kapıları OPEN.**
+
 Kod kapsamı: **136/1655**, henüz zengin kod formatına yükseltilmemiş: **1519**. Bunların içinde 45/45 elektriksel ölçme dersi rich kod olarak kayıtlı; 10/10 Doğru akım dersi de rich. Çok sayıda sıradan quiz/wiring başlığı hâlen detaylı uygulama ve gerçek devre tasarımı bekliyor.
 
 Çalışma sırası: (1) **Doğru akım 10/10 kod doğrulaması tamam; ekran QA açık**, (2) diğer Temel Elektrik ve tesisat konuları, (3) elektronik ölçme/anahtarlama/sensör ve dijital mantık, (4) motor/pano/PLC, (5) tüm konu başlıklarının gerçek görsel, simülasyon, pedagojik ve Windows kullanıcı kabulü. İlerleme gerçek repo kanıtına göre kaydedilir.
