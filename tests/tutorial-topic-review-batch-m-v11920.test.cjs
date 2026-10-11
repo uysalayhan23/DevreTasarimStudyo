@@ -19,7 +19,7 @@ test('Batch M replaces generic repeated quiz questions in exactly 1519 non-rich 
  assert.equal(s.replaced,1519);
  assert.equal(s.richUntouched,136);
  assert.equal(s.keptNonGeneric,0);
- assert.deepEqual(s.missingRules,[]);
+ assert.equal(s.missingRules.length,0);
  for(const l of L.lessons){
   assert.equal(JSON.stringify(l.project),before.get(l.id),'canonical graph changed '+l.id);
   if(l.designStandard==='rich-reference-v1')assert.equal(l.topicReview,undefined);
