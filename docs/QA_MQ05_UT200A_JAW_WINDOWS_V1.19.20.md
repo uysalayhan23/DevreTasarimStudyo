@@ -34,3 +34,15 @@ Beklenen dört gerçek PNG: `jaw-before-drag.png`, `jaw-open-over-live-wire.png`
 - Somut kanıt: [evidence/mq05_ut200a_windows_20261011_200708.json](../evidence/mq05_ut200a_windows_20261011_200708.json). En son kanıtın başarısızlık durumu hiçbir belgede PASS/DONE'a çevrilemez.
 
 **Kalan kalite kapıları:** Güncel `main` ZIP'ini Windows'ta çıkarıp `QA_MQ05_UT200A_CALISTIR.bat` çalıştırmak; gerçek fare sürüklemesinde açık çene, w1'e snap, 1 A AC, değişmeyen iki kablo, 4 ayrı gerçek PNG ve SHA/CRC artefakt doğrulamasını birlikte görmek. Ardından MQ-12 kanıtı, MQ-13 depo bütünlüğü ve MQ-00 nihai kabulü kaydedilmeli. Kullanıcının açık izni olmadan Actions kullanılmaz; `BASLAT.bat` sunucusuz `file:///` davranışı değiştirilmez.
+
+## 2026-10-11 20:47:41 TRT — kullanıcı Windows yeniden testi (PASS)
+
+**MQ-05 / MQ-12 UT200A çene kabulü: PASS, kullanıcı tarafından yüklenen gerçek Windows QA paketi ile doğrulandı.** Önceki 20:07 başarısız testi tarihsel kanıt olarak kalır, bu test onu izleyen yeni geçiştir.
+
+- Paket: `QA_MQ05_UT200A_SONUC_20261011_204741.zip`. ZIP içeriği 16 entry, CRC hatası yok. `run-summary.json` Node, Chromium, artifact verifier exit code: **0/0/0**, gerçek Google Chrome, Node v24.21.0.
+- `node-tests.stdout.log` final TAP: **121 test, 121 pass, 0 fail, 0 skipped**; 19 test dosyası.
+- `mq05-ut200a-browser/report.json`: **PASS**; gerçek pointer drag, açık çene ve visible marker, `w1` snap, bırakınca kapalı çene, 2 kablo korunmuş, UI'dan ACA kademe, **1.000 A**, warning boş, running=true. Kablo/çene mesafesi snap sonrası ~0.000025 px.
+- `mq05-ut200a-browser/verification.json`: **PASS**; dört ayrı 1440×1000 PNG. ZIP içindeki PNG uzunlukları ve SHA-256 değerleri raporla bağımsız tekrar karşılaştırıldı: **4/4 eşleşiyor**. `checksums.sha256` mevcut. Chromium ve artifact verification stderr boş.
+- Hedeflenen **UT200A fiziksel çene / kablo snap / AC 1 A Windows browser test kapısı CLOSED/PASS**. Bu, tüm 1.655 dersin, tüm cihazların görsel QA'sının veya tam uygulama regresyonunun tamamlandığı anlamına gelmez. `BASLAT.bat` üretim `file:///` açılış politikası korunur; QA izole geçici loopback browser sunucusu üretim uygulamasının çalışma şartı değildir.
+- Ajan kapanış izi: MQ-05 davranış ve MQ-10 Chromium gerçek etkileşim kanıtı → MQ-12 Node+PNG verifier → MQ-13 repo/launcher süreklilik kontrolü → MQ-00 yalnız UT200A çene alt kapısını PASS kabul eder. Genel programdaki bağımsız açık kalite maddeleri açık kalır.
+- GitHub Actions kullanılmadı. Commit: `[skip ci]`.
