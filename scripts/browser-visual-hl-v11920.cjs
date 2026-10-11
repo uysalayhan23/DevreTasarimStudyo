@@ -193,7 +193,9 @@ function verifyReportArtifacts(report){
  const seen=new Set();
  const visit=node=>{
   if(!node||typeof node!=='object')return;
-  if(typeof node.file==='string'&&node.file.endsWith('.png')&&typeof node.sha256==='string'){
+  if(Object.prototype.hasOwnProperty.call(node,'file')){
+   if(typeof node.file!=='string'||!node.file.endsWith('.png')||typeof node.sha256!=='string'||!/^[0-9a-f]{64}$/.test(node.sha256))
+    throw Error('Invalid screenshot entry (PNG path/hash): '+String(node.file));
    const file=path.resolve(ROOT,node.file);
    if(!file.startsWith(BUILD+path.sep))throw Error('Screenshot path outside QA output: '+node.file);
    if(seen.has(file))throw Error('Duplicate screenshot reference: '+node.file);
