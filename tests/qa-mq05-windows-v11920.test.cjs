@@ -15,7 +15,9 @@ test('MQ05 live QA bootstraps real Chromium and handles all four stages fail-clo
  for(const value of ['Input.dispatchMouseEvent','Page.captureScreenshot','Runtime.evaluate','window.DTSTutorialBootstrap.ensure()',
   'seal-in-1','meterFixture','clampFixture','dcFixture','seal_in','probes_and_multimeter','ut200a','ac_dc_flow',
   "report.status='FAIL'","report.status='PASS'"])assert.ok(src.includes(value),value);
- assert.match(src,/await drag\(cdp,from,to\)/);
+ assert.match(src,/await drag\(cdp,body,pointerEnd\)/);
+ assert.match(src,/dragProbeToTerminal\(cdp,'black','g','M'\)/);
+ assert.match(src,/dragProbeToTerminal\(cdp,'red','g','P'\)/);
  assert.match(src,/await press\(cdp,start\)/);
  assert.match(src,/await release\(cdp,start\)/);
 });
@@ -54,4 +56,32 @@ test('single-click Windows launcher and ZIP pipeline leave BASLAT.bat and H-L vi
  assert.match(ver,/sha256|hash\(b\)/);
  assert.match(read('BASLAT.bat'),/set "FILEURL=file:\/\/\/%INDEX:\\=\/%"/);
  assert.match(read('evidence/qa_hl64_windows_20261011_164226.json'),/"hl_lessons_checked": 64/);
+});
+
+
+test('physical probe drag keeps TIP aligned with target rather than body center',()=>{
+ const calc=Browser.probePointerEnd;
+ const body={x:1100,y:550},tip={x:1165,y:532},terminal={x:530,y:337};
+ const result=calc(body,tip,terminal);
+ assert.deepEqual(result,{x:465,y:355});
+ assert.equal(tip.x+result.x-body.x,terminal.x,'probe TIP x reaches terminal');
+ assert.equal(tip.y+result.y-body.y,terminal.y,'probe TIP y reaches terminal');
+ assert.throws(()=>calc(body,null,terminal),/geometry missing/);
+});
+test('real AC seal-in fixture is separate from DC lesson and preserves signed-flow states',()=>{
+ const p=clone(Browser.acFixture);
+ const comp=id=>p.components.find(c=>c.id===id);
+ S.solve(p,byId,{now:0});
+ assert.equal(comp('coil')._active,false);
+ comp('start').state=true;S.solve(p,byId,{now:1});
+ assert.equal(comp('coil')._active,true);
+ assert.ok(['a1','a2','a4','a5'].every(id=>p.wires.find(w=>w.id===id)._flowCertainty==='ambiguous'));
+ assert.ok(p.wires.some(w=>w._flowMode==='ac'&&w._flowActive));
+ comp('start').state=false;S.solve(p,byId,{now:2});
+ assert.equal(comp('coil')._active,true);
+ assert.ok(['a4','a5'].every(id=>{const w=p.wires.find(w=>w.id===id);return w._flowMode==='ac'&&w._flowActive&&w._flowCertainty==='directional'&&w._flowDirection!==0}));
+ comp('stop').state=true;S.solve(p,byId,{now:3});
+ assert.equal(comp('coil')._active,false);
+ const code=read('scripts/browser-mq05-live-v11920.cjs');
+ assert.match(code,/await evaluate\(cdp,expression\(p=>\{window\.DTSEditor\.load\(p\);return true\},acFixture\)\)/);
 });
