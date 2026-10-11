@@ -23,6 +23,14 @@ Beklenen dört gerçek PNG: `jaw-before-drag.png`, `jaw-open-over-live-wire.png`
 
 `scripts/qa-mq05-ut200a-jaw-verify-v11920.cjs`, kaydedilmiş raporu ve dört PNG'yi **PNG CRC/IDAT, 1440×1000 boyut, bayt uzunluğu ve SHA-256** ile tekrar doğrular. Başarı için `verification.json` ve `checksums.sha256` üretilmelidir. Hata halinde `verification.failure.json`, Node/Chromium stdout-stderr ve `run-summary.json` ZIP'e girer. Chromium süresi 900 saniyeyle sınırlanır.
 
-## Kabul sınırı
+## Güncel kabul sınırı — 2026-10-11
 
-Yeni UT200A kodunun GitHub sözdizimi ve Windows başlatıcı/test sözleşmesi statik olarak denetlenmiştir; **henüz gerçek Windows Chromium koşusu yapılmamıştır.** Bu nedenle fiziksel pens çene uçtan uca kabulü şu an **OPEN** kalır. Görsel çene açıklığı, gerçek donanımın mekanik ölçümünün değil, simülasyondaki çene durumunun göstergesidir. Kullanıcının ZIP çıktısı gelince test sonucu kanıta göre işlenecektir.
+**Durum: OPEN — düzeltme sonrası gerçek Windows/Chromium yeniden testi bekleniyor.** Önceki açıklamanın "hiç gerçek Windows koşusu yapılmadı" ifadesi artık güncel değildir.
+
+- Kullanıcının gönderdiği gerçek Windows QA ZIP'i `QA_MQ05_UT200A_SONUC_20261011_200708.zip` raporunda **120/120 Node PASS**, Chromium **FAIL (exit 1)**. Üç PNG dosyasının CRC/boyut/SHA kontrolü başarılıdır; bu, dört aşamalı çene kabulünün geçtiği anlamına gelmez.
+- Gerçek tarayıcı gözlemi: pens sürükleniyor, ancak çene kablo üstünde açılamıyor ve snap gerçekleşmiyor; çene-kablo uzaklığı ~70,84 px. Kablo hedefi yönlendirme sırasında zıplıyor.
+- Kök neden: `dist/app.js` içindeki `componentObstacles()` pens ampermetreyi kablo rotasını etkileyen engel olarak görüyordu. Bu, pens yaklaştıkça kabloyu başka yere yönlendirip yakalama hedefini oynatıyordu.
+- Düzeltme mevcut `main` üzerinde: `clamp-meter` fiziksel ölçüm aracı kabloyu iten engeller dışında tutuldu; önceki kabul edilmiş diğer cihaz engelleri korunur. İlgili regresyon testi eklendi. Önceki kaynak izolasyonunda 4/4 ve yerel uygun test ağacında 27/27 geçti; bu sonuçlar güncel HEAD'in tam Node + Windows testi değildir.
+- Somut kanıt: [evidence/mq05_ut200a_windows_20261011_200708.json](../evidence/mq05_ut200a_windows_20261011_200708.json). En son kanıtın başarısızlık durumu hiçbir belgede PASS/DONE'a çevrilemez.
+
+**Kalan kalite kapıları:** Güncel `main` ZIP'ini Windows'ta çıkarıp `QA_MQ05_UT200A_CALISTIR.bat` çalıştırmak; gerçek fare sürüklemesinde açık çene, w1'e snap, 1 A AC, değişmeyen iki kablo, 4 ayrı gerçek PNG ve SHA/CRC artefakt doğrulamasını birlikte görmek. Ardından MQ-12 kanıtı, MQ-13 depo bütünlüğü ve MQ-00 nihai kabulü kaydedilmeli. Kullanıcının açık izni olmadan Actions kullanılmaz; `BASLAT.bat` sunucusuz `file:///` davranışı değiştirilmez.
