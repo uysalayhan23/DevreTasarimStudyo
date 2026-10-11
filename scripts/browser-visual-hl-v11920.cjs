@@ -6,6 +6,7 @@ const path=require('node:path');
 const os=require('node:os');
 const http=require('node:http');
 const crypto=require('node:crypto');
+const zlib=require('node:zlib');
 const {spawn,spawnSync}=require('node:child_process');
 
 const ROOT=path.resolve(__dirname,'..');
@@ -23,7 +24,8 @@ function pngCrc(data){
 function pngSize(data){
  const sig=Buffer.from([137,80,78,71,13,10,26,10]);
  if(!Buffer.isBuffer(data)||!data.subarray(0,8).equals(sig))throw Error('PNG signature invalid');
- let offset=8,width=0,height=0,ihdr=false,idat=false,idatClosed=false,iend=false;
+ let offset=8,width=0,height=0,bitDepth=0,colorType=-1,interlace=0,ihdr=false,idat=false,idatClosed=false,iend=false;
+ const parts=[];
  while(offset+12<=data.length){
   const len=data.readUInt32BE(offset),end=offset+12+len;
   if(end>data.length)throw Error('PNG chunk truncated');
@@ -33,17 +35,46 @@ function pngSize(data){
   if(!ihdr){
    if(type!=='IHDR'||len!==13)throw Error('PNG IHDR invalid');
    width=payload.readUInt32BE(0);height=payload.readUInt32BE(4);
-   if(!width||!height)throw Error('PNG dimensions zero');
+   bitDepth=payload[8];colorType=payload[9];interlace=payload[12];
+   const depths={0:[1,2,4,8,16],2:[8,16],3:[1,2,4,8],4:[8,16],6:[8,16]};
+   if(!width||!height||!depths[colorType]?.includes(bitDepth)||payload[10]!==0||payload[11]!==0||interlace>1)
+    throw Error('PNG IHDR dimensions or color encoding invalid');
    ihdr=true;
-  }else if(type==='IDAT'){if(idatClosed||len===0)throw Error('PNG IDAT empty or nonconsecutive');idat=true}
-  else if(type==='IEND'){
+  }else if(type==='IDAT'){
+   if(idatClosed)throw Error('PNG nonconsecutive IDAT');
+   idat=true;
+   if(len)parts.push(payload); // PNG permits zero-length IDAT chunks.
+  }else if(type==='IEND'){
    if(len!==0||!idat||end!==data.length)throw Error('PNG IEND/IDAT invalid');
    iend=true;break;
   }else if(type==='IHDR')throw Error('Duplicate IHDR');
   if(idat&&type!=='IDAT')idatClosed=true;
   offset=end;
  }
- if(!ihdr||!idat||!iend)throw Error('PNG missing required chunks');
+ if(!ihdr||!idat||!iend||!parts.length)throw Error('PNG missing image data or required chunks');
+ const channels={0:1,2:3,3:1,4:2,6:4}[colorType],bitsPerPixel=channels*bitDepth;
+ const passes=interlace===0?[[0,0,1,1]]:[
+  [0,0,8,8],[4,0,8,8],[0,4,4,8],[2,0,4,4],[0,2,2,4],[1,0,2,2],[0,1,1,2]];
+ const rows=[];
+ let expectedLength=0;
+ for(const [x,y,dx,dy] of passes){
+  const w=x<width?Math.ceil((width-x)/dx):0,h=y<height?Math.ceil((height-y)/dy):0;
+  if(w&&h){
+   const stride=Math.ceil(w*bitsPerPixel/8);
+   expectedLength+=(stride+1)*h;
+   rows.push({stride,count:h});
+  }
+ }
+ if(expectedLength>64*1024*1024)throw Error('PNG scanlines exceed screenshot safety limit');
+ let inflated;
+ try{inflated=zlib.inflateSync(Buffer.concat(parts),{maxOutputLength:expectedLength+1})}
+ catch(e){throw Error('PNG IDAT compressed data invalid: '+e.message)}
+ if(inflated.length!==expectedLength)throw Error('PNG scanline length invalid');
+ let pos=0;
+ for(const {stride,count} of rows)for(let i=0;i<count;i++){
+  if(inflated[pos]>4)throw Error('PNG scanline filter invalid');
+  pos+=stride+1;
+ }
  return {width,height};
 }
 function findBrowser(){
