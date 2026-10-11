@@ -179,3 +179,35 @@ test('UT200A live correction moves actual pressed pointer closer to wire; fails 
  );
  await assert.rejects(failing(cdp,{x:700,y:400},{states:{}}),/leave Chromium viewport/);
 });
+
+
+test('UT200A noninvasive clamp never becomes a moving wire-routing obstacle',()=>{
+ const src=read('dist/app.js');
+ const start=src.indexOf('function componentObstacles(){');
+ const end=src.indexOf('function heapPush(',start);
+ assert.ok(start>=0&&end>start,'Actual routing-obstacle function missing');
+ assert.match(src,/routeObstacles=componentObstacles\(\)/);
+ assert.match(src,/clampNearest\(c,d\)/);
+ const fixture=Jaw.freeClampFixture();
+ const clamp=fixture.components.find(c=>c.id==='cl');
+ const byIdMinimal={
+  'unit-ut200a':{kind:'clamp-meter',w:180,h:220},
+  'supply-1p':{kind:'supply',w:160,h:130},
+  'resistor':{kind:'resistor',w:100,h:70}
+ };
+ const env={
+  project:fixture,byId:byIdMinimal,Leads:{floating:d=>!!d&&(d.kind==='multimeter'||!!d.probeColor)},
+  appearance:'symbol',materialDefinition:(c,d)=>d,GRID:20
+ };
+ const obstacleFunction=new Function(...Object.keys(env),
+  src.slice(start,end)+';return componentObstacles;')(...Object.values(env));
+ const before=obstacleFunction();
+ assert.equal(before.length,2,'Only AC supply and resistor should repel wire routes');
+ for(const point of [{x:405,y:75},{x:525,y:230},{x:670,y:420},{x:740,y:180}]){
+  clamp.x=point.x;clamp.y=point.y;
+  assert.deepEqual(obstacleFunction(),before,
+   'Moving a floating clamp must not change conductor routes: '+JSON.stringify(point));
+ }
+ assert.ok(before.some(box=>box.left<180&&box.right>180),'Supply remains routing obstacle');
+ assert.ok(before.some(box=>box.left<540&&box.right>540),'Resistor remains routing obstacle');
+});
