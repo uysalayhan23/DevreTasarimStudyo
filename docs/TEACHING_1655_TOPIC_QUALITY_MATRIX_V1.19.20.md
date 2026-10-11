@@ -264,3 +264,16 @@ MQ-12: yalıtılmış Node suite 30/30 PASS, doğrudan main tam Node suite OPEN.
 MQ-10: gerçek 64 ders / 100 PNG / JSON / SHA-256 üretimi ve kabulü OPEN.
 MQ-05: gerçek simülasyon OPEN. MQ-00 FINAL: OPEN.
 GitHub Actions çalıştırılmadı; yeni commitlerde [skip ci] kullanıldı.
+
+
+
+## 2026-10-11 — Library arşiviyle gerçek Node/Chromium denemesi (Actions yok)
+
+Dosya kütüphanesinde kullanıcı arşivi DevreTasarimStudyo-main.zip (85,324,351 bayt, 2026-10-10 09:09 UTC) bulundu; doğrulanmış arşiv SHA-256: 68a572186e44eaccef5d60df8a8b9d66f81ffeabb490546651d1aa30e1cea651. ZIP açma ve ZIP CRC bütünlük kontrolü PASS (744 öğe). Ancak bu arşiv main'in 2026-10-11 HEAD'i f8c881658225f87c98a4e90b093cd5976f7aea64 ile aynı değildir: arşivde dist/tutorial-mode.js blob SHA 4468314d7292547c96449285397e93560ccaf7c1; current main blob SHA f6031603dbc214937645f0c9a8249fbcb042bf0f. Arşivde tests/tutorial-coach-responsive-contract-v11920.test.cjs ve scripts/browser-visual-hl-v11920.cjs hiç yok. Dolayısıyla güncel main'e ait söz konusu iki dosyanın gerçek Node/Chromium yürütülebilir kanıtı bu arşivden üretilemez.
+
+Arşivde bulunan tests/browser-visual-contract-v11920.test.cjs, gerçek Node v22.16.0 ile **4/4 PASS** (exit 0). Arşivdeki öğretici testleri ve installation tutorial dahil daha geniş Node koşusu **96 toplam / 56 PASS / 40 FAIL / 0 skipped** (exit 1); eksik docs/TUTORIAL_DESIGN_STANDARD_LOCK_V1.19.20.md dahil çeşitli eski arşiv test hataları vardır. Bu başarısızlıklar güncel main'in çalışma sonucu sayılmaz. Arşivin scripts/browser-visual-v11920.cjs gerçek Chromium denemesi **FAIL** (exit 1; "Uygulama gerçek tarayıcıda hazır olmadı."); H-L-64 özelleştirilmiş script arşivde yok ve build/browser-visual altında PNG/JSON kanıtı üretilmedi. Arşivin kaynakları üzerinden bugünkü main için 64 ders/100 PNG/SHA-256 kabul sonucu verilemez.
+
+MQ-12: Arşivdeki gerçek Node görsel sözleşmesi 4/4 PASS, arşiv öğretici genel koşusu 56/96 PASS ve 40 FAIL; güncel main kalıcı responsive Node suite **OPEN / NOT RUN**.
+MQ-10: Arşivin global Chromium hazır olma kontrolü FAIL; güncel main H-L 64 ders ve gerçek 100 PNG/JSON/SHA-256 **OPEN / NOT RUN**.
+MQ-05: main canlı simülasyon OPEN. MQ-00 FINAL: OPEN.
+Yeni Actions çalıştırılmadı. Arşiv farkı ve eski koşu hata raporları gizlenmeden kaydedildi. Yeni committe [skip ci].
