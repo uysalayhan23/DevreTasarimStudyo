@@ -45,7 +45,7 @@ test('current floating teacher loads timed courses and micro hints without an ex
  assert.match(m,/tutorial-timer-batch-g\.js\?v=1\.19\.20-timer-batch-g1/);
  assert.match(m,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
  assert.match(m,/DTSTutorialMicroHints\?\.sync/);
- assert.match(b,/tutorial-mode\.js\?v=20261011-collector-pulldown1/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261011-collector-pulldown1/);
+ assert.match(b,/tutorial-mode\.js\?v=20261011-topic-review-m1/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261011-topic-review-m1/);
  assert.doesNotMatch(read('tutorial-timer-batch-g.js'),/#viewport|innerHTML|document\.createElement/);
 });
