@@ -290,14 +290,26 @@ async function aimJaw(cdp){
   const body=g.querySelector('.body'),b=(body?.getBoundingClientRect().width>0&&body?.getBoundingClientRect().height>0)
    ?body.getBoundingClientRect():g.getBoundingClientRect();
   if(b.width<=1||b.height<=1)return null;
-  const from={x:b.left+b.width/2,y:b.top+b.height/2};
+  // The SVG centre may be a movable <text> / [data-label-key]. Clicking it drags
+  // the LABEL rather than starting beginClampDrag. Hit-test the graphic body.
+  const fractions=[[.22,.5],[.78,.5],[.22,.35],[.78,.35],[.22,.65],[.78,.65],
+    [.36,.23],[.64,.23],[.36,.78],[.64,.78],[.5,.87],[.5,.13]];
+  const forbidden='[data-label-key],.port-group,[data-meter-position],[data-meter-action],[data-instrument-key],[data-note-owner],[data-wire],[data-junction]';
+  let from=null,fromHit=null;
+  for(const [fx,fy] of fractions){
+   const x=b.left+b.width*fx,y=b.top+b.height*fy,node=document.elementFromPoint(x,y);
+   if(!node||node.closest('.component')!==g||node.closest(forbidden)||
+      ['text','tspan'].includes(node.tagName?.toLowerCase()))continue;
+   from={x,y};fromHit={tag:node.tagName,fx,fy};break;
+  }
+  if(!from)return null;
   const w=wire.getPointAtLength(wire.getTotalLength()*.5);
   const p=new DOMPoint(w.x,w.y).matrixTransform(wire.getScreenCTM());
   const jaw=new DOMPoint(90,65).matrixTransform(g.getScreenCTM());
   const end={x:from.x+p.x-jaw.x,y:from.y+p.y-jaw.y};
   if(![from.x,from.y,p.x,p.y,jaw.x,jaw.y,end.x,end.y].every(Number.isFinite)||
      from.x<=0||from.y<=0||p.x<=0||p.y<=0)return null;
-  return {from,wire:{x:p.x,y:p.y},jaw:{x:jaw.x,y:jaw.y},end};
+  return {from,fromHit,wire:{x:p.x,y:p.y},jaw:{x:jaw.x,y:jaw.y},end};
  }));
 }
 async function dragDiagnostics(cdp,point){
@@ -305,6 +317,8 @@ async function dragDiagnostics(cdp,point){
   const q=document.elementFromPoint(p.x,p.y),hit=q?.closest?.('.component'),project=window.DTSEditor?.getProject?.(),
    c=project?.components?.find(v=>v.id==='cl');
   return {hitId:hit?.dataset?.id||null,hitTag:q?.tagName||null,
+   labelKey:q?.closest?.('[data-label-key]')?.dataset?.labelKey||null,
+   labelDragging:document.body.classList.contains('label-dragging'),
    selected:[...document.querySelectorAll('#scene .component.selected')].map(el=>el.dataset.id),
    gestureActive:document.body.classList.contains('canvas-gesture'),
    editable:!!window.DTSEditor?.guardEdit?.(),
@@ -355,8 +369,9 @@ async function runJaw(cdp,report){
  // The component click selects its SVG first; test an actual second pointer gesture against the selected clamp.
  const initial=await dragDiagnostics(cdp,geometry.from);
  report.states.pointer_initial=initial;
- check(initial.hitId==='cl'&&initial.editable,
-  'UT200A pointer cannot reach an editable clamp: '+JSON.stringify(initial));
+ check(initial.hitId==='cl'&&initial.editable&&!initial.labelKey&&
+   !['text','tspan'].includes(initial.hitTag?.toLowerCase()),
+  'UT200A pointer must hit draggable body, not label/terminal: '+JSON.stringify(initial));
  await press(cdp,geometry.from);
  await release(cdp,geometry.from);
  await sleep(50);
@@ -367,8 +382,8 @@ async function runJaw(cdp,report){
  await press(cdp,geometry.from);
  const pressed=await dragDiagnostics(cdp,geometry.from);
  report.states.pointer_pressed=pressed;
- check(pressed.gestureActive,
-  'UT200A clamp pointer drag did not start: '+JSON.stringify(pressed));
+ check(pressed.gestureActive&&!pressed.labelDragging,
+  'UT200A device gesture did not start (check label/port interception): '+JSON.stringify(pressed));
  for(let i=1;i<=16;i++){
   await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',
    x:geometry.from.x+(geometry.end.x-geometry.from.x)*i/16,
