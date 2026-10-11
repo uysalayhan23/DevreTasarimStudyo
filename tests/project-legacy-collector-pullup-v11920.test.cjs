@@ -55,3 +55,11 @@ test('studio warns on project load without silently changing connections or bypa
  const notice=studio.slice(studio.indexOf('function showLegacyCircuitWarning('),studio.indexOf('function load(project)',studio.indexOf('function showLegacyCircuitWarning(')));
  assert.doesNotMatch(notice,/\.wires\s*=|\.components\s*=|resistance\s*=|E\.load/);
 });
+
+
+test('file launcher has fresh revisions for the compatibility checker and warning UI',()=>{
+ const html=fs.readFileSync(path.resolve(__dirname,'../dist/index.html'),'utf8');
+ assert.match(html,/project-store\.js\?rev=20261011-collector-legacy-warning1/);
+ assert.match(html,/studio\.js\?rev=20261011-collector-legacy-warning1/);
+ assert.doesNotMatch(html,/src="project-store\.js\?rev=20261004-wp014"/);
+});
