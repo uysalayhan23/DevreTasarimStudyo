@@ -25,6 +25,7 @@ test('Windows QA runs actual Node tests and browser script, with no GitHub Actio
   'tutorial-installation-batch-h-v11920.test.cjs',
   'tutorial-next-batch-i-v11920.test.cjs',
   'tutorial-sensor-batch-j-v11920.test.cjs',
+  'tutorial-open-collector-pulldown-v11920.test.cjs',
   'tutorial-motor-batch-k-v11920.test.cjs',
   'tutorial-dual-dc-batch-l-v11920.test.cjs',
   'browser-visual-hl-v11920.cjs',
