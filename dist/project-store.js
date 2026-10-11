@@ -58,6 +58,31 @@
     normalizeWorkspace(q);
     return q;
   }
+  // MQ-P1-016: legacy saved tutorial projects are user-owned files.
+  // Detect the former PNP +24V / 1k pull-up branch, but NEVER rewrite it on load.
+  function legacyCollectorPullup(project){
+    if(!Array.isArray(project?.components)||!Array.isArray(project?.wires))return false;
+    const byId=new Map(project.components.filter(c=>c&&typeof c==='object').map(c=>[c.id,c]));
+    if(byId.get('g1')?.typeId!=='supply-dc-plus'||
+      byId.get('s')?.typeId!=='proximity'||
+      byId.get('h')?.typeId!=='lamp-green'||
+      byId.get('r')?.typeId!=='resistor'||
+      Number(byId.get('r')?.resistance)!==1000)return false;
+    const same=(a,id,pin)=>a?.c===id&&a?.p===pin;
+    const connected=(a,ap,b,bp)=>project.wires.some(w=>
+      (same(w?.from,a,ap)&&same(w?.to,b,bp))||
+      (same(w?.to,a,ap)&&same(w?.from,b,bp)));
+    return connected('g1','P','r','1')&&connected('r','2','s','BK')&&
+      connected('s','BK','h','X1')&&connected('h','X2','g1','M')&&
+      connected('g1','P','s','BN')&&connected('s','BU','g1','M');
+  }
+  function compatibilityWarnings(project){
+    if(!legacyCollectorPullup(project))return [];
+    return [{
+      code:'MQ-P1-016-LEGACY-PNP-PULLUP',
+      message:'Eski PNP sensör devresinde 1 kΩ R1, +24 V ile BK arasındadır; sensör kapalıyken göstergeye istenmeyen akım yolu oluşturabilir. Kaydınız değiştirilmedi. Düzeltilmiş örnek için Öğretici Modu > Open Collector > 3. uygulamayı açın.'
+    }];
+  }
   function normalizeLegacy(p){return migrate(p)}
   function validate(p){
     if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&w.to))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
@@ -146,5 +171,5 @@
     }
     return {put,get,list:readIndex,removeDraft,restoreFolder,chooseFolder,useFolderFiles,scan,readEntry,openFile,remember,save,download,get folderName(){return directory?.name||(readOnlyFiles?.[0]?.webkitRelativePath||'').split('/')[0]||''},get permissionNeeded(){return permissionNeeded}};
   }
-  const api={CURRENT_VERSION,MIN_SUPPORTED_VERSION,LEGACY_BASELINE_VERSION,migrations,migrationPath,migrate,create,parse,validate,normalizeLegacy,clean,uid,filename,isProtected,editableCopy};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSProjects=api;
+  const api={CURRENT_VERSION,MIN_SUPPORTED_VERSION,LEGACY_BASELINE_VERSION,migrations,migrationPath,migrate,create,parse,validate,normalizeLegacy,clean,uid,filename,isProtected,editableCopy,legacyCollectorPullup,compatibilityWarnings};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSProjects=api;
 })(typeof window==='undefined'?globalThis:window);
