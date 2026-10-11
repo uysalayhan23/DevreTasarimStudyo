@@ -244,6 +244,19 @@
     const g=svg('g',{class:Symbols.classes(d,c,appearance)+(selectedIds.has(c.id)?' selected':''),'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
     if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
     g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireOverlayOnly:wireOverDeviceBody(d)});
+    if(d.kind==='clamp-meter'){
+      g.dataset.clampJawState=c._clampJawOpen?'open':'closed';
+      if(c._clampJawOpen){
+        const overlay=svg('g',{class:'clamp-jaw-open-indicator','data-clamp-jaw-state':'open','pointer-events':'none'});
+        const scale=c.materialScale||1;
+        const q=Symbols.rotatedPoint({x:d.w/2,y:65},d,c.rotation||0);
+        overlay.appendChild(svg('path',{d:'M '+(q.x*scale-22)+' '+(q.y*scale-8)+' Q '+(q.x*scale-18)+' '+(q.y*scale-29)+' '+(q.x*scale-3)+' '+(q.y*scale-34),
+          fill:'none',stroke:'#e29a26','stroke-width':4,'stroke-linecap':'round'}));
+        overlay.appendChild(svg('path',{d:'M '+(q.x*scale+22)+' '+(q.y*scale-8)+' Q '+(q.x*scale+18)+' '+(q.y*scale-29)+' '+(q.x*scale+3)+' '+(q.y*scale-34),
+          fill:'none',stroke:'#e29a26','stroke-width':4,'stroke-linecap':'round'}));
+        g.appendChild(overlay);
+      }
+    }
     parent.appendChild(g);
     prepareLabelInteraction(g);
   }
@@ -932,7 +945,7 @@
   function beginClampDrag(c,e){
     if(!guardEdit()||gesture||labelDragging)return;e.preventDefault();
     const d=byId[c.typeId],old={x:c.x,y:c.y,wire:c.clampedWireId,t:c.clampT},start=worldPoint(e),oldFuture=[...future];let moved=false,candidate=null;
-    trackGesture(e,{move:ev=>{const q=worldPoint(ev);if(!moved&&Math.hypot(q.x-start.x,q.y-start.y)<3)return;if(!moved){if(!snapshot(true))return;moved=true}delete c.clampedWireId;delete c.clampT;c.x=old.x+q.x-start.x;c.y=old.y+q.y-start.y;candidate=clampNearest(c,d);c._clampCandidate=candidate?{wireId:candidate.wireId,t:candidate.t}:null;render();},finish:cancel=>{if(cancel&&moved){c.x=old.x;c.y=old.y;if(old.wire){c.clampedWireId=old.wire;c.clampT=old.t}else{delete c.clampedWireId;delete c.clampT}history.pop();future=oldFuture}else if(moved&&candidate){c.clampedWireId=candidate.wireId;c.clampT=candidate.t;const jaw=clampJawPoint(c,d);c.x+=candidate.point.x-jaw.x;c.y+=candidate.point.y-jaw.y}delete c._clampCandidate;if(moved){render();scheduleSave()}updateProperties()}});
+    trackGesture(e,{move:ev=>{const q=worldPoint(ev);if(!moved&&Math.hypot(q.x-start.x,q.y-start.y)<3)return;if(!moved){if(!snapshot(true))return;moved=true}delete c.clampedWireId;delete c.clampT;c.x=old.x+q.x-start.x;c.y=old.y+q.y-start.y;candidate=clampNearest(c,d);c._clampCandidate=candidate?{wireId:candidate.wireId,t:candidate.t}:null;c._clampJawOpen=!!candidate;render();},finish:cancel=>{if(cancel&&moved){c.x=old.x;c.y=old.y;if(old.wire){c.clampedWireId=old.wire;c.clampT=old.t}else{delete c.clampedWireId;delete c.clampT}history.pop();future=oldFuture}else if(moved&&candidate){c.clampedWireId=candidate.wireId;c.clampT=candidate.t;const jaw=clampJawPoint(c,d);c.x+=candidate.point.x-jaw.x;c.y+=candidate.point.y-jaw.y}delete c._clampJawOpen;delete c._clampCandidate;if(moved){render();scheduleSave()}updateProperties()}});
   }
   function beginComponentDrag(c,e){
     if(byId[c.typeId]?.kind==='clamp-meter'&&selectedIds.size===1){beginClampDrag(c,e);return}
