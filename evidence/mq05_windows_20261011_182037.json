@@ -1,0 +1,86 @@
+{
+  "schema": "dts-mq05-real-windows-qa-evidence-v1",
+  "date": "2026-10-11",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "archive": {
+    "name": "QA_MQ05_SONUC_20261011_182037.zip",
+    "sha256": "2a45214c73b4384b901f98d95dce96f48af1258b5538d0092611bc5f77902fc7",
+    "entries": 24,
+    "zip_crc": "PASS"
+  },
+  "run": {
+    "start": "2026-10-11T18:20:37.2409805+03:00",
+    "finish": "2026-10-11T18:22:18.5786359+03:00",
+    "windows_node": "v24.21.0",
+    "status": "PASS",
+    "node": {
+      "tests": 110,
+      "passed": 110,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "chromium_exit_code": 0,
+    "verification_exit_code": 0,
+    "chromium_runtime_exceptions": 0
+  },
+  "chromium": {
+    "stages": {
+      "seal_in": "PASS",
+      "probes_and_multimeter": "PASS",
+      "ut200a": "PASS",
+      "ac_dc_flow": "PASS"
+    },
+    "seal_in": {
+      "START": true,
+      "START_release_latched": true,
+      "STOP_deenergizes": true,
+      "real_mouse_events": true
+    },
+    "free_probe_drags": 2,
+    "probe_wires_unchanged": true,
+    "ut33d_dc_voltage": 24,
+    "ut200a_ac_current": 1,
+    "ut200a_fixture_preclamped": true,
+    "dc_reverse_direction": -1,
+    "ac_parallel_ambiguous": true,
+    "ac_latched_directional": true,
+    "ac_stop_deenergizes": true
+  },
+  "independent_png_verification": {
+    "screenshots": 12,
+    "png_structure_verified": 12,
+    "png_size": "1440x1000",
+    "file_size_matched": 12,
+    "sha256_matched": 12,
+    "unique_sha256": 12,
+    "checksums_sha256_lines": 12,
+    "report_sha256": "1f5b0794c770927ad4c77da2ce44c177475a31a7c6f8ac897dfe79d8635a461c",
+    "report_hash_matched": true
+  },
+  "github_source_sha256_matched_5_of_5": {
+    "dist/tutorial-mode.js": "dfd18abd706ac6522f64cd7431608bb7377c62348bdf7e4efa127201ed5f636d",
+    "scripts/browser-mq05-live-v11920.cjs": "430eeffa3451457f946cbf2517607fb4113759f9036d6b012c6f7d3028a30378",
+    "scripts/qa-mq05-artifact-verify-v11920.cjs": "51dea7b96c5f6e67da0ac30079d9563fe9cf5941e7ad59fef70f6edb3cc654de",
+    "tests/qa-mq05-windows-v11920.test.cjs": "c72906cd0fc11358e8eaa46534a260a4d4a2af23029e5d41cb34c47e9a3336f8",
+    "BASLAT.bat": "487d5d63cccc36929100955c9af35e43341dd480cf01815a52f6f0c944e7eca0"
+  },
+  "scope_limitations": [
+    "Real UT200A current measurement uses a fixture with clampedWireId already set; physical jaw opening/snapping onto cable is not directly exercised by this run.",
+    "This acceptance covers the four defined live Chromium scenarios, not exhaustive UI/device/entire-application simulation QA.",
+    "Screenshots were programmatically validated and a 12-image contact sheet reviewed; no pixel-perfect manual inspection of all original images is claimed."
+  ],
+  "acceptance": {
+    "MQ05_Node_suite": "PASS",
+    "MQ05_4_stage_Chromium": "PASS",
+    "MQ05_12_PNG_sha": "PASS",
+    "MQ05_complete_physical_clamp_interaction": "OPEN_NOT_EXECUTED",
+    "MQ05_full_scope": "OPEN",
+    "MQ10_HL_64_100": "PASS_PRESERVED",
+    "MQ00_final": "OPEN"
+  },
+  "actions_triggered": false,
+  "commit_convention": "[skip ci]",
+  "full_original_png_evidence": "Stored in conversation-uploaded QA ZIP, not copied into GitHub repository."
+}
