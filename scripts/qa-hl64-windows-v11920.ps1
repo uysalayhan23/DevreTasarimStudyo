@@ -87,6 +87,7 @@ try {
     'tests/tutorial-next-batch-i-v11920.test.cjs',
     'tests/tutorial-sensor-batch-j-v11920.test.cjs',
     'tests/tutorial-open-collector-pulldown-v11920.test.cjs',
+    'tests/project-legacy-collector-pullup-v11920.test.cjs',
     'tests/tutorial-motor-batch-k-v11920.test.cjs',
     'tests/tutorial-motor-physical-regression-v11920.test.cjs',
     'tests/tutorial-dual-dc-batch-l-v11920.test.cjs'
@@ -108,6 +109,8 @@ try {
     'QA_HL64_CALISTIR.bat',
     'scripts/qa-hl64-windows-v11920.ps1',
     'tests/qa-hl64-windows-v11920.test.cjs',
+    'dist/project-store.js',
+    'dist/studio.js',
     'dist/tutorial-source-outline.js',
     'dist/tutorial-lessons.js',
     'dist/tutorial-pedagogy.js',
