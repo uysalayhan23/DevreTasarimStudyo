@@ -87,3 +87,23 @@ test('real Chromium UT200A test enters visible editor, never accepts hidden dash
  mock={...mock,wireVisible:false};
  await assert.rejects(verify({}),/not visibly rendered/);
 });
+
+
+test('UT200A Chrome driver requires visible hit target, explicit selection and active drag gesture',()=>{
+ const qa=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
+ const begin=qa.indexOf("const initial=await dragDiagnostics(cdp,geometry.from);");
+ const select=qa.indexOf("await press(cdp,geometry.from);",begin);
+ const release=qa.indexOf("await release(cdp,geometry.from);",select);
+ const selected=qa.indexOf("const selected=await dragDiagnostics(cdp,geometry.from);",release);
+ const rePress=qa.indexOf("await press(cdp,geometry.from);",selected);
+ const pressed=qa.indexOf("const pressed=await dragDiagnostics(cdp,geometry.from);",rePress);
+ const moves=qa.indexOf("for(let i=1;i<=16;i++)",pressed);
+ assert.ok(begin>=0&&select>begin&&release>select&&selected>release&&rePress>selected&&pressed>rePress&&moves>pressed,
+  'Physical clamp selection must precede actual pointer drag');
+ assert.match(qa,/initial\.hitId==='cl'&&initial\.editable/);
+ assert.match(qa,/selected\.selected\.includes\('cl'\)&&!selected\.gestureActive/);
+ assert.match(qa,/check\(pressed\.gestureActive/);
+ assert.match(qa,/pointer_mid_drag=await dragDiagnostics\(cdp,geometry\.from\)/);
+ assert.match(qa,/document\.elementFromPoint\(p\.x,p\.y\)/);
+ assert.match(qa,/gestureActive:document\.body\.classList\.contains\('canvas-gesture'\)/);
+});
