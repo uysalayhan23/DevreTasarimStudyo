@@ -41,7 +41,7 @@ test('UT200A UI opens jaws only for nearby wire and closes them on release',()=>
  assert.match(qa,/data-thermal-param="meterPosition"/);
 });
 test('independent four screenshot verifier rejects unsupported PASS and absent jaw states',()=>{
- assert.throws(()=>Verify.validate({status:'FAIL'}),/did not finish/);
+ assert.throws(()=>Verify.validate({status:'FAIL'}),/Real Chromium jaw run failed/);
  assert.throws(()=>Verify.validate({status:'PASS',coverage:{},tests:{},screenshots:[]}),/Missing real UT200A physical jaw coverage/);
  const src=read('scripts/qa-mq05-ut200a-jaw-verify-v11920.cjs');
  assert.match(src,/const EXPECTED=\['jaw-before-drag','jaw-open-over-live-wire','jaw-snapped-closed','jaw-current-ac-1a'\]/);
