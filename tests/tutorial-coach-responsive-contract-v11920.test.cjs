@@ -32,7 +32,9 @@ test('PNG envelope and failure JSON are checked before visual acceptance',()=>{
  assert.match(browser,/payload\.readUInt32BE\(0\)/);
  assert.match(browser,/payload\.readUInt32BE\(4\)/);
  assert.match(browser,/PNG chunk CRC invalid/);
- assert.match(browser,/PNG missing required chunks/);
+ assert.match(browser,/PNG missing image data or required chunks/);
+ assert.match(browser,/zlib\.inflateSync/);
+ assert.match(browser,/PNG scanline filter invalid/);
  assert.match(browser,/report\.failure=\{message:/);
  assert.match(browser,/fs\.writeFileSync\(path\.join\(BUILD,'report\.json'\)/);
  for(const [capture,gate] of [
@@ -47,15 +49,15 @@ test('PNG envelope and failure JSON are checked before visual acceptance',()=>{
 test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>{
  const a=browser.indexOf('function pngCrc(data){'),b=browser.indexOf('function findBrowser()',a);
  assert.ok(a>=0&&b>a,'PNG parser source unavailable');
- const png=vm.runInNewContext(browser.slice(a,b)+';pngSize',{Buffer});
- const crc=vm.runInNewContext(browser.slice(a,b)+';pngCrc',{Buffer});
+ const png=vm.runInNewContext(browser.slice(a,b)+';pngSize',{Buffer,zlib});
+ const crc=vm.runInNewContext(browser.slice(a,b)+';pngCrc',{Buffer,zlib});
  function chunk(type,data=Buffer.alloc(0)){
   const b=Buffer.alloc(12+data.length);b.writeUInt32BE(data.length,0);b.write(type,4);
   data.copy(b,8);b.writeUInt32BE(crc(b.subarray(4,8+data.length)),8+data.length);
   return b;
  }
  function sample(w=1,h=1){
-  const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(w,0);ihdr.writeUInt32BE(h,4);ihdr[9]=6;
+  const ihdr=Buffer.alloc(13);ihdr.writeUInt32BE(w,0);ihdr.writeUInt32BE(h,4);ihdr[8]=8;ihdr[9]=6;
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',ihdr),chunk('IDAT',zlib.deflateSync(Buffer.from([0,255,0,0,255]))),chunk('IEND')]);
  }
  const valid=sample();assert.equal(png(valid).width,1);assert.equal(png(valid).height,1);
@@ -64,7 +66,14 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
  assert.throws(()=>png(valid.subarray(0,valid.length-3)));
  const noData=Buffer.concat([valid.subarray(0,33),chunk('IEND')]);assert.throws(()=>png(noData));
  const trailing=Buffer.concat([valid,Buffer.from([0])]);assert.throws(()=>png(trailing));
+ const compressed=zlib.deflateSync(Buffer.from([0,255,0,0,255]));
+ const split=Buffer.concat([valid.subarray(0,33),chunk('IDAT'),chunk('IDAT',compressed.subarray(0,3)),chunk('IDAT',compressed.subarray(3)),chunk('IDAT'),chunk('IEND')]);
+ assert.equal(png(split).width,1,'zero-length and split IDAT chunks are legal');
  const emptyIdat=Buffer.concat([valid.subarray(0,33),chunk('IDAT'),chunk('IEND')]);assert.throws(()=>png(emptyIdat));
+ const fakeDeflate=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1,2,3])),chunk('IEND')]);
+ assert.throws(()=>png(fakeDeflate),'CRC-correct but invalid compressed IDAT must fail');
+ const invalidFilter=Buffer.concat([valid.subarray(0,33),chunk('IDAT',zlib.deflateSync(Buffer.from([5,255,0,0,255]))),chunk('IEND')]);
+ assert.throws(()=>png(invalidFilter),'Invalid PNG scanline filter must fail');
  const interrupted=Buffer.concat([valid.subarray(0,33),chunk('IDAT',Buffer.from([1])),chunk('tEXt',Buffer.from('x')),chunk('IDAT',Buffer.from([2])),chunk('IEND')]);assert.throws(()=>png(interrupted));
  assert.throws(()=>png(sample(0,1)));assert.throws(()=>png(sample(1,0)));
 });
