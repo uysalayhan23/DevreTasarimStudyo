@@ -1,0 +1,70 @@
+{
+  "schema": "dts-ut200a-windows-qa-result-v1",
+  "date": "2026-10-11",
+  "artifact": {
+    "name": "QA_MQ05_UT200A_SONUC_20261011_184931.zip",
+    "sha256": "031ca302ff31f6c1fe9028ffa1b90c000ab55a42e85a2335c373f744048499aa",
+    "zip_entries": 6,
+    "zip_crc": "PASS"
+  },
+  "run": {
+    "started_at": "2026-10-11T18:49:31.0432299+03:00",
+    "finished_at": "2026-10-11T18:50:46.9545563+03:00",
+    "node_version": "v24.21.0",
+    "node_tests": {
+      "files": 19,
+      "total": 115,
+      "passed": 114,
+      "failed": 1,
+      "skipped": 0,
+      "exit_code": 1
+    },
+    "chromium": "NOT_RUN",
+    "chromium_exit_code": null,
+    "verification": "NOT_RUN",
+    "verification_exit_code": null,
+    "status": "FAIL"
+  },
+  "failure": {
+    "test": "independent four screenshot verifier rejects unsupported PASS and absent jaw states",
+    "test_number": 58,
+    "file": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "expected_error_pattern": "did not finish",
+    "actual_verifier_error": "Real Chromium jaw run failed",
+    "diagnosis": "Incorrect test expectation; verifier correctly rejected a report with status FAIL.",
+    "production_ut200a_bug_proven": false
+  },
+  "corrective_change": {
+    "file": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "expected_regex_after_fix": "Real Chromium jaw run failed",
+    "commit": "361f9d162746583017c604099dc9fa08b65514a0"
+  },
+  "local_followup": {
+    "node_version": "v22.16.0",
+    "tests": "isolated opening verifier guards (not full repository suite)",
+    "passed": 2,
+    "total": 2,
+    "failed": 0,
+    "artifact": "local sandbox TAP"
+  },
+  "source_hashes_from_windows_zip": {
+    "dist\\app.js": "e3c4d9d2d4b5dd7c4069ec1bfd72a1bc186ec395b21cf316265c609d7a9ac700",
+    "dist\\tutorial-mode.js": "dfd18abd706ac6522f64cd7431608bb7377c62348bdf7e4efa127201ed5f636d",
+    "scripts\\browser-mq05-ut200a-jaw-v11920.cjs": "df8247be29c94f50f1d993f7cf32a89b20bf53410a2fbfb6acc29aafd1c9a22d",
+    "scripts\\qa-mq05-ut200a-jaw-verify-v11920.cjs": "80d6cc7da2463ba331b2f471c02ba415eff9eefc64c020dd3d58d350dfcc606c",
+    "tests\\qa-mq05-ut200a-jaw-v11920.test.cjs": "805e9324025db728eed67db3922486bed098f62a2f76ffab2746b48bfced1432",
+    "BASLAT.bat": "487d5d63cccc36929100955c9af35e43341dd480cf01815a52f6f0c944e7eca0"
+  },
+  "qa_gates": {
+    "ut200a_node": "OPEN_RETEST_REQUIRED",
+    "ut200a_physical_chromium": "OPEN_NOT_RUN",
+    "mq05_previous_node_110": "PASS_PRESERVED_FROM_EARLIER_RUN",
+    "mq05_previous_chromium_4_of_4": "PASS_PRESERVED_FROM_EARLIER_RUN",
+    "hl_64_lessons_100_png": "PASS_PRESERVED",
+    "mq05_final": "OPEN",
+    "mq00_final": "OPEN"
+  },
+  "actions_used": false,
+  "commit_convention": "[skip ci]",
+  "notes": "The uploaded ZIP has no Chromium screenshots, report.json, or verification.json because its Node gate failed. Never count 114/115 as a pass or imply the physical jaw UI was exercised."
+}
