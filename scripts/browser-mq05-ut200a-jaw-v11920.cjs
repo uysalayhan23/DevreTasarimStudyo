@@ -256,18 +256,48 @@ function freeClampFixture(){
  device.meterPosition=0; // OFF while moving around an energized wire; prevents an unconnected-mode warning modal.
  return f;
 }
+async function ensureEditorVisible(cdp){
+ const info=await evaluate(cdp,expression(()=>{
+  const dashboard=document.querySelector('#dashboard');
+  const viewport=document.querySelector('#viewport');
+  const scene=document.querySelector('#scene');
+  const clamp=scene?.querySelector('.component[data-id="cl"]');
+  const wire=scene?.querySelector('[data-wire="w1"] .wire');
+  const view=viewport?.getBoundingClientRect();
+  const clampBox=clamp?.getBoundingClientRect();
+  const wireBox=wire?.getBoundingClientRect();
+  return {
+   dashboardHidden:!!dashboard?.hidden,
+   dashboardOpen:document.body.classList.contains('dashboard-open'),
+   viewportHidden:!!viewport?.hidden,
+   viewportVisible:!!viewport&&!!view&&view.width>100&&view.height>100,
+   clampVisible:!!clampBox&&clampBox.width>1&&clampBox.height>1,
+   wireVisible:!!wireBox&&wireBox.width>1&&wireBox.height>1,
+   clampRect:clampBox?{x:clampBox.x,y:clampBox.y,width:clampBox.width,height:clampBox.height}:null,
+   wireRect:wireBox?{x:wireBox.x,y:wireBox.y,width:wireBox.width,height:wireBox.height}:null
+  };
+ }));
+ check(info.dashboardHidden&&!info.dashboardOpen&&!info.viewportHidden&&
+  info.viewportVisible&&info.clampVisible&&info.wireVisible,
+  'Circuit editor/UT200A/wire not visibly rendered: '+JSON.stringify(info));
+ return info;
+}
 async function aimJaw(cdp){
  return evaluate(cdp,expression(()=>{
   const g=document.querySelector('#scene .component[data-id="cl"]');
   const wire=document.querySelector('#scene [data-wire="w1"] .wire');
   if(!g||!wire||!g.getScreenCTM()||!wire.getScreenCTM()||!wire.getTotalLength())return null;
-  const body=g.querySelector('.body'),b=body?.getBoundingClientRect()||g.getBoundingClientRect();
+  const body=g.querySelector('.body'),b=(body?.getBoundingClientRect().width>0&&body?.getBoundingClientRect().height>0)
+   ?body.getBoundingClientRect():g.getBoundingClientRect();
+  if(b.width<=1||b.height<=1)return null;
   const from={x:b.left+b.width/2,y:b.top+b.height/2};
   const w=wire.getPointAtLength(wire.getTotalLength()*.5);
   const p=new DOMPoint(w.x,w.y).matrixTransform(wire.getScreenCTM());
   const jaw=new DOMPoint(90,65).matrixTransform(g.getScreenCTM());
-  return {from,wire:{x:p.x,y:p.y},jaw:{x:jaw.x,y:jaw.y},
-   end:{x:from.x+p.x-jaw.x,y:from.y+p.y-jaw.y}};
+  const end={x:from.x+p.x-jaw.x,y:from.y+p.y-jaw.y};
+  if(![from.x,from.y,p.x,p.y,jaw.x,jaw.y,end.x,end.y].every(Number.isFinite)||
+     from.x<=0||from.y<=0||p.x<=0||p.y<=0)return null;
+  return {from,wire:{x:p.x,y:p.y},jaw:{x:jaw.x,y:jaw.y},end};
  }));
 }
 async function inspectJaw(cdp){
@@ -298,15 +328,17 @@ async function inspectJaw(cdp){
 }
 async function runJaw(cdp,report){
  const p=freeClampFixture();
- await evaluate(cdp,expression(f=>{window.DTSEditor.load(f);return true},p));
- await sleep(150);await runSimulation(cdp);
+ await evaluate(cdp,expression(f=>{window.DTSStudio.load(f);return true},p));
+ await sleep(150);
+ report.states.editor=await ensureEditorVisible(cdp);
+ await runSimulation(cdp);
  const before=await inspectJaw(cdp);
  check(before.projectRunning,'Real AC simulation did not start');
  check(!before.clampedWireId&&!before.jawOpen&&before.visualState==='closed','UT200A must begin unattached with closed jaws');
  check(before.wireCount===2,'UT200A clamp must not add wires to a load circuit');
  report.states.before=before;await shotEvidence(cdp,report,'jaw-before-drag');
  const geometry=await aimJaw(cdp);
- check(geometry?.end&&Number.isFinite(geometry.end.x)&&Number.isFinite(geometry.end.y),'Cannot locate jaw and live conductor in viewport');
+ check(geometry?.end&&[geometry.from.x,geometry.from.y,geometry.end.x,geometry.end.y].every(Number.isFinite)&&geometry.from.x>0&&geometry.from.y>0,'Cannot locate visible jaw and live conductor in viewport');
  report.states.drag_geometry=geometry;
  await press(cdp,geometry.from);
  for(let i=1;i<=16;i++){
@@ -389,4 +421,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[UT200A-JAW]',e.stack||e.message);process.exitCode=1});
-module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw};
+module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible};
