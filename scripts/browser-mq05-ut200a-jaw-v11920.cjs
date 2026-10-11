@@ -300,6 +300,18 @@ async function aimJaw(cdp){
   return {from,wire:{x:p.x,y:p.y},jaw:{x:jaw.x,y:jaw.y},end};
  }));
 }
+async function dragDiagnostics(cdp,point){
+ return evaluate(cdp,expression(p=>{
+  const q=document.elementFromPoint(p.x,p.y),hit=q?.closest?.('.component'),project=window.DTSEditor?.getProject?.(),
+   c=project?.components?.find(v=>v.id==='cl');
+  return {hitId:hit?.dataset?.id||null,hitTag:q?.tagName||null,
+   selected:[...document.querySelectorAll('#scene .component.selected')].map(el=>el.dataset.id),
+   gestureActive:document.body.classList.contains('canvas-gesture'),
+   editable:!!window.DTSEditor?.guardEdit?.(),
+   devicePosition:c?{x:c.x,y:c.y}:null,
+   open:!!c?._clampJawOpen,candidate:c?._clampCandidate||null};
+ },point));
+}
 async function inspectJaw(cdp){
  return evaluate(cdp,expression(()=>{
   const p=window.DTSEditor?.getProject?.(),c=p?.components?.find(c=>c.id==='cl');
@@ -340,10 +352,28 @@ async function runJaw(cdp,report){
  const geometry=await aimJaw(cdp);
  check(geometry?.end&&[geometry.from.x,geometry.from.y,geometry.end.x,geometry.end.y].every(Number.isFinite)&&geometry.from.x>0&&geometry.from.y>0,'Cannot locate visible jaw and live conductor in viewport');
  report.states.drag_geometry=geometry;
+ // The component click selects its SVG first; test an actual second pointer gesture against the selected clamp.
+ const initial=await dragDiagnostics(cdp,geometry.from);
+ report.states.pointer_initial=initial;
+ check(initial.hitId==='cl'&&initial.editable,
+  'UT200A pointer cannot reach an editable clamp: '+JSON.stringify(initial));
  await press(cdp,geometry.from);
+ await release(cdp,geometry.from);
+ await sleep(50);
+ const selected=await dragDiagnostics(cdp,geometry.from);
+ report.states.pointer_selected=selected;
+ check(selected.selected.includes('cl')&&!selected.gestureActive,
+  'UT200A was not selected before physical drag: '+JSON.stringify(selected));
+ await press(cdp,geometry.from);
+ const pressed=await dragDiagnostics(cdp,geometry.from);
+ report.states.pointer_pressed=pressed;
+ check(pressed.gestureActive,
+  'UT200A clamp pointer drag did not start: '+JSON.stringify(pressed));
  for(let i=1;i<=16;i++){
-  await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:geometry.from.x+(geometry.end.x-geometry.from.x)*i/16,
+  await cdp.call('Input.dispatchMouseEvent',{type:'mouseMoved',
+   x:geometry.from.x+(geometry.end.x-geometry.from.x)*i/16,
    y:geometry.from.y+(geometry.end.y-geometry.from.y)*i/16,buttons:1});
+  if(i===8){report.states.pointer_mid_drag=await dragDiagnostics(cdp,geometry.from);}
  }
  await sleep(130);
  const opened=await inspectJaw(cdp);
@@ -421,4 +451,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[UT200A-JAW]',e.stack||e.message);process.exitCode=1});
-module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible};
+module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible,dragDiagnostics};
