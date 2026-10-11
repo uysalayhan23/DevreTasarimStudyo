@@ -76,5 +76,10 @@ test('H-L acceptance ties physical motor regression and all executed test inputs
  ])assert.ok(ps.includes(source),'Missing source hash provenance: '+source);
  assert.match(ps,/Get-FileHash -LiteralPath \$Absolute -Algorithm SHA256/);
  assert.match(ps,/Missing source required for reproducible H-L QA/);
+ for(const runner of [
+  'QA_HL64_CALISTIR.bat',
+  'scripts/qa-hl64-windows-v11920.ps1',
+  'tests/qa-hl64-windows-v11920.test.cjs'
+ ])assert.ok(ps.includes(runner),'QA executor missing from source-hashes: '+runner);
  assert.match(ps,/source-hashes\.json/);
 });
