@@ -83,7 +83,7 @@ test('H-L acceptance ties physical motor regression and all executed test inputs
   'scripts/qa-hl64-windows-v11920.ps1',
   'tests/qa-hl64-windows-v11920.test.cjs'
  ])assert.ok(ps.includes(runner),'QA executor missing from source-hashes: '+runner);
- for(const path of ['dist/project-store.js','dist/studio.js'])
+ for(const path of ['dist/project-store.js','dist/studio.js','dist/library.js','dist/tutorial-expanded-lessons.js','dist/installation-v118.js'])
   assert.ok(ps.includes(path),'Legacy-compatibility source not provenance-hashed: '+path);
  assert.match(ps,/source-hashes\.json/);
 });
