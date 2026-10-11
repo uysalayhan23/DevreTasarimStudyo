@@ -11,7 +11,7 @@ Bu araç yalnızca kalite testidir; uygulamanın **BASLAT.bat** başlatıcısın
 
 ## Araç neler yapar?
 
-- 10 kalıcı Node test dosyasını `node --test --test-reporter=tap` ile doğrudan çalıştırır. PASS olmayan testte Chromium'a geçmez; hata çıktıları saklanır.
+- 11 kalıcı Node test dosyasını `node --test --test-reporter=tap` ile doğrudan çalıştırır. PASS olmayan testte Chromium'a geçmez; hata çıktıları saklanır.
 - Node başarılıysa, `scripts/browser-visual-hl-v11920.cjs` ile Chromium üzerinde **16 konu × 4 ders = 64 dersi** açar. 16 konu için köşe/taşıma, küçültme/geri açma ve pencere boyutu testlerini çalıştırır.
 - **Beklenen 100 ekran görüntüsü**: 64 ders + 16 köşe + 16 panel + 4 genel ekran. `report.json` içindeki dosya yolu, PNG yapısı, ölçüler, dosya boyutu ve SHA-256 denetlenir.
 - `scripts/qa-hl64-artifact-verify-v11920.cjs` kaydedilmiş `report.json` dosyasını yeniden okur, gerçek ekran görüntüsü dosyalarını doğrular ve yalnız bütün koşullar sağlandığında `verification.json` ve `checksums.sha256` oluşturur.
