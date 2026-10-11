@@ -104,6 +104,9 @@ try {
   # Trace every executed regression and every tutorial overlay to the exact ZIP source bytes.
   # A prior source-hashes.json listed only five files, making H-L code/test provenance incomplete.
   $TraceSources = @($Tests) + @(
+    'QA_HL64_CALISTIR.bat',
+    'scripts/qa-hl64-windows-v11920.ps1',
+    'tests/qa-hl64-windows-v11920.test.cjs',
     'dist/tutorial-source-outline.js',
     'dist/tutorial-lessons.js',
     'dist/tutorial-pedagogy.js',
