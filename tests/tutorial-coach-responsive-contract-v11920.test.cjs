@@ -129,3 +129,38 @@ test('Chromium QA verifies screenshot file bytes and SHA against JSON and preser
   assert.throws(()=>verify({states:{a:{screenshot:entry}}}),'corrupted screenshot must fail');
  }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
+
+test('64 lessons and 100 screenshot categories are independently required for saved Chromium acceptance',()=>{
+ const a=browser.indexOf('function verifyHLArtifactCoverage(report){'),b=browser.indexOf('function verifyReportArtifacts(report){',a);
+ assert.ok(a>=0&&b>a,'artifact coverage function missing');
+ const verify=vm.runInNewContext(browser.slice(a,b)+';verifyHLArtifactCoverage',{
+  assert:(condition,message)=>assert.ok(condition,message)
+ });
+ const topics=['commutator','two-way','intermediate','bells','control-combinations','loop-420','loop-powered','active-passive',
+  'pnp-npn','inductive-capacitive','source-sink','open-collector','bero','motor-forward-reverse','motor-star-delta','dual-dc'];
+ const folder='build/browser-visual-hl/',states={hlLessons:{checked:64,items:[]}};
+ for(const name of ['dashboard','editor','panel','tutorial'])
+  states[name]={screenshot:{file:folder+name+'.png'}};
+ for(const topic of topics)for(let n=1;n<=4;n++){
+  const id=topic+'-'+n,item={id,screenshot:{file:folder+'hl-'+id+'.png'}};
+  if(n===1){
+   item.cornerScreenshot={file:folder+'hl-corners-'+id+'.png'};
+   item.panelScreenshot={file:folder+'hl-panel-'+id+'.png'};
+   item.cornerChecks=Array.from({length:4},()=>({bounded:true,reachesEdge:true}));
+   item.resizeChecks=[{bounded:true},{bounded:true}];item.panelInteraction={ok:true};
+  }
+  states.hlLessons.items.push(item);
+ }
+ const report={states};
+ assert.equal(verify(report).expectedTotal,100);
+ function shouldReject(mutator){
+  const modified=JSON.parse(JSON.stringify(report));mutator(modified);
+  assert.throws(()=>verify(modified));
+ }
+ shouldReject(x=>delete x.states.hlLessons.items[0].cornerScreenshot);
+ shouldReject(x=>x.states.hlLessons.items[0].cornerChecks[0].reachesEdge=false);
+ shouldReject(x=>x.states.hlLessons.items[0].resizeChecks[0].bounded=false);
+ shouldReject(x=>x.states.hlLessons.items[63].id=x.states.hlLessons.items[0].id);
+ shouldReject(x=>delete x.states.dashboard.screenshot);
+ shouldReject(x=>x.states.hlLessons.items[0].id='not-a-lesson');
+});
