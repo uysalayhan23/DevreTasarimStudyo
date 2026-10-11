@@ -122,6 +122,9 @@ test('Chromium QA verifies screenshot file bytes and SHA against JSON and preser
  try{
   assert.equal(verify({states:{a:{screenshot:entry}}}).files,1);
   assert.throws(()=>verify({states:{a:{screenshot:{...entry,sha256:'0'.repeat(64)}}}}),'modified digest must fail');
+  assert.throws(()=>verify({states:{a:{screenshot:{...entry,file:'../../../../etc/passwd'}}}}),'non-PNG path must not be silently ignored');
+  assert.throws(()=>verify({states:{a:{screenshot:{...entry,file:'../../outside.png'}}}}),'PNG path escape must fail');
+  assert.throws(()=>verify({states:{a:{screenshot:{...entry,sha256:undefined}}}}),'missing SHA must not be silently ignored');
   fs.writeFileSync(file,Buffer.from([0,1,2]));
   assert.throws(()=>verify({states:{a:{screenshot:entry}}}),'corrupted screenshot must fail');
  }finally{fs.rmSync(root,{recursive:true,force:true})}
