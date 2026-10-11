@@ -14,12 +14,12 @@ test('Batch J preserves 16 source sensor graphs, guided terminal steps, and 120 
 });
 test('Batch J is loaded after Batch I and does not edit viewport or wiring',()=>{
  const m=read('tutorial-mode.js'),j=read('tutorial-sensor-batch-j.js');
- assert.ok(m.indexOf('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j1')>m.indexOf('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1'));
+ assert.ok(m.indexOf('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2')>m.indexOf('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1'));
  assert.doesNotMatch(j,/\.innerHTML|#viewport|\.push\(W\(/);
 });
 
 
-test('open collector lessons distinguish PNP/NPN and flag resistor-fed PNP indicator',()=>{
+test('open collector lessons distinguish PNP/NPN and verify PNP pull-down metadata',()=>{
  const L=JSON.parse(JSON.stringify(require('../dist/tutorial-source-outline.js')));
  const ctx={window:{DTSTutorialLessons:L}};
  for(const file of ['tutorial-pedagogy.js','tutorial-measurement-batch-a.js','tutorial-measurement-batch-b.js','tutorial-measurement-batch-c.js','tutorial-measurement-batch-d.js','tutorial-dc-batch-e.js','tutorial-control-batch-f.js','tutorial-timer-batch-g.js','tutorial-installation-batch-h.js','tutorial-next-batch-i.js'])
@@ -33,7 +33,7 @@ test('open collector lessons distinguish PNP/NPN and flag resistor-fed PNP indic
   assert.equal(lesson.pedagogyReview.visualAcceptance,false);
   assert.equal(lesson.pedagogyReview.simulationAcceptance,false);
   assert.equal(lesson.quiz.options.length,3);
-  assert.equal(lesson.measurementUpgrade.sourceCorrectionRequired,n===3);
+  assert.equal(lesson.measurementUpgrade.sourceCorrectionRequired,false);
  }
  assert.match(L.byId['open-collector-1'].learningGoal,/PNP/);
  assert.match(L.byId['open-collector-1'].learningGoal,/yoktur/);
@@ -41,15 +41,18 @@ test('open collector lessons distinguish PNP/NPN and flag resistor-fed PNP indic
  assert.match(L.byId['open-collector-2'].learningGoal,/R1/);
  const suspect=L.byId['open-collector-3'];
  assert.equal(suspect.project.components.find(c=>c.id==='s').typeId,'proximity');
- assert.ok(suspect.project.wires.some(w=>w.from.c==='g1'&&w.from.p==='P'&&w.to.c==='r'&&w.to.p==='1'));
+ assert.ok(suspect.project.wires.some(w=>w.from.c==='g1'&&w.from.p==='M'&&w.to.c==='r'&&w.to.p==='1'));
  assert.ok(suspect.project.wires.some(w=>w.from.c==='r'&&w.from.p==='2'&&w.to.c==='s'&&w.to.p==='BK'));
- assert.equal(suspect.pedagogyReview.sourceStatus,'canonical-graph-physical-review-required');
- assert.match(suspect.measurementUpgrade.task,/sensörden bağımsız/);
+ assert.equal(suspect.project.components.find(c=>c.id==='r').resistance,10000);
+ assert.equal(suspect.pedagogyReview.sourceStatus,'source-solver-checked-windows-acceptance-open');
+ assert.equal(suspect.pedagogyReview.sourceSolverVerified,true);
+ assert.match(suspect.measurementUpgrade.task,/10 kΩ/);
+ assert.match(suspect.measurementUpgrade.task,/0 mA/);
  assert.match(L.byId['open-collector-4'].learningGoal,/paralel/);
 });
 
 
-test('physical topology audit: open-collector-3 has an R1-fed H1 path even with sensor output open',()=>{
+test('physical topology audit: no open-collector lesson has passive resistor-fed H1 with sensor open',()=>{
  const L=require('../dist/tutorial-source-outline.js');
  // Graph includes real wires plus passive R1 and H1; NO current can travel through a
  // sensor's BK output here because that transistor is deliberately treated as open.
@@ -70,7 +73,7 @@ test('physical topology audit: open-collector-3 has an R1-fed H1 path even with 
   return seen.has('g1:M');
  }
  for(let n=1;n<=4;n++)assert.equal(
-  passiveFeed(L.byId['open-collector-'+n].project),n===3,
+  passiveFeed(L.byId['open-collector-'+n].project),false,
   'unexpected resistor-fed lamp topology in open-collector-'+n
  );
 });
