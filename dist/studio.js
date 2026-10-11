@@ -46,7 +46,18 @@
     saveQueue=saveQueue.then(()=>store.put(data)).catch(e=>{E.toast('Taslak kaydedilemedi: '+e.message)});return saveQueue;
   }
   async function home(){window.DTSArduinoIDE?.closeSerialMonitor?.();E.stop();await checkpoint(E.getProject());isHome=true;document.body.classList.remove('tutorial-active');$('#dashboard').hidden=false;document.body.classList.add('dashboard-open');document.querySelector('.topbar').inert=true;document.querySelector('.app-shell').inert=true;$('#resumeProject').hidden=!E.getProject().projectId;await renderProjects();$('#dashboard').scrollTop=0}
-  function load(project){templateOriginal=null;E.load(project);templateOriginal=Projects.isProtected(project)?Projects.clean(E.getProject()):null;markClean();showEditor();if(project.preferredAppearance==='material')E.setAppearance('material');templateUI();checkpoint(E.getProject())}
+  function showLegacyCircuitWarning(project){
+    const found=Projects.compatibilityWarnings?.(project)||[];
+    if(!found.length)return;
+    const modal=$('#modal'),title=$('#modalTitle'),body=$('#modalBody'),confirm=$('#modalConfirm'),cancel=$('#modalCancel');
+    if(!modal||!title||!body||!confirm||!cancel){E.toast(found[0].message);return}
+    title.textContent='Eski PNP sensör bağlantısı tespit edildi';
+    body.textContent=found[0].message;
+    confirm.textContent='Anladım';cancel.textContent='Kapat';
+    const close=()=>{modal.hidden=true;confirm.textContent='Onayla';cancel.textContent='İptal'};
+    confirm.onclick=close;cancel.onclick=close;modal.hidden=false;
+  }
+  function load(project){templateOriginal=null;E.load(project);templateOriginal=Projects.isProtected(project)?Projects.clean(E.getProject()):null;markClean();showEditor();if(project.preferredAppearance==='material')E.setAppearance('material');templateUI();checkpoint(E.getProject());showLegacyCircuitWarning(project)}
   async function preserve(){E.stop();if(!isHome)await checkpoint(E.getProject())}
   function createProject(mode){
     if(safety.visible)return;
