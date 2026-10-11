@@ -62,3 +62,19 @@ test('independent verifier fails closed without 64 lessons, 100 PNG, JSON and SH
  assert.match(src,/checksums\.sha256/);
  assert.match(src,/verification\.failure\.json/);
 });
+
+
+test('H-L acceptance ties physical motor regression and all executed test inputs to SHA-256 evidence',()=>{
+ const ps=read('scripts/qa-hl64-windows-v11920.ps1');
+ assert.match(ps,/tests\/tutorial-motor-physical-regression-v11920\.test\.cjs/);
+ assert.match(ps,/\$TraceSources = @\(\$Tests\)/);
+ for(const source of [
+  'dist/tutorial-source-outline.js','dist/tutorial-lessons.js',
+  'dist/tutorial-installation-batch-h.js','dist/tutorial-next-batch-i.js',
+  'dist/tutorial-sensor-batch-j.js','dist/tutorial-motor-batch-k.js',
+  'dist/tutorial-dual-dc-batch-l.js','dist/simulation.js'
+ ])assert.ok(ps.includes(source),'Missing source hash provenance: '+source);
+ assert.match(ps,/Get-FileHash -LiteralPath \$Absolute -Algorithm SHA256/);
+ assert.match(ps,/Missing source required for reproducible H-L QA/);
+ assert.match(ps,/source-hashes\.json/);
+});
