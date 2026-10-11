@@ -48,6 +48,7 @@ Bu dosya bundan sonraki kalite ve düzeltme çalışmalarının tek birleşik ba
 | MQ-P1-013 | Pano mühendislik kuralları | MQ-02/MQ-04 | MQ-12 | bend radius, duct fill, clearance, segregasyon, servis/termal/BOM eksik. | Aşamalı engineering constraints katmanı. |
 | MQ-P1-014 | Kaynak otoritesi | MQ-01/MQ-09 | MQ-03/MQ-13 | Manufacturer ve supplier kaynakları teknik kanıt açısından ayrılmıyor. | sourceAuthority + technicalSource + sourceStatus. |
 | MQ-P1-015 | Repo lock tamper-resistance | MQ-13/MQ-12 | MQ-00 | Checker/workflow aynı aktif dalda birlikte değiştirilebilir. | Server-side protection mümkünse etkinleştir; o zamana kadar checker/workflow kritik değişiklik protokolü + bağımsız baseline kaydı. |
+| MQ-P1-016 | Open-collector kaynak topolojisi / ders doğruluğu | MQ-05/MQ-07 | MQ-04, MQ-12, MQ-13 | `open-collector-3` PNP çıkışlıyken +24 V → R1 (1 kΩ) → BK → H1 → 0 V yolu, algılama sinyalinden bağımsız dirençli besleme yolu oluşturabilir. Dört varyantı tek NPN/pull-up örneği gibi öğretmek hatalıdır. | MQ-05 gerçek solver OFF/ON ölçümü ve ürün çıkış modeli doğrulaması; MQ-04 kanonik terminalleri/migration kontrolü; gerekliyse güvenli kaynak devre düzeltmesi; MQ-07 ders metni; MQ-12 H–L ve Windows regresyonu; MQ-00 onayı. |
 
 ---
 
@@ -1708,3 +1709,15 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `docs/TEACHING_1655_TOPIC_QUALITY_MATRIX_V1.19.20.md` gerçek 72/1.655 kod kapsamı ve kalan 1.583 ders olacak şekilde güncellendi. MQ-00 gerçek Windows/Edge `file:///dist/index.html` görsel/pedagojik kabulü, üreticiye uygun malzeme fotoğrafları, tüm SHA-eş HEAD regresyonu ve 3 native Git-history testi açık. GitHub Actions kullanılmadı, `[skip ci]` korundu.
 
 **Sıradaki otomatik süreç:** `commutator` → `two-way` → `intermediate` → `bells` güvenli sanal aydınlatma/zil dersleri; her derste gerçek bağlantı ve anahtar konumu doğrulanır. Sonra 4–20 mA / loop-powered / active-passive sensör ölçümleri ve diğer 43 konu. Her dilim için manifest/kapsam, QA, GitHub commit, test delili; Actions asla izinsiz değil.
+
+
+## 2026-10-11 — MQ-P1-016 açıldı: open-collector-3 kaynak devresi ve H/J eğitim QA
+
+**Durum: OPEN / MODELE DAYALI DOĞRULAMA BEKLİYOR.** Bu bulgu önceki P1 kayıtlarından farklı, somut kanonik sensör devresi kök nedenidir. İlgili öğretim metni güvenilir sınırı belirtecek şekilde güncellendi; fiziksel kaynak devre veya pinler değiştirilmedi.
+
+- **Kanonik kanıt:** `open-collector-3` için `s=proximity` (PNP), `g1/P→r/1`, `r/2→s/BK`, `s/BK→h/X1`, `h/X2→g1/M`; `r` 1000 Ω. Yalnız kablo grafiği ve ideal direnç/yük bağlantılarına göre sensör çıkışı OFF kabul edildiğinde de kaynaktan lambaya **R1 üzerinden bir yol** bulunur. Bu, gerçek lamba parlaklığının veya solver sonucunun kanıtı değildir.
+- `open-collector-1` PNP/dirençsiz, `-2` NPN/dirençsiz, `-4` NPN olup R1 ile H1 +→BK kolları paraleldir. Varyantların quiz/amaç/metinleri artık bu farklılıkları açık anlatır. `-3` için `sourceCorrectionRequired=true` ve `sourceStatus=canonical-graph-physical-review-required` işaretlendi; `simulationAcceptance=false` korundu.
+- **Zil 4. varyantı:** `bells-4` kaynak devresinde B1–B3 yanında `bell-light-push` B4 de iki adet NO 13/14 teliyle dördüncü çağrı noktasıdır. Ayrı buton ışığı çıkışı yoktur; öğretim metninde B4 açıklandı, gerçekte olmayan ışık simülasyonu iddia edilmedi.
+- **Çalıştırılan kaynak QA:** GitHub `main` JavaScript'inin 16 modülü V8 içinde yürütüldü: 1.655 ders, 136 `rich-reference-v1`. Kanonik karşılaştırma **Batch G sonrası, H öncesi** tabanına göre yapıldı: H–L **64/64** projenin bileşenleri, kabloları ve guided steps değişmedi; bağ/step uyuşmazlığı yok. Bu Node `--test`, gerçek Chromium veya Windows son kabulü değildir.
+- **Sonraki MQ-05 görevi:** Aynı HEAD'in gerçek `Simulation.solve` ile `open-collector-3` PNP algılamayan/algılayan durumlarında R1 ve H1 akım/gerilim sonuçlarını ölç; `-1/-2/-4` kontrol grubuyla kıyasla. Kanonik şema değişikliği ancak terminal/topoloji etki denetimi, migration, uzman çapraz kontrolü ve MQ-00 kararıyla yapılır. Fiziksel ölçüm ve Node regresyonu gerçekleşmeden DONE verilmez.
+- Aktif yeni repo `uysalayhan23/DevreTasarimStudyo`, çalışma dalı `main`; GitHub Actions kullanımı **yok**, `[skip ci]` geçerli.
