@@ -1,0 +1,100 @@
+{
+  "schema": "dts-ut200a-real-windows-qa-v1",
+  "date": "2026-10-11",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "archive": {
+    "name": "QA_MQ05_UT200A_SONUC_20261011_193404.zip",
+    "sha256": "ddb038fa5b6683264c59c326cbac155c0ae1456c9ac34b9443481fdefeaf8291",
+    "entries": 11,
+    "crc": "PASS"
+  },
+  "windows": {
+    "node_version": "v24.21.0",
+    "node_tests": 117,
+    "node_pass": 117,
+    "node_fail": 0,
+    "skipped": 0,
+    "exit_code": 0,
+    "chromium_exit_code": 1,
+    "independent_verifier": "NOT_RUN",
+    "run_summary": "FAIL"
+  },
+  "chrome": {
+    "editor_visible": true,
+    "component": "cl",
+    "pointer_initial": {
+      "hitId": "cl",
+      "hitTag": "text",
+      "selected": [],
+      "gestureActive": false,
+      "editable": true
+    },
+    "pointer_selected": {
+      "hitId": "cl",
+      "hitTag": "text",
+      "selected": [
+        "cl"
+      ],
+      "gestureActive": false
+    },
+    "pointer_pressed": {
+      "hitId": "cl",
+      "hitTag": "text",
+      "selected": [
+        "cl"
+      ],
+      "gestureActive": false,
+      "devicePosition": {
+        "x": 670,
+        "y": 420
+      },
+      "candidate": null,
+      "jawOpen": false
+    },
+    "failure": "UT200A clamp pointer drag did not start",
+    "physical_jaw_snap": "NOT_EXECUTED",
+    "ac_readout_1a": "NOT_EXECUTED"
+  },
+  "png": {
+    "files": 2,
+    "sha256_matches": 2,
+    "byte_length_matches": 2,
+    "signature_matches": 2,
+    "dimensions": "1440x1000",
+    "claims_physical_acceptance": false
+  },
+  "diagnosis": {
+    "verified": "Pointer hit SVG text on the component and no canvas-gesture started even on second press.",
+    "likely_cause": "SVG movable label/control intercepts pointerdown before the clamp drag handler.",
+    "confidence": "needs rerun to verify browser root cause"
+  },
+  "qa_change": {
+    "script": "scripts/browser-mq05-ut200a-jaw-v11920.cjs",
+    "script_commit": "7e59876921ca50cb4348501a0515558cef5772a5",
+    "test": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "test_commit": "3344f917db7ee531f1619e8b5709332a2ef9eeb4",
+    "action": "Choose only a visible drawable SVG hit-test target; reject movable label text and instrument controls; capture label interception diagnostics.",
+    "isolated_actual_source_checks": {
+      "drawable_rect": "PASS",
+      "movable_label_text_rejected": "PASS",
+      "instrument_control_rejected": "PASS"
+    },
+    "updated_windows_chromium": "NOT_RUN"
+  },
+  "historical_gates": {
+    "hl_lessons": "64/64 PASS (prior run)",
+    "hl_screenshots": "100/100 PASS (prior run)",
+    "mq05_node": "110/110 PASS (prior run)",
+    "mq05_chrome": "4/4 PASS (prior run)",
+    "mq05_chrome_png": "12/12 PASS (prior run)"
+  },
+  "acceptance": {
+    "ut200a_physical_jaw": "OPEN_RETEST_REQUIRED",
+    "mq05_full": "OPEN",
+    "mq00_final": "OPEN"
+  },
+  "actions_triggered": false,
+  "commit_message_rule": "[skip ci]",
+  "notes": "Node 117/117 belongs to the uploaded Windows source revision, not the updated test harness. Browser remains unaccepted until actual PNG/JSON/SHA and real jaw snap."
+}
