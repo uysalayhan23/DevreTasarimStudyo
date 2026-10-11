@@ -220,3 +220,15 @@ Kaynakta kanıtlanan test uyumsuzluğu: `tests/tutorial-coach-responsive-contrac
 ## 2026-10-11 — PNG IDAT boşluk ve ardışıklık koruması
 
 `main` PNG parser'ında CRC'si geçerli fakat sıfır uzunluklu `IDAT` chunk'ının kabul edildiği ve araya başka chunk girdikten sonra yeni `IDAT` parçasının yeniden başlayabildiği belirlendi. `scripts/browser-visual-hl-v11920.cjs` bu iki durumu reddedecek şekilde güncellendi (commit `7992489`, `[skip ci]`); `tests/tutorial-coach-responsive-contract-v11920.test.cjs` içine boş ve kesintiye uğramış IDAT negatif koşulları eklendi (commit `d4a5dbe`, `[skip ci]`). Güncel parser fonksiyonunun yalıtılmış JS değerlendirmesinde **geçerli / boş IDAT / kesintili IDAT 3/3 beklenen sonuç PASS**; güncel iki dosyada JavaScript ayrıştırma **PASS**. Yerel Node 22 var ancak depo checkout'u yok; yeni `node --test` suite koşusu ve gerçek 64 ders Chromium/PNG görsel kabulü **yapılmadı**. Önceki 6/6 geometri ve H–L 18/18 Actions run 38070861990 kanıtları korunuyor. MQ-12 yeni suite yürütme OPEN, MQ-10 canlı Chromium OPEN, MQ-05 solver OPEN, **MQ-00 FINAL OPEN**. Actions çalıştırılmadı.
+
+
+
+## 2026-10-11 — PNG standart uyumu, deflate doğrulaması ve 100 görsel kanıt (Actions yok)
+
+PNG standart uyumluluk hatası düzeltildi: sıfır bayt uzunluklu IDAT chunk tek başına değil, diğer ardışık IDAT parçalarıyla birleştiğinde geçerli PNG olabilir. Ayrıştırıcıda boş/bölünmüş IDAT kabulü; araya giren chunk sonrası IDAT reddi; birleşik IDAT'nin zlib ile açılması; IHDR renk derinliği, interlace scanline uzunluğu, filtre baytı doğrulaması uygulandı (cad71d0). Indexed PNG için zorunlu PLTE ve bilinmeyen kritik chunk reddi eklendi (5f68c7c). Kalıcı Node testi geçerli boş/bölünmüş IDAT, yanlış deflate/filtre, paletsiz indexed PNG ve bilinmeyen kritik chunk senaryolarıyla güçlendirildi (85375bb, 1db3121). Tüm commitlerde [skip ci].
+
+Chromium shot() PNG doğrulaması başarısız olduğunda ham çıktı artık .invalid.png olarak saklanır; dosya yolu, bayt uzunluğu ve SHA256 hata mesajındadır (e4fc7fd). Başarılı rapordan önce 64 ders + 16 köşe + 16 panel + 4 genel ekran olmak üzere en az 100 PNG JSON girdisi disk üzerinde tekrar CRC/zlib, boyut, bayt ve SHA256 açısından doğrulanır (afcd8e8). Değiştirilmiş hash ve bozulmuş dosya için Node negatif testleri eklendi (cf62120).
+
+Yerel Node v22.16.0: kaynak-eşdeğer yalıtılmış ayrıştırıcı ve geometri testi 22/22 PASS (16 PNG, 6 geometri). Bu, repo dosyasının tam node --test koşusu değildir; tam depo checkout yok ve GitHub DNS çözümlemesi başarısız. Chromium ekran görüntüsü denemesi zaman aşımına uğradı; 64 ders canlı görsel QA ve gerçek 100 PNG/JSON kanıtı henüz yok. Tarihi farklı SHA'daki 18/18 Actions run 38070861990 korunur. Yeni Actions çalıştırılmadı.
+
+MQ-12: yalıtılmış 22/22 PASS, repo Node paketi OPEN. MQ-10: gerçek 64 ders + 100 PNG OPEN. MQ-05: canlı simülasyon OPEN. MQ-00 FINAL: OPEN.
