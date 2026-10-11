@@ -6,9 +6,9 @@ $Stamp=Get-Date -Format 'yyyyMMdd_HHmmss'
 $Build=Join-Path $Root 'build'
 $Dir=Join-Path $Build ('qa-full-windows\run-'+$Stamp)
 $Zip=Join-Path $Build ('QA_TAM_PROJE_SONUC_'+$Stamp+'.zip')
-$Utf8=New-Object System.Text.UTF8Encoding($false)
+$Utf8=[System.Text.UTF8Encoding]::new($false)
 New-Item -ItemType Directory -Path $Dir -Force | Out-Null
-$Report=[ordered]@{qa='Full Node + H-L 64/100 PNG + UT200A 4 PNG';started_at=(Get-Date).ToString('o');status='FAIL';node_full=$null;hl64=$null;ut200a=$null;hl64_zip=$null;ut200a_zip=$null;errors=@()}
+$Report=[ordered]@{qa='Full Node + H-L 64/100 PNG + UT200A 4 PNG';started_at=(Get-Date).ToString('o');status='FAIL';node_version=$null;node_full=$null;hl64=$null;ut200a=$null;hl64_zip=$null;ut200a_zip=$null;errors=@()}
 function Stage([string]$Name,[string]$Executable,[string[]]$Arguments){
  try{
   $A=Join-Path $Dir ($Name+'.stdout.log');$B=Join-Path $Dir ($Name+'.stderr.log')
@@ -37,12 +37,12 @@ try{
  $Report.node_version=$V
  $Report.node_full=Stage 'all-node-tests' $N @('scripts/run-tests.cjs')
  if(Test-Path -LiteralPath (Join-Path $Build 'tests.tap')){Copy-Item -LiteralPath (Join-Path $Build 'tests.tap') -Destination (Join-Path $Dir 'all-tests.tap') -Force}
- $PS=(Get-Command powershell.exe -ErrorAction Stop).Source
+ $PsExe=(Get-Command powershell.exe -ErrorAction Stop).Source
  $At=Get-Date
- $Report.hl64=Stage 'hl64-windows' $PS @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $Root 'scripts\qa-hl64-windows-v11920.ps1'))
+ $Report.hl64=Stage 'hl64-windows' $PsExe @('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $Root 'scripts\qa-hl64-windows-v11920.ps1')+'"'))
  $Report.hl64_zip=FreshZip 'QA_HL64_SONUC_*.zip' $At
  $At=Get-Date
- $Report.ut200a=Stage 'ut200a-windows' $PS @('-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $Root 'scripts\qa-mq05-ut200a-windows-v11920.ps1'))
+ $Report.ut200a=Stage 'ut200a-windows' $PsExe @('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $Root 'scripts\qa-mq05-ut200a-windows-v11920.ps1')+'"'))
  $Report.ut200a_zip=FreshZip 'QA_MQ05_UT200A_SONUC_*.zip' $At
  if(-not $Report.hl64_zip){$Report.errors+='Fresh H-L result ZIP missing.'}
  if(-not $Report.ut200a_zip){$Report.errors+='Fresh UT200A result ZIP missing.'}
