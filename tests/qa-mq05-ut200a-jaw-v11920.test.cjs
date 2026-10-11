@@ -63,3 +63,27 @@ test('Windows launcher packages diagnostics with timeout and does not modify acc
  assert.equal(accepted.real_chromium.hl_lessons_checked,64);
  assert.equal(accepted.real_chromium.categories.total,100);
 });
+
+
+test('real Chromium UT200A test enters visible editor, never accepts hidden dashboard or zero pointer origin',async()=>{
+ const qa=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
+ const studio=read('dist/studio.js');
+ assert.match(studio,/function load\(project\)\{[\s\S]*?showEditor\(\)/);
+ assert.match(qa,/window\.DTSStudio\.load\(f\)/);
+ assert.doesNotMatch(qa,/window\.DTSEditor\.load\(f\)/);
+ assert.match(qa,/report\.states\.editor=await ensureEditorVisible\(cdp\)/);
+ assert.match(qa,/info\.dashboardHidden&&!info\.dashboardOpen&&!info\.viewportHidden/);
+ assert.match(qa,/info\.viewportVisible&&info\.clampVisible&&info\.wireVisible/);
+ assert.match(qa,/geometry\.from\.x>0&&geometry\.from\.y>0/);
+ const start=qa.indexOf('async function ensureEditorVisible(cdp){'),end=qa.indexOf('async function aimJaw(cdp){',start);
+ assert.ok(start>=0&&end>start);
+ const check=(flag,msg)=>{if(!flag)throw Error(msg)};
+ let mock={dashboardHidden:false,dashboardOpen:true,viewportHidden:false,viewportVisible:false,clampVisible:false,wireVisible:false};
+ const verify=new Function('evaluate','expression','check',qa.slice(start,end)+';return ensureEditorVisible;')(
+  async()=>mock,()=>'',check);
+ await assert.rejects(verify({}),/Circuit editor\/UT200A\/wire not visibly rendered/);
+ mock={dashboardHidden:true,dashboardOpen:false,viewportHidden:false,viewportVisible:true,clampVisible:true,wireVisible:true};
+ assert.equal((await verify({})).clampVisible,true);
+ mock={...mock,wireVisible:false};
+ await assert.rejects(verify({}),/not visibly rendered/);
+});
