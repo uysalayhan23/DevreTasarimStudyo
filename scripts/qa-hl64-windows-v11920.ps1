@@ -86,6 +86,7 @@ try {
     'tests/tutorial-installation-batch-h-v11920.test.cjs',
     'tests/tutorial-next-batch-i-v11920.test.cjs',
     'tests/tutorial-sensor-batch-j-v11920.test.cjs',
+    'tests/tutorial-open-collector-pulldown-v11920.test.cjs',
     'tests/tutorial-motor-batch-k-v11920.test.cjs',
     'tests/tutorial-motor-physical-regression-v11920.test.cjs',
     'tests/tutorial-dual-dc-batch-l-v11920.test.cjs'
