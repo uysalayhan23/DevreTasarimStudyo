@@ -35,7 +35,7 @@ test('UT200A UI opens jaws only for nearby wire and closes them on release',()=>
  assert.match(qa,/Input\.dispatchMouseEvent/);
  assert.match(qa,/await press\(cdp,geometry\.from\)/);
  assert.match(qa,/opened\.jawOpen&&opened\.visualState==='open'&&opened\.visibleOpenMark/);
- assert.match(qa,/await release\(cdp,geometry\.end\)/);
+ assert.match(qa,/await release\(cdp,alignedEnd\)/);
  assert.match(qa,/snapped\.clampedWireId==='w1'/);
  assert.match(qa,/jaw-snapped-closed/);
  assert.match(qa,/data-thermal-param="meterPosition"/);
