@@ -92,6 +92,13 @@ try {
       throw ('Missing Node test: '+$Test)
     }
   }
+  $Summary.test_files = $Tests
+  $SourceHashes = [ordered]@{}
+  foreach ($SourceFile in @('dist\tutorial-mode.js','scripts\browser-visual-hl-v11920.cjs',
+      'scripts\qa-hl64-artifact-verify-v11920.cjs','tests\tutorial-coach-responsive-contract-v11920.test.cjs','BASLAT.bat')) {
+    $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
+  }
+  $SourceHashes | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $RunDir 'source-hashes.json') -Encoding UTF8
   $Summary.node_exit_code = Invoke-QA -Exe $Node.Source -Argv (@('--test','--test-reporter=tap') + $Tests) -Label 'node-tests'
   if ($Summary.node_exit_code -ne 0) { throw 'Node tests FAILED. Chromium acceptance not attempted; inspect ZIP logs.' }
 
