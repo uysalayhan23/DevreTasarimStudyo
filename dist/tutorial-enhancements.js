@@ -58,7 +58,7 @@ function defaultLayout(){
 }
 function readLayout(){try{const v=JSON.parse(root.localStorage?.getItem(LAYOUT_KEY)||'null');if(v&&['left','top','width','height'].every(k=>Number.isFinite(v[k])))return v}catch{}return defaultLayout()}
 function applyLayout(v=readLayout()){
- const c=coach();if(!c)return;const vw=Math.max(320,root.innerWidth||1200),vh=Math.max(320,root.innerHeight||800),w=clamp(Number(v.width)||430,300,Math.max(300,vw-16)),h=clamp(Number(v.height)||520,220,Math.max(220,vh-16)),left=clamp(Number(v.left)||8,8,Math.max(8,vw-w-8)),top=clamp(Number(v.top)||8,8,Math.max(8,vh-h-8));
+ const c=coach();if(!c)return;const vw=Math.max(320,root.innerWidth||1200),vh=Math.max(320,root.innerHeight||800),w=clamp(Number(v.width)||430,300,Math.max(300,vw-16)),h=clamp(Number(v.height)||520,120,Math.max(120,vh-66)),left=clamp(Number(v.left)||8,8,Math.max(8,vw-w-8)),top=clamp(Number(v.top)||58,58,Math.max(58,vh-h-8));
  c.style.width=w+'px';c.style.height=h+'px';c.style.left=left+'px';c.style.top=top+'px';c.style.right='auto';c.style.bottom='auto';layoutReady=true;
 }
 function saveLayout(){const c=coach();if(!c||c.hidden||c.classList.contains('is-minimized'))return;const r=c.getBoundingClientRect();try{root.localStorage?.setItem(LAYOUT_KEY,JSON.stringify({left:r.left,top:r.top,width:r.width,height:r.height}))}catch{}}
@@ -104,7 +104,7 @@ function bind(){
  root.document.addEventListener('pointerdown',e=>{
   const bar=e.target.closest?.('[data-tutorial-float-bar]');if(!bar||e.target.closest('button')||e.button!==0)return;const r=c.getBoundingClientRect();drag={dx:e.clientX-r.left,dy:e.clientY-r.top};c.classList.add('is-dragging');e.preventDefault();e.stopPropagation();
  },true);
- root.document.addEventListener('pointermove',e=>{if(drag){const r=c.getBoundingClientRect(),vw=root.innerWidth||1200,vh=root.innerHeight||800;c.style.left=clamp(e.clientX-drag.dx,8,Math.max(8,vw-r.width-8))+'px';c.style.top=clamp(e.clientY-drag.dy,8,Math.max(8,vh-r.height-8))+'px'}scheduleArrow()},true);
+ root.document.addEventListener('pointermove',e=>{if(drag){const r=c.getBoundingClientRect(),vw=root.innerWidth||1200,vh=root.innerHeight||800;c.style.left=clamp(e.clientX-drag.dx,8,Math.max(8,vw-r.width-8))+'px';c.style.top=clamp(e.clientY-drag.dy,58,Math.max(58,vh-(c.classList.contains('is-minimized')?46:r.height)-8))+'px'}scheduleArrow()},true);
  root.document.addEventListener('pointerup',()=>{if(drag){drag=null;c.classList.remove('is-dragging');saveLayout()}scheduleArrow()},true);
  if(root.ResizeObserver){resizeObserver=new root.ResizeObserver(()=>{if(!drag)saveLayout();scheduleArrow()});resizeObserver.observe(c)}
  root.addEventListener('resize',()=>{if(layoutReady){const r=c.getBoundingClientRect();applyLayout({left:r.left,top:r.top,width:r.width,height:r.height})}scheduleArrow()});root.addEventListener('scroll',scheduleArrow,true);root.document.addEventListener('wheel',scheduleArrow,{capture:true,passive:true});
