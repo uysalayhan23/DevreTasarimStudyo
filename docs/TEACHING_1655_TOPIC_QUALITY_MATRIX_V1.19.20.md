@@ -232,3 +232,20 @@ Chromium shot() PNG doğrulaması başarısız olduğunda ham çıktı artık .i
 Yerel Node v22.16.0: kaynak-eşdeğer yalıtılmış ayrıştırıcı ve geometri testi 22/22 PASS (16 PNG, 6 geometri). Bu, repo dosyasının tam node --test koşusu değildir; tam depo checkout yok ve GitHub DNS çözümlemesi başarısız. Chromium ekran görüntüsü denemesi zaman aşımına uğradı; 64 ders canlı görsel QA ve gerçek 100 PNG/JSON kanıtı henüz yok. Tarihi farklı SHA'daki 18/18 Actions run 38070861990 korunur. Yeni Actions çalıştırılmadı.
 
 MQ-12: yalıtılmış 22/22 PASS, repo Node paketi OPEN. MQ-10: gerçek 64 ders + 100 PNG OPEN. MQ-05: canlı simülasyon OPEN. MQ-00 FINAL: OPEN.
+
+
+
+## 2026-10-11 — Kaydedilmiş JSON/100 PNG tekrar doğrulama ve Node test kanıtı (Actions yok)
+
+Gerçek uygulama dosyalarını doğrudan yerel çekme girişiminde git ls-remote GitHub DNS çözümleme hatası döndürdü; tam kaynak checkout sağlanamadı. Bu nedenle main dalındaki kalıcı tests/tutorial-coach-responsive-contract-v11920.test.cjs dosyasının *tam kaynak üzerinde* node --test çalıştırması ve H–L 64 dersin gerçek Chromium çekimi hâlâ bekliyor.
+
+Kaynak denetimi sonucunda önemli bir kabul koşulu düzeltildi: scripts/browser-visual-hl-v11920.cjs, 100 PNG kontrolünün ardından report.json dosyasını diske yazar, sonra tekrar açıp JSON.parse yaparak 64 tamamlanmış ve **benzersiz** ders kimliğini ve **tam 100** PNG referansının dosya varlığı, PNG ayrıştırma, boyut, bayt sayısı, SHA-256 bütünlüğünü yeniden kontrol eder (commit 57459b5, [skip ci]); kalıcı regresyon testinin sözleşmesi buna uyarlandı (commit 0bea9cf, [skip ci]).
+
+Yerel Node sentetik 100 PNG / JSON red-team denetimi ilk çalıştırmada 7/8 PASS verdi. **Gerçek hata**: verifyReportArtifacts, ekran görüntüsü kaydı .png ile bitmiyorsa veya hash alanı eksikse kaydı sessizce atlıyordu; böylece doğrulama fonksiyonu gerçek referans hatasını doğrudan raporlamıyordu. Fonksiyon her file özellikli kaydı zorunlu PNG yolu ve SHA-256 formatı ile denetleyecek şekilde düzeltildi (commit 9561a5b, [skip ci]); eksik hash, sahte yol ve dizin dışına çıkma negatif testleri kalıcı Node dosyasına eklendi (commit 54c2001, [skip ci]).
+
+Actions kullanılmadan gerçek yerel Node v22.16.0 üzerinden iki **kaynak eşdeğeri yalıtılmış** dosya çalıştırıldı: 22 PNG/panel testi + 8 sentetik dosya/JSON kabul testi = **30/30 PASS** (ilk 7/8 hatası giderildikten sonra). Sentetik çalıştırmada 100 ayrı 1x1 PNG diske yazıldı; rapor yazılıp yeniden okundu; doğru SHA kabulü ve bozuk SHA, bayt, boyut, eksik dosya, yinelenen kayıt, dış dizin ve dosya yolu reddi doğrulandı. Bu sayılar gerçek H–L Chromium görsellerine ait değildir ve git main tam Node test paketinin PASS olduğunu kanıtlamaz.
+
+MQ-12: Kaynak eşdeğeri yerel Node 30/30 PASS; repo içindeki gerçek node --test OPEN.
+MQ-10: Gerçek 64 ders Chromium, 100 PNG ve bunların JSON/SHA-256 nihai kabulü OPEN.
+MQ-05: Gerçek simülasyon kabulü OPEN. MQ-00 FINAL: OPEN.
+GitHub Actions sıfır; commitlerde [skip ci]. Eski 18/18 Actions run 38070861990 yalnız eski SHA tarihsel delildir.
