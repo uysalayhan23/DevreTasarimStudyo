@@ -68,7 +68,7 @@ test('reference format cache chain is current',()=>{
  const h=fs.readFileSync(path.join(root,'dist','index.html'),'utf8');
  const b=fs.readFileSync(path.join(root,'dist','tutorial-bootstrap.js'),'utf8');
  assert.match(h,/tutorial\.css\?rev=20261010-measure-batch-d2/);
- assert.match(h,/tutorial-bootstrap\.js\?rev=20261010-timer-batch-g1/);
+ assert.match(h,/tutorial-bootstrap\.js\?rev=20261011-topic-review-m1/);
  assert.match(b,/tutorial-mode\.js\?v=1\.19\.20-timer-batch-g1/);
 });
 
