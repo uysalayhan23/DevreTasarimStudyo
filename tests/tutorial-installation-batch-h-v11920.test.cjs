@@ -52,3 +52,19 @@ test('tutorial loader loads Batch H after canonical Batch G',()=>{
  assert.match(m,/measurementUpgradeCard\(l,s,project\)\+noteHtml/);
  assert.doesNotMatch(h,/\.innerHTML|#viewport|#tutorialCoach|\.push\(W\(/);
 });
+
+
+test('fourth bell lesson recognizes B4 as fourth NO push without inventing a light circuit',()=>{
+ const {L,before}=curriculum(),lesson=L.byId['bells-4'],p=lesson.project;
+ assert.equal(p.components.filter(c=>['bell-push','bell-light-push'].includes(c.typeId)).length,4);
+ assert.equal(p.components.find(c=>c.id==='bl')?.typeId,'bell-light-push');
+ assert.equal(p.wires.filter(w=>w.from.c==='bl'||w.to.c==='bl').length,2);
+ assert.equal(p.wires.length,9);
+ assert.equal(JSON.stringify({components:p.components,wires:p.wires,steps:lesson.steps}),before.get('bells-4'));
+ assert.match(lesson.measurementUpgrade.task,/B1, B2, B3 ve B4/);
+ assert.match(lesson.measurementUpgrade.task,/simüle edilmez/);
+ assert.match(lesson.learningGoal,/ayrı.*ışık devresi modellenmemiştir/);
+ assert.equal(lesson.measurementUpgrade.illuminatedButtonModelled,false);
+ assert.match(lesson.quiz.question,/B4/);
+ assert.match(lesson.quiz.options[0],/13\/14 NO/);
+});
