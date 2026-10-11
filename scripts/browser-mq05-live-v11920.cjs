@@ -334,18 +334,53 @@ const dcFixture={version:7,workspaceMode:'control',name:'MQ05 Signed Flow',compo
  {id:'reverse',from:{c:'r',p:'1'},to:{c:'g',p:'P'},color:'#e53935',role:'DC+',points:[]},
  {id:'return',from:{c:'r',p:'2'},to:{c:'g',p:'M'},color:'#111827',role:'0V',points:[]}
 ],junctions:[],colorRoles:{}};
+const acFixture={version:7,workspaceMode:'control',name:'MQ05 AC Signed Flow',components:[
+ {id:'s',typeId:'supply-1p',x:135,y:140,ref:'G1'},
+ {id:'stop',typeId:'push-nc',x:315,y:130,ref:'S0'},
+ {id:'start',typeId:'push-no',x:490,y:150,ref:'S2'},
+ {id:'hold',typeId:'contact-no',x:505,y:355,ref:'K1'},
+ {id:'coil',typeId:'coil-relay',x:750,y:180,ref:'K1'}
+],wires:[
+ {id:'a0',from:{c:'s',p:'L'},to:{c:'stop',p:'21'},color:'#e53935',role:'CONTROL',points:[]},
+ {id:'a1',from:{c:'stop',p:'22'},to:{c:'start',p:'13'},color:'#e53935',role:'CONTROL',points:[]},
+ {id:'a2',from:{c:'start',p:'14'},to:{c:'coil',p:'A1'},color:'#e53935',role:'CONTROL',points:[]},
+ {id:'a3',from:{c:'coil',p:'A2'},to:{c:'s',p:'N'},color:'#e53935',role:'CONTROL',points:[]},
+ {id:'a4',from:{c:'stop',p:'22'},to:{c:'hold',p:'13'},color:'#e53935',role:'CONTROL',points:[]},
+ {id:'a5',from:{c:'hold',p:'14'},to:{c:'coil',p:'A1'},color:'#e53935',role:'CONTROL',points:[]}
+],junctions:[],colorRoles:{}};
 async function flow(cdp,report){
  await evaluate(cdp,expression(p=>{window.DTSEditor.load(p);return true},dcFixture));
  await sleep(140);await runSimulation(cdp);
  const s=await read(cdp),reverse=s.wires.find(w=>w.id==='reverse');
  check(reverse?.mode==='dc'&&reverse?.direction===-1&&reverse?.certainty==='exact','DC wire must retain signed reverse direction');
  check((reverse.classes||'').includes('flow-reverse'),'Real rendered wire lacks reverse flow class');
- const ac=report.states.seal_latch?.wires?.some(w=>w.mode==='ac'&&w.active&&(w.classes||'').includes('flow-ac'));
- check(ac,'Rendered AC current flow was not detected in seal-in');
- const ambiguous=report.states.seal_start?.wires?.some(w=>w.certainty==='ambiguous');
- check(ambiguous,'Parallel AC paths should be direction-ambiguous while START is pressed');
  report.states.flow_reverse=s;await shotEvidence(cdp,report,'dc-reverse-flow');
- report.coverage.flow={dc_reverse:true,rendered_reverse:true,ac_in_seal_in:true,ac_ambiguous_parallel:true};
+ await stopSimulation(cdp);
+ // The canonical seal-in-1 lesson uses DC supply. Use an explicit AC fixture for AC claims.
+ await evaluate(cdp,expression(p=>{window.DTSEditor.load(p);return true},acFixture));
+ await sleep(140);await runSimulation(cdp);
+ const start=await coords(cdp,'#scene .component[data-id="start"] .body');
+ await press(cdp,start);await sleep(160);
+ const parallel=await read(cdp);
+ check(pick(parallel,'coil')?.active,'AC START must energize relay');
+ check(['a1','a2','a4','a5'].every(id=>parallel.wires.find(w=>w.id===id)?.certainty==='ambiguous'),
+  'AC parallel paths should be ambiguous while START is pressed');
+ check(parallel.wires.some(w=>w.mode==='ac'&&w.active&&(w.classes||'').includes('flow-ac')),
+  'Real AC wire did not receive flow-ac renderer class');
+ report.states.ac_parallel_ambiguous=parallel;await shotEvidence(cdp,report,'ac-start-parallel');
+ await release(cdp,start);await sleep(160);
+ const latched=await read(cdp);
+ check(pick(latched,'coil')?.active,'AC relay must latch after START release');
+ check(['a4','a5'].every(id=>{const w=latched.wires.find(w=>w.id===id);return w?.mode==='ac'&&w.active&&w.certainty==='directional'&&w.direction!==0}),
+  'AC seal-in feedback must carry directional current after START release');
+ report.states.ac_latched=latched;await shotEvidence(cdp,report,'ac-latched-direction');
+ const stop=await coords(cdp,'#scene .component[data-id="stop"] .body');
+ await press(cdp,stop);await sleep(160);
+ const stopped=await read(cdp);check(!pick(stopped,'coil')?.active,'AC STOP must release coil');
+ report.states.ac_stopped=stopped;await shotEvidence(cdp,report,'ac-stop');
+ await release(cdp,stop);
+ report.coverage.flow={dc_reverse:true,rendered_reverse:true,ac_in_seal_in:true,
+  ac_ambiguous_parallel:true,ac_directional_after_release:true,ac_stop_deenergizes:true};
  await stopSimulation(cdp);
 }
 async function main(){
@@ -389,4 +424,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[MQ05]',e.stack||e.message);process.exitCode=1});
-module.exports={meterFixture,clampFixture,dcFixture,read,seal,probe,clamp,flow,probePointerEnd};
+module.exports={meterFixture,clampFixture,dcFixture,acFixture,read,seal,probe,clamp,flow,probePointerEnd};
