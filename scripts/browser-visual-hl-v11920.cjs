@@ -169,12 +169,19 @@ async function shot(cdp,name){
   let r;
   try{r=await cdp.call('Page.captureScreenshot',{format:'png',fromSurface:true,captureBeyondViewport:false})}
   catch(e){throw Error('Screenshot capture failed ['+name+']: '+(e?.message||e))}
-  const data=Buffer.from(r.data,'base64'),size=pngSize(data);
-  if(size.width!==GOLDEN.viewport.width||size.height!==GOLDEN.viewport.height)throw Error(name+' screenshot boyutu yanlış: '+size.width+'x'+size.height);
-  if(data.length<10000)throw Error(name+' screenshot beklenenden küçük.');
+  const data=Buffer.from(r.data,'base64');
   fs.mkdirSync(BUILD,{recursive:true});
-  const file=path.join(BUILD,name+'.png');fs.writeFileSync(file,data);
-  return {file:path.relative(ROOT,file).replace(/\\/g,'/'),bytes:data.length,sha256:sha256(data),...size};
+  try{
+    const size=pngSize(data);
+    if(size.width!==GOLDEN.viewport.width||size.height!==GOLDEN.viewport.height)throw Error(name+' screenshot boyutu yanlış: '+size.width+'x'+size.height);
+    if(data.length<10000)throw Error(name+' screenshot beklenenden küçük.');
+    const file=path.join(BUILD,name+'.png');fs.writeFileSync(file,data);
+    return {file:path.relative(ROOT,file).replace(/\\/g,'/'),bytes:data.length,sha256:sha256(data),...size};
+  }catch(e){
+    const raw=path.join(BUILD,name+'.invalid.png');
+    fs.writeFileSync(raw,data);
+    throw Error('Screenshot validation failed ['+name+']: '+e.message+' (raw '+path.relative(ROOT,raw).replace(/\\/g,'/')+', bytes='+data.length+', sha256='+sha256(data)+')');
+  }
 }
 function assert(cond,msg){if(!cond)throw Error(msg)}
 function validateCards(info){
