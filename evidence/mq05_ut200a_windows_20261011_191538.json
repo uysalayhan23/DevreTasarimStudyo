@@ -1,0 +1,105 @@
+{
+  "schema": "dts-ut200a-real-windows-qa-result-v1",
+  "date": "2026-10-11",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "archive": {
+    "filename": "QA_MQ05_UT200A_SONUC_20261011_191538.zip",
+    "sha256": "570242a425729578496a5ea92d27a94720402cd8240654982c849947fa3c05fb",
+    "entries": 12,
+    "zip_crc": "PASS"
+  },
+  "windows": {
+    "node_version": "v24.21.0",
+    "node_test_files": 19,
+    "node_total": 116,
+    "node_pass": 116,
+    "node_fail": 0,
+    "node_skip": 0,
+    "node_exit_code": 0,
+    "chromium_exit_code": 1,
+    "independent_artifact_verification": "NOT_RUN",
+    "status": "FAIL"
+  },
+  "chromium": {
+    "editor_visible": true,
+    "clamp_visible": true,
+    "wire_visible": true,
+    "initial": {
+      "jawOpen": false,
+      "candidate": null,
+      "clampedWireId": null,
+      "projectRunning": true,
+      "distanceToWirePixels": 209.70382553602707
+    },
+    "drag": {
+      "from": {
+        "x": 982.6667175292969,
+        "y": 609.6666564941406
+      },
+      "to": {
+        "x": 761.5194091796875,
+        "y": 322.16665649414074
+      },
+      "jawFrom": {
+        "x": 982.6666666666667,
+        "y": 522.1666666666666
+      },
+      "wireTarget": {
+        "x": 761.5193583170574,
+        "y": 234.66666666666669
+      }
+    },
+    "after": {
+      "jawOpen": false,
+      "candidate": null,
+      "clampedWireId": null,
+      "distanceToWirePixels": 209.70382553602707
+    },
+    "failure": "UT200A jaws did not visibly open as they approached the AC conductor",
+    "real_clamp_snap": "NOT_PROVEN",
+    "ac_current_reading": "NOT_REACHED"
+  },
+  "independent_png": {
+    "count": 3,
+    "dimensions": "1440x1000",
+    "crc_valid": 3,
+    "sha256_matches": 3,
+    "byte_size_matches": 3,
+    "unique_hashes": 3
+  },
+  "source_hashes_from_zip": {
+    "dist/app.js": "e3c4d9d2d4b5dd7c4069ec1bfd72a1bc186ec395b21cf316265c609d7a9ac700",
+    "dist/tutorial-mode.js": "dfd18abd706ac6522f64cd7431608bb7377c62348bdf7e4efa127201ed5f636d",
+    "scripts/browser-mq05-ut200a-jaw-v11920.cjs": "259883f264e480e55db7ce4c3c2fa7606296de0cb8d06d216ec3ccf74b5c8357",
+    "tests/qa-mq05-ut200a-jaw-v11920.test.cjs": "89ab3ba61bcd06bc36678b9aff5cfdaa23993ec4d1db7b616c095d59724546e2",
+    "BASLAT.bat": "487d5d63cccc36929100955c9af35e43341dd480cf01815a52f6f0c944e7eca0"
+  },
+  "interpretation": "The SVG selection outline changed; probe/clamp did not visibly move, jaw-open state and candidate remained false/null. Actual drag not proven. The cause of missing pointer movement is not yet conclusively known; avoid claiming app device defect or complete QA fix.",
+  "qa_test_changes": {
+    "explicit_click_select_before_drag": true,
+    "assert_pointer_target_clamp": true,
+    "assert_editable": true,
+    "assert_active_canvas_gesture": true,
+    "record_mid_and_final_mouse_diagnostics": true,
+    "assert_world_displacement": true,
+    "script_commits": [
+      "a7bc7a18dcf1bd3051afd2aa768caeb44f0d3e23",
+      "047cc660b9316d530fd4910feef4f1c847ef822d"
+    ],
+    "test_commits": [
+      "8f492fea0fc8b15781dfbe8fe3a59eee8566f535",
+      "90bd2891a4ec0a1b579b09536e6ce164f2fb5e77"
+    ],
+    "new_windows_run": "NOT_YET_EXECUTED"
+  },
+  "quality": {
+    "MQ05_UT200A_physical_jaw": "OPEN",
+    "MQ05_prior_four_chromium_stages": "PASS_HISTORICAL",
+    "MQ05_prior_110_node": "PASS_HISTORICAL",
+    "HL64_100PNG": "PASS_HISTORICAL",
+    "MQ00_final": "OPEN"
+  },
+  "actions_used": false,
+  "commit_convention": "[skip ci]"
+}
