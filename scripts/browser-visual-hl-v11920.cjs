@@ -392,6 +392,8 @@ async function main(){
        // Keep an interaction-state screenshot even when its geometry assertion fails.
        const panelShot=await shot(cdp,'hl-panel-'+id);
        report.states.hlLessons.items[report.states.hlLessons.items.length-1].panelScreenshot=panelShot;
+       // Fail at the first broken interaction; a hidden panel returns 0x0 on resize and masks the cause.
+       assert(interaction.ok,'Panel drag/bounds/close/reopen failed: '+id+' '+JSON.stringify(interaction));
        // Resize the real browser viewport; assert restored and minimized geometry.
        const resizeChecks=[];
        try{
@@ -419,7 +421,6 @@ async function main(){
        assert(resizeChecks.length===2&&resizeChecks.every(v=>v.bounded),
          'Panel resize bounds failed: '+id+' '+JSON.stringify(resizeChecks));
 
-       assert(interaction.ok,'Panel drag/bounds/close/reopen failed: '+id+' '+JSON.stringify(interaction));
       }
 
       report.states.hlLessons.checked++;
