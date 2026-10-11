@@ -1,0 +1,74 @@
+{
+  "schema": "dts-hl64-real-windows-qa-evidence-v1",
+  "date": "2026-10-11",
+  "scope": "H–L 64 lessons and 100 Chromium screenshots only",
+  "source": "User-provided Windows QA result archive; independently parsed and validated",
+  "zip_name": "QA_HL64_SONUC_20261011_164226.zip",
+  "zip_sha256": "0ae75ab1d811cb055a6fcde00031b9d1e9064e7830396e304d34570fb6f9d8c4",
+  "zip_entries": 112,
+  "zip_integrity": "PASS",
+  "windows_run": {
+    "started_at": "2026-10-11T16:42:26.5686356+03:00",
+    "finished_at": "2026-10-11T16:47:00.5283999+03:00",
+    "node_version": "v24.21.0",
+    "node_tests": {
+      "total": 43,
+      "pass": 43,
+      "fail": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "chromium_exit_code": 0,
+    "artifact_verification_exit_code": 0,
+    "run_summary_status": "PASS"
+  },
+  "real_chromium": {
+    "hl_lessons_checked": 64,
+    "hl_items": 64,
+    "exceptions": 0,
+    "corner_sets_pass": 16,
+    "responsive_sets_pass": 16,
+    "panel_interactions_pass": 16,
+    "categories": {
+      "lessons": 64,
+      "corners": 16,
+      "panels": 16,
+      "global": 4,
+      "total": 100
+    }
+  },
+  "independent_archive_verification": {
+    "report_sha256": "016d38078a1951d492e7278b72bcdacb02b74569eb782e7e92376934faba591d",
+    "report_sha256_match": true,
+    "checksum_rows": 100,
+    "sha256_matches": 100,
+    "byte_size_matches": 100,
+    "png_structure_valid": 100,
+    "png_dimensions": "1440x1000",
+    "png_files": 100,
+    "distinct_content_sha256": 100,
+    "blank_or_solid_png": 0,
+    "missing_or_duplicate": 0,
+    "corrupt_zip_entries": 0,
+    "errors": 0,
+    "manual_sample": "A contact sheet of twelve representative screenshots was visually inspected."
+  },
+  "github_source_sha256_verified": {
+    "dist/tutorial-mode.js": "dfd18abd706ac6522f64cd7431608bb7377c62348bdf7e4efa127201ed5f636d",
+    "scripts/browser-visual-hl-v11920.cjs": "a9c9236d0dd61a6270c3f82e3b7549a62729cdaef52c9fd1e964d0dcefc98015",
+    "scripts/qa-hl64-artifact-verify-v11920.cjs": "fa0d35ef18a66fbc2ed70249b12e4b40799b7c5c153c855283a753f12f89c37c",
+    "tests/tutorial-coach-responsive-contract-v11920.test.cjs": "7daccebdb8f976a6d68ca1a46d7293b9233716045cc5ff4319c4f15d17afc74c",
+    "BASLAT.bat": "487d5d63cccc36929100955c9af35e43341dd480cf01815a52f6f0c944e7eca0"
+  },
+  "acceptance": {
+    "MQ-12_HL_Node": "PASS",
+    "MQ-10_HL_Chromium_visual": "PASS",
+    "MQ-05_full_application_simulation": "OPEN_NOT_COVERED",
+    "MQ-00_FINAL": "OPEN_PENDING_OTHER_GATES"
+  },
+  "qualifications": [
+    "No GitHub Actions executed.",
+    "This report does not establish full-app solver/simulation acceptance or manual visual inspection of all 100 pictures.",
+    "Original 100 PNG binaries remain in the user's conversation-uploaded ZIP, not in this small repository evidence JSON."
+  ]
+}
