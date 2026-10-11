@@ -14,10 +14,10 @@ function main(){
   fail('One or more browser simulation stages missing/failed');
  const coverage=report.coverage||{};
  if(!(coverage.seal_in?.start_pressed&&coverage.seal_in?.start_released_latched&&coverage.seal_in?.stop_deenergizes&&coverage.seal_in?.real_mouse_events&&
-  coverage.probes?.free_then_attached&&coverage.probes?.real_pointer_drag&&coverage.probes?.wires_unchanged&&
+  coverage.probes?.free_then_attached&&coverage.probes?.both_free_then_attached&&coverage.probes?.real_pointer_drag&&coverage.probes?.real_pointer_drags===2&&coverage.probes?.wires_unchanged&&
   coverage.multimeter?.dc_24v&&coverage.multimeter?.red_black_physical_probes&&
   coverage.ut200a?.ac_1a&&coverage.ut200a?.noninvasive&&
-  coverage.flow?.dc_reverse&&coverage.flow?.rendered_reverse&&coverage.flow?.ac_in_seal_in))
+  coverage.flow?.dc_reverse&&coverage.flow?.rendered_reverse&&coverage.flow?.ac_in_seal_in&&coverage.flow?.ac_ambiguous_parallel))
   fail('MQ-05 functional coverage fields missing');
  if(!Array.isArray(report.screenshots)||report.screenshots.length<8)
   fail('Missing live browser screenshot evidence');
