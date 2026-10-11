@@ -104,6 +104,8 @@ test('UT200A Chrome driver requires visible hit target, explicit selection and a
  assert.match(qa,/selected\.selected\.includes\('cl'\)&&!selected\.gestureActive/);
  assert.match(qa,/check\(pressed\.gestureActive/);
  assert.match(qa,/pointer_mid_drag=await dragDiagnostics\(cdp,geometry\.from\)/);
+ assert.match(qa,/pointer_actual_world_displacement=pointerDelta/);
+ assert.match(qa,/check\(pointerDelta>10&&pointerLast\.gestureActive/);
  assert.match(qa,/document\.elementFromPoint\(p\.x,p\.y\)/);
  assert.match(qa,/gestureActive:document\.body\.classList\.contains\('canvas-gesture'\)/);
 });
