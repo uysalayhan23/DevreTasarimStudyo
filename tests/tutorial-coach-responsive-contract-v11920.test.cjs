@@ -224,3 +224,57 @@ test('capture-phase enhancement drag and restored layout clamp top to 58px at th
     result.top+result.height<=vh,'Bottom/right drag outside viewport on '+vw+'x'+vh);
  }
 });
+
+
+test('floating coach visibility is handled once in capture phase and persists across two toggles',()=>{
+ const enhancement=fs.readFileSync(path.join(ROOT,'dist/tutorial-enhancements.js'),'utf8');
+ const begin=enhancement.indexOf('function setVisible(v){');
+ const end=enhancement.indexOf('function refreshArrow(){',begin);
+ const bind=enhancement.indexOf('function bind(){');
+ const captureStart=enhancement.indexOf("root.document.addEventListener('click',e=>{",bind);
+ const captureEnd=enhancement.indexOf('},true);',captureStart)+'},true);'.length;
+ assert.ok(begin>=0&&end>begin&&captureStart>=0&&captureEnd>captureStart);
+ const state={};
+ const panel={hidden:false};
+ let capture,sideCalls=0,bubbleCalls=0;
+ const ctx={
+  coachVisible:true,COACH_UI_KEY:'dts-tutorial-coach-ui-v11920',
+  layoutReady:true,coach:()=>panel,lesson:()=>({id:'commutator-1'}),
+  sideControl:()=>{sideCalls++},ensureFloatBar:()=>{},applyLayout:()=>{},
+  root:{
+   localStorage:{
+    getItem:key=>state[key]||null,
+    setItem:(key,value)=>{state[key]=value}
+   },
+   document:{addEventListener(type,handler,isCapture){
+    assert.equal(type,'click');assert.equal(isCapture,true);capture=handler;
+   }}
+  }
+ };
+ vm.runInNewContext(enhancement.slice(begin,end)+enhancement.slice(captureStart,captureEnd),ctx);
+ assert.equal(typeof capture,'function');
+ function dispatch(type){
+  let stopped=false,prevented=false;
+  const event={
+   target:{closest:selector=>
+    selector==='[data-tutorial-coach-toggle]'&&type==='toggle'?{}:
+    selector==='[data-tutorial-coach-close]'&&type==='close'?{}:null
+   },
+   preventDefault(){prevented=true},
+   stopImmediatePropagation(){stopped=true}
+  };
+  capture(event);
+  if(!stopped){bubbleCalls++;panel.hidden=!panel.hidden}
+  assert.ok(prevented&&stopped,'capture click must not also reach the base toggle handler');
+ }
+ dispatch('toggle');
+ assert.equal(panel.hidden,true,'first click hides coach');
+ assert.equal(JSON.parse(state[ctx.COACH_UI_KEY]).hidden,true);
+ dispatch('toggle');
+ assert.equal(panel.hidden,false,'second click restores coach');
+ assert.equal(JSON.parse(state[ctx.COACH_UI_KEY]).hidden,false);
+ dispatch('close');
+ assert.equal(panel.hidden,true,'close hides coach');
+ assert.equal(bubbleCalls,0,'bubble handler must not run a duplicate toggle');
+ assert.equal(sideCalls,3);
+});
