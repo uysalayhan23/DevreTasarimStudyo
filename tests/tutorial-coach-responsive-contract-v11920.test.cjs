@@ -94,7 +94,10 @@ test('PNG chunk CRC, lengths, IDAT, IEND and dimensions reject broken data',()=>
 test('Chromium QA verifies screenshot file bytes and SHA against JSON and preserves invalid captures',()=>{
  assert.match(browser,/function verifyReportArtifacts\(report\)/);
  assert.match(browser,/report\.artifactIntegrity=verifyReportArtifacts\(report\)/);
- assert.match(browser,/report\.artifactIntegrity\.files>=100/);
+ assert.match(browser,/report\.artifactIntegrity\.files===100/);
+ assert.match(browser,/JSON\.parse\(fs\.readFileSync\(reportFile,'utf8'\)\)/);
+ assert.match(browser,/new Set\(lessons\.items\.map\(x=>x\.id\)\)\.size===64/);
+ assert.match(browser,/verifyReportArtifacts\(persisted\)/);
  assert.match(browser,/name\+'\.invalid\.png'/);
  const a=browser.indexOf('function pngCrc(data){'),b=browser.indexOf('function findBrowser()',a);
  const crc=vm.runInNewContext(browser.slice(a,b)+';pngCrc',{Buffer,zlib});
