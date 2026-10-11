@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 test('MQ-12 validates all 1655 lessons through real native electrical solver and material library',()=>{
- const result=QA.audit();
+ const result=QA.main();
  assert.equal(result.total,1655);
  assert.equal(result.rich,136);
  assert.equal(result.topicReviewed,1519);
