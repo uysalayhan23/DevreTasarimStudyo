@@ -1,0 +1,64 @@
+{
+  "schema": "dts-mq05-ut200a-physical-jaw-preacceptance-v1",
+  "date": "2026-10-11",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "status": "READY_FOR_WINDOWS_TEST_NOT_PASSED",
+  "files": {
+    "launcher": "QA_MQ05_UT200A_CALISTIR.bat",
+    "windows_runner": "scripts/qa-mq05-ut200a-windows-v11920.ps1",
+    "chromium": "scripts/browser-mq05-ut200a-jaw-v11920.cjs",
+    "verifier": "scripts/qa-mq05-ut200a-jaw-verify-v11920.cjs",
+    "persistent_test": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "instructions": "docs/QA_MQ05_UT200A_JAW_WINDOWS_V1.19.20.md"
+  },
+  "production_scope": [
+    "dist/app.js: temporary _clampJawOpen from nearest wire candidate during drag",
+    "clamp visual open indicator only when candidate is in capture radius",
+    "jaw closes and original clampedWireId+clampT snap is retained on mouse release"
+  ],
+  "expected_real_chrome_evidence": {
+    "images": [
+      "jaw-before-drag.png",
+      "jaw-open-over-live-wire.png",
+      "jaw-snapped-closed.png",
+      "jaw-current-ac-1a.png"
+    ],
+    "signals": [
+      "no preattached clampedWireId",
+      "active AC load while meter OFF",
+      "pointer drag moves jaw to wire w1",
+      "opening visible before release",
+      "clampedWireId=w1 and clampT after release",
+      "jaw closed after snap",
+      "jaw within 18 display pixels of wire",
+      "two conductor wires unchanged",
+      "inspector ACA range selected",
+      "UT200A 1.000 A +/-0.04 A"
+    ],
+    "verification": "PNG full CRC/IDAT, 1440x1000, byte length and SHA-256, four unique files, JSON stage consistency"
+  },
+  "executed_local_tests": {
+    "existing_clamp_and_meter_node": 27,
+    "passed": 27,
+    "failed": 0,
+    "new_code_js_syntax": "PASS",
+    "new_windows_end_to_end": "NOT_RUN",
+    "new_test_file_node_suite": "NOT_RUN"
+  },
+  "preserved_existing_evidence": {
+    "mq05_windows_node": "110/110 PASS (2026-10-11 previous source)",
+    "mq05_chromium": "4/4 PASS, 12/12 PNG (previous source)",
+    "hl": "64/64 lessons and 100/100 PNG previously accepted",
+    "baslat_bat": "UNCHANGED",
+    "file_url_launcher": "UNCHANGED"
+  },
+  "quality_gates": {
+    "UT200A_physical_jaw": "OPEN_PENDING_REAL_CHROME",
+    "MQ05_full_scope": "OPEN",
+    "MQ00_final": "OPEN"
+  },
+  "actions_used": false,
+  "commit_format": "[skip ci]",
+  "note": "The physical jaw opening is an application simulation with a transient visual open indicator; it is not a mechanical measurement of a real UT200A device. Four live screenshots must be supplied in a Windows QA ZIP before approval."
+}
