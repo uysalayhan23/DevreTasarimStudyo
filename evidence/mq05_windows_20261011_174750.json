@@ -1,0 +1,60 @@
+{
+  "schema": "dts-mq05-windows-qa-observation-v1",
+  "qa_zip": "QA_MQ05_SONUC_20261011_174750.zip",
+  "zip_sha256": "d412d2b408f5f40f529b66d6d1fe57a5c8c7ebcc6b1c4dbb016d6e568dda2661",
+  "zip_crc": "PASS",
+  "date": "2026-10-11",
+  "result": "FAIL",
+  "source": "User-provided Windows QA ZIP independently inspected",
+  "run": {
+    "node": "v24.21.0",
+    "node_tests": 108,
+    "node_passed": 108,
+    "node_failed": 0,
+    "chromium_exit": 1,
+    "artifact_verification": "NOT_RUN",
+    "browser_stages": {
+      "seal_in": "PASS",
+      "probes_and_multimeter": "FAIL",
+      "ut200a": "NOT_RUN",
+      "ac_dc_flow": "NOT_RUN"
+    }
+  },
+  "verified_visuals": {
+    "screenshots": 6,
+    "png_decoded": 6,
+    "sha256_matches": 6,
+    "bytes_matches": 6,
+    "png_errors": 0
+  },
+  "functional_observations": {
+    "seal_off": true,
+    "seal_start_pressed": true,
+    "seal_start_release_latch": true,
+    "seal_stop_drop": true,
+    "probe_free": true,
+    "black_probe_drag_attached": false
+  },
+  "failure": {
+    "message": "Real pointer drag did not attach black probe",
+    "cause": "QA pointer movement targeted the terminal with probe BODY center, but app requires probe TIP contact. Image shows body moves without target attachment.",
+    "app_defect_confirmed": false,
+    "qa_fixture_defect_confirmed": true,
+    "follow_on_qa_defect": "AC current assertions referenced the DC-only seal-in-1 lesson instead of a real AC fixture."
+  },
+  "corrective_changes": {
+    "tip_aligned_drag": "8974426",
+    "separate_ac_flow_fixture": "7cc8a47",
+    "strict_artifact_gate": "b1ecb05",
+    "test_tip_and_ac_regressions": "9a23cde",
+    "windows_summary_12_png": "0525617"
+  },
+  "acceptance": {
+    "MQ05_Node": "PASS",
+    "MQ05_Windows_E2E": "OPEN_RETEST_REQUIRED",
+    "MQ05_FINAL": "OPEN",
+    "MQ00_FINAL": "OPEN",
+    "HL_64_100": "PASS_PRESERVED"
+  },
+  "notes": "Corrected Chromium harness has not been rerun on Windows; no false UI PASS claimed. No Actions used. Original ZIP in conversation, not uploaded to repo."
+}
