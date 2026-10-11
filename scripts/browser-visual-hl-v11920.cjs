@@ -24,7 +24,7 @@ function pngCrc(data){
 function pngSize(data){
  const sig=Buffer.from([137,80,78,71,13,10,26,10]);
  if(!Buffer.isBuffer(data)||!data.subarray(0,8).equals(sig))throw Error('PNG signature invalid');
- let offset=8,width=0,height=0,bitDepth=0,colorType=-1,interlace=0,ihdr=false,idat=false,idatClosed=false,iend=false;
+ let offset=8,width=0,height=0,bitDepth=0,colorType=-1,interlace=0,ihdr=false,idat=false,idatClosed=false,iend=false,plte=false;
  const parts=[];
  while(offset+12<=data.length){
   const len=data.readUInt32BE(offset),end=offset+12+len;
@@ -40,7 +40,12 @@ function pngSize(data){
    if(!width||!height||!depths[colorType]?.includes(bitDepth)||payload[10]!==0||payload[11]!==0||interlace>1)
     throw Error('PNG IHDR dimensions or color encoding invalid');
    ihdr=true;
+  }else if(type==='PLTE'){
+   if(idat||plte||colorType===0||colorType===4||len===0||len>768||len%3!==0||(colorType===3&&len>3*(1<<bitDepth)))
+    throw Error('PNG PLTE invalid');
+   plte=true;
   }else if(type==='IDAT'){
+   if(colorType===3&&!plte)throw Error('PNG indexed palette missing');
    if(idatClosed)throw Error('PNG nonconsecutive IDAT');
    idat=true;
    if(len)parts.push(payload); // PNG permits zero-length IDAT chunks.
@@ -48,6 +53,7 @@ function pngSize(data){
    if(len!==0||!idat||end!==data.length)throw Error('PNG IEND/IDAT invalid');
    iend=true;break;
   }else if(type==='IHDR')throw Error('Duplicate IHDR');
+  else if(!/^[A-Za-z]{4}$/.test(type)||type[0]===type[0].toUpperCase())throw Error('PNG unknown critical chunk: '+type);
   if(idat&&type!=='IDAT')idatClosed=true;
   offset=end;
  }
