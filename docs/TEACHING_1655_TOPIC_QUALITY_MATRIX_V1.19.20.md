@@ -277,3 +277,8 @@ MQ-12: Arşivdeki gerçek Node görsel sözleşmesi 4/4 PASS, arşiv öğretici 
 MQ-10: Arşivin global Chromium hazır olma kontrolü FAIL; güncel main H-L 64 ders ve gerçek 100 PNG/JSON/SHA-256 **OPEN / NOT RUN**.
 MQ-05: main canlı simülasyon OPEN. MQ-00 FINAL: OPEN.
 Yeni Actions çalıştırılmadı. Arşiv farkı ve eski koşu hata raporları gizlenmeden kaydedildi. Yeni committe [skip ci].
+
+
+## 2026-10-11 — Güncel main arşivinin yeniden kontrolü (Actions kullanılmadı)
+
+Bu oturumda Library ve sohbet dosyaları tekrar tarandı. **Yeni main ZIP arşivi yok**: tek ilgili arşiv `DevreTasarimStudyo-main.zip`, 85.324.351 bayt, 2026-10-10 09:09 UTC. Yerel SHA-256 `68a572186e44eaccef5d60df8a8b9d66f81ffeabb490546651d1aa30e1cea651`; ZIP 744 öğe. Arşiv `dist/tutorial-mode.js` Git blob SHA `4468314d7292547c96449285397e93560ccaf7c1`, oysa güncel GitHub main'deki dosya SHA `f6031603dbc214937645f0c9a8249fbcb042bf0f`; inceleme öncesi `main` commit `bd37fe2c67080390e2822ff36c2ecbc125e992c6`. Arşivde `tests/tutorial-coach-responsive-contract-v11920.test.cjs` ve `scripts/browser-visual-hl-v11920.cjs` bulunmuyor. Yerel Node v22.16.0 ve Chromium v144 bulunuyor; `git ls-remote` github.com DNS başarısız. Bu nedenle **güncel main kalıcı Node testi çalıştırılmadı** ve **gerçek H–L 64 ders / 100 PNG / JSON / SHA-256 Chromium kabulü çalıştırılmadı**. Önceki eski arşiv 4/4 Node sözleşme PASS, 56/96 öğretici genel test ve Chromium hazır olma FAIL kayıtları tarihsel eski-arşiv sonuçları olarak değişmeden durur. MQ-12 güncel main Node OPEN; MQ-10 güncel main Chromium OPEN; MQ-00 FINAL OPEN. Yeni GitHub Actions tetiklenmedi; `[skip ci]`.
