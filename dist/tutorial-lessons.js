@@ -113,7 +113,14 @@ function sensorCircuit(v,topic){
  p.components.push(C('s',sensor,390,220,'B1',pnp?'PNP sensör':'NPN sensör'),C('h','lamp-green',780,220,'H1','24 V gösterge'));p.wires.push(W('g1','P','s','BN','+24 V → BN','Kahverengi BN sensörün pozitif beslemesidir.'),W('s','BU','g1','M','BU → 0 V','Mavi BU sensörün 0 V beslemesidir.','#111827','0V'));
  if(pnp){p.wires.push(W('s','BK','h','X1','BK → yük X1','PNP/sourcing çıkış aktifken yükün girişine +24 V verir.','#43a047','SIGNAL'),W('h','X2','g1','M','Yük X2 → 0 V','PNP yükü çıkış ile 0 V arasındadır.','#111827','0V'))}
  else{p.wires.push(W('g1','P','h','X1','+24 V → yük X1','NPN devrede yük pozitif hatta bağlanır.'),W('h','X2','s','BK','Yük X2 → BK','NPN/open-collector çıkış aktifken akımı BK üzerinden 0 V tarafına çeker.','#43a047','SIGNAL'))}
- if(topic==='open-collector'&&(v===2||v===3)){p.components.push(C('r','resistor',780,430,'R1','Pull-up direnci',{resistance:1000}));p.wires.push(W('g1','P','r','1','+24 V → pull-up 1','Open collector çıkış kapalıyken sinyal seviyesini tanımlayan harici pull-up kaynağıdır.'),W('r','2','s','BK','Pull-up 2 → BK','Pull-up, kolektör düğümünü pozitif seviyeye taşır; transistor iletince düğüm 0 V tarafına çekilir.','#43a047','SIGNAL'))}
+ if(topic==='open-collector'&&(v===2||v===3)){
+  const pullDown=v===2; // PNP sourcing needs a pull-down, NPN sinking a pull-up.
+  p.components.push(C('r','resistor',780,430,'R1',pullDown?'10 kΩ pull-down direnci':'1 kΩ pull-up direnci',{resistance:pullDown?10000:1000}));
+  p.wires.push(
+   W('g1',pullDown?'M':'P','r','1',pullDown?'0 V → pull-down R1/1':'+24 V → pull-up R1/1',pullDown?'PNP BK çıkışını algılama yokken 0 V seviyesinde tutar.':'NPN BK çıkışını algılama yokken pozitif seviyede tutar.'),
+   W('r','2','s','BK',pullDown?'Pull-down R1/2 → BK':'Pull-up R1/2 → BK',pullDown?'10 kΩ direnç PNP çıkış düğümünü 0 V tarafına referanslar; göstergeye bağımsız besleme taşımaz.':'NPN çıkış iletime geçtiğinde BK düğümünü 0 V tarafına çeker.','#43a047','SIGNAL')
+  );
+}
  return p;
 }
 function dualDcCircuit(v){
