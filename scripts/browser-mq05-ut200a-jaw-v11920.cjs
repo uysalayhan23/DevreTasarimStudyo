@@ -326,6 +326,44 @@ async function dragDiagnostics(cdp,point){
    open:!!c?._clampJawOpen,candidate:c?._clampCandidate||null};
  },point));
 }
+async function liveJawAlignment(cdp){
+ return evaluate(cdp,expression(()=>{
+  const g=document.querySelector('#scene .component[data-id="cl"]');
+  const wire=document.querySelector('#scene [data-wire="w1"] .wire');
+  if(!g?.getScreenCTM()||!wire?.getScreenCTM()||!wire.getTotalLength())return null;
+  const pt=wire.getPointAtLength(wire.getTotalLength()*.5);
+  const target=new DOMPoint(pt.x,pt.y).matrixTransform(wire.getScreenCTM());
+  const jaw=new DOMPoint(90,65).matrixTransform(g.getScreenCTM());
+  const dx=target.x-jaw.x,dy=target.y-jaw.y;
+  if(![dx,dy,target.x,target.y,jaw.x,jaw.y].every(Number.isFinite))return null;
+  return {dx,dy,distance:Math.hypot(dx,dy),
+    jaw:{x:jaw.x,y:jaw.y},target:{x:target.x,y:target.y}};
+ }));
+}
+async function alignJawWhileDragging(cdp,screenPointer,report){
+ let pointer={...screenPointer};
+ const attempts=[];
+ for(let i=0;i<5;i++){
+  const alignment=await liveJawAlignment(cdp),status=await inspectJaw(cdp);
+  check(alignment&&Number.isFinite(alignment.distance),
+   'UT200A alignment geometry unavailable while dragging');
+  attempts.push({index:i,alignment,jawOpen:status.jawOpen,candidate:status.candidate||null});
+  if(status.jawOpen&&status.candidate?.wireId==='w1')break;
+  if(i===4)break;
+  // Recompute from live SVG matrices after every render, not from the initial
+  // mouse-down coordinates. This can correct editor reflow and camera changes.
+  const next={x:pointer.x+alignment.dx,y:pointer.y+alignment.dy};
+  check(next.x>0&&next.y>0&&next.x<1440&&next.y<1000,
+   'UT200A alignment correction would leave Chromium viewport: '+JSON.stringify(next));
+  for(let j=1;j<=8;j++)await cdp.call('Input.dispatchMouseEvent',{
+   type:'mouseMoved',x:pointer.x+(next.x-pointer.x)*j/8,
+   y:pointer.y+(next.y-pointer.y)*j/8,buttons:1});
+  pointer=next;
+  await sleep(90);
+ }
+ report.states.jaw_alignment_attempts=attempts;
+ return pointer;
+}
 async function inspectJaw(cdp){
  return evaluate(cdp,expression(()=>{
   const p=window.DTSEditor?.getProject?.(),c=p?.components?.find(c=>c.id==='cl');
@@ -363,7 +401,7 @@ async function runJaw(cdp,report){
  check(!before.clampedWireId&&!before.jawOpen&&before.visualState==='closed','UT200A must begin unattached with closed jaws');
  check(before.wireCount===2,'UT200A clamp must not add wires to a load circuit');
  report.states.before=before;await shotEvidence(cdp,report,'jaw-before-drag');
- const geometry=await aimJaw(cdp);
+ let geometry=await aimJaw(cdp);
  check(geometry?.end&&[geometry.from.x,geometry.from.y,geometry.end.x,geometry.end.y].every(Number.isFinite)&&geometry.from.x>0&&geometry.from.y>0,'Cannot locate visible jaw and live conductor in viewport');
  report.states.drag_geometry=geometry;
  // The component click selects its SVG first; test an actual second pointer gesture against the selected clamp.
@@ -379,6 +417,14 @@ async function runJaw(cdp,report){
  report.states.pointer_selected=selected;
  check(selected.selected.includes('cl')&&!selected.gestureActive,
   'UT200A was not selected before physical drag: '+JSON.stringify(selected));
+ // Clicking the clamp exposes its properties and can reflow the viewport.
+ // Re-read both SVG matrices after selection; stale pre-selection geometry caused
+ // a real 435 world-unit drag to stop about 71 screen pixels away from the wire.
+ const selectedGeometry=await aimJaw(cdp);
+ check(selectedGeometry?.end&&selectedGeometry.from?.x>0&&selectedGeometry.from?.y>0,
+  'UT200A geometry not visible after selecting its property panel');
+ report.states.drag_geometry_after_selection=selectedGeometry;
+ geometry=selectedGeometry;
  await press(cdp,geometry.from);
  const pressed=await dragDiagnostics(cdp,geometry.from);
  report.states.pointer_pressed=pressed;
@@ -390,8 +436,11 @@ async function runJaw(cdp,report){
    y:geometry.from.y+(geometry.end.y-geometry.from.y)*i/16,buttons:1});
   if(i===8){report.states.pointer_mid_drag=await dragDiagnostics(cdp,geometry.from);}
  }
- await sleep(130);
- const pointerLast=await dragDiagnostics(cdp,geometry.end);
+ await sleep(80);
+ const alignedEnd=await alignJawWhileDragging(cdp,geometry.end,report);
+ report.states.drag_final_pointer=alignedEnd;
+ await sleep(100);
+ const pointerLast=await dragDiagnostics(cdp,alignedEnd);
  report.states.pointer_last_drag=pointerLast;
  const opened=await inspectJaw(cdp);
  report.states.opened=opened;await shotEvidence(cdp,report,'jaw-open-over-live-wire');
@@ -405,7 +454,7 @@ async function runJaw(cdp,report){
   'UT200A jaws did not visibly open as they approached the AC conductor');
  check(opened.candidate?.wireId==='w1','Jaws must choose the intended live conductor before release');
  check(!opened.clampedWireId,'UT200A must not claim attachment before the mouse is released');
- await release(cdp,geometry.end);await sleep(170);
+ await release(cdp,alignedEnd);await sleep(170);
  const snapped=await inspectJaw(cdp);
  report.states.snapped=snapped;await shotEvidence(cdp,report,'jaw-snapped-closed');
  check(snapped.clampedWireId==='w1'&&Number.isFinite(snapped.clampT),
@@ -474,4 +523,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[UT200A-JAW]',e.stack||e.message);process.exitCode=1});
-module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible,dragDiagnostics};
+module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible,dragDiagnostics,liveJawAlignment,alignJawWhileDragging};
