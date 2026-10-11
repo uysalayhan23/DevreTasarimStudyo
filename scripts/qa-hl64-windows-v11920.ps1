@@ -77,6 +77,7 @@ try {
   }
   Note ('Node '+$Version)
   $Tests = @(
+    'tests/qa-hl64-windows-v11920.test.cjs',
     'tests/browser-visual-contract-v11920.test.cjs',
     'tests/tutorial-hl-visual-contract-v11920.test.cjs',
     'tests/tutorial-hl-64-lesson-acceptance-v11920.test.cjs',
