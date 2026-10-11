@@ -1,0 +1,29 @@
+{
+  "title": "MQ-07 1519 topic-specific quiz rollout source audit",
+  "date": "2026-10-11",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "source_commit_before_evidence": "18052d056048ac3f879453be6fedca15a2f2542a",
+  "execution": "GitHub-retrieved native JavaScript modules executed in V8, not node --test, not Windows Chrome",
+  "modules": 18,
+  "lessons": 1655,
+  "rich_unchanged": 136,
+  "topic_reviewed": 1519,
+  "topics": 21,
+  "unique_new_questions": 1519,
+  "canonical_project_graph_changes": 0,
+  "fully_wired_lessons": 722,
+  "no_wire_theory_lessons": 933,
+  "invalid_guided_endpoints": 0,
+  "meb_invalid_metadata": 0,
+  "official_meb_outcomes_verified": 0,
+  "full_node_acceptance": "OPEN",
+  "windows_visual_acceptance": "OPEN",
+  "full_pedagogical_acceptance": "OPEN",
+  "gitHub_actions_started": false,
+  "notes": [
+    "All previous 136 rich lessons stay rich; the 1519 updated items remain non-rich.",
+    "The 933 no-wire entries are theory/reference views and must not be counted as physically simulated lessons.",
+    "New full 1655 native-solver QA is checked into main but has not been executed on a full local checkout."
+  ]
+}
