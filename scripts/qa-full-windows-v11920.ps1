@@ -35,9 +35,15 @@ try{
  }
  [IO.File]::WriteAllText((Join-Path $Dir 'source-hashes.json'),($Hashes|ConvertTo-Json -Depth 4),$Utf8)
  $Report.node_version=$V
+ $FullSince=Get-Date
  $Report.node_full=Stage 'all-node-tests' $N @('scripts/run-tests.cjs')
  if(Test-Path -LiteralPath (Join-Path $Build 'tests.tap')){Copy-Item -LiteralPath (Join-Path $Build 'tests.tap') -Destination (Join-Path $Dir 'all-tests.tap') -Force}
- if(Test-Path -LiteralPath (Join-Path $Build 'qa-tutorial-1655-simulation-report.json')){Copy-Item -LiteralPath (Join-Path $Build 'qa-tutorial-1655-simulation-report.json') -Destination (Join-Path $Dir 'qa-tutorial-1655-simulation-report.json') -Force}
+ $Audit=Join-Path $Build 'qa-tutorial-1655-simulation-report.json'
+ if((Test-Path -LiteralPath $Audit -PathType Leaf) -and (Get-Item -LiteralPath $Audit).LastWriteTime -ge $FullSince.AddSeconds(-1)){
+  Copy-Item -LiteralPath $Audit -Destination (Join-Path $Dir 'qa-tutorial-1655-simulation-report.json') -Force
+  $AuditInfo=Get-Content -LiteralPath $Audit -Raw | ConvertFrom-Json
+  if($AuditInfo.status -ne 'PASS'){$Report.errors+='Full 1655 curriculum solver evidence is not PASS.'}
+ }else{$Report.errors+='Fresh full 1655 curriculum solver report missing.'}
  $PsExe=(Get-Command powershell.exe -ErrorAction Stop).Source
  $At=Get-Date
  $Report.hl64=Stage 'hl64-windows' $PsExe @('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $Root 'scripts\qa-hl64-windows-v11920.ps1')+'"'))
