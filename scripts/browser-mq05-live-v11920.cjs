@@ -215,6 +215,8 @@ async function drag(cdp,from,to){
  await release(cdp,to);
 }
 async function ensureReady(cdp){
+ const bootstrap=await evaluate(cdp,expression(async()=>{if(!window.DTSTutorialBootstrap?.ensure)return false;await window.DTSTutorialBootstrap.ensure();return !!window.DTSTutorialMode}));
+ check(bootstrap,'Tutorial lazy module did not initialize');
  const ready=await evaluate(cdp,expression(async()=>{
   for(let n=0;n<240;n++){if(window.DTSStudio&&window.DTSEditor&&window.CCSSimulation&&window.DTSTutorialMode){
    try{if(window.DTSStudio.ready)await window.DTSStudio.ready}catch{}return true
