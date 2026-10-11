@@ -1,0 +1,48 @@
+{
+  "schema": "dts-mq05-windows-runner-preacceptance-v1",
+  "date": "2026-10-11",
+  "branch": "main",
+  "status": "READY_FOR_WINDOWS_EXECUTION_NOT_ACCEPTED",
+  "artifacts": {
+    "bat": "QA_MQ05_CALISTIR.bat",
+    "powershell": "scripts/qa-mq05-windows-v11920.ps1",
+    "chromium": "scripts/browser-mq05-live-v11920.cjs",
+    "verifier": "scripts/qa-mq05-artifact-verify-v11920.cjs",
+    "contract_test": "tests/qa-mq05-windows-v11920.test.cjs",
+    "guide": "docs/QA_MQ05_WINDOWS_V1.19.20.md"
+  },
+  "planned_chromium_scenarios": {
+    "seal_in": "real mouse START press/release and STOP; coil state and screenshots",
+    "free_probes": "both red and black free, separately dragged to DC supply terminals, 24V multimeter",
+    "ut200a": "clamp jaw around AC conductor, 1A, 2 wires preserved",
+    "signed_flow": "DC reversed -1 direction and rendered class; AC flow and parallel ambiguity"
+  },
+  "local_source_preflight": {
+    "javascript_syntax": "PASS",
+    "numeric_meter_24v": "PASS",
+    "numeric_clamp_1a": "PASS",
+    "numeric_dc_reverse": "PASS",
+    "windows_bat_executed": false,
+    "full_chromium_executed": false
+  },
+  "evidence_conditions": {
+    "all_four_stages_pass": true,
+    "minimum_real_png": 8,
+    "verify_all_png_crc_dimensions_sha256": true,
+    "failures_include_screenshot_json_logs_zip": true,
+    "windows_node_suite_test_files": 18
+  },
+  "preservation": {
+    "hl64_100png": "PASS_PREVIOUSLY_ACCEPTED_UNCHANGED",
+    "baslat_bat": "UNCHANGED",
+    "application_file_launcher": "UNCHANGED",
+    "github_actions_used": false
+  },
+  "qa_gates": {
+    "MQ05_Node_103": "PASS_HISTORIC_EVIDENCE",
+    "MQ05_Chromium_Windows": "OPEN_PENDING_USER_ZIP",
+    "MQ05_FINAL": "OPEN",
+    "MQ00_FINAL": "OPEN"
+  },
+  "notes": "No PASS claim for Windows MQ-05 browser until actual run ZIP is independently inspected."
+}
