@@ -183,6 +183,26 @@ async function shot(cdp,name){
     throw Error('Screenshot validation failed ['+name+']: '+e.message+' (raw '+path.relative(ROOT,raw).replace(/\\/g,'/')+', bytes='+data.length+', sha256='+sha256(data)+')');
   }
 }
+function verifyReportArtifacts(report){
+ const seen=new Set();
+ const visit=node=>{
+  if(!node||typeof node!=='object')return;
+  if(typeof node.file==='string'&&node.file.endsWith('.png')&&typeof node.sha256==='string'){
+   const file=path.resolve(ROOT,node.file);
+   if(!file.startsWith(BUILD+path.sep))throw Error('Screenshot path outside QA output: '+node.file);
+   if(seen.has(file))throw Error('Duplicate screenshot reference: '+node.file);
+   seen.add(file);
+   if(!fs.existsSync(file))throw Error('Screenshot missing: '+node.file);
+   const bytes=fs.readFileSync(file),dim=pngSize(bytes);
+   if(bytes.length!==node.bytes||sha256(bytes)!==node.sha256||dim.width!==node.width||dim.height!==node.height)
+    throw Error('Screenshot metadata/hash mismatch: '+node.file);
+   return;
+  }
+  for(const value of Object.values(node))visit(value);
+ };
+ visit(report.states);
+ return {files:seen.size,verified:true};
+}
 function assert(cond,msg){if(!cond)throw Error(msg)}
 function validateCards(info){
   assert(info.cards.length>=GOLDEN.dashboard.minCards,'Dashboard kart sayısı yetersiz: '+info.cards.length);
@@ -373,6 +393,8 @@ async function main(){
 
 
     assert(report.exceptions.length===0,'Tarayıcı runtime exception: '+report.exceptions.join(' | '));
+    report.artifactIntegrity=verifyReportArtifacts(report);
+    assert(report.artifactIntegrity.files>=100,'Expected 64 lesson + 32 interaction + 4 global PNG artifacts');
     fs.writeFileSync(path.join(BUILD,'report.json'),JSON.stringify(report,null,2)+'\n');
     console.log(JSON.stringify(report,null,2));
   }catch(err){
