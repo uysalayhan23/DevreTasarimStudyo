@@ -13,3 +13,32 @@ test('Batch L preserves 4 dual DC canonical networks and yields 136 rich lessons
 test('Batch L is present in tutorial loader after motor Batch K',()=>{
  const s=read('tutorial-mode.js');assert.ok(s.indexOf('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1')>s.indexOf('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1'));
 });
+
+
+test('Batch L: four physical DC graphs remain nonshorted and nonblocked under the real solver at rest',()=>{
+ const Simulation=require('../dist/simulation.js');
+ const ctx={window:{}};
+ for(const filename of ['library.js','clamp-meter.js','installation-v118.js','design-library.js','electronics-library-v119.js','electronics-ics-v11920.js','arduino-library.js','dold-library.js','hcfa-library.js','tutorial-components.js'])
+  vm.runInNewContext(read(filename),ctx,{filename});
+ const definitions=Object.fromEntries(ctx.window.DTSDesignLibrary.extend(ctx.window.COMPONENT_LIBRARY).map(d=>[d.id,d]));
+ const source=require('../dist/tutorial-source-outline.js');
+ for(let n=1;n<=4;n++){
+  const project=structuredClone(source.byId['dual-dc-'+n].project);
+  const result=Simulation.solve(project,definitions,{now:0});
+  assert.equal(result.blocked,false,'dual-dc-'+n+' blocked');
+  assert.equal(result.shortCircuit,false,'dual-dc-'+n+' short circuit');
+ }
+});
+test('Batch L: isolation is explicit and common references occur only in intended variants',()=>{
+ const L=require('../dist/tutorial-source-outline.js');
+ for(let n=1;n<=4;n++){
+  const p=L.byId['dual-dc-'+n].project;
+  const common=p.wires.some(w=>w.from.c==='g1'&&w.from.p==='M'&&w.to.c==='g2'&&w.to.p==='M');
+  if(n===1||n===3){
+   assert.equal(p.intentionalElectricalIslands,2,'dual-dc-'+n+' island contract');
+   assert.equal(common,false,'dual-dc-'+n+' must remain isolated');
+  }else{
+   assert.equal(common,true,'dual-dc-'+n+' must share intended 0V reference');
+  }
+ }
+});
