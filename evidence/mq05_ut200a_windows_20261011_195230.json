@@ -1,0 +1,99 @@
+{
+  "schema": "dts-ut200a-real-windows-qa-v1",
+  "date": "2026-10-11",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "uploaded_archive": {
+    "name": "QA_MQ05_UT200A_SONUC_20261011_195230.zip",
+    "sha256": "0a13d7aeaa11ee97fae30eedc6e579a66e5bc9c726098b2dc71662bcec3a764b",
+    "crc_status": "PASS",
+    "entries": 11
+  },
+  "actual_windows_run": {
+    "start": "2026-10-11T19:52:30.7736679+03:00",
+    "finish": "2026-10-11T19:54:08.8812283+03:00",
+    "node": {
+      "tests": 118,
+      "passed": 118,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "chromium": {
+      "started": true,
+      "exit_code": 1,
+      "status": "FAIL",
+      "stage": "ut200a_real_jaw_drag"
+    },
+    "independent_final_png_verifier": "NOT_RUN"
+  },
+  "chromium_diagnostics": {
+    "editor_visible": true,
+    "ut200a_visible": true,
+    "ac_wire_visible": true,
+    "gesture_started": true,
+    "start_position_world": {
+      "x": 670,
+      "y": 420
+    },
+    "mid_position_world": {
+      "x": 537.3115844726562,
+      "y": 247.50006103515625
+    },
+    "final_position_world": {
+      "x": 404.6232604980469,
+      "y": 75.00004577636719
+    },
+    "real_world_displacement": 435.25829375555406,
+    "planned_pointer_end": {
+      "x": 719.5193920898439,
+      "y": 322.16665649414074
+    },
+    "candidate": null,
+    "jaw_open": false,
+    "clamped_wire_id": null,
+    "jaw_wire_screen_distance_px": 70.84331175784858,
+    "failure": "UT200A jaws did not visibly open as they approached the AC conductor",
+    "current_meter_1a": "NOT_EXECUTED"
+  },
+  "screenshots": {
+    "count": 3,
+    "distinct_sha256": 3,
+    "sha256_matches": 3,
+    "byte_length_matches": 3,
+    "png_decoded": 3,
+    "resolution": "1440x1000",
+    "report_sha256": "79f961480a5e88afe226ee401ee94f46e0b2cc4d209b0c835df1ea63ef8ffcf9",
+    "original_binary_source": "user-uploaded ZIP"
+  },
+  "interpretation": "The body/label drag issue is fixed and real model movement occurred. Jaw remains approximately 71 screen pixels from wire. A stale editor/camera transform or target alignment mismatch is plausible, but the precise cause of the distance was not proven in this run. Physical jaw/open/snap/current acceptance remains FAIL.",
+  "source_fixes": {
+    "chromium_script": "scripts/browser-mq05-ut200a-jaw-v11920.cjs",
+    "script_commit": "13eb14cf4531d0d73cc944f8f3caa1576d453cc2",
+    "node_test": "tests/qa-mq05-ut200a-jaw-v11920.test.cjs",
+    "test_commit": "d08aa703aa1255fab9a509a65419285379f575dc",
+    "behaviour": [
+      "Refresh SVG jaw/target coordinates after UI selection",
+      "Live feedback correction while pressed, with staged movement and diagnostics",
+      "Reject corrections outside 1440x1000 viewport"
+    ],
+    "isolated_real_source_checks": "PASS; correction to pointer (689,330), 8 events, 2 recorded states, outside-viewport guard exercised",
+    "actual_post_fix_windows_browser_run": "NOT_RUN"
+  },
+  "historical_pass_gates": {
+    "HL_lessons_64": "PASS_PREVIOUS",
+    "HL_png_100": "PASS_PREVIOUS",
+    "MQ05_node_110": "PASS_PREVIOUS",
+    "MQ05_chromium_4": "PASS_PREVIOUS",
+    "MQ05_png_12": "PASS_PREVIOUS"
+  },
+  "acceptance": {
+    "UT200A_physical_drag": "PARTIAL_MOVEMENT_ONLY",
+    "UT200A_jaw_open_snap": "OPEN",
+    "UT200A_1A_while_physically_clamped": "OPEN",
+    "MQ05_full": "OPEN",
+    "MQ00_final": "OPEN"
+  },
+  "github_actions_used": false,
+  "commit_convention": "[skip ci]"
+}
