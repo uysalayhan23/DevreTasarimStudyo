@@ -47,3 +47,30 @@ test('open collector lessons distinguish PNP/NPN and flag resistor-fed PNP indic
  assert.match(suspect.measurementUpgrade.task,/sensörden bağımsız/);
  assert.match(L.byId['open-collector-4'].learningGoal,/paralel/);
 });
+
+
+test('physical topology audit: open-collector-3 has an R1-fed H1 path even with sensor output open',()=>{
+ const L=require('../dist/tutorial-source-outline.js');
+ // Graph includes real wires plus passive R1 and H1; NO current can travel through a
+ // sensor's BK output here because that transistor is deliberately treated as open.
+ // This is topology evidence, NOT an assertion of lamp brightness or solver current.
+ function passiveFeed(project){
+  const nodes=new Map(),name=(id,pin)=>id+':'+pin;
+  function join(a,b){
+   if(!nodes.has(a))nodes.set(a,new Set());
+   if(!nodes.has(b))nodes.set(b,new Set());
+   nodes.get(a).add(b);nodes.get(b).add(a);
+  }
+  for(const w of project.wires)join(name(w.from.c,w.from.p),name(w.to.c,w.to.p));
+  if(project.components.some(c=>c.id==='r'&&c.typeId==='resistor'))join('r:1','r:2');
+  if(project.components.some(c=>c.id==='h'&&c.typeId==='lamp-green'))join('h:X1','h:X2');
+  const seen=new Set(['g1:P']),queue=['g1:P'];
+  for(let i=0;i<queue.length;i++)for(const next of nodes.get(queue[i])||[])
+   if(!seen.has(next)){seen.add(next);queue.push(next);}
+  return seen.has('g1:M');
+ }
+ for(let n=1;n<=4;n++)assert.equal(
+  passiveFeed(L.byId['open-collector-'+n].project),n===3,
+  'unexpected resistor-fed lamp topology in open-collector-'+n
+ );
+});
