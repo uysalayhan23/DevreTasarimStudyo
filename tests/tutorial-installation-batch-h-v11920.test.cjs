@@ -63,7 +63,7 @@ test('fourth bell lesson recognizes B4 as fourth NO push without inventing a lig
  assert.equal(JSON.stringify({components:p.components,wires:p.wires,steps:lesson.steps}),before.get('bells-4'));
  assert.match(lesson.measurementUpgrade.task,/B1, B2, B3 ve B4/);
  assert.match(lesson.measurementUpgrade.task,/simüle edilmez/);
- assert.match(lesson.learningGoal,/ayrı.*ışık devresi modellenmemiştir/);
+ assert.match(lesson.learningGoal,/bağımsız ışık devresi modellenmemiştir/);
  assert.equal(lesson.measurementUpgrade.illuminatedButtonModelled,false);
  assert.match(lesson.quiz.question,/B4/);
  assert.match(lesson.quiz.options[0],/13\/14 NO/);
