@@ -15,5 +15,6 @@ test('MQ-12 validates all 1655 lessons through real native electrical solver and
  for(const key of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.equal(result[key].length,0,key+': '+JSON.stringify(result[key].slice(0,12)));
  assert.equal(result.tested,result.withWires);
+ assert.equal(result.oscillating,0,'Unexpected oscillation in tutorial baselines');
  assert.equal(result.status,'PASS');
 });
