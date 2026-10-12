@@ -233,3 +233,28 @@ test('classification coverage accounts separately for missing, unsupported, pass
  assert.equal(r.controls,1);
  assert.equal(r.behaviorStatus,'REVIEW');
 });
+
+test('first canonical NO/NC button lessons transition and restore the LED with the native solver',()=>{
+ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
+ const native=require('../dist/simulation.js');
+ const L=QA.curriculum(),defs=QA.catalog();
+ for(const [id,expected] of [['button-led-1',[false,true,false]],['button-led-2',[true,false,true]]]){
+  const lesson=L.byId?.[id]||L.lessons.find(l=>l.id===id);
+  assert.ok(lesson?.project,'missing canonical lesson '+id);
+  const p=structuredClone(lesson.project);
+  const button=p.components.find(c=>c.typeId=== (id==='button-led-1'?'push-no':'push-nc'));
+  const led=p.components.find(c=>c.typeId==='led');
+  assert.ok(button&&led);
+  const observed=[];
+  for(const [phase,state] of [false,true,false].entries()){
+   button.state=state;
+   const result=native.solve(p,defs,{now:[0,400,850][phase]});
+   assert.equal(result.stable,true,id+' phase '+phase);
+   assert.equal(!!result.blocked,false,id+' phase '+phase);
+   assert.equal(!!result.shortCircuit,false,id+' phase '+phase);
+   assert.equal(!!result.oscillating,false,id+' phase '+phase);
+   observed.push(!!led._active);
+  }
+  assert.deepEqual(observed,expected,id+' LED OFF/ON/OFF regression');
+ }
+});
