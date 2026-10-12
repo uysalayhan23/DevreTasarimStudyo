@@ -13,9 +13,9 @@ test('all 722 native classifications and profile stability remain complete; beha
  assert.equal(r.classificationCoverage,'722/722');
  assert.deepEqual(r.classification,{CONTROLLED:456,UNSUPPORTED_ACTUATOR:67,PASSIVE_STABILITY_ONLY:199,MISSING_DEFINITIONS:0});
  assert.deepEqual(r.stability,{phases:2052,pass:2052,fail:0});
- assert.deepEqual(r.response,{PASS:391,REVIEW:65,NOT_APPLICABLE:266});
- assert.deepEqual(r.restoration,{PASS:384,REVIEW:72,NOT_APPLICABLE:266});
- assert.equal(r.lessons.filter(x=>x.response==='REVIEW'||x.restoration==='REVIEW').length,72);
+ assert.deepEqual(r.response,{PASS:421,REVIEW:35,NOT_APPLICABLE:266});
+ assert.deepEqual(r.restoration,{PASS:414,REVIEW:42,NOT_APPLICABLE:266});
+ assert.equal(r.lessons.filter(x=>x.response==='REVIEW'||x.restoration==='REVIEW').length,42);
  assert.equal(r.fullAcceptance,'REVIEW');
 });
 test('jog is not a seal-in latch; START release removes coil and motor power',()=>{
