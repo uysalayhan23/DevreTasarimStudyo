@@ -88,6 +88,7 @@ try {
     'tests/tutorial-sensor-batch-j-v11920.test.cjs',
     'tests/tutorial-open-collector-pulldown-v11920.test.cjs',
     'tests/tutorial-topic-review-batch-m-v11920.test.cjs',
+    'tests/tutorial-practice-guide-batch-n-v11920.test.cjs',
     'tests/qa-tutorial-1655-failclosed-v11920.test.cjs',
     'tests/project-legacy-collector-pullup-v11920.test.cjs',
     'tests/tutorial-motor-batch-k-v11920.test.cjs',
@@ -132,6 +133,7 @@ try {
     'dist/tutorial-motor-batch-k.js',
     'dist/tutorial-dual-dc-batch-l.js',
     'dist/tutorial-topic-review-batch-m.js',
+    'dist/tutorial-practice-guide-batch-n.js',
     'scripts/qa-tutorial-1655-simulation-v11920.cjs',
     'dist/simulation.js'
   )
