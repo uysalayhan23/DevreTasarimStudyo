@@ -13,7 +13,10 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
  for(const lesson of selected){
   const original=lesson.project,missing=[...new Set(original.components.map(c=>c.typeId).filter(id=>!defs[id]))];
   if(missing.length){report.classification.missingDefinitions.push({id:lesson.id,missing});continue}
-  const p=JSON.parse(JSON.stringify(original)),ctrl=p.components.find(c=>toggles.has(c.typeId));
+  const p=JSON.parse(JSON.stringify(original));
+  // For multi-button seal-in lessons actuate START before STOP, preserving canonical graph.
+  const selectable=p.components.filter(c=>toggles.has(c.typeId));
+  const ctrl=selectable.find(c=>/^(start|start[-_][0-9]+)$/i.test(c.id||''))||selectable[0];
   if(!ctrl){const candidate=p.components.filter(c=>/switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(c.typeId+' '+(defs[c.typeId]?.kind||''))).map(c=>c.typeId);
    report.classification[candidate.length?'unsupportedActuator':'passive'].push({id:lesson.id,candidate});}
   else report.classification.controlled.push(lesson.id);
