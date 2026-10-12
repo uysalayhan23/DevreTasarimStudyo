@@ -52,7 +52,7 @@ function run(){
   }
   if(report.scenarios.length<40)report.scenarios.push({id:lesson.id,controlCount:controls.length,baseline:baseline.outputs||[],baselineShort:baseline.shortCircuit});
  }
- report.status=report.total===1655&&report.missingDefs.length===0&&report.failures.length===0&&report.initialStates===report.wired?'PASS':'FAIL';
+ report.status=report.total===1655&&report.referenceOnly===933&&report.wired===722&&report.missingDefs.length===0&&report.failures.length===0&&report.oscillating.length===0&&report.initialStates===report.wired&&report.interactiveDevices>=500&&report.toggledStates>=1000&&report.changedOutputs>=100?'PASS':'FAIL';
  return report;
 }
 function main(){
