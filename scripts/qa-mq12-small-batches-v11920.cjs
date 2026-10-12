@@ -53,7 +53,7 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
  }
  // A small batch cannot grant full 722-lesson acceptance.
  report.classificationCoverage=(report.classification.controlled.length+report.classification.missingDefinitions.length+report.classification.unsupportedActuator.length+report.classification.passive.length)+'/'+selected.length;
- report.classificationComplete=report.classificationCoverage===selected.length+'/'+selected.length;
+ report.classificationComplete=selected.length>0&&report.classificationCoverage===selected.length+'/'+selected.length;
  report.stabilityCoverage=(report.stability.pass.length+report.stability.fail.length)+'/'+selected.filter(l=>!report.classification.missingDefinitions.some(x=>x.id===l.id)).length;
  report.responseCoverage=(report.response.pass.length+report.response.review.length)+'/'+report.classification.controlled.length;
  report.restorationCoverage=(report.restoration.pass.length+report.restoration.review.length)+'/'+report.classification.controlled.length;
