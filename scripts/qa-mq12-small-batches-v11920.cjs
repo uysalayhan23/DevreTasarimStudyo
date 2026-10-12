@@ -37,6 +37,8 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
   report.restoration[restored?'pass':'review'].push(lesson.id);
  }
  // A small batch cannot grant full 722-lesson acceptance.
+ report.classificationCoverage=(report.classification.controlled.length+report.classification.missingDefinitions.length+report.classification.unsupportedActuator.length+report.classification.passive.length)+'/'+selected.length;
+ report.classificationComplete=report.classificationCoverage===selected.length+'/'+selected.length;
  report.fullAcceptance='REVIEW';
  return report;
 }
