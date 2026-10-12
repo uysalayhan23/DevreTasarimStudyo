@@ -149,6 +149,8 @@ test('passive circuit does not falsely count as actuated restoration',()=>{
  const r=audit({L,defs,solver});
  assert.equal(r.noControl,1);assert.equal(r.controls,0);
  assert.deepEqual(r.noControlLessons.map(x=>x.id),['passive']);
+ assert.equal(r.noControlLessons[0].classification,'STABILITY_ONLY');
+ assert.equal(r.noControlLessons[0].observableCount,1);
  assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
  assert.equal(r.restorationCoverage,'0/0');
  assert.equal(r.responseStatus,'REVIEW');
@@ -166,4 +168,16 @@ test('stable unactuated lessons cannot be promoted to full sequential behavior a
  assert.deepEqual(r.noControlLessons.map(x=>x.id),['passive']);
  assert.equal(r.responseStatus,'PASS');assert.equal(r.restorationStatus,'PASS');
  assert.equal(r.actuationCoverage,'1/2');assert.equal(r.behaviorStatus,'REVIEW');
+});
+
+test('unrecognized switch remains a separately listed candidate rather than receiving actuation PASS',()=>{
+ const L={lessons:[{id:'unrecognized-switch',project:{components:[{id:'sw',typeId:'custom-switch',state:false},{id:'lamp',typeId:'lamp-green'}],wires:[{from:{c:'sw',p:'1'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'custom-switch':{kind:'switch-no'},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){p.components[1]._active=false;return{stable:true,shortCircuit:false,blocked:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.noControl,1);
+ assert.equal(r.noControlLessons[0].classification,'STABILITY_ONLY');
+ assert.deepEqual(r.noControlLessons[0].candidateTypes,['custom-switch']);
+ assert.equal(r.noControlLessons[0].observableCount,1);
+ assert.equal(r.behaviorStatus,'REVIEW');
 });
