@@ -63,6 +63,6 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
 if(require.main===module){const start=Number(process.argv[2]||0),count=Number(process.argv[3]||10);
  if(!Number.isInteger(start)||start<0||!Number.isInteger(count)||count<1||count>50)throw Error('Invalid batch range');
  const result=run({start,count});process.stdout.write(JSON.stringify(result,null,2)+'\n');
- if(result.stability.fail.length||result.response.review.length||result.restoration.review.length||result.classification.missingDefinitions.length)process.exitCode=1;
+ if(result.stability.fail.length||result.response.review.length||result.restoration.review.length||result.classification.missingDefinitions.length||result.classification.unsupportedActuator.length||result.classification.passive.length||!result.classificationComplete)process.exitCode=1;
 }
 module.exports={run};
