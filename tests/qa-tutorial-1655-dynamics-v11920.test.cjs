@@ -5,9 +5,11 @@ test('MQ-05 virtual behavior: every actual wired lesson has native baseline and 
  const result=QA.main();
  assert.equal(result.total,1655);
  assert.equal(result.referenceOnly+result.wired,1655);
- assert.ok(result.wired>=700,'Expected hundreds of actual wired lessons');
+ assert.equal(result.wired,722,'Unexpected change in canonical wired-lesson count');
  assert.equal(result.initialStates,result.wired);
- assert.ok(result.toggledStates>=100,'Dynamic OFF/ON coverage is missing');
+ assert.ok(result.toggledStates>=1000,'Dynamic OFF/ON coverage is insufficient');
+ assert.ok(result.changedOutputs>=100,'Control toggles did not affect at least 100 actual virtual outputs');
+ assert.equal(result.oscillating.length,0,'Unreviewed unstable/oscillating source cases');
  assert.ok(result.toggledStates>=result.interactiveDevices*2);
  assert.equal(result.missingDefs.length,0,JSON.stringify(result.missingDefs.slice(0,8)));
  assert.equal(result.failures.length,0,JSON.stringify(result.failures.slice(0,12)));
