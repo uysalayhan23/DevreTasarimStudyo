@@ -39,7 +39,12 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   const initialDistance=sensing?Number(control.sensing.distance):null;
   const sensorRange=sensing?Math.max(.1,Number(control.sensing.range)||4):0;
   if(control)report.controls++;
-  else {report.noControl++;report.noControlLessons.push({id:lesson.id,reason:'No supported virtual actuator; stable time samples only'});}
+  else {
+   report.noControl++;
+   const candidates=p.components.filter(c=>/switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(c.typeId||'')).map(c=>c.typeId);
+   const observable=p.components.filter(c=>{const d=defs[c.typeId];return d&&(observedKinds.has(d.kind)||d.instrument||d.isPLC)}).length;
+   report.noControlLessons.push({id:lesson.id,reason:candidates.length?'Unsupported or unselected virtual actuator':'No recognized virtual actuator',candidateTypes:[...new Set(candidates)],observableCount:observable,classification:'STABILITY_ONLY'});
+  }
   try{
    const phases=[{key:'Initial',time:0},{key:'Changed',time:400},{key:'Restored',time:850}];
    let originalState='';
