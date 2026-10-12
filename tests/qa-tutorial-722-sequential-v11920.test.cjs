@@ -11,7 +11,9 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.equal(r.stabilityStatus,'PASS');
  assert.equal(r.missingDefinitions.length,0);
  assert.equal(r.failures.length,0);
- assert.equal(r.controls+r.noControl,722);
+ assert.equal(r.controls+r.noControl+r.missingDefinitionLessons.length,722);
+ assert.equal(r.classificationCoverage,'722/722');
+ assert.equal(r.classificationComplete,true);
  assert.equal(r.actuationCoverage,r.controls+'/722');
  assert.equal(r.restorationChecked,r.controls);
  assert.equal(r.restorationFailures.length,0);
@@ -25,7 +27,7 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.ok(r.observedOutputChanges>=0&&r.observedOutputChanges<=r.controls);
  assert.equal(r.behaviorCoverage,r.observedOutputChanges+'/'+r.controls);
  assert.equal(r.behaviorStatus,
-  r.stabilityStatus==='PASS'&&r.responseStatus==='PASS'&&r.restorationStatus==='PASS'&&r.noControl===0?'PASS':'REVIEW');
+  r.classificationComplete&&r.stabilityStatus==='PASS'&&r.responseStatus==='PASS'&&r.restorationStatus==='PASS'&&r.noControl===0?'PASS':'REVIEW');
 });
 test('sequential gate refuses a short introduced by virtual control transition',()=>{
  let phase=0;
