@@ -1767,3 +1767,15 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 3. Açık kalan pano ürün W/H/D, terminal doğruluğu, donanım fiziksel model eşleme, kullanıcı akışları ve diğer MQ backlog maddeleri için bağımsız kalite kanıtları. Kapsam taranmadıkça kapatılmadı.
 
 **MQ-00 kapanış ilkesi:** Kod yükleme/V8 kaynak başarısı ≠ tam Node testi ≠ gerçek Windows kullanıcı/görsel kabulü ≠ bütün ders içeriğinin tamamlanması. Sahte kabul sayacı artırılmayacak.
+
+
+## 2026-10-12 — MQ-12 tüm 1.655 ders kaynak bütünlüğü / fail-closed doğrulama
+
+- `main` üzerindeki 18 kanonik öğretici modülü V8'de gerçek yükleme sırasıyla çalıştırıldı: toplam **1.655**, zengin içerik **136**, konu sorusu yenilenmiş **1.519**, bağlantılı devre **722**, bağlantısız teori/konu alanı **933**.
+- Yapısal denetim: **0** eksik proje, **0** tekrarlanan ders ID'si, **0** yanlış bileşen kimlikli kablo ucu, **0** müfredat rehberli-adım/kablo eşleşme hatası, MEB metadata `audit.invalid=[]`. Bu **Native Node solver/Chromium kabulü değildir**.
+- Özgün 702 ürün + ilgili malzeme genişletmeleri birlikte V8'e aktarıldı; genişletilmiş katalog **939** model tanımı içerir. *Kanonik outline + pedagogy* tabanındaki 1.655 kaydın tür ve mevcut kablo terminal tanımları test edildi: eksik tür/yanlış terminal **0**. Not: Bu katalog taraması henüz son A–L müfredat katmanlarının her türlü elektriksel çıktısını kanıtlamaz.
+- `scripts/qa-tutorial-1655-simulation-v11920.cjs` denetiminde önemli bir fail-open açığı kapatıldı. Önceden **bağlantısı olmayan dersler** malzeme türü doğrulanmadan atlanıyordu. Artık **her dersteki bütün malzeme tanımları**, her bağlantılı dersin gerçek bileşen **pin/terminal veya junction uçları**, her sunulan rehberli bağlantı ve teori dersinin hayalî kablo adımı içerip içermediği kontrol edilir. `tests/qa-tutorial-1655-simulation-v11920.test.cjs` buna göre güçlendirildi.
+- `tests/qa-tutorial-1655-failclosed-v11920.test.cjs` dört negatif vaka için eklendi: teori dersinde eksik ürün, yanlış terminal, olmayan birleşim noktası, bağlantısız teoride hayalî kablo adımı. Buna ek olarak geçerli junction yanlış reddedilmez. Bu beş mantıksal durum özgün HEAD denetim fonksiyonu V8'de gerçekten yürütülerek **PASS** görüldü. Test, H–L Windows Node listesine ve kalite sözleşmesine de bağlandı.
+- Birleşik `QA_TAM_PROJE_CALISTIR.bat` kanıt zincirindeki kaynak SHA-256 izi artık yalnız örnek dosyaları değil `dist`, `tests` ve `scripts` klasörlerinin JS/CJS ve ilgili kaynak dosyalarını kapsar.
+- Makinece okunabilir V8 kanıtı: `evidence/mq12_1655_failclosed_source_20261012.json`.
+- **AÇIK:** en yeni `main` SHA'da tam `node --test` yürütmesi, 1.655 dersin özgün sayısal solver koşusu, H–L Windows/Chromium 100 PNG, UT200A güncel 4 PNG, 1.519 dersin özgün fiziksel/pedagojik zenginleştirilmesi ve ilgili pano/donanım backlog işleri. Kapanış gerekmeden **PASSED veya DONE değildir**. Actions kullanılmadı; `[skip ci]` geçerli.
