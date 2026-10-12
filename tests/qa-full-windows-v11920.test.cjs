@@ -33,3 +33,14 @@ test('MQ-00 QA is separate from offline launcher and never trusts old screenshot
  assert.match(ps,/\$Report\.hash_file_count=\$Hashes\.Count/);
  assert.match(ps,/if\(\$Report\.status -ne 'PASS'\)\{exit 1\}/);
 });
+
+
+test('full Windows gate incorporates native 722 sequence evidence and refuses unverified probe output',()=>{
+ const ps=read('scripts/qa-full-windows-v11920.ps1');
+ for(const item of ['qa-tutorial-722-sequential-v11920.cjs','qa-tutorial-722-sequential-v11920.test.cjs',
+  'qa-tutorial-722-sequential-report.json','SeqInfo.stabilityStatus','SeqInfo.behaviorStatus',
+  '722 sequential electrical stability did not PASS','requires separate virtual-probe/browser QA'])
+  assert.ok(ps.includes(item),'Missing 722 QA coverage: '+item);
+ assert.match(ps,/\$SeqInfo\.behaviorStatus -ne 'PASS'/);
+ assert.match(ps,/LastWriteTime -ge \$FullSince\.AddSeconds\(-1\)/);
+});
