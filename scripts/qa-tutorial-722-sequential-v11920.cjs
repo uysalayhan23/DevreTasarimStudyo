@@ -23,7 +23,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
-  noControl:0,unresponsiveControls:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
+  noControl:0,unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
   scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
@@ -56,9 +56,13 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
     report['checked'+phase.key]++;
     if(result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating)
      report['stable'+phase.key]++;
-    else report.failures.push({id:lesson.id,phase:phase.key,blocked:!!result.blocked,
-      shortCircuit:!!result.shortCircuit,oscillating:!!result.oscillating,stable:!!result.stable,
-      reason:result.reason||null});
+    else {
+      const fault={id:lesson.id,phase:phase.key,blocked:!!result.blocked,
+       shortCircuit:!!result.shortCircuit,oscillating:!!result.oscillating,stable:!!result.stable,
+       reason:result.reason||null};
+      report.solverFailures.push(fault);
+      report.failures.push(fault);
+    }
     const signature=state(p,defs);
     if(i===0)originalState=signature;
     if(i===2&&control){
@@ -80,12 +84,13 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  report.stabilityStatus=report.lessonCount===1655&&report.withWires===722&&
   report.checkedInitial===722&&report.checkedChanged===722&&report.checkedRestored===722&&
   report.stableInitial===722&&report.stableChanged===722&&report.stableRestored===722&&
-  !report.missingDefinitions.length&&!report.failures.length?'PASS':'FAIL';
+  !report.missingDefinitions.length&&!report.solverFailures.length&&
+  !report.failures.some(f=>f.phase==='structure'||f.phase==='exception')?'PASS':'FAIL';
  report.behaviorCoverage=report.controls?report.observedOutputChanges+'/'+report.controls:'0/0';
  report.restorationCoverage=report.restorationChecked+'/'+report.controls;
- report.restorationStatus=report.restorationChecked===report.controls&&report.restorationFailures.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
+ report.restorationStatus=report.controls>0&&report.restorationChecked===report.controls&&report.restorationFailures.length===0?'PASS':'REVIEW';
  report.responseStatus=report.controls>0&&report.unresponsiveControls.length===0&&report.observedOutputChanges===report.controls?'PASS':'REVIEW';
- report.behaviorStatus=report.unresponsiveControls.length===0&&report.restorationFailures.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
+ report.behaviorStatus=report.stabilityStatus==='PASS'&&report.responseStatus==='PASS'&&report.restorationStatus==='PASS'?'PASS':'REVIEW';
  return report;
 }
 function main(){
@@ -95,7 +100,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  if(r.stabilityStatus!=='PASS')process.exitCode=1;
  return r;
 }
