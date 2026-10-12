@@ -10,7 +10,8 @@ const toggles=new Set(['push-no','push-nc','wall-switch','wall-vavien','wall-com
  'switch-nc','proximity','autonics-pr12-npn']);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const state=p=>JSON.stringify(p.components.map(c=>[c.id,c._active,c._powered,
- Number(c._currentValue)||0,c._lampActive,c._spin,c._actuated]));
+ Number(c._currentValue)||0,c._lampActive,c._spin,c._actuated,
+ c._meter?.value??null,c._meter?.display??null,c._voltageValue??null]));
 function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
@@ -27,13 +28,23 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   const missing=[...new Set(raw.components.map(c=>c.typeId).filter(id=>!defs[id]))];
   if(missing.length){report.missingDefinitions.push({id:lesson.id,types:missing});continue}
   const p=clone(raw),control=p.components.find(c=>toggles.has(c.typeId));
+  const sensing=control?.sensing&&control.sensing.target&&control.sensing.target!=='none';
+  const initialDistance=sensing?Number(control.sensing.distance):null;
+  const sensorRange=sensing?Math.max(.1,Number(control.sensing.range)||4):0;
   if(control)report.controls++;else report.noControl++;
   try{
    const phases=[{key:'Initial',time:0},{key:'Changed',time:400},{key:'Restored',time:850}];
    let originalState='';
    for(let i=0;i<phases.length;i++){
-    if(i===1&&control)control.state=!control.state;
-    if(i===2&&control)control.state=!control.state;
+    if(i===1&&control){
+     if(sensing)control.sensing.distance=initialDistance<=sensorRange?
+      Math.max(sensorRange*2,initialDistance+sensorRange):sensorRange/2;
+     else control.state=!control.state;
+    }
+    if(i===2&&control){
+     if(sensing)control.sensing.distance=initialDistance;
+     else control.state=!control.state;
+    }
     const phase=phases[i],result=solver.solve(p,defs,{now:phase.time});
     report['checked'+phase.key]++;
     if(result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating)
