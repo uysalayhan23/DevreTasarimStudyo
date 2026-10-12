@@ -10,7 +10,7 @@ const overlays=[
  'tutorial-measurement-batch-c.js','tutorial-measurement-batch-d.js',
  'tutorial-dc-batch-e.js','tutorial-control-batch-f.js','tutorial-timer-batch-g.js',
  'tutorial-installation-batch-h.js','tutorial-next-batch-i.js','tutorial-sensor-batch-j.js',
- 'tutorial-motor-batch-k.js','tutorial-dual-dc-batch-l.js','tutorial-topic-review-batch-m.js',
+ 'tutorial-motor-batch-k.js','tutorial-dual-dc-batch-l.js','tutorial-topic-review-batch-m.js','tutorial-practice-guide-batch-n.js',
  'tutorial-curriculum.js'
 ];
 function curriculum(){
@@ -36,6 +36,7 @@ function audit({L=curriculum(),defs=catalog(),Simulation=require('../dist/simula
  const report={qa:'MQ-12 full 1655 tutorial initial-state simulation',
   total:L.lessons.length,expected:1655,rich:L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,
   topicReviewed:L.lessons.filter(x=>x.topicReview?.version==='topic-review-m1').length,
+  virtualPracticeGuides:L.lessons.filter(x=>x.practiceGuide?.version==='practice-n1').length,
   definitionCount:Object.keys(defs).length,referenceOnly:0,withWires:0,
   tested:0,stable:0,oscillating:0,componentsChecked:0,wireEndpointsChecked:0,
   missingDefinitions:[],invalidGuidedSteps:[],invalidWireEndpoints:[],
@@ -91,7 +92,7 @@ function audit({L=curriculum(),defs=catalog(),Simulation=require('../dist/simula
    if(result.stable)report.stable++;else if(!result.oscillating)report.unstable.push({id:lesson.id,reason:result.reason||'unstable'});
   }catch(error){report.errors.push({id:lesson.id,error:String(error).slice(0,240)})}
  }
- report.status=report.total===report.expected&&report.rich===136&&report.topicReviewed===1519&&
+ report.status=report.total===report.expected&&report.rich===136&&report.topicReviewed===1519&&report.virtualPracticeGuides===1519&&
   !report.missingDefinitions.length&&!report.invalidGuidedSteps.length&&!report.invalidWireEndpoints.length&&!report.blocked.length&&
   !report.shortCircuits.length&&!report.unstable.length&&!report.errors.length&&!report.duplicateIds.length?'PASS':'FAIL';
  return report;
