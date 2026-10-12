@@ -213,3 +213,21 @@ test('missing catalog definitions are blocked and never counted as passive',()=>
  assert.equal(r.stabilityStatus,'FAIL');
  assert.equal(r.behaviorStatus,'REVIEW');
 });
+
+test('classification coverage accounts separately for missing, unsupported, passive and controlled lessons',()=>{
+ const types=['missing-device','vendor-switch','dc-source','push-no'];
+ const defs={'vendor-switch':{kind:'switch-no'},'dc-source':{},'push-no':{kind:'switch-no'},'lamp-green':{kind:'lamp'}};
+ const L={lessons:types.map((type,i)=>({id:'class-'+i,project:{components:[
+  {id:'s',typeId:type,state:false},{id:'l',typeId:'lamp-green'}
+ ],wires:[{from:{c:'s',p:'1'},to:{c:'l',p:'X1'}}]}}))};
+ const solver={solve(p){p.components[1]._active=!!p.components[0].state;return{
+  stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.classificationCoverage,'4/4');
+ assert.equal(r.classificationComplete,true);
+ assert.equal(r.missingDefinitionLessons.length,1);
+ assert.equal(r.unsupportedActuatorLessons.length,1);
+ assert.equal(r.passiveLessons.length,1);
+ assert.equal(r.controls,1);
+ assert.equal(r.behaviorStatus,'REVIEW');
+});
