@@ -28,5 +28,8 @@ test('MQ-00 QA is separate from offline launcher and never trusts old screenshot
  assert.ok(ps.includes("'dist\\project-store.js'"));
  assert.ok(ps.includes("'dist\\studio.js'"));
  assert.match(ps,/source-hashes\.json/);
+ for(const folder of ['dist','tests','scripts'])assert.ok(ps.includes("'"+folder+"'"),'Source provenance missing folder '+folder);
+ assert.match(ps,/Get-ChildItem -LiteralPath \$Folder -File/);
+ assert.match(ps,/\$Report\.hash_file_count=\$Hashes\.Count/);
  assert.match(ps,/if\(\$Report\.status -ne 'PASS'\)\{exit 1\}/);
 });
