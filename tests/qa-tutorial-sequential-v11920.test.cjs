@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-sequential-v11920.cjs');
 const Core=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 test('sequenced electrical QA probes genuine curriculum through native simulator',()=>{
- const report=QA.audit();
+ const report=QA.main();
  assert.equal(report.total,1655);
  assert.equal(report.wired,722);
  assert.equal(report.referenceOnly,933);
