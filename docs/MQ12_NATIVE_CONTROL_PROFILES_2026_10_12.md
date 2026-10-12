@@ -45,3 +45,34 @@ First 10 native lessons: 8 controlled have **8/8 causal response PASS** and **8/
 - Original independent baseline `Legacy.audit()` → 722/722/722 stable native solves, **PASS**.
 
 **Remaining gates:** 73 response and 74 restoration reviews (74 distinct lessons), sensor physics models, unsupported Arduino stimuli, per-part accuracy, browser pedagogy, physical device/Windows checks. Do **not** claim overall 722 behavior accepted based solely on stability or targeted profiles.
+
+## Follow-up: targeted REVIEW reduction and fail-closed regression (2026-10-12 evening)
+
+Re-checked using the user-uploaded canonical `DevreTasarimStudyo-main(2).zip` with Node.js v22 and the real `dist/simulation.js`. This is a virtual solver audit, **not** physical device or browser/UI acceptance.
+
+### Updated native QA (full 722 wired lessons)
+
+| Area | Verified after targeted correction |
+| --- | ---: |
+| Classification | 722/722; 456 controlled, 67 unsupported, 199 passive, 0 missing |
+| Independent baseline stability | 2,166/2,166 stable, **PASS** |
+| Native control-profile stability | 2,052/2,052 stable, **PASS** |
+| Controlled causal response | 391 PASS, 65 REVIEW |
+| Controlled restoration | 384 PASS, 72 REVIEW |
+| Distinct remaining REVIEW lessons | **72** |
+| General behavioral acceptance | **REVIEW** |
+
+**Why profile phases decreased from 2,054 to 2,052:** `motor-direct-power-src-04` is a **momentary jog**, not a self-holding seal-in circuit. It should be audited in 3 phases instead of a 5-phase START/STOP latch profile. The native 5-step targeted confirmation `OFF → START ON → START released OFF → STOP OFF → STOP released OFF` was stable and the motor/coil outputs matched each step. This correction converts that lesson's restoration REVIEW into PASS without changing any canonical graph.
+
+**Visible multimeter outputs:** `unit-ut33d-plus` carries `kind='multimeter'`, so it is a real observable sink even though it was previously excluded from `observedKinds`. Seven reactive lessons had causal multimeter readings under virtual START/RELEASE, changing their response verdict from REVIEW to PASS **without** granting a false restoration PASS. Their measurable capacitor/inductor residual state remains `REACTIVE_STATE_NOT_SETTLED` and restoration REVIEW. `measurement-workshop-src-10` has a pre-existing physical sensing target and a causal multimeter response, so both its response/restoration pass with the native modeled stimulus.
+
+**Fail closed:** Restoration now requires **causal response as well as baseline-matched return**, preventing unchanged meter outputs from receiving restoration PASS. The 35 sensor lessons without defined target stimulus stay REVIEW. There are 31 `NO_DOWNSTREAM_RESPONSE` and 7 `REACTIVE_STATE_NOT_SETTLED` diagnostic tags; tags overlap among the **72 distinct** open lessons.
+
+### Regression and independent baseline caveat
+
+- Node: `node --test tests/qa-mq12-review-targeted-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs tests/qa-tutorial-722-sequential-v11920.test.cjs tests/tutorial-practice-guide-batch-n-v11920.test.cjs tests/qa-tutorial-practice-1519-v11920.test.cjs` → **29/29 PASS**.
+- Independent `qa-tutorial-722-sequential-v11920.cjs` still records **8 unresolved restoration reviews**, all visible in `restorationFailures`, while 2,166/2,166 electrical phases are stable. The old `node --test` harness incorrectly expected zero restoration reviews and called `main()` (which sets exit code 1 for known behavior reviews). It now calls `audit()`, ensures zero actual solver faults, and deliberately preserves unresolved restoration as REVIEW.
+- Batch N: source audit **1,519/1,519 PASS**, 525 wired, 923 reference-only, 71 reference with wires, 2,085 observations. Batch N node regressions are included in the 29/29.
+- All acceptance remains **REVIEW** for physical circuit realism, unsupported Arduino/sensors, and actual teaching/UI rendering; do not promote this to project-wide PASS.
+
+No GitHub Actions were invoked. Every change was committed with `[skip ci]`.
