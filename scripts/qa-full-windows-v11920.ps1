@@ -23,7 +23,7 @@ function FreshZip([string]$Pattern,[datetime]$After){
  return $null
 }
 try{
- foreach($Item in @('BASLAT.bat','dist\index.html','dist\app.js','dist\library.js','dist\tutorial-lessons.js','dist\tutorial-mode.js','dist\tutorial-topic-review-batch-m.js','dist\project-store.js','dist\studio.js','tests\tutorial-topic-review-batch-m-v11920.test.cjs','scripts\qa-tutorial-1655-simulation-v11920.cjs','scripts\qa-tutorial-1655-dynamics-v11920.cjs','scripts\qa-tutorial-1655-transitions-v11920.cjs','scripts\qa-tutorial-722-sequential-v11920.cjs','tests\qa-tutorial-722-sequential-v11920.test.cjs','tests\qa-tutorial-1655-transitions-v11920.test.cjs','tests\qa-tutorial-1655-transitions-failclosed-v11920.test.cjs','tests\tutorial-open-collector-stateful-v11920.test.cjs','tests\qa-tutorial-1655-dynamics-v11920.test.cjs','dist\tutorial-practice-guide-batch-n.js','tests\project-legacy-collector-pullup-v11920.test.cjs','tests\tutorial-open-collector-pulldown-v11920.test.cjs','scripts\qa-full-windows-v11920.ps1','scripts\qa-tutorial-1655-simulation-v11920.cjs','scripts\qa-hl64-windows-v11920.ps1','scripts\qa-mq05-ut200a-windows-v11920.ps1')){
+ foreach($Item in @('BASLAT.bat','dist\index.html','dist\app.js','dist\library.js','dist\tutorial-lessons.js','dist\tutorial-mode.js','dist\tutorial-topic-review-batch-m.js','dist\project-store.js','dist\studio.js','tests\tutorial-topic-review-batch-m-v11920.test.cjs','scripts\qa-tutorial-1655-simulation-v11920.cjs','scripts\qa-tutorial-1655-dynamics-v11920.cjs','scripts\qa-tutorial-1655-transitions-v11920.cjs','scripts\qa-tutorial-722-sequential-v11920.cjs','tests\qa-tutorial-722-sequential-v11920.test.cjs','scripts\qa-tutorial-practice-1519-v11920.cjs','tests\qa-tutorial-practice-1519-v11920.test.cjs','tests\qa-tutorial-1655-transitions-v11920.test.cjs','tests\qa-tutorial-1655-transitions-failclosed-v11920.test.cjs','tests\tutorial-open-collector-stateful-v11920.test.cjs','tests\qa-tutorial-1655-dynamics-v11920.test.cjs','dist\tutorial-practice-guide-batch-n.js','tests\project-legacy-collector-pullup-v11920.test.cjs','tests\tutorial-open-collector-pulldown-v11920.test.cjs','scripts\qa-full-windows-v11920.ps1','scripts\qa-tutorial-1655-simulation-v11920.cjs','scripts\qa-hl64-windows-v11920.ps1','scripts\qa-mq05-ut200a-windows-v11920.ps1')){
   if(-not(Test-Path -LiteralPath (Join-Path $Root $Item) -PathType Leaf)){throw ('Missing file: '+$Item+'. Extract current main ZIP.')}
  }
  $N=(Get-Command node.exe -ErrorAction Stop).Source
@@ -81,6 +81,13 @@ try{
   if($SeqInfo.stabilityStatus -ne 'PASS'){$Report.errors+='722 sequential electrical stability did not PASS.'}
   if($SeqInfo.behaviorStatus -ne 'PASS'){$Report.errors+='722 sequential functional output coverage requires separate virtual-probe/browser QA.'}
  }else{$Report.errors+='Fresh 722 sequential solver report missing.'}
+
+ $Pedagogy=Join-Path $Build 'qa-tutorial-practice-1519-report.json'
+ if((Test-Path -LiteralPath $Pedagogy -PathType Leaf) -and (Get-Item -LiteralPath $Pedagogy).LastWriteTime -ge $FullSince.AddSeconds(-1)){
+  Copy-Item -LiteralPath $Pedagogy -Destination (Join-Path $Dir 'qa-tutorial-practice-1519-report.json') -Force
+  $PedagogyInfo=Get-Content -LiteralPath $Pedagogy -Raw | ConvertFrom-Json
+  if($PedagogyInfo.sourceStatus -ne 'PASS'){$Report.errors+='1519 practice guide pedagogy and coach source QA did not pass.'}
+ }else{$Report.errors+='Fresh 1519 practice guide QA report missing.'}
 
  $PsExe=(Get-Command powershell.exe -ErrorAction Stop).Source
  $At=Get-Date
