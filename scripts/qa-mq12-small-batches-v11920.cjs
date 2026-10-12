@@ -34,7 +34,20 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
   if(!stableAll)report.stability.fail.push({id:lesson.id,phases,error});
   else report.stability.pass.push(lesson.id);
   if(!ctrl)continue;
-  const response=stableAll&&states[0]!==states[1],restored=stableAll&&states[0]===states[2];
+  // Compare against a time-matched, unactuated control branch: timers and
+  // autonomous outputs must never masquerade as a response to this switch.
+  let controlEffect=false;
+  if(stableAll&&states[0]!==states[1]){
+   const baseline=JSON.parse(JSON.stringify(original));
+   try{
+    const b0=solver.solve(baseline,defs,{now:0});
+    const b1=solver.solve(baseline,defs,{now:400});
+    controlEffect=!!b0?.stable&&!!b1?.stable&&!b0.blocked&&!b1.blocked&&
+     !b0.shortCircuit&&!b1.shortCircuit&&!b0.oscillating&&!b1.oscillating&&
+     signature(baseline,defs)!==states[1];
+   }catch(_){controlEffect=false;}
+  }
+  const response=stableAll&&states[0]!==states[1]&&controlEffect,restored=stableAll&&states[0]===states[2];
   report.response[response?'pass':'review'].push(lesson.id);
   report.restoration[restored?'pass':'review'].push(lesson.id);
  }
