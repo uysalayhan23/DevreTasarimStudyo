@@ -103,6 +103,9 @@ test('restoration drift of a downstream lamp fails closed even when all phases s
  assert.equal(r.restorationChecked,1);
  assert.equal(r.observedOutputChanges,1);
  assert.equal(r.restorationFailures.length,1);
+ assert.equal(r.solverFailures.length,0,'stable solver must be reported separately');
+ assert.equal(r.responseStatus,'PASS');
+ assert.equal(r.restorationStatus,'REVIEW');
  assert.equal(r.restorationFailures[0].id,'stuck-lamp');
  assert.equal(r.stabilityStatus,'FAIL');
  assert.equal(r.behaviorStatus,'REVIEW');
@@ -134,6 +137,8 @@ test('stable solver does not excuse failing OFF restoration of a downstream mete
  const r=audit({L,defs,solver});
  assert.equal(r.stableInitial,1);assert.equal(r.stableChanged,1);assert.equal(r.stableRestored,1);
  assert.equal(r.restorationChecked,1);assert.equal(r.restorationFailures.length,1);
+ assert.equal(r.solverFailures.length,0);assert.equal(r.responseStatus,'PASS');
+ assert.equal(r.restorationStatus,'REVIEW');
  assert.equal(r.failures[0].phase,'Restored');assert.equal(r.stabilityStatus,'FAIL');
 });
 test('passive circuit does not falsely count as actuated restoration',()=>{
