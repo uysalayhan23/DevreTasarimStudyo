@@ -92,6 +92,7 @@ try {
     'tests/tutorial-practice-guide-batch-n-v11920.test.cjs',
     'tests/qa-tutorial-1655-failclosed-v11920.test.cjs',
     'tests/qa-tutorial-1655-transitions-v11920.test.cjs',
+    'tests/qa-tutorial-1655-transitions-failclosed-v11920.test.cjs',
     'tests/project-legacy-collector-pullup-v11920.test.cjs',
     'tests/tutorial-motor-batch-k-v11920.test.cjs',
     'tests/tutorial-motor-physical-regression-v11920.test.cjs',
