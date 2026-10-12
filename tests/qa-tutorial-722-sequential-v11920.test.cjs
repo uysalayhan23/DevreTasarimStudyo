@@ -121,3 +121,22 @@ test('downstream lamp that returns to its initial output passes restoration chec
  assert.equal(r.failures.length,0);
  assert.equal(r.stabilityStatus,'FAIL','small fixture cannot satisfy full 722 scope');
 });
+
+test('stable solver does not excuse failing OFF restoration of a downstream meter',()=>{
+ const L={lessons:[{id:'meter-drift',project:{components:[{id:'sw',typeId:'push-no',state:false},{id:'meter',typeId:'meter-v'}],wires:[{from:{c:'sw',p:'13'},to:{c:'meter',p:'V'}}]}}]};
+ const defs={'push-no':{kind:'switch-no'},'meter-v':{kind:'meter-v'}};
+ let calls=0;
+ const solver={solve(p){p.components[1]._meter={value:[0,24,12][calls++]};return {stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.stableInitial,1);assert.equal(r.stableChanged,1);assert.equal(r.stableRestored,1);
+ assert.equal(r.restorationChecked,1);assert.equal(r.restorationFailures.length,1);
+ assert.equal(r.failures[0].phase,'Restored');assert.equal(r.stabilityStatus,'FAIL');
+});
+test('passive circuit does not falsely count as actuated restoration',()=>{
+ const L={lessons:[{id:'passive',project:{components:[{id:'a',typeId:'supply-dc-plus'},{id:'lamp',typeId:'lamp-green'}],wires:[{from:{c:'a',p:'P'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'supply-dc-plus':{},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){p.components[1]._active=true;return {stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.noControl,1);assert.equal(r.controls,0);
+ assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
+});
