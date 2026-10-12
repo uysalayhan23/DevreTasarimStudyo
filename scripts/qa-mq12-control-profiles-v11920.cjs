@@ -7,7 +7,7 @@ const Solver=require('../dist/simulation.js');
 const Legacy=require('./qa-tutorial-722-sequential-v11920.cjs');
 const toggles=new Set(['push-no','push-nc','wall-switch','wall-vavien','wall-commutator','wall-intermediate','bell-push','bell-light-push','limit-nc','limit-no','switch-no','switch-nc','proximity','autonics-pr12-npn']);
 const sensorTypes=new Set(['proximity','autonics-pr12-npn']);
-const observedKinds=new Set(['lamp','led','buzzer','siren','flasher','coil','coil-valve','relay-protection','contactor3','motor','motor3','motor-yd','motor-1p','meter-v','meter-a']);
+const observedKinds=new Set(['lamp','led','buzzer','siren','flasher','coil','coil-valve','relay-protection','contactor3','motor','motor3','motor-yd','motor-1p','meter-v','meter-a','multimeter']);
 const clone=x=>JSON.parse(JSON.stringify(x));
 const stable=r=>!!r&&!!r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating;
 const signature=(p,defs)=>JSON.stringify(p.components.filter(c=>{
@@ -19,6 +19,13 @@ function choice(p){
   c.find(x=>x.typeId==='push-no')||c.find(x=>/^start/i.test(x.id||''))||c[0]||null;
 }
 const isSensor=c=>!!c&&sensorTypes.has(c.typeId);
+// Jog circuits are momentary even when both START and STOP buttons exist.
+// Require an explicit jog/kesik lesson and no coil-linked holding NO contact.
+function isMomentaryJog(lesson,p,defs){
+ if(!/jog|kesik/i.test(lesson.title||''))return false;
+ const coilRefs=new Set(p.components.filter(c=>defs[c.typeId]?.kind==='coil').map(c=>c.ref).filter(Boolean));
+ return !p.components.some(c=>defs[c.typeId]?.kind==='contact-no'&&coilRefs.has(c.ref));
+}
 function changeControl(c,on,original){
  if(!c)return;
  if(isSensor(c)&&c.sensing?.target&&c.sensing.target!=='none'){
@@ -42,14 +49,15 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver,legacy=false,sta
  const report={qa:'MQ-12 native profile-aware read-only control QA',sourceTotal:L.lessons.length,wiredTotal:wiredAll.length,batchStart:start,batchCount:wired.length,definitionCount:Object.keys(defs).length,
  classification:{CONTROLLED:0,UNSUPPORTED_ACTUATOR:0,PASSIVE_STABILITY_ONLY:0,MISSING_DEFINITIONS:0},
  stability:{phases:0,pass:0,fail:0},response:{PASS:0,REVIEW:0,NOT_APPLICABLE:0},restoration:{PASS:0,REVIEW:0,NOT_APPLICABLE:0},
- profiles:{LATCH_START_STOP:0,SENSOR_TOGGLE:0,DIRECT_TOGGLE:0,UNSUPPORTED:0,PASSIVE:0,MISSING:0},reasons:{},lessons:[],originalStability:null,fullAcceptance:'REVIEW'};
+ profiles:{LATCH_START_STOP:0,MOMENTARY_JOG:0,SENSOR_TOGGLE:0,DIRECT_TOGGLE:0,UNSUPPORTED:0,PASSIVE:0,MISSING:0},reasons:{},lessons:[],originalStability:null,fullAcceptance:'REVIEW'};
  const reason=(key)=>{report.reasons[key]=(report.reasons[key]||0)+1};
  for(const l of wired){const p=clone(l.project),cl=classify(p,defs),out={id:l.id,classification:cl.category,profile:null,response:'NOT_APPLICABLE',restoration:'NOT_APPLICABLE',reason:[],phases:[],controlId:cl.controlId||null};report.classification[cl.category]++;
   if(cl.category==='MISSING_DEFINITIONS'){out.profile='MISSING';out.reason.push('MISSING_DEFINITIONS');out.types=cl.missing;report.profiles.MISSING++;}
   else{
    const ctrl=choice(p),stop=ctrl&&p.components.find(c=>/^stop(?:[-_a-z\d]*)$/i.test(c.id||'')&&c.typeId==='push-nc');
-   const latch=ctrl?.typeId==='push-no'&&/^start/i.test(ctrl.id||'')&&!!stop;
-   out.profile=!ctrl?cl.category==='PASSIVE_STABILITY_ONLY'?'PASSIVE':'UNSUPPORTED':latch?'LATCH_START_STOP':isSensor(ctrl)?'SENSOR_TOGGLE':'DIRECT_TOGGLE';report.profiles[out.profile]++;
+   const jog=ctrl?.typeId==='push-no'&&/^start/i.test(ctrl.id||'')&&!!stop&&isMomentaryJog(l,p,defs);
+   const latch=ctrl?.typeId==='push-no'&&/^start/i.test(ctrl.id||'')&&!!stop&&!jog;
+   out.profile=!ctrl?cl.category==='PASSIVE_STABILITY_ONLY'?'PASSIVE':'UNSUPPORTED':latch?'LATCH_START_STOP':jog?'MOMENTARY_JOG':isSensor(ctrl)?'SENSOR_TOGGLE':'DIRECT_TOGGLE';report.profiles[out.profile]++;
    // Unsupported and passive lessons have no credible control stimulus.
    // Independent 722 x 3-phase stability audit covers those graphs.
    if(!ctrl){out.reason.push(cl.category==='UNSUPPORTED_ACTUATOR'?'UNSUPPORTED_ACTUATOR':'PASSIVE_STABILITY_ONLY');
@@ -82,9 +90,10 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver,legacy=false,sta
      const last=out.phases.length-1;
      const restored=out.phases[last].sig===baseline[last].sig;
      const latchHold=latch&&out.phases[2].sig===out.phases[1].sig&&out.phases[2].sig!==baseline[2].sig;
-     out.restoration=allStable&&hasSinks&&restored&&(!latch||latchHold)?'PASS':'REVIEW';
+     out.restoration=allStable&&hasSinks&&causal&&restored&&(!latch||latchHold)?'PASS':'REVIEW';
      if(latch&&!latchHold)out.reason.push('LATCH_HOLD_UNVERIFIED');
-     if(!restored)out.reason.push(latch?'STOP_RELEASE_NOT_RESTORED':'RELEASE_NOT_RESTORED');
+     if(!restored){out.reason.push(latch?'STOP_RELEASE_NOT_RESTORED':'RELEASE_NOT_RESTORED');
+      if(p.components.some(c=>['capacitor','reactor','inductor'].includes(defs[c.typeId]?.kind)))out.reason.push('REACTIVE_STATE_NOT_SETTLED');}
      if(isSensor(ctrl)&&!ctrl.sensing?.target){out.reason.push('SENSOR_STIMULUS_NOT_MODELED');out.response='REVIEW';out.restoration='REVIEW';}
      if(!allStable)out.reason.push('SOLVER_UNSTABLE');
     }
@@ -101,4 +110,4 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver,legacy=false,sta
  return report;
 }
 if(require.main===module){const start=Number(process.argv[2]||0),count=Number(process.argv[3]||10);const report=run({start,count});const output=path.join(__dirname,'..','build','qa-mq12-control-profiles-report-'+start+'-'+count+'.json');fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({file:output,sourceTotal:report.sourceTotal,wiredTotal:report.wiredTotal,definitions:report.definitionCount,classification:report.classification,stability:report.stability,stabilityStatus:report.stabilityStatus,originalStability:report.originalStability,response:report.response,restoration:report.restoration,profiles:report.profiles,reasons:report.reasons,fullAcceptance:report.fullAcceptance}));if(report.stability.fail||(report.originalStability&&report.originalStability.status!=='PASS'))process.exitCode=1;}
-module.exports={run,classify,choice,signature};
+module.exports={run,classify,choice,signature,isMomentaryJog};
