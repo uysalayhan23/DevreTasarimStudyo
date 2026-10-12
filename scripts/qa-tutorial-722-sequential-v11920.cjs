@@ -23,7 +23,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
-  noControl:0,unresponsiveControls:[],missingDefinitions:[],failures:[],
+  noControl:0,unresponsiveControls:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
   scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
@@ -61,6 +61,14 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
       reason:result.reason||null});
     const signature=state(p,defs);
     if(i===0)originalState=signature;
+    if(i===2&&control){
+     report.restorationChecked++;
+     if(signature!==originalState){
+      const mismatch={id:lesson.id,phase:'Restored',reason:'Downstream observable outputs did not return to initial state'};
+      report.restorationFailures.push(mismatch);
+      report.failures.push(mismatch);
+     }
+    }
     if(i===1&&control){
      if(signature!==originalState)report.observedOutputChanges++;
      else report.unresponsiveControls.push({id:lesson.id,control:control.typeId,
@@ -74,7 +82,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   report.stableInitial===722&&report.stableChanged===722&&report.stableRestored===722&&
   !report.missingDefinitions.length&&!report.failures.length?'PASS':'FAIL';
  report.behaviorCoverage=report.controls?report.observedOutputChanges+'/'+report.controls:'0/0';
- report.behaviorStatus=report.unresponsiveControls.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
+ report.behaviorStatus=report.unresponsiveControls.length===0&&report.restorationFailures.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
  return report;
 }
 function main(){
@@ -84,7 +92,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  if(r.stabilityStatus!=='PASS')process.exitCode=1;
  return r;
 }
