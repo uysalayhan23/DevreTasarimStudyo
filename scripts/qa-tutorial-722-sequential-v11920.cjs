@@ -9,8 +9,15 @@ const toggles=new Set(['push-no','push-nc','wall-switch','wall-vavien','wall-com
  'wall-intermediate','bell-push','bell-light-push','limit-nc','limit-no','switch-no',
  'switch-nc','proximity','autonics-pr12-npn']);
 const clone=x=>JSON.parse(JSON.stringify(x));
-const state=p=>JSON.stringify(p.components.map(c=>[c.id,c._active,c._powered,
- Number(c._currentValue)||0,c._lampActive,c._spin,c._actuated,
+// MQ-12: an operated pushbutton/sensor changing its OWN internal state is not
+// evidence that a load, actuator or meter responded. Observe downstream sinks only.
+const observedKinds=new Set(['lamp','led','buzzer','siren','flasher','coil','coil-valve',
+ 'relay-protection','contactor3','motor','motor3','motor-yd','motor-1p','meter-v','meter-a']);
+const state=(p,defs)=>JSON.stringify(p.components.filter(c=>{
+ const d=defs[c.typeId];return !!d&&(observedKinds.has(d.kind)||!!d.instrument||
+  !!d.isPLC);
+}).map(c=>[c.id,!!c._active,!!c._powered,
+ Number(c._currentValue)||0,!!c._lampActive,c._spin||0,
  c._meter?.value??null,c._meter?.display??null,c._voltageValue??null]));
 function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
@@ -52,12 +59,12 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
     else report.failures.push({id:lesson.id,phase:phase.key,blocked:!!result.blocked,
       shortCircuit:!!result.shortCircuit,oscillating:!!result.oscillating,stable:!!result.stable,
       reason:result.reason||null});
-    const signature=state(p);
+    const signature=state(p,defs);
     if(i===0)originalState=signature;
     if(i===1&&control){
      if(signature!==originalState)report.observedOutputChanges++;
      else report.unresponsiveControls.push({id:lesson.id,control:control.typeId,
-      reason:'No electrical output change in this fixture; may require manually attached probes or a target.'});
+      reason:'The selected virtual control caused no observable downstream load/actuator/meter change; own actuator state is deliberately excluded.'});
     }
    }
   }catch(e){report.failures.push({id:lesson.id,phase:'exception',message:String(e).slice(0,240)})}
