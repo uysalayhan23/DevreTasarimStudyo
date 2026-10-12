@@ -273,8 +273,8 @@
       net=network(project,byId,actuators,sensors,false,now);
       const plcChanged=plcBefore!==JSON.stringify(project.components.filter(c=>definition(byId,c)?.isPLC).map(c=>[c.id,c._plcRuntime?.inputs||{},c._plcRuntime?.outputs||{},!!c._plcLatch]));
       if(!firstNet)firstNet=net;
-      let bjtChanged=false;
-      for(const tc of project.components){const td=definition(byId,tc);if(!['bjt-npn','bjt-pnp'].includes(td?.kind))continue;const vb=td.kind==='bjt-npn'?net.dcVoltage(tc,'B','E'):net.dcVoltage(tc,'E','B'),on=vb!==null&&vb>=0.62;if(on!==!!tc._bjtOn){tc._bjtOn=on;bjtChanged=true}}
+      let bjtChanged=false,bjtNumeric=null;
+      for(const tc of project.components){const td=definition(byId,tc);if(!['bjt-npn','bjt-pnp'].includes(td?.kind))continue;let vb=td.kind==='bjt-npn'?net.dcVoltage(tc,'B','E'):net.dcVoltage(tc,'E','B');if(vb===null){bjtNumeric ||= Numeric.update(project,byId,net,{now,sampleOnly:true});vb=td.kind==='bjt-npn'?bjtNumeric.dc(tc,'B','E'):-bjtNumeric.dc(tc,'B','E')}const on=vb!==null&&vb>=0.62;if(on!==!!tc._bjtOn){tc._bjtOn=on;bjtChanged=true}}
       let semiconductorChanged=false;
       for(const tc of project.components){const td=definition(byId,tc);if(!td)continue;let stateKey=null,on=false,v=null;
         if(td.kind==='mosfet-n'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');on=v!==null&&v>=4}
