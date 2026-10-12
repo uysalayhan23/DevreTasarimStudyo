@@ -41,7 +41,10 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   if(control)report.controls++;
   else {
    report.noControl++;
-   const candidates=p.components.filter(c=>/switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(c.typeId||'')).map(c=>c.typeId);
+   const candidates=p.components.filter(c=>{const d=defs[c.typeId]||{};
+    return /switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(c.typeId||'')||
+     /switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(d.kind||'');
+   }).map(c=>c.typeId);
    const observable=p.components.filter(c=>{const d=defs[c.typeId];return d&&(observedKinds.has(d.kind)||d.instrument||d.isPLC)}).length;
    const detail={id:lesson.id,reason:candidates.length?'Unsupported or unselected virtual actuator':'No recognized virtual actuator',candidateTypes:[...new Set(candidates)],observableCount:observable,classification:candidates.length?'UNSUPPORTED_ACTUATOR':'PASSIVE_STABILITY_ONLY'};
    report.noControlLessons.push(detail);
