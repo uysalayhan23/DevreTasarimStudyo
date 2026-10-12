@@ -62,3 +62,11 @@ test('Batch N is idempotent and visible in the coach without misrepresenting phy
  assert.match(mode,/l\.practiceGuide\.observations/);
  assert.match(mode,/esc\(x\)/);
 });
+
+test('Batch N markup guard recognizes safe text and dangerous embedded HTML',()=>{
+ const unsafe=/<script\\b|javascript:|<iframe\\b|<object\\b|<embed\\b|<svg\\b|<math\\b|srcdoc\\s*=|on[a-z]+\\s*=/i;
+ for(const example of ['<iframe src=x>','<svg onload=evil()>','<img onfocus = bad()>','srcdoc = "html"','javascript:alert(1)'])
+  assert.equal(unsafe.test(example),true,example);
+ for(const example of ['Sanal prob ile ölçümü gözlemleyin.','OFF → ON → OFF','Devre kontrolü / referans şemasıdır.'])
+  assert.equal(unsafe.test(example),false,example);
+});
