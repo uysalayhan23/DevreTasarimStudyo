@@ -43,6 +43,10 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   const sensing=control?.sensing&&control.sensing.target&&control.sensing.target!=='none';
   const initialDistance=sensing?Number(control.sensing.distance):null;
   const sensorRange=sensing?Math.max(.1,Number(control.sensing.range)||4):0;
+  if(sensing&&!Number.isFinite(initialDistance)){
+   report.failures.push({id:lesson.id,phase:'structure',reason:'Invalid or missing sensor distance; virtual actuation not verified'});
+   continue;
+  }
   if(control)report.controls++;
   else {
    report.noControl++;
