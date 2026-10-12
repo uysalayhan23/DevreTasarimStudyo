@@ -30,8 +30,9 @@ function catalog(){
   throw Error('Full physical product library unavailable');
  return Object.fromEntries(ctx.window.DTSDesignLibrary.extend(lib).map(d=>[d.id,d]));
 }
-function audit(){
- const L=curriculum(),defs=catalog(),Simulation=require('../dist/simulation.js');
+function audit({L=curriculum(),defs=catalog(),Simulation=require('../dist/simulation.js')}={}){
+ // Explicit fixture injection is for fail-closed tests only; main() always runs
+ // the real full curriculum, product catalog and native solver.
  const report={qa:'MQ-12 full 1655 tutorial initial-state simulation',
   total:L.lessons.length,expected:1655,rich:L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,
   topicReviewed:L.lessons.filter(x=>x.topicReview?.version==='topic-review-m1').length,
