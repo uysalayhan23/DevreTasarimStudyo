@@ -14,8 +14,11 @@ test('sequenced electrical QA probes genuine curriculum through native simulator
  assert.equal(report.errors.length,0,'native solver errors: '+JSON.stringify(report.errors.slice(0,8)));
  assert.equal(report.faults.length,0,'faults: '+JSON.stringify(report.faults.slice(0,8)));
  assert.equal(report.unstable.length,0,'unstable states: '+JSON.stringify(report.unstable.slice(0,8)));
+ assert.equal(report.oscillating.length,0,'oscillating states: '+JSON.stringify(report.oscillating.slice(0,8)));
+ assert.equal(report.status,'SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN','only source-state coverage can be claimed');
+
  // An electrical state probe does not certify pedagogical, physical or visual acceptance.
- assert.ok(['SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN','FAIL_OR_INCOMPLETE'].includes(report.status));
+ assert.equal(report.status,'SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN');
 });
 test('sequential probes switch on then off without modifying source project',()=>{
  const p={components:[{id:'b',typeId:'switch',state:false},{id:'light',typeId:'lamp',state:false}],wires:[{from:{c:'b',p:'1'},to:{c:'light',p:'A'}}]};
