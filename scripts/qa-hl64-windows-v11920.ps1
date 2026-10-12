@@ -90,6 +90,7 @@ try {
     'tests/tutorial-open-collector-stateful-v11920.test.cjs',
     'tests/tutorial-topic-review-batch-m-v11920.test.cjs',
     'tests/tutorial-practice-guide-batch-n-v11920.test.cjs',
+    'tests/qa-tutorial-practice-1519-v11920.test.cjs',
     'tests/qa-tutorial-1655-failclosed-v11920.test.cjs',
     'tests/qa-tutorial-1655-transitions-v11920.test.cjs',
     'tests/qa-tutorial-722-sequential-v11920.test.cjs',
@@ -141,6 +142,7 @@ try {
     'scripts/qa-tutorial-1655-simulation-v11920.cjs',
     'scripts/qa-tutorial-1655-transitions-v11920.cjs',
     'scripts/qa-tutorial-722-sequential-v11920.cjs',
+    'scripts/qa-tutorial-practice-1519-v11920.cjs',
     'dist/simulation.js'
   )
   foreach ($SourceFile in ($TraceSources | Sort-Object -Unique)) {
