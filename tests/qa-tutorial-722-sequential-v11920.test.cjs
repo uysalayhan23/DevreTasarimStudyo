@@ -12,6 +12,7 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.equal(r.missingDefinitions.length,0);
  assert.equal(r.failures.length,0);
  assert.equal(r.controls+r.noControl,722);
+ assert.equal(r.actuationCoverage,r.controls+'/722');
  assert.equal(r.restorationChecked,r.controls);
  assert.equal(r.restorationFailures.length,0);
  assert.equal(r.restorationStatus,'PASS');
@@ -150,4 +151,17 @@ test('passive circuit does not falsely count as actuated restoration',()=>{
  assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
  assert.equal(r.restorationCoverage,'0/0');
  assert.equal(r.responseStatus,'REVIEW');
+ assert.equal(r.actuationCoverage,'0/1');
+ assert.equal(r.behaviorStatus,'REVIEW');
+});
+
+test('stable unactuated lessons cannot be promoted to full sequential behavior acceptance',()=>{
+ const L={lessons:[{id:'actuated',project:{components:[{id:'sw',typeId:'push-no',state:false},{id:'bulb',typeId:'lamp-green'}],wires:[{from:{c:'sw',p:'13'},to:{c:'bulb',p:'X1'}}]}},
+ {id:'passive',project:{components:[{id:'supply',typeId:'supply-dc-plus'},{id:'bulb',typeId:'lamp-green'}],wires:[{from:{c:'supply',p:'P'},to:{c:'bulb',p:'X1'}}]}}]};
+ const defs={'push-no':{kind:'switch-no'},'supply-dc-plus':{},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){p.components[1]._active=!!p.components[0].state;return{stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.controls,1);assert.equal(r.noControl,1);
+ assert.equal(r.responseStatus,'PASS');assert.equal(r.restorationStatus,'PASS');
+ assert.equal(r.actuationCoverage,'1/2');assert.equal(r.behaviorStatus,'REVIEW');
 });
