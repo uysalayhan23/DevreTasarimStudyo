@@ -148,6 +148,7 @@ test('passive circuit does not falsely count as actuated restoration',()=>{
  const solver={solve(p){p.components[1]._active=true;return {stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
  const r=audit({L,defs,solver});
  assert.equal(r.noControl,1);assert.equal(r.controls,0);
+ assert.deepEqual(r.noControlLessons.map(x=>x.id),['passive']);
  assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
  assert.equal(r.restorationCoverage,'0/0');
  assert.equal(r.responseStatus,'REVIEW');
@@ -162,6 +163,7 @@ test('stable unactuated lessons cannot be promoted to full sequential behavior a
  const solver={solve(p){p.components[1]._active=!!p.components[0].state;return{stable:true,blocked:false,shortCircuit:false,oscillating:false};}};
  const r=audit({L,defs,solver});
  assert.equal(r.controls,1);assert.equal(r.noControl,1);
+ assert.deepEqual(r.noControlLessons.map(x=>x.id),['passive']);
  assert.equal(r.responseStatus,'PASS');assert.equal(r.restorationStatus,'PASS');
  assert.equal(r.actuationCoverage,'1/2');assert.equal(r.behaviorStatus,'REVIEW');
 });
