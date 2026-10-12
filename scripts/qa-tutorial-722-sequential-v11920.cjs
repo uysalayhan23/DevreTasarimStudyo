@@ -87,10 +87,12 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   !report.missingDefinitions.length&&!report.solverFailures.length&&
   !report.failures.some(f=>f.phase==='structure'||f.phase==='exception')?'PASS':'FAIL';
  report.behaviorCoverage=report.controls?report.observedOutputChanges+'/'+report.controls:'0/0';
+ report.actuationCoverage=report.controls+'/'+report.withWires;
  report.restorationCoverage=report.restorationChecked+'/'+report.controls;
  report.restorationStatus=report.controls>0&&report.restorationChecked===report.controls&&report.restorationFailures.length===0?'PASS':'REVIEW';
  report.responseStatus=report.controls>0&&report.unresponsiveControls.length===0&&report.observedOutputChanges===report.controls?'PASS':'REVIEW';
- report.behaviorStatus=report.stabilityStatus==='PASS'&&report.responseStatus==='PASS'&&report.restorationStatus==='PASS'?'PASS':'REVIEW';
+ // Unactuated lessons only prove three stable time samples, not OFF→ON→OFF behavior.
+ report.behaviorStatus=report.stabilityStatus==='PASS'&&report.responseStatus==='PASS'&&report.restorationStatus==='PASS'&&report.noControl===0?'PASS':'REVIEW';
  return report;
 }
 function main(){
@@ -100,7 +102,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  // Fail closed: a stable solver is not proof that controls respond and return.
  if(r.behaviorStatus!=='PASS')process.exitCode=1;
  return r;
