@@ -241,7 +241,9 @@ test('first canonical NO/NC button lessons transition and restore the LED with t
  for(const [id,expected] of [['button-led-1',[false,true,false]],['button-led-2',[true,false,true]]]){
   const lesson=L.byId?.[id]||L.lessons.find(l=>l.id===id);
   assert.ok(lesson?.project,'missing canonical lesson '+id);
+  const canonicalBefore=JSON.stringify(lesson.project);
   const p=structuredClone(lesson.project);
+  assert.ok(p.wires.length>=3,id+' expected canonical wiring');
   const button=p.components.find(c=>c.typeId=== (id==='button-led-1'?'push-no':'push-nc'));
   const led=p.components.find(c=>c.typeId==='led');
   assert.ok(button&&led);
@@ -256,5 +258,6 @@ test('first canonical NO/NC button lessons transition and restore the LED with t
    observed.push(!!led._active);
   }
   assert.deepEqual(observed,expected,id+' LED OFF/ON/OFF regression');
+  assert.equal(JSON.stringify(lesson.project),canonicalBefore,'canonical lesson unchanged: '+id);
  }
 });
