@@ -12,6 +12,8 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.equal(r.missingDefinitions.length,0);
  assert.equal(r.failures.length,0);
  assert.equal(r.controls+r.noControl,722);
+ assert.equal(r.restorationChecked,r.controls);
+ assert.equal(r.restorationFailures.length,0);
  assert.ok(r.controls>=400);
  // A contact changing its own state is not proof of downstream load activity.
  // The source audit reports unresponsive controls explicitly for independent review.
@@ -81,4 +83,41 @@ test('selected button self-actuation is NOT accepted as downstream functional ou
  assert.equal(r.controls,1);assert.equal(r.observedOutputChanges,0);
  assert.equal(r.unresponsiveControls.length,1);
  assert.equal(r.behaviorStatus,'REVIEW');
+});
+
+test('restoration drift of a downstream lamp fails closed even when all phases solve stably',()=>{
+ const L={lessons:[{id:'stuck-lamp',project:{components:[
+  {id:'switch',typeId:'push-no',state:false},
+  {id:'lamp',typeId:'lamp-green',state:false}
+ ],wires:[{from:{c:'switch',p:'13'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'push-no':{kind:'switch-no'},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){
+  const sw=p.components[0],lamp=p.components[1];
+  if(sw.state)lamp._active=true; // broken latch remains ON after switch release
+  return {stable:true,shortCircuit:false,blocked:false,oscillating:false};
+ }};
+ const r=audit({L,defs,solver});
+ assert.equal(r.restorationChecked,1);
+ assert.equal(r.observedOutputChanges,1);
+ assert.equal(r.restorationFailures.length,1);
+ assert.equal(r.restorationFailures[0].id,'stuck-lamp');
+ assert.equal(r.stabilityStatus,'FAIL');
+ assert.equal(r.behaviorStatus,'REVIEW');
+});
+test('downstream lamp that returns to its initial output passes restoration check',()=>{
+ const L={lessons:[{id:'reversible-lamp',project:{components:[
+  {id:'switch',typeId:'push-no',state:false},
+  {id:'lamp',typeId:'lamp-green',state:false}
+ ],wires:[{from:{c:'switch',p:'13'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'push-no':{kind:'switch-no'},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){
+  p.components[1]._active=!!p.components[0].state;
+  return {stable:true,shortCircuit:false,blocked:false,oscillating:false};
+ }};
+ const r=audit({L,defs,solver});
+ assert.equal(r.restorationChecked,1);
+ assert.equal(r.restorationFailures.length,0);
+ assert.equal(r.observedOutputChanges,1);
+ assert.equal(r.failures.length,0);
+ assert.equal(r.stabilityStatus,'FAIL','small fixture cannot satisfy full 722 scope');
 });
