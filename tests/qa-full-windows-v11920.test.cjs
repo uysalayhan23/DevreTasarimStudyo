@@ -44,3 +44,15 @@ test('full Windows gate incorporates native 722 sequence evidence and refuses un
  assert.match(ps,/\$SeqInfo\.behaviorStatus -ne 'PASS'/);
  assert.match(ps,/LastWriteTime -ge \$FullSince\.AddSeconds\(-1\)/);
 });
+
+
+test('full Windows acceptance bundles and checks fresh 1519 pedagogy source report',()=>{
+ const ps=read('scripts/qa-full-windows-v11920.ps1');
+ for(const part of ['qa-tutorial-practice-1519-v11920.cjs',
+  'qa-tutorial-practice-1519-v11920.test.cjs',
+  'qa-tutorial-practice-1519-report.json',
+  'PedagogyInfo.sourceStatus','Fresh 1519 practice guide QA report missing'])
+  assert.ok(ps.includes(part),'Missing pedagogy full QA gate: '+part);
+ assert.match(ps,/\$PedagogyInfo\.sourceStatus -ne 'PASS'/);
+ assert.match(ps,/\$FullSince\.AddSeconds\(-1\)/);
+});
