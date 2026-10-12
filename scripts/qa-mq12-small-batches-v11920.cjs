@@ -18,7 +18,8 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
    report.classification[candidate.length?'unsupportedActuator':'passive'].push({id:lesson.id,candidate});}
   else report.classification.controlled.push(lesson.id);
   if(ctrl?.sensing?.target&&ctrl.sensing.target!=='none'&&!Number.isFinite(Number(ctrl.sensing.distance))){
-   report.stability.fail.push({id:lesson.id,reason:'invalid sensing distance'});continue;}
+   report.stability.fail.push({id:lesson.id,reason:'invalid sensing distance'});
+   report.response.review.push(lesson.id);report.restoration.review.push(lesson.id);continue;}
   const sensing=ctrl?.sensing?.target&&ctrl.sensing.target!=='none';
   const originalDistance=sensing?Number(ctrl.sensing.distance):null;
   const range=sensing?Math.max(.1,Number(ctrl.sensing.range)||4):null;
@@ -29,10 +30,11 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation,start=0,coun
    try{const r=solver.solve(p,defs,{now:[0,400,850][i]});phases.push(!!r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating);states.push(signature(p,defs));}
    catch(e){error=String(e);break}
   }
-  if(error||phases.length!==3||phases.some(x=>!x))report.stability.fail.push({id:lesson.id,phases,error});
+  const stableAll=!error&&phases.length===3&&phases.every(Boolean);
+  if(!stableAll)report.stability.fail.push({id:lesson.id,phases,error});
   else report.stability.pass.push(lesson.id);
   if(!ctrl)continue;
-  const response=states.length===3&&states[0]!==states[1],restored=states.length===3&&states[0]===states[2];
+  const response=stableAll&&states[0]!==states[1],restored=stableAll&&states[0]===states[2];
   report.response[response?'pass':'review'].push(lesson.id);
   report.restoration[restored?'pass':'review'].push(lesson.id);
  }
