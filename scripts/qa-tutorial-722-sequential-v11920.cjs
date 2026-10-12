@@ -23,7 +23,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
-  noControl:0,unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
+  noControl:0,noControlLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
   scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
@@ -38,7 +38,8 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   const sensing=control?.sensing&&control.sensing.target&&control.sensing.target!=='none';
   const initialDistance=sensing?Number(control.sensing.distance):null;
   const sensorRange=sensing?Math.max(.1,Number(control.sensing.range)||4):0;
-  if(control)report.controls++;else report.noControl++;
+  if(control)report.controls++;
+  else {report.noControl++;report.noControlLessons.push({id:lesson.id,reason:'No supported virtual actuator; stable time samples only'});}
   try{
    const phases=[{key:'Initial',time:0},{key:'Changed',time:400},{key:'Restored',time:850}];
    let originalState='';
@@ -102,7 +103,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,noControlLessons:r.noControlLessons,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  // Fail closed: a stable solver is not proof that controls respond and return.
  if(r.behaviorStatus!=='PASS')process.exitCode=1;
  return r;
