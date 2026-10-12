@@ -40,10 +40,10 @@ test('1519 practical guides follow real lesson source graphs and preserve 136 ri
   assert.ok(p.steps.length>=3&&p.steps.every(x=>typeof x==='string'&&x.trim().length>12),lesson.id);
   assert.ok(p.steps.every(x=>!/<script\b|javascript:|onerror\s*=|onload\s*=/i.test(x)),lesson.id+' unsafe HTML in steps');
   assert.ok(p.observations.length>=1,lesson.id);
-  assert.ok(p.steps.every(x=>!/<iframe\\b|<object\\b|<embed\\b|<svg\\b|<math\\b|srcdoc\\s*=|on[a-z]+\\s*=/i.test(x)),lesson.id+' unsafe embedded content');
+  assert.ok(p.steps.every(x=>!/<iframe\b|<object\b|<embed\b|<svg\b|<math\b|srcdoc\s*=|on[a-z]+\s*=/i.test(x)),lesson.id+' unsafe embedded content');
   assert.ok(p.observations.every(x=>typeof x==='string'&&x.trim().length>0),lesson.id+' empty observation');
   assert.ok(p.observations.every(x=>!/<script\b|javascript:|onerror\s*=|onload\s*=/i.test(x)),lesson.id+' unsafe HTML in observations');
-  assert.ok(p.observations.every(x=>!/<iframe\\b|<object\\b|<embed\\b|<svg\\b|<math\\b|srcdoc\\s*=|on[a-z]+\\s*=/i.test(x)),lesson.id+' unsafe embedded observation');
+  assert.ok(p.observations.every(x=>!/<iframe\b|<object\b|<embed\b|<svg\b|<math\b|srcdoc\s*=|on[a-z]+\s*=/i.test(x)),lesson.id+' unsafe embedded observation');
   if(p.method==='reference-only')assert.match(p.steps.join(' '),/doğrulanmış kablolu deney şeması bulunmuyor/);
   else if(p.method==='reference-with-wires')assert.match(p.steps.join(' '),/konu kontrolü \/ referans şemasıdır/);
   else assert.ok(p.observations.some(x=>x.includes('→')),lesson.id);
