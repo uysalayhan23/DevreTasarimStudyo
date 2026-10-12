@@ -101,3 +101,47 @@ Regressions: \`tests/qa-mq12-review-diagnostics-v11920.test.cjs\`. Uses the real
 **Executed tests**: \`node --test tests/qa-mq12-review-diagnostics-v11920.test.cjs tests/qa-mq12-review-targeted-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs tests/qa-tutorial-722-sequential-v11920.test.cjs tests/tutorial-practice-guide-batch-n-v11920.test.cjs tests/qa-tutorial-practice-1519-v11920.test.cjs\` → **33/33 PASS**. The standalone Batch N QA also returned **PASS**, 1,519 examined, 0 issues, 2,085 observations. No Actions, every GitHub commit \`[skip ci]\`.
 
 These new tests distinguish proven solver behavior from hypothetical sensor stimuli, preserve all pre-existing acceptance gates, and do not promote unfinished or physically unverified lessons to PASS.
+
+
+## Verified BJT resistive bias repair and follow-up (2026-10-12, late session)
+
+**Evidence:** user-supplied \`DevreTasarimStudyo-main(2).zip\`, Node.js v22, full effective 939-definition catalog, original 1,655 canonical lesson graphs, native \`dist/simulation.js\`; no GitHub Actions.
+
+### Root cause and fix
+
+The native BJT on/off solver previously used \`net.dcVoltage(B,E)\` derived from **ideal conductor connectivity**. For 30 canonical transistor lessons, \`B\` is supplied through an actual series resistor (\`g1.P → NO pushbutton → base resistor → transistor B\`), so ideal-net \`dcVoltage\` returned \`null\`, leaving the transistor OFF despite a valid bias source. The update preserves the original ideal-net check and only **if that value is null** samples the existing native nodal numerical network (\`Numeric.update(...,{sampleOnly:true})\`) for the correct signed NPN/PNP B–E voltage. Numerical work is reused once per pass for all BJTs.
+
+**Native outcomes:** all **30/30** affected canonical lessons yielded transistor OFF→ON→OFF with genuine multimeter changes and restoration; the original lesson graph bytes were unchanged. A separate open-base negative control remained OFF. Full original three-phase stability **2,166/2,166 PASS**; native control-profile stability **2,052/2,052 PASS** with no short circuit or oscillation.
+
+### Updated full MQ-12 behavior acceptance
+
+| Gate | Verified latest value |
+|---|---:|
+| Full lesson source QA | 1,655/1,655 PASS |
+| Wired circuit classification | 722/722 (456 controlled / 67 unsupported / 199 passive / 0 missing) |
+| Independent stability | 2,166/2,166 PASS |
+| Control-profile stability | 2,052/2,052 PASS |
+| Causal response | **421 PASS / 35 REVIEW / 266 N/A** |
+| Restoration | **414 PASS / 42 REVIEW / 266 N/A** |
+| Distinct unresolved behavior lessons | **42** |
+| Overall behavior acceptance | **REVIEW** |
+| Combined Node regressions (existing 33 + new 5) | **38/38 PASS** |
+| Batch N guided-source QA | **1,519/1,519 PASS**, zero source issues |
+
+These new counts supersede the earlier 391/65 response and 384/72 restoration audit. Old records remain in this document as historical evidence, not current acceptance.
+
+### Sensor and reactive evidence (diagnostic only)
+
+- **35 target-undefined sensors remain REVIEW**. The \`dual-dc-2\` canonical graph uses the default **PNP** sensor output with wiring that expects an **NPN sinking** output. Clone-only NPN fixture + temporary metal target produces lamp OFF→ON→OFF, whereas unchanged PNP output remains OFF at all three phases. Do not silently change the physical sensor product or canonical lesson; reconcile product type/lesson wiring and source lock first.
+- **7 reactive restoration REVIEW cases** remain. Repeated 100 ms native steps to simulated 10,000 ms: **three inductive lessons** settle to near-zero meter current; **four capacitive lessons** retain approximately 7.53 V after switch release because there is no discharge route. These are observed solver states, not proof of physical-clock calibration or clearance for restoration PASS. The four RC lessons still need explicit discharge paths/expected observation standards before acceptance.
+- The independent diagnostics now yield **one** \`NO_DOWNSTREAM_RESPONSE\` lesson (\`dual-dc-2\`), zero remaining BJT no-response lessons; no fictional material targets or UI changes were accepted.
+
+### Reproduction
+
+\`\`\`sh
+node --test tests/qa-tutorial-722-sequential-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs tests/qa-mq12-review-targeted-v11920.test.cjs tests/qa-mq12-review-diagnostics-v11920.test.cjs tests/tutorial-practice-guide-batch-n-v11920.test.cjs tests/qa-tutorial-practice-1519-v11920.test.cjs tests/qa-mq12-bjt-resistive-bias-v11920.test.cjs tests/qa-mq12-dual-sensor-reactive-v11920.test.cjs
+node scripts/qa-tutorial-1655-simulation-v11920.cjs
+node scripts/qa-tutorial-practice-1519-v11920.cjs
+\`\`\`
+
+Observed locally using complete authentic sources: 38/38 Node tests PASS, 1,655-source QA PASS and 1,519 Batch N QA PASS. All changes \`[skip ci]\`; no Actions invoked. Physical-panel or teaching UI acceptance remains pending.
