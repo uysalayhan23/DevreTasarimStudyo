@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-12",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "source_head": "70827251107de9a9cb0831ba111f92c326c1051b",
+  "task": "MQ-12 all-course static electrical topology coverage and negative regression",
+  "scope": {
+    "modules_executed_in_v8": 18,
+    "lessons": 1655,
+    "rich": 136,
+    "topic_reviewed": 1519,
+    "wired": 722,
+    "reference_only": 933,
+    "duplicate_ids": 0,
+    "invalid_guided_edges": 0,
+    "missing_component_references": 0,
+    "missing_projects": 0,
+    "meb_metadata_invalid": 0
+  },
+  "catalog_proof": {
+    "canonical_library_count": 702,
+    "extended_library_count": 939,
+    "missing_definitions_in_base_curriculum": 0,
+    "invalid_physical_pins_in_base_curriculum": 0,
+    "scope_note": "Catalog-and-pin check ran over native source outline plus pedagogy, before A-L overlays; full runtime Node test remains pending."
+  },
+  "qa_fix": "All lesson component types and all wired endpoints now checked even for no-wire theory boards. Phantom theory wiring steps rejected.",
+  "negative_tests": {
+    "unknown_reference_component": "PASS (rejected)",
+    "invalid_physical_terminal": "PASS (rejected)",
+    "missing_junction": "PASS (rejected)",
+    "fictitious_theory_steps": "PASS (rejected)",
+    "valid_junction": "PASS (accepted)"
+  },
+  "tests_added": [
+    "tests/qa-tutorial-1655-failclosed-v11920.test.cjs"
+  ],
+  "qa_integration": "Selective H-L Windows Node QA includes fail-closed fixture suite. Combined Windows QA hashes entire dist/tests/scripts JS/CJS source tree.",
+  "acceptance": {
+    "v8_functional_static": "PASS",
+    "all_1655_native_node_test": "OPEN / NOT RUN",
+    "full_windows_browser": "OPEN / NOT RUN",
+    "full_curriculum_pedagogy": "OPEN / NOT DONE"
+  },
+  "actions_runs": 0,
+  "commit_policy": "[skip ci]"
+}
