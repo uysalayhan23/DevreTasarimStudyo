@@ -1,0 +1,62 @@
+{
+  "auditedAt": "2026-10-12",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceHead": "6a7de543646f97383a11237de396237ab74197a2",
+  "execution": "Original GitHub JavaScript executed in V8 using all 19 native simulation modules, 10 catalog modules and 18 curriculum modules; no mocks in acceptance run",
+  "sourceBlobShas": {
+    "runtime": "616e0c8a000886bcc565dac92c521c9e299f7337",
+    "catalog": "879138abb9506d2dde8e893d907b5cf3da1e62c6",
+    "curriculum": "a5eb366fb3d9de5f53569ff90bdcdd0024730211"
+  },
+  "curriculum": {
+    "allLessons": 1655,
+    "rich": 136,
+    "practiceGuides": 1519,
+    "wired": 722,
+    "referenceOnly": 933
+  },
+  "materials": {
+    "productDefinitions": 939,
+    "missingPhysicalDefinitions": 0
+  },
+  "nativeSimulation": {
+    "baseline": 722,
+    "toggledStates": 1750,
+    "allCases": 2472,
+    "passed": 2472,
+    "controlsExamined": 875,
+    "outputChanges": 492,
+    "shortCircuitCases": 0,
+    "blockedCases": 0,
+    "unstableCases": 0,
+    "oscillatingCases": 0,
+    "exceptions": 0
+  },
+  "sourceCorrections": [
+    {
+      "lessonIds": [
+        "installation-systems-src-08",
+        "installation-systems-outline-069"
+      ],
+      "issue": "phase and neutral connected to one all-pins-common building junction causing two virtual source shorts",
+      "fix": "independent L/N splice nodes within same building-box teaching scene",
+      "sourceCommit": "d1aba6091050d8d5851cb3cc1a071b7fb5a83b5c"
+    }
+  ],
+  "independentGoldenSample": {
+    "canonicalProjects": 90,
+    "baseline": 90,
+    "controlScenarios": 252,
+    "allPassed": 342
+  },
+  "acceptance": {
+    "nativeV8": "PASS",
+    "currentHeadFullNodeTest": "NOT RUN - container has no direct GitHub DNS/network access",
+    "realWindowsChromium": "NOT RUN - no remote Windows graphical execution",
+    "physicalProductValidation": "OPEN",
+    "full1519PedagogicalAcceptance": "OPEN - guides added but manual expert/UI QA outstanding"
+  },
+  "actionsUsed": false,
+  "commitConvention": "[skip ci]"
+}
