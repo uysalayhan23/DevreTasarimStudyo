@@ -94,7 +94,7 @@ function audit({L=curriculum(),defs=catalog(),Simulation=require('../dist/simula
  }
  report.status=report.total===report.expected&&report.rich===136&&report.topicReviewed===1519&&report.virtualPracticeGuides===1519&&
   !report.missingDefinitions.length&&!report.invalidGuidedSteps.length&&!report.invalidWireEndpoints.length&&!report.blocked.length&&
-  !report.shortCircuits.length&&!report.unstable.length&&!report.errors.length&&!report.duplicateIds.length?'PASS':'FAIL';
+  !report.shortCircuits.length&&!report.unstable.length&&report.oscillating===0&&!report.errors.length&&!report.duplicateIds.length?'PASS':'FAIL';
  return report;
 }
 function main(){
