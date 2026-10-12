@@ -43,3 +43,25 @@ test('faults and unstable states are recorded, not silently accepted',()=>{
  assert.equal(report.unstable.length,1);
  assert.equal(report.status,'FAIL_OR_INCOMPLETE');
 });
+
+
+test('configured PNP sensor uses target distance instead of ineffective manual state',()=>{
+ const source={components:[
+  {id:'s',typeId:'proximity',state:false,sensing:{target:'metal',range:4,distance:10}},
+  {id:'h',typeId:'lamp',state:false}
+ ],wires:[{from:{c:'s',p:'BK'},to:{c:'h',p:'X1'}}]};
+ const original=JSON.stringify(source),distances=[];
+ const engine={solve(p){
+  const sensor=p.components[0],lamp=p.components[1];
+  distances.push(sensor.sensing.distance);
+  lamp._active=sensor.sensing.distance<=4;
+  return{blocked:false,shortCircuit:false,stable:true};
+ }};
+ const report=QA.audit({L:{lessons:[{id:'sensor',project:source}]},
+  defs:{proximity:{kind:'sensor'},lamp:{kind:'lamp'}},engine});
+ assert.deepEqual(distances,[10,2,10]);
+ assert.equal(report.controlsExercised,1);
+ assert.equal(report.observableChanges,1);
+ assert.equal(report.errors.length,0);
+ assert.equal(JSON.stringify(source),original);
+});
