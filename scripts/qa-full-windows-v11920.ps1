@@ -33,6 +33,21 @@ try{
  foreach($Item in @('BASLAT.bat','dist\index.html','dist\app.js','dist\library.js','dist\tutorial-lessons.js','dist\tutorial-mode.js','dist\tutorial-topic-review-batch-m.js','dist\project-store.js','dist\studio.js','scripts\qa-full-windows-v11920.ps1','scripts\qa-hl64-windows-v11920.ps1','scripts\qa-mq05-ut200a-windows-v11920.ps1')){
   $Hashes[$Item]=(Get-FileHash -LiteralPath (Join-Path $Root $Item) -Algorithm SHA256).Hash.ToLowerInvariant()
  }
+ # The full Node suite discovers ALL *.test.cjs tests. Recording only a short
+ # hand-picked list would not prove which test sources were actually evaluated.
+ foreach($SourceDir in @('dist','tests','scripts')){
+  $Folder=Join-Path $Root $SourceDir
+  if(-not(Test-Path -LiteralPath $Folder -PathType Container)){throw ('Source folder missing: '+$SourceDir)}
+  $Sources=@(Get-ChildItem -LiteralPath $Folder -File | Where-Object {
+   $_.Extension -in @('.js','.cjs','.css','.html','.ps1')
+  })
+  if($Sources.Count -lt 1){throw ('No QA source files discovered: '+$SourceDir)}
+  foreach($Source in $Sources){
+   $Relative=$SourceDir+'\'+$Source.Name
+   $Hashes[$Relative]=(Get-FileHash -LiteralPath $Source.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+  }
+ }
+ $Report.hash_file_count=$Hashes.Count
  [IO.File]::WriteAllText((Join-Path $Dir 'source-hashes.json'),($Hashes|ConvertTo-Json -Depth 4),$Utf8)
  $Report.node_version=$V
  $FullSince=Get-Date
