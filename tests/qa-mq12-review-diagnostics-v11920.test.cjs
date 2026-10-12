@@ -4,13 +4,13 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const {run}=require('../scripts/qa-mq12-review-diagnostics-v11920.cjs');
 const L=QA.curriculum(),before=JSON.stringify(L.lessons);
 const report=run({L});
-test('native 722 lesson classification, 2052 controlled phases, and 72 unresolved reviews stay fail-closed',()=>{
+test('native 722 lesson classification, 2052 controlled phases, and 42 unresolved reviews stay fail-closed',()=>{
  assert.equal(report.sourceLessons,1655);assert.equal(report.wiredLessons,722);
  assert.deepEqual(report.originalClassification,{CONTROLLED:456,UNSUPPORTED_ACTUATOR:67,PASSIVE_STABILITY_ONLY:199,MISSING_DEFINITIONS:0});
  assert.deepEqual(report.originalStability,{phases:2052,pass:2052,fail:0});
- assert.deepEqual(report.originalResponse,{PASS:391,REVIEW:65,NOT_APPLICABLE:266});
- assert.deepEqual(report.originalRestoration,{PASS:384,REVIEW:72,NOT_APPLICABLE:266});
- assert.equal(report.reviewLessonCount,72);assert.equal(report.fullAcceptance,'REVIEW');
+ assert.deepEqual(report.originalResponse,{PASS:421,REVIEW:35,NOT_APPLICABLE:266});
+ assert.deepEqual(report.originalRestoration,{PASS:414,REVIEW:42,NOT_APPLICABLE:266});
+ assert.equal(report.reviewLessonCount,42);assert.equal(report.fullAcceptance,'REVIEW');
  assert.equal(JSON.stringify(L.lessons),before,'canonical scenes untouched');
 });
 test('35 missing-target sensors respond only to temporary virtual material fixtures',()=>{
@@ -22,10 +22,10 @@ test('35 missing-target sensors respond only to temporary virtual material fixtu
  assert.ok(report.sensor.every(x=>x.accepted===false&&x.scenario==='SYNTHETIC_FIXTURE_NOT_CANONICAL'));
  assert.equal(report.sensor.find(x=>x.id==='dual-dc-2').causal,false);
 });
-test('31 unresponsive lessons are not falsely blamed on missing meter connections',()=>{
- assert.equal(report.summary.noDownstreamResponse,31);
- assert.equal(report.summary.noDownstreamWithValidProbeTargets,30);
- assert.equal(report.summary.noDownstreamWithBjt,30);
+test('30 repaired BJT lessons are no longer wrongly counted as unresponsive',()=>{
+ assert.equal(report.summary.noDownstreamResponse,1);
+ assert.equal(report.summary.noDownstreamWithValidProbeTargets,0);
+ assert.equal(report.summary.noDownstreamWithBjt,0);
  assert.ok(report.noDownstream.every(x=>!x.accepted));
 });
 test('reactive restoration remains REVIEW even if 3 of 7 settle in longer virtual steps',()=>{
