@@ -196,3 +196,20 @@ test('catalog kind identifies obscure actuator labels rather than treating them 
  assert.deepEqual(r.unsupportedActuatorLessons[0].candidateTypes,['vendor-k42']);
  assert.equal(r.behaviorStatus,'REVIEW');
 });
+
+test('missing catalog definitions are blocked and never counted as passive',()=>{
+ const L={lessons:[{id:'undefined-control',project:{components:[
+  {id:'sw',typeId:'unknown-device'},{id:'lamp',typeId:'lamp-green'}
+ ],wires:[{from:{c:'sw',p:'1'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'lamp-green':{kind:'lamp'}};
+ const solver={solve(){throw Error('must not solve missing definition');}};
+ const r=audit({L,defs,solver});
+ assert.equal(r.withWires,1);
+ assert.equal(r.controls,0);
+ assert.equal(r.noControl,0);
+ assert.equal(r.missingDefinitionLessons.length,1);
+ assert.equal(r.missingDefinitionLessons[0].classification,'MISSING_DEFINITIONS');
+ assert.deepEqual(r.missingDefinitionLessons[0].types,['unknown-device']);
+ assert.equal(r.stabilityStatus,'FAIL');
+ assert.equal(r.behaviorStatus,'REVIEW');
+});
