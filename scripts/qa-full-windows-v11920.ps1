@@ -66,6 +66,14 @@ try{
   if($BehaviorInfo.status -ne 'PASS'){$Report.errors+='Native virtual ON/OFF curriculum behavior audit did not pass.'}
  }else{$Report.errors+='Fresh virtual behavior test report missing.'}
 
+ $Transitions=Join-Path $Build 'qa-tutorial-1655-transitions-report.json'
+ if((Test-Path -LiteralPath $Transitions -PathType Leaf) -and (Get-Item -LiteralPath $Transitions).LastWriteTime -ge $FullSince.AddSeconds(-1)){
+  Copy-Item -LiteralPath $Transitions -Destination (Join-Path $Dir 'qa-tutorial-1655-transitions-report.json') -Force
+  $TransitionInfo=Get-Content -LiteralPath $Transitions -Raw | ConvertFrom-Json
+  if($TransitionInfo.status -ne 'PASS'){$Report.errors+='Stateful OFF-ON-OFF native transition audit did not pass.'}
+ }else{$Report.errors+='Fresh stateful transition report missing.'}
+
+
  $PsExe=(Get-Command powershell.exe -ErrorAction Stop).Source
  $At=Get-Date
  $Report.hl64=Stage 'hl64-windows' $PsExe @('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+(Join-Path $Root 'scripts\qa-hl64-windows-v11920.ps1')+'"'))
