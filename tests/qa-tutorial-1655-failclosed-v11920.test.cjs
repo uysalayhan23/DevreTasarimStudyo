@@ -41,3 +41,14 @@ test('MQ-12 checks junction identities without treating junctions as component p
  assert.equal(ok.missingDefinitions.length,0);
  assert.equal(ok.tested,1);
 });
+
+
+test('MQ-12 rejects fake guided steps on theory-only reference lessons',()=>{
+ const p={components:[component('a','resistor')],wires:[]};
+ const result=audit({L:{lessons:[{id:'bad-reference',project:p,steps:[{from:pin('a','1'),to:pin('a','2')}]}]},
+  defs:{resistor:{id:'resistor',pins:[{id:'1'},{id:'2'}]}},
+  Simulation:{solve(){throw Error('Reference-only course must not run the solver');}}});
+ assert.equal(result.referenceOnly,1);
+ assert.equal(result.invalidGuidedSteps.length,1);
+ assert.equal(result.status,'FAIL');
+});
