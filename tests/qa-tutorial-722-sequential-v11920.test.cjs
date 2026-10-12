@@ -149,7 +149,8 @@ test('passive circuit does not falsely count as actuated restoration',()=>{
  const r=audit({L,defs,solver});
  assert.equal(r.noControl,1);assert.equal(r.controls,0);
  assert.deepEqual(r.noControlLessons.map(x=>x.id),['passive']);
- assert.equal(r.noControlLessons[0].classification,'STABILITY_ONLY');
+ assert.deepEqual(r.passiveLessons.map(x=>x.id),['passive']);
+ assert.equal(r.noControlLessons[0].classification,'PASSIVE_STABILITY_ONLY');
  assert.equal(r.noControlLessons[0].observableCount,1);
  assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
  assert.equal(r.restorationCoverage,'0/0');
@@ -176,7 +177,8 @@ test('unrecognized switch remains a separately listed candidate rather than rece
  const solver={solve(p){p.components[1]._active=false;return{stable:true,shortCircuit:false,blocked:false,oscillating:false};}};
  const r=audit({L,defs,solver});
  assert.equal(r.noControl,1);
- assert.equal(r.noControlLessons[0].classification,'STABILITY_ONLY');
+ assert.equal(r.noControlLessons[0].classification,'UNSUPPORTED_ACTUATOR');
+ assert.deepEqual(r.unsupportedActuatorLessons.map(x=>x.id),['unrecognized-switch']);
  assert.deepEqual(r.noControlLessons[0].candidateTypes,['custom-switch']);
  assert.equal(r.noControlLessons[0].observableCount,1);
  assert.equal(r.behaviorStatus,'REVIEW');
