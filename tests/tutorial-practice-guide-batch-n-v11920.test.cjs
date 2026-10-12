@@ -29,6 +29,13 @@ test('1519 practical guides follow real lesson source graphs and preserve 136 ri
  assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='reference-only').length,923);
  assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='reference-with-wires').length,71);
  assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='virtual-circuit-check').length,525);
+ // Every generated guide remains unaccepted until user-facing pedagogy and UI QA.
+ const generated=L.lessons.filter(l=>l.practiceGuide?.version==='practice-n1');
+ assert.equal(generated.length,1519);
+ assert.equal(generated.filter(l=>l.practiceGuide.pedagogicalAcceptance!==false).length,0);
+ const unsafeMarkup=/<script\\b|javascript:|<iframe\\b|<object\\b|<embed\\b|<svg\\b|<math\\b|srcdoc\\s*=|on[a-z]+\\s*=/i;
+ assert.deepEqual(generated.filter(l=>l.practiceGuide.steps.concat(l.practiceGuide.observations).some(x=>unsafeMarkup.test(x))).map(l=>l.id),[]);
+
 
  for(const lesson of L.lessons){
   assert.equal(JSON.stringify(lesson.project),graphs.get(lesson.id),'canonical project mutated '+lesson.id);
