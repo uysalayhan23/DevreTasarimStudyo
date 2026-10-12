@@ -14,10 +14,12 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.equal(r.controls+r.noControl,722);
  assert.ok(r.controls>=400);
  assert.ok(r.observedOutputChanges>=450);
- // Only this virtual measurement reference lacks physical probe contact in source.
- // It must NOT count as a confirmed sensor-output functional demonstration.
- assert.deepEqual(r.unresponsiveControls.map(x=>x.id),['measurement-workshop-src-10']);
- assert.equal(r.behaviorStatus,'REVIEW');
+ // The PNP target-driven sensor must be actuated by virtual target distance,
+ // not by toggling a disabled manual button state.
+ assert.equal(r.controls,456);
+ assert.equal(r.observedOutputChanges,456);
+ assert.deepEqual(r.unresponsiveControls,[]);
+ assert.equal(r.behaviorStatus,'PASS');
 });
 test('sequential gate refuses a short introduced by virtual control transition',()=>{
  let phase=0;
@@ -35,4 +37,28 @@ test('sequential gate refuses a short introduced by virtual control transition',
  assert.equal(result.failures.length,1);
  assert.equal(result.failures[0].phase,'Changed');
  assert.equal(result.stabilityStatus,'FAIL');
+});
+
+
+test('virtual PNP sensor target near/far actually drives UT33D+ 0 V / 24 V / 0 V',()=>{
+ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
+ const Simulation=require('../dist/simulation.js');
+ const lessons=QA.curriculum(),definitions=QA.catalog();
+ const raw=lessons.byId['measurement-workshop-src-10'].project;
+ const project=structuredClone(raw),s=project.components.find(c=>c.id==='s1'),
+  meter=project.components.find(c=>c.id==='mm');
+ const before=JSON.stringify(raw);
+ const volts=[];
+ for(const distance of [10,2,10]){
+  s.sensing.distance=distance;
+  const result=Simulation.solve(project,definitions,{now:volts.length*400});
+  assert.equal(result.stable,true);
+  assert.equal(result.shortCircuit,false);
+  assert.equal(result.blocked,false);
+  volts.push(meter._meter.value);
+ }
+ assert.ok(Math.abs(volts[0])<.1);
+ assert.ok(Math.abs(volts[1]-24)<.1);
+ assert.ok(Math.abs(volts[2])<.1);
+ assert.equal(JSON.stringify(raw),before,'canonical lesson must remain untouched');
 });
