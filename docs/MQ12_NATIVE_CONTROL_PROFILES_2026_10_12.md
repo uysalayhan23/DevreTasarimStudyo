@@ -76,3 +76,28 @@ Re-checked using the user-uploaded canonical `DevreTasarimStudyo-main(2).zip` wi
 - All acceptance remains **REVIEW** for physical circuit realism, unsupported Arduino/sensors, and actual teaching/UI rendering; do not promote this to project-wide PASS.
 
 No GitHub Actions were invoked. Every change was committed with `[skip ci]`.
+
+## MQ-12 unresolved behavior investigation — read-only follow-up (2026-10-12)
+
+Reproducible script: \`node scripts/qa-mq12-review-diagnostics-v11920.cjs\` (writes \`build/qa-mq12-review-diagnostics-v11920.json\`).
+Regressions: \`tests/qa-mq12-review-diagnostics-v11920.test.cjs\`. Uses the real user-uploaded source snapshot, native solver, original canonical lessons, effective catalog, sensor detector, and probe-target resolver. Never alters canonical lesson content.
+
+| Controlled QA gate | Native verified |
+|---|---:|
+| Curriculum / wired lessons | 1,655 / 722 |
+| Native classification | 456 controlled, 67 unsupported, 199 passive, 0 missing |
+| Independent native solver phases | 2,166/2,166 stable PASS |
+| Controlled profile phases | 2,052/2,052 stable PASS |
+| Causal response | 391 PASS, **65 REVIEW** |
+| Restoration | 384 PASS, **72 REVIEW** |
+| Distinct behavior REVIEW lessons | **72** |
+
+**Sensor evidence, NOT acceptance**: 35 canonical lessons lack a defined sensing target. On *temporary test clones only*, assign a material compatible with the manufacturer's modeled sensor principle, move the target far→near→far, and independently compare the output against an unchanged, time-matched physical-target baseline. **35/35** detector transitions and stable solver phase sequences were observed; **34/35** produced causal downstream output and **35/35** returned to the baseline. \`dual-dc-2\` detected the virtual target but still showed no downstream response. These are *synthetic diagnostic fixtures*: the original 35 lessons **remain REVIEW** until canonical target definition and pedagogy are reviewed.
+
+**31 no-response records**: 30 use a BJT (transistor) and have legitimate attached probe targets according to \`probe-leads.resolve\`. Do **not** misdiagnose them as disconnected multimeters. Their genuine circuit/semiconductor response still needs dedicated investigation; the 31st record overlaps the sensor set (\`dual-dc-2\`).
+
+**7 reactive restoration records**: native runs with a longer simulated-time schedule \`[0,400,850,1500,3000,10000]\` showed stable solver phases for all seven; **three** returned to their original baseline at or before the last step, while **four** did not. This exploratory simulation is not physical-time calibration or acceptance; all seven **remain restoration REVIEW** until expected time constant, measurement tolerance, and connected probe semantics are established.
+
+**Executed tests**: \`node --test tests/qa-mq12-review-diagnostics-v11920.test.cjs tests/qa-mq12-review-targeted-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs tests/qa-tutorial-722-sequential-v11920.test.cjs tests/tutorial-practice-guide-batch-n-v11920.test.cjs tests/qa-tutorial-practice-1519-v11920.test.cjs\` → **33/33 PASS**. The standalone Batch N QA also returned **PASS**, 1,519 examined, 0 issues, 2,085 observations. No Actions, every GitHub commit \`[skip ci]\`.
+
+These new tests distinguish proven solver behavior from hypothetical sensor stimuli, preserve all pre-existing acceptance gates, and do not promote unfinished or physically unverified lessons to PASS.
