@@ -33,6 +33,7 @@ test('1519 practical guides follow real lesson source graphs and preserve 136 ri
   assert.ok(p.steps.length>=3&&p.steps.every(x=>x.length>12),lesson.id);
   assert.ok(p.observations.length>=1,lesson.id);
   if(p.method==='reference-only')assert.match(p.steps.join(' '),/doğrulanmış kablolu deney şeması bulunmuyor/);
+  else if(p.method==='reference-with-wires')assert.match(p.steps.join(' '),/konu kontrolü \/ referans şemasıdır/);
   else assert.ok(p.observations.some(x=>x.includes('→')),lesson.id);
  }
 });
