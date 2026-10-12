@@ -183,3 +183,16 @@ test('unrecognized switch remains a separately listed candidate rather than rece
  assert.equal(r.noControlLessons[0].observableCount,1);
  assert.equal(r.behaviorStatus,'REVIEW');
 });
+
+test('catalog kind identifies obscure actuator labels rather than treating them as passive',()=>{
+ const L={lessons:[{id:'opaque-actuator',project:{components:[
+  {id:'control',typeId:'vendor-k42',state:false},{id:'lamp',typeId:'lamp-green'}
+ ],wires:[{from:{c:'control',p:'1'},to:{c:'lamp',p:'X1'}}]}}]};
+ const defs={'vendor-k42':{kind:'switch-no'},'lamp-green':{kind:'lamp'}};
+ const solver={solve(p){p.components[1]._active=false;return{stable:true,shortCircuit:false,blocked:false,oscillating:false};}};
+ const r=audit({L,defs,solver});
+ assert.deepEqual(r.unsupportedActuatorLessons.map(x=>x.id),['opaque-actuator']);
+ assert.deepEqual(r.passiveLessons,[]);
+ assert.deepEqual(r.unsupportedActuatorLessons[0].candidateTypes,['vendor-k42']);
+ assert.equal(r.behaviorStatus,'REVIEW');
+});
