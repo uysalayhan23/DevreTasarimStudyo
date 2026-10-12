@@ -50,12 +50,21 @@ function audit({L=Core.curriculum(),defs=Core.catalog(),engine=Simulation}={}){
   if(previous===null)continue;
   let t=0;
   for(const c of controls){
-   c.state=true;
+   const originalState=!!c.state;
+   const targetActive=!!(c.sensing&&c.sensing.target&&c.sensing.target!=='none');
+   const originalDistance=targetActive?Number(c.sensing.distance):null;
+   const range=targetActive?Math.max(.1,Number(c.sensing.range)||4):0;
+   // A configured sensor is driven by actual virtual target distance, not a
+   // state flag that its sensing logic may legitimately ignore.
+   if(targetActive)c.sensing.distance=originalDistance<=range?
+     Math.max(range*2,originalDistance+range):range/2;
+   else c.state=!originalState;
    t+=250;
-   const active=run(c.id+':on',t);
-   c.state=false;
+   const active=run(c.id+':changed',t);
+   if(targetActive)c.sensing.distance=originalDistance;
+   else c.state=originalState;
    t+=250;
-   const released=run(c.id+':off',t);
+   const released=run(c.id+':restored',t);
    report.controlsExercised++;
    if(active!==null&&released!==null){
     if(active!==previous||released!==active)report.observableChanges++;
