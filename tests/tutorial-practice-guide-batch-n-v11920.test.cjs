@@ -23,6 +23,13 @@ test('1519 practical guides follow real lesson source graphs and preserve 136 ri
  assert.equal(L.practiceGuideBatchN.richPreserved,136);
  assert.equal(L.practiceGuideBatchN.withoutMatchedLinks.length,0);
  assert.equal(L.practiceGuideBatchN.wired+L.practiceGuideBatchN.referenceOnly,1519);
+ assert.equal(L.practiceGuideBatchN.wired,525,'525 guided virtual circuit practices');
+ assert.equal(L.practiceGuideBatchN.referenceOnly,994,'994 references, including 71 schematic-only');
+ assert.equal(L.practiceGuideBatchN.referenceWithWires,71,'reference drawings must not be presented as tested wiring');
+ assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='reference-only').length,923);
+ assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='reference-with-wires').length,71);
+ assert.equal(L.lessons.filter(l=>l.practiceGuide?.method==='virtual-circuit-check').length,525);
+
  for(const lesson of L.lessons){
   assert.equal(JSON.stringify(lesson.project),graphs.get(lesson.id),'canonical project mutated '+lesson.id);
   if(rich.has(lesson.id)){assert.equal(JSON.stringify(lesson),rich.get(lesson.id));continue}
