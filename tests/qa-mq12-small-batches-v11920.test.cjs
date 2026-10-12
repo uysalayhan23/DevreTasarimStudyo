@@ -44,3 +44,11 @@ test('passive circuit is stability-only, without simulated actuation acceptance'
  assert.equal(r.responseCoverage,'0/0');
  assert.equal(r.fullAcceptance,'REVIEW');
 });
+
+test('empty batch must not claim complete classification or full acceptance',()=>{
+ const r=run({L,defs,solver:solveFor('switch'),start:1,count:10});
+ assert.equal(r.count,0);
+ assert.equal(r.classificationCoverage,'0/0');
+ assert.equal(r.classificationComplete,false);
+ assert.equal(r.fullAcceptance,'REVIEW');
+});
