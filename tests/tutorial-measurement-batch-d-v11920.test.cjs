@@ -77,9 +77,9 @@ test('shared lesson coach, micro-hints, UI footprints and asset revisions stay c
  assert.match(mode,/DTSMeasurementWorkbench\?\.display/);assert.match(mode,/DTSMeasurementWorkbench\?\.diagram/);assert.match(mode,/DTSMeasurementWorkbench\?\.choose/);
  assert.match(mode,/data-measurement-workbench-index/);
  assert.match(mode,/DTSTutorialMicroHints\?\.sync/);
- assert.match(bootstrap,/tutorial-mode\.js\?v=20261011-topic-review-m1/);
+ assert.match(bootstrap,/tutorial-mode\.js\?v=20261012-practice-n1/);
  assert.match(html,/tutorial\.css\?rev=20261010-measure-batch-d2/);
- assert.match(html,/tutorial-bootstrap\.js\?rev=20261011-topic-review-m1/);
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261012-practice-n1/);
  const rules=css.slice(css.lastIndexOf('/* MQ-07 accessible virtual measurement exercises')).split(/\n\/\* /)[0];
  assert.match(rules,/#tutorialCoach \.measurement-workbench-panel/);
  const selectors=[...rules.replace(/^\/\*[\s\S]*?\*\//,'').matchAll(/(?:^|\})\s*([^{}]+)\{/g)].map(m=>m[1].trim());
