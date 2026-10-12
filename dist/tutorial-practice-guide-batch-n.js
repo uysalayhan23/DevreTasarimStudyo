@@ -20,7 +20,7 @@
   steps.push('Sanal dersin hedefi: '+title+'. Önce kaynak tanımını ve gösterilen malzemeleri incele.');
   if(materials.length){
    const first=materials[0];steps.push(clamp(first.label)+' elemanının bu dersteki rolünü oku: '+clamp(first.why));
-   if(materials.length>1){const second=materials[1];steps.push(clamp(second.label)+' için şu görevi '+clamp(second.why)+' ifadesiyle karşılaştır.');}
+   if(materials.length>1){const second=materials[1];steps.push(clamp(second.label)+' elemanının görevini incele: '+clamp(second.why));}
   }
   if(isWired){
    stats.wired++;
