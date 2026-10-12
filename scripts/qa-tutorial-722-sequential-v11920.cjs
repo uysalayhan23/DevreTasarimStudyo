@@ -23,7 +23,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
-  noControl:0,noControlLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
+  noControl:0,noControlLessons:[],unsupportedActuatorLessons:[],passiveLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
   scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
@@ -43,7 +43,10 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
    report.noControl++;
    const candidates=p.components.filter(c=>/switch|push|button|sensor|relay|timer|contactor|proximity|limit/i.test(c.typeId||'')).map(c=>c.typeId);
    const observable=p.components.filter(c=>{const d=defs[c.typeId];return d&&(observedKinds.has(d.kind)||d.instrument||d.isPLC)}).length;
-   report.noControlLessons.push({id:lesson.id,reason:candidates.length?'Unsupported or unselected virtual actuator':'No recognized virtual actuator',candidateTypes:[...new Set(candidates)],observableCount:observable,classification:'STABILITY_ONLY'});
+   const detail={id:lesson.id,reason:candidates.length?'Unsupported or unselected virtual actuator':'No recognized virtual actuator',candidateTypes:[...new Set(candidates)],observableCount:observable,classification:candidates.length?'UNSUPPORTED_ACTUATOR':'PASSIVE_STABILITY_ONLY'};
+   report.noControlLessons.push(detail);
+   if(candidates.length)report.unsupportedActuatorLessons.push(detail);
+   else report.passiveLessons.push(detail);
   }
   try{
    const phases=[{key:'Initial',time:0},{key:'Changed',time:400},{key:'Restored',time:850}];
@@ -108,7 +111,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,noControlLessons:r.noControlLessons,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,noControlLessons:r.noControlLessons,unsupportedActuatorLessons:r.unsupportedActuatorLessons,passiveLessons:r.passiveLessons,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  // Fail closed: a stable solver is not proof that controls respond and return.
  if(r.behaviorStatus!=='PASS')process.exitCode=1;
  return r;
