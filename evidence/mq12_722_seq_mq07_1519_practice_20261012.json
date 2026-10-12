@@ -24,15 +24,29 @@
     "shortCircuit": 0,
     "solverExceptions": 0,
     "controlsFound": 456,
-    "electricalOutputChanged": 455,
+    "electricalOutputChanged": 456,
     "noControlLessons": 266,
-    "unresponsive": [
-      {
-        "id": "measurement-workshop-src-10",
-        "title": "Sensör sinyalinin multimetreyle kontrolü",
-        "explanation": "Sensor BK / meter probes are not electrically in contact in this fixture; browser virtual probe positioning and material target needs separate functional confirmation."
-      }
-    ]
+    "unresponsive": [],
+    "sensorMeasurement": {
+      "id": "measurement-workshop-src-10",
+      "sensor": "PNP proximity, metal target",
+      "targetDistancesMm": [
+        10,
+        2,
+        10
+      ],
+      "observedUT33DVoltageV": [
+        0,
+        24,
+        0
+      ],
+      "realSolverStable": [
+        true,
+        true,
+        true
+      ],
+      "virtualTargetOnly": true
+    }
   },
   "practice": {
     "totalGuides": 1519,
@@ -46,8 +60,8 @@
     "screenRenderChromium": "NOT RUN"
   },
   "acceptance": {
-    "nativeV8SequentialStability": "PASS",
-    "controlOutputCoverage": "REVIEW 455/456",
+    "nativeV8SequentialStability": "PASS 722/722 x 3 phases, 2166 solves",
+    "controlOutputCoverage": "PASS 456/456 selected virtual controls, with proximity sensor operated by actual target distance",
     "practiceSourceAndUiCode": "PASS",
     "nodeTestOnFullGitCheckout": "NOT RUN (git DNS unavailable)",
     "fullWindowsChromeAcceptance": "NOT RUN",
@@ -56,5 +70,6 @@
   },
   "actionsUsed": 0,
   "commitPolicy": "[skip ci]",
-  "warning": "These are virtual simulation and UI-source checks only; they do not certify real energized wiring, physical device behavior, full user interaction or Windows visual rendering."
+  "warning": "These are virtual simulation and UI-source checks only; they do not certify real energized wiring, physical device behavior, full user interaction or Windows visual rendering.",
+  "note": "Earlier initial test toggled sensor.state even though configured metal target overrides manual state; corrected test moves target distance. Node full-checkout and Windows browser remain unrun."
 }
