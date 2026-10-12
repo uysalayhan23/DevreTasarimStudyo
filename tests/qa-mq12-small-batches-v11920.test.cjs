@@ -20,3 +20,27 @@ test('time-only drift cannot count as actuator response',()=>{
  assert.deepEqual(r.restoration.review,['switch-led']);
  assert.equal(r.fullAcceptance,'REVIEW');
 });
+
+test('unsupported catalog actuator remains separate from passive and cannot earn response PASS',()=>{
+ const sample={lessons:[{id:'vendor-actuator',project:{components:[
+  {id:'act',typeId:'vendor-k42',state:false},{id:'lamp',typeId:'led'}
+ ],wires:[{from:{c:'act',p:'1'},to:{c:'lamp',p:'A'}}]}}]};
+ const r=run({L:sample,defs:{'vendor-k42':{kind:'switch-no'},led:{kind:'led'}},
+  solver:{solve(p,_d,{now}){p.components[1]._active=now>=400;return{stable:true};}}});
+ assert.equal(r.classification.unsupportedActuator.length,1);
+ assert.equal(r.classification.passive.length,0);
+ assert.equal(r.response.pass.length,0);
+ assert.equal(r.fullAcceptance,'REVIEW');
+});
+test('passive circuit is stability-only, without simulated actuation acceptance',()=>{
+ const sample={lessons:[{id:'passive-source',project:{components:[
+  {id:'power',typeId:'supply-dc-plus'},{id:'lamp',typeId:'led'}
+ ],wires:[{from:{c:'power',p:'P'},to:{c:'lamp',p:'A'}}]}}]};
+ const r=run({L:sample,defs:{'supply-dc-plus':{kind:'supply'},led:{kind:'led'}},
+  solver:{solve(p){p.components[1]._active=true;return{stable:true};}}});
+ assert.equal(r.classification.passive.length,1);
+ assert.equal(r.classification.unsupportedActuator.length,0);
+ assert.equal(r.stabilityCoverage,'1/1');
+ assert.equal(r.responseCoverage,'0/0');
+ assert.equal(r.fullAcceptance,'REVIEW');
+});
