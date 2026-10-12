@@ -29,6 +29,7 @@ test('Windows QA runs actual Node tests and browser script, with no GitHub Actio
   'tutorial-open-collector-stateful-v11920.test.cjs',
   'qa-tutorial-1655-transitions-v11920.test.cjs',
   'qa-tutorial-722-sequential-v11920.test.cjs',
+  'qa-tutorial-practice-1519-v11920.test.cjs',
   'qa-tutorial-1655-transitions-failclosed-v11920.test.cjs',
   'tutorial-topic-review-batch-m-v11920.test.cjs',
   'tutorial-practice-guide-batch-n-v11920.test.cjs',
@@ -90,7 +91,7 @@ test('H-L acceptance ties physical motor regression and all executed test inputs
   'scripts/qa-hl64-windows-v11920.ps1',
   'tests/qa-hl64-windows-v11920.test.cjs'
  ])assert.ok(ps.includes(runner),'QA executor missing from source-hashes: '+runner);
- for(const path of ['dist/project-store.js','dist/studio.js','dist/library.js','dist/tutorial-expanded-lessons.js','dist/installation-v118.js','dist/tutorial-topic-review-batch-m.js','dist/tutorial-practice-guide-batch-n.js','scripts/qa-tutorial-1655-simulation-v11920.cjs','scripts/qa-tutorial-1655-transitions-v11920.cjs','scripts/qa-tutorial-722-sequential-v11920.cjs'])
+ for(const path of ['dist/project-store.js','dist/studio.js','dist/library.js','dist/tutorial-expanded-lessons.js','dist/installation-v118.js','dist/tutorial-topic-review-batch-m.js','dist/tutorial-practice-guide-batch-n.js','scripts/qa-tutorial-1655-simulation-v11920.cjs','scripts/qa-tutorial-1655-transitions-v11920.cjs','scripts/qa-tutorial-722-sequential-v11920.cjs','scripts/qa-tutorial-practice-1519-v11920.cjs'])
   assert.ok(ps.includes(path),'Legacy-compatibility source not provenance-hashed: '+path);
  assert.match(ps,/source-hashes\.json/);
 });
