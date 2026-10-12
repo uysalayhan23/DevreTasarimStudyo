@@ -101,7 +101,8 @@ function main(){
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
   outputs:r.behaviorCoverage,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
- if(r.stabilityStatus!=='PASS')process.exitCode=1;
+ // Fail closed: a stable solver is not proof that controls respond and return.
+ if(r.behaviorStatus!=='PASS')process.exitCode=1;
  return r;
 }
 if(require.main===module)main();
