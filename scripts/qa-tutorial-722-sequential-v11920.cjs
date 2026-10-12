@@ -23,7 +23,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
  const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
-  noControl:0,noControlLessons:[],unsupportedActuatorLessons:[],passiveLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
+  noControl:0,noControlLessons:[],missingDefinitionLessons:[],unsupportedActuatorLessons:[],passiveLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
   scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
@@ -33,7 +33,12 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   if(!raw.wires.length)continue;
   report.withWires++;
   const missing=[...new Set(raw.components.map(c=>c.typeId).filter(id=>!defs[id]))];
-  if(missing.length){report.missingDefinitions.push({id:lesson.id,types:missing});continue}
+  if(missing.length){
+   const issue={id:lesson.id,types:missing,classification:'MISSING_DEFINITIONS'};
+   report.missingDefinitions.push(issue);
+   report.missingDefinitionLessons.push(issue);
+   continue;
+  }
   const p=clone(raw),control=p.components.find(c=>toggles.has(c.typeId));
   const sensing=control?.sensing&&control.sensing.target&&control.sensing.target!=='none';
   const initialDistance=sensing?Number(control.sensing.distance):null;
@@ -114,7 +119,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,noControlLessons:r.noControlLessons,unsupportedActuatorLessons:r.unsupportedActuatorLessons,passiveLessons:r.passiveLessons,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,actuationCoverage:r.actuationCoverage,noControl:r.noControl,noControlLessons:r.noControlLessons,missingDefinitionLessons:r.missingDefinitionLessons,unsupportedActuatorLessons:r.unsupportedActuatorLessons,passiveLessons:r.passiveLessons,solverFailures:r.solverFailures.length,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  // Fail closed: a stable solver is not proof that controls respond and return.
  if(r.behaviorStatus!=='PASS')process.exitCode=1;
  return r;
