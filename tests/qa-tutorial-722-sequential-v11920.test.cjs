@@ -14,6 +14,9 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.equal(r.controls+r.noControl,722);
  assert.equal(r.restorationChecked,r.controls);
  assert.equal(r.restorationFailures.length,0);
+ assert.equal(r.restorationStatus,'PASS');
+ assert.equal(r.restorationCoverage,r.restorationChecked+'/'+r.controls);
+ assert.ok(['PASS','REVIEW'].includes(r.responseStatus));
  assert.ok(r.controls>=400);
  // A contact changing its own state is not proof of downstream load activity.
  // The source audit reports unresponsive controls explicitly for independent review.
@@ -103,6 +106,7 @@ test('restoration drift of a downstream lamp fails closed even when all phases s
  assert.equal(r.restorationFailures[0].id,'stuck-lamp');
  assert.equal(r.stabilityStatus,'FAIL');
  assert.equal(r.behaviorStatus,'REVIEW');
+ assert.equal(r.restorationStatus,'REVIEW');
 });
 test('downstream lamp that returns to its initial output passes restoration check',()=>{
  const L={lessons:[{id:'reversible-lamp',project:{components:[
@@ -139,4 +143,6 @@ test('passive circuit does not falsely count as actuated restoration',()=>{
  const r=audit({L,defs,solver});
  assert.equal(r.noControl,1);assert.equal(r.controls,0);
  assert.equal(r.restorationChecked,0);assert.equal(r.observedOutputChanges,0);
+ assert.equal(r.restorationCoverage,'0/0');
+ assert.equal(r.responseStatus,'REVIEW');
 });
