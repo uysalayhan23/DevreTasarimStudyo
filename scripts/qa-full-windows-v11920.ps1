@@ -82,6 +82,14 @@ try{
   if($SeqInfo.behaviorStatus -ne 'PASS'){$Report.errors+='722 sequential functional output coverage requires separate virtual-probe/browser QA.'}
  }else{$Report.errors+='Fresh 722 sequential solver report missing.'}
 
+ $MultiControl=Join-Path $Build 'qa-tutorial-sequential-report.json'
+ if((Test-Path -LiteralPath $MultiControl -PathType Leaf) -and (Get-Item -LiteralPath $MultiControl).LastWriteTime -ge $FullSince.AddSeconds(-1)){
+  Copy-Item -LiteralPath $MultiControl -Destination (Join-Path $Dir 'qa-tutorial-sequential-report.json') -Force
+  $MultiInfo=Get-Content -LiteralPath $MultiControl -Raw | ConvertFrom-Json
+  if($MultiInfo.status -ne 'SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN'){$Report.errors+='Multi-control native electrical sequence regression did not complete.'}
+  if($MultiInfo.faults.Count -gt 0 -or $MultiInfo.unstable.Count -gt 0 -or $MultiInfo.errors.Count -gt 0){$Report.errors+='Multi-control native electrical sequence found a fault.'}
+ }else{$Report.errors+='Fresh multi-control native sequence report missing.'}
+
  $Pedagogy=Join-Path $Build 'qa-tutorial-practice-1519-report.json'
  if((Test-Path -LiteralPath $Pedagogy -PathType Leaf) -and (Get-Item -LiteralPath $Pedagogy).LastWriteTime -ge $FullSince.AddSeconds(-1)){
   Copy-Item -LiteralPath $Pedagogy -Destination (Join-Path $Dir 'qa-tutorial-practice-1519-report.json') -Force
