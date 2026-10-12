@@ -82,6 +82,9 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   report.stableInitial===722&&report.stableChanged===722&&report.stableRestored===722&&
   !report.missingDefinitions.length&&!report.failures.length?'PASS':'FAIL';
  report.behaviorCoverage=report.controls?report.observedOutputChanges+'/'+report.controls:'0/0';
+ report.restorationCoverage=report.restorationChecked+'/'+report.controls;
+ report.restorationStatus=report.restorationChecked===report.controls&&report.restorationFailures.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
+ report.responseStatus=report.controls>0&&report.unresponsiveControls.length===0&&report.observedOutputChanges===report.controls?'PASS':'REVIEW';
  report.behaviorStatus=report.unresponsiveControls.length===0&&report.restorationFailures.length===0&&report.stabilityStatus==='PASS'?'PASS':'REVIEW';
  return report;
 }
@@ -92,7 +95,7 @@ function main(){
  fs.writeFileSync(file,JSON.stringify(r,null,2)+'\n','utf8');
  console.log(JSON.stringify({file,stability:r.stabilityStatus,behavior:r.behaviorStatus,
   lessons:r.withWires,phases:r.checkedInitial+r.checkedChanged+r.checkedRestored,
-  outputs:r.behaviorCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
+  outputs:r.behaviorCoverage,responseStatus:r.responseStatus,restorationStatus:r.restorationStatus,restorationCoverage:r.restorationCoverage,restorationChecked:r.restorationChecked,restorationFailures:r.restorationFailures.length,failures:r.failures.length,unresponsive:r.unresponsiveControls}));
  if(r.stabilityStatus!=='PASS')process.exitCode=1;
  return r;
 }
