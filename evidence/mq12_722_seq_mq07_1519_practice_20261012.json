@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-12",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "testSourceHead": "cae8645ad881bae6965c730692ead03b31e5b71d",
+  "execution": "V8 using ORIGINAL GitHub simulator and all runtime dependencies; real source not mocks",
+  "snapshotBlobs": {
+    "solver": "664b67b4915c05c4b610b9559a6027101ef88130",
+    "baseLibrary": "f415731471c6bb095c81289f7f6936ddd9127e41",
+    "productExtensions": "13a26e061c0a62b890ea0a058d55bcf0466660ef",
+    "curriculum": "d76c9e55568dcbdfac57a92bb20c17058fb705ab"
+  },
+  "electrical": {
+    "lessons": 1655,
+    "wired": 722,
+    "referenceOnly": 933,
+    "catalogDefinitions": 939,
+    "phasesPerLesson": 3,
+    "totalSolves": 2166,
+    "initialStable": 722,
+    "changedStable": 722,
+    "restoredStable": 722,
+    "blocked": 0,
+    "shortCircuit": 0,
+    "solverExceptions": 0,
+    "controlsFound": 456,
+    "electricalOutputChanged": 455,
+    "noControlLessons": 266,
+    "unresponsive": [
+      {
+        "id": "measurement-workshop-src-10",
+        "title": "Sensör sinyalinin multimetreyle kontrolü",
+        "explanation": "Sensor BK / meter probes are not electrically in contact in this fixture; browser virtual probe positioning and material target needs separate functional confirmation."
+      }
+    ]
+  },
+  "practice": {
+    "totalGuides": 1519,
+    "virtualWiredGuides": 525,
+    "referenceOnlyGuides": 923,
+    "referenceWithWireVisualGuides": 71,
+    "sourceMatchedLinkExercises": 2085,
+    "guideIssues": 0,
+    "uiCodeEscapingContract": "PASS",
+    "uiMarkupVisibilityContract": "PASS",
+    "screenRenderChromium": "NOT RUN"
+  },
+  "acceptance": {
+    "nativeV8SequentialStability": "PASS",
+    "controlOutputCoverage": "REVIEW 455/456",
+    "practiceSourceAndUiCode": "PASS",
+    "nodeTestOnFullGitCheckout": "NOT RUN (git DNS unavailable)",
+    "fullWindowsChromeAcceptance": "NOT RUN",
+    "entirePhysicalProductQA": "OPEN",
+    "pedagogicalLearningOutcomes": "OPEN"
+  },
+  "actionsUsed": 0,
+  "commitPolicy": "[skip ci]",
+  "warning": "These are virtual simulation and UI-source checks only; they do not certify real energized wiring, physical device behavior, full user interaction or Windows visual rendering."
+}
