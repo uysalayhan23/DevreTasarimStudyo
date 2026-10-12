@@ -25,7 +25,7 @@ test('native 722 wiring lessons solve all three consecutive phases without fault
  assert.ok(r.observedOutputChanges>=0&&r.observedOutputChanges<=r.controls);
  assert.equal(r.behaviorCoverage,r.observedOutputChanges+'/'+r.controls);
  assert.equal(r.behaviorStatus,
-  r.unresponsiveControls.length===0&&r.stabilityStatus==='PASS'?'PASS':'REVIEW');
+  r.stabilityStatus==='PASS'&&r.responseStatus==='PASS'&&r.restorationStatus==='PASS'&&r.noControl===0?'PASS':'REVIEW');
 });
 test('sequential gate refuses a short introduced by virtual control transition',()=>{
  let phase=0;
@@ -108,7 +108,7 @@ test('restoration drift of a downstream lamp fails closed even when all phases s
  assert.equal(r.responseStatus,'PASS');
  assert.equal(r.restorationStatus,'REVIEW');
  assert.equal(r.restorationFailures[0].id,'stuck-lamp');
- assert.equal(r.stabilityStatus,'FAIL');
+ assert.equal(r.stabilityStatus,'FAIL','single-lesson fixture does not meet full corpus gate');
  assert.equal(r.behaviorStatus,'REVIEW');
  assert.equal(r.restorationStatus,'REVIEW');
 });
