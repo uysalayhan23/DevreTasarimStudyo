@@ -55,7 +55,11 @@ function audit({L=curriculum(),defs=catalog(),Simulation=require('../dist/simula
   report.componentsChecked+=p.components.length;
   const absent=[...new Set(p.components.map(c=>c.typeId).filter(id=>!defs[id]))];
   if(absent.length)report.missingDefinitions.push({id:lesson.id,ids:absent});
-  if(!p.wires.length){report.referenceOnly++;continue}
+  if(!p.wires.length){
+   // Theory boards must never advertise steps for nonexistent physical wiring.
+   if(steps.length)report.invalidGuidedSteps.push(lesson.id);
+   report.referenceOnly++;continue;
+  }
   report.withWires++;
   const junctionIds=new Set((p.junctions||[]).map(j=>j.id));
   for(const [wireIndex,wire] of p.wires.entries()){
