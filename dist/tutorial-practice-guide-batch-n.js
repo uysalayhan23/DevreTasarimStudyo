@@ -12,7 +12,8 @@
   if(!p||!Array.isArray(p.wires)||!Array.isArray(p.components))throw Error('Missing project '+lesson.id);
   stats.scanned++;
   const title=clamp(lesson.title||lesson.topic||lesson.id);
-  const isWired=p.wires.length>0 && lesson.kind!=='quiz' && !p.referenceOnly;
+  const hasWires=p.wires.length>0;
+  const isWired=hasWires && lesson.kind!=='quiz' && !p.referenceOnly;
   const materials=(lesson.materials||[]).filter(x=>x.label&&x.why).slice(0,4);
   const observations=[];
   const steps=[];
@@ -42,7 +43,8 @@
    observations.push('Sanal simülasyonda varsa anahtar/sensör durumunu değiştirince hangi bileşenin durumu değişiyor, gözlemle; ölçülmeyen fiziksel değerleri doğru kabul etme.');
   }else{
    stats.referenceOnly++;
-   steps.push('Bu başlıkta doğrulanmış kablolu deney şeması bulunmuyor. Görsel materyali bağlı ve enerjili bir devre gibi değerlendirme.');
+   if(hasWires)stats.referenceWithWires=(stats.referenceWithWires||0)+1;
+   steps.push(hasWires?'Bu başlık konu kontrolü / referans şemasıdır: ekranda kablo veya ölçüm probu çizimleri bulunsa bile bağımsız rehberli elektriksel deney kabulü verilmemiştir.':'Bu başlıkta doğrulanmış kablolu deney şeması bulunmuyor. Görsel materyali bağlı ve enerjili bir devre gibi değerlendirme.');
    for(const m of materials.slice(0,3)){
     observations.push(clamp(m.label)+': '+clamp(m.why));
    }
@@ -54,7 +56,7 @@
    heading:isWired?'Sanal devrede bağlantı ve gözlem rehberi':'Teori ve malzeme inceleme rehberi',
    virtualOnly:true,canonicalGraphUnchanged:true,physicalTestAccepted:false,
    pedagogicalAcceptance:false,fullyRich:false,
-   method:isWired?'virtual-circuit-check':'reference-only',
+   method:isWired?'virtual-circuit-check':hasWires?'reference-with-wires':'reference-only',
    steps,observations
   };
   stats.guides++;
