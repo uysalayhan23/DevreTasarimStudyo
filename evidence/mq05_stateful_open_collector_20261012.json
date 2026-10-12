@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-12",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceHeadAtAudit": "6b1a4b6158575f98a467caff58e6dc8626b197ba",
+  "phase": "Native stateful OFF-ON-OFF regression and Batch N code acceptance",
+  "batchN": {
+    "lessons": 1519,
+    "richLessonsPreserved": 136,
+    "actualCheckedInTestCallbacksRunInV8": 2,
+    "passed": 2,
+    "failed": 0,
+    "note": "Tests executed with a V8 host adapter for fs/VM/assert, not a native Node --test invocation."
+  },
+  "sensorSeries": {
+    "scenes": [
+      "open-collector-1",
+      "open-collector-2",
+      "open-collector-3",
+      "open-collector-4"
+    ],
+    "statesEach": [
+      "OFF",
+      "ON",
+      "OFF"
+    ],
+    "nativeSolveCalls": 12,
+    "passed": 12,
+    "blocked": 0,
+    "shortCircuit": 0,
+    "unstable": 0,
+    "oscillating": 0,
+    "lampStatesByScene": [
+      [
+        false,
+        true,
+        false
+      ],
+      [
+        false,
+        true,
+        false
+      ],
+      [
+        false,
+        true,
+        false
+      ],
+      [
+        false,
+        true,
+        false
+      ]
+    ],
+    "measuredMilliampModel": {
+      "third": [
+        0,
+        24,
+        0
+      ],
+      "fourth": [
+        0,
+        24,
+        0
+      ]
+    },
+    "note": "Original GitHub simulation.js and unmodified 702-item base product library V8 execution. Do not infer physical hardware acceptance or real current from other variants' absent meter values."
+  },
+  "newTestFiles": [
+    "tests/tutorial-open-collector-stateful-v11920.test.cjs",
+    "tests/qa-tutorial-1655-transitions-v11920.test.cjs",
+    "tests/qa-tutorial-1655-transitions-failclosed-v11920.test.cjs"
+  ],
+  "negativeFixtureV8": {
+    "originalCheckedInCallbacks": 2,
+    "passed": 2,
+    "shortCircuitAndOscillationRejected": true,
+    "fixtureCannotMake1655Pass": true
+  },
+  "fullCurriculumStatefulTransition": {
+    "status": "NOT_RUN",
+    "details": "Committed Node test and Windows full QA gate; cannot claim PASS until exact HEAD Node execution evidence exists."
+  },
+  "windowsBrowser": {
+    "status": "NOT_RUN_ON_CURRENT_HEAD"
+  },
+  "full1519ExpertPedagogicalAcceptance": {
+    "status": "OPEN"
+  },
+  "actionsUsed": false,
+  "commitConvention": "[skip ci]"
+}
