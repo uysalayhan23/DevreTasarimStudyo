@@ -36,6 +36,7 @@ test('1519 practical guides follow real lesson source graphs and preserve 136 ri
   const p=lesson.practiceGuide;
   assert.ok(p,'Guide missing '+lesson.id);
   assert.equal(p.virtualOnly,true);assert.equal(p.physicalTestAccepted,false);
+  assert.equal(p.pedagogicalAcceptance,false,lesson.id+' cannot claim pedagogical acceptance before UI QA');
   assert.equal(p.fullyRich,false);assert.equal(p.canonicalGraphUnchanged,true);
   assert.ok(p.steps.length>=3&&p.steps.every(x=>typeof x==='string'&&x.trim().length>12),lesson.id);
   assert.ok(p.steps.every(x=>!/<script\b|javascript:|onerror\s*=|onload\s*=/i.test(x)),lesson.id+' unsafe HTML in steps');
