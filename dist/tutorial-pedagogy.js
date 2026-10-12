@@ -976,8 +976,23 @@ function equipotentialProject(id,title){
  p.wires.push(W('g1','PE','b1','1','Kaynak PE → bara/1','Ana PE iletkeni eş potansiyel baraya girer.','#16a34a','PE'),W('b1','4','x1','1','Bara/4 → PE klemensi','Koruma iletkeni dağıtılır.','#16a34a','PE'),W('x1','2','s1','PE','PE klemensi → priz PE','Priz gövde koruması eş potansiyel baraya bağlıdır.','#16a34a','PE'),W('b1','5','e1','PE','Bara/5 → toprak elektrodu','Eş potansiyel baranın toprak bağlantısıdır.','#16a34a','PE'));return p;
 }
 function junctionProject(id,title){
- const p=base(id,title,'building');p.components=[C('g1','supply-1p',60,240,'G1','1 faz kaynak'),C('j1','building-junction',350,240,'B1','Tesisat buatı'),C('h1','ceiling-light',700,240,'H1','Aydınlatma armatürü')];
- p.wires.push(W('g1','L','j1','1','L → buat/1','Faz buat üzerinden armatüre dağıtılır.','#e53935','L1'),W('j1','2','h1','X1','Buat/2 → armatür L','Fazın armatüre devamıdır.','#e53935','L1'),W('g1','N','j1','3','N → buat/3','Nötr buat üzerinden taşınır.','#1e88e5','N'),W('j1','4','h1','X2','Buat/4 → armatür N','Nötr dönüşü armatüre ulaşır.','#1e88e5','N'));return p;
+ // One physical box, two distinct conductor splice symbols. A single
+ // building-junction electrically unites all its pins; L and N must never
+ // share that one simulated node.
+ const p=base(id,title,'building');
+ p.components=[
+  C('g1','supply-1p',60,240,'G1','1 faz kaynak'),
+  C('j1','building-junction',350,140,'B1-L','Buat içi faz ek noktası'),
+  C('j2','building-junction',350,360,'B1-N','Buat içi nötr ek noktası'),
+  C('h1','ceiling-light',700,240,'H1','Aydınlatma armatürü')
+ ];
+ p.wires.push(
+  W('g1','L','j1','1','L → buat faz eki/1','Faz ayrı iletken ekinden armatüre dağıtılır.','#e53935','L1'),
+  W('j1','2','h1','X1','Buat faz eki/2 → armatür L','Faz yolu nötr ekinden fiziksel ve elektriksel olarak ayrıdır.','#e53935','L1'),
+  W('g1','N','j2','3','N → buat nötr eki/3','Nötr, aynı kutudaki farklı ek noktası üzerinden geçer.','#1e88e5','N'),
+  W('j2','4','h1','X2','Buat nötr eki/4 → armatür N','Nötr dönüşü faz ekine bağlanmadan armatüre ulaşır.','#1e88e5','N')
+ );
+ return p;
 }
 function busTapProject(id,title){
  const p=base(id,title,'building');p.components=[C('g1','supply-1p',70,240,'G1','1 faz kaynak'),C('bt','one-line-bus-tap',340,240,'BT1','Bara çıkış tapı'),C('f1','mcb-1p',580,240,'F1','Çıkış sigortası'),C('r1','resistor',820,240,'R1','1 kΩ örnek yük',{resistance:1000})];
