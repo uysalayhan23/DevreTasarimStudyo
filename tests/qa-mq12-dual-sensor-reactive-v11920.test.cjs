@@ -5,11 +5,11 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
 const lesson=id=>{const l=L.lessons.find(x=>x.id===id);assert.ok(l,id);return l};
-test('dual-dc-2 requires sink-type NPN output; canonical PNP sensor remains REVIEW',()=>{
+test('dual-dc-2 now has native NPN output and keeps synthetic-target acceptance pending',()=>{
  const original=lesson('dual-dc-2'),before=JSON.stringify(original.project),out={};
  for(const mode of ['PNP','NPN']){
   const p=structuredClone(original.project),s=p.components.find(c=>c.id==='s'),lamp=p.components.find(c=>c.id==='h');
-  if(mode==='NPN')s.sensorOutput='NPN';
+  if(mode==='PNP')s.sensorOutput='PNP';
   s.sensing={target:'metal',distance:20,range:8,offset:0};out[mode]=[];
   for(const [now,distance] of [[0,20],[400,3],[850,20]]){
    s.sensing.distance=distance;
@@ -20,6 +20,8 @@ test('dual-dc-2 requires sink-type NPN output; canonical PNP sensor remains REVI
  }
  assert.deepEqual(out.PNP,[false,false,false]);
  assert.deepEqual(out.NPN,[false,true,false]);
+ assert.equal(original.project.components.find(c=>c.id==='s').typeId,'autonics-pr12-npn');
+ assert.ok(!original.project.components.find(c=>c.id==='s').sensing?.target);
  assert.equal(JSON.stringify(original.project),before,'canonical lesson unchanged');
 });
 test('seven real reactive lessons remain stable, four capacitors retain charge without discharge path',()=>{
