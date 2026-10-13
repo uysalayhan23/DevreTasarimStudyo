@@ -42,3 +42,35 @@
 ## Güncel kaynak sürümü eşlemesi
 
 Bu turun sonunda yüklenen eski ZIP'in `dist/simulation.js`, `dist/tutorial-lessons.js` ve `dist/tutorial-sensor-batch-j.js` dosyaları, önceki doğrulanmış [skip ci] değişiklikleri uygulanarak **GitHub HEAD blob SHA değerleriyle birebir eşitlendi**. `dist/device-behavior.js`, `dist/library.js`, `dist/design-library.js`, `dist/tutorial-source-outline.js` ve tam QA kaynak yükleyicisinin de Git blob eşitliği kontrol edildi. Bu eşleşen modüllerle **13/13 Node testi yeniden PASS**; 1.655/1.655 kaynak QA, 2.166/2.166 temel solver kararlılığı ve Batch N 1.519/1.519 kaynak QA yeniden PASS. Eski bağımsız üç aşama raporundaki sekiz restoration REVIEW sonucu açık kaldı. Genel davranış kabulü REVIEW durumundadır.
+
+
+## 2026-10-13 follow-up: actually executed combined Node QA and virtual comparator guard
+
+**Verified baseline at this turn:** the ZIP snapshot was overlaid with GitHub-verified source file versions. In particular, \`tests/qa-tutorial-722-sequential-v11920.test.cjs\` was refreshed from GitHub and the blob SHA matched \`18754b5a8fca0a7a0d6ec318a5907204c60f782d\`. The older ZIP's test improperly expected eight existing restoration REVIEW records to be zero; the GitHub version checks that they remain REVIEW without claiming an electrical solver fault.
+
+**Actually executed in a single real Node.js v22 \`node --test\` run:** **51/51 PASS, 0 FAIL**, covering the available MQ-12 small-batch, manufacturer interface, 722 sequential, five new virtual decision, four new sonic voltage-margin, 1,655-curriculum and Batch N regressions. Complete live test log and source/Bach N audits are provided as conversation downloadable artifacts.
+
+**Limit:** This did **not** re-execute the entire historical 63-plus-eight test collection. The uploaded older ZIP lacks several later test/runner files and external GitHub raw download is unavailable in this runtime. Previous full-suite PASS counts are historical; **do not certify 71/71 PASS** from this run.
+
+- Native curriculum QA: **1,655 lessons; 722 wired; 0 missing definitions; 0 blocked/short circuit; PASS**.
+- Native sequential solver: **722 × 3 = 2,166 stable phases**; remaining **eight baseline restoration REVIEW** entries. This is electrical stability PASS, not behavior-closure PASS.
+- Batch N source QA: **1,519/1,519 PASS; zero issues**, 525 wired, 923 reference-only, 71 reference-with-wires and 2,085 observations.
+- Native transfer functions: \`load-cell\` with 10 V excitation gives **0/10/20 mV** for 0/500/1000 kg virtual examples; NTC resistance decreases with temperature and PT100 increases. A **standalone virtual threshold example** checks units and refuses malformed thresholds. It **does not** simulate or approve an actual differential amplifier, ADC, temperature controller, PLC, relay or physical load.
+- \`tutorial-piezo\` and \`arduino-mq2\` fall through a generic \`Device.output\` 5 V graphical value. This **is not a validated piezo vibration or MQ-2 gas concentration transfer function**. Both remain virtual decision \`null\` and \`physicalAcceptance:'REVIEW'\`.
+- 35 original sensor targets and seven reactive restoration cases remain open. Canonical graphs, identities, assets, terminal positions and launch path were not edited.
+
+### Additional physical buzzer acceptance issue — upper bound
+
+The U1KT003 manufacturer's switching output voltage drop is specified **< 2.5 V** and output limit **100 mA**. Schneider XB5KSB is nominal **24 V ± 10%**, ≤ **28 mA**. With a 24 V nominal supply, the calculated worst-case lower-bound output is **24 − 2.5 = 21.5 V**, while the sounder's lower rated supply limit is **21.6 V**. A small **−0.1 V worst-case margin** means the datasheet limits alone cannot *guarantee* a direct output-voltage match, even though the current limits look favorable. The actual output drop at 28 mA may be smaller; no incompatibility or failure was proven, only insufficient worst-case acceptance evidence. The simulator's generic \`buzzer\` terminal \`1/2\` mapping still has not been verified against the Schneider product; relay coil loading and NO/NC settings need independent confirmation.
+
+Source of manufacturer electrical figures:
+- https://www.wenglor.com/en/Sensors/Ultrasonic-Sensors/Ultrasonic-Distance-Sensors/Distance-Sensor/p/U1KT003
+- https://iportal.se.com/Contents/docs/SQD-XB5KSB.PDF
+
+New reproducible files:
+- \`scripts/qa-mq12-analog-decision-guard-v11920.cjs\`
+- \`tests/qa-mq12-analog-decision-guard-v11920.test.cjs\`
+- \`scripts/qa-mq12-sonic-headroom-v11920.cjs\`
+- \`tests/qa-mq12-sonic-headroom-v11920.test.cjs\`
+
+All four GitHub file content blob SHAs were verified against the actual tested working copies. All commits \`[skip ci]\`; **no GitHub Actions**.
