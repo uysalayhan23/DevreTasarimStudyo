@@ -17,13 +17,13 @@ test('35 missing-target sensors respond only to temporary virtual material fixtu
  assert.equal(report.summary.sensorMissingTarget,35);
  assert.equal(report.summary.sensorFixturesStable,35);
  assert.equal(report.summary.sensorFixturesDetectedOffOnOff,35);
- assert.equal(report.summary.sensorFixturesCausal,34);
+ assert.equal(report.summary.sensorFixturesCausal,35);
  assert.equal(report.summary.sensorFixturesRestored,35);
  assert.ok(report.sensor.every(x=>x.accepted===false&&x.scenario==='SYNTHETIC_FIXTURE_NOT_CANONICAL'));
- assert.equal(report.sensor.find(x=>x.id==='dual-dc-2').causal,false);
+ assert.equal(report.sensor.find(x=>x.id==='dual-dc-2').causal,true);
 });
 test('30 repaired BJT lessons are no longer wrongly counted as unresponsive',()=>{
- assert.equal(report.summary.noDownstreamResponse,1);
+ assert.equal(report.summary.noDownstreamResponse,0);
  assert.equal(report.summary.noDownstreamWithValidProbeTargets,0);
  assert.equal(report.summary.noDownstreamWithBjt,0);
  assert.ok(report.noDownstream.every(x=>!x.accepted));
