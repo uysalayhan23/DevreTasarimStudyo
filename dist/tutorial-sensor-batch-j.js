@@ -42,7 +42,7 @@ for(const [topic,config] of Object.entries(specs)){
     {goal:'Üçüncü varyantta PNP sourcing sensör BK çıkışıyla H1 yükünü besler. 10 kΩ R1, BK çıkışını algılama yokken 0 V seviyesinde tutan pull-down direncidir.',
      question:'Üçüncü varyantta 10 kΩ R1 direnci hangi hatlar arasında bulunur?',
      options:['BK ve 0 V arasında','BK ve +24 V arasında','Koruma toprağı ve nötr arasında'],
-     note:'Önceki yanlış 1 kΩ +24 V → BK bağlantısı kaldırıldı. Güncel gerçek kaynak kodunun solver denetiminde sensör OFF: H1 0 mA, ON: H1 24 mA ve R1 2,4 mA ölçüldü. Bu, sanal model sonucudur; gerçek donanımın ölçümü değildir.'},
+     note:'Güncel 10 kΩ BK → 0 V pull-down direnci korunur. Önceki yanlış 1 kΩ +24 V → BK bağlantısı kaldırıldı. Güncel gerçek kaynak kodunun solver denetiminde sensör OFF: H1 0 mA, ON: H1 24 mA ve R1 2,4 mA ölçüldü. Bu, sanal model sonucudur; gerçek donanımın ölçümü değildir.'},
     {goal:'Dördüncü varyant NPN sinking sensördür; H1 yükü ve R1 aynı + besleme ile BK düğümüne paralel bağlıdır. Bu, yalnız dijital giriş pull-up direncinden oluşan devre değildir.',
      question:'Dördüncü varyantta R1 ve H1 nasıl konumlanır?',
      options:['+ besleme ile BK arasında paralel kollardır','Biri diğerinin içindedir','Aynı kablonun iki ucu olarak kısa devredir'],
