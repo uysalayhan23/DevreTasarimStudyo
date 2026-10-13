@@ -12,6 +12,7 @@ const TOPICS={
  'sensor-analog-apps-outline-121':['sensor-ntc','sensor-ptc'],
  'sensor-analog-apps-outline-138':['arduino-mq2']
 };
+const REACTIVE_IDS=['electronic-component-basics-outline-012','electronic-component-basics-outline-106','electronic-component-basics-outline-126','electronic-component-basics-outline-130','workshop-safety-mechanics-outline-049','workshop-safety-mechanics-outline-127','workshop-safety-mechanics-outline-130'];
 const MANUFACTURERS={
  ultrasonic:{model:'wenglor U1KT003',voltageMin:18,voltageMax:30,outputLimitMA:100,outputs:2,outputModes:['PNP','NPN'],switchModes:['NO','NC'],connector:'M12-4',source:'https://www.wenglor.com/en/Sensors/Ultrasonic-Sensors/Ultrasonic-Distance-Sensors/Distance-Sensor/p/U1KT003'},
  buzzer:{model:'Schneider Electric XB5KSB',ratedVoltage:24,voltageTolerance:0.1,maxCurrentMA:28,terminalsVerifiedAsCatalogBuzzer:false,source:'https://iportal.se.com/Contents/docs/SQD-XB5KSB.PDF'},
@@ -48,10 +49,10 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
  const piezoFallback=Device.output({},defs['tutorial-piezo']);
  const mq2Fallback=Device.output({},defs['arduino-mq2']);
  return {scope:'READ_ONLY_NONCANONICAL_MANUFACTURER_MODEL_GATES',sourceLessons:L.lessons.length,wiredLessons:L.lessons.filter(l=>l.project?.wires?.length).length,
-  unconfiguredSensorLessons:L.lessons.filter(l=>l.project?.wires?.length&&l.project.components.some(c=>['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target)).length,reactiveRestorationCases:7,
+  unconfiguredSensorLessons:L.lessons.filter(l=>l.project?.wires?.length&&l.project.components.some(c=>['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target)).length,reactiveRestorationCases:REACTIVE_IDS.filter(id=>L.lessons.some(l=>l.id===id&&l.project?.wires?.length)).length,
   manufacturers:MANUFACTURERS,rows,findings:{
     supply24VCount:rows.filter(x=>x.canonicalVoltage===24).length,
-    ultrasonicSupplyCompatible:rows.find(x=>x.id==='sensor-analog-apps-outline-089').canonicalVoltage>=MANUFACTURERS.ultrasonic.voltageMin,
+    ultrasonicSupplyCompatible:rows.find(x=>x.id==='sensor-analog-apps-outline-089').canonicalVoltage>=MANUFACTURERS.ultrasonic.voltageMin&&rows.find(x=>x.id==='sensor-analog-apps-outline-089').canonicalVoltage<=MANUFACTURERS.ultrasonic.voltageMax,
     buzzerMaxCurrentBelowSensorSwitchLimit:MANUFACTURERS.buzzer.maxCurrentMA<MANUFACTURERS.ultrasonic.outputLimitMA,
     relayCoilCurrentVerified:Number.isFinite(Number(defs['coil-relay']?.coilCurrentMilliamp)),
     catalogBuzzerRatedVoltageVerified:Number.isFinite(Number(defs.buzzer?.ratedVoltage)),
