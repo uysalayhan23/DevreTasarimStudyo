@@ -55,7 +55,6 @@ test('35 unconfigured sensor stimuli and seven reactive gates remain unresolved'
  assert.equal(r.unconfiguredSensorLessons,35);assert.equal(r.reactiveRestorationCases,7);
  assert.equal(r.overallAcceptance,'REVIEW');
 });
-
 test('ultrasonic 35 V injected fixture fails upper manufacturer voltage limit without canonical edit',()=>{
  const altered=structuredClone(L);
  altered.lessons.find(x=>x.id==='sensor-analog-apps-outline-089').project.components.find(x=>x.typeId==='arduino-bench-supply').dcVoltage=35;
