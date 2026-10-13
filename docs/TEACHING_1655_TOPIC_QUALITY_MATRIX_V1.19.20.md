@@ -52,7 +52,7 @@ Kod kapsamı: **136/1655**, henüz zengin kod formatına yükseltilmemiş: **151
 | `pnp-npn` | 4 | 4 | 0 | 4 | 0 | 0 | PNP sensör → 0 V’a bağlı yük |
 | `inductive-capacitive` | 4 | 4 | 0 | 4 | 0 | 0 | PNP endüktif metal algılama |
 | `source-sink` | 4 | 4 | 0 | 4 | 0 | 0 | Sourcing PNP çıkış |
-| `open-collector` | 4 | 4 | 0 | 4 | 0 | 0 | NPN open collector yük sürme |
+| `open-collector` | 4 | 4 | 0 | 4 | 0 | 0 | PNP sourcing sensörle yük sürme |
 | `bero` | 4 | 4 | 0 | 4 | 0 | 0 | BERO tipi PNP endüktif yaklaşım |
 | `motor-forward-reverse` | 4 | 4 | 0 | 4 | 0 | 0 | İleri/geri · çapraz elektriksel kilitleme |
 | `motor-star-delta` | 4 | 4 | 0 | 4 | 0 | 0 | Manuel yıldız/üçgen paket şalter |
