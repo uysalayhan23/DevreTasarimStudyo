@@ -10,15 +10,15 @@ test('35 unconfigured sensors stay REVIEW with no synthetic auto-fix',()=>{
  assert.ok(sensor.rows.every(x=>x.missingTarget&&!x.accepted));
  assert.equal(sensor.fullAcceptance,'REVIEW');
 });
-test('dual-dc-2 needs sinking NPN but has sourcing PNP; other direct sensor loads are not misclassified',()=>{
- assert.deepEqual(sensor.polarityMismatch.map(x=>x.id),['dual-dc-2']);
+test('dual-dc-2 now uses the sinking NPN product; 35 physical stimuli still await review',()=>{
+ assert.deepEqual(sensor.polarityMismatch.map(x=>x.id),[]);
  assert.equal(sensor.rows.find(x=>x.id==='dual-dc-2').requiredOutput,'NPN');
- assert.equal(sensor.rows.find(x=>x.id==='dual-dc-2').declaredOutput,'PNP');
+ assert.equal(sensor.rows.find(x=>x.id==='dual-dc-2').declaredOutput,'NPN');
  assert.equal(sensor.rows.find(x=>x.id==='pnp-npn-1').physicalMismatch,false);
  assert.equal(sensor.rows.find(x=>x.id==='pnp-npn-2').physicalMismatch,false);
 });
 test('sensor title and genuine component conflicts remain flagged without replacing lesson content',()=>{
- assert.deepEqual(sensor.titlePolarityMismatch.map(x=>x.id),['open-collector-1']);
+ assert.deepEqual(sensor.titlePolarityMismatch.map(x=>x.id),[]);
  assert.equal(sensor.topicMismatch.length,8);
  assert.ok(sensor.topicMismatch.some(x=>x.id==='sensor-analog-apps-outline-089'));
  assert.ok(sensor.topicMismatch.some(x=>x.id==='sensor-analog-apps-outline-085'));
