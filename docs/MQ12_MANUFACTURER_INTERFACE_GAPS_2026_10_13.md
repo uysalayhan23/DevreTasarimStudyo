@@ -5,10 +5,10 @@
 ## Tekrar çalıştırılabilir kaynak denetimi
 
 - \`node scripts/qa-mq12-interface-model-gaps-v11920.cjs\` — kaydı \`build/qa-mq12-interface-model-gaps.json\` dosyasına yazar.
-- \`node --test tests/qa-mq12-interface-model-gaps-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs\` — **12/12 PASS** (7 yeni üretici/model koruması + 5 mevcut küçük-batch regresyonu) gerçek Node.js v22 çalıştırması.
+- \`node --test tests/qa-mq12-interface-model-gaps-v11920.test.cjs tests/qa-mq12-small-batches-v11920.test.cjs\` — **13/13 PASS** (8 yeni üretici/model koruması + 5 mevcut küçük-batch regresyonu) gerçek Node.js v22 çalıştırması.
 - İki yeni dosya **tam olarak test edilen ZIP çalışma kopyasının Git blob SHA içeriğiyle eşleşecek şekilde** GitHub'a kaydedildi.
 - Aynı ZIP üzerinde bağımsız \`qa-tutorial-1655-simulation-v11920.cjs\` **1.655 ders / 722 kablolu devre QA PASS**, \`qa-tutorial-722-sequential-v11920.cjs\` **2.166/2.166 elektriksel solver fazı kararlı PASS**, Batch N \`qa-tutorial-practice-1519-v11920.cjs\` **1.519/1.519 kaynak QA PASS** çalıştırıldı.
-- **Önceki 63/63 Node sonucunun kapsamı önceki çalışma turuna aittir; bu turda güncel HEAD üzerindeki tüm 63 test bir arada çalıştırılmadı.** Bu nedenle bu değişikliklerin "yeni tam-suite 70/70 PASS" olduğu ileri sürülmez.
+- **Test senaryoları arasında 35 V üst sınırını aşan yalnız test kopyası vardır ve bu durumda kabul REVIEW kalır. Önceki 63/63 Node sonucunun kapsamı önceki çalışma turuna aittir; bu turda güncel HEAD üzerindeki tüm 63 test bir arada çalıştırılmadı.** Bu nedenle bu değişikliklerin "yeni tam-suite 70/70 PASS" olduğu ileri sürülmez.
 - 35 fiziksel algılama hedefi tanımlanmamış sensör ve 7 reaktif restoration REVIEW dersinin kapsamı korunur. Pasif/stability-only veya desteklenmeyen kumanda sonuçları bir davranış PASS'i değildir.
 
 ## U1KT003 ve somut sesli ikaz ürünü
@@ -38,3 +38,7 @@
 - Olimex SNS-MQ2 ürün bilgisi: https://www.olimex.com/Products/Components/Sensors/Gas/SNS-MQ2/
 
 **Sonraki güvenli kapsam:** Önce ürünlerin gerçek terminal/simülasyon arayüzünü kanonik şema değiştirmeyen *standalone fixture* içinde ayrıştır; ardından uygun ölçümden kumandaya dönüşüm ve tam HEAD regresyonunu ayrı doğrula. Kullanıcıdan yerel test veya Actions istenmez.
+
+## Güncel kaynak sürümü eşlemesi
+
+Bu turun sonunda yüklenen eski ZIP'in `dist/simulation.js`, `dist/tutorial-lessons.js` ve `dist/tutorial-sensor-batch-j.js` dosyaları, önceki doğrulanmış [skip ci] değişiklikleri uygulanarak **GitHub HEAD blob SHA değerleriyle birebir eşitlendi**. `dist/device-behavior.js`, `dist/library.js`, `dist/design-library.js`, `dist/tutorial-source-outline.js` ve tam QA kaynak yükleyicisinin de Git blob eşitliği kontrol edildi. Bu eşleşen modüllerle **13/13 Node testi yeniden PASS**; 1.655/1.655 kaynak QA, 2.166/2.166 temel solver kararlılığı ve Batch N 1.519/1.519 kaynak QA yeniden PASS. Eski bağımsız üç aşama raporundaki sekiz restoration REVIEW sonucu açık kaldı. Genel davranış kabulü REVIEW durumundadır.
