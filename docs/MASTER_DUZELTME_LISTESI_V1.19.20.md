@@ -1869,3 +1869,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Açıklama artık LM358P **8/4 besleme, 2 eviren giriş, 3 evirmeyen giriş, 1 OUT**, `R2=R3=10 kΩ` → **12 V referans**, B1 NTC/R1 → sıcaklıkla değişen gerilim ve 15 °C / 35 °C sanal ölçüm yöntemini açıklar. `tutorial-practice-guide-batch-n.js` aşamalı sanal deney ekler; UI penceresi boyutu değişmez.
 - Özgün GitHub kaynaklarından V8'dе **15,25,35 °C stabil**, 35 °C'de yüksek OUT, 15 °C'de düşük OUT, 1.655 ders/722 kablo kaynak QA PASS, Batch N 1.519/1.519 kaynak PASS. Bu Node `--test`, Windows UI veya fiziksel donanım onayı değildir. Kalıcı `tests/tutorial-ntc-comparator-context-v11920.test.cjs` regresyonu eklendi; tamamlanmış çağrı testlerinin kanıtı ayrıca değerlendirilir.
 - **Genel müfredat pedagojik kabulü OPEN:** 1.519 otomatik rehber hâlâ `pedagogicalAcceptance=false` / `fullyRich=false`; 136 önceki zengin ders korunur. Geniş ölçüt ve P1→toplu QA programı: `docs/TUTORIAL_PEDAGOGICAL_ACCEPTANCE_ROADMAP_2026_10_14.md`. 35 sensör + 7 reaktif davranış REVIEW ayrı açık. Actions 0, `[skip ci]`.
+
+## 2026-10-14 — MQ-07 semantik kapsam audit: genel ders kabulü OPEN
+
+- `main` `349fcefd3e748cccb2c71f5cc1f671085eb3d6ed` üzerinden 1.655 özgün ders V8 belleğinde işlendi. 136 eski rich kayıt korunurken diğer 1.519 dersin pedagojik kabulü açık kaldı.
+- **523 generic summary, 350 generic explanation, 644 tekrar eden açıklama başlangıcı, 715 generic malzeme amacı** raporlandı; bu kümeler birbirini kapsar. NTC başlığı ile sahne elemanı uyumsuzluğu, `opamp-apps-src-08` onarımından sonra sıfır.
+- Yeni kaynak denetimi `scripts/qa-tutorial-pedagogical-depth-v11920.cjs`, V8 host shim ile yürütülen **2/2** negatif/süreklilik regresyonu `tests/qa-tutorial-pedagogical-depth-v11920.test.cjs`, kanıt `evidence/mq07_pedagogical_semantic_baseline_20261014.json`.
+- MQ-00 karar: **SOURCE INVENTORY DONE, pedagogical FINAL OPEN, browser/Windows OPEN**. Anlatımlar başlık bazında terminaller, elektriksel neden-sonuç, en az iki gerçek simülasyon gözlemi ve öğrenen göreviyle düzeltilmeden pedagojik PASS yok. Actions 0; kaynak/devre/solver/görsel kilitleri değiştirilmedi; `[skip ci]`.

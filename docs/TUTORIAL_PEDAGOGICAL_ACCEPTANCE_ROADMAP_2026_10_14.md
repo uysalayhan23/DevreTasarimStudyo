@@ -21,3 +21,10 @@ Kullanıcı ekranında **NTC’li karşılaştırıcı** dersi RV1 potansiyometr
 ## Geniş müfredat için kabul durumu
 
 Her ders için `titleVsPhysicalPart`, `terminalMap`, `causeAndEffect`, `measurableOutput`, `lessonText`, `layout`, `sourceRegression` alanları tek tek PASS/REVIEW/N/A ile takip edilecek. Bölüm bölüm ilerle: öncelik P1 gerçek başlık-devre uyuşmazlığı; ardından 1.519 otomatik metnin konuya özgü anlatımı; sonra 1.655 sayfa UX kabulü. Tekil pilot tamamlanması, bütün derslerin düzeltildiği anlamına gelmez. Ajan zinciri MQ-07 lider → MQ-05 çapraz → MQ-12 V8/Node kanıt → MQ-13 repo süreklilik → MQ-00. Actions kullanılmayacak, `[skip ci]`.
+
+## 2026-10-14 — MQ-07 tam müfredat semantik kalite tabanı (kapanış değil)
+
+- Güncel `main` HEAD `349fcefd3e748cccb2c71f5cc1f671085eb3d6ed` özgün kaynaklarından V8 ile **1.655/1.655 ders tarandı**. **523 şablon özet, 350 şablon çalışma açıklaması, 644 birbirini tekrarlayan giriş, 715 derste en az bir genel malzeme gerekçesi** tespit edildi. Başlık NTC iken kablolu şemada NTC olmayan ders **0** (önceki `opamp-apps-src-08` pilot onarımından sonra). Bu gruplar kesişir; **toplanmaz**.
+- Yeni fail-closed semantik envanter: `scripts/qa-tutorial-pedagogical-depth-v11920.cjs`, negatif örnekleri de doğrulayan `tests/qa-tutorial-pedagogical-depth-v11920.test.cjs`. V8 test uyarlamasında **2/2 PASS**; **gerçek Node `--test` çalıştırılmadı**. Envanter `evidence/mq07_pedagogical_semantic_baseline_20261014.json` içine kaydedildi.
+- **Derslerin pedagojik kabulü 1.519 REVIEW**, Windows sayfa/terminal görünürlüğü ve bağımsız öğrenme QA hâlâ **OPEN**. Bu QA'nın PASS olan testleri, ders içeriklerine onay vermez.
+- Düzeltme sırası: (1) başlık–fiziksel eleman/topoloji uyuşmazlığı; (2) kaynaklı neden-sonuç/pin-geri besleme/ölçüm anlatımı; (3) gerçek Windows `file:///` sayfa akışı, prob/scroll/taşma; (4) ilgili ders için MQ-07→MQ-05→MQ-12→MQ-13→MQ-00 kapıları. Mevcut NTC pilotu tekrar onarılmaz; 136 rich ve kanonik örnekler korunur.

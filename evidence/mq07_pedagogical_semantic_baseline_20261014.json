@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "349fcefd3e748cccb2c71f5cc1f671085eb3d6ed",
+  "scope": "All 1655 original-source tutorial lessons, heuristics only",
+  "method": "Original GitHub JavaScript curriculum source executed in V8 with in-memory require/fs/path/vm adapters",
+  "qualityTool": "scripts/qa-tutorial-pedagogical-depth-v11920.cjs",
+  "toolBlobSha": "e4cf14e7348e535c6bf753d009b4aa7b546f3908",
+  "testBlobSha": "1b1a05d749ab3853e53f1fa531ec0d456d568904",
+  "v8HostTests": {
+    "executed": 2,
+    "passed": 2,
+    "failed": 0,
+    "note": "Two original test callbacks executed via V8 test/assert shims, NOT node --test"
+  },
+  "count": {
+    "total": 1655,
+    "richExisting": 136,
+    "pedagogicalReviewPending": 1519,
+    "genericSummary": 523,
+    "genericExplanation": 350,
+    "repeatedOpening": 644,
+    "genericMaterialPurpose": 715,
+    "wiredNtcWithoutSensor": 0
+  },
+  "examples": {
+    "genericSummary": [
+      "installation-grounding-src-01",
+      "installation-grounding-src-02",
+      "installation-systems-src-02"
+    ],
+    "genericMaterialPurpose": [
+      "button-led-1",
+      "button-led-2",
+      "timer-flipflop-1"
+    ],
+    "resolvedTitleMismatch": "opamp-apps-src-08"
+  },
+  "overlapWarning": "Categories overlap; do not sum their counts to estimate distinct defective lessons.",
+  "acceptance": {
+    "sourceHeuristicReview": "REVIEW",
+    "independentPedagogicalFinal": false,
+    "windowsLayoutTest": "NOT_RUN",
+    "allSourceNodeTests": "NOT_RUN",
+    "existingNtCPilotV8": "3/3 recorded separately"
+  },
+  "actionsUsed": 0,
+  "canonicalModified": false
+}
