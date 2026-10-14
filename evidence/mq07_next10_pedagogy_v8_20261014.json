@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "54ce6c7e7da49e7017b2dd78d79d858e8f31e769",
+  "candidateBlob": "fdc7e1c417a1ed933245ecb63bb03ebf516d78e9",
+  "selectedIDs": [
+    "installation-systems-src-11",
+    "installation-systems-src-12",
+    "electronic-switching-src-02",
+    "electronic-switching-src-04",
+    "electronic-switching-src-05",
+    "electronic-switching-src-06",
+    "electronic-switching-src-07",
+    "sensor-analog-apps-src-01",
+    "sensor-analog-apps-src-02",
+    "sensor-analog-apps-src-03"
+  ],
+  "method": "Original 51-source Github V8 adapter, full 1655 lessons, 939 catalog; Node --test NOT RUN, Windows UI NOT RUN, physical acceptance NOT GRANTED",
+  "richUnchanged": true,
+  "graphsUnchanged": true,
+  "explanationsUpdated": true,
+  "reviewClear": true,
+  "total": 1655,
+  "rich": 136,
+  "wired": 722,
+  "semanticBefore": {
+    "genericSummary": 513,
+    "genericExplanation": 340,
+    "repeatedOpening": 634,
+    "genericMaterialPurpose": 706,
+    "wiredNtcWithoutSensor": 0
+  },
+  "semanticAfter": {
+    "genericSummary": 503,
+    "genericExplanation": 330,
+    "repeatedOpening": 624,
+    "genericMaterialPurpose": 701,
+    "wiredNtcWithoutSensor": 0
+  },
+  "electrical": {
+    "status": "PASS",
+    "withWires": 722,
+    "missing": 0,
+    "invalidPins": 0,
+    "blocked": 0,
+    "shortCircuit": 0,
+    "unstable": 0,
+    "errors": 0
+  },
+  "batchN": {
+    "status": "PASS",
+    "examined": 1519,
+    "rich": 136,
+    "issues": 0,
+    "observations": 2085
+  },
+  "firstTen": {
+    "classification": "10/10",
+    "stability": "10/10",
+    "response": "8/8",
+    "restoration": "8/8",
+    "latchReview": [
+      "seal-in-1"
+    ]
+  },
+  "reviewTopics": [
+    "installation-systems-src-12",
+    "electronic-switching-src-05",
+    "electronic-switching-src-06",
+    "electronic-switching-src-07"
+  ],
+  "actionsUsed": 0
+}

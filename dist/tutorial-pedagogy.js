@@ -2412,6 +2412,235 @@ if(ntcLesson){
   independentAcceptance:false,windowsAcceptance:false};
 })();
 
+
+// MQ-07 first *remaining* ten generic wired lessons, scoped to source-level pedagogy.
+// SOURCE REVIEW is not independent pedagogy, physical-device or Windows acceptance.
+(function mq07NextTenNarratives(){
+ const rows=[
+ {
+  "id": "installation-systems-src-11",
+  "summary": "Bu sanal uygulama çanak antenin aldığı RF sinyalinin dağıtım kutusu üzerinden TV prizine ulaşma yolunu öğretir. Kablo sürekliliği sinyal kalitesi veya yayın alındığı anlamına gelmez.",
+  "explanation": "ANT1 çanak anteninin OUT ucu AD1 anten dağıtım kutusunun IN girişine, AD1/OUT ise TV1 prizinin IN ucuna bağlıdır. İlk bağlantı RF sinyalinin kaynaktan dağıtıcıya taşındığı hattı; ikinci bağlantı ise daire/priz tarafına giden hattı temsil eder. Gerçek dağıtımda kayıp, frekans bandı, LNB beslemesi, empedans ve ekranlama sonucu etkileyebilir. Bu üç elemanlı sanal şema sinyal seviyesi, BER, dB kayıp veya TV görüntüsü ölçümü yapmadığı için bu sayılar hesaplanmış sayılmaz.",
+  "goal": "ANT1/OUT → AD1/IN → AD1/OUT → TV1/IN hattını açıklayabilmek; bağlı kablo ile gerçekten ölçülmüş RF yayın kalitesini ayırmak.",
+  "steps": [
+   "ANT1, AD1 ve TV1'in görevlerini sanal sahnede ayırt et.",
+   "ANT1/OUT ile AD1/IN; AD1/OUT ile TV1/IN bağlantılarını kontrol et.",
+   "Koaksiyel RF iletimi ile şebeke L/N beslemesinin farklı kavramlar olduğunu açıkla.",
+   "Devrede RF seviye veya kanal çözücü ölçümü olmadığı için görüntü kalitesi hakkında sayısal PASS verme."
+  ],
+  "whys": {
+   "d1": "ANT1 RF sinyalinin geldiği anten kaynağını temsil eder; yayın kalitesi ölçümü değildir.",
+   "a1": "AD1/IN giriş ve AD1/OUT çıkış, sanal sinyal dağıtım yolunun ara noktalarıdır.",
+   "tv": "TV1/IN dağıtılmış anten hattının priz tarafındaki bitiş noktasıdır."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ },
+ {
+  "id": "installation-systems-src-12",
+  "summary": "Bu dersin mevcut sanal şemasında KNX veri yolu, lojik modül, aktüatör ve tek aydınlatma yükü gösterilir. Başlıkta güneşlik de geçse de güneşlik motoru/çıkışı henüz yoktur; tam aydınlatma ve güneşlik kabulü REVIEW'dur.",
+  "explanation": "KNX güç kaynağından PS1/BUS+ ve PS1/BUS− hatları A1 lojik modülünün BUS+ ve BUS− uçlarına gelir. A1/1 ve A1/2 hatları aktüatör A2'nin BUS+ ve BUS− uçlarına eğitim şemasında komut iletimini temsil eder. A2/1 ve A2/2, H1/X1 ve H1/X2 aydınlatma yüküne bağlıdır. Bu düzen yalnız gösterilen veri/çıkış yolunu açıklar: ayrı şebeke güç beslemesi, KNX telegram doğrulaması, güneşlik sürücüsü ve iki yönlü güneşlik limit kontrolü çizilmemiştir. Bu nedenle gerçek KNX standardına uygun uygulama veya çalışan güneşlik sistemi sonucu ileri sürülmez.",
+  "goal": "KNX güç/veri yolu ile aktüatör çıkışını ayrı yorumlamak; aydınlatma bağlantısını açıklamak ve eksik güneşlik kumandasını saptamak.",
+  "steps": [
+   "Sanal PS1/BUS+ ve PS1/BUS− hatlarının A1'e geldiğini gözle.",
+   "A1/1–2 ile A2/BUS+–BUS− hattını; A2/1–2 ile H1/X1–X2 yük yolunu birbirinden ayır.",
+   "KNX mesajı/kontrol davranışının ayrı doğrulama gerektirdiğini açıkla.",
+   "Sahnede güneşlik motoru, iki yön ve limit uçları bulunmadığından güneşlik deneyi yapılmış sayma."
+  ],
+  "whys": {
+   "ps": "PS1 KNX bus kaynağıdır; doğrudan şebeke lamba beslemesi olarak görülmez.",
+   "lg": "A1 BUS+/BUS− girişleri ve 1/2 uçları yalnız mevcut eğitim şemasındaki lojik yolunu temsil eder.",
+   "ac": "A2 bus uçları ve 1/2 çıkışı bir aktüatörün sanal işlevini tanıtır; üretici KNX telegramları doğrulanmadı.",
+   "h1": "H1 yalnız aydınlatma yüküdür; güneşlik motoru bulunmaz."
+  },
+  "status": "REVIEW_TITLE_CIRCUIT_MISMATCH"
+ },
+ {
+  "id": "electronic-switching-src-02",
+  "summary": "Bu 24 VDC sanal kumanda devresi START butonuna kısa süre basıldıktan sonra K1 röle bobininin kendi yardımcı kontağı üzerinden enerjili kalmasını, STOP basılınca bırakmasını öğretir.",
+  "explanation": "G1/P +24 V hattı normalde kapalı S0 STOP kontağının 21 ucuna gelir. S0/22 noktasından iki paralel kol ayrılır: normalde açık S1 START kontağı 13–14 ve K1'e ait normalde açık mühürleme kontağı 13–14. Bu iki kol K1 bobininin A1 ucunda birleşir; bobinin A2 ucu G1/M 0 V hattına döner. START geçici olarak kapanınca bobin enerjilenir, K1 yardımcı kontağı kapanır ve START serbest bırakıldıktan sonra 13–14 yardımcı yol bobini tutar. STOP açılırsa hem START hem mühürleme kolunun kaynağı kesilir ve bobin bırakır. Bir 24 V bobinin gerçek akımı ve bobin direnci verilmedikçe I=V/R için sayı uydurulmaz. Yalnız simülasyonda OFF → START/ON → START serbest/HOLD → STOP/OFF sırasını karşılaştır.",
+  "goal": "S0/21–22, S1/13–14, K1 yardımcı 13–14 ve bobin A1/A2 arasındaki mühürleme yolunu ve STOP önceliğini nedenleriyle açıklamak.",
+  "steps": [
+   "Sanal G1/P → S0/21–22 üzerinden bobin A1'e uzanan iki kolu bul.",
+   "START serbestken K1 durumunu kaydet; START'a kısa basınca K1'in değişimini izle.",
+   "START'ı serbest bıraktıktan sonra K1 yardımcı kontağının bobini nasıl tuttuğunu açıkla.",
+   "STOP durumunu değiştirerek yardımcı kolun neden artık tutma sağlayamadığını gözle.",
+   "Bobin akımını ancak simülasyonda ölçülebilir gerçek malzeme verisi varsa rakamsal kaydet."
+  ],
+  "whys": {
+   "g1": "G1/P +24 V ve G1/M 0 V, röle kumandasının sanal kaynak/dönüş uçlarıdır.",
+   "stop": "S0/21–22 normalde kapalı STOP kontağı, tüm kumanda ve tutma yollarını keser.",
+   "start": "S1/13–14 normalde açık START kontağı röleyi ilk kez çektirir.",
+   "hold": "K1 yardımcı NO 13–14 START koluna paralel kilitleme yoludur.",
+   "coil": "K1 bobini A1/A2 enerjilendiğinde aynı referanslı yardımcı kontağı kapatır."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ },
+ {
+  "id": "electronic-switching-src-04",
+  "summary": "Bu 24 VDC sanal devrede BD139 NPN transistörü, beyz akımı uygulanınca kolektör yükü üzerinden akımı anahtarlayan bir eleman olarak incelenir.",
+  "explanation": "G1/P +24 V rayı RL=1 kΩ üzerinden Q1 kolektör C ucuna; Q1 emitörü E üzerinden G1/M 0 V'a döner. Ayrı sürme yolunda +24 V, normalde açık S1'in 13–14 kontağından ve RB=4,7 kΩ direncinden Q1/B beyzine ulaşır. S1 açıkken beyz sürülmediğinden ideal modelde kolektör yolu kapalıdır, Q1/C düğümü yük üzerinden besleme potansiyeline yaklaşabilir. S1 kapandığında beyz akımı ve VBE gerilimi Q1'i iletime geçirir; kolektör gerilimi düşebilir ve RL akımı artar. Yaklaşık kazanç veya doygunluk değerlerini yalnız özgün solver sonucuna göre yorumla. İdeal üst sınır hesaplaması RL üzerinden 24 V/1 kΩ = 24 mA'dır; gerçek sonuç VCE ve model sınırlarına bağlıdır. UT33D+ sanal probu kolektör ile 0 V arasına taşıyarak iki durumu kıyasla.",
+  "goal": "RB'nin beyz akımını sınırlamasını, Q1 B/C/E uçlarının görevini, RL üzerindeki potansiyel farkın değişmesini ve gözlenen kolektör gerilimini açıklamak.",
+  "steps": [
+   "Sanal RL/1 → +24 V, RL/2 → Q1/C ve Q1/E → 0 V yolunu incele.",
+   "S1/13–14 ile RB=4,7 kΩ üzerinden Q1/B beyz sürme yolunu tanımla.",
+   "S1 açık/kapalı koşullarında Q1 kolektör gerilimini sanal multimetreyle karşılaştır.",
+   "RL=1 kΩ için yalnız teorik 24 mA üst sınırını hesapla; simülasyon akımını ayrıca doğrula."
+  ],
+  "whys": {
+   "g1": "G1 sanal 24 V DC beslemenin +24 V/0 V raylarını oluşturur.",
+   "s1": "S1/13–14 açıkken beyz sürülmez, kapandığında RB'ye sürme verilir.",
+   "rb": "RB=4,7 kΩ Q1/B beyzine giden akımı sınırlar.",
+   "q1": "Q1 BD139 NPN B/C/E uçlarıyla kontrollü kolektör yolunu temsil eder.",
+   "rl": "RL=1 kΩ kolektör yüküdür; ideal üst sınır I=24V/1kΩ=24mA'dır.",
+   "v1": "UT33D+ prob ölçümü, kolektör veya yük düğümlerinin 0 V'a göre gerilimini karşılaştırır."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ },
+ {
+  "id": "electronic-switching-src-05",
+  "summary": "Ders başlığında potansiyometre ile transistör kontrolü yazıyor; ancak mevcut sanal devre S1 butonu ve 4,7 kΩ sabit beyz direnci kullanıyor. Ayarlanabilir potansiyometre bulunmadığından başlığın vaat ettiği eşik/kademeli ayar bu sahnede yoktur.",
+  "explanation": "G1/P +24 V hattı RL=1 kΩ direnciyle Q1/C kolektörüne gelir, Q1/E ise G1/M 0 V hattına döner. S1'in 13–14 kontağı kapanırsa RB=4,7 kΩ üzerinden Q1/B beyzine sürme uygulanır ve NPN anahtarlaması incelenebilir. Mevcut şemada potansiyometrenin iki sabit ucu ve sürgü ucu olmadığı için beyz gerilimini çevirerek yumuşak eşik deneyi yapılamaz. Öğrenci bu farkı saptamalı; mevcut devrede yalnız iki durumlu S1 kontrolü için gerilim gözlemi yapmalı ve 'potansiyometreli' çalışma kabulünü REVIEW bırakmalıdır.",
+  "goal": "Gerçek B/C/E ve RB/RL yolunu açıklamak; potansiyometrenin bulunmadığını tespit edip var olmayan ayarlı giriş deneyini PASS saymamak.",
+  "steps": [
+   "G1/P → RL/1 → Q1/C ve Q1/E → G1/M yollarını sanal sahnede göster.",
+   "S1/13–14 → RB/1–2 → Q1/B sürme yolunu incele.",
+   "Projede potansiyometre ve orta uç bulunmadığını belgeleyerek başlık–devre uyumsuzluğunu açıkla.",
+   "Yalnız S1'i değiştirip sanal voltmetreyle kolektör gerilimini karşılaştır; ayarlı eşik testi diye raporlama."
+  ],
+  "whys": {
+   "s1": "S1 sanal buton sürmesidir; potansiyometre değildir.",
+   "rb": "RB=4,7 kΩ sabit dirençtir; ayarlı sürgü terminali bulunmaz.",
+   "q1": "BD139 NPN transistörün B/C/E uçları vardır, ayar elemanı eklenmemiştir.",
+   "rl": "RL=1 kΩ kolektör yüküdür.",
+   "v1": "V1 sanal ölçüm cihazı ile iki anahtarlama durumu incelenir; potansiyometre tepkisi ölçülmez."
+  },
+  "status": "REVIEW_TITLE_CIRCUIT_MISMATCH"
+ },
+ {
+  "id": "electronic-switching-src-06",
+  "summary": "Başlık gecikmeli çalışan transistör devresini tanıtsa da sanal şemada yalnız S1 butonu, RB=4,7 kΩ, RL=1 kΩ ve Q1 BD139 NPN bulunuyor. Gecikmeyi üreten RC/zamanlama elemanı yoktur; turn-on delay kabulü REVIEW'dur.",
+  "explanation": "Devrenin gerçek sanal yapısında G1/P → RL/1 → RL/2 → Q1/C ve Q1/E → G1/M kolektör yolu vardır. S1/13–14 ile RB=4,7 kΩ üzerinden Q1/B sürülür. S1 kapandığında yalnız butonun NPN anahtarlamasına etkisi sınanabilir. Zaman gecikmesini belirleyecek kondansatör, şarj/deşarj veya zamanlayıcı eklenmemiştir; dolayısıyla t=R×C ile gecikme hesabı yapılamaz ve mili-saniye cinsinden bir açılma gecikmesi kanıtsız söylenemez. Kaynağı doğrulanmış zamanlama modeli eklenmeden bu dersin gecikme kazanımı tamamlanmış sayılamaz.",
+  "goal": "Mevcut anlık B/C/E anahtarlamasını tarif etmek ve RC/zamanlama ağı olmadan gecikmeli açma davranışı iddia edilemeyeceğini açıklamak.",
+  "steps": [
+   "S1/13–14 → RB/1–2 → Q1/B sürme yolunu sanal sahnede bul.",
+   "RL/1–2 ile Q1/C/E yük akım yolunu ayırt et.",
+   "S1 konumunu değiştirerek anlık NPN davranışını gözle.",
+   "Devrede C kondansatörü veya zamanlayıcı olmadığını göster; t=R×C sayısı uydurma.",
+   "Gecikmeli açma kabulünü REVIEW olarak tut."
+  ],
+  "whys": {
+   "s1": "S1 normalde açık bir sanal butondur; kendi başına gecikme üretmez.",
+   "rb": "RB=4,7 kΩ beyz akımını sınırlar, RC zaman sabiti değildir.",
+   "q1": "Q1 NPN'nin B/C/E uçları mevcut ama gecikme ağı yoktur.",
+   "rl": "RL=1 kΩ kolektör yükü; zamana bağlı eleman değildir."
+  },
+  "status": "REVIEW_TITLE_CIRCUIT_MISMATCH"
+ },
+ {
+  "id": "electronic-switching-src-07",
+  "summary": "Başlık gecikmeli duran transistör devresini vaat ediyor; ancak bu sanal devre de S1 butonu, RB ve RL dirençleri ile Q1 BD139 NPN'den oluşuyor. Turn-off gecikmesi için enerji depolayan/zamanlayan bir eleman yoktur.",
+  "explanation": "S1/13–14 üzerinden RB=4,7 kΩ ile Q1/B beyzine sürme uygulanır. RL=1 kΩ, G1/P +24 V hattıyla Q1/C kolektörü arasında bulunur; Q1/E G1/M 0 V'a döner. S1 serbest bırakıldığında beyz sürmesi kesilir. Devrede kondansatör, zamanlayıcı veya kontrol mantığı olmadığından enerjinin ölçülebilir bir süreyle tutulması doğrulanamaz. Bu bağlantı yalnız anlık NPN anahtarlamasını tanıtır; t=R×C formülü için gerçek bir C değeri ve yol bulunmadığı sürece gecikmeli durma başlığı REVIEW kalır.",
+  "goal": "Transistörün mevcut sürme/bırakma yolunu göstermek ve gecikmeli durma için eksik zamanlama devresini saptamak.",
+  "steps": [
+   "Sanal S1/13–14 ile RB/1–2 ve Q1/B sürme yolunu incele.",
+   "RL/1–2 → Q1/C ve Q1/E → 0 V dönüşünü ayırt et.",
+   "S1 durumunu değiştirip sanal ölçüm çıktısını gözle, süreyi uydurma.",
+   "Şemada kondansatör/RC zaman sabiti bulunmadığını kaydet; gecikmeli kapanma kabulünü REVIEW bırak."
+  ],
+  "whys": {
+   "s1": "S1 iki durumlu sanal butondur; gecikme ayarı sağlamaz.",
+   "rb": "RB=4,7 kΩ beyz direnci, geçerli bir RC gecikme ağı oluşturmaz.",
+   "q1": "BD139 NPN yalnız gösterilen beyz/kolektör anahtarlamasını yapar.",
+   "rl": "RL=1 kΩ sabit yük direncidir."
+  },
+  "status": "REVIEW_TITLE_CIRCUIT_MISMATCH"
+ },
+ {
+  "id": "sensor-analog-apps-src-01",
+  "summary": "Bu sanal sıcaklık kontrol dersinde NTC ısındıkça direncinin azalması bir gerilim bölücüde algılanır; LM358P iki girişi karşılaştırarak çıkış seviyesini değiştirir.",
+  "explanation": "G1/P +24 V ve G1/M 0 V, LM358P U1'in sırasıyla pin 8 ve pin 4 besleme uçlarına gider. NTC B1'in 1 ucu +24 V'dadır; B1/2 ile R1=10 kΩ'un 1 ucu birleşerek U1 pin 3 (IN+) girişini oluşturur, R1/2 0 V'a döner. Böylece V(IN+)=24×10k/(R_NTC+10k) olur. R2=R3=10 kΩ referans bölücüsü +24 V ile 0 V arasında 12 V üretir ve U1 pin 2 (IN−) girişine verir. Modelde 25 °C için NTC yaklaşık 10 kΩ ise V(IN+)≈12 V sınırındadır; sıcaklık yükselince NTC direnci azalır ve pin 3 gerilimi artar. Pin 3 referansı geçtiğinde U1 pin 1 OUT yüksek yöne gider; altına düşünce düşük olur. Multimetrenin sanal kırmızı probu OUT, siyah probu 0 V noktasına taşınarak iki durum karşılaştırılır. Eşikte ideal olmayan davranış ve ölçülmemiş gerçek donanım ayrıdır.",
+  "goal": "NTC ve R1 gerilim bölücüsünü, R2/R3=12 V eşiğini, LM358 8/4 besleme, 3/2 kıyas ve 1 çıkış terminallerini kullanarak sıcaklık–gerilim–karar ilişkisini açıklamak.",
+  "steps": [
+   "Sanal U1 pin 8 ile +24 V, pin 4 ile 0 V arasındaki beslemeyi bul.",
+   "R2/R3=10k+10k için 12 V referansı hesapla ve pin 2'ye ulaşan hattı göster.",
+   "NTC B1/1–2 ile R1/1–2 gerilim bölücüsünü pin 3'e kadar izle.",
+   "Yalnız simülasyonda iki farklı sıcaklık seç; NTC direncini, giriş gerilimini ve OUT durumunu karşılaştır.",
+   "UT33D+ sanal probuyla OUT ile 0 V arasını ölç; eşik değerini ve sonucu gözlemle."
+  ],
+  "whys": {
+   "s1": "NTC B1 sıcaklık artınca direnci azalan model elemanıdır; R1 ile sensör gerilimini oluşturur.",
+   "r1": "R1=10 kΩ bölücünün alt koludur; IN+ sıcaklık gerilimini belirler.",
+   "r2": "R2=10 kΩ referans üst kolu; R3 ile 12 V üretir.",
+   "r3": "R3=10 kΩ referans alt kolu; U1 pin 2 eşiğini belirler.",
+   "u1": "LM358P pin 8/4 besleme, 3 IN+, 2 IN−, 1 OUT karşılaştırma çıkışıdır.",
+   "v1": "UT33D+ sanal DCV ölçümünde OUT ile 0 V arasını kıyaslamak için kullanılır."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ },
+ {
+  "id": "sensor-analog-apps-src-02",
+  "summary": "PTC sıcaklık sensörünün sıcaklık arttıkça direnç değerinin yükselmesi, gerilim bölücüsü ve LM358P karşılaştırıcının girişinde değişen bir gerilim oluşturur.",
+  "explanation": "G1/P +24 V, U1 LM358P pin 8; G1/M 0 V, U1 pin 4 besleme uçlarına bağlıdır. B1 PTC sensörü +24 V ile R1=10 kΩ arasında, R1'in diğer ucu 0 V'dadır. B1/2–R1/1 orta düğümü U1 pin 3 IN+ girişine gider. V(IN+)=24×10k/(R_PTC+10k) bağıntısıyla PTC direnci arttıkça bu gerilim azalır. R2=R3=10 kΩ +24/0 V arasından 12 V referans üretir; U1 pin 2 IN− girişindedir. Pin 3, 12 V'un üzerindeyken OUT yüksek yöne; altındayken düşük yöne gider. Ancak özgün PTC modelinde 25 °C yaklaşık 1 kΩ olabilir; bu durumda V(IN+)≈21,8 V'dur. Tipik yakın sıcaklık aralığında 12 V eşiğinin gerçekten aşılması doğrulanmadan yüksek→düşük anahtarlama PASS ilan edilmez. Öğrenci modelde seçilebilir farklı sıcaklıklarda IN+ ve OUT'u sanal probla karşılaştırır.",
+  "goal": "PTC/R1 sensör bölücüsü ile R2/R3 referansını ayırmak; 25 °C örnek hesabını ve geçiş eşiğinin gerçek simülasyonda erişilebilir olup olmadığını sorgulamak.",
+  "steps": [
+   "Sanal U1 besleme pinleri 8/4 ve giriş pinleri 3/2'nin görevlerini işaretle.",
+   "R2=R3=10 kΩ için Vref=12 V hesapla.",
+   "PTC/R1=10 kΩ bölücüsünden V(IN+)=24×10k/(R_PTC+10k) ilişkisini kur.",
+   "İki sıcaklıkta sanal PTC direnç ve IN+ değerlerini karşılaştır; eşik gerçekten aşılmadıysa çıkışın değişmemesini doğru açıkla.",
+   "UT33D+ sanal probuyla OUT–0 V ölçümünün değişip değişmediğini denetle."
+  ],
+  "whys": {
+   "s1": "B1 PTC sıcaklıkla direnci artan sensördür; R1 ile IN+ gerilimini belirler.",
+   "r1": "R1=10 kΩ sensör bölücüsünün sabit alt koludur.",
+   "r2": "R2=10 kΩ referans üst direncidir.",
+   "r3": "R3=10 kΩ referans alt direncidir; 12 V kıyas eşiğini sağlar.",
+   "u1": "LM358P pin 8/4 beslenir, pin 3 PTC bölücüsünü pin 2 ile kıyaslar.",
+   "v1": "UT33D+ sanal OUT gerilimini 0 V referansına göre ölçer."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ },
+ {
+  "id": "sensor-analog-apps-src-03",
+  "summary": "Termokupl, iki farklı metalin sıcaklık farkına bağlı oluşturduğu küçük gerilimi sıcaklık ölçüm bilgisine dönüştürür. Bu ders, K tipi termokuplun sanal ENDA ET4420 kontrol cihazı girişine giden yolunu tanıtır.",
+  "explanation": "TC1 K tipi termokuplun + ucu TIC1 ENDA ET4420'nin 9 numaralı, − ucu 10 numaralı sensör girişine gider. Modelde G1/L ve G1/N, TIC1'in sırasıyla 11 ve 12 besleme terminallerine gelir. Termokupl sinyali küçük milivolt düzeyindedir; 230 VAC besleme sinyaliyle aynı şey değildir ve sensör girişine şebeke gerilimi uygulanmış gibi anlatılamaz. Termokuplun ölçtüğü değer sıcak ve soğuk bağlantı sıcaklığı farkından etkilenir. Bu kaynakta kontrol cihazının gerçek kalibrasyonu, CJC (soğuk uç kompanzasyonu), gösterge doğruluğu veya röle çıkışı doğrulanmadığından bunlara sayısal PASS verilmez.",
+  "goal": "TC1 +/− ve ET4420 9/10 sensör girişlerini 11/12 beslemesinden ayırmak; mV termoelektrik ölçüm ile şebeke beslemesinin farklı görevlerini açıklamak.",
+  "steps": [
+   "TC1 üzerindeki +/− işaretlerini ve sanal TIC1/9 ile TIC1/10 sensör girişlerini ayırt et.",
+   "TIC1/11 ve TIC1/12 cihaz besleme uçlarının sıcaklık ölçüm sinyali taşımadığını açıkla.",
+   "Termokupl sıcaklık farkının neden milivolt düzeyinde gerilim oluşturduğunu öğretim kartından incele.",
+   "Gerçek ET4420 ölçüm hassasiyeti, CJC veya ekran sıcaklığı modeli doğrulanmadıkça rakamsal sonuç yazma."
+  ],
+  "whys": {
+   "tc": "K tipi TC1 +/− termokupl hatları küçük termoelektrik gerilim taşır.",
+   "ctl": "ENDA ET4420 9/10 termokupl girişi, 11/12 cihaz besleme terminalleridir.",
+   "g1": "G1 şemadaki sanal cihaz beslemesini temsil eder; sensör mV girişinden ayrıdır."
+  },
+  "status": "SOURCE_ENRICHED_VISUAL_REVIEW"
+ }
+];
+ for(const entry of rows){
+  const l=L.byId[entry.id];
+  if(!l||l.kind!=='wiring'||l.designStandard==='rich-reference-v1')throw Error('MQ07 next ten unexpected lesson '+entry.id);
+  if(!/Gerçek bağlantı adımları:|Bu derste yalnız “/.test(l.explanation||''))
+   throw Error('MQ07 next ten no longer template '+entry.id);
+  const before=JSON.stringify(l.project);
+  for(const id of Object.keys(entry.whys))if(!l.project.components.some(c=>c.id===id))
+   throw Error('MQ07 next ten missing component '+entry.id+' / '+id);
+  l.summary=entry.summary;l.explanation=entry.explanation;l.learningGoal=entry.goal;
+  l.beginnerSteps=entry.steps.slice();
+  l.materials=l.materials.map(m=>entry.whys[m.componentId]?{...m,why:entry.whys[m.componentId]}:m);
+  l.pedagogyReview={...(l.pedagogyReview||{}),mq07DepthVersion:'next10-v1',
+    mq07CircuitMatch:entry.status==='REVIEW_TITLE_CIRCUIT_MISMATCH'?'REVIEW':'SOURCE_CHECKED',
+    mq07ContentAcceptance:'REVIEW',windowsVisualAcceptance:false,
+    independentPedagogicalAcceptance:false,physicalAcceptance:false};
+  if(l.practiceGuide){l.practiceGuide.pedagogicalAcceptance=false;l.practiceGuide.fullyRich=false}
+  if(before!==JSON.stringify(l.project))throw Error('MQ07 next ten mutated graph '+entry.id);
+ }
+ L.mq07NextTenDepth={version:'next10-v1',ids:rows.map(x=>x.id),
+  sourceEnriched:rows.length,topologyReview:rows.filter(x=>x.status==='REVIEW_TITLE_CIRCUIT_MISMATCH').map(x=>x.id),
+  independentAcceptance:false,windowsAcceptance:false};
+})();
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
