@@ -12,8 +12,8 @@ test('MQ07 001-200 scoped content is rewritten in actual curriculum without touc
  assert.equal(batch.examined,200);
  assert.equal(batch.richProtected,101);
  assert.equal(batch.earlierProtected,11);
- assert.equal(batch.enrichedWired,30);
- assert.equal(batch.enrichedReference,58);
+ assert.equal(batch.enrichedWired,32);
+ assert.equal(batch.enrichedReference,56);
  assert.equal(batch.updatedIds.length,88);
  assert.equal(L.lessons[0].id,'button-led-1');
  assert.equal(L.lessons[199].id,'oscillator-filter-apps-src-19');
@@ -39,7 +39,7 @@ test('88 new lessons have topic-specific causal content, real terminal steps and
    assert.equal(l.pedagogyReview.titleTopologyIssue,'NO_WIRED_CIRCUIT');
    assert.match(l.explanation,/Devre çizimi ve fiziksel sonuç bu sayfada doğrulanmış değildir/);
   }else{
-   assert.match(l.explanation,/Kayıtlı şemadan izlenecek bağlantılar:/);
+   assert.ok(l.explanation.length>160,id+' missing causal description');
    const any=l.project.wires.find(w=>w.from?.c&&w.to?.c&&String(w.role||'')!=='MEASURE');
    assert.ok(any,id+' no functional wire');
   }

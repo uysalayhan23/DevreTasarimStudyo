@@ -22,6 +22,7 @@ test('Hall and optical first-200 lessons now have verified 5-element, 7-wire sce
   assert.ok(l.explanation.includes('24 V DC'));
   assert.ok(l.explanation.includes('K1/13'));
   assert.ok(l.beginnerSteps.length>=5);
+  assert.equal(l.pedagogyReview.mq07CircuitMatch,'SOURCE_ALIGNED');
   assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false);
   assert.equal(l.pedagogyReview.windowsVisualAcceptance,false);
   assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id===id));

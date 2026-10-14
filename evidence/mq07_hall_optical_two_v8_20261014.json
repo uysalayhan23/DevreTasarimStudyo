@@ -2,7 +2,6 @@
   "date": "2026-10-14",
   "repo": "uysalayhan23/DevreTasarimStudyo",
   "sourceHead": "622766d9df7952f95af284e629be788d3868f311",
-  "sourceBlob": "38efca4de2c71bb3abced9731b38df593077c2df",
   "operation": "MQ-07 two additional new physical simulation graphs in first 200; concurrent existing sensor13 and sensor14 preserved",
   "newlyRepaired": [
     "sensor-analog-apps-src-20",
@@ -159,5 +158,7 @@
     "independentPedagogy": "REVIEW",
     "first200": "PARTIAL_REVIEW"
   },
-  "actions": 0
+  "actions": 0,
+  "scopeStatus": "SOURCE_ALIGNED_AFTER_VERIFIED_V8",
+  "note": "Both Hall/optical two-lesson repairs received SOURCE_ALIGNED source status following 12/12 V8 OFF→ON→OFF phases across four sensor lessons; no independent physical or pedagogy acceptance."
 }

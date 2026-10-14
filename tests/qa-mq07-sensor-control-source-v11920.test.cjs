@@ -46,7 +46,7 @@ test('both low voltage scenarios switch relay and lamp OFF→ON→OFF using orig
 });
 test('full source and locked transformer remain unchanged in acceptance scope',()=>{
  const r=QA.audit({L,defs,Simulation});
- assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,726);
+ assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,728);
  assert.equal(r.rich,136);assert.equal(r.missingDefinitions.length,0);
  assert.equal(r.invalidWireEndpoints.length,0);
  const b=Bell.audit({L,defs,solver:Simulation});
