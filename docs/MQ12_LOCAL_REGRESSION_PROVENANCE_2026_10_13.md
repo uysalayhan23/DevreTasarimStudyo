@@ -41,3 +41,20 @@ A user-supplied, older ZIP source snapshot is not equivalent to the current GitH
 - Batch N independent source audit: **1,519/1,519 PASS** with 2,085 observations and 0 issues.
 
 **Acceptance:** the complete 19-test-source/9-runner package has **not** been executed from this older ZIP; the full-suite status remains **INCOMPLETE**. Sensor physics and reactive restoration remain **REVIEW**. No GitHub Actions; GitHub commits use `[skip ci]`.
+
+
+## 2026-10-14 — GitHub 19+9 inventory and physical target / reactive native checks
+
+**GitHub main inventory:** Compared the lists in `scripts/qa-mq12-complete-local-suite-v11920.cjs` against the live `tests/` and `scripts/` directory listings: **19/19 required test sources and 9/9 runners exist**, no missing remote source paths. Source presence does not count as executed tests.
+
+**Local snapshot:** `DevreTasarimStudyo-main(2).zip` predates the later MQ-12 test/runner additions. Direct GitHub-to-local archive transfer and unauthenticated `git ls-remote` are unavailable in this runtime. Therefore the **full 19-test-file suite has not run**, remains `INCOMPLETE`; no inferred 71/71 or full project PASS. The locally available original source and Batch N audits were actually run: 1,655 lesson-source QA PASS (722 wired, 0 missing defs), Batch N **1,519/1,519 PASS**, zero guide-source issues, 2,085 observations.
+
+**Current native solver verification:** Locally applied the previously approved BJT numeric-voltage fix to the *test copy only* of the original ZIP's `dist/simulation.js`. Its resulting **Git blob SHA `75c1b72fe35923e5b7bcb995c602957792f370b8` exactly matches GitHub main**, without a new runtime commit or canonical lesson edit. The original `dist/sensors.js` SHA `6738aefa7fdc5964d9e12ab711f9b2d257fe19ce` also matches main. The snapshot is not asserted byte-identical to all current lesson-source files.
+
+**35 sensor REVIEW lesson evidence:** 35 of 36 native wired proximity-sensor lessons have no configured physical `sensing.target`. On cloned canonical projects, drove logical state OFF→ON→OFF at 0/400/850 ms and ran the verified native solver: **105/105 stable**. Critically, `Sensors.detect().enabled` was **false at all 105 phases**. The virtual `detected` state may still follow the manually changed logical state; this is **not** evidence of a real compatible physical target, electrical rating, or installed sensor. All 35 retain REVIEW. A regression was added to the existing `tests/qa-mq12-sensor-review-reactive-v11920.test.cjs`; an equivalent test against the current solver passed **1/1** locally.
+
+**Seven reactive REVIEW lessons:** At 100 ms native increments to 10,000 ms, ran **707/707 stable** current-solver phases. All four RC lessons retain approximately **7.5333656 V** on their multimeters at 10 s without a discharge branch; all three RL examples have near-zero meter current by that point. These results support continued restoration REVIEW until measurement tolerances and intended discharge/decay conditions are verified. No canonical wires or physical product data were changed.
+
+**Executed test scope:** `node --test` on the three test sources available in the old ZIP plus the new 35-sensor local regression yielded **11/11 PASS**, **0 FAIL**. This is a deliberately scoped set, not the unavailable 19-file full package. The earlier 2,166/2,166 independent stability result was re-executed in the original ZIP snapshot, with 8 original restoration REVIEW events retained; the local source does not replace the newer GH acceptance status of **35 sensor + 7 reactive behavior REVIEW**.
+
+**Actions: not used. Commits: `[skip ci]`. Full behavioral/physical acceptance remains REVIEW.**
