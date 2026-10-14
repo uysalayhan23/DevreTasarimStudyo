@@ -2561,7 +2561,7 @@ for(const item of mq07LowVoltageSensors){
  ];
  const why={g1:'Sanal +24 V/0 V beslemeyi sağlar; gerçek tesisat şebekesi değildir.',s1:'B1 algılama durumunu BK PNP çıkışına aktarır; BN ve BU besleme terminalleridir.',k1:'K1 A1/A2 bobini BK çıkışından sanal kumanda alır.',ka1:'Aynı K1 bobini enerjilenince 13–14 NO kontağı kapanıp yük yolunu tamamlar.',h1:'H1 X1/X2 yükü, kontağın kapanmasının öğrencinin görebileceği sonucudur.'};
  lesson.materials=materialRows(p).map(m=>why[m.componentId]?{...m,why:why[m.componentId]}:m);
- lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07CircuitMatch:'SOURCE_ALIGNED',titleTopologyStatus:'SOURCE_ALIGNED',titleTopologyIssue:null,previousReason:'NO_WIRED_CIRCUIT',sensor24vV1:true,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',mq07CircuitMatch:'SOURCE_ALIGNED',titleTopologyStatus:'SOURCE_ALIGNED',titleTopologyIssue:null,previousReason:'NO_WIRED_CIRCUIT',sensor24vV1:true,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
  lesson.safety='Yalnız sanal düşük gerilimli laboratuvar. Gerçek devre bağlantısı veya enerji verme yönergesi değildir.';
  L.mq07Batch200.reviewIds=originalReview.filter(x=>x.id!==lesson.id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),lesson.id];
