@@ -1861,3 +1861,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Mevcut MQ-12 5 testinin ve first-ten 2 testinin callback'leri V8 host uyarlamasıyla **7/7 PASS**. **Node `--test` koşusu değildir; tam Node 19+9 ve Windows/Edge kapıları açık.**
 - Batch N **1.519/1.519 kaynak QA PASS**, 2.085 doğrulanmış rehber bağlantısı, sıfır sorun; pedagojik/ürün kabulü değildir.
 - Kanıt: `evidence/mq12_first10_20261014_v8_execution.json` ve dört ayrı güncel JSON. MQ-13 süreklilik: yalnız docs/evidence, canonical, 5/5 temel kaydı, solver, launcher korunuyor. MQ-00 hedef V8 VERIFY/PASS; genel 42 açık davranış REVIEW; Actions kullanılmadı.
+
+
+## 2026-10-14 — MQ-07 pedagojik kalite açığı / NTC karşılaştırıcı pilotu (OPEN: Windows + 1.518 diğer rehber)
+
+- Kullanıcının gerçek ekran kanıtı, `opamp-apps-src-08` dersinde tekrar eden genel açıklamaların devrenin işlevini öğretmediğini ortaya koydu. Kök neden: genel opamp karşılaştırıcı şablonu NTC başlıklı derse **NTC yerine RV1 potansiyometre** koyuyordu. Hedefli onarım `dist/tutorial-pedagogy.js` içindeki bu derse özel kaynak seçimidir; diğer kanonik dersler ve rich kilitler korunur.
+- Açıklama artık LM358P **8/4 besleme, 2 eviren giriş, 3 evirmeyen giriş, 1 OUT**, `R2=R3=10 kΩ` → **12 V referans**, B1 NTC/R1 → sıcaklıkla değişen gerilim ve 15 °C / 35 °C sanal ölçüm yöntemini açıklar. `tutorial-practice-guide-batch-n.js` aşamalı sanal deney ekler; UI penceresi boyutu değişmez.
+- Özgün GitHub kaynaklarından V8'dе **15,25,35 °C stabil**, 35 °C'de yüksek OUT, 15 °C'de düşük OUT, 1.655 ders/722 kablo kaynak QA PASS, Batch N 1.519/1.519 kaynak PASS. Bu Node `--test`, Windows UI veya fiziksel donanım onayı değildir. Kalıcı `tests/tutorial-ntc-comparator-context-v11920.test.cjs` regresyonu eklendi; tamamlanmış çağrı testlerinin kanıtı ayrıca değerlendirilir.
+- **Genel müfredat pedagojik kabulü OPEN:** 1.519 otomatik rehber hâlâ `pedagogicalAcceptance=false` / `fullyRich=false`; 136 önceki zengin ders korunur. Geniş ölçüt ve P1→toplu QA programı: `docs/TUTORIAL_PEDAGOGICAL_ACCEPTANCE_ROADMAP_2026_10_14.md`. 35 sensör + 7 reaktif davranış REVIEW ayrı açık. Actions 0, `[skip ci]`.

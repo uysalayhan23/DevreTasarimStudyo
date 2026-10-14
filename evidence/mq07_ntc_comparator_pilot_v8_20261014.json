@@ -1,0 +1,49 @@
+{
+  "head": "a0923b60d02ef52cc55bad22faef6cb1ef0afc07",
+  "correctedId": "opamp-apps-src-08",
+  "full": {
+    "status": "PASS",
+    "total": 1655,
+    "wired": 722,
+    "missingDefinitions": 0,
+    "invalidWireEndpoints": 0,
+    "errors": 0,
+    "shortCircuits": 0,
+    "blocked": 0
+  },
+  "thermal": [
+    {
+      "temp": 15,
+      "output": 0.01999996000008,
+      "diff": -2.711048947327626,
+      "stable": true,
+      "blocked": false,
+      "shortCircuit": false
+    },
+    {
+      "temp": 25,
+      "output": 0.01999996000008,
+      "diff": 0,
+      "stable": true,
+      "blocked": false,
+      "shortCircuit": false
+    },
+    {
+      "temp": 35,
+      "output": 22.014358438627067,
+      "diff": 2.540580255528303,
+      "stable": true,
+      "blocked": false,
+      "shortCircuit": false
+    }
+  ],
+  "batch": {
+    "status": "PASS",
+    "examined": 1519,
+    "observations": 2085,
+    "issues": 0
+  },
+  "actionsUsed": 0,
+  "execution": "original GitHub JS in V8 with in-memory fs/path/vm shims; Node --test and Windows UI NOT RUN",
+  "otherLessonCountUnchanged": 1655
+}

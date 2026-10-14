@@ -1062,6 +1062,8 @@ function workshopProject(id,title){
 
 function explicitTitleProject(l){
  const t=l.title.toLocaleLowerCase('tr-TR'),id=l.id,title=l.title;
+ // MQ-07 targeted correction: an NTC lesson must actually contain an NTC, not RV1.
+ if(id==='opamp-apps-src-08')return {p:resistiveSensorComparatorProject(id,title,'sensor-ntc','NTC sıcaklık sensörü'),kind:'wiring'};
  if(l.topicId==='dc-circuits'&&t==='doğru akım ve kullanım alanları')return {p:dcUsageProject(id,title),kind:'explore',explanation:'Serbest prob deneyi ile doğru akımın yönünü, gerilim farkını ve Ohm Kanunu ilişkisini gözlemleyin.'};
  if(/soft starter/.test(t))return topicBoard(id,title,[['softstarter','Soft-starter güç modülü'],['motor-3p','Üç faz asenkron motor']]);
  if(/lcr metrelerin yapısı|lcr metre/.test(t))return topicBoard(id,title,[['unit-ut33d-plus','UNI-T UT33D+ multimetre'],['tutorial-lcr-meter','LCR metre'],['resistor','Ölçüm örneği direnç'],['test-probe-red','Kırmızı prob'],['test-probe-black','Siyah prob']]);
@@ -2088,6 +2090,30 @@ for(const id of ['dc-circuits-src-07','dc-circuits-src-08']){
  l.steps=p.wires.filter(w=>!w.probeLead&&!probeIds.has(w.from?.c)&&!probeIds.has(w.to?.c)).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Güç devresinin terminallerini bağlayın.',why:w.tutorialWhy||'Bu iletken ölçüm devresinin gerçek yolunu tamamlar.',color:w.color,role:w.role,size:w.size}));
  l.materials=materialRows(p);
  if(l.pedagogyReview){l.pedagogyReview.componentIds=p.components.map(c=>c.typeId);l.pedagogyReview.physicalProbes=true}
+}
+
+// MQ-07 pedagogy pilot: explanation is grounded in the actual canonical terminal graph.
+const ntcLesson=L.byId['opamp-apps-src-08'];
+if(ntcLesson){
+ const p=ntcLesson.project;
+ const hasNTC=p.components.some(c=>c.id==='s1'&&c.typeId==='sensor-ntc');
+ const hasPot=p.components.some(c=>c.typeId==='potentiometer');
+ const hasPins=['8','4','2','3','1'].every(pin=>p.components.some(c=>c.id==='u1'&&c.typeId==='lm358p-dip8'));
+ if(!hasNTC||hasPot||!hasPins)throw Error('NTC comparator lesson mismatched with actual circuit');
+ ntcLesson.summary='Bu devre sıcaklığın değişmesini iki seviyeli bir elektriksel karara dönüştürür: NTC ısındığında direnci azalır; R1 üzerindeki sensör düğümü gerilimi yükselerek LM358P karşılaştırıcının yaklaşık 12 V eşiğini geçebilir. Çıkış değişimi UNI-T UT33D+ ile izlenir. Bu yalnız sanal eğitim devresidir.';
+ ntcLesson.explanation='G1 ayarlı kaynak +24 V verir. LM358P U1 entegresinde 8 numaralı bacak V+ besleme ucuna +24 V, 4 numaralı V− ucuna 0 V bağlanır. R2 ve R3 10 kΩ dirençler +24 V ile 0 V arasında gerilim bölücü kurar: Vref = 24 × 10/(10+10) = 12 V. Ortak düğüm U1 pin 2 (IN−, eviren giriş) ucuna gider. B1 NTC sensörü +24 V ile R1=10 kΩ arasında, R1 ise 0 V hattındadır. NTC ile R1 birleşimi U1 pin 3 (IN+, evirmeyen giriş) ucuna bağlanır. Giriş gerilimi V(IN+) = 24 × 10 kΩ/(R_NTC + 10 kΩ) bağıntısıyla değişir. Modelde 25 °C için R_NTC ≈ 10 kΩ ve giriş yaklaşık 12 V olur. Sıcaklık yükselip NTC direnci azalınca pin 3 gerilimi artar. Pin 3, pin 2 üzerindeki 12 V referansı aştığında karşılaştırıcı pin 1 (OUT) yüksek seviyeye geçer; altında kaldığında düşük seviyede kalır. Sanal solver yüksek durumda yaklaşık 22 V, düşük durumda yaklaşık 0 V gösterir; gerçek LM358P çıkışı ideal +24 V olmak zorunda değildir. UNI-T UT33D+ DCV ölçümünde kırmızı prob OUT/pin 1 noktasına, siyah prob 0 V referansına temas ettirilerek iki durum gözlenir.';
+ ntcLesson.learningGoal='LM358P besleme uçları 8/4, karşılaştırma girişleri 2/3 ve çıkış ucu 1 ile NTC/R1 sensör bölücüsünü, R2/R3 12 V referansını ve sıcaklık arttıkça çıkışın neden değiştiğini ölçümle açıklamak.';
+ ntcLesson.beginnerSteps=[
+  'Önce U1 beslemesini izle: pin 8 → +24 V, pin 4 → 0 V. Bu bağlantılar olmadan op-amp karşılaştırma yapamaz.',
+  'R2 ve R3 dirençlerinin 10 kΩ + 10 kΩ olduğunu bul. +24 V kaynağın orta noktadaki referansı yaklaşık 12 V yapmasını hesapla; U1 pin 2 (IN−) ucuna ulaşan hattı izle.',
+  'B1 NTC → R1 (10 kΩ) → 0 V bağlantısını bul. NTC/R1 birleşimini U1 pin 3 (IN+) ucuna kadar takip et.',
+  'Yalnız sanal laboratuvarda NTC sıcaklığını 15 °C ve 35 °C olarak değiştir. Direnç azaldıkça pin 3 geriliminin neden yükseldiğini açıkla.',
+  'UNI-T UT33D+ DCV kademesinde kırmızı probu U1 pin 1 (OUT), siyah probu 0 V referansına getir. Düşük ve yüksek çıkışı karşılaştır; ölçülen değeri kaydet.',
+  'Sonuç: V(IN+) > 12 V ise OUT yüksek, V(IN+) < 12 V ise OUT düşük. Bunun yalnız simülasyon sonucu olduğunu ve gerçek devrede ayrıca üretici sınırlarının kontrol edilmesi gerektiğini söyle.'
+ ];
+ const why={s1:'NTC sıcaklığa bağlı dirençtir; sıcaklık yükseldikçe R_NTC düşer ve sensör bölücüsünün gerilimi yükselir.',r1:'10 kΩ alt direnç; NTC ile birlikte U1 pin 3 için sıcaklığa bağlı gerilim bölücüsünü kurar.',r2:'10 kΩ üst referans direnci; R3 ile +24 V kaynaktan 12 V referans üretir.',r3:'10 kΩ alt referans direnci; R2 ile U1 pin 2 için 12 V eşik oluşturur.',u1:'LM358P pin 8/+24 V ve pin 4/0 V ile beslenir; pin 3 sensörü, pin 2 referansı kıyaslar; pin 1 çıkışı bildirir.',v1:'UNI-T UT33D+ DCV kademesinde OUT/pin 1 ile 0 V arasındaki çıkış gerilimini ölçer.'};
+ ntcLesson.materials=materialRows(p).map(m=>why[m.componentId]?{...m,why:why[m.componentId]}:m);
+ ntcLesson.pedagogyReview={...(ntcLesson.pedagogyReview||{}),ntcTopicGraphCorrected:true,causalPinNarrativeAdded:true,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
 L.count=L.lessons.length;
