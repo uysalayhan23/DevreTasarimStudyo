@@ -18,7 +18,7 @@
       "installation-systems-src-06"
     ],
     "graphChangeCount": 2,
-    "missingCircuitOrUnverifiedTitleReviewCount": 64
+    "missingCircuitOrUnverifiedTitleReviewCount": 63
   },
   "validation": {
     "originalSourceV8": {
@@ -92,5 +92,55 @@
     "A separate corrected LDR comparator uses a genuine ldr-gl5528 instead of RV1.",
     "User-directed transformer-only virtual bell model replaces old L/N-to-bell educational circuits; 15 affected lessons and 38 virtual phases validated. Physical supplier rating and full UI QA remain open."
   ],
-  "updatedOn": "2026-10-14"
+  "updatedOn": "2026-10-14",
+  "followupSingleSwitchLighting": {
+    "date": "2026-10-14",
+    "sourceHead": "a1288f85d04cb8a8ea18618ba4666b702f088a75",
+    "lessonId": "installation-systems-src-01",
+    "fix": "Replaced 4 unconnected reference-only components with 4 true virtual terminal wires (G1→Q1→S1→H1→G1), source-grounded explanation and five learner steps",
+    "catalogModels": 940,
+    "allLessons": 1655,
+    "wiredSolver": {
+      "status": "PASS",
+      "total": 723,
+      "passed": 723,
+      "missingDefinitions": 0,
+      "blocked": 0,
+      "shortCircuits": 0,
+      "unstable": 0
+    },
+    "switchScenarios": [
+      {
+        "breakerOpen": false,
+        "lightSwitchClosed": false,
+        "lit": false
+      },
+      {
+        "breakerOpen": false,
+        "lightSwitchClosed": true,
+        "lit": true
+      },
+      {
+        "breakerOpen": true,
+        "lightSwitchClosed": false,
+        "lit": false
+      },
+      {
+        "breakerOpen": true,
+        "lightSwitchClosed": true,
+        "lit": false
+      }
+    ],
+    "virtualBell": {
+      "id": "BELL_TRANSFORMER_V1",
+      "status": "PASS",
+      "circuits": 15,
+      "states": "38/38"
+    },
+    "first200TechnicalReviewRemaining": 63,
+    "independentPedagogicalAcceptance": false,
+    "windowsVisualAcceptance": "NOT_RUN",
+    "fullNativeNode": "NOT_RUN",
+    "actionsUsed": 0
+  }
 }

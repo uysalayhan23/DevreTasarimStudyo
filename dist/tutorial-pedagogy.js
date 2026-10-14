@@ -2387,6 +2387,51 @@ for(const id of ['installation-systems-src-05','installation-systems-src-06']){
 if(L.mq07FirstTenDepth?.topologyReview)
  L.mq07FirstTenDepth.topologyReview=L.mq07FirstTenDepth.topologyReview.filter(id=>!['installation-systems-src-04','installation-systems-src-06'].includes(id));
 
+
+// MQ-07 P1 first-200 real repair: one-switch lighting. Virtual teaching only.
+// A heading plus four floating parts is NOT a functional lighting circuit.
+const singleLight=L.byId['installation-systems-src-01'];
+if(singleLight){
+ const p=singleLight.project;
+ const types=p.components.map(c=>c.typeId);
+ if(JSON.stringify(types)!==JSON.stringify(['supply-1p','mcb-1p','wall-switch','ceiling-light'])||p.wires.length)
+  throw Error('MQ07 single-lighting unexpected source topology; refuse to overwrite canonical graph');
+ p.wires=[
+  W('pg0','L','pg1','1','Sanal kaynak L → Q1/1','Koruma elemanı aydınlatma kolunun başındadır.','#e53935','L1'),
+  W('pg1','2','pg2','13','Q1/2 → S1/13','Koruma elemanından çıkan sanal hat tek kutuplu anahtarın girişine ulaşır.','#e53935','L1'),
+  W('pg2','14','pg3','X1','S1/14 → H1/X1','Anahtar kapalı konuma geçince armatürün besleme tarafındaki yol tamamlanır.','#e53935','L1'),
+  W('pg3','X2','pg0','N','H1/X2 → sanal kaynak N','Armatürün sanal dönüş hattı devrenin elektriksel halkasını tamamlar.','#1e88e5','N')
+ ];
+ p.referenceOnly=false;
+ p.tutorialLesson.phase='demo';p.tutorialLesson.step=0;
+ const q=p.components.find(c=>c.id==='pg1'),s=p.components.find(c=>c.id==='pg2');
+ q.ref='Q1';q.label='Tek kutuplu sanal koruma anahtarı';
+ s.ref='S1';s.label='Adi aç/kapa anahtarı';
+ p.components.find(c=>c.id==='pg3').ref='H1';
+ p.components.find(c=>c.id==='pg0').ref='G1';
+ q.state=false; // in this solver false is closed, true is open
+ singleLight.kind='wiring';
+ singleLight.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ singleLight.summary='Bu sanal aydınlatma devresinde S1 anahtarı tek bir H1 lambasını açıp kapatır. Anahtar açıkken lambaya enerji yolu tamamlanmaz; kapalıyken Q1 üzerinden gelen sanal besleme lambaya ulaşır. Devre yalnız yazılım içindeki elektrik modelidir; gerçek şebekede bağlantı uygulaması değildir.';
+ singleLight.explanation='Bu devrenin amacı, bir odadaki lambayı tek noktadan kumanda etmenin mantığını göstermektir. G1 sanal beslemedir; Q1 koruma anahtarı, S1 adi anahtar, H1 ise armatürdür. Şemada sanal L hattı Q1/1 girişine, Q1/2 çıkışı S1/13 girişine, S1/14 çıkışı H1/X1 noktasına ve H1/X2 dönüşü G1/N noktasına gider. Anahtarın 13–14 kontağı açıksa elektriksel halka kesilir: H1 ışık vermez. S1 sanal anahtarı kapatılınca 13–14 birleşir ve H1 besleme–dönüş halkası tamamlanır; lamba yanabilir. Q1 sanal olarak açıldığında S1 kapalı olsa da besleme kesilir. Öğrenci sanal S1 konumunu değiştirerek H1 yanıyor mu gözler; ardından Q1 durumunun sonuca etkisini karşılaştırır. Bu test bir elektrik tesisatı montaj tarifi değil, simülasyon içindeki neden–sonuç incelemesidir. Kaynak gerilimine ve armatür modeline ait kesin sayısal değer ölçülmedikçe varsayılmaz. Kayıtlı şemadan izlenecek bağlantılar: G1/L → Q1/1; Q1/2 → S1/13; S1/14 → H1/X1; H1/X2 → G1/N.';
+ singleLight.learningGoal='Sanal Q1 koruma elemanının, S1/13–14 aç/kapa kontağının ve H1 armatürünün görevlerini; açık, kapalı ve koruma kesik hallerinde devrenin neden farklı davrandığını açıklamak.';
+ singleLight.beginnerSteps=[
+  'Ekranda G1 sanal kaynak, Q1 koruma anahtarı, S1 adi anahtar ve H1 armatürünü bul; dördünün görevlerini ayır.',
+  'S1 açıkken H1 durumunu simülasyonda gözle ve devre halkasının nerede kesildiğini anlat.',
+  'S1 sanal anahtarını kapatıp simülasyonu yeniden çalıştır; H1’in davranışının neden değiştiğini kendi cümlenle söyle.',
+  'S1 kapalı kalırken Q1’i sanal olarak aç; koruma kesildiğinde lambanın niçin enerjisiz kaldığını gözle.',
+  'Sanal testten sonra farkı özetle: bir anahtarın kontrol etmesi ile koruma elemanının devreyi ayırması aynı amaç değildir.'
+ ];
+ const roles={pg0:'G1 sanal enerjiyi temsil eder; gerçek şebeke üzerinde işlem yapılmaz.',pg1:'Q1 aydınlatma kolunu sanal olarak ayırabilen koruma elemanıdır.',pg2:'S1 yalnız H1 için 13–14 kontağını açıp kapatan tek kutuplu anahtardır.',pg3:'H1 anahtarın durumuna göre etkinleşen görsel armatür yüküdür.'};
+ singleLight.materials=materialRows(p).map(m=>({...m,why:roles[m.componentId]||m.why}));
+ singleLight.pedagogyReview={...singleLight.pedagogyReview,titleTopologyIssue:null,titleTopologyStatus:'SOURCE_ALIGNED',mq07CircuitRepair:'SINGLE_SWITCH_LIGHTING_VIRTUAL_V1',electricalSourcePending:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+ singleLight.safety='Yalnızca yazılım içindeki sanal aydınlatma devresidir. Gerçek şebeke bağlantısı uygulaması değildir.';
+ const before=L.mq07Batch200?.reviewIds||[];
+ if(!before.some(x=>x.id===singleLight.id&&x.reason==='NO_WIRED_CIRCUIT'))throw Error('Expected MQ07 review entry absent');
+ L.mq07Batch200.reviewIds=before.filter(x=>x.id!==singleLight.id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),singleLight.id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

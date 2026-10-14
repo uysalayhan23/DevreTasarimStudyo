@@ -57,7 +57,7 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
 });
 
 test('all known unbuilt first-200 circuits remain REVIEW, not false pedagogy acceptance',()=>{
- assert.equal(batch.reviewIds.length,64);
+ assert.equal(batch.reviewIds.length,63);
  assert.ok(batch.reviewIds.some(x=>x.id==='opamp-apps-src-11'&&x.reason==='MISSING_REQUIRED_SECOND_INPUT'));
  assert.ok(batch.reviewIds.some(x=>x.id==='sensor-analog-apps-src-11'&&x.reason==='MISSING_DIMMER_POWER_STAGE'));
  assert.equal(batch.reviewIds.some(x=>x.id==='opamp-apps-src-07'),false);
