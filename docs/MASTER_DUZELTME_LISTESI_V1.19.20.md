@@ -1884,3 +1884,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - MQ-05/MQ-12 özgün V8: **4/4 yeni regresyon** ve **1.655/1.655 kaynak, 722/722 solver başlangıç, 10/10 üç faz kararlı, 5/5 kumandalı sanal tepki/geri dönüş**; kalan beş pasif/referans senaryoya sahte yük yanıtı PASS verilmedi. Kaynak terminal eksik/kısa devre/blocked 0. **136 rich tamamen aynı, 1.655 projenin kabloları/bileşenleri aynı**, değişen içerik ID yalnız 10.
 - MQ-07 semantik envanter: genel özet **523→513**, genel açıklama **350→340** (diğer 1.519 ders için nihai pedagojik kabul hâlâ açık). Batch N **1.519/1.519 kaynak QA** korunur. Windows `file:///` / gerçek fiziksel ürün/bağımsız öğretmen kabulü **NOT_RUN/REVIEW**.
 - QA kanıtı: `evidence/mq07_first10_wired_depth_20261014.json`; kalıcı test `tests/qa-mq07-first10-pedagogical-v11920.test.cjs`. MQ-07 lider → MQ-05 kaynak → MQ-12 V8 test → MQ-13 136 rich/canonical kilit → MQ-00 **SOURCE PASS, FINAL OPEN**. Actions 0; commit `[skip ci]`.
+
+
+## 2026-10-14 — MQ-07 ilk 10 kablolu derse GERÇEK kaynak düzeltmesi (2 REVIEW)
+
+- `dist/tutorial-pedagogy.js` üzerinde ilk 10 şablon dersin `summary`, `explanation`, `learningGoal`, `beginnerSteps` ve `materials.why` metinleri gerçek terminaller, işlev/neden-sonuç, gerekliyse hesap, ölçüm sınırları ve öğrenci sanal deneylerine göre **fiilen değiştirildi**. Kimlikler ve bütün canonical grafikleri sabit tutuldu.
+- Önemli iki açık şema uyumsuzluğu: `installation-systems-src-04` (3 noktadan kontrol için ara vaviyen eksik) ve `installation-systems-src-06` (2/3 butonlu zil başlığında yalnız 1 buton) **REVIEW**. Öğrenciye yanlış işlev öğretilmiyor.
+- Gerçek özgün V8 kaynak QA: 1655 ders/722 solver stabil, 939 tanım, 7250 bileşen, 16478 terminal ucu, 0 kaynak/bağlantı hatası. Batch N 1519/1519 PASS. Yeni regresyon 2/2 V8 callback PASS. Bu Node --test veya Windows görsel kabulü değildir.
+- Kanıt `evidence/mq07_wired_first10_enrichment_20261014.json`; ders düzeltme özeti `docs/MQ07_WIRED_FIRST10_ENRICHMENT_20261014.md`. Kalan 1509 otomatik ders ve 2 uyuşmazlık, Windows ve pedagojik kabul kapıları OPEN. MQ-00 pilot SOURCE UPDATED, general acceptance REVIEW. Actions 0; [skip ci].

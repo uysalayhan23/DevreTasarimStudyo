@@ -1,0 +1,110 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceParentSha": "6cd3525bbecde2e8824aa22ca3a8d49b4c2d7683",
+  "category": "MQ-07 ACTUAL LESSON SOURCE ENRICHMENT (NOT JUST INVENTORY)",
+  "changedLessonIds": [
+    "installation-grounding-src-01",
+    "installation-grounding-src-02",
+    "installation-systems-src-02",
+    "installation-systems-src-03",
+    "installation-systems-src-04",
+    "installation-systems-src-05",
+    "installation-systems-src-06",
+    "installation-systems-src-08",
+    "installation-systems-src-09",
+    "installation-systems-src-10"
+  ],
+  "sourcePatch": {
+    "path": "dist/tutorial-pedagogy.js",
+    "blobSha": "f0a1df0505f50bf5b24d191f25c1f575264de20b"
+  },
+  "newTest": {
+    "path": "tests/qa-mq07-wired-first-ten-v11920.test.cjs",
+    "blobSha": "afe80730774bce242c74d619f0ef21734865d69b",
+    "originalCallbacksV8": {
+      "executed": 2,
+      "passed": 2,
+      "failed": 0
+    },
+    "nodeTest": "NOT_RUN"
+  },
+  "sourceRuntime": "Original GitHub curriculum/catalog/Simulation.solve executed using V8 require/fs/path/vm host adapters, not Node.js",
+  "mq12Full": {
+    "status": "PASS",
+    "lessons": 1655,
+    "richPreserved": 136,
+    "practiceGuides": 1519,
+    "wired": 722,
+    "referenceOnly": 933,
+    "catalogDefinitions": 939,
+    "solverTested": 722,
+    "stable": 722,
+    "components": 7250,
+    "wireEndpoints": 16478,
+    "invalidWireEndpoints": 0,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "blocked": 0,
+    "shortCircuits": 0,
+    "oscillating": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicateLessonIds": 0
+  },
+  "batchN": {
+    "status": "PASS",
+    "scanned": 1519,
+    "richPreserved": 136,
+    "virtualWired": 525,
+    "referenceOnly": 923,
+    "referenceWithWires": 71,
+    "checkableObservations": 2085,
+    "issues": 0
+  },
+  "semanticReviewBefore": {
+    "genericSummary": 523,
+    "genericExplanation": 350,
+    "repeatedOpening": 644,
+    "genericMaterialPurpose": 715
+  },
+  "semanticReviewAfter": {
+    "genericSummary": 513,
+    "genericExplanation": 340,
+    "repeatedOpening": 634,
+    "genericMaterialPurpose": 706,
+    "semanticStatus": "REVIEW"
+  },
+  "templateLessonsEnriched": 10,
+  "sourceAligned": 8,
+  "explicitReview": [
+    {
+      "id": "installation-systems-src-04",
+      "issue": "MISSING_INTERMEDIATE_SWITCH",
+      "description": "Three-position lesson currently only has two vavien switches; canonical topology not changed"
+    },
+    {
+      "id": "installation-systems-src-06",
+      "issue": "MISSING_SECOND_AND_THIRD_BUTTON",
+      "description": "Multi-button bell lesson currently only has one pushbutton; canonical topology not changed"
+    }
+  ],
+  "acceptance": {
+    "sourceRegression": "PASS",
+    "sourceSemanticContent": "IMPROVED_NOT_INDEPENDENT_ACCEPTANCE",
+    "fullPedagogicalAcceptance": "OPEN",
+    "realNodeTests": "NOT_RUN",
+    "windowsBrowser": "NOT_RUN",
+    "userVisualAcceptance": "OPEN",
+    "physicalInstallationAcceptance": "NOT_CLAIMED"
+  },
+  "unchanged": [
+    "All lesson IDs and canonical wiring",
+    "136 accepted rich lessons",
+    "Solver/catalog code",
+    "Dashboard and Windows launcher"
+  ],
+  "actionsUsed": 0,
+  "commitPolicy": "[skip ci]"
+}
