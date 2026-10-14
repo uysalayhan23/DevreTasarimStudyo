@@ -214,6 +214,17 @@
       }
       // Passive thermocouples produce an EMF without an external supply.
       for(const c of project.components){const d=definition(byId,c);if(d?.id==='thermocouple'){const v=Devices.output(c,d).value/1000;for(let i=0;i+1<d.pins.length;i+=2){seed(c,d.pins[i].id,'tc:'+c.id+':'+i,'+','dc',v);seed(c,d.pins[i+1].id,'tc:'+c.id+':'+i,'0','dc',v)}}}
+      // MQ-07 piezo: the actual circuit has a passive low-voltage transient
+      // between the two electrodes; no external 24 V digital sensor supply.
+      for(const c of project.components){
+        const d=definition(byId,c);if(d?.id!=='tutorial-piezo')continue;
+        const pulse=Devices.piezoPulse(c,now);c._piezoMv=pulse.valueMv;
+        if(pulse.transient){
+          const domain='piezo:'+c.id,volts=pulse.valueMv/1000;
+          seed(c,'+',domain,'+','dc',volts);
+          seed(c,'−',domain,'0','dc',volts);
+        }
+      }
       for(const c of project.components){const d=definition(byId,c);if(d?.digitalIc&&DigitalIC)DigitalIC.evaluate(c,d,{dcVoltage},now)}
       for(const c of project.components){const d=definition(byId,c);if(d?.kind!=='electret-mic')continue;
         const db=Number(c.soundLevelDb??d.defaultSoundDb??60),sens=Number(d.sensitivityDbvPa??-44),pa=Math.pow(10,(db-94)/20),vrms=Math.pow(10,sens/20)*pa,phase=((now%10)/10)*Math.PI*2,v=vrms*Math.SQRT2*Math.sin(phase);

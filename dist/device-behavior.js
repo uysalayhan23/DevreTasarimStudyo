@@ -67,5 +67,13 @@
     if(d.id==='sensor-ultrasonic-analog')art+=`<path d="M20 ${d.h+85}h150" stroke="#86a2ac" stroke-width="3"/><g data-analog-handle="${c.id}" style="cursor:ew-resize"><rect x="${20+p*1.5}" y="${d.h+65}" width="18" height="40" rx="3" fill="#b8c3ca" stroke="#345"/></g><text x="${d.w/2}" y="${d.h+125}" text-anchor="middle" font-size="11" fill="#245">${o.distance.toFixed(1)} mm · yankı ${o.echoUs.toFixed(0)} µs</text>`;
     return `<g class="analog-device">${art}</g>`;
   }
-  const api={analog,powered,supplyPins,output,supply,timed,panelMeterValue,markup};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSDeviceBehavior=api;
+  // Passive two-terminal virtual piezo: decay of a transient electric potential,
+  // never a powered PNP proximity or manufacturer-calibrated pressure transducer.
+  function piezoPulse(c,now){
+    const start=c.piezoTapAt,valid=typeof start==='number'&&Number.isFinite(start)&&Number.isFinite(now);
+    const dt=valid?now-start:NaN,amplitude=Math.max(-200,Math.min(200,Number(c.piezoTapMv??100)||0));
+    const mv=Number.isFinite(dt)&&dt>=0&&dt<=1600?amplitude*Math.exp(-dt/220):0;
+    return {valueMv:mv,elapsedMs:Number.isFinite(dt)?dt:null,transient:Math.abs(mv)>1e-6,model:'VIRTUAL_IMPULSE_EXP_DECAY_NOT_SPICE'};
+  }
+  const api={analog,powered,supplyPins,output,supply,timed,panelMeterValue,markup,piezoPulse};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSDeviceBehavior=api;
 })(typeof window==='undefined'?globalThis:window);

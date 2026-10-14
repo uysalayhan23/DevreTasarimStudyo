@@ -129,7 +129,7 @@ add(box('tutorial-comparator','Dijital Karşılaştırıcı','A ve B büyüklük
 add(box('tutorial-rf-transmitter','RF Verici Bloğu','Taşıyıcı + modülasyon + çıkış',[],{refPrefix:'TX'}));
 add(box('tutorial-rf-receiver','RF Alıcı Bloğu','RF giriş + demodülasyon + ses/işaret çıkışı',[],{refPrefix:'RX'}));
 add(box('tutorial-solar-cell','Güneş Pili','Fotovoltaik enerji kaynağı',[P('+','+',150,35,'right'),P('−','−',150,70,'right')],{refPrefix:'PV'}));
-add(box('tutorial-piezo','Piezoelektrik Sensör','Mekanik titreşim → elektrik sinyali',[P('+','+',150,35,'right'),P('−','−',150,70,'right')],{refPrefix:'B'}));
+add(box('tutorial-piezo','Piezoelektrik Sensör','Mekanik titreşim → elektrik sinyali',[P('+','+',0,35,'left'),P('−','−',150,70,'right')],{refPrefix:'B',kind:'piezo',diagramOnly:false,visualOnly:false,piezoVirtual:true,model:'İki elektrotlu sanal piezo · eğitim modeli',physicalAcceptance:false,simulationNote:'Mekanik darbe sonrası kısa süreli mV gerilim; gerçek üretici kalibrasyonu veya SPICE modeli değildir.'}));
 add(box('tutorial-number-binary','İkilik Sayı Sistemi','Binary · 0 ve 1',[],{refPrefix:'NUM'}));
 add(box('tutorial-number-decimal','Onluk Sayı Sistemi','Decimal · 0…9',[],{refPrefix:'NUM'}));
 add(box('tutorial-number-hex','Onaltılık Sayı Sistemi','Hexadecimal · 0…9 / A…F',[],{refPrefix:'NUM'}));
