@@ -37,3 +37,13 @@ Tam, SHA eşit kaynak ağacının **desteklenen çalıştırılabilir ortama** a
 **Lider incelemesi:** QA/katalog çalışma bağımlılıkları belirlendi. **Çapraz denetim:** Eski ZIP'in güncel `main` eşitliği yok; kaynak bulundu diye PASS denmemeli. **MQ-12:** güncel SHA'da test **NOT_EXECUTED**. **MQ-13:** mevcut dal `main`, golden/canonical/uygulama dosyaları değiştirilmeyecek, yalnız kanıt+backlog kaydı. **MQ-00:** `BLOCKED` (icra ortamı / source transferi), tam davranış kabulü `REVIEW`. G0/G1 kaynak bulunabilirliği doğrulandı; G6/G7/G8 **açık**.
 
 **Devam koşulu:** Kullanıcıdan yerel işlem veya GitHub Actions istenmeden, yalnız gerçekten aktarılmış eksiksiz SHA eşit Node kaynak ağacı bulunursa first-10 özgün testleri ve ayrı dinamik raporlar yeniden çalıştırılacak. Kaynak bulunamazsa sayısal kabul ileri taşınmayacak.
+
+
+
+## 2026-10-14 — GitHub blob→V8 kaynak aktarımı çözüldü (önceki aktarım engeli tarihsel)
+
+- **51 özgün GitHub SHA eşit kaynak** (üç ara Git blob paketi + `tutorial-lessons.js`) çağrı sınırı korunarak, geçici bellek içi V8 ortamında çalıştırıldı; kaynak ve kanonik ders dosyaları değiştirilmedi. `evidence/mq12_first10_20261014_v8_execution.json` bireysel kaynak SHA ve yürütme envanterini tutar.
+- Özgün 939 ürünlük katalog + `Simulation.solve` + `qa-mq12-small-batches-v11920.cjs`: **classification 10/10**, **stability 10/10 (30 faz)**, **response 8/8**; `button-led-5` ve `button-relay-4` desteklenmeyen Arduino kontrolü olarak ayrı sınıflandırıldı; **restoration 7 PASS / `seal-in-1` REVIEW**.
+- Özgün iki test dosyasının 5+2 gerçek callback'i V8 içerisinde temel `node:test` ve `assert` uyum katmanıyla yürütüldü: **7/7 PASS**. Dört mühürleme devresinin START→HOLD→STOP/OFF davranışı doğrulandı. **Bu `node --test` değildir.** Tam HEAD Node 19+9 regression kapısı ve Windows/Chromium testleri açık.
+- Batch N öz kaynak QA yeniden **1.519/1.519 PASS**; 525 kablolu rehber, 923 kablosuz referans, 71 kablolu referans, 2.085 gerçek kanonik bağlantı gözlemi ve 0 hata; gerçek pedagojik/Windows kabulü değildir.
+- Dört ayrı `evidence/mq12_first10_20261014_*.json` artık `EXECUTED_ORIGINAL_GITHUB_SOURCE_V8` taşıyor ve önceki `historicalBaseline`'ı koruyor. Genel davranışta **35 sensör + 7 reaktif = 42 REVIEW** açık. MQ-00 hedef V8 kapısı yürütüldü, genel kabul REVIEW. Actions 0, `[skip ci]`.

@@ -1853,3 +1853,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Önceki regresyon kayıtları **5/5**, first-10 **classification 10/10, stability 10/10, response 8/8, restoration 7 PASS / seal-in-1 REVIEW** ve Batch N **1.519/1.519** tarihsel kaynak QA korunur; yeni `main` koşusu olarak tekrar PASS ilan edilmedi. 35 sensör + 7 reaktif davranış **REVIEW** sürer.
 - Dört ayrı fail-closed `evidence/mq12_first10_20261014_*.json` raporu bugünkü `NOT_EXECUTED` durumunu, `historicalBaseline` alanından ayırır. Aktarım stratejisi: `docs/MQ12_GITHUB_SNAPSHOT_EXECUTION_LIMITS_2026_10_14.md`.
 - MQ-12 G6/G7 açık, MQ-13 süreklilik: yalnız doküman/kanıt güncellemesi, kanonik/devre/solver/launcher ve golden değişmez; MQ-00 karar `BLOCKED`. GitHub Actions yok, `[skip ci]`.
+
+## 2026-10-14 — MQ-12 kaynak aktarımı giderildi ve ilk 10 özgün V8 solver denetimi yürütüldü
+
+- Önceki **BLOCKED** kayıt güncellendi: 51 GitHub blob SHA kaynağı V8 belleğinde birleştirildi; 939 katalog tanımı ve 1.655/722 kanonik müfredat özgün koda dayandı.
+- Yeni V8 çalıştırması: **Classification 10/10 PASS**, **Stability 10/10 PASS (30 faz)**, **Response 8/8 PASS** (2 Arduino aktüatörü kapsam dışı), **Restoration 7 PASS + seal-in-1 REVIEW**. Dört kanonik seal-in devresinde START bırakılınca HOLD, STOP ile OFF ayrıca test edildi.
+- Mevcut MQ-12 5 testinin ve first-ten 2 testinin callback'leri V8 host uyarlamasıyla **7/7 PASS**. **Node `--test` koşusu değildir; tam Node 19+9 ve Windows/Edge kapıları açık.**
+- Batch N **1.519/1.519 kaynak QA PASS**, 2.085 doğrulanmış rehber bağlantısı, sıfır sorun; pedagojik/ürün kabulü değildir.
+- Kanıt: `evidence/mq12_first10_20261014_v8_execution.json` ve dört ayrı güncel JSON. MQ-13 süreklilik: yalnız docs/evidence, canonical, 5/5 temel kaydı, solver, launcher korunuyor. MQ-00 hedef V8 VERIFY/PASS; genel 42 açık davranış REVIEW; Actions kullanılmadı.

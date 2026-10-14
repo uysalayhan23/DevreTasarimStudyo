@@ -1,0 +1,360 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "7b302409105d212aa6f227b431a05a706e8e6cfb",
+  "method": "Original GitHub source executed in V8 using in-memory require/fs/path/vm and basic node:test + assert host adapters. NOT Node.js --test.",
+  "actionsUsed": 0,
+  "sourceFiles": 51,
+  "sourceManifest": [
+    {
+      "path": "dist/simulation.js",
+      "sha": "75c1b72fe35923e5b7bcb995c602957792f370b8"
+    },
+    {
+      "path": "dist/probe-leads.js",
+      "sha": "943533577b780e643c89e205b434450d8ec71ba6"
+    },
+    {
+      "path": "dist/components.js",
+      "sha": "e8088bf23e32355dc06f7cdc6d3757bde29458aa"
+    },
+    {
+      "path": "dist/sensors.js",
+      "sha": "6738aefa7fdc5964d9e12ab711f9b2d257fe19ce"
+    },
+    {
+      "path": "dist/device-behavior.js",
+      "sha": "52c6dbe8702f2b14a94557abcbdd2f4f108a5681"
+    },
+    {
+      "path": "dist/incremental-encoder.js",
+      "sha": "584db7d80ec4a3b4f931b99446f316e93a51f0c7"
+    },
+    {
+      "path": "dist/dold-safety.js",
+      "sha": "38e643b4c4504547ad85f73b5bd822adfe6dc1b9"
+    },
+    {
+      "path": "dist/instruments.js",
+      "sha": "d6ddd67bdb18d391272a181bde75a3f6565b3128"
+    },
+    {
+      "path": "dist/v20.js",
+      "sha": "5db262de5e819f02bdd93b1ba15f72ced980725c"
+    },
+    {
+      "path": "dist/acs800.js",
+      "sha": "d764c20902e9f66baa8a3aa556efc5e8eedaffd2"
+    },
+    {
+      "path": "dist/hcfa-x2e.js",
+      "sha": "caf96c8c89e1c832355956224adb2f44948bd08e"
+    },
+    {
+      "path": "dist/current-model.js",
+      "sha": "b3c97c3f36c246dfba74a354955321bd18e84006"
+    },
+    {
+      "path": "dist/signed-flow.js",
+      "sha": "7d38fff8e46865ce0e5ae3404c62c35bd866ae33"
+    },
+    {
+      "path": "dist/plc-runtime.js",
+      "sha": "1173e9451b4134323b17135d1b08f953856b342c"
+    },
+    {
+      "path": "dist/digital-ic-runtime-v11920.js",
+      "sha": "939d819d9cbfaa036f5e77ae719cee5a86689d4a"
+    },
+    {
+      "path": "scripts/qa-mq12-small-batches-v11920.cjs",
+      "sha": "db946de90a421df6c6949b4e6c1b7c5c13179dd7"
+    },
+    {
+      "path": "scripts/qa-tutorial-1655-simulation-v11920.cjs",
+      "sha": "f5be420bda39babc72f0bd5130190088b63b4696"
+    },
+    {
+      "path": "scripts/qa-tutorial-practice-1519-v11920.cjs",
+      "sha": "532a95c03dac0816480ee0b6d66d6c27287deb34"
+    },
+    {
+      "path": "dist/library.js",
+      "sha": "f415731471c6bb095c81289f7f6936ddd9127e41"
+    },
+    {
+      "path": "dist/clamp-meter.js",
+      "sha": "eb5b17ac97357eebf2abc74e321204fd006399a7"
+    },
+    {
+      "path": "dist/installation-v118.js",
+      "sha": "ba5568a33bbdcf01f859179e485393a8903fedca"
+    },
+    {
+      "path": "dist/design-library.js",
+      "sha": "c562ce3ac8c1decd8bfa01a75bd3f78a7e59f6fa"
+    },
+    {
+      "path": "dist/electronics-library-v119.js",
+      "sha": "ea92a5470fd67ba5204bfae7ad54d13c156590f7"
+    },
+    {
+      "path": "dist/electronics-ics-v11920.js",
+      "sha": "7edcc9b46034a85661c602406facff7b626d588c"
+    },
+    {
+      "path": "dist/arduino-library.js",
+      "sha": "a0aa22ca5716fec0593c2816039da91773133313"
+    },
+    {
+      "path": "dist/dold-library.js",
+      "sha": "578175bde959305ae3159137f421ff93d02e1a8a"
+    },
+    {
+      "path": "dist/hcfa-library.js",
+      "sha": "3cc5e1e9e3adb577cfbb6ad95aa1d56b45516ff2"
+    },
+    {
+      "path": "dist/tutorial-components.js",
+      "sha": "2640e2563b67e035304bbb9386d8d62d4b813ed8"
+    },
+    {
+      "path": "dist/tutorial-source-outline.js",
+      "sha": "899bda6b10b2a8c8cc5b277dfa7722e745d1a207"
+    },
+    {
+      "path": "dist/tutorial-expanded-lessons.js",
+      "sha": "005d4a79896c789a5c9902f9c414bcc629615138"
+    },
+    {
+      "path": "dist/thermal.js",
+      "sha": "7fcf30b05a64dea4c5f5d307436c5da270a12c41"
+    },
+    {
+      "path": "dist/multimeter.js",
+      "sha": "f8e14a8c5509eaee9623d6eda3ab54ddefa25261"
+    },
+    {
+      "path": "dist/energy-analyzer.js",
+      "sha": "fe911e7110ea5b9f9f10e63c0531dbd1e237a51e"
+    },
+    {
+      "path": "dist/tutorial-mode.js",
+      "sha": "6ba756195e16bcf2b486a9245c3f042438c6f488"
+    },
+    {
+      "path": "dist/tutorial-pedagogy.js",
+      "sha": "c268c8f46e7f1c8cbe9f70c787c988bdcd75a323"
+    },
+    {
+      "path": "dist/tutorial-measurement-batch-a.js",
+      "sha": "24f94716f976494824dedec129459493fe4c4a79"
+    },
+    {
+      "path": "dist/tutorial-measurement-batch-b.js",
+      "sha": "09ea672819d3a30642a0ee3b8e400dbecf8914d2"
+    },
+    {
+      "path": "dist/tutorial-measurement-batch-c.js",
+      "sha": "54ec483cef7e7db3e1ebfd178731de018a120beb"
+    },
+    {
+      "path": "dist/tutorial-measurement-batch-d.js",
+      "sha": "3cf940c3c513b28af69ce91eb1a805f5f50c72b0"
+    },
+    {
+      "path": "dist/tutorial-dc-batch-e.js",
+      "sha": "f70772d75f38b035f931d4b503e321053721a2b7"
+    },
+    {
+      "path": "dist/tutorial-control-batch-f.js",
+      "sha": "334cf2e28e56ce9bf8a5c36832c7eba4dfaa4464"
+    },
+    {
+      "path": "dist/tutorial-timer-batch-g.js",
+      "sha": "b724e59793a2a654e31ad44d424ae023e99fb126"
+    },
+    {
+      "path": "dist/tutorial-installation-batch-h.js",
+      "sha": "0dbffd0a756109b835ffc0601e42919f8c0dfa1e"
+    },
+    {
+      "path": "dist/tutorial-next-batch-i.js",
+      "sha": "6c6a8c2e0b3b6aa24c49751314d1cb9c2e1ab975"
+    },
+    {
+      "path": "dist/tutorial-sensor-batch-j.js",
+      "sha": "088ffffc3195cb9a898d906fc5519726d555e2dc"
+    },
+    {
+      "path": "dist/tutorial-motor-batch-k.js",
+      "sha": "e40d056bad111830f2dcd2003a52d01260d82577"
+    },
+    {
+      "path": "dist/tutorial-dual-dc-batch-l.js",
+      "sha": "1744cdd4a0171e8b7c2bd7c9ac38ed4cbd123aa5"
+    },
+    {
+      "path": "dist/tutorial-topic-review-batch-m.js",
+      "sha": "88bc7803ecb2bd3e8e62f6e70e7ce7f99aa9ee5e"
+    },
+    {
+      "path": "dist/tutorial-practice-guide-batch-n.js",
+      "sha": "f30121bce71aa6c519b1abd7887e5413d51edb1e"
+    },
+    {
+      "path": "dist/tutorial-curriculum.js",
+      "sha": "a054c05f9a7c4d49cb7d1b19014beed756844926"
+    },
+    {
+      "path": "dist/tutorial-lessons.js",
+      "sha": "d6480d14d012cb2832d7a6e19702173a182e4cfd"
+    }
+  ],
+  "sourceBundleShas": [
+    "3b652692fbee9152431eac342138ca00c8993aa3",
+    "5f4f288a8a274d0356e3ce3764a9b7027fa676d4",
+    "6b3db25eaca0d6a4650faeecbecbde6a2b679f0e"
+  ],
+  "additionalSource": "d6480d14d012cb2832d7a6e19702173a182e4cfd",
+  "catalogDefinitions": 939,
+  "curriculumLessons": 1655,
+  "wiredLessons": 722,
+  "selectedLessons": 10,
+  "phaseTimesMs": [
+    0,
+    400,
+    850
+  ],
+  "firstTen": {
+    "classification": {
+      "status": "PASS",
+      "coverage": "10/10",
+      "controlled": [
+        "button-led-1",
+        "button-led-2",
+        "button-led-3",
+        "button-led-4",
+        "button-relay-1",
+        "button-relay-2",
+        "button-relay-3",
+        "seal-in-1"
+      ],
+      "unsupportedActuator": [
+        {
+          "id": "button-led-5",
+          "candidate": [
+            "arduino-button"
+          ]
+        },
+        {
+          "id": "button-relay-4",
+          "candidate": [
+            "arduino-button",
+            "arduino-relay-1ch"
+          ]
+        }
+      ],
+      "passive": [],
+      "missingDefinitions": []
+    },
+    "stability": {
+      "status": "PASS",
+      "coverage": "10/10",
+      "stableLessons": 10,
+      "stablePhases": 30,
+      "failures": []
+    },
+    "response": {
+      "status": "PASS_SCOPED_TO_SUPPORTED_CONTROLS",
+      "coverage": "8/8",
+      "pass": [
+        "button-led-1",
+        "button-led-2",
+        "button-led-3",
+        "button-led-4",
+        "button-relay-1",
+        "button-relay-2",
+        "button-relay-3",
+        "seal-in-1"
+      ],
+      "review": [],
+      "excludedUnsupported": [
+        "button-led-5",
+        "button-relay-4"
+      ]
+    },
+    "restoration": {
+      "status": "REVIEW",
+      "coverage": "8/8",
+      "pass": [
+        "button-led-1",
+        "button-led-2",
+        "button-led-3",
+        "button-led-4",
+        "button-relay-1",
+        "button-relay-2",
+        "button-relay-3"
+      ],
+      "review": [
+        "seal-in-1"
+      ],
+      "reason": "Seal-in circuit intentionally stays energized after START is released; STOP correctly turns it OFF in separate regression."
+    }
+  },
+  "v8Regression": {
+    "total": 7,
+    "passed": 7,
+    "failed": 0,
+    "cases": [
+      {
+        "name": "actuated lamp responds and restores while complete acceptance remains REVIEW",
+        "status": "PASS"
+      },
+      {
+        "name": "time-only drift cannot count as actuator response",
+        "status": "PASS"
+      },
+      {
+        "name": "unsupported catalog actuator remains separate from passive and cannot earn response PASS",
+        "status": "PASS"
+      },
+      {
+        "name": "passive circuit is stability-only, without simulated actuation acceptance",
+        "status": "PASS"
+      },
+      {
+        "name": "empty batch must not claim complete classification or full acceptance",
+        "status": "PASS"
+      },
+      {
+        "name": "first 10 canonical wired lessons use full native solver/catalog; retain latching review",
+        "status": "PASS"
+      },
+      {
+        "name": "four canonical seal-in circuits retain energy on START release and turn off on STOP",
+        "status": "PASS"
+      }
+    ]
+  },
+  "batchN": {
+    "status": "PASS",
+    "scanned": 1519,
+    "richPreserved": 136,
+    "virtualWired": 525,
+    "referenceOnly": 923,
+    "referenceWithWires": 71,
+    "checkableObservations": 2085,
+    "issues": 0,
+    "escapesMarkup": true,
+    "virtualOnlyWarning": true
+  },
+  "remaining": {
+    "originalNodeTests": "NOT_RUN",
+    "fullMq12NodeSuite": "NOT_RUN",
+    "windowsBrowser": "NOT_RUN",
+    "physicalAcceptance": "REVIEW",
+    "distinctOpenBehaviorLessons": 42
+  },
+  "canonicalGraphChanged": false
+}

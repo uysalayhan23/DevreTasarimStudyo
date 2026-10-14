@@ -3,11 +3,11 @@
   "repository": "uysalayhan23/DevreTasarimStudyo",
   "branch": "main",
   "checkedHead": "3ba745d4c35a9e3440281f67b4b932bff5b9bc3b",
-  "executionStatus": "NOT_EXECUTED",
-  "executed": false,
-  "passed": null,
-  "failed": null,
-  "qaStatus": "OPEN",
+  "executionStatus": "EXECUTED_ORIGINAL_GITHUB_SOURCE_V8",
+  "executed": true,
+  "passed": 7,
+  "failed": 0,
+  "qaStatus": "REVIEW",
   "actionsUsed": 0,
   "sourceCheck": "GitHub connector read-only source inspection; source presence does not imply solver execution",
   "evidenceRefs": [
@@ -19,9 +19,30 @@
   "note": "Historical numbers below are preserved evidence, not new 2026-10-14 live HEAD test results.",
   "gate": "restoration",
   "currentRun": {
-    "status": "NOT_EXECUTED",
-    "restorationPass": null,
-    "restorationReview": null
+    "status": "REVIEW",
+    "coverage": "8/8",
+    "pass": [
+      "button-led-1",
+      "button-led-2",
+      "button-led-3",
+      "button-led-4",
+      "button-relay-1",
+      "button-relay-2",
+      "button-relay-3"
+    ],
+    "review": [
+      "seal-in-1"
+    ],
+    "reason": "Seal-in circuit intentionally stays energized after START is released; STOP correctly turns it OFF in separate regression.",
+    "runType": "V8 source execution",
+    "sourceHead": "7b302409105d212aa6f227b431a05a706e8e6cfb",
+    "nodeTestExecuted": false,
+    "regressionV8": "7/7",
+    "phaseTimesMs": [
+      0,
+      400,
+      850
+    ]
   },
   "historicalBaseline": {
     "restorationPass": 7,
@@ -45,5 +66,6 @@
       "step": "OFF → START → HOLD after release → STOP → OFF"
     }
   },
-  "acceptance": "REVIEW_NOT_FULL_PASS"
+  "acceptance": "REVIEW_NOT_FULL_PASS",
+  "warning": "V8 execution of original sources through host shims, not a Node --test invocation or physical/electrical hardware acceptance."
 }
