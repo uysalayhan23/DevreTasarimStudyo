@@ -28,3 +28,18 @@ test('inventory separates absent test source from absent runner source',()=>{
   assert.equal(q.complete,false);
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('CLI --check fails on missing sources and never describes source presence as test PASS',()=>{
+ const cp=require('node:child_process');
+ const root=path.resolve(__dirname,'..');
+ const cli=path.join(root,'scripts','qa-mq12-complete-local-suite-v11920.cjs');
+ const result=cp.spawnSync(process.execPath,[cli,'--check'],{cwd:root,encoding:'utf8'});
+ assert.ok(result.stdout,JSON.stringify({stderr:result.stderr}));
+ const report=JSON.parse(result.stdout);
+ const expected=inventory(root);
+ assert.equal(result.status,expected.complete?0:1);
+ assert.equal(report.complete,expected.complete);
+ assert.equal(report.status,expected.complete?'SOURCES_PRESENT_UNTESTED':'INCOMPLETE');
+ assert.equal(report.executed,false);
+ assert.equal(report.passed,null);
+});
