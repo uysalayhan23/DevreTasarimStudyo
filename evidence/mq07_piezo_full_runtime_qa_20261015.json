@@ -1,0 +1,101 @@
+{
+  "task": "MQ07 Piezo virtual topology correction",
+  "testedAt": "2026-10-15",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "candidateCommit": "80016a86bb1bf22c5db84e0ab7109469838fe746",
+  "environment": "original repository JavaScript executed with V8 module wrappers; native Simulation.solve and QA.audit, no GitHub Actions",
+  "qa": "PASS",
+  "fullCurriculum": {
+    "lessons": 1655,
+    "rich": 136,
+    "topicsReviewed": 1519,
+    "practiceGuides": 1519,
+    "wired": 729,
+    "stable": 729,
+    "tested": 729,
+    "definitions": 940,
+    "componentsChecked": 7276,
+    "wireEndpointsChecked": 16600,
+    "errors": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "missingDefinitions": 0,
+    "blocked": 0,
+    "shortCircuits": 0,
+    "unstable": 0,
+    "duplicateIds": 0
+  },
+  "piezoTest": {
+    "id": "sensor-analog-apps-src-08",
+    "terminals": [
+      "+",
+      "−"
+    ],
+    "wires": 4,
+    "components": 5,
+    "oldInductiveSensorRemoved": true,
+    "piezoPresent": true,
+    "meter": "UT33D+ DCV 200mV",
+    "values": [
+      {
+        "elapsedMs": null,
+        "piezoMv": 0,
+        "meterMv": 0
+      },
+      {
+        "elapsedMs": 0,
+        "piezoMv": 100,
+        "meterMv": 100
+      },
+      {
+        "elapsedMs": 150,
+        "piezoMv": 50.56967074374725,
+        "meterMv": 50.6
+      },
+      {
+        "elapsedMs": 1000,
+        "piezoMv": 1.0615346461976674,
+        "meterMv": 1.1
+      },
+      {
+        "elapsedMs": 2000,
+        "piezoMv": 0,
+        "meterMv": 0
+      }
+    ],
+    "stable": 5,
+    "shortCircuits": 0,
+    "blocked": 0,
+    "oscillating": 0
+  },
+  "uiV8": {
+    "actions": [
+      "before tap 150ms denied",
+      "tap returns 100mV",
+      "150ms returns 50.57mV",
+      "1000ms returns 1.06mV"
+    ],
+    "nativeSolverInvoked": true,
+    "healthyRebuildAllowed": true,
+    "reviewNoticeRemoved": true
+  },
+  "review": {
+    "before": 55,
+    "after": 54,
+    "reasonCountsAfter": {
+      "NO_WIRED_CIRCUIT": 51,
+      "NO_RC_TIMING_EVIDENCE": 2,
+      "MISSING_DIMMER_POWER_STAGE": 1
+    },
+    "manufacturerCalibrationVerified": false,
+    "physicalAcceptance": false,
+    "independentPedagogicalAcceptance": false,
+    "windowsVisualAcceptance": false
+  },
+  "notExecuted": [
+    "node --test",
+    "Windows file:/// browser visual QA",
+    "physical manufacturer calibration"
+  ],
+  "actionsUsed": false
+}
