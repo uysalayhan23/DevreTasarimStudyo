@@ -60,7 +60,7 @@ function renderDashboard(){
  const q=query.toLocaleLowerCase('tr-TR').trim(),topics=L.topics.filter(t=>{const titles=L.lessons.filter(x=>x.topicId===t.topicId).map(x=>x.title).join(' ');return (filter==='all'||t.group===filter)&&(!q||(t.topic+' '+t.summary+' '+t.concepts.join(' ')+' '+titles).toLocaleLowerCase('tr-TR').includes(q))});
  grid.innerHTML=topics.map(t=>{
    const ls=L.lessons.filter(x=>x.topicId===t.topicId),topicDone=ls.filter(x=>done[x.id]?.completed).length;
-   return '<article class="tutorial-topic-card"><header><span class="tutorial-topic-icon">'+groupIcon(t.group)+'</span><div><small>'+esc(t.group)+'</small><h3>'+esc(t.topic)+'</h3></div><b>'+topicDone+'/'+ls.length+'</b></header><p>'+esc(t.summary)+'</p><div class="tutorial-concepts">'+t.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div><div class="tutorial-variants">'+ls.map(x=>'<button type="button" data-tutorial-open="'+x.id+'" class="'+(done[x.id]?.completed?'done':'')+'"><span>'+(done[x.id]?.completed?'✓':x.variant)+'</span><strong>'+esc(x.title)+'</strong><small>'+esc(x.levelName.replace(/^\d+ · /,''))+'</small></button>').join('')+'</div></article>';
+   return '<article class="tutorial-topic-card"><header><span class="tutorial-topic-icon">'+groupIcon(t.group)+'</span><div><small>'+esc(t.group)+'</small><h3>'+esc(t.topic)+'</h3></div><b>'+topicDone+'/'+ls.length+'</b></header><p>'+esc(t.summary)+'</p><div class="tutorial-concepts">'+t.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div><div class="tutorial-variants">'+ls.map(x=>'<button type="button" data-tutorial-open="'+x.id+'" class="'+(done[x.id]?.completed?'done':'')+'"><span>'+(done[x.id]?.completed?'✓':x.variant)+'</span><strong>'+esc(x.title)+'</strong><small>'+(x.pedagogyReview?.titleTopologyIssue?'Devre incelemede':esc(x.levelName.replace(/^\d+ · /,'')))+'</small></button>').join('')+'</div></article>';
  }).join('')||'<div class="tutorial-empty">Bu filtrede ders bulunamadı.</div>';
 }
 function isProbeLeadWire(l,w){
@@ -80,7 +80,7 @@ function lessonFor(project){const lessons=root.DTSTutorialLessons||L;return proj
 function sameEndpoint(a,b){return !!a&&!!b&&a.c===b.c&&a.p===b.p}
 function sameWire(step,a,b){return (sameEndpoint(step.from,a)&&sameEndpoint(step.to,b))||(sameEndpoint(step.from,b)&&sameEndpoint(step.to,a))}
 function locksEditing(project){return !!lessonFor(project)}
-function allowsGuidedWiring(project){const l=lessonFor(project),s=project?.tutorialLesson;return !!(l&&s?.phase==='rebuild'&&s.step<l.steps.length)}
+function allowsGuidedWiring(project){const l=lessonFor(project),s=project?.tutorialLesson;return !!(l&&!l.pedagogyReview?.titleTopologyIssue&&s?.phase==='rebuild'&&s.step<l.steps.length)}
 function explainLock(project){
  const E=root.DTSEditor;if(!E)return;
  if(allowsGuidedWiring(project))E.toast('Öğretici Modu: yalnız sıradaki iki terminal arasındaki kabloyu bağlayın.');
@@ -98,7 +98,7 @@ function beforeWire(project,a,b){
  return {ok:true,step:project.tutorialLesson.step};
 }
 function afterWire(project,wire){
- const l=lessonFor(project),session=project?.tutorialLesson;if(!l||session?.phase!=='rebuild')return;
+ const l=lessonFor(project),session=project?.tutorialLesson;if(!l||session?.phase!=='rebuild'||l.pedagogyReview?.titleTopologyIssue)return;
  const step=l.steps[session.step];if(!step||!sameWire(step,wire.from,wire.to))return;
  for(const lessonClamp of l.project.components.filter(c=>c.typeId==='unit-ut200a'&&c.clampedWireId)){
   const target=l.project.wires.find(w=>w.id===lessonClamp.clampedWireId);if(target&&sameWire(target,wire.from,wire.to)){const live=project.components.find(c=>c.id===lessonClamp.id);if(live){live.clampedWireId=wire.id;live.clampT=lessonClamp.clampT??.5}}
@@ -882,6 +882,18 @@ function seriesAnalysisNoteHtml(l,session,project){
  '<button type="button" data-tutorial-action="next">Paralel devre analizine geç →</button><button type="button" data-tutorial-action="home">Konu listesine dön</button></footer></div>';
 }
 
+const MQ07_TOPOLOGY_REVIEW_REASONS=Object.freeze({
+ NO_WIRED_CIRCUIT:'Bu dersin doğrulanmış bir işlevsel kablolu deneyi yok; mevcut görseller yalnız kavram veya referans olabilir.',
+ NO_RC_TIMING_EVIDENCE:'Devrede RC zamanlama ağı bulunmuyor; gecikmeli açma veya bırakma davranışı bu şemayla doğrulanamaz.',
+ TITLE_MISSING_REQUIRED_PART:'Ders piezo sensörü anlatıyor, fakat mevcut şemada endüktif yakınlık sensörü kullanılıyor; piezo işlevi doğrulanmış değildir.',
+ MISSING_DIMMER_POWER_STAGE:'LDR karşılaştırıcısı var, fakat dimmer güç ve anahtarlama katı yok; gerçek ışık kısma işlevi doğrulanmış değildir.'
+});
+function topologyReviewNotice(l){
+ const issue=l?.pedagogyReview?.titleTopologyIssue;if(!issue)return '';
+ const message=MQ07_TOPOLOGY_REVIEW_REASONS[issue]||'Bu dersin kaynak devresi ve başlık/topoloji eşleşmesi incelemede.';
+ return '<div class="tutorial-feedback warn tutorial-review-warning" role="status"><strong>DEVRE İNCELEMEDE · '+esc(issue)+'</strong><p>'+esc(message)+'</p><p>Bu model, doğrulanmış fiziksel devre veya tamamlanmış simülasyon kabulü değildir.</p></div>';
+}
+
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -905,6 +917,7 @@ function noteHtml(l,session,project){
  if(phase==='quiz'&&l.quiz){current='<section class="tutorial-current-step tutorial-quiz"><small>KONU KONTROLÜ</small><h4>'+esc(l.quiz.question)+'</h4><div class="tutorial-quiz-options">'+l.quiz.options.map((x,i)=>'<button type="button" data-tutorial-quiz="'+i+'">'+String.fromCharCode(65+i)+' · '+esc(x)+'</button>').join('')+'</div></section>'}
  if(phase==='complete')current='<section class="tutorial-complete"><b>✓ DERS TAMAMLANDI</b><p>'+(l.kind==='quiz'?'Konu kontrolünü doğru tamamladınız.':'Bağlantı sırası eksiksiz ve doğru. Şimdi simülasyonu çalıştırın. Buton ve anahtarları simülasyon sırasında istediğiniz kadar tekrar kullanabilirsiniz; mühürleme gibi tutmalı devrelerde STOP butonu devreyi bırakır ve ardından yeniden START verilebilir.')+'</p></section>';
  return '<header class="tutorial-coach-head"><small>ÖĞRETİCİ MODU · '+esc(l.group)+'</small><h2>'+esc(l.topic)+'</h2><p>'+esc(l.title)+'</p></header>'+
+ topologyReviewNotice(l)+
  '<div class="tutorial-progress"><span style="width:'+pct+'%"></span></div>'+
  (session.lastFeedback?'<div class="tutorial-feedback '+(session.lastFeedback.startsWith('✓')?'ok':'warn')+'">'+esc(session.lastFeedback)+'</div>':'')+
  '<section class="tutorial-explain"><h3>Bu ders ne işe yarar?</h3><p>'+esc(l.summary)+'</p>'+
@@ -983,7 +996,9 @@ function restoreMeasurementTargets(project,l){
  for(const source of l.project.components){const live=project.components.find(c=>c.id===source.id);if(!live)continue;if(source.probeTarget)live.probeTarget=clone(source.probeTarget);else delete live.probeTarget;if(source.typeId==='unit-ut200a'){delete live.clampedWireId;delete live.clampT}}
 }
 function startRebuild(project=root.DTSEditor?.getProject?.()){
- const l=lessonFor(project);if(!l)return;root.DTSEditor.stop();project.wires=clone((l.project.wires||[]).filter(w=>isProbeLeadWire(l,w)));project.junctions=[];restoreMeasurementTargets(project,l);project.tutorialLesson.phase='rebuild';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Hazırsınız. İlk iki terminal yanıp sönüyor.';hintOpen=l.variant===1;root.DTSEditor.render();sync(project);
+ const l=lessonFor(project);if(!l)return;
+ if(l.pedagogyReview?.titleTopologyIssue){project.tutorialLesson.lastFeedback='Devre/topoloji incelemesi açık; doğrulanmamış yeniden kurma başlatılamaz.';root.DTSEditor?.toast?.(project.tutorialLesson.lastFeedback);sync(project);return}
+ root.DTSEditor.stop();project.wires=clone((l.project.wires||[]).filter(w=>isProbeLeadWire(l,w)));project.junctions=[];restoreMeasurementTargets(project,l);project.tutorialLesson.phase='rebuild';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Hazırsınız. İlk iki terminal yanıp sönüyor.';hintOpen=l.variant===1;root.DTSEditor.render();sync(project);
 }
 function showExample(project=root.DTSEditor?.getProject?.()){
  const l=lessonFor(project);if(!l)return;root.DTSEditor.stop();project.wires=clone(l.project.wires);project.junctions=clone(l.project.junctions||[]);for(const source of l.project.components){const live=project.components.find(c=>c.id===source.id);if(!live)continue;if(source.probeTarget)live.probeTarget=clone(source.probeTarget);else delete live.probeTarget;if(source.clampedWireId){live.clampedWireId=source.clampedWireId;live.clampT=source.clampT??.5}else if(source.typeId==='unit-ut200a'){delete live.clampedWireId;delete live.clampT}}project.tutorialLesson.phase='demo';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Tam bağlantı tekrar gösterildi.';root.DTSEditor.render();sync(project);
@@ -1085,6 +1100,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
