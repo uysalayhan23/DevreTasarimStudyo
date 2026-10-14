@@ -31,7 +31,11 @@ test('88 new lessons have topic-specific causal content, real terminal steps and
   assert.equal(l.pedagogyReview.mq07Batch,'001_200');
   assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false);
   assert.equal(l.pedagogyReview.windowsVisualAcceptance,false);
-  if(!wired){
+  if(l.pedagogyReview.sensor24vV1){
+   assert.equal(l.project.wires.length,7);
+   assert.match(l.explanation,/B1/);
+   assert.match(l.explanation,/K1\/13/);
+  }else if(!wired){
    assert.equal(l.pedagogyReview.titleTopologyIssue,'NO_WIRED_CIRCUIT');
    assert.match(l.explanation,/Devre çizimi ve fiziksel sonuç bu sayfada doğrulanmış değildir/);
   }else{
@@ -57,7 +61,7 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
 });
 
 test('all known unbuilt first-200 circuits remain REVIEW, not false pedagogy acceptance',()=>{
- assert.equal(batch.reviewIds.length,62);
+ assert.equal(batch.reviewIds.length,58);
  assert.ok(batch.reviewIds.some(x=>x.id==='opamp-apps-src-11'&&x.reason==='MISSING_REQUIRED_SECOND_INPUT'));
  assert.ok(batch.reviewIds.some(x=>x.id==='sensor-analog-apps-src-11'&&x.reason==='MISSING_DIMMER_POWER_STAGE'));
  assert.equal(batch.reviewIds.some(x=>x.id==='opamp-apps-src-07'),false);

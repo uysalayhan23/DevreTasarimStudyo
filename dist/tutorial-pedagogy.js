@@ -2531,6 +2531,43 @@ for(const id of ['sensor-analog-apps-src-13','sensor-analog-apps-src-14']){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
+/* MQ-07: two additional 24 V low-voltage virtual detection/relay/indicator lessons.
+   No real-world energised installation; no data are stamped accepted without a native solver trace. */
+const mq07LowVoltageSensors=[
+ {id:'sensor-analog-apps-src-20',kind:'sensor-hall',label:'Hall etkili PNP manyetik algılayıcı',target:'magnet',range:4,what:'manyetik hedefin algılanmasını',act:'Sanal Hall sensörünün algılama durumunu kapalı → açık → kapalı yap; hedef hareketi modeli desteklemiyorsa bunun bir yazılım anahtarlama deneyi olduğunu belirt.'},
+ {id:'sensor-analog-apps-src-22',kind:'sensor-through-beam',label:'IR optik ışık bariyeri',target:'wood',range:40,what:'optik hedefin varlığını',act:'Sanal optik hedefi uzaktan yakına ve geri taşı; kontrolün röle ve lambayı değiştirip değiştirmediğini izle.'}
+]
+for(const item of mq07LowVoltageSensors){
+ const lesson=L.byId[item.id];
+ if(!lesson||lesson.project.wires.length||lesson.designStandard==='rich-reference-v1')throw Error('MQ07 sensor scene cannot be replaced '+item.id);
+ const originalReview=L.mq07Batch200?.reviewIds||[];
+ if(!originalReview.some(x=>x.id===item.id&&x.reason==='NO_WIRED_CIRCUIT'))throw Error('MQ07 expected review missing '+item.id);
+ const p=industrialSensorLoadProject(lesson.id,lesson.title,item.kind,item.label);
+ const s=p.components.find(c=>c.id==='s1');
+ s.sensing={target:item.target,range:item.range,distance:item.range*2,offset:0,auto:false};
+ s.state=false;
+ p.workspaceMode='control';
+ setLesson(lesson,p,{kind:'wiring'});
+ lesson.summary='Bu sanal 24 V DC uygulamasında '+item.what+' bir röleyle lambaya bildiriyoruz. Öğrenci sensörün, röle bobininin, normalde açık kontağın ve lambanın görevlerini gerçek bağlantı üzerinden öğrenir.';
+ lesson.explanation='Bu derste yalnız yazılım içindeki 24 V DC devre kullanılır. G1 kaynağının P (+24 V) ve M (0 V) uçları, B1 sensörünün BN (besleme) ve BU (dönüş) uçlarına bağlanır. B1 algıladığında BK adlı PNP çıkışından K1 rölesinin A1 bobin ucuna sanal +24 V sinyali ulaşır. K1 bobininin A2 ucu G1/M dönüşüne bağlıdır; bobin enerji aldığında K1 ile eşleşen 13–14 numaralı normalde açık kontak kapanır. Ayrı lamba yolunda G1/P → K1/13 → K1/14 → H1/X1 → H1/X2 → G1/M bulunur. Başlangıçta hedef uzaktaysa K1 bırakır ve H1 söner; hedef algılama alanına geldiğinde K1 çekip H1 yanar; hedef yeniden uzaklaşınca kontak açılıp lamba söner. Bu gözlem, sensörün düşük güçlü karar bilgisini röleyle yük kontrolüne dönüştürdüğünü gösterir. Sanal deney için sensörün durumu değiştirilebilir; gerçek ürün algılama mesafesi veya donanım kabulü bu ders tarafından doğrulanmış sayılmaz.';
+ lesson.learningGoal='G1 +24 V/0 V, B1 BN/BU/BK, K1 A1/A2, K1 13/14 ve H1 X1/X2 sanal terminallerini göstererek sensör algılamasının neden röle ve lamba durumunu değiştirdiğini anlatabilmek.';
+ lesson.beginnerSteps=[
+  'Devreyi incele: G1 24 V DC kaynak, B1 sensör, K1 bobin ve normalde açık 13–14 kontak, H1 lambayı bul.',
+  'Besleme bağlantılarının B1/BN ile B1/BU üzerinde; BK işaret çıkışının K1/A1 üzerinde olduğunu göster.',
+  'K1/A2 dönüşünü ve G1/P → 13 → 14 → H1/X1 → H1/X2 → G1/M yük halkasını izle.',
+  item.act,
+  'K1 bobini ve H1 lambası OFF → ON → OFF değişimini kontrol et; yalnız sensörün kendi durumu değişti diye sonucu doğru kabul etme.',
+  'Neden-sonuç sorusu: B1/BK çıkışı etkinleşse fakat K1/13–14 kapanmasa H1 lambası neden yanmaz?'
+ ];
+ const why={g1:'Sanal +24 V/0 V beslemeyi sağlar; gerçek tesisat şebekesi değildir.',s1:'B1 algılama durumunu BK PNP çıkışına aktarır; BN ve BU besleme terminalleridir.',k1:'K1 A1/A2 bobini BK çıkışından sanal kumanda alır.',ka1:'Aynı K1 bobini enerjilenince 13–14 NO kontağı kapanıp yük yolunu tamamlar.',h1:'H1 X1/X2 yükü, kontağın kapanmasının öğrencinin görebileceği sonucudur.'};
+ lesson.materials=materialRows(p).map(m=>why[m.componentId]?{...m,why:why[m.componentId]}:m);
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07CircuitMatch:'PENDING_SOLVER_CONFIRMATION',titleTopologyIssue:null,previousReason:'NO_WIRED_CIRCUIT',sensor24vV1:true,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+ lesson.safety='Yalnız sanal düşük gerilimli laboratuvar. Gerçek devre bağlantısı veya enerji verme yönergesi değildir.';
+ L.mq07Batch200.reviewIds=originalReview.filter(x=>x.id!==lesson.id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),lesson.id];
+}
+
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

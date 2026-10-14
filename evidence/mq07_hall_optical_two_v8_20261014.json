@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "622766d9df7952f95af284e629be788d3868f311",
+  "sourceBlob": "38efca4de2c71bb3abced9731b38df593077c2df",
+  "operation": "MQ-07 two additional new physical simulation graphs in first 200; concurrent existing sensor13 and sensor14 preserved",
+  "newlyRepaired": [
+    "sensor-analog-apps-src-20",
+    "sensor-analog-apps-src-22"
+  ],
+  "preservedRepaired": [
+    "sensor-analog-apps-src-13",
+    "sensor-analog-apps-src-14"
+  ],
+  "sourceMethod": "Original GitHub JS modules executed in V8 host adapter, not Node --test or Windows browser",
+  "scenarios": [
+    {
+      "id": "sensor-analog-apps-src-13",
+      "wires": 7,
+      "types": [
+        "arduino-bench-supply",
+        "proximity",
+        "coil-relay",
+        "contact-no",
+        "lamp-green"
+      ],
+      "phases": [
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "stable": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    },
+    {
+      "id": "sensor-analog-apps-src-14",
+      "wires": 7,
+      "types": [
+        "arduino-bench-supply",
+        "sensor-through-beam",
+        "coil-relay",
+        "contact-no",
+        "lamp-green"
+      ],
+      "phases": [
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "stable": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    },
+    {
+      "id": "sensor-analog-apps-src-20",
+      "wires": 7,
+      "types": [
+        "supply-dc-plus",
+        "sensor-hall",
+        "coil-relay",
+        "contact-no",
+        "lamp-green"
+      ],
+      "phases": [
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "stable": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    },
+    {
+      "id": "sensor-analog-apps-src-22",
+      "wires": 7,
+      "types": [
+        "supply-dc-plus",
+        "sensor-through-beam",
+        "coil-relay",
+        "contact-no",
+        "lamp-green"
+      ],
+      "phases": [
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "stable": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "stable": true,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    }
+  ],
+  "full": {
+    "lessonCount": 1655,
+    "rich": 136,
+    "definitions": 940,
+    "wired": 728,
+    "stable": 728,
+    "batchN": 1519,
+    "errors": 0,
+    "missing": 0,
+    "invalidEndpoints": 0,
+    "shorts": 0,
+    "blocked": 0,
+    "unstable": 0
+  },
+  "bell": {
+    "model": "BELL_TRANSFORMER_V1",
+    "status": "PASS",
+    "circuits": 15,
+    "phases": 38,
+    "pass": 38
+  },
+  "reviews": {
+    "before": 60,
+    "after": 58
+  },
+  "acceptance": {
+    "virtualSolver": "PASS",
+    "nativeNode": "NOT_RUN",
+    "Windows": "NOT_RUN",
+    "independentPedagogy": "REVIEW",
+    "first200": "PARTIAL_REVIEW"
+  },
+  "actions": 0
+}

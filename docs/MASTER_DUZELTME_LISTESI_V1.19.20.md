@@ -1941,3 +1941,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Gerçek GitHub kaynaklarıyla V8 özgün solver: iki ders × üç durum = **6/6 tutarlı röle/lamba fazı**. Müfredat **1655**, kablolu **724→726**, katalog **940**, kaynak başlangıç solver **726/726 PASS**, bozuk uç/kısa devre/engel/kararsızlık **0**. Aynı 1655 dersin grafiği karşılaştırıldığında yalnız bu iki ders değişti. Önceki rich **136/136** korunur.
 - `BELL_TRANSFORMER_V1` kontrolü: **15 devre / 38/38 faz PASS**. Kilitli trafo manifesti değiştirilmedi. İlk 200 teknik REVIEW **62→60**; diğerleri değiştirilmeden açık. Kalıcı Node test kaynağı eklendi ancak **gerçek Node --test ve Windows/Edge sayfa koşuları çalıştırılmadı**. Pedagojik bağımsız ve gerçek fiziksel kabul **REVIEW**.
 - Kanıt `evidence/mq07_sensor_low_voltage_20261014.json`. Actions kullanılmadı; `[skip ci]`.
+
+
+## 2026-10-14 — İlk 200 sensör dersi ek düzeltmesi: Hall ve optik devre (60 → 58 REVIEW)
+
+- Eşzamanlı kabul edilmiş `sensor-analog-apps-src-13` ve `-14` gerçek devre onarımları olduğu gibi korundu. Kalan `sensor-analog-apps-src-20` (Hall etkili sensör) ve `-22` (optik sensör) için `dist/tutorial-pedagogy.js` kaynak devresi ve pedagojik açıklamalar yenilendi: her birinde sanal G1/DC, B1/BN-BU-BK, K1/A1-A2 bobin, K1/13–14 NO kontak, H1/X1-X2 lamba, **5 fiziksel katalog modeli ve 7 sanal kablo**.
+- V8 özgün `Simulation.solve`: iki yeni ders + korunmuş iki sensör dersi birlikte **4×3 = 12/12 OFF→ON→OFF**, aynı proje nesnesinde röle ve lamba OFF/ON/OFF. Bütün müfredat **1655 ders, 940 katalog, 728/728 bağlı ilk durum stabil**, eksik tür/terminal/short/blocked/unstable **0**, Batch N rehberi **1519/1519** kaynak. `BELL_TRANSFORMER_V1` hiç değiştirilmedi: 15 sanal zil, 38/38 faz PASS.
+- İlk 200 teknik REVIEW **60→58** (turun toplamı 62→58); kalanlar gerçek topoloji/mesafe/sinyal/timing kabulü olmadan kapatılamaz. Windows `file:///...`, tam Node `--test`, bağımsız öğretmen ve fiziksel üretici kabulü hâlâ **REVIEW / NOT_RUN**. Değişikliklerde Actions yok, `[skip ci]`. Kanıt `evidence/mq07_hall_optical_two_v8_20261014.json`; test `tests/qa-mq07-hall-optical-source-v11920.test.cjs`.
