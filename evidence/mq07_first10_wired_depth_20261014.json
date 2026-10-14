@@ -1,0 +1,103 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceHead": "3ae62f2e1f4ab68a07936637be5c66a7162c00cd",
+  "scope": "MQ-07 first 10 wired lessons flagged as generic by prior semantic heuristic, excluding 136 locked rich lessons",
+  "method": "Original GitHub sources executed with V8 in-memory fs/path/vm + test/assert host adapters. NOT native Node --test.",
+  "ids": [
+    "installation-grounding-src-01",
+    "installation-grounding-src-02",
+    "installation-systems-src-02",
+    "installation-systems-src-03",
+    "installation-systems-src-04",
+    "installation-systems-src-05",
+    "installation-systems-src-06",
+    "installation-systems-src-08",
+    "installation-systems-src-09",
+    "installation-systems-src-10"
+  ],
+  "reviews": [
+    "installation-systems-src-04",
+    "installation-systems-src-06"
+  ],
+  "enriched": 10,
+  "changedLessonIds": [
+    "installation-grounding-src-01",
+    "installation-grounding-src-02",
+    "installation-systems-src-02",
+    "installation-systems-src-03",
+    "installation-systems-src-04",
+    "installation-systems-src-05",
+    "installation-systems-src-06",
+    "installation-systems-src-08",
+    "installation-systems-src-09",
+    "installation-systems-src-10"
+  ],
+  "changedCircuitGraphs": [],
+  "changedAcceptedRich": [],
+  "sourceQuality": {
+    "status": "PASS_FOR_THIS_10_ONLY",
+    "testsV8": [
+      {
+        "name": "MQ-07 first 10 source-specific wired lessons, no invented acceptance",
+        "status": "PASS"
+      },
+      {
+        "name": "MQ-07 two known misleading lesson titles explicitly fail closed",
+        "status": "PASS"
+      },
+      {
+        "name": "MQ-05 first 10 dynamic simulations separate responsive vs passive circuits",
+        "status": "PASS"
+      },
+      {
+        "name": "MQ-12 1655 source solver topology stays intact; no missing terminals",
+        "status": "PASS"
+      }
+    ],
+    "baselineGenericSummaries": 523,
+    "afterGenericSummaries": 513,
+    "baselineGenericExplanations": 350,
+    "afterGenericExplanations": 340,
+    "remainsGenericSummaries": 513,
+    "remainsGenericExplanations": 340,
+    "allLessons": 1655,
+    "lockedRich": 136,
+    "remainingPedagogicalAcceptanceReview": 1519
+  },
+  "mq05": {
+    "fullCurriculumSourceNativeSolver": "722/722 stable",
+    "nativePhase10": "10/10 stable 3 phases per scene",
+    "observableControlledLessons": 5,
+    "passiveOrReferenceLessons": 5,
+    "measuredBusbarResistor": {
+      "nominalVoltageV": 230,
+      "nominalResistanceOhm": 1000,
+      "simulatedCurrentA": 0.23,
+      "computedPowerW": 52.9
+    }
+  },
+  "mq12": {
+    "sourceTopology": "1655/1655",
+    "missingDefinitions": 0,
+    "invalidTerminals": 0,
+    "blocked": 0,
+    "shortCircuits": 0,
+    "exceptions": 0
+  },
+  "batchN": {
+    "historicalAndRetested": "1519/1519 source PASS",
+    "independentPedagogyAccepted": false
+  },
+  "acceptance": {
+    "codeSemantic": "PASS_SCOPED",
+    "titleTopologyMismatch": "2 REVIEW",
+    "all1519IndependentPedagogy": "REVIEW",
+    "windowsBrowser": "NOT_RUN",
+    "physicalHardware": "NOT_TESTED",
+    "fullNodeSuite": "NOT_RUN"
+  },
+  "safety": "Only virtual educational descriptions. No approval for live 230VAC construction.",
+  "actionsUsed": 0
+}

@@ -2116,6 +2116,302 @@ if(ntcLesson){
  ntcLesson.pedagogyReview={...(ntcLesson.pedagogyReview||{}),ntcTopicGraphCorrected:true,causalPinNarrativeAdded:true,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+
+// MQ-07 — first ten generic wired lessons: semantic educational text only.
+// NEVER mutate canonical project, lesson IDs, terminals, wire graphs, acceptance locks or 136 rich lessons.
+(function applyMq07FirstTen(){
+ const rows=[
+ {
+  "id": "installation-grounding-src-01",
+  "required": [
+   "g1:supply-1p",
+   "x1:terminal-pe",
+   "e1:ground"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Bu sanal şema koruma iletkeninin kaynaktan topraklama elektroduna kadar hangi uçlardan geçtiğini gösterir. Amaç işletme akımını PE hattından geçirmek değil, koruma iletkeninin bağlantı yolunu tanımaktır.",
+  "explanation": "G1 üzerindeki PE terminalinden gelen koruma iletkeni XPE1 klemensinin 1 numaralı ucuna bağlanmış; klemensin 2 numaralı ucu ise PE1 topraklama elektrodunun PE ucuna devam eder. Böylece öğrenci G1/PE → XPE1/1 → XPE1/2 → PE1/PE yolunu izler. L ve N uçları bu şemada bir yük beslemez; PE normal çalışma akımının dönüş yolu değildir. Simülasyonda bu iki sanal iletkenin terminallerini izlemek bağlantı topolojisini gösterir, fakat gerçek topraklama direncini, dokunma gerilimini veya bir koruma cihazının açma süresini ÖLÇMEZ. Bunların sayısal değerini bu devreden çıkarmak doğru değildir.",
+  "goal": "PE koruma yolunu doğru terminallerle göstermek; PE ile normal nötr/çalışma akım yolunu ayırmak ve simülasyonun doğrulamadığı koruma ölçümlerini tanımak.",
+  "steps": [
+   "Şemada G1'in PE, L ve N terminallerini ayırt et; yalnız PE yolunun çizildiğini gözle.",
+   "Sanal kablo yolunu G1/PE → XPE1/1 ve XPE1/2 → PE1/PE olarak takip et.",
+   "XPE1'in bağlantı noktası görevi ile PE1 elektrodunun temsil ettiği koruma işlevini karşılaştır.",
+   "İki kablo arasındaki sürekliliğin çizimini kontrol et; gerçek elektrot direnci veya güvenli koruma sonucu uydurma.",
+   "Öğrenme kontrolü: Neden PE normal yük akımını taşımak için kullanılmaz?"
+  ],
+  "why": {
+   "g1": "Bu örnekte yalnız kaynak PE referansı kullanılır; L/N ile çalışan yük bulunmaz.",
+   "x1": "XPE1, PE hattını XPE1/1 ve XPE1/2 arasından düzenli biçimde ileten klemens modelidir.",
+   "e1": "PE1 topraklama elektrodu sembolüdür; sayısal toprak direnci burada ölçülmez."
+  }
+ },
+ {
+  "id": "installation-grounding-src-02",
+  "required": [
+   "g1:supply-1p",
+   "b1:bar-pe",
+   "x1:terminal-pe",
+   "s1:socket-power",
+   "e1:ground"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Eş potansiyel PE barasının koruma bağlantılarını tek merkezde toplama mantığını öğretir. Şema, prizin koruma ucuna giden yolu gösterir; priz üzerinden enerji besleme veya koruma ölçümü değildir.",
+  "explanation": "G1 kaynağının PE ucu BPE barasının 1 ucuna gelir. Baranın 4 ucundan XPE1/1'e, XPE1/2'den topraklı prizin X1/PE ucuna gidilir. BPE/5 ayrıca PE1 elektrodunun PE ucuyla bağlantılıdır. Bu yapının amacı koruma iletkenlerini ortak bara üzerinden birleştirmektir. Prizin faz ve nötr uçları bu örnekte bağlı olmadığından priz üzerinden çalışan bir cihaz gösterilmez. Simülasyondaki çizilmiş süreklilik, gerçek eş potansiyel farkı, topraklama empedansı veya koruma cihazının açma performansı ölçümü değildir.",
+  "goal": "BPE/1, BPE/4, BPE/5 ile XPE1/1–2 ve X1/PE bağlantılarının koruma işlevini açıklamak ve devrenin enerji beslemediğini söylemek.",
+  "steps": [
+   "G1/PE → BPE/1 koruma girişini izle.",
+   "BPE/4 → XPE1/1 → XPE1/2 → X1/PE yoluyla priz koruma terminaline ulaş.",
+   "BPE/5 → PE1/PE ile toprağa temsilî bağlantıyı incele.",
+   "Prizin L/N uçlarının kullanılmadığını belirle; bu bir çalışan priz laboratuvarı değildir.",
+   "Sanal topoloji ile gerçek toprak direnci/koruma sürekliliği ölçümünü birbirine karıştırma."
+  ],
+  "why": {
+   "g1": "G1/PE, temsili koruma bağlantısının başlangıcıdır.",
+   "b1": "BPE barasının 1, 4 ve 5 numaralı uçları ayrı koruma bağlantılarını ortaklaştırır.",
+   "x1": "XPE1 PE klemensi, bara ile priz PE terminali arasındaki geçişi temsil eder.",
+   "s1": "X1 prizin yalnız PE terminali bağlıdır; L ve N beslemesi gösterilmemiştir.",
+   "e1": "PE1 sembolü topraklama elektrodunu gösterir, direnç değeri doğrulanmış değildir."
+  }
+ },
+ {
+  "id": "installation-systems-src-02",
+  "required": [
+   "g1:supply-1p",
+   "s:wall-commutator",
+   "h1:ceiling-light",
+   "h2:lampholder-e27"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "S1 komütatörünün iki aydınlatma koluna nasıl kumanda ettiğini gösteren 230 VAC sanal eğitim devresidir. Öğrenci anahtar durumunu değiştirip H1 ve H2'nin tepkisini gözler.",
+  "explanation": "G1 sanal kaynağının L hattı S1 komütatörünün 1 ve 3 girişlerine ayrılır. S1/2, H1/X1'e; S1/4 ise H2/X1'e bağlıdır. Her iki aydınlatma kolunun X2 dönüşü G1/N ortak nötr noktasına ulaşır. S1 içindeki anahtarlama bağlantıları fazı ilgili lambaya ulaştırdığı durumda o lamba enerjilenir, kesildiğinde söner. Her lambanın yolu ayrı izlenir; iki lambanın her anahtar konumundaki davranışı simülasyonla kontrol edilmelidir. Bu 230 VAC düzen yalnız yazılımdaki sanal devredir; gerçek şebekede uygulama talimatı değildir.",
+  "goal": "Komütatörün 1/2 ve 3/4 kolları ile H1/H2'nin ortak N dönüşünü açıklamak, iki lambanın sanal anahtarlama tepkisini karşılaştırmak.",
+  "steps": [
+   "L'nin iki ayrı S1 girişine, 1 ve 3'e yöneldiğini göster.",
+   "S1/2 → H1/X1 ve S1/4 → H2/X1 kol bağlantılarını ve iki X2 → N dönüşünü izle.",
+   "Sanal S1 kumanda durumunu değiştir; H1 ve H2'nin enerjilenmesini ayrı ayrı gözlemle.",
+   "Bir kolun açık olmasının diğer kola otomatik akım sağladığını varsayma; simülasyon sonucunu kaydet.",
+   "Öğrenme kontrolü: N dönüşü olmasaydı aydınlatma kolu neden kapanmazdı?"
+  ],
+  "why": {
+   "g1": "G1, sanal 230 VAC L ve N hatlarını temsil eder; gerçek şebekede deney yaptırılmaz.",
+   "s": "S1/1–2 ile S1/3–4 iki ayrı anahtarlama yoludur.",
+   "h1": "H1/X1 faz girişini S1/2'den, X2 nötr dönüşünü kaynaktan alır.",
+   "h2": "H2/X1 faz girişini S1/4'ten, X2 nötr dönüşünü kaynaktan alır."
+  }
+ },
+ {
+  "id": "installation-systems-src-03",
+  "required": [
+   "g1:supply-1p",
+   "s1:wall-vavien",
+   "s2:wall-vavien",
+   "h:ceiling-light"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "İki farklı sanal anahtar noktasından tek bir aydınlatmayı kontrol etmenin mantığını gösterir. Aynı gezgin hat iki anahtarın ortak uçlarını birleştirdiğinde lamba yanar.",
+  "explanation": "G1/L, ilk vaviyenin S1/11 ortak ucuna gelir. Gezgin hatlar S1/12 → S2/12 ve S1/14 → S2/14 arasında uzanır. İkinci vaviyenin S2/11 ortak ucu H1/X1 lambasına, H1/X2 ise G1/N'ye bağlıdır. İki vaviyen aynı gezgin hattı seçtiğinde sanal faz yolu tamamlanır ve lamba yanar; farklı gezginler seçildiğinde yol açılır ve söner. Bir anahtarın konumunu tek başına değiştirmek lambanın önceki durumunu tersine çevirmelidir. Bu, yazılımdaki sanal anahtarlama modeline ait gözlemdir.",
+  "goal": "11 ortak, 12/14 gezgin uçlarını göstermek; tek sanal vaviyen konum değişiminin H1'e etkisini açıklamak.",
+  "steps": [
+   "G1/L'den S1/11 ortak ucuna ulaşan yolu izle.",
+   "S1/12→S2/12 ve S1/14→S2/14 gezgin hatlarını ayırt et.",
+   "S2/11→H1/X1 ve H1/X2→N dönüşünü göster.",
+   "Yalnız S1'i değiştirerek H1 açık/kapalı durumunu kaydet; sonra yalnız S2'yi değiştir ve karşılaştır.",
+   "İki anahtarın aynı veya farklı gezgini seçmesini çizim üzerinde gerekçelendir."
+  ],
+  "why": {
+   "g1": "Sanal 230 VAC kaynağının L/N hatları gösterilir.",
+   "s1": "S1/11 ilk ortak uç; S1/12 ve S1/14 iki seçilebilir gezgin terminalidir.",
+   "s2": "S2/12 ve S2/14 gezgin girişleri, S2/11 lambaya giden ortak uçtur.",
+   "h": "H1/X1 S2/11'den beslenir, H1/X2 nötr dönüşüdür."
+  }
+ },
+ {
+  "id": "installation-systems-src-04",
+  "required": [
+   "g1:supply-1p",
+   "s1:wall-vavien",
+   "s2:wall-vavien",
+   "h:ceiling-light"
+  ],
+  "review": "TITLE_TOPOLOGY_MISMATCH",
+  "summary": "Bu ders üç noktadan aydınlatma kontrolünü hedefliyor; ancak mevcut sanal şema henüz ara vaviyen içermiyor. Görüntüdeki bağlantı yalnız iki noktadan kontrol mantığını temsil ediyor. Üçüncü nokta kabulü REVIEW durumundadır.",
+  "explanation": "Mevcut şema G1/L → S1/11, S1/12 → S2/12, S1/14 → S2/14, S2/11 → H1/X1 ve H1/X2 → G1/N bağlantılarını içerir. Bu, önceki iki noktadan vaviyen dersinin aynısıdır: iki anahtar aynı gezgini seçince lamba yanabilir, diğer durumda söner. Başlıktaki ara vaviyen (gezgin hatları aktaran üçüncü kontrol elemanı) bu projede YOKTUR. Bu nedenle öğrenci mevcut görselden üçüncü bir kumanda noktasının çalıştığı sonucunu çıkarmamalıdır. Ara eleman, uygun pin modeli ve üçüncü noktadaki gerçek sanal anahtarlama davranışı ayrıca doğrulanmadan ders tam kabul edilmez.",
+  "goal": "Var olan iki-vaviyenli terminal yollarını ayırt etmek; gerçek üç-nokta kontrolünün bu şemada eksik olduğunu ve neden REVIEW kaldığını açıklamak.",
+  "steps": [
+   "S1/11, S1/12, S1/14 ve S2/11, S2/12, S2/14 uçlarını bul.",
+   "İki gezgin hattın yalnız S1 ve S2 arasında olduğunu gözlemle.",
+   "Sanal S1 konumunu değiştirerek H1 etkisini izle; bu iki noktadan kumanda davranışıdır.",
+   "Üçüncü anahtarın şemada bulunmadığını not et; var olmayan ara eleman terminallerini uydurma.",
+   "Öğrenme kontrolü: Başlıktaki üç kontrol noktasının gerçekten gösterilmesi için hangi işlev eksik?"
+  ],
+  "why": {
+   "g1": "Sanal besleme iki-vaviyenli mevcut devreye aittir.",
+   "s1": "Birinci vaviyen; üçüncü kontrol noktası sağlamaz.",
+   "s2": "İkinci vaviyen; ara vaviyen olmadığı için başlıktaki devre tamam değildir.",
+   "h": "H1, yalnız mevcut iki anahtarın gezgin hatlarından beslenebilir."
+  }
+ },
+ {
+  "id": "installation-systems-src-05",
+  "required": [
+   "g1:supply-1p",
+   "b0:bell-push",
+   "z:bell-electronic"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Bir butona basıldığında sanal elektronik zilin etkinleştiğini, buton bırakıldığında devrenin tekrar açıldığını gösterir.",
+  "explanation": "G1/L → B1/13 hattı zil butonuna gelir; normalde açık buton sanal olarak basıldığında B1/13 ile B1/14 birleşir ve B1/14 → Z1/1 üzerinden zil girişine ulaşır. Z1/2 → G1/N dönüşü çevrimi tamamlar. Buton bırakıldığında bu yol açılır ve sanal zil enerjisiz kalır. Bu örnekte çizilen kaynak 230 VAC olduğundan gerçek zil cihazının gerilim anma değeriyle uyumlu olduğuna ilişkin fiziksel kabul YOKTUR; yalnız sanal şemanın çalışması incelenir.",
+  "goal": "B1/13–14 NO kontak işlevini, Z1/1–2 sanal zil yükünü ve basma/bırakma durumlarını karşılaştırmak.",
+  "steps": [
+   "L → B1/13 → B1/14 → Z1/1 ile Z1/2 → N yollarını haritada ayırt et.",
+   "Başlangıçta zilin neden enerjisiz kaldığını açıkla.",
+   "Sanal butona basılı tutup Z1 etkinliğini gözle; butonu bırakınca sonucu kaydet.",
+   "İki durumdaki elektrik yolunu göster ve butonun geçici kontak olduğunu belirt.",
+   "Fiziksel cihaz gerilim değerleri doğrulanmadığından gerçek şebeke bağlantısı yapıldığı sonucu çıkarma."
+  ],
+  "why": {
+   "g1": "230 VAC değeri yalnız simüle edilen kaynaktır; gerçek zil uyumluluğu doğrulanmadı.",
+   "b0": "B1/13–14 normalde açık sanal zil butonunun uçlarıdır.",
+   "z": "Z1/1–2 yalnız sanal zil yükünün uçlarıdır; anma gerilimi ayrıca doğrulanmalıdır."
+  }
+ },
+ {
+  "id": "installation-systems-src-06",
+  "required": [
+   "g1:supply-1p",
+   "b0:bell-push",
+   "z:bell-electronic"
+  ],
+  "review": "TITLE_TOPOLOGY_MISMATCH",
+  "summary": "Dersin başlığı iki/üç butonlu zili hedefliyor; fakat mevcut devrede yalnız B1 adlı tek buton yer alıyor. Çoklu buton devresi olarak kabul edilmez ve eksik topoloji REVIEW durumundadır.",
+  "explanation": "Şemada yalnız G1/L → B1/13, B1/14 → Z1/1 ve Z1/2 → G1/N üç kablo bağlantısı vardır. Bu bağlantılar tek bir normalde açık butonla zili açıp kapatır. Öğrenci B1'e sanal olarak basınca Z1 etkinleşebilir, bırakınca devre açılır. Başlıkta vaat edilen ikinci veya üçüncü zil butonu bu projede bulunmuyor; farklı noktalardan aynı zili çaldırma davranışı bu şemada gösterilemez. İlave sanal buton modeli ve gerçek dallanma doğrulanmadan çoklu buton öğrenme hedefi tamamlanmış sayılamaz.",
+  "goal": "Mevcut tek butonlu devreyi doğru terminallerle açıklamak ve başlıkta vaat edilen ek butonların eksikliğini tespit etmek.",
+  "steps": [
+   "Şemada B1/13 ve B1/14 ile Z1/1–2 terminallerini bul.",
+   "Yalnız B1'in bulunmasını, çoklu kumanda başlığı ile karşılaştır.",
+   "B1 için sanal OFF→ON→OFF durumlarını gözlemle.",
+   "İkinci/üçüncü buton yokken bunların enerjilendirdiği bir kolu varmış gibi anlatma.",
+   "Öğrenme kontrolü: Birden fazla zil kumanda noktası bu şemada neden doğrulanamıyor?"
+  ],
+  "why": {
+   "g1": "Sanal L/N besleme, yalnız tek butonlu devrede gösteriliyor.",
+   "b0": "B1 tek normalde açık butondur; başlıktaki diğer butonlar mevcut değil.",
+   "z": "Z1 elektronik zilin simüle edilmiş yüküdür; çoklu kumanda davranışı doğrulanmamıştır."
+  }
+ },
+ {
+  "id": "installation-systems-src-08",
+  "required": [
+   "g1:supply-1p",
+   "j1:building-junction",
+   "j2:building-junction",
+   "h1:ceiling-light"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Buatın bir aydınlatma devresinde faz ve nötr bağlantılarını iki ayrı ek noktası üzerinden düzenleme rolünü gösterir. Devrede anahtar bulunmadığı için sanal lamba besleme mevcutken doğrudan enerjilenir.",
+  "explanation": "G1/L → B1-L/1 faz bağlantısı, buat içindeki faz ek noktasının 2 ucundan H1/X1 lambasına devam eder. G1/N → B1-N/3 nötr bağlantısı ise B1-N/4 üzerinden H1/X2 dönüşünü oluşturur. İki ek noktası fazı ve nötrü birbirine karıştırmadan ayrı taşıyan sanal düğümlerdir. Devrede bir anahtar ya da kumanda kontağı bulunmaz. Bu nedenle yazılım simülasyonunda kaynak etkin olduğunda lamba yanar; anahtarla kapatma deneyinin bu şemada mevcut olduğu iddia edilemez.",
+  "goal": "Buatın faz ve nötr ek terminallerini ayırt etmek, H1'e giden dönüş yolunu izlemek ve devrede anahtar olmadığını açıklamak.",
+  "steps": [
+   "B1-L/1→B1-L/2 arasındaki faz ek yolunu bul.",
+   "B1-N/3→B1-N/4 arasındaki nötr ek yolunu ayrı göster.",
+   "H1/X1 faz ile H1/X2 nötr uçlarının kaynakla bağını incele.",
+   "Sanal kaynak durumunda H1'in neden enerjilendiğini açıkla; görünmeyen bir anahtar davranışı uydurma.",
+   "Öğrenme kontrolü: Buatın iki ek noktasını tek noktaymış gibi göstermek neden kavramsal hata olur?"
+  ],
+  "why": {
+   "g1": "G1 sanal kaynağı ayrı L ve N hatları sağlar.",
+   "j1": "B1-L faz ekinde 1 ve 2 numaralı terminaller aynı faz yolunun parçalarıdır.",
+   "j2": "B1-N nötr ekinde 3 ve 4 terminaller dönüş yolunu oluşturur.",
+   "h1": "H1/X1 faz, H1/X2 nötr üzerinden devreye dahil olur; ara anahtar gösterilmez."
+  }
+ },
+ {
+  "id": "installation-systems-src-09",
+  "required": [
+   "g1:supply-1p",
+   "bt:one-line-bus-tap",
+   "f1:mcb-1p",
+   "r1:resistor"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Busbar çıkış tapı ve tek kutuplu koruma elemanı üzerinden temsili bir yüke enerji verilmesini gösterir. Sanal 230 V ve 1 kΩ için ideal devre hesabı yaklaşık 230 mA'dır.",
+  "explanation": "G1/L → BT1/1, BT1/2 → F1/1 ve F1/2 → R1/1 hattı sanal faz yolunu oluşturur; R1/2 → G1/N dönüşüdür. BT1 bara çıkış tapı, F1 tek kutuplu koruma anahtarı modelidir, R1=1 kΩ yükü temsil eder. Sanal F1 yolu kapalı ve kaynak 230 V olduğunda ideal direnç üzerinde I = V/R = 230/1000 = 0,23 A beklenir; P = V×I = 52,9 W teorik güçtür. Özgün solver bu örnek için R1 üzerinde 230 V ve yaklaşık 0,23 A göstermiştir. Bu değer fiziksel 1 kΩ direncin gerçek güç dayanımını veya F1'in açma eğrisini kanıtlamaz; gerçek pano malzemesi seçimi sonucu değildir.",
+  "goal": "BT1/1–2, F1/1–2 ve R1/1–2 akım yolunu izlemek; ideal 0,23 A/52,9 W hesabını simülasyonla karşılaştırmak.",
+  "steps": [
+   "G1/L → BT1/1 → BT1/2 → F1/1 → F1/2 → R1/1 yolunu incele.",
+   "R1/2 → G1/N dönüşünü takip ederek sanal devre çevrimini göster.",
+   "R1=1000 Ω ve V=230 V için I=0,23 A hesabını yap.",
+   "Sanal çözücüde R1 üzerindeki akım/gerilim sonucunu karşılaştır; gerçek direnç gücü olarak kabul etme.",
+   "F1'in koruma davranışını test ettiğini iddia etme: ürünün zaman-akım eğrisi bu ölçümde doğrulanmadı."
+  ],
+  "why": {
+   "g1": "Sanal 230 VAC kaynak L/N uçlarını sağlar.",
+   "bt": "BT1/1–2 busbar çıkış bağlantısını temsil eder.",
+   "f1": "F1/1–2 seri koruma anahtarıdır; gerçek açma karakteristiği bu derste doğrulanmadı.",
+   "r1": "R1=1 kΩ temsili yüktür; sanal I≈0,23 A ve P≈52,9 W hesabı fiziksel direnç gücü tavsiyesi değildir."
+  }
+ },
+ {
+  "id": "installation-systems-src-10",
+  "required": [
+   "f1:phone-floor-box",
+   "a1:phone-apartment-box",
+   "t1:telephone"
+  ],
+  "review": "SOURCE_ONLY",
+  "summary": "Kat telefon terminal kutusundan daire kutusuna ve telefon cihazına iki damarlı a/b hattının nasıl aktarıldığını gösterir. Bu devrede konuşma veya çağrı testi yapılmaz.",
+  "explanation": "KTK kat kutusunun a terminali DTK daire kutusunun a ucuna, KTK/b ise DTK/b ucuna bağlanmıştır. DTK/a → T1/a ve DTK/b → T1/b bağlantıları aynı a/b çiftini telefon cihazına taşır. İletim yolunda a ve b damarlarının kimliği korunur; faz/nötr güç hattı çizilmemiştir. Bu kaynak yalnız bağlantı sürekliliğini ve terminal eşlemesini gösterir. Hat gerilimi, çalma işareti, konuşma sesi, hat polaritesi ve iletişim servisinin çalışması bu sanal devrede ölçülmediğinden doğrulanmış sayılmaz.",
+  "goal": "KTK→DTK→T1 a/b bağlantılarını ayrı ayrı takip etmek ve terminal eşlemesiyle telefon hizmeti işlevini birbirinden ayırmak.",
+  "steps": [
+   "KTK/a → DTK/a ve KTK/b → DTK/b hatlarını farklı damarlarmış gibi izle.",
+   "DTK/a → T1/a ve DTK/b → T1/b devamlarını göster.",
+   "Toplam dört bağlantının her iki damarı hedef telefona taşıdığını açıkla.",
+   "Devrede telefon beslemesi veya çağrı sinyali olmadığını tespit et; çalışır konuşma kanıtı yazma.",
+   "Öğrenme kontrolü: a ve b damarlarını aynı düğümde birleştirmek neden doğru hat eşlemesi değildir?"
+  ],
+  "why": {
+   "f1": "KTK kat kutusu hat çiftinin a/b çıkış terminallerini temsil eder.",
+   "a1": "DTK daire kutusu a/b çiftini gelen ve giden eşleşmelerle geçirir.",
+   "t1": "T1 telefon cihazının a/b hat uçları şemada vardır; çalma/konuşma simülasyonu kabulü yoktur."
+  }
+ }
+];
+ const pinned=rows.map(x=>x.id);
+ for(const item of rows){
+  const lesson=L.byId[item.id];
+  if(!lesson||lesson.designStandard==='rich-reference-v1'||lesson.kind!=='wiring')
+   throw Error('MQ07 source not eligible: '+item.id);
+  const components=lesson.project?.components||[],wires=lesson.project?.wires||[];
+  if(!wires.length)throw Error('MQ07 missing graph: '+item.id);
+  for(const entry of item.required){
+   const i=entry.indexOf(':'),id=entry.slice(0,i),type=entry.slice(i+1);
+   if(!components.some(c=>c.id===id&&c.typeId===type))
+    throw Error('MQ07 component drift: '+item.id+' '+entry);
+  }
+  if(!/Gerçek bağlantı adımları:|Bu derste yalnız “/.test(lesson.explanation||'')||
+   !/elemanları arasındaki \d+ gerçek terminal bağlantısını/.test(lesson.summary||''))
+   throw Error('MQ07 source no longer has targeted template: '+item.id);
+  lesson.summary=item.summary;
+  lesson.explanation=item.explanation;
+  lesson.learningGoal=item.goal;
+  lesson.beginnerSteps=item.steps.slice();
+  lesson.materials=materialRows(lesson.project).map(m=>
+    item.why[m.componentId]?{...m,why:item.why[m.componentId]}:m);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+   mq07DepthVersion:'first10-v1',mq07TemplateRemoved:true,
+   mq07CircuitMatch:item.review==='TITLE_TOPOLOGY_MISMATCH'?'REVIEW':'SOURCE_CHECKED',
+   mq07ContentAcceptance:'REVIEW',independentPedagogicalAcceptance:false,
+   windowsVisualAcceptance:false,physicalAcceptance:false};
+  if(lesson.practiceGuide){
+    lesson.practiceGuide.pedagogicalAcceptance=false;
+    lesson.practiceGuide.fullyRich=false;
+  }
+ }
+ L.mq07FirstTenDepth={version:'first10-v1',ids:pinned.slice(),
+  sourceEnriched:10,topologyReview:pinned.filter(id=>rows.find(x=>x.id===id).review==='TITLE_TOPOLOGY_MISMATCH'),
+  independentAcceptance:false,windowsAcceptance:false};
+})();
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
