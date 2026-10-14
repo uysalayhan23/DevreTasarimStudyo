@@ -2665,6 +2665,58 @@ for(const lessonId of ['opamp-apps-src-11','opamp-apps-src-12']){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
+/* MQ-07: Piezo is a passive two-electrode voltage transient, not a PNP proximity sensor. */
+{
+ const id='sensor-analog-apps-src-08',l=L.byId[id];
+ if(!l||!L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='TITLE_MISSING_REQUIRED_PART'))
+  throw Error('Piezo: canonical REVIEW baseline missing');
+ if(!l.project?.components?.some(c=>c.typeId==='proximity')||l.project.components.some(c=>/piezo/i.test(c.typeId)))
+  throw Error('Piezo: baseline source graph changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('pz','tutorial-piezo',260,255,'B1','Piezoelektrik eleman · sanal iki elektrot',{piezoTapAt:null,piezoTapMv:100}),
+  C('r1','resistor',545,265,'R1','1 MΩ ölçüm yükü',{resistance:1000000}),
+  C('v1','unit-ut33d-plus',765,280,'V1','UNI-T UT33D+ · DCV 200 mV',{meterPosition:1}),
+  C('v1-red','test-probe-red',785,495,'PRV1','Kırmızı sanal prob',{probeTarget:{c:'pz',p:'+'}}),
+  C('v1-black','test-probe-black',985,495,'PBV1','Siyah sanal prob',{probeTarget:{c:'pz',p:'−'}})
+ ];
+ p.wires.push(
+  W('pz','+','r1','1','B1/+ → R1/1','Piezo elektrodu sanal ölçüm yükünün ilk ucuna bağlanır.','#43a047','SIGNAL'),
+  W('r1','2','pz','−','R1/2 → B1/−','Direnç, iki elektrot arasındaki sanal elektriksel yük yolunu tamamlar.','#111827','0V'),
+  W('v1','V','v1-red','PLUG','V1/VΩmA → kırmızı prob','DCV 200 mV ölçümünde kırmızı prob VΩmA girişindedir.','#e53935','MEASURE'),
+  W('v1','COM','v1-black','PLUG','V1/COM → siyah prob','Siyah prob COM referans girişindedir.','#111827','MEASURE')
+ );
+ p.projectId='tutorial-session-source-'+id;p.name='Öğretici · '+l.title;
+ p.tutorialLesson={id,topicId:l.topicId,phase:'demo',step:0,level:l.variant};
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='B1 piezoelektrik sensörün kısa mekanik darbede geçici elektrik gerilimi üretmesini ve darbe bittikten sonra sönmesini incele. Bu, harici besleme gerektiren 24 V PNP yakınlık algılama rölesi değil; iki elektrotlu sanal piezo eğitim eşdeğeridir.';
+ l.explanation='B1 piezo elemanının + ve − elektrotları arasındaki mekanik şekil değişimi elektrik yükünün yer değiştirmesine ve kısa süreli potansiyel farkına neden olabilir. B1/+ → R1/1 ve R1/2 → B1/− bağlantıları 1 MΩ sanal yük yolunu oluşturur. UNI-T V1’in VΩmA girişi kırmızı PRV1/PLUG kablosuna, COM girişi siyah PBV1/PLUG kablosuna bağlıdır; iki probun uçları B1/+ ve B1/− elektrotlarına temas eder. UT33D+ DCV 200 mV kademesi düşük genlikli sanal gerilimi gösterir. “Sanal darbe uygula” komutuyla model varsayımsal +100 mV ilk EMK üretir; eğitimde 220 ms sönüm zaman sabiti kullanılır. Yaklaşık 1,6 saniye sonra model sıfıra döner. Bu sayılar ölçülmüş üretici parametreleri değildir ve 1 MΩ yükle gerçek piezo kapasitansının hesaplanmış RC sonucu olarak sunulmaz. Darbe yokken sabit gerilim üretilmez. Sanal sensörde harici 24 V besleme, BN/BU/BK terminalleri, endüktif metal hedef algılaması ve K1 rölesi bulunmaz. Model kalibre edilmiş kuvvet ölçümü veya tam SPICE piezo devresi değildir.';
+ l.learningGoal='B1/+ ve B1/− piezo elektrotlarını, R1 yükünü ve V1 DCV 200 mV ölçümünü doğru eşlemek; sanal darbe → sönüm → sıfır sonucunu açıklamak.';
+ l.beginnerSteps=[
+  'B1 üzerindeki + ve − elektrotlarını bul; bu elemanda BN/BU/BK PNP sensör uçları bulunmaz.',
+  'B1/+ → R1/1 ve R1/2 → B1/− bağlantılarını takip et; 1 MΩ yük elemanını tanı.',
+  'V1 kırmızı probunun VΩmA, siyah probunun COM girişinde olduğunu ve iki probun B1 elektrotlarına temas ettiğini doğrula.',
+  'Sanal darbe öncesinde UT33D+ göstergesinin sıfıra yakın olduğunu gözlemle.',
+  'Sanal darbe uygula; mV değerini 150 ms sonraki değerle karşılaştır.',
+  '1000 ms sonraki sönümü incele; sanal 100 mV değerini gerçek bir üretici hassasiyeti olarak sunma.'
+ ];
+ const reasons={pz:'B1 iki elektrotlu geçici EMK kaynağıdır; dijital PNP çıkışı veya harici 24 V besleme yoktur.',
+  r1:'R1 1 MΩ sanal dirençtir; iki piezo elektrodu arasında yük/ölçüm yolu sağlar.',
+  v1:'V1 UT33D+ DCV 200 mV kademesinde sanal küçük geçici gerilimi ölçer.',
+  'v1-red':'Kırmızı prob VΩmA girişinden B1/+ elektroduna temas eder.',
+  'v1-black':'Siyah prob COM girişinden B1/− elektroduna temas eder.'};
+ l.materials=materialRows(p).map(m=>({...m,why:reasons[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyStatus:'VIRTUAL_PIEZO_SOURCE_ALIGNED',titleTopologyIssue:null,
+  piezoVirtualSource:'TWO_TERMINAL_PASSIVE_TRANSIENT_EMF',
+  previousReason:'TITLE_MISSING_REQUIRED_PART',manufacturerCalibrationVerified:false,
+  physicalAcceptance:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal düşük gerilimli piezo gösterimi. Gerilim ve sönüm süresi öğretici varsayımdır; gerçek donanım testi veya üretici doğrulaması değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

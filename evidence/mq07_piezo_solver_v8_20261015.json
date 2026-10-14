@@ -1,0 +1,41 @@
+{
+  "title": "MQ-07 passive piezo native solver V8 targeted evidence",
+  "sourceCandidate": "a62fa76cc43d66772f7ff483171fba3c86804756",
+  "testedWith": "original dist/simulation.js + original dist/current-model.js + original dist/multimeter.js in browser V8, real 794-item partial catalog",
+  "cases": [
+    {
+      "now": 0,
+      "piezoMv": 0,
+      "meterMv": 0
+    },
+    {
+      "now": 1000,
+      "piezoMv": 100,
+      "meterMv": 100
+    },
+    {
+      "now": 1150,
+      "piezoMv": 50.56967074374725,
+      "meterMv": 50.6
+    },
+    {
+      "now": 2000,
+      "piezoMv": 1.0615346461976674,
+      "meterMv": 1.1
+    },
+    {
+      "now": 3000,
+      "piezoMv": 0,
+      "meterMv": 0
+    }
+  ],
+  "stable": 5,
+  "blocked": 0,
+  "shortCircuit": 0,
+  "oscillating": 0,
+  "whole1655NodeTest": "NOT_RUN",
+  "windowsFileUi": "NOT_RUN",
+  "manufacturerCalibrated": false,
+  "physicalAcceptance": false,
+  "actionsUsed": false
+}

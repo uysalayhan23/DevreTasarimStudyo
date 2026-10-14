@@ -894,6 +894,28 @@ function topologyReviewNotice(l){
  return '<div class="tutorial-feedback warn tutorial-review-warning" role="status"><strong>DEVRE İNCELEMEDE · '+esc(issue)+'</strong><p>'+esc(message)+'</p><p>Bu model, doğrulanmış fiziksel devre veya tamamlanmış simülasyon kabulü değildir.</p></div>';
 }
 
+function isPiezoVirtualLesson(l){return l?.id==='sensor-analog-apps-src-08'&&l?.pedagogyReview?.piezoVirtualSource==='TWO_TERMINAL_PASSIVE_TRANSIENT_EMF'}
+function piezoVirtualPanel(l,session,project){
+ const pz=project?.components?.find(c=>c.id==='pz'),mv=Number(pz?._piezoMv)||0;
+ return '<section class="tutorial-piezo-virtual"><h3>Piezo · sanal darbe ve sönüm deneyi</h3>'+
+ '<p>B1/+ ve B1/− elektrotlarında oluşan geçici küçük gerilimi UT33D+ DCV 200 mV kademesinde izle. Gösterim üretici ölçümü veya gerçek fiziksel cihaz kabulü değildir.</p>'+
+ '<div class="tutorial-piezo-observation"><strong>Model: '+esc(mv.toFixed(3))+' mV</strong><small>Eğitim eşdeğeri · kısa süreli EMK</small></div>'+
+ '<div class="tutorial-piezo-controls"><button type="button" data-piezo-sample="0">Sanal darbe uygula</button>'+
+ '<button type="button" data-piezo-sample="150">150 ms sonra ölç</button>'+
+ '<button type="button" data-piezo-sample="1000">1000 ms sonra ölç</button></div></section>';
+}
+function setPiezoVirtualSample(project,value){
+ const lesson=lessonFor(project),sensor=project?.components?.find(c=>c.id==='pz'),now=Number(value);
+ if(!isPiezoVirtualLesson(lesson)||!sensor||![0,150,1000].includes(now))return false;
+ if(now===0)sensor.piezoTapAt=0;
+ if(typeof sensor.piezoTapAt!=='number'){project.tutorialLesson.lastFeedback='Önce sanal darbeyi uygula.';sync(project);return false}
+ const defs=root.DTSEditor?.byId,solver=root.CCSSimulation?.solve;
+ if(typeof solver!=='function'||!defs){project.tutorialLesson.lastFeedback='Native solver hazır değil; ölçüm doğrulanamadı.';sync(project);return false}
+ const r=solver(project,defs,{now});
+ if(!r?.stable||r.blocked||r.shortCircuit||r.oscillating){project.tutorialLesson.lastFeedback='Piezo çözümü kararlı değil; inceleme gerekiyor.';sync(project);return false}
+ project.tutorialLesson.lastFeedback=now+' ms: sanal piezo gerilimi '+(Number(sensor._piezoMv)||0).toFixed(3)+' mV. Üretici verisi değildir.';
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -926,6 +948,7 @@ function noteHtml(l,session,project){
  (l.materials?.length?'<div class="tutorial-materials"><h3>Bu derste kullandığımız elemanlar</h3><ul>'+l.materials.map(x=>'<li><strong>'+esc(x.label||x.typeId)+'</strong><span>'+esc(x.why||'Bu dersin konusunu doğrudan göstermek için kullanılır.')+'</span></li>').join('')+'</ul></div>':'')+
  (l.beginnerSteps?.length?'<div class="tutorial-beginner-steps"><h3>Sıfırdan öğrenme sırası</h3><ol>'+l.beginnerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>':'')+
  (l.practiceGuide?.steps?.length?'<div class="tutorial-beginner-steps tutorial-virtual-practice"><h3>'+esc(l.practiceGuide.heading)+'</h3><p><strong>Yalnız sanal eğitim:</strong> Bu rehber dersin kodlanmış şema ve materyallerini açıklar; gerçek donanım testi veya nihai fiziksel kabul değildir.</p><ol>'+l.practiceGuide.steps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+(l.practiceGuide.observations?.length?'<h3>Gözlem ve öz değerlendirme</h3><ul>'+l.practiceGuide.observations.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</div>':'')+
+ (isPiezoVirtualLesson(l)?piezoVirtualPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
  current+
  '<footer class="tutorial-actions">'+
@@ -1016,6 +1039,7 @@ function bind(){
    const coachToggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(coachToggle){e.preventDefault();const coach=root.document?.querySelector('#tutorialCoach');setCoachVisible(!!coach?.hidden);return}
    const coachClose=e.target.closest?.('[data-tutorial-coach-close]');if(coachClose){e.preventDefault();setCoachVisible(false);return}
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
+   const piezoButton=e.target.closest?.('[data-piezo-sample]');if(piezoButton){e.preventDefault();setPiezoVirtualSample(root.DTSEditor?.getProject?.(),piezoButton.dataset.piezoSample);return}
    const energyPreset=e.target.closest?.('[data-energy-preset]');if(energyPreset){e.preventDefault();setEnergyAnalyzerPreset(root.DTSEditor?.getProject?.(),energyPreset.dataset.energyPreset);return}
    const frequencyPreset=e.target.closest?.('[data-frequency-preset]');if(frequencyPreset){e.preventDefault();setFrequencyMeasurePreset(root.DTSEditor?.getProject?.(),frequencyPreset.dataset.frequencyPreset);return}
    const clampPreset=e.target.closest?.('[data-clamp-preset]');if(clampPreset){e.preventDefault();setClampMeasurePreset(root.DTSEditor?.getProject?.(),clampPreset.dataset.clampPreset);return}
@@ -1100,6 +1124,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);

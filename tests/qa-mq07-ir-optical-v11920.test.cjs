@@ -43,7 +43,7 @@ test('unchanged bell-transformer lock, 1655-source and practice-guide regression
  assert.equal(practice.sourceStatus,'PASS');assert.equal(practice.examined,1519);
  assert.equal(practice.wired,532);assert.equal(practice.referenceOnly,916);
  assert.equal(practice.referenceWithWires,71);assert.deepEqual(practice.issues,[]);
- assert.equal(L.mq07Batch200.reviewIds.length,55);
+ assert.equal(L.mq07Batch200.reviewIds.length,54);
 });
 test('old direct-phase virtual bells are rejected instead of silently bypassing transformer',()=>{
  const sample=JSON.parse(JSON.stringify(L.byId['bells-1']));
