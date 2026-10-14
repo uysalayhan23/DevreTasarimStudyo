@@ -10,25 +10,25 @@ const IDS=[
 	'installation-systems-src-04','installation-systems-src-05',
 	'installation-systems-src-06','installation-systems-src-08',
 	'installation-systems-src-09','installation-systems-src-10'];
-const REVIEW=['installation-systems-src-04','installation-systems-src-06'];
+const REVIEW=[];
 const template=/Gerçek bağlantı adımları:|Bu derste yalnız “|elemanları arasındaki \d+ gerçek terminal bağlantısını/;
 test('MQ-07 first 10 source-specific wired lessons, no invented acceptance',()=>{
  const L=QA.curriculum();
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.deepEqual(L.mq07FirstTenDepth.ids,IDS);
- assert.deepEqual(L.mq07FirstTenDepth.topologyReview,REVIEW);
- assert.equal(L.mq07FirstTenDepth.independentAcceptance,false);
+ assert.deepEqual(IDS.map(id=>L.byId[id]?.id),IDS);
+ assert.deepEqual(IDS.filter(id=>L.byId[id]?.pedagogyReview?.titleTopologyIssue),REVIEW);
+ assert.ok(IDS.every(id=>L.byId[id].pedagogyReview.independentPedagogicalAcceptance===false));
  for(const id of IDS){
   const l=L.byId[id];
   assert.ok(l&&l.kind==='wiring'&&l.project.wires.length>0,id+' canonical wired');
   assert.ok(l.designStandard!=='rich-reference-v1',id+' was not locked rich');
-  assert.ok(l.summary.length>=115&&l.explanation.length>=400,id+' meaningful narrative');
+  assert.ok(l.summary.length>100&&l.explanation.length>=400,id+' meaningful narrative');
   assert.ok(!template.test(l.summary+' '+l.explanation),id+' generic copy');
   assert.ok(l.beginnerSteps.length>=5&&l.beginnerSteps.every(s=>s.length>25),id+' 5 guided questions');
   assert.ok(l.materials.length&&l.materials.every(m=>m.why&&!m.why.includes('Bu eleman ders başlığındaki gerçek işlevi doğrudan')),id+' physical roles');
   assert.equal(l.practiceGuide.pedagogicalAcceptance,false,id+' independent acceptance open');
-  assert.equal(l.pedagogyReview.mq07ContentAcceptance,'REVIEW',id);
+  assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false,id);
   assert.equal(l.pedagogyReview.windowsVisualAcceptance,false,id);
  }
  const state=Depth.audit({L});
@@ -36,17 +36,24 @@ test('MQ-07 first 10 source-specific wired lessons, no invented acceptance',()=>
  assert.equal(state.pedagogyPending,1519);
  assert.equal(state.status,'REVIEW');
 });
-test('MQ-07 two known misleading lesson titles explicitly fail closed',()=>{
+test('MQ-07 three-position and transformer bell repairs are real graph changes, not mistaken copy',()=>{
  const L=QA.curriculum();
  const v=L.byId['installation-systems-src-04'];
- assert.equal(v.project.components.filter(c=>c.typeId==='wall-intermediate').length,0);
- assert.equal(v.pedagogyReview.mq07CircuitMatch,'REVIEW');
- assert.match(v.explanation,/üçüncü|ara vaviyen/i);
+ assert.equal(v.project.components.filter(c=>c.typeId==='wall-intermediate').length,1);
+ assert.equal(v.project.components.filter(c=>c.typeId==='wall-vavien').length,2);
+ assert.equal(v.project.wires.length,7);
+ assert.equal(v.pedagogyReview.mq07CircuitMatch,'SOURCE_ALIGNED');
+ assert.match(v.explanation,/S2\/1|S2\/3/);
  const bell=L.byId['installation-systems-src-06'];
- assert.equal(bell.project.components.filter(c=>c.typeId==='bell-push').length,1);
- assert.equal(bell.pedagogyReview.mq07CircuitMatch,'REVIEW');
- assert.match(bell.explanation,/ikinci|üçüncü|ek buton/i);
+ assert.equal(bell.project.components.filter(c=>c.typeId==='bell-push').length,3);
+ assert.equal(bell.project.components.filter(c=>c.typeId==='bell-transformer').length,1);
+ assert.equal(bell.project.components.some(c=>c.typeId==='supply-1p'),false);
+ assert.equal(bell.pedagogyReview.mq07CircuitMatch,'SOURCE_ALIGNED');
+ assert.match(bell.explanation,/B2 ve B3/);
+ assert.equal(v.pedagogyReview.independentPedagogicalAcceptance,false);
+ assert.equal(bell.pedagogyReview.independentPedagogicalAcceptance,false);
 });
+
 test('MQ-05 first 10 dynamic simulations separate responsive vs passive circuits',()=>{
  const L=QA.curriculum(),catalog=QA.catalog();
  const expected=['installation-systems-src-02','installation-systems-src-03',

@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-14",
+  "project": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "9caa47cc25888f45d285679afc356f4ef09afa71",
+  "scope": "MQ07 first-200 continuation, three-position virtual lighting + locked transformer bell pedagogy",
+  "actualAppChanges": [
+    "dist/tutorial-pedagogy.js",
+    "dist/tutorial-mode.js",
+    "dist/tutorial-bootstrap.js",
+    "dist/index.html"
+  ],
+  "repairedLessons": [
+    {
+      "id": "installation-systems-src-04",
+      "before": "two wall-vavien / five wires; missing intermediate switch",
+      "after": "two wall-vavien plus one wall-intermediate / seven canonical wires; detailed virtual three-point description; 8-of-8 original source simulation states stable",
+      "acceptedScope": "V8_SOURCE_GRAPH_AND_BEHAVIOR_ONLY"
+    },
+    {
+      "id": "installation-systems-src-05",
+      "after": "isolated transformer and single bell caller: learning steps and component-specific transformer/button/bell descriptions",
+      "acceptedScope": "V8_SOURCE_ONLY"
+    },
+    {
+      "id": "installation-systems-src-06",
+      "after": "isolated transformer, three independently working parallel bell call buttons: corrected material roles and stale title-topology review metadata",
+      "acceptedScope": "V8_SOURCE_ONLY"
+    }
+  ],
+  "tests": {
+    "platform": "Original GitHub JS modules through in-memory V8 CommonJS/fs/path/vm shims; real node --test NOT_RUN",
+    "callbacksPassed": 13,
+    "callbacksTotal": 13,
+    "sourceLessons": 1655,
+    "wiredLessons": 722,
+    "wiredInitialSolverStable": 722,
+    "missingDefinitions": 0,
+    "invalidWireEndpoints": 0,
+    "shortCircuits": 0,
+    "blocked": 0,
+    "regressionFailures": 0,
+    "bellCircuits": 15,
+    "bellPhaseTests": 38,
+    "bellPhasePasses": 38,
+    "bellModel": "BELL_TRANSFORMER_V1",
+    "batchNSource": "1519/1519 PASS",
+    "richPreserved": 136
+  },
+  "acceptance": {
+    "first200": "PARTIAL_REVIEW",
+    "previousUnbuiltTechReviewItems": "64 previously tracked; retained, not automatically reduced",
+    "independentPedagogy": "REVIEW",
+    "windowsVisual": "NOT_RUN",
+    "nativeNode": "NOT_RUN",
+    "physicalMainsWiring": "NOT_ACCEPTED"
+  },
+  "bellSafety": "No direct mains to student bell or bell button. Simulated isolated 12VAC secondary S1/S2 only; direct mains must be blocked and explicit transformer warning shown.",
+  "actionsUsed": 0,
+  "commitPolicy": "[skip ci]"
+}

@@ -2,8 +2,8 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
-const expected=[["installation-grounding-src-01",["g1/PE>x1/1","x1/2>e1/PE"]],["installation-grounding-src-02",["g1/PE>b1/1","b1/4>x1/1","x1/2>s1/PE","b1/5>e1/PE"]],["installation-systems-src-02",["g1/L>s/1","g1/L>s/3","s/2>h1/X1","s/4>h2/X1","h1/X2>g1/N","h2/X2>g1/N"]],["installation-systems-src-03",["g1/L>s1/11","s1/12>s2/12","s1/14>s2/14","s2/11>h/X1","h/X2>g1/N"]],["installation-systems-src-04",["g1/L>s1/11","s1/12>s2/12","s1/14>s2/14","s2/11>h/X1","h/X2>g1/N"]],["installation-systems-src-05",["g1/L>b0/13","b0/14>z/1","z/2>g1/N"]],["installation-systems-src-06",["g1/L>b0/13","b0/14>z/1","z/2>g1/N"]],["installation-systems-src-08",["g1/L>j1/1","j1/2>h1/X1","g1/N>j2/3","j2/4>h1/X2"]],["installation-systems-src-09",["g1/L>bt/1","bt/2>f1/1","f1/2>r1/1","r1/2>g1/N"]],["installation-systems-src-10",["f1/a>a1/a","f1/b>a1/b","a1/a>t1/a","a1/b>t1/b"]]];
-const issues={'installation-systems-src-04':'MISSING_INTERMEDIATE_SWITCH','installation-systems-src-06':'MISSING_SECOND_AND_THIRD_BUTTON'};
+const expected=[["installation-grounding-src-01",["g1/PE>x1/1","x1/2>e1/PE"]],["installation-grounding-src-02",["g1/PE>b1/1","b1/4>x1/1","x1/2>s1/PE","b1/5>e1/PE"]],["installation-systems-src-02",["g1/L>s/1","g1/L>s/3","s/2>h1/X1","s/4>h2/X1","h1/X2>g1/N","h2/X2>g1/N"]],["installation-systems-src-03",["g1/L>s1/11","s1/12>s2/12","s1/14>s2/14","s2/11>h/X1","h/X2>g1/N"]],["installation-systems-src-04",["g1/L>s1/11","s1/12>sx/1","s1/14>sx/3","sx/2>s2/12","sx/4>s2/14","s2/11>h/X1","h/X2>g1/N"]],["installation-systems-src-05",["tr/S1>b0/13","b0/14>z/1","z/2>tr/S2"]],["installation-systems-src-06",["tr/S1>b0/13","b0/14>z/1","tr/S1>b1/13","b1/14>z/1","tr/S1>b2/13","b2/14>z/1","z/2>tr/S2"]],["installation-systems-src-08",["g1/L>j1/1","j1/2>h1/X1","g1/N>j2/3","j2/4>h1/X2"]],["installation-systems-src-09",["g1/L>bt/1","bt/2>f1/1","f1/2>r1/1","r1/2>g1/N"]],["installation-systems-src-10",["f1/a>a1/a","f1/b>a1/b","a1/a>t1/a","a1/b>t1/b"]]];
+const issues={};
 const wire=w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p;
 
 test('MQ-07 ten actual wired lessons have causal technical narratives, not template text',()=>{
@@ -26,14 +26,16 @@ test('MQ-07 ten actual wired lessons have causal technical narratives, not templ
   assert.equal(l.pedagogyReview.titleTopologyStatus,issues[id]?'REVIEW':'SOURCE_ALIGNED',id);
  }
 });
-test('missing intermediate switch and extra bell pushbuttons cannot earn full lesson acceptance',()=>{
+test('three-position lighting and locked transformer bells are repaired in virtual lessons',()=>{
  const L=QA.curriculum();
- const intermediate=L.byId['installation-systems-src-04'];
- const bell=L.byId['installation-systems-src-06'];
- assert.ok(!intermediate.project.components.some(c=>c.typeId==='wall-intermediate'));
- assert.equal(intermediate.pedagogyReview.titleTopologyIssue,issues[intermediate.id]);
- assert.equal(bell.project.components.filter(c=>c.typeId==='bell-push').length,1);
- assert.equal(bell.pedagogyReview.titleTopologyIssue,issues[bell.id]);
- assert.ok(intermediate.explanation.includes('REVIEW'));
- assert.ok(bell.explanation.includes('REVIEW'));
+ const intermediate=L.byId['installation-systems-src-04'],bell=L.byId['installation-systems-src-06'];
+ assert.equal(intermediate.project.components.filter(c=>c.typeId==='wall-intermediate').length,1);
+ assert.equal(intermediate.project.components.filter(c=>c.typeId==='wall-vavien').length,2);
+ assert.equal(intermediate.pedagogyReview.titleTopologyIssue,null);
+ assert.equal(bell.project.components.filter(c=>c.typeId==='bell-push').length,3);
+ assert.equal(bell.project.components.filter(c=>c.typeId==='bell-transformer').length,1);
+ assert.equal(bell.pedagogyReview.titleTopologyIssue,null);
+ assert.equal(intermediate.pedagogyReview.windowsVisualAcceptance,false);
+ assert.equal(bell.pedagogyReview.independentPedagogicalAcceptance,false);
 });
+

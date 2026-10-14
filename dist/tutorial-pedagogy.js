@@ -2325,11 +2325,67 @@ for(const id of ['installation-systems-src-05','installation-systems-src-06']){
  l.explanation='Bu örnekte TR1 sanal zil trafosunun şebeke tarafı simülasyon içinde yalıtılmıştır ve öğrencinin kablolayacağı primer uç yoktur. TR1/S1 alçak gerilim tarafı B1/13 girişine ulaşır. B1 basılınca normalde açık 13–14 kontağı kapanır, B1/14 ile Z1/1 arasındaki yol tamamlanır; zilin Z1/2 ucu TR1/S2 sekonder dönüşündedir. B1 bırakılınca kontak açılır, zil durur. Düşün: buton bırakılınca neden zil susar? Bu örneğin 12 V AC değeri simülasyon modelidir; gerçek ürünün anma verisi doğrulanmamıştır. Kayıtlı şemadan izlenecek bağlantılar: TR1/S1 → B1/13; B1/14 → Z1/1; Z1/2 → TR1/S2.'+
  (id.endsWith('06')?' B2 ve B3 butonları da aynı yalıtılmış sekondere paralel bağlanır: biri basıldığında yalnız kendi 13–14 kontağı kapanarak ortak Z1 zilini çaldırır. İki butonlu modeli ilk iki kol, üç butonlu modeli üç kol ile gözlemle.':'');
  l.learningGoal='Sanal zil trafosunun yalıtılmış 12 V AC çıkışını, B1 13–14 normalde açık kontağını ve Z1 zilinin kapanan/yeniden açılan akım yolunu açıklayabilmek.';
- l.beginnerSteps=['TR1 içten yalıtılmış sanal trafodur; burada şebeke fazı bağlantısı kurulmaz.','Yalnız 12 V AC S1/S2 çıkışı ile çağrı butonları ve Z1 arasındaki devreyi gör.','Sanal B1 butonuna bas: 13–14 kapanınca zilin neden çaldığını söyle.','B1 butonunu bırak: kontak açılınca zilin neden sustuğunu açıkla.',...(id.endsWith('06')?['Sırayla B2 ve B3 çağrı butonlarına da bas-bırak yap; biri basılıyken diğerlerinin basılmasına neden gerek olmadığını açıkla.']:[])];
- l.materials=materialRows(p);
+ l.beginnerSteps=['TR1 içten yalıtılmış sanal trafodur; burada şebeke fazı bağlantısı kurulmaz.','Yalnız 12 V AC S1/S2 çıkışı ile çağrı butonları ve Z1 arasındaki devreyi gör.','Sanal TR1 trafosunun enerjisi yokken butona basılsa bile zilin neden çalmayacağını tartış; doğrudan şebeke bağlantısı kullanılmaz.','Sanal B1 butonuna bas: 13–14 kapanınca zilin neden çaldığını söyle.','B1 butonunu bırak: kontak açılınca zilin neden sustuğunu açıkla.',...(id.endsWith('06')?['Sırayla B2 ve B3 çağrı butonlarına da bas-bırak yap; biri basılıyken diğerlerinin basılmasına neden gerek olmadığını açıkla.']:[])];
+ const role={
+  tr:'TR1 şebekeden kablo bağlanabilir girişleri bulunmayan, yalnız sanal yalıtılmış 12 VAC S1/S2 sekonderini sağlayan zil trafosudur.',
+  b0:'B1 normalde açık 13–14 çağrı kontağıdır; basılınca yalnız kendi 12 VAC yolunu kapatır, bırakılınca açar.',
+  b1:'B2 ikinci paralel çağrı butonudur; B1 basılı değilken de 13–14 kontağını kapatarak ortak zili çalıştırabilir.',
+  b2:'B3 üçüncü paralel çağrı butonudur; diğer butonlardan bağımsız sanal çağrı noktasıdır.',
+  z:'Z1 yalnız izole 12 VAC sanal sekonderden beslenen elektronik zildir; herhangi bir buton basılıyken çalar, tüm butonlar bırakıldığında susar.'
+ };
+ l.materials=materialRows(p).map(m=>({...m,why:role[m.componentId]||m.why}));
  l.safety='Yalnız sanal eğitimde yalıtılmış 12 V AC zil trafosu kullanılır; şebeke fazı buton/zile doğrudan bağlanmaz.';
  l.pedagogyReview={...l.pedagogyReview,bellTransformerModel:'BELL_TRANSFORMER_V1',independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
 }
+
+/* MQ-07 lesson repair: reuse the already-modeled, solver-tested three-position
+   virtual lighting circuit. Do not silently mutate saved student projects. */
+const threePointLesson=L.byId['installation-systems-src-04'];
+const threePointSource=L.byId['intermediate-1'];
+if(threePointLesson&&threePointSource){
+ const p=clone(threePointSource.project);
+ const types=p.components.map(c=>c.typeId);
+ if(types.filter(x=>x==='wall-vavien').length!==2||
+    types.filter(x=>x==='wall-intermediate').length!==1||
+    p.wires.length!==7)throw Error('Three-position canonical virtual circuit incomplete');
+ const id=threePointLesson.id;
+ p.projectId='tutorial-session-source-'+id;
+ p.name='Öğretici · '+threePointLesson.title;
+ p.tutorialLesson={id,topicId:threePointLesson.topicId,phase:'demo',step:0,level:threePointLesson.variant};
+ threePointLesson.project=p;
+ threePointLesson.kind='wiring';
+ threePointLesson.workspaceMode=p.workspaceMode;
+ threePointLesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ threePointLesson.summary='Bu sanal aydınlatma devresinde H1 lambasını üç ayrı noktadan kontrol edebilirsin. İki uçtaki S1 ve S3 vaviyenleri yolu seçer; ortadaki S2 ara vaviyen iki gezgin hattı düz ya da çapraz geçirir. Üç anahtardan herhangi birinin konumu değiştiğinde lambanın durumu değişir.';
+ threePointLesson.explanation='Önce devrenin amacını düşün: Bir koridorun üç ucundan aynı H1 lambasını açıp kapatabilmek. Sanal G1 kaynağının L ucu ilk vaviyen S1/11 ortak girişine gelir. S1 anahtarı faz yolunu S1/12 ya da S1/14 gezginine yönlendirir. İlk gezgin S2 ara vaviyenin 1 ucuna, ikinci gezgin S2/3 ucuna gider. S2 ortadaki çapraz anahtardır: bir konumda gelen iki hattı sırasıyla 2 ve 4 uçlarına, diğer konumda çapraz çıkışlara bağlar. S2/2 hattı son vaviyenin S3/12 ucuna, S2/4 hattı S3/14 ucuna ulaşır. S3 son vaviyeni 12 veya 14 gezginini ortak S3/11 çıkışına seçer. S3/11 → H1/X1 hattı lambaya gider; H1/X2 → G1/N hattı dönüş yoludur. Böylece S1, S2 veya S3 konumu tek başına değiştirilince süreklilik tersine döner ve sanal H1 açıkken kapanır ya da kapalıyken açılır. Sayısal lamba akımı veya gücü tanımlanmadığından bunları ölçülmüş gibi söyleme. G1 üzerindeki 230 VAC kaynak etiketi gerçek bir ölçüm veya fiziksel tesisat uygulama talimatı değildir. Kayıtlı şemadan izlenecek bağlantılar: G1/L → S1/11; S1/12 → S2/1; S1/14 → S2/3; S2/2 → S3/12; S2/4 → S3/14; S3/11 → H1/X1; H1/X2 → G1/N. Bu yalnız sanal laboratuvardır; gerçek şebeke bağlantısı yaptırılmaz.';
+ threePointLesson.learningGoal='İlk vaviyenin ortak 11 ve gezgin 12/14 uçlarını; ara vaviyenin 1, 3 giriş ve 2, 4 çıkışlarını; son vaviyenin 11 ortak çıkışını ve H1 lambasının X1/X2 dönüşünü anlatmak. Üç anahtardan herhangi birinin lambayı neden değiştirdiğini açıklayabilmek.';
+ threePointLesson.beginnerSteps=[
+  'Sanal devrede önce S1 ve S3 uç vaviyenleri, aradaki S2 ara vaviyeni ve H1 lambasını bul. Üç kontrol elemanı olduğunu say.',
+  'Sanal L kaynağı → S1/11 ortak girişi, S1/12 → S2/1 ve S1/14 → S2/3 gezgin hatlarını devre üzerinden izle.',
+  'S2/2 → S3/12 ve S2/4 → S3/14 çıkışlarını izle. Ara anahtarın düz/çapraz durumu değişince hangi gezginin diğerine aktarıldığını kendi cümlenle söyle.',
+  'S3/11 → H1/X1 hattını ve H1/X2 → sanal N dönüşünü ayırt et. Bu dönüşün S2 ara anahtardan geçmediğini gör.',
+  'Yalnız simülasyonda S1 ve S3 sabitken S2 konumunu değiştir. H1 açık/kapalı durumunu iki kez gözlemleyip kaydet.',
+  'S2 sabitken önce S1, sonra S3 anahtarını tek tek değiştir. Neden her bir değişimin lambayı ters duruma geçirdiğini açıkla.',
+  'Öğrendiğini anlat: Neden iki uç vaviyen yetmez; ortadaki ara vaviyen olmadan üç noktadan kontrol sağlanamaz?'
+ ];
+ const byId={g1:'G1 yalnız sanal L/N kaynağıdır; gerçek tesisat bağlantısı görevi değildir.',s1:'S1 ortak 11 ile 12/14 gezginlerini seçen ilk vaviyendir.',sx:'S2 ara vaviyen; 1/3 giriş çiftini 2/4 çıkışına düz veya çapraz aktarır.',s2:'S3 ortak 11 ile 12/14 gezginlerini seçen son vaviyendir.',h:'H1 iki anahtar yolu tamamlanınca ışık veren sanal lamba yüküdür.'};
+ threePointLesson.materials=materialRows(p).map(m=>({...m,why:byId[m.componentId]||m.why}));
+ threePointLesson.pedagogyReview={...(threePointLesson.pedagogyReview||{}),mq07CircuitMatch:'SOURCE_ALIGNED',titleTopologyStatus:'SOURCE_ALIGNED',titleTopologyIssue:null,threePositionCircuitSource:'intermediate-1',virtualTruthTablePending:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+}
+/* BELL_TRANSFORMER_V1 remains mandatory; correct stale source metadata after
+   the earlier 1-button/3-button transformer repairs. */
+for(const id of ['installation-systems-src-05','installation-systems-src-06']){
+ const lesson=L.byId[id];if(!lesson)continue;
+ const parts=lesson.project?.components||[];
+ const expected=id.endsWith('06')?3:1;
+ if(parts.filter(c=>c.typeId==='bell-transformer').length!==1||
+    parts.filter(c=>c.typeId==='bell-push').length!==expected||
+    parts.some(c=>c.typeId==='supply-1p'))
+   throw Error('BELL_TRANSFORMER_V1 locked teaching circuit mismatch '+id);
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07CircuitMatch:'SOURCE_ALIGNED',titleTopologyStatus:'SOURCE_ALIGNED',titleTopologyIssue:null,bellTransformerModel:'BELL_TRANSFORMER_V1',independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+}
+if(L.mq07FirstTenDepth?.topologyReview)
+ L.mq07FirstTenDepth.topologyReview=L.mq07FirstTenDepth.topologyReview.filter(id=>!['installation-systems-src-04','installation-systems-src-06'].includes(id));
 
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
