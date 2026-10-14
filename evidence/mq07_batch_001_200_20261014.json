@@ -142,5 +142,42 @@
     "windowsVisualAcceptance": "NOT_RUN",
     "fullNativeNode": "NOT_RUN",
     "actionsUsed": 0
+  },
+  "followupRelayTerminal": {
+    "date": "2026-10-14",
+    "sourceHead": "4e406fa6204d1eb6afbbd7fc67bdb24af0244bfd",
+    "lessonId": "electronic-switching-src-01",
+    "changedSource": "dist/tutorial-pedagogy.js",
+    "copiedGraphFrom": "button-relay-2",
+    "newComponents": 7,
+    "newWires": 9,
+    "v8OriginalSourceSolver": {
+      "phases": 3,
+      "outputs": [
+        "coil OFF/green OFF/red ON",
+        "coil ON/green ON/red OFF",
+        "coil OFF/green OFF/red ON"
+      ],
+      "stablePhases": 3,
+      "shortCircuits": 0,
+      "blocked": 0,
+      "oscillations": 0
+    },
+    "fullCurriculumSource": {
+      "lessons": 1655,
+      "wired": 724,
+      "graphAudit": "PASS",
+      "missingDefinitions": 0,
+      "blocked": 0,
+      "unstable": 0
+    },
+    "technicalReviewsBefore": 63,
+    "technicalReviewsAfter": 62,
+    "lockedRichCount": 136,
+    "bellTransformerManifest": "docs/BELL_TRANSFORMER_MODEL_LOCKED.json",
+    "nativeNode": "NOT_RUN",
+    "windowsVisual": "NOT_RUN",
+    "independentPedagogy": "REVIEW",
+    "actions": 0
   }
 }

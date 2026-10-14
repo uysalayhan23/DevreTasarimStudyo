@@ -1925,3 +1925,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - **MQ-05 V8 özgün kaynak:** tek anahtar OFF→ON→OFF ve sanal koruma açma senaryoları **4/4 kararlı**, lamba yalnız koruma kapalı ve S1 kapalı konumdayken etkin. Tüm 1.655 ders, 940 malzeme, **723/723 kablolu ilk durum PASS**, eksik malzeme/kısa devre/blocked **0**.
 - **BELL_TRANSFORMER_V1 kilidi korunur:** 15/15 sanal zil dersi, 38/38 çalışma durumu PASS, doğrudan şebeke fazı zil ve butona bağlanmaz. Manifest JSON/MD değiştirilmedi.
 - İlk 200 grubunun açık teknik sayısı **64 → 63**. Grubun tamamı veya Windows/native Node testi PASS kabul edilmez; pedagojik ve görsel bağımsız kabul REVIEW sürer. QA: `tests/qa-mq07-single-switch-lighting-v11920.test.cjs`. Actions 0, `[skip ci]`.
+
+## 2026-10-14 — MQ-07 gerçek uygulama onarımı: Röle uçlarının bulunması
+
+- `electronic-switching-src-01` dersindeki bağlantısız iki parça yerine **7 gerçek model / 9 sanal terminal bağlantısı** ve K1 bobini, NO 13/14 ile NC 21/22 öğretimi eklendi. Korunan `button-relay-2` kabul edilmiş devresi yalnız klon kaynak olarak kullanıldı, kendisi değiştirilmedi.
+- Doğrudan V8 özgün elektrik solver kontrolü: S1 OFF→ON→OFF, bobin OFF/ON/OFF, yeşil H1 OFF/ON/OFF, kırmızı H2 ON/OFF/ON. 3/3 kararlı, kısa devre/blokaj yok. Devre ve alan bazlı metin uygulamanın `dist/tutorial-pedagogy.js` dosyasında gerçekten değiştirildi.
+- 1.655 ders kaynak QA PASS, kablolu 724, 136 kabul edilmiş rich ders aynı, ilk 200 teknik REVIEW **63→62**. Batch N kaynak rehber geçmiş kanıtı bozulmamalı; gerçek Node/Windows/UI/pedagoji hâlâ OPEN.
+- `BELL_TRANSFORMER_V1` zil manifesti ve doğrudan faz blokajı **korundu**. Yeni regresyon testi `tests/qa-mq07-relay-terminal-v11920.test.cjs`; V8 kanıtı `evidence/mq07_relay_terminals_v8_20261014.json`. Actions yok, `[skip ci]`.

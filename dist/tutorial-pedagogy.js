@@ -2432,6 +2432,53 @@ if(singleLight){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),singleLight.id];
 }
 
+
+// MQ-07 physical tutorial repair: relay terminal discovery must be simulated.
+const relayLesson=L.byId['electronic-switching-src-01'];
+const relayReference=L.byId['button-relay-2'];
+if(relayLesson&&relayReference){
+ if(relayLesson.project.wires.length||JSON.stringify(relayLesson.project.components.map(c=>c.typeId))!==JSON.stringify(['coil-relay','contact-both']))
+  throw Error('MQ07 relay lesson unexpected source graph');
+ const p=clone(relayReference.project);
+ p.projectId='tutorial-session-source-'+relayLesson.id;
+ p.name='Öğretici · '+relayLesson.title;
+ p.tutorialLesson={id:relayLesson.id,topicId:relayLesson.topicId,phase:'demo',step:0,level:relayLesson.variant};
+ p.components.push(C('nc','contact-nc',720,475,'K1','K1 normalde kapalı NC 21–22'));
+ p.components.push(C('h2','lamp-red',940,475,'H2','K1 bırakıldığında yanan kırmızı gösterge'));
+ p.wires.push(
+  W('g1','P','nc','21','+24 V → K1/21','NC kontağın sanal enerji girişi.','#8b5a2b','+24V'),
+  W('nc','22','h2','X1','K1/22 → H2/X1','Bobin enerjisizken kırmızı H2 yanar.','#43a047','SIGNAL'),
+  W('h2','X2','g1','M','H2/X2 → sanal 0 V','H2 gösterge yükünün dönüşü.','#111827','0V')
+ );
+ relayLesson.project=p;
+ relayLesson.workspaceMode=p.workspaceMode;
+ relayLesson.kind='wiring';
+ relayLesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint||'Sanal terminal yolunu incele.',
+  why:w.tutorialWhy||'Bu terminal devre yolunun bir parçasıdır.',
+  color:w.color,role:w.role,size:w.size}));
+ relayLesson.summary='Bu düşük gerilimli sanal derste K1 rölesinin A1/A2 bobini ile normalde açık 13–14 ve normalde kapalı 21–22 yardımcı kontaklarının iki lambayı neden ters sırayla çalıştırdığı öğrenilir.';
+ relayLesson.explanation='Röleyi elektrikle çalışan bir görevli gibi düşün: S1 butonu bobine komut verir, K1 yardımcı kontakları başka devre yollarını açıp kapatır. Sanal G1 kaynağının +24 V ucu S1/13 noktasına, S1/14 çıkışı K1 bobininin A1 ucuna gider; bobinin A2 ucu G1/0 V dönüşündedir. Buton basılı değilken bobin enerjisizdir. K1/13–14 normalde açık (NO) olduğu için yeşil H1 sönüktür; K1/21–22 normalde kapalı (NC) olduğu için kırmızı H2 yanar. Sanal S1 butonuna basılınca K1 bobini çeker: NO 13–14 kapanır ve +24 V H1/X1 yoluna iletilir; H1/X2 0 V kaynağına döner. Aynı anda NC 21–22 açılır, H2 söner. Buton bırakılınca bobin serbest kalır, yeşil H1 söner ve kırmızı H2 yeniden yanar. Böylece A1/A2 bobin uçlarının NO/NC kontaklarından farklı görevde olduğu görülür. Bu sanal modelin gerilimi 24 VDC’dir; gerçek bobin akımı ve lambaların güç/direnç değerleri verilmediğinden uydurma bir I veya P sayısı hesaplanmaz. Bu şema fiziksel montaj talimatı değildir.';
+ relayLesson.learningGoal='A1/A2 bobin, NO 13/14 ve NC 21/22 kontaklarını tanıyarak S1 OFF→ON→OFF senaryosunda H1 ile H2 göstergelerinin neden ters davrandığını açıklamak.';
+ relayLesson.beginnerSteps=[
+  'Sanal G1 kaynağını, S1 butonunu ve K1 rölesinin A1/A2 bobin uçlarını bul.',
+  'Buton bırakılmışken K1/13–14 yolunun açık, K1/21–22 yolunun kapalı olmasını yeşil H1 ve kırmızı H2 ile karşılaştır.',
+  'Sanal S1 butonuna bas ve bobin çektikten sonra NO ile NC kontaklarının durumunu gözlemle.',
+  'Butonu bırakınca iki göstergenin ilk duruma döndüğünü kontrol et.',
+  'Bobinin A1/A2 uçları ile kontakların 13–14 ve 21–22 uçlarının farklı elektriksel görevini kendi cümlenle anlat.'
+ ];
+ relayLesson.materials=materialRows(p).map(m=>m.componentId==='k'?{...m,why:'K1 bobini A1/A2; yalnız sanal kumanda gerilimiyle çekerek yardımcı kontak durumunu değiştirir.'}:
+ m.componentId==='q'?{...m,why:'K1 NO 13–14; bobin çektiğinde kapanır ve H1 göstergesini yakar.'}:
+ m.componentId==='nc'?{...m,why:'K1 NC 21–22; bobin enerjisizken kapalı olduğu için H2 yanar.'}:m);
+ relayLesson.pedagogyReview={...(relayLesson.pedagogyReview||{}),titleTopologyIssue:null,
+  mq07CircuitMatch:'SOURCE_ALIGNED',relayTerminalSource:'button-relay-2',
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+ const pending=L.mq07Batch200?.reviewIds||[];
+ if(!pending.some(x=>x.id===relayLesson.id&&x.reason==='NO_WIRED_CIRCUIT'))throw Error('MQ07 relay pending REVIEW missing');
+ L.mq07Batch200.reviewIds=pending.filter(x=>x.id!==relayLesson.id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),relayLesson.id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

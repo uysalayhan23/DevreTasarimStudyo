@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "4e406fa6204d1eb6afbbd7fc67bdb24af0244bfd",
+  "lessonId": "electronic-switching-src-01",
+  "model": "virtual 24 V DC only",
+  "sourceCode": "dist/tutorial-pedagogy.js",
+  "originalSourceClone": "button-relay-2",
+  "catalog": "original 940 models",
+  "testMethod": "Original GitHub JavaScript source through V8 require/fs/path/vm host shim, not native Node",
+  "graph": {
+    "components": 7,
+    "wires": 9,
+    "coil": [
+      "A1",
+      "A2"
+    ],
+    "no": [
+      "13",
+      "14"
+    ],
+    "nc": [
+      "21",
+      "22"
+    ]
+  },
+  "testedPhases": [
+    {
+      "button": false,
+      "coil": false,
+      "green": false,
+      "red": true,
+      "stable": true
+    },
+    {
+      "button": true,
+      "coil": true,
+      "green": true,
+      "red": false,
+      "stable": true
+    },
+    {
+      "button": false,
+      "coil": false,
+      "green": false,
+      "red": true,
+      "stable": true
+    }
+  ],
+  "v8AllCurriculum": {
+    "lessons": 1655,
+    "wiredLessons": 724,
+    "audit": "PASS",
+    "missingDefinitions": 0,
+    "blocked": 0,
+    "shorts": 0,
+    "unstable": 0
+  },
+  "bellLock": "BELL_TRANSFORMER_V1 preserved, prior 15 circuits/38 V8 phases not independently re-executed in this same scope",
+  "regressionCodeAdded": "tests/qa-mq07-relay-terminal-v11920.test.cjs",
+  "nativeNode": "NOT_RUN",
+  "windowsUI": "NOT_RUN",
+  "teacherApproval": "REVIEW",
+  "actionsUsed": 0
+}
