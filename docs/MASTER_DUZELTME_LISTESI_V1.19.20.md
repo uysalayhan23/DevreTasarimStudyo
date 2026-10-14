@@ -1932,3 +1932,12 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Doğrudan V8 özgün elektrik solver kontrolü: S1 OFF→ON→OFF, bobin OFF/ON/OFF, yeşil H1 OFF/ON/OFF, kırmızı H2 ON/OFF/ON. 3/3 kararlı, kısa devre/blokaj yok. Devre ve alan bazlı metin uygulamanın `dist/tutorial-pedagogy.js` dosyasında gerçekten değiştirildi.
 - 1.655 ders kaynak QA PASS, kablolu 724, 136 kabul edilmiş rich ders aynı, ilk 200 teknik REVIEW **63→62**. Batch N kaynak rehber geçmiş kanıtı bozulmamalı; gerçek Node/Windows/UI/pedagoji hâlâ OPEN.
 - `BELL_TRANSFORMER_V1` zil manifesti ve doğrudan faz blokajı **korundu**. Yeni regresyon testi `tests/qa-mq07-relay-terminal-v11920.test.cjs`; V8 kanıtı `evidence/mq07_relay_terminals_v8_20261014.json`. Actions yok, `[skip ci]`.
+
+
+## 2026-10-14 — MQ-07 ilk 200: sensör kumanda test ve IR yük kontrolü gerçek devre onarımı
+
+- Kullanıcı talebi üzerine **sadece rapor değil**, `dist/tutorial-pedagogy.js` uygulama kaynağında `sensor-analog-apps-src-13` ve `sensor-analog-apps-src-14` kablolu sanal eğitim devreleri düzeltildi. Her derste sensör (PNP endüktif / PNP sanal optik), 24 VDC kaynak, K1 bobin, K1 normalde açık kontak, H1 gösterge ve **7 doğru terminal bağlantısı** bulunur.
+- Çocukların anlayacağı açıklamalar devrenin amacı → BN/BU besleme → BK kumanda → A1/A2 bobin → 13/14 NO yük kontağı → H1 dönüşü → OFF/ON/OFF gözlemi şeklinde yeniden yazıldı. Fiziksel ürünün kesin akım/güç/optik montaj verisi olmadığında sayı uydurulmadı.
+- Gerçek GitHub kaynaklarıyla V8 özgün solver: iki ders × üç durum = **6/6 tutarlı röle/lamba fazı**. Müfredat **1655**, kablolu **724→726**, katalog **940**, kaynak başlangıç solver **726/726 PASS**, bozuk uç/kısa devre/engel/kararsızlık **0**. Aynı 1655 dersin grafiği karşılaştırıldığında yalnız bu iki ders değişti. Önceki rich **136/136** korunur.
+- `BELL_TRANSFORMER_V1` kontrolü: **15 devre / 38/38 faz PASS**. Kilitli trafo manifesti değiştirilmedi. İlk 200 teknik REVIEW **62→60**; diğerleri değiştirilmeden açık. Kalıcı Node test kaynağı eklendi ancak **gerçek Node --test ve Windows/Edge sayfa koşuları çalıştırılmadı**. Pedagojik bağımsız ve gerçek fiziksel kabul **REVIEW**.
+- Kanıt `evidence/mq07_sensor_low_voltage_20261014.json`. Actions kullanılmadı; `[skip ci]`.

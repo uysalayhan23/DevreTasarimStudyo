@@ -1062,6 +1062,8 @@ function workshopProject(id,title){
 
 function explicitTitleProject(l){
  const t=l.title.toLocaleLowerCase('tr-TR'),id=l.id,title=l.title;
+ if(id==='sensor-analog-apps-src-13')return {p:industrialSensorLoadProject(id,title,'proximity','Endüktif PNP sensör'),kind:'wiring'};
+ if(id==='sensor-analog-apps-src-14')return {p:industrialSensorLoadProject(id,title,'sensor-through-beam','Optik PNP algılama sensörü'),kind:'wiring'};
  // MQ-07 targeted correction: an NTC lesson must actually contain an NTC, not RV1.
  if(id==='opamp-apps-src-08')return {p:resistiveSensorComparatorProject(id,title,'sensor-ntc','NTC sıcaklık sensörü'),kind:'wiring'};
  if(id==='opamp-apps-src-07')return {p:resistiveSensorComparatorProject(id,title,'ldr-gl5528','LDR foto direnç'),kind:'wiring'};
@@ -2265,6 +2267,8 @@ function mq07MaterialReason(c){
  if(/motor|lamp|light|buzzer|bell/.test(id))return label+' sürücü/anahtarlama sonucunun görüldüğü yük veya göstergedir.';
  return label+' devrenin kayıtlı elemanıdır; rolü şemadaki gerçek terminal bağlantılarına göre değerlendirilir.';
 }
+mq07WiredFocus['sensor-analog-apps-src-13']=mq07Concepts['sensor-analog-apps-src-13'];
+mq07WiredFocus['sensor-analog-apps-src-14']=mq07Concepts['sensor-analog-apps-src-14'];
 const mq07Batch200={examined:0,richProtected:0,earlierProtected:0,enrichedWired:0,enrichedReference:0,reviewIds:[],updatedIds:[]};
 for(const lesson of L.lessons.slice(0,200)){
  mq07Batch200.examined++;
@@ -2477,6 +2481,54 @@ if(relayLesson&&relayReference){
  if(!pending.some(x=>x.id===relayLesson.id&&x.reason==='NO_WIRED_CIRCUIT'))throw Error('MQ07 relay pending REVIEW missing');
  L.mq07Batch200.reviewIds=pending.filter(x=>x.id!==relayLesson.id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),relayLesson.id];
+}
+
+
+/* MQ-07: physically routed low-voltage virtual sensor-control examples.
+   The immutable bell transformer and the already accepted rich lessons stay untouched. */
+for(const id of ['sensor-analog-apps-src-13','sensor-analog-apps-src-14']){
+ const lesson=L.byId[id];if(!lesson)throw Error('Missing virtual sensor lesson '+id);
+ const p=lesson.project,optic=id.endsWith('14');
+ const required=[['g1','arduino-bench-supply'],['s1',optic?'sensor-through-beam':'proximity'],
+  ['k1','coil-relay'],['ka1','contact-no'],['h1','lamp-green']];
+ for(const [cid,typeId] of required)
+  if(!p.components.some(c=>c.id===cid&&c.typeId===typeId))throw Error('Sensor circuit component mismatch '+id+'/'+cid);
+ const connected=(a,ap,b,bp)=>p.wires.some(w=>w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp);
+ if(![
+  ['g1','P','s1','BN'],['g1','M','s1','BU'],['s1','BK','k1','A1'],['k1','A2','g1','M'],
+  ['g1','P','ka1','13'],['ka1','14','h1','X1'],['h1','X2','g1','M']
+ ].every(x=>connected(...x)))throw Error('Incomplete sensor-control terminal wiring '+id);
+ const name=optic?'optik algılama birimi':'endüktif yaklaşım sensörü';
+ lesson.summary=optic
+  ?'Bu sanal optik sensör devresi bir cismin ışık yolunda algılandığı bilgisini ayrı bir röleye aktarır. K1 bobini çekince normalde açık K1/13–14 kontağı kapanır, H1 yeşil gösterge yanar. Algılama kalkınca lamba söner. Böylece algılama sinyali ile yükü çalıştıran enerji yolunun farklı olduğu öğrenilir.'
+  :'Bu sanal devrede endüktif PNP sensör bir metal hedefin algılandığını bildirir. Sensörün BK çıkışı K1 rölesini çalıştırır; rölenin normalde açık 13–14 kontağı H1 lambasını yakar. Algılama kalkınca röle bırakır ve lamba söner. Sensörün görevini bir anahtarla karıştırmadan öğreniriz.';
+ lesson.explanation='Önce sanal G1 güç kaynağının +24 V ucunu bul: G1/P hattı B1 sensörünün BN (kahverengi besleme) ucuna gider. G1/M ise B1/BU (0 V, mavi dönüş) ucuna bağlıdır. '+(optic
+  ?'B1, ışık yolundaki değişimi algılayan üç terminalli sanal optik sensör modelidir; bu sahne gerçek verici–alıcı çiftinin fiziksel montajını göstermez. '
+  :'B1, sanal metal algılama durumu etkinleştiğinde PNP tipinde çıkış verir. ')+
+ 'B1/BK (siyah işaret çıkışı) doğrudan K1/A1 bobin ucuna gider; K1/A2 ucu G1/M hattına döner. Sensör çıkışı aktif değilken K1 bobini enerjisizdir ve K1/13–14 normalde açık kontağı aralıktır: H1 yanmaz. Sanal algılama ON olduğunda B1/BK bobini enerjilendirir, K1/13–14 kapanır. Artık G1/P → K1/13 → K1/14 → H1/X1 → H1/X2 → G1/M üzerinden yük yolu tamamlanır ve yeşil H1 yanar. Algılama OFF olunca bobin bırakır, 13–14 yeniden açılır ve H1 söner. Bobinin A1/A2 uçları ile yük kontağının 13/14 uçları birbirine karıştırılmamalıdır. Besleme bu modelde 24 VDC’dir; bobinin ve lambanın sayısal direnç/güç verileri doğrulanmadığı için uydurma akım veya watt hesabı gösterilmez. Bu yalnız yazılım simülasyonudur, gerçek montaj talimatı değildir.';
+ lesson.learningGoal='Sanal 24 VDC kaynağın P/M uçlarını, PNP sensör BN/BU/BK bağlantılarını, röle bobini A1/A2 ve normalde açık 13/14 uçlarını tek tek göstererek OFF→ON→OFF sırasında H1 lambasının neden söndüğünü, yandığını ve tekrar söndüğünü anlatabilmek.';
+ lesson.beginnerSteps=[
+  'Şemada G1/P (+24 V) ve G1/M (0 V) uçlarını bul; B1/BN ve B1/BU sensör beslemesini takip et.',
+  'B1/BK çıkışının K1/A1 ucuna ve K1/A2 ucunun 0 V’a dönmesine bak. Bu yol sensörden gelen röle kumandasıdır.',
+  'G1/P → K1/13 → K1/14 → H1/X1 → H1/X2 → G1/M yolunu incele; yük enerjisi için kontak neden gereklidir?',
+  'Sanal sensör algılama durumunu önce OFF, sonra ON yap: K1 bobini ile H1 lambasının değişimini karşılaştır.',
+  'Algılamayı tekrar OFF yap; kontak neden yeniden açılıyor ve H1 neden sönüyor, kendi cümlenle söyle.',
+  'Sanal modelde yalnız 24 V kaynak değeri verilmiştir; gerçek cihazın akım/güç hesabını malzeme değerleri yokken tahmin etme.'
+ ];
+ const reasons={
+  g1:'G1, bu sanal dersin 24 VDC P/M beslemesini sağlar; şebeke devresi değildir.',
+  s1:optic?'B1, ışık algılama durumunu BK üzerinden PNP sanal çıkışına dönüştürür; fiziksel optik montajı ayrıca doğrulanmalıdır.':'B1, metal hedefin algılama durumunu PNP tipinde BK sanal işaretine dönüştürür.',
+  k1:'K1 bobini A1/A2 uçlarıyla çalışır; sensör BK çıkışının etkisini anahtarlama hareketine dönüştürür.',
+  ka1:'K1/13–14 normalde açık kontağı yalnız bobin çekince kapanır; H1 yük yolunu kontrol eder.',
+  h1:'H1, NO kontak üzerinden beslenince yanan sanal göstergedir; bağlantı döngüsünün dönüşü X2→0 V’tur.'
+ };
+ lesson.materials=materialRows(p).map(m=>({...m,why:reasons[m.componentId]||m.why}));
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  sourceGraphRepaired:true,causalTerminalsExplained:true,sourceSimulationVerified:true,
+  titleTopologyIssue:null,titleTopologyStatus:'SOURCE_ALIGNED',
+  physicalAcceptance:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
 L.count=L.lessons.length;

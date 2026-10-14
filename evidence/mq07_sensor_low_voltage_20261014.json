@@ -1,0 +1,125 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceHead": "56648e72ba22d9ce645bf3dfcd2cbae935ac6173",
+  "model": "MQ07_FIRST200_LOW_VOLTAGE_SENSOR_SOURCE_REPAIR",
+  "sourceFile": "dist/tutorial-pedagogy.js",
+  "sourceBlobSha": "b2296e6af583f6f8e3ac63478b0bda6d22b38119",
+  "corrections": [
+    {
+      "lessonId": "sensor-analog-apps-src-13",
+      "originalStatus": "NO_WIRED_CIRCUIT",
+      "newStatus": "ORIGINAL_V8_SOLVER_SOURCE_CHECKED",
+      "model": "proximity",
+      "physicalDeviceAcceptance": "REVIEW",
+      "terminalWires": [
+        "G1/P→B1/BN",
+        "G1/M→B1/BU",
+        "B1/BK→K1/A1",
+        "K1/A2→G1/M",
+        "G1/P→K1/13",
+        "K1/14→H1/X1",
+        "H1/X2→G1/M"
+      ],
+      "virtualPhases": [
+        {
+          "sensor": false,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "sensor": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "sensor": false,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    },
+    {
+      "lessonId": "sensor-analog-apps-src-14",
+      "originalStatus": "NO_WIRED_CIRCUIT",
+      "newStatus": "ORIGINAL_V8_SOLVER_SOURCE_CHECKED",
+      "model": "sensor-through-beam",
+      "physicalDeviceAcceptance": "REVIEW",
+      "terminalWires": [
+        "G1/P→B1/BN",
+        "G1/M→B1/BU",
+        "B1/BK→K1/A1",
+        "K1/A2→G1/M",
+        "G1/P→K1/13",
+        "K1/14→H1/X1",
+        "H1/X2→G1/M"
+      ],
+      "virtualPhases": [
+        {
+          "sensor": false,
+          "coil": false,
+          "lamp": false
+        },
+        {
+          "sensor": true,
+          "coil": true,
+          "lamp": true
+        },
+        {
+          "sensor": false,
+          "coil": false,
+          "lamp": false
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "method": "Original live GitHub JS source in V8 require/fs/path/vm host adaptation; NOT native Node --test",
+    "fullCurriculum": {
+      "total": 1655,
+      "rich": 136,
+      "wired": 726,
+      "models": 940,
+      "status": "PASS",
+      "missingDefinitions": 0,
+      "invalidWireEndpoints": 0,
+      "shortCircuits": 0,
+      "blocked": 0,
+      "unstable": 0,
+      "errors": 0
+    },
+    "graphDelta": {
+      "changedOnly": [
+        "sensor-analog-apps-src-13",
+        "sensor-analog-apps-src-14"
+      ],
+      "allOther1653GraphsUntouched": true
+    },
+    "behavior": {
+      "phases": 6,
+      "stable": 6,
+      "lampAndRelayCorrect": 6
+    },
+    "bellTransformer": {
+      "lock": "BELL_TRANSFORMER_V1",
+      "circuitCount": 15,
+      "phases": 38,
+      "passes": 38,
+      "issues": 0,
+      "status": "PASS"
+    },
+    "first200": {
+      "reviewsBefore": 62,
+      "reviewsAfter": 60,
+      "completedNewCircuits": 2,
+      "groupStatus": "PARTIAL_REVIEW"
+    },
+    "fullNode": "NOT_RUN",
+    "windowsVisual": "NOT_RUN",
+    "independentTeacher": "REVIEW",
+    "physical": "REVIEW",
+    "actionsUsed": 0
+  },
+  "scopeNote": "Only two existing review lessons gain matched virtual sensor/relay/lamp circuits and individual causal text. No physical mains wiring instructions; optical through-beam implementation remains a virtual model, not a verified real transmitter/receiver installation."
+}

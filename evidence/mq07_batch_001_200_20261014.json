@@ -15,10 +15,12 @@
     "rewrittenTotal": 88,
     "physicalCircuitRepaired": [
       "opamp-apps-src-07",
-      "installation-systems-src-06"
+      "installation-systems-src-06",
+      "sensor-analog-apps-src-13",
+      "sensor-analog-apps-src-14"
     ],
-    "graphChangeCount": 2,
-    "missingCircuitOrUnverifiedTitleReviewCount": 63
+    "graphChangeCount": 4,
+    "missingCircuitOrUnverifiedTitleReviewCount": 60
   },
   "validation": {
     "originalSourceV8": {
@@ -178,6 +180,34 @@
     "nativeNode": "NOT_RUN",
     "windowsVisual": "NOT_RUN",
     "independentPedagogy": "REVIEW",
+    "actions": 0
+  },
+  "followupSensorControls": {
+    "date": "2026-10-14",
+    "sourceHead": "56648e72ba22d9ce645bf3dfcd2cbae935ac6173",
+    "model": "virtual low-voltage PNP sensor relay switching",
+    "repaired": [
+      "sensor-analog-apps-src-13",
+      "sensor-analog-apps-src-14"
+    ],
+    "reviewBefore": 62,
+    "reviewAfter": 60,
+    "originalSourceV8": {
+      "lessons": 1655,
+      "wired": 726,
+      "rich": 136,
+      "models": 940,
+      "stable": 726,
+      "phasesCorrect": 6,
+      "phaseCount": 6,
+      "missingEndpoints": 0
+    },
+    "bellTransformer": {
+      "status": "PASS",
+      "circuits": 15,
+      "phases": "38/38"
+    },
+    "acceptance": "SOURCE_ONLY_PENDING_NODE_WINDOWS_PHYSICAL_PEDAGOGY",
     "actions": 0
   }
 }
