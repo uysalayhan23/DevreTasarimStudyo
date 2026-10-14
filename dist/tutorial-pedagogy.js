@@ -2616,6 +2616,55 @@ for(const lessonId of ['opamp-apps-src-11','opamp-apps-src-12']){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),lessonId];
 }
 
+
+
+/* MQ-07 first-200: genuine IR optical receiver/transmitter teaching stage.
+   Reuse the proven low-voltage optical sensor graph without mutating its source.
+   Physical separate TX/RX product and browser acceptance remain REVIEW. */
+{
+ const id='sensor-analog-apps-src-12',lesson=L.byId[id],reference=L.byId['sensor-analog-apps-src-22'];
+ if(!lesson||!reference||lesson.project?.wires?.length||!reference.project?.wires?.length)
+  throw Error('IR virtual optical teaching source not in expected state');
+ const unresolved=L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT');
+ if(!unresolved)throw Error('IR title-topology review baseline missing');
+ const p=clone(reference.project);
+ const detector=p.components.find(c=>c.id==='s1'&&c.typeId==='sensor-through-beam');
+ if(!detector||p.wires.length!==7)throw Error('IR optical graph expected 7 real wires');
+ detector.ref='B1';detector.label='IR optik algılama modülü (sanal gönderici/alıcı)';
+ detector.sensing={target:'plastic',distance:80,range:40,offset:0,auto:false};
+ detector.tutorialPurpose='B1 sanal optik modülü kızılötesi verici/alıcı çiftinin algılama işlevini tek modelde gösterir; bu gerçek iki ayrı fiziksel cihazın üretici onayı değildir.';
+ p.projectId='tutorial-session-source-'+id;
+ p.name='Öğretici · '+lesson.title;
+ p.tutorialLesson={id,topicId:lesson.topicId,phase:'demo',step:0,level:lesson.variant};
+ lesson.project=p;lesson.workspaceMode=p.workspaceMode||'control';lesson.kind='wiring';
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Sanal terminalleri izle.',why:w.tutorialWhy||'Kayıtlı kontrol yolu tamamlanır.',color:w.color,role:w.role,size:w.size}));
+ lesson.summary='IR alıcı-verici düzeneği kızılötesi ışıkla bir hedefin optik algılama alanına girip girmediğini anlamayı sağlar. Bu sanal modelde B1 hedefi gördüğünde K1 rölesi ve H1 göstergesi etkinleşir; hedef uzaklaşınca ikisi de kapanır. Tek parça B1 modeli gerçek verici/alıcı donanım çiftinin fiziksel çizimi değildir.';
+ lesson.explanation='Bu dersin amacı, optik algılama bilgisinin bir elektrik kumandasına nasıl dönüştüğünü öğrenmektir. Sanal G1 kaynağının +24 V ucu B1/BN kahverengi besleme girişine, 0 V ucu B1/BU mavi referansına bağlanır. B1 optik modülü hedefin varlığını simüle eder: hedef 80 mm uzaktayken 40 mm sanal algılama sınırının dışındadır; algılama yoktur. Hedef 2 mm yakına getirildiğinde B1/BK siyah PNP çıkışı K1/A1 bobin ucuna kumanda verir; bobinin K1/A2 ucu 0 V hattındadır. Röle enerjilenince K1/13 ve K1/14 normalde açık kontakları birleşir. Kaynağın +24 V hattı K1/13 üzerinden, K1/14 ise H1/X1 üzerinden lambaya ulaşır; H1/X2 dönüşü 0 V hattındadır. Böylece optik hedef yaklaştığında gösterge yanar, hedef 80 mm uzağa geri taşındığında söner. B1 gönderici ve alıcının optik işlevini tek sanal bileşende temsil eder: ayrı gerçek verici/alıcı optiği, ışın güvenilirliği ve üretici ölçüleri henüz doğrulanmış değildir. Yalnız düşük gerilimli uygulama simülasyonunda gözlem yap; gerçek tesisat talimatı değildir.';
+ lesson.learningGoal='B1/BN-BU beslemesini, BK ile K1/A1 röle kumandasını, K1/13-14 kontağını ve H1/X1-X2 yük yolunu açıklayıp 80→2→80 mm sanal hedef hareketinde neden OFF→ON→OFF sonucu oluştuğunu kendi sözleriyle anlatabilmek.';
+ lesson.beginnerSteps=[
+  'Önce B1 algılayıcıyı ve H1 göstergeyi bul. Devrenin amacı bir hedefin algılandığını göstermek.',
+  'Sanal G1 kaynağından B1/BN (+24 V) ve B1/BU (0 V) bağlantılarını, sonra B1/BK → K1/A1 hattını izle.',
+  'K1/A2 → 0 V dönüşünü ve ayrı yük yolunu bul: +24 V → K1/13 → K1/14 → H1/X1 → H1/X2 → 0 V.',
+  'B1 hedefi plastik ve 80 mm uzakta iken sanal devreyi çalıştır; K1 ve H1 kapalı olmalıdır.',
+  'Sanal hedefi 2 mm yakına taşı. B1 algıladığında K1 bobini ve H1 lambasının birlikte açılmasını gözle.',
+  'Hedefi 80 mm uzağa götür. OFF→ON→OFF değişiminin neden röle kontağını açıp kapattığını açıklayıp kaydet.'
+ ];
+ const purpose={
+  g1:'Yalnız sanal 24 VDC enerji kaynağı; sensör besleme ve lamba devresine enerji sağlar.',
+  s1:'Kızılötesi gönderici/alıcı işlevinin birleştirilmiş sanal optik modelidir; 40 mm algılama sınırı eğitim ayarıdır.',
+  k1:'B1/BK sanal PNP sinyali gelince K1/A1-A2 bobini enerjilenir.',
+  ka1:'K1/13-14 normalde açık kontağı, bobin enerjilenince lambanın akım yolunu tamamlar.',
+  h1:'H1/X1-X2 lamba, hedef algılandığında röle kontağının kapandığını gösterir.'
+ };
+ lesson.materials=materialRows(p).map(m=>purpose[m.componentId]?{...m,why:purpose[m.componentId]}:m);
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_OPTICAL_SOURCE_ALIGNED',
+  irVirtualGraphRepair:true,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false,
+  separateTransmitterReceiverVerified:false};
+ lesson.safety='Yalnız 24 VDC sanal eğitim; gerçek IR verici/alıcı ve optik mesafe ürün ölçüleri henüz kabul edilmedi.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

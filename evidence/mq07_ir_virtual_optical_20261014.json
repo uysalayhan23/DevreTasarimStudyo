@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "sourceHead": "f5bc4b83e029423dcf2f2661e1e7fb627c9643ed",
+  "sourceStagedBlob": "d6d5d1337450fe97f36b7ac71643100ff0f79eca",
+  "lessonId": "sensor-analog-apps-src-12",
+  "reportType": "original GitHub source executed in V8 with in-memory Node module/fs/vm adapters",
+  "changedGraph": {
+    "components": 5,
+    "terminalWires": 7,
+    "catalogModels": 940
+  },
+  "irPhases": [
+    {
+      "distanceMm": 80,
+      "relay": false,
+      "lamp": false,
+      "stable": true
+    },
+    {
+      "distanceMm": 2,
+      "relay": true,
+      "lamp": true,
+      "stable": true
+    },
+    {
+      "distanceMm": 80,
+      "relay": false,
+      "lamp": false,
+      "stable": true
+    }
+  ],
+  "curriculum": {
+    "lessons": 1655,
+    "wired": 729,
+    "stable": 729,
+    "rich": 136,
+    "missingDefinitions": 0,
+    "invalidWireEndpoints": 0,
+    "blocked": 0,
+    "shorts": 0,
+    "unstable": 0
+  },
+  "bell": {
+    "model": "BELL_TRANSFORMER_V1",
+    "circuits": 15,
+    "phases": 38,
+    "passed": 38,
+    "issues": 0,
+    "lockedManifestModified": false
+  },
+  "batchN": {
+    "total": 1519,
+    "wired": 532,
+    "referenceOnly": 916,
+    "referenceWithWires": 71,
+    "observations": 2114,
+    "issues": 0,
+    "status": "PASS"
+  },
+  "first200Reviews": {
+    "before": 56,
+    "after": 55
+  },
+  "hysteresisSchmitt": "REVIEW - original comparator source output lacks demonstrated distinct rise/fall switching thresholds",
+  "fullNode": "NOT_RUN",
+  "windowsUI": "NOT_RUN",
+  "realOpticalTXRXManufacturer": "REVIEW",
+  "independentPedagogy": "REVIEW",
+  "actionsUsed": 0
+}

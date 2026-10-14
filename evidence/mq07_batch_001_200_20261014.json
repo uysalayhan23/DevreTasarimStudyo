@@ -20,7 +20,7 @@
       "sensor-analog-apps-src-14"
     ],
     "graphChangeCount": 4,
-    "missingCircuitOrUnverifiedTitleReviewCount": 60
+    "missingCircuitOrUnverifiedTitleReviewCount": 55
   },
   "validation": {
     "originalSourceV8": {
@@ -209,5 +209,29 @@
     },
     "acceptance": "SOURCE_ONLY_PENDING_NODE_WINDOWS_PHYSICAL_PEDAGOGY",
     "actions": 0
+  },
+  "latestTechnicalReviewRemaining": 55,
+  "followupIrVirtual": {
+    "date": "2026-10-14",
+    "sourceHead": "f5bc4b83e029423dcf2f2661e1e7fb627c9643ed",
+    "lessonId": "sensor-analog-apps-src-12",
+    "change": "Real registered 5-component / 7-wire virtual IR through-beam sensor circuit, 24 VDC PNP → K1 relay → H1 lamp. Not a verified physical separate IR transmitter/receiver product.",
+    "reviewBefore": 56,
+    "reviewAfter": 55,
+    "solver": {
+      "initialWired": "729/729 PASS",
+      "irThreePhases": "3/3 PASS",
+      "state": "80mm OFF → 2mm ON → 80mm OFF",
+      "faults": 0
+    },
+    "bellModel": "BELL_TRANSFORMER_V1",
+    "bell": "15/15 circuits,38/38 phases PASS",
+    "batchN": "1519/1519 PASS;532 wired,916 reference-only,71 reference-with-wires",
+    "richPreserved": 136,
+    "independentPedagogy": "REVIEW",
+    "realTxRxHardware": "REVIEW",
+    "windowsUI": "NOT_RUN",
+    "nodeFull": "NOT_RUN",
+    "actionsUsed": 0
   }
 }

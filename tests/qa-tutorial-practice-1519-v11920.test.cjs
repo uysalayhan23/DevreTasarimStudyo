@@ -10,8 +10,8 @@ test('1519 non-rich practice guides have 2085 source-backed terminal examples an
  assert.equal(report.total,1655);
  assert.equal(report.rich,136);
  assert.equal(report.examined,1519);
- assert.equal(report.wired,525);
- assert.equal(report.referenceOnly,923);
+ assert.equal(report.wired,532);
+ assert.equal(report.referenceOnly,916);
  assert.equal(report.referenceWithWires,71);
  assert.ok(report.checkableObservations>=2000);
  assert.equal(report.issues.length,0);
