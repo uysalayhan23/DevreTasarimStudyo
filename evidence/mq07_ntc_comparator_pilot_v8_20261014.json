@@ -45,5 +45,20 @@
   },
   "actionsUsed": 0,
   "execution": "original GitHub JS in V8 with in-memory fs/path/vm shims; Node --test and Windows UI NOT RUN",
-  "otherLessonCountUnchanged": 1655
+  "otherLessonCountUnchanged": 1655,
+  "v8SourceRegression": {
+    "executed": true,
+    "mode": "Original test source callbacks in V8 with compatible node:test/assert/structuredClone host adapters (NOT Node --test)",
+    "tests": 3,
+    "passed": 3,
+    "failed": 0,
+    "cases": [
+      "NTC comparison lesson has real thermistor and correct 8/4/2/3 pins",
+      "real native solver: 15C low, 35C high around the 12V reference",
+      "causal explanation, guide and fail-closed teaching status are preserved"
+    ],
+    "firstAttempt": "2/3 because text used '8 numaralı bacak' whereas test searched 'pin 8'; repaired explanatory terminology, no solver change"
+  },
+  "nodeTestExecuted": false,
+  "windowsBrowserTestExecuted": false
 }
