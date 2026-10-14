@@ -54,10 +54,15 @@ function execute(root=ROOT){
  const tests=count('tests'),passed=count('pass'),failed=count('fail');
  return {...check,executed:true,tests,passed,failed,status:child.status===0&&tests>=71&&passed===tests&&failed===0?'PASS':'REVIEW',exitCode:child.status,stderr:child.stderr||'',stdout:output};
 }
-if(require.main===module){const report=process.argv.includes('--check')?inventory():execute();
+if(require.main===module){
+ const sourceCheck=process.argv.includes('--check');
+ const checked=inventory();
+ // Source completeness is necessary but NEVER proof that a regression was executed.
+ const report=sourceCheck?{...checked,executed:false,passed:null,status:checked.complete?'SOURCES_PRESENT_UNTESTED':'INCOMPLETE'}:execute();
  const summary={...report};delete summary.stdout;delete summary.stderr;
  console.log(JSON.stringify(summary,null,2));
  if(report.executed&&report.stdout)process.stdout.write(report.stdout);
- if(report.status!=='PASS'&&!process.argv.includes('--check'))process.exitCode=1;
+ // A missing source must make --check fail, not silently return a successful shell status.
+ if(sourceCheck?!report.complete:report.status!=='PASS')process.exitCode=1;
 }
 module.exports={REQUIRED,RUNNERS,inventory,execute};
