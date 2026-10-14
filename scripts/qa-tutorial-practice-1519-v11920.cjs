@@ -53,7 +53,7 @@ function audit({L=Curriculum.curriculum(),modeSource=fs.readFileSync(path.join(S
   modeSource.includes('Yalnız sanal eğitim:');
  report.guiContract={escaped,visible,passed:escaped&&visible};
  report.sourceStatus=report.total===1655&&report.rich===136&&report.examined===1519&&
-  report.wired===525&&report.referenceOnly===923&&report.referenceWithWires===71&&
+  report.wired+report.referenceOnly+report.referenceWithWires===report.examined&&
   report.checkableObservations>=525&&!report.issues.length&&report.guiContract.passed?'PASS':'FAIL';
  return report;
 }

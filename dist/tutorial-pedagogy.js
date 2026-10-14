@@ -2568,6 +2568,54 @@ for(const item of mq07LowVoltageSensors){
 }
 
 
+
+/* MQ07 001-200: real independently controllable A/B inputs for two op-amp lessons. */
+for(const lessonId of ['opamp-apps-src-11','opamp-apps-src-12']){
+ const lesson=L.byId[lessonId],subtract=lessonId.endsWith('-11'),p=lesson?.project;
+ if(!lesson||lesson.designStandard==='rich-reference-v1'||!p||p.components.some(c=>c.id==='in2')||!p.components.some(c=>c.id==='u1'&&c.typeId==='lm358p-dip8'))throw Error('MQ07 unexpected opamp lesson '+lessonId);
+ const component=x=>p.components.find(c=>c.id===x);
+ component('in').label='RV1 · giriş A';component('in').potentiometer=35;
+ component('r2').resistance=10000;component('r2').label='R2 · 10 kΩ geri besleme';
+ p.components.push(C('in2','potentiometer',150,650,'RV2','RV2 · giriş B',{potMax:10000,potentiometer:60}));
+ p.wires.push(W('in2','1','g1','P','RV2/1 → sanal +24 V','B potansiyometresinin üst beslemesidir.','#8b5a2b','+24V'),W('in2','3','g1','M','RV2/3 → sanal 0 V','B potansiyometresinin alt referansıdır.','#111827','0V'));
+ p.components.push(C('r5','resistor',445,570,'R5','10 kΩ B giriş direnci',{resistance:10000}));
+ if(subtract){
+  const old=p.wires.filter(w=>w.from?.c==='ref1'&&w.from?.p==='2'&&w.to?.c==='u1'&&w.to?.p==='3');
+  if(old.length!==1)throw Error('MQ07 subtractor Vref direct connection mismatch');
+  p.wires=p.wires.filter(w=>!old.includes(w));
+  p.components.push(C('r6','resistor',490,215,'R6','10 kΩ Vref giriş direnci',{resistance:10000}));
+  p.wires.push(
+   W('in2','2','r5','1','RV2/2 → R5/1','B girişini U1 evirmeyen girişe taşır.','#43a047','SIGNAL'),
+   W('r5','2','u1','3','R5/2 → U1 pin 3','B gerilimi evirmeyen girişe uygulanır.','#43a047','SIGNAL'),
+   W('ref1','2','r6','1','R3–R4 orta nokta → R6','12 V sanal referans aynı girişte ağırlıklandırılır.','#43a047','SIGNAL'),
+   W('r6','2','u1','3','R6/2 → U1 pin 3','Evirmeyen giriş için referans koludur.','#43a047','SIGNAL')
+  );
+ }else{
+  p.wires.push(W('in2','2','r5','1','RV2/2 → R5','İkinci giriş için bağımsız direnç koludur.','#43a047','SIGNAL'),W('r5','2','u1','2','R5 → U1 pin 2','A ve B sinyalleri eviren toplama noktasında birleşir.','#43a047','SIGNAL'));
+ }
+ p.referenceOnly=false;lesson.kind='wiring';
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ const common='Bu sanal eğitim devresinde G1 +24 V ile 0 V arasındaki güç kaynağıdır; LM358P U1 pin 8 üzerinden beslenir, pin 4 ise 0 V referansıdır. R3=R4=10 kΩ dirençleri +24 V kaynağı ikiye bölerek 12 V orta referans oluşturur (24 × 10/(10+10) = 12 V). RV1 (A) ve RV2 (B) iki ayrı ayarlanabilir sinyal kaynağıdır. U1 pin 1 çıkışı, UNI-T multimetrenin DCV kademesiyle sanal OUT–0 V arasında ölçülür. ';
+ if(subtract){
+  lesson.summary='Bu iki girişli çıkarıcı sanal devrede LM358P, RV2 girişindeki B gerilimi ile RV1 girişindeki A geriliminin farkını gösterir. İki giriş eşitken çıkış yaklaşık 12 V referansta kalır; B büyürse çıkış artar, A büyürse azalır.';
+  lesson.explanation=common+'A sinyali RV1/2 → R1=10 kΩ → U1 pin 2 (IN−) yolunu izler; R2=10 kΩ pin 1 (OUT) ile pin 2 arasında negatif geri besleme kurar. B sinyali RV2/2 → R5=10 kΩ → U1 pin 3 (IN+) yoluyla gelir. R3–R4 orta noktasındaki 12 V referans da R6=10 kΩ üzerinden aynı pin 3 noktasına ulaşır. Dört direnç eşit olduğunda, doyuma girilmeyen bölgede yaklaşık Vout=12 V+B−A olur. Bu denklem yalnızca besleme sınırları içindeki ideal çalışma bölgesine aittir; gerçek değer sanal simülasyonda ölçülmelidir. Öğrenci önce A=B ayarlar, sonra B yükseltir, sonra A yükseltir ve OUT seviyesinin neden değiştiğini kendi sözleriyle açıklar. Kayıtlı şemadan izlenecek bağlantılar: RV1/2 → R1 → pin 2; RV2/2 → R5 → pin 3; 12 Vref → R6 → pin 3; OUT → R2 → pin 2.';
+  lesson.learningGoal='Bağımsız A ve B girişleri, U1 pin 2/3, R1/R2/R5/R6 dirençleri ve 12 V orta referans üzerinden fark hesabını sözlü anlatmak.';
+  lesson.beginnerSteps=['G1 +24 V ve 0 V uçlarını U1 pin 8 ve 4 ile eşleştir.','R3/R4 gerilim bölücüsünü bul ve neden 12 V oluştuğunu hesapla.','RV1 ve RV2 sanal ayarlarını eşit yap; OUT gerilimini izle.','RV1 sabitken RV2 ayarını büyüt; çıkış değişimini gözle.','RV2 sabitken RV1 ayarını büyüt; çıkış yönünün neden ters değiştiğini açıkla.','R1/R2/R5/R6 dirençleri üzerinden hesap ve ölçüm farkını değerlendir.'];
+ }else{
+  lesson.summary='Bu iki girişli eviren toplayıcı devrede LM358P, RV1 ve RV2 ile ayarlanan A/B sinyallerinin 12 V orta referansa göre etkilerini birleştirir. Her giriş çıkışı etkiler.';
+  lesson.explanation=common+'A sinyali RV1/2 → R1=10 kΩ → U1 pin 2 (IN−) yolundan gelir. B sinyali RV2/2 → R5=10 kΩ → aynı pin 2 düğümüne ulaşır. R2=10 kΩ OUT/pin 1 ile pin 2 arasında negatif geri besleme oluşturur. R3–R4 bölücüsünün 12 V orta noktası U1 pin 3 (IN+) girişidir. Doyum dışında eşit dirençler için ideal matematiksel ilişki Vout≈3×12 V−A−B olur: A veya B artınca eviren çıkış düşer. Gerilim 0–24 V çalışma sınırına yaklaştığında ideal hesap geçerli olmayabilir; bu yüzden öğrenci simüle edilen değeri gözlemlemelidir. Önce yalnız A ayarını, sonra yalnız B ayarını değiştirip iki girişin çıkışa katkısını açıkla. Kayıtlı şemadan izlenecek bağlantılar: RV1/2 → R1 → pin 2; RV2/2 → R5 → pin 2; 12 Vref → pin 3; OUT → R2 → pin 2.';
+  lesson.learningGoal='İki ayrı A/B girişini gerçek pin 2 toplama düğümünde tanımak; R1/R5 ve R2 geri beslemenin eviren toplama işlemini nasıl gerçekleştirdiğini açıklamak.';
+  lesson.beginnerSteps=['U1 pin 8/4 beslemesini ve R3/R4 üzerinden 12 V referansını bul.','RV1/2 ile R1 ve RV2/2 ile R5 giriş yollarının U1 pin 2 de birleştiğini göster.','RV1 ayarını değiştirip sanal OUT/pin 1 seviyesini gözlemle.','RV1 sabitken RV2 ayarını değiştir; iki girişin etkisini karşılaştır.','R2 negatif geri besleme ve ideal 3×12−A−B hesabını anlat.','İdeal hesap ile sanal ölçüm farklıysa doyum/çalışma sınırı etkisini değerlendir.'];
+ }
+ const purpose={in:'A adlı ilk bağımsız sanal giriş gerilimidir.',in2:'B adlı ikinci bağımsız sanal giriş gerilimidir.',g1:'+24 V/0 V sanal besleme kaynağıdır.',u1:'LM358P pin 8/4 beslenir; pin 2 IN−, pin 3 IN+, pin 1 OUT.',r1:'A girişini 10 kΩ üzerinden evirmeyen değil eviren pin 2 ye iletir.',r2:'OUT ile IN− arasında 10 kΩ negatif geri besleme oluşturur.',r5:'B girişini 10 kΩ üzerinden ilgili toplama düğümüne getirir.',r6:'12 V referansını 10 kΩ üzerinden IN+ girişine getirir.',ref1:'R3 10 kΩ üst referans bölücüdür.',ref2:'R4 10 kΩ alt referans bölücüdür.'};
+ lesson.materials=materialRows(p).map(m=>purpose[m.componentId]?{...m,why:purpose[m.componentId]}:m);
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',twoInputOpampVirtual:true,titleTopologyIssue:null,titleTopologyStatus:'SOURCE_ALIGNED',independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,physicalAcceptance:false};
+ lesson.safety='Yalnızca sanal düşük gerilimli laboratuvar; fiziksel donanım talimatı değildir.';
+ if(!L.mq07Batch200?.reviewIds?.some(x=>x.id===lessonId&&x.reason==='MISSING_REQUIRED_SECOND_INPUT'))throw Error('Unexpected review baseline '+lessonId);
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==lessonId);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),lessonId];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

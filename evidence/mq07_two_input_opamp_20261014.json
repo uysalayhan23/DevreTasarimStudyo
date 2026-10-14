@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "baseHead": "9c74ff35445eefbbe9aadd9d461eeb901f537d40",
+  "scope": "MQ07 first-200 P1 repairs: two true virtual inputs for opamp subtractor and summer",
+  "changes": {
+    "application": "dist/tutorial-pedagogy.js",
+    "lessons": [
+      "opamp-apps-src-11",
+      "opamp-apps-src-12"
+    ],
+    "inputControlsPerLesson": 2,
+    "terminalWires": {
+      "subtract": 19,
+      "sum": 18
+    },
+    "oldReview": 58,
+    "newReview": 56,
+    "standardsManifest": "docs/BELL_TRANSFORMER_MODEL_LOCKED.json",
+    "bellModel": "BELL_TRANSFORMER_V1",
+    "bellManifestModified": false
+  },
+  "v8": {
+    "source": "51 original GitHub JS dependencies with updated branch source and in-memory Node API shims",
+    "lessons": 1655,
+    "catalogDefinitions": 940,
+    "wired": 728,
+    "stable": 728,
+    "errors": 0,
+    "bell": {
+      "circuits": 15,
+      "phases": 38,
+      "passed": 38,
+      "issues": 0
+    },
+    "batchN": {
+      "total": 1519,
+      "virtualWired": 531,
+      "referenceOnly": 917,
+      "referenceWithWires": 71,
+      "issues": 0,
+      "sourceStatus": "PASS"
+    },
+    "analogSims": {
+      "phasesPerLesson": 5,
+      "allStable": true,
+      "subtractorOutputVolts": [
+        18.4375,
+        10.8569,
+        5.2405,
+        5.256,
+        17.8008
+      ],
+      "summerOutputVolts": [
+        5.2562,
+        10.8573,
+        17.801,
+        5.2562,
+        17.801
+      ],
+      "settings": [
+        [
+          50,
+          20
+        ],
+        [
+          50,
+          50
+        ],
+        [
+          50,
+          80
+        ],
+        [
+          20,
+          50
+        ],
+        [
+          80,
+          50
+        ]
+      ],
+      "independentlyResponsive": true
+    },
+    "testType": "Original app/curriculum/solver run in V8; not native Node --test",
+    "windows": "NOT_RUN",
+    "physical": "REVIEW",
+    "independentPedagogy": "REVIEW"
+  },
+  "sourceQARepair": "Batch N static 525/923 counters stale after earlier 6 accepted circuit repairs; individual wire/guide checks retained and totals now 531/917/71, sum=1519",
+  "acceptance": "PARTIAL_REVIEW",
+  "otherTechnicalReviewRemaining": 56,
+  "actionsUsed": 0
+}
