@@ -48,3 +48,27 @@ test('seven canonical RC/RL lessons: 707 stable phases and no fabricated restora
  }
  assert.equal(count,707);
 });
+
+test('35 native sensor circuits: virtual state does not prove a real target',()=>{
+ const Sensor=require('../dist/sensors.js');
+ let missingTargets=0,stablePhases=0;
+ for(const lesson of L.lessons.filter(l=>l.project?.wires?.length)){
+  const original=lesson.project.components.find(c=>['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target);
+  if(!original)continue;
+  missingTargets++;
+  const source=JSON.stringify(lesson.project),project=structuredClone(lesson.project);
+  const control=project.components.find(c=>c.id===original.id);
+  for(const [now,state] of [[0,false],[400,true],[850,false]]){
+   control.state=state;
+   assert.equal(Sensor.detect(control,defs[control.typeId]).enabled,false,
+    lesson.id+' has no physically configured target');
+   const r=Sim.solve(project,defs,{now});stablePhases++;
+   assert.ok(r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating,
+    lesson.id+' '+now+' must be solver-stable without physical acceptance');
+  }
+  assert.equal(JSON.stringify(lesson.project),source,lesson.id+' canonical graph mutated');
+ }
+ assert.equal(missingTargets,35);
+ assert.equal(stablePhases,105);
+ // This regression verifies that synthetic state toggles do NOT close sensor QA.
+});
