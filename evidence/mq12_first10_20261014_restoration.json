@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "checkedHead": "3ba745d4c35a9e3440281f67b4b932bff5b9bc3b",
+  "executionStatus": "NOT_EXECUTED",
+  "executed": false,
+  "passed": null,
+  "failed": null,
+  "qaStatus": "OPEN",
+  "actionsUsed": 0,
+  "sourceCheck": "GitHub connector read-only source inspection; source presence does not imply solver execution",
+  "evidenceRefs": [
+    "tests/qa-mq12-native-first-ten-v11920.test.cjs",
+    "scripts/qa-mq12-small-batches-v11920.cjs",
+    "tests/qa-mq12-small-batches-v11920.test.cjs",
+    "docs/MQ12_LOCAL_REGRESSION_PROVENANCE_2026_10_13.md"
+  ],
+  "note": "Historical numbers below are preserved evidence, not new 2026-10-14 live HEAD test results.",
+  "gate": "restoration",
+  "currentRun": {
+    "status": "NOT_EXECUTED",
+    "restorationPass": null,
+    "restorationReview": null
+  },
+  "historicalBaseline": {
+    "restorationPass": 7,
+    "restorationReview": [
+      "seal-in-1"
+    ],
+    "latchingSuite": {
+      "ids": [
+        "seal-in-1",
+        "seal-in-2",
+        "seal-in-3",
+        "seal-in-4"
+      ],
+      "expectedStates": [
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "step": "OFF → START → HOLD after release → STOP → OFF"
+    }
+  },
+  "acceptance": "REVIEW_NOT_FULL_PASS"
+}

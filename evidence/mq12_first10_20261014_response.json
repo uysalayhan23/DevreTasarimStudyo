@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-14",
+  "repository": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "checkedHead": "3ba745d4c35a9e3440281f67b4b932bff5b9bc3b",
+  "executionStatus": "NOT_EXECUTED",
+  "executed": false,
+  "passed": null,
+  "failed": null,
+  "qaStatus": "OPEN",
+  "actionsUsed": 0,
+  "sourceCheck": "GitHub connector read-only source inspection; source presence does not imply solver execution",
+  "evidenceRefs": [
+    "tests/qa-mq12-native-first-ten-v11920.test.cjs",
+    "scripts/qa-mq12-small-batches-v11920.cjs",
+    "tests/qa-mq12-small-batches-v11920.test.cjs",
+    "docs/MQ12_LOCAL_REGRESSION_PROVENANCE_2026_10_13.md"
+  ],
+  "note": "Historical numbers below are preserved evidence, not new 2026-10-14 live HEAD test results.",
+  "gate": "response",
+  "currentRun": {
+    "status": "NOT_EXECUTED",
+    "responsive": null
+  },
+  "historicalBaseline": {
+    "controlled": 8,
+    "responsePass": 8,
+    "responseReview": 0,
+    "knownResponseExamples": [
+      "button-led-1",
+      "button-led-2",
+      "seal-in-1"
+    ]
+  },
+  "acceptance": "NO_NEW_PASS"
+}

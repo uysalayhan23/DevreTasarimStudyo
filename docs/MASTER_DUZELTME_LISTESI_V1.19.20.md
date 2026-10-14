@@ -1845,3 +1845,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `tests/tutorial-practice-guide-batch-n-v11920.test.cjs` bu 525/923/71 ayrımını artık zorunlu doğrular; sahte elektriksel kabulü engeller.
 - `scripts/qa-tutorial-sequential-v11920.cjs` özgün solver'da `722` kablolu dersi başlangıç → sanal kontrol değişimi → geri dönüş dizisiyle taramak üzere repoda mevcut. `tests/qa-tutorial-sequential-v11920.test.cjs` testinde artık osilasyonun sıfır olması ve sonucun yalnız `SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN` olması zorunludur. Bu statü **nihai fiziksel/öğrenme kabulü değildir**.
 - **Açık:** Güncel HEAD üzerinde 722 dersin gerçek Node sayısal ardışık çalıştırması ve varsa hata düzeltmeleri; 1519 rehberin gerçek Chromium/Windows görünüm-kullanılabilirlik QA'sı. Burada kaynak/V8 kontrolü yapılmıştır; Node/Windows yürütmesi kanıtı üretilmemiştir.
+
+
+## 2026-10-14 — MQ-12 GitHub snapshot aktarım engeli / first-10 dört ayrı kapı (MQ-00: BLOCKED)
+
+- `main` HEAD `3ba745d4c35a9e3440281f67b4b932bff5b9bc3b` üzerinde GitHub kaynakları okundu; ilk 10 kablolu dersin gerçek native Node yürütmesi **bu oturumda yapılamadı**. GitHub bağlantısı ZIP/tarball ikili arşivini yerel Node dosya sistemine aktaramıyor; yerel ortamdan doğrudan GitHub DNS erişimi yok. Kaynak dosya listesi, executable solver kanıtı değildir.
+- Önceki regresyon kayıtları **5/5**, first-10 **classification 10/10, stability 10/10, response 8/8, restoration 7 PASS / seal-in-1 REVIEW** ve Batch N **1.519/1.519** tarihsel kaynak QA korunur; yeni `main` koşusu olarak tekrar PASS ilan edilmedi. 35 sensör + 7 reaktif davranış **REVIEW** sürer.
+- Dört ayrı fail-closed `evidence/mq12_first10_20261014_*.json` raporu bugünkü `NOT_EXECUTED` durumunu, `historicalBaseline` alanından ayırır. Aktarım stratejisi: `docs/MQ12_GITHUB_SNAPSHOT_EXECUTION_LIMITS_2026_10_14.md`.
+- MQ-12 G6/G7 açık, MQ-13 süreklilik: yalnız doküman/kanıt güncellemesi, kanonik/devre/solver/launcher ve golden değişmez; MQ-00 karar `BLOCKED`. GitHub Actions yok, `[skip ci]`.
