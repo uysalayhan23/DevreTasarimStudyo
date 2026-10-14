@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "baseCommit": "4f4e28b6c20563191c7503d1e9402385f9c48999",
+  "sourceBlobSha": "03343c83bfdb840c5a3c0d48daaeea8da0479fcd",
+  "scope": {
+    "start": 1,
+    "end": 200,
+    "count": 200,
+    "lockedRichPreserved": 101,
+    "earlierAcceptedNarrativesPreserved": 11,
+    "rewrittenCabled": 30,
+    "rewrittenReferenceOnly": 58,
+    "rewrittenTotal": 88,
+    "physicalCircuitRepaired": [
+      "opamp-apps-src-07"
+    ],
+    "graphChangeCount": 1,
+    "missingCircuitOrUnverifiedTitleReviewCount": 64
+  },
+  "validation": {
+    "originalSourceV8": {
+      "allLessons": 1655,
+      "initialSolverWiredPass": 722,
+      "catalogModels": 939,
+      "brokenEndpoints": 0,
+      "missingDefinitions": 0,
+      "shorts": 0,
+      "blocked": 0,
+      "unstable": 0,
+      "status": "PASS"
+    },
+    "first10Regressions": {
+      "classification": "10/10",
+      "stability": "10/10",
+      "response": "8/8",
+      "restoration": "7_PASS_1_REVIEW"
+    },
+    "batchN": {
+      "checked": 1519,
+      "status": "PASS",
+      "issues": 0
+    },
+    "pedagogyHeuristics": {
+      "genericSummaryBefore": 513,
+      "after": 310,
+      "genericExplanationBefore": 340
+    },
+    "equivalence": {
+      "canonicalGraphsCompared": "component and terminal topology, ignoring transient pgwXXXX probe lead IDs",
+      "graphChangedOnly": [
+        "opamp-apps-src-07"
+      ],
+      "richUnchanged": 136
+    },
+    "v8TestCallbacks": {
+      "executed": 4,
+      "passed": 4,
+      "failed": 0,
+      "mode": "Original node:test callback functions executed through V8 host adapter, NOT native Node --test"
+    },
+    "fullNode": "NOT_RUN",
+    "windowsVisual": "NOT_RUN",
+    "independentTeacherReview": "NOT_RUN"
+  },
+  "acceptance": {
+    "groupStatus": "PARTIAL_REVIEW",
+    "fullGroupDelivered": false,
+    "actionRuns": 0
+  },
+  "notes": [
+    "The 58 reference-only lessons were given conceptual explanations, not invented electric circuits.",
+    "64 first-200 lessons retain a topology/functional REVIEW gate; numerical claims are theoretical unless native solver confirms them.",
+    "A separate corrected LDR comparator uses a genuine ldr-gl5528 instead of RV1."
+  ]
+}

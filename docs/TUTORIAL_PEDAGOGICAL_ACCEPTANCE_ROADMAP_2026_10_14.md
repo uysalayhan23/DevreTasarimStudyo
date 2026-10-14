@@ -36,3 +36,12 @@ Her ders için `titleVsPhysicalPart`, `terminalMap`, `causeAndEffect`, `measurab
 - MQ-05/MQ-12 özgün V8: **4/4 yeni regresyon** ve **1.655/1.655 kaynak, 722/722 solver başlangıç, 10/10 üç faz kararlı, 5/5 kumandalı sanal tepki/geri dönüş**; kalan beş pasif/referans senaryoya sahte yük yanıtı PASS verilmedi. Kaynak terminal eksik/kısa devre/blocked 0. **136 rich tamamen aynı, 1.655 projenin kabloları/bileşenleri aynı**, değişen içerik ID yalnız 10.
 - MQ-07 semantik envanter: genel özet **523→513**, genel açıklama **350→340** (diğer 1.519 ders için nihai pedagojik kabul hâlâ açık). Batch N **1.519/1.519 kaynak QA** korunur. Windows `file:///` / gerçek fiziksel ürün/bağımsız öğretmen kabulü **NOT_RUN/REVIEW**.
 - QA kanıtı: `evidence/mq07_first10_wired_depth_20261014.json`; kalıcı test `tests/qa-mq07-first10-pedagogical-v11920.test.cjs`. MQ-07 lider → MQ-05 kaynak → MQ-12 V8 test → MQ-13 136 rich/canonical kilit → MQ-00 **SOURCE PASS, FINAL OPEN**. Actions 0; commit `[skip ci]`.
+
+
+## 2026-10-14 — 001–200 gerçek ders metni / bir devre onarımı
+
+- İlk **200 ders** tarandı; mevcut **101 rich** ve önceden düzeltilmiş **10 kablolu + 1 NTC** anlatımı korundu. **88 dersin uygulamanın gerçek `dist/tutorial-pedagogy.js` dosyasında** `summary`, `explanation`, `learningGoal`, `beginnerSteps` ve eleman görevleri yenilendi: **30 gerçek kablolu + 58 kavramsal/referans ders**.
+- `opamp-apps-src-07` başlık/LDR uyumsuzluğu gerçek `ldr-gl5528` sensörü, 10 kΩ bölücü, 12 V LM358P karşılaştırıcı ağını kullanacak biçimde değiştirildi. `opamp-apps-src-08` önceki NTC onarımı korundu.
+- MQ-12 özgün GitHub kaynaklarıyla V8: **1655/1655 ders, 722/722 özgün solver başlangıcı PASS**, katalog **939**, eksik tür/terminal/blocked/kısa devre/kararsız **0**; eski ilk10 sınıflandırma 10/10, stabilite 10/10, response 8/8 ve seal-in restoration REVIEW, Batch N **1519/1519 kaynak PASS** korundu. Son HEAD gerçek `node --test`, Windows `file:///` görsel ve kullanıcı kabulü **NOT_RUN**.
+- **64 ders REVIEW:** devresi olmayan **58 konu dersi**, zamanlama kanıtı, piezo sensörü, dimmer güç katı ve iki bağımsız op-amp girişi gibi diğer eksikler. Bunların teknik devre/çizim tamamlanmışlığı iddia edilemez. **Grup 001–200 henüz tam teslim değil**. Diğer 200 gruba geçişte bu açıklar ayrı P1 kalemleri olarak tutulmalı.
+- Kalıcı test `tests/qa-mq07-batch-001-200-v11920.test.cjs` ve QA kanıtı `evidence/mq07_batch_001_200_20261014.json`. Actions 0, commit `[skip ci]`.
