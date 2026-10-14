@@ -2302,6 +2302,35 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+
+/* BELL_TRANSFORMER_V1: source circuits and learner explanations must agree. */
+for(const id of ['installation-systems-src-05','installation-systems-src-06']){
+ const l=L.byId[id];if(!l)continue;
+ if(id==='installation-systems-src-06'){
+  // Old source was a single-bell button: upgrade only after the locked
+  // historic pilot audit. Preserve the user project ID and lesson identity.
+  l.project=clone(L.byId['bells-3'].project);
+  l.project.projectId='tutorial-session-source-'+id;
+  l.project.name='Öğretici · '+l.title;
+  l.project.tutorialLesson={id,topicId:l.topicId,phase:'demo',step:0,level:l.variant};
+  l.steps=l.project.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.kind='wiring';l.workspaceMode=l.project.workspaceMode;
+ }
+ const p=l.project;
+ if(!p?.components?.some(c=>c.typeId==='bell-transformer')||p.components.some(c=>c.typeId==='supply-1p'))
+   throw Error('Unsafe direct-mains teaching bell '+id);
+ l.summary=id.endsWith('05')
+   ?'Zil trafosunun sanal, yalıtılmış 12 V AC çıkışı ile normalde açık B1 butonu Z1 zilini yalnız basılıyken çalıştırır. Şebeke bağlantısı butonda veya zilde bulunmaz.'
+   :'Zil trafosunun yalıtılmış sanal 12 V AC çıkışını paylaşan B1, B2 ve B3 butonlarından herhangi biri Z1 zilini çalıştırır. İki butonlu örnek B1 ve B2 ile; üç butonlu örnek üç ayrı çağrı noktasıyla anlaşılır.';
+ l.explanation='Bu örnekte TR1 sanal zil trafosunun şebeke tarafı simülasyon içinde yalıtılmıştır ve öğrencinin kablolayacağı primer uç yoktur. TR1/S1 alçak gerilim tarafı B1/13 girişine ulaşır. B1 basılınca normalde açık 13–14 kontağı kapanır, B1/14 ile Z1/1 arasındaki yol tamamlanır; zilin Z1/2 ucu TR1/S2 sekonder dönüşündedir. B1 bırakılınca kontak açılır, zil durur. Düşün: buton bırakılınca neden zil susar? Bu örneğin 12 V AC değeri simülasyon modelidir; gerçek ürünün anma verisi doğrulanmamıştır. Kayıtlı şemadan izlenecek bağlantılar: TR1/S1 → B1/13; B1/14 → Z1/1; Z1/2 → TR1/S2.'+
+ (id.endsWith('06')?' B2 ve B3 butonları da aynı yalıtılmış sekondere paralel bağlanır: biri basıldığında yalnız kendi 13–14 kontağı kapanarak ortak Z1 zilini çaldırır. İki butonlu modeli ilk iki kol, üç butonlu modeli üç kol ile gözlemle.':'');
+ l.learningGoal='Sanal zil trafosunun yalıtılmış 12 V AC çıkışını, B1 13–14 normalde açık kontağını ve Z1 zilinin kapanan/yeniden açılan akım yolunu açıklayabilmek.';
+ l.beginnerSteps=['TR1 içten yalıtılmış sanal trafodur; burada şebeke fazı bağlantısı kurulmaz.','Yalnız 12 V AC S1/S2 çıkışı ile çağrı butonları ve Z1 arasındaki devreyi gör.','Sanal B1 butonuna bas: 13–14 kapanınca zilin neden çaldığını söyle.','B1 butonunu bırak: kontak açılınca zilin neden sustuğunu açıkla.',...(id.endsWith('06')?['Sırayla B2 ve B3 çağrı butonlarına da bas-bırak yap; biri basılıyken diğerlerinin basılmasına neden gerek olmadığını açıkla.']:[])];
+ l.materials=materialRows(p);
+ l.safety='Yalnız sanal eğitimde yalıtılmış 12 V AC zil trafosu kullanılır; şebeke fazı buton/zile doğrudan bağlanmaz.';
+ l.pedagogyReview={...l.pedagogyReview,bellTransformerModel:'BELL_TRANSFORMER_V1',independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

@@ -1,0 +1,56 @@
+{
+  "id": "BELL_TRANSFORMER_V1",
+  "locked": true,
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "date": "2026-10-14",
+  "scope": "All present and future bell-electronic teaching circuits, including bells-1..4 and installation systems bell lessons",
+  "educationalModel": {
+    "typeId": "bell-transformer",
+    "kind": "bell-transformer",
+    "primary": "internal virtual sealed/isolation model; no externally wireable mains primary",
+    "secondary": {
+      "mode": "isolated simulated AC",
+      "rmsVoltage": 12,
+      "pins": [
+        "S1",
+        "S2"
+      ]
+    },
+    "realProductVerified": false,
+    "physicalInstallationAccepted": false
+  },
+  "requiredCircuit": {
+    "transformer": true,
+    "primaryWireable": false,
+    "secondaryOnly": true,
+    "buttonType": "normally-open call button; 13/14 contact",
+    "load": "bell-electronic",
+    "allButtonsParallel": true,
+    "allReturnToSecondaryS2": true
+  },
+  "rejected": {
+    "directMainsPhaseToBell": true,
+    "directMainsNeutralToBell": true,
+    "directMainsSourceWithBell": true,
+    "missingTransformer": true,
+    "wrongTransformerOutput": true,
+    "physicalBuildInstructions": true
+  },
+  "warning": "Zil devresinde doğrudan şebeke fazı kullanılmaz; yalıtılmış uygun zil trafosu gereklidir. Yalnız sanal eğitim devresi oluşturun.",
+  "legacy": "Old saved projects are not silently migrated; direct-mains bell diagrams remain in REVIEW and simulation is blocked with explicit transformer warning.",
+  "ui": "Students work solely on the isolated 12 VAC secondary; the primary is not a wireable lesson terminal.",
+  "acceptance": {
+    "virtualSourceQA": "PENDING_RECHECK",
+    "fullNode": "NOT_RUN",
+    "windowsUI": "NOT_RUN",
+    "realProduct": "REVIEW",
+    "pedagogicalExpert": "REVIEW"
+  },
+  "enforcedBy": [
+    "scripts/qa-bell-transformer-v11920.cjs",
+    "tests/qa-bell-transformer-v11920.test.cjs"
+  ],
+  "nextBatches": "Fail-closed rule applies to all lessons as each 200-lesson batch is inspected.",
+  "actionsUsed": 0
+}

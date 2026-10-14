@@ -650,7 +650,7 @@
     }
     if((result.timed||arduinoFrame.active)&&running)simulationTimer=setTimeout(()=>{simulationTimer=null;if(running)render(true)},arduinoFrame.active?20:50);
     for(const c of project.components){const state=c._meter||c._clamp,warning=state?.warning;if(warning&&warning!==c._shownMeterWarning){c._shownMeterWarning=warning;const d=byId[c.typeId],title=d?.kind==='clamp-meter'?'UT200A · Ölçüm uyarısı':d?.id==='unit-ut61e-plus'?'UT61E+ · Ölçüm uyarısı':'UT33D+ · Ölçüm uyarısı';modal(title,'<p>'+warning+'</p>',()=>{})}if(!warning)delete c._shownMeterWarning}
-    if(result.blocked){running=false;return}
+    if(result.blocked){running=false;if(result.safetyWarning){setStatus(result.safetyWarning,'warn');toast(result.safetyWarning)}return}
     if(result.oscillating){
       setStatus('Simülasyon çalışıyor · '+(result.cyclingRefs.join(', ')||'Kontaklar')+' açılıp kapanıyor');
       simulationTimer=setTimeout(()=>{simulationTimer=null;if(running)render(true)},250);

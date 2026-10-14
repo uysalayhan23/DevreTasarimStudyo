@@ -16,7 +16,7 @@ async function ensure(){
  if(root.DTSTutorialMode)return root.DTSTutorialMode;
  if(loading)return loading;
  loading=(async()=>{
-  await load('tutorial-lessons.js?v=20261011-collector-pulldown1');
+  await load('tutorial-lessons.js?v=20261014-bell-trafo-v1');
   await load('tutorial-micro-hints.js?v=1.19.20-micro-hints1');
   await load('tutorial-mode.js?v=20261014-mq07-batch200-v1');
   await load('tutorial-enhancements.js?v=1.19.20-coach-restore1');

@@ -19,7 +19,7 @@
   const followers=new Set(['contact-no','contact-nc','contact-both','delay-on-no','delay-on-nc','delay-off-no','delay-off-nc','contactor3']);
   const breakers=new Set(['breaker','breaker2','breaker3','rcd2','rcd4','fuse-switch','overload','thermal-magnetic']);
   const loads=new Set(['lamp','led','buzzer','siren','flasher','meter-v','meter-ohm','resistor','capacitor','diode','potentiometer','reactor']);
-  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery']);
+  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery','bell-transformer']);
   const phaseMotors=new Set(['motor3','motor-yd','motor-dahlender','motor-rotor','motor-2speed','generator','servo-motor']);
   const normalizeRef=s=>String(s||'').trim().normalize('NFKC').toLocaleUpperCase('tr-TR');
   const pinKey=(c,p)=>JSON.stringify([c,p]);
@@ -131,7 +131,10 @@
     for(let pass=0;pass<Math.max(12,(derived.length+instruments.length)*3+4);pass++){
       potentials=new Map();faultDomains=new Set();faultRoots=new Set();
       for(const c of project.components){const d=definition(byId,c);if(!d||!sources.has(d.kind))continue;
-        if(d.kind==='supply'||d.kind==='supply3'){
+        if(d.kind==='bell-transformer'){
+          // Educational isolated secondary: no exposed or wireable mains terminals.
+          if(c.transformerEnabled!==false){seed(c,'S1','bell-secondary:'+c.id,'L1','ac',12);seed(c,'S2','bell-secondary:'+c.id,'N','ac',12)}
+        }else if(d.kind==='supply'||d.kind==='supply3'){
           for(const p of d.pins)if(c.phaseEnabled?.[p.id]!==false)seed(c,p.id,'mains',p.id==='L'?'L1':p.id,'ac',Math.max(0,Number(c.phaseVoltages?.[p.id]??230)));
         }else if(d.kind==='battery'){
           const cellV=x=>Math.max(.1,Math.min(48,Number(x.cellVoltage??definition(byId,x)?.defaultVoltage??1.5))),packId=String(c.seriesPackId||'').trim();
@@ -257,6 +260,22 @@
     return {voltage,dcVoltage,threePhase,phaseDirection,dcDirection,at,find,potentials,faultDomains,faultRoots,enabled,settled};
   }
   function solve(project,byId,options={}){
+    // BELL_TRANSFORMER_V1: refuse legacy mains-fed bell schematics.
+    // Saved user graphs are never silently rewritten or converted.
+    const bellPresent=project.components.some(c=>c.typeId==='bell-electronic');
+    if(bellPresent){
+      const bellTrafo=project.components.find(c=>c.typeId==='bell-transformer');
+      const mainsPresent=project.components.some(c=>['supply-1p','supply-3p'].includes(c.typeId));
+      const invalidSecondary=!!bellTrafo&&project.wires.some(w=>
+        (w.from?.c===bellTrafo.id&&!['S1','S2'].includes(w.from?.p))||
+        (w.to?.c===bellTrafo.id&&!['S1','S2'].includes(w.to?.p)));
+      if(!bellTrafo||mainsPresent||invalidSecondary){
+        clear(project);
+        return {blocked:true,stable:false,shortCircuit:false,oscillating:false,
+          safetyWarning:'Zil devresinde doğrudan şebeke fazı kullanılmaz; yalıtılmış uygun zil trafosu gereklidir. Yalnız sanal eğitim devresi oluşturun.',
+          reason:'bell-transformer-required'};
+      }
+    }
     const now=Number.isFinite(options.now)?options.now:Date.now(),timedStates=new Map();for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);if(ed?.incrementalEncoder38mm){const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef;IncrementalEncoder.state(c,ed,now,true)}}if(c.typeId===V20.id)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};if(c.typeId===ACS.id)c._acs800Frame={now,base:c._acs800?JSON.parse(JSON.stringify(c._acs800)):null};if(c.typeId===HCFA.id)c._hcfaFrame={now,base:c._hcfa?JSON.parse(JSON.stringify(c._hcfa)):null};}
     let actuators=new Map(),sensors=new Set();
     for(const c of project.components){const d=definition(byId,c);if(d&&['overload','thermal-magnetic'].includes(d.kind)&&c.state&&normalizeRef(c.ref))actuators.set('thermal:'+normalizeRef(c.ref),true)}

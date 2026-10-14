@@ -23,7 +23,7 @@ const topics=[
  meta('commutator','Komütatör anahtarla iki lamba','Tesisat','İki bağımsız anahtar kontağıyla iki yükün birlikte veya ayrı kontrolünü öğretir.',['komütatör','iki kutup','aydınlatma']),
  meta('two-way','Vaviyen anahtar kullanımı','Tesisat','Bir lambayı iki farklı noktadan kumanda etmeyi öğretir.',['vaviyen','gezgin iletken','ortak uç']),
  meta('intermediate','Vaviyen + ara vaviyen','Tesisat','Bir lambayı üç veya daha fazla noktadan kumanda etmenin temelini öğretir.',['ara vaviyen','çaprazlama','gezgin iletken']),
- meta('bells','1 / 2 / 3 butonlu zil devreleri','Tesisat','Bir veya birden fazla çağırma butonunun aynı zili nasıl çalıştırdığını öğretir.',['paralel buton','zil','faz dönüşü']),
+ meta('bells','1 / 2 / 3 butonlu zil devreleri','Tesisat','Bir veya birden fazla çağırma butonunun aynı zili nasıl çalıştırdığını öğretir.',['paralel buton','zil trafosu','izole 12 VAC dönüşü']),
  meta('control-combinations','Kumanda devresi kombinasyonları','Temel Kumanda','Kütüphane elemanlarını gerçek kumanda mantıklarında birlikte kullanmayı öğretir.',['seri/paralel','röle','kontaktör','sinyal']),
  meta('loop-420','4–20 mA loop','Analog / Enstrümantasyon','Akım döngüsünün besleme, transmitter ve ölçüm elemanı üzerinden tek seri yol oluşturduğunu öğretir.',['4–20 mA','seri loop','transmitter','alıcı']),
  meta('loop-powered','Loop powered nedir?','Analog / Enstrümantasyon','İki telli transmitterin hem enerjisini hem sinyalini aynı iki iletkenden almasını öğretir.',['2 telli transmitter','loop power','burden']),
@@ -93,7 +93,23 @@ function twoWayCircuit(v,intermediate=false){
  p.wires.push(W('s2','11','h','X1','Son vaviyen/11 → lamba X1','Son anahtarın ortak ucu lambaya anahtarlanan fazı taşır.','#e53935','L1'),W('h','X2','g1','N','Lamba X2 → N','Nötr doğrudan lambaya gider.','#1e88e5','N'));return p;
 }
 function bellCircuit(v){
- wi=0;const p=base('bells-'+v,(v+1)+' butonlu / çağırma zil devresi','building','TSE');ac(p);const count=Math.min(3,v+1);for(let i=0;i<count;i++)p.components.push(C('b'+i,'bell-push',300+i*180,180+i*100,'B'+(i+1),'Zil butonu '+(i+1)));p.components.push(C('z','bell-electronic',920,320,'Z1','Elektronik zil'));for(let i=0;i<count;i++){p.wires.push(W('g1','L','b'+i,'13','L → B'+(i+1)+'/13','Her zil butonu aynı fazdan beslenir.','#e53935','L1'),W('b'+i,'14','z','1','B'+(i+1)+'/14 → Z1/1','Butonlardan herhangi biri basılınca zilin faz girişi enerjilenir.','#e53935','L1'))}p.wires.push(W('z','2','g1','N','Z1/2 → N','Zilin nötr dönüşü ortak ve sabittir.','#1e88e5','N'));if(v===3){p.components.push(C('bl','bell-light-push',650,600,'B4','Işıklı çağırma'));p.wires.push(W('g1','L','bl','13','L → ışıklı buton/13','Ek çağırma butonunu fazdan besler.','#e53935','L1'),W('bl','14','z','1','Işıklı buton/14 → zil/1','Ek buton da aynı zil girişine paralel bağlanır.','#e53935','L1'))}return p;
+ wi=0;
+ const p=base('bells-'+v,(v+1)+' butonlu / çağırma zil devresi','building','TSE');
+ // Virtual training transformer: mains primary is internal and NOT wireable.
+ // Only the galvanically separated 12 VAC secondary S1/S2 is available here.
+ p.components.push(C('tr','bell-transformer',90,170,'TR1','Sanal zil trafosu · yalıtılmış 12 VAC'));
+ p.bellTransformerModel={id:'BELL_TRANSFORMER_V1',primary:'internal-simulation-only',secondaryVoltsAC:12,secondaryPins:['S1','S2'],mainsDirectToButtonOrBell:false,physicalInstallationAccepted:false};
+ const count=Math.min(3,v+1);
+ for(let i=0;i<count;i++)p.components.push(C('b'+i,'bell-push',300+i*180,180+i*100,'B'+(i+1),'Zil butonu '+(i+1)));
+ p.components.push(C('z','bell-electronic',920,320,'Z1','12 V AC sanal elektronik zil'));
+ const out=(bid,ref)=>{p.wires.push(
+  W('tr','S1',bid,'13','12 VAC → '+ref+'/13','İzole trafonun alçak gerilim çıkışı çağrı kontağına gider.','#f9a825','CONTROL'),
+  W(bid,'14','z','1',ref+'/14 → Z1/1','Buton basıldığında yalnız 12 VAC zil devresi kapanır.','#f9a825','CONTROL')
+ )};
+ for(let i=0;i<count;i++)out('b'+i,'B'+(i+1));
+ p.wires.push(W('z','2','tr','S2','Z1/2 → TR1/S2','Zilin yalıtılmış 12 VAC dönüşü trafonun ikinci sekonder ucunadır.','#7c3aed','CONTROL'));
+ if(v===3){p.components.push(C('bl','bell-light-push',650,600,'B4','Dördüncü çağrı (yalnız NO kontak)'));out('bl','B4')}
+ return p;
 }
 function comboCircuit(v){
  wi=0;if(v===0)return sealCircuit(2);
@@ -366,11 +382,11 @@ for(const t of topics)for(let v=0;v<(t.topicId==='button-led'?5:4);v++){
  const isArduinoButtonLed=t.topicId==='button-led'&&v===4;
  const isArduinoButtonRelay=t.topicId==='button-relay'&&v===3;
  const isIlluminatedCallBell=t.topicId==='bells'&&v===3;
- const lessonSummary=isArduinoButtonLed?'Buton modülü 5 V ile beslenir; Arduino D2 girişi butonu okur, D13 çıkışı LED’i 220 Ω seri direnç üzerinden sürer.':isArduinoButtonRelay?'5 V kaynak UNO, buton modülünü ve röle modülünü besler. UNO D2’den butonu okur ve D8 ile röleyi kumanda eder; tüm modüller ortak 0 V kullanır.':isIlluminatedCallBell?'Üç zil butonu ve gösterge halkalı butonun çağrı kontakları aynı elektronik zili paralel çalıştırır. Bu alıştırmada gösterge halkası görseldir; elektriksel olarak simüle edilmez.':t.summary;
- const lessonExplanation=isArduinoButtonLed?'Ayarlı kaynak buton modülünü 5 V ile besler. Butonun SIG ucu Arduino D2 girişine, Arduino GND ortak 0 V referansına bağlanır. Program D2 durumunu okuyup D13 çıkışına aktarır; harici LED’e giden akım 220 Ω seri dirençle sınırlandırılır.':isArduinoButtonRelay?'Ayarlı 5 V kaynak UNO’yu, buton modülünü ve tek kanallı röle modülünü besler. Butonun SIG ucu D2’ye bağlanır; program D2 durumunu okuyup D8 çıkışına aktarır. D8 röle modülünün SIG girişini sürer. Kaynağın 0 V ucu, UNO GND, buton GND ve röle GND arasında ortak referans oluşturur.':isIlluminatedCallBell?'Üç normal zil butonu ile gösterge halkalı butonun 13–14 çağrı kontakları zil girişine paralel bağlanır. Herhangi birine basıldığında zil çalar. Butonun ışık halkası bu devrede yalnızca görseldir; ayrı terminali ve elektriksel modeli olmadığı için yanıp sönmesi simüle edilmez.':explanation[t.topicId];
+ const lessonSummary=t.topicId==='bells'?'Yalıtılmış sanal 12 VAC zil trafosu ile paralel çağrı butonları aynı zili güvenli simülasyon kapsamında çalıştırır. Şebeke fazı doğrudan buton/zile uygulanmaz.':isArduinoButtonLed?'Buton modülü 5 V ile beslenir; Arduino D2 girişi butonu okur, D13 çıkışı LED’i 220 Ω seri direnç üzerinden sürer.':isArduinoButtonRelay?'5 V kaynak UNO, buton modülünü ve röle modülünü besler. UNO D2’den butonu okur ve D8 ile röleyi kumanda eder; tüm modüller ortak 0 V kullanır.':isIlluminatedCallBell?'Üç zil butonu ve gösterge halkalı butonun çağrı kontakları aynı elektronik zili paralel çalıştırır. Bu alıştırmada gösterge halkası görseldir; elektriksel olarak simüle edilmez.':t.summary;
+ const lessonExplanation=t.topicId==='bells'?'Zil trafosunun şebeke girişi yalnız sanal model içinde gösterilir; kullanıcıya erişilebilir ve kablolanabilir primer uç yoktur. TR1/S1 ve TR1/S2 yalıtılmış 12 VAC çıkışıdır. Her NO zil butonunun 13–14 kontağı paralel çağrı dalıdır; buton basılıyken Z1 çalar, bırakılınca durur. Doğrudan şebeke fazı bağlanmış trafosuz zil devresi yanlış ve kabul edilemez.':isArduinoButtonLed?'Ayarlı kaynak buton modülünü 5 V ile besler. Butonun SIG ucu Arduino D2 girişine, Arduino GND ortak 0 V referansına bağlanır. Program D2 durumunu okuyup D13 çıkışına aktarır; harici LED’e giden akım 220 Ω seri dirençle sınırlandırılır.':isArduinoButtonRelay?'Ayarlı 5 V kaynak UNO’yu, buton modülünü ve tek kanallı röle modülünü besler. Butonun SIG ucu D2’ye bağlanır; program D2 durumunu okuyup D8 çıkışına aktarır. D8 röle modülünün SIG girişini sürer. Kaynağın 0 V ucu, UNO GND, buton GND ve röle GND arasında ortak referans oluşturur.':isIlluminatedCallBell?'Üç normal zil butonu ile gösterge halkalı butonun 13–14 çağrı kontakları zil girişine paralel bağlanır. Herhangi birine basıldığında zil çalar. Butonun ışık halkası bu devrede yalnızca görseldir; ayrı terminali ve elektriksel modeli olmadığı için yanıp sönmesi simüle edilmez.':explanation[t.topicId];
  const lessonConcepts=isArduinoButtonLed?['Arduino UNO','5 VDC','D2 sayısal giriş','D13 sayısal çıkış','220 Ω seri direnç']:isArduinoButtonRelay?['Arduino UNO','5 VDC','D2 buton girişi','D8 röle çıkışı','ortak 0 V']:t.concepts;
  p.tutorialLesson={id,topicId:t.topicId,phase:'demo',step:0,level:v+1};p.projectId='tutorial-'+id;p.name='Öğretici · '+t.topic+' · '+(v+1);
- const lessonSafety=t.topicId==='button-led'&&v!==2?'':safety[t.topicId]||'';
+ const lessonSafety=t.topicId==='bells'?'Yalnız sanal yalıtılmış 12 VAC zil trafosu; şebeke fazı doğrudan zil butonuna veya zile bağlanamaz. Gerçek bağlantı için uygun trafonun şart olduğu öğretilir.':t.topicId==='button-led'&&v!==2?'':safety[t.topicId]||'';
  lessons.push(finish(p,{id,topicId:t.topicId,topic:t.topic,group:t.group,variant:v+1,level:lv.key,levelName:lv.name,levelHelp:lv.help,title:extra[t.topicId][v],summary:lessonSummary,explanation:lessonExplanation,concepts:lessonConcepts,safety:lessonSafety,workspaceMode:p.workspaceMode}));
 }
 const byId=Object.fromEntries(lessons.map(x=>[x.id,x]));

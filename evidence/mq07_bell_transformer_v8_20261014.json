@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-14",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "baseHead": "38a91aa952a2bba4de14d6c3823366b7c79b5af2",
+  "workItem": "BELL_TRANSFORMER_V1",
+  "group": "001-200 and future bell topics",
+  "manifest": "docs/BELL_TRANSFORMER_MODEL_LOCKED.json",
+  "implementation": [
+    "dist/library.js",
+    "dist/simulation.js",
+    "dist/tutorial-lessons.js",
+    "dist/tutorial-pedagogy.js",
+    "dist/tutorial-installation-batch-h.js",
+    "dist/app.js",
+    "dist/tutorial-mode.js",
+    "dist/tutorial-bootstrap.js",
+    "dist/index.html"
+  ],
+  "scope": {
+    "modifiedBellCircuitLessons": 15,
+    "sourceLessonRepaired": "installation-systems-src-06",
+    "fourCanonicalVariants": 4,
+    "isolatedSecondaryVirtualVolts": 12,
+    "manufacturerVerified": false,
+    "canonicalLessonCount": 1655,
+    "first200ReviewRemaining": 64
+  },
+  "validation": {
+    "originalGitHubSourceExecutedWithV8": true,
+    "bellCircuits": "15/15 PASS",
+    "bellPhaseChecks": "38/38 PASS",
+    "bellRegressionTestCallbacks": "4/4 PASS",
+    "sourceCatalogModels": 940,
+    "allWiredInitialSolver": "722/722 PASS",
+    "brokenEndpoints": 0,
+    "shorts": 0,
+    "blocked": 0,
+    "unstable": 0,
+    "batchNGuides": "1519/1519 PASS",
+    "batchNIssues": 0,
+    "legacyMainsRejected": true,
+    "legacyMainsMessage": "Zil devresinde doğrudan şebeke fazı kullanılmaz; yalıtılmış uygun zil trafosu gereklidir.",
+    "nativeNode": "NOT_RUN",
+    "windowsUI": "NOT_RUN",
+    "physicalAcceptance": "REVIEW",
+    "pedagogyFinal": "REVIEW"
+  },
+  "migration": "Old saved projects NOT rewritten, direct mains bell remains blocked with visible warning.",
+  "acceptance": {
+    "G0": "PASS",
+    "G1": "PASS",
+    "G2": "REVIEW",
+    "G3": "V8_PASS_ONLY",
+    "G4": "REVIEW",
+    "G5": "Windows_OPEN",
+    "G6": "V8_PASS",
+    "G7": "NativeNode_NOT_RUN",
+    "G8": "PARTIAL_REVIEW"
+  },
+  "actionsUsed": 0
+}

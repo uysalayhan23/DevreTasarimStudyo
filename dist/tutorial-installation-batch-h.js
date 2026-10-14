@@ -31,10 +31,10 @@ const topics={
  bells:{
   label:'Paralel butonlarla çağırma zili',
   aim:'Herhangi bir normalde açık butonun ortak elektronik zili çalıştıran sanal yolu kapatmasını açıkla.',
-  task:'Sanal çağrı butonlarından birine basıp bırak. Ardından diğer butonları tek tek dene; butonların neden birbirinden bağımsız olduğunu gözlemle.',
+  task:'Yalnız sanal 12 VAC devrede bir butona basıp bırak. Diğer çağrı noktalarını tek tek dene; hiçbirinde şebeke fazı bulunmadığını ve ortak Z1 zilinin aynı kaldığını izle.',
   question:'Paralel bağlanan zil butonlarından biri basılınca ne olur?',
   answers:['Zil için bir besleme yolu kapanır','Tüm butonlar seri hale gelir','Nötr hattı kaybolur'],
-  points:['Butonun 13 ucu ortak besleme tarafıdır.','14 uçları zilin aynı girişine ulaşır.','Zilin dönüş ucu N hattına gider.']
+  points:['Butonun 13 ucu yalnız TR1/S1 yalıtılmış 12 VAC tarafındadır.','14 uçları zilin aynı girişine ulaşır.','Zilin dönüş ucu TR1/S2 yalıtılmış sekondere ulaşır; şebeke fazı buton/zile bağlanmaz.']
  }
 };
 function endpoint(w){return JSON.stringify([w.from?.c,w.from?.p,w.to?.c,w.to?.p]);}

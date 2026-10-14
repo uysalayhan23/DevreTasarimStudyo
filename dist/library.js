@@ -5,6 +5,7 @@
     {id:'supply-3p',category:'Enerji',name:'3 Faz Besleme',model:'L1 / L2 / L3 / N / PE',kind:'supply3',w:120,h:120,pins:[P('L1','L1',0,30,'left'),P('L2','L2',0,60,'left'),P('L3','L3',0,90,'left'),P('N','N',0,105,'left'),P('PE','PE',0,120,'left')]},
     {id:'smps',category:'Enerji',name:'24 VDC Güç Kaynağı',model:'230 VAC / 24 VDC',kind:'power24',w:112,h:90,pins:[P('L','L',0,26,'left'),P('N','N',0,60,'left'),P('P','+24V',112,26,'right'),P('M','0V',112,60,'right')]},
     {id:'transformer',category:'Enerji',name:'Kumanda Trafosu',model:'400/230 VAC',kind:'transformer',w:112,h:90,pins:[P('1','1',0,28,'left'),P('2','2',0,62,'left'),P('3','3',112,28,'right'),P('4','4',112,62,'right')]},
+    {id:'bell-transformer',category:'Enerji',name:'Zil Trafosu · SANAL 12 V AC',model:'İçten yalıtılmış sanal primer / 12 VAC çıkış',kind:'bell-transformer',w:132,h:90,defaultVoltage:12,tutorialOnly:true,manufacturerVerified:false,pins:[P('S1','12 V~ A',132,27,'right'),P('S2','12 V~ B',132,63,'right')]},
     {id:'mcb-1p',category:'Koruma',name:'Otomatik Sigorta',model:'1P',kind:'breaker',w:76,h:92,pins:[P('1','1',38,0,'top'),P('2','2',38,92,'bottom')]},
     {id:'mcb-3p',category:'Koruma',name:'Otomatik Sigorta',model:'3P',kind:'breaker3',w:120,h:102,pins:[P('1','1',30,0,'top'),P('3','3',60,0,'top'),P('5','5',90,0,'top'),P('2','2',30,102,'bottom'),P('4','4',60,102,'bottom'),P('6','6',90,102,'bottom')]},
     {id:'fuse',category:'Koruma',name:'Cam/Silindirik Sigorta',model:'F',kind:'fuse',w:76,h:76,pins:[P('1','1',38,0,'top'),P('2','2',38,76,'bottom')]},

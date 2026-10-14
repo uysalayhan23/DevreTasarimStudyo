@@ -14,9 +14,10 @@
     "rewrittenReferenceOnly": 58,
     "rewrittenTotal": 88,
     "physicalCircuitRepaired": [
-      "opamp-apps-src-07"
+      "opamp-apps-src-07",
+      "installation-systems-src-06"
     ],
-    "graphChangeCount": 1,
+    "graphChangeCount": 2,
     "missingCircuitOrUnverifiedTitleReviewCount": 64
   },
   "validation": {
@@ -62,7 +63,23 @@
     },
     "fullNode": "NOT_RUN",
     "windowsVisual": "NOT_RUN",
-    "independentTeacherReview": "NOT_RUN"
+    "independentTeacherReview": "NOT_RUN",
+    "followupBellTransformerV8": {
+      "model": "BELL_TRANSFORMER_V1",
+      "sourceHead": "38a91aa952a2bba4de14d6c3823366b7c79b5af2",
+      "catalogModels": 940,
+      "affectedBellLessons": 15,
+      "virtualBellPhases": "38/38 PASS",
+      "bellV8HostTests": "4/4 PASS",
+      "allCurriculum": 1655,
+      "wiredInitialSolver": "722/722 PASS",
+      "batchNGuides": "1519/1519 PASS",
+      "newlyRepairedMultiButton": "installation-systems-src-06",
+      "originalNode": "NOT_RUN",
+      "windowsVisual": "NOT_RUN",
+      "physicalAcceptance": "REVIEW",
+      "safetyWarningAndBlock": "PASS"
+    }
   },
   "acceptance": {
     "groupStatus": "PARTIAL_REVIEW",
@@ -72,6 +89,8 @@
   "notes": [
     "The 58 reference-only lessons were given conceptual explanations, not invented electric circuits.",
     "64 first-200 lessons retain a topology/functional REVIEW gate; numerical claims are theoretical unless native solver confirms them.",
-    "A separate corrected LDR comparator uses a genuine ldr-gl5528 instead of RV1."
-  ]
+    "A separate corrected LDR comparator uses a genuine ldr-gl5528 instead of RV1.",
+    "User-directed transformer-only virtual bell model replaces old L/N-to-bell educational circuits; 15 affected lessons and 38 virtual phases validated. Physical supplier rating and full UI QA remain open."
+  ],
+  "updatedOn": "2026-10-14"
 }
