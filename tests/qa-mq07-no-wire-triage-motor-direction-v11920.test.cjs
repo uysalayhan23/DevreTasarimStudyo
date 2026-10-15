@@ -12,7 +12,7 @@ test('MQ-07 51-reference triage has exactly 14 preserved quizzes and 35 pending 
  assert.equal(t.originalTotal,51);
  assert.equal(t.conceptPreservedIds.length,14);
  assert.equal(t.applicationRepairIds.length,34);
- assert.deepEqual(t.repairedVirtualIds,[id,'electronic-switching-src-09','electronic-switching-src-10']);
+ assert.deepEqual(t.repairedVirtualIds,[id,'electronic-switching-src-09','electronic-switching-src-10','electronic-switching-src-11']);
  assert.equal(L.mq07Batch200.reviewIds.length,47);
  assert.equal(L.mq07Batch200.reviewIds.every(x=>x.reason==='NO_WIRED_CIRCUIT'),true);
  const protectedSet=new Set(t.conceptPreservedIds);
