@@ -84,3 +84,12 @@ This contract is a software-only educational representation, not electrical hard
 - MQ-12/MQ-13/MQ-00: execution evidence, repository continuity and final decision respectively.
 
 **This entry is a source-review and concrete acceptance contract, not a claim that the replacement has been coded or tests passed.**
+
+## 2026-10-15 SC11 PWM1 implementation checkpoint (MQ-00 OPEN)
+- MQ-09: registered `virtual-pwm-generator-v1` with physical interface V+/GND/OUT, explicitly virtual rather than manufacturer-certified hardware.
+- MQ-05: `Simulation.network` emits an OUT potential in its matched DC supply domain only when valid generator duty, frequency, time, V+ and GND reference are present. A plain `push-no` is no longer the SC11 source; legacy `mq05PwmGateSwitch` solver support is retained strictly for backward-compatible old projects.
+- MQ-07: replaced `S1` by `PWM1` in the canonical SC11 wiring project; added supply and ground wires and connected OUT through RG to Q1/G. Lesson explanation and duty UI now use PWM1.
+- MQ-12: updated SC11 native and UI test assertions. Six changed JS files successfully parsed in V8 syntax-only check through connector file reads. **Node behavioral tests, full regression, genuine browser visuals: NOT_RUN.**
+- MQ-03/MQ-10: user screenshot still requires visual rerender and manual wire/label overlap audit. No screenshot acceptance yet.
+- MQ-00 decision: **PARTIAL / REVIEW**, not DONE. No validated motor RPM/average current/torque/thermal model, no independent electrical numerical acceptance. Confirm browser library discovery and exact fail-closed semantics on disconnected reference before release.
+- MQ-13: `main` direct UTF-8 changes, `[skip ci]`, no workflow run, no force push. 
