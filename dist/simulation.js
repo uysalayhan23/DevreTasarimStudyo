@@ -345,7 +345,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
         if(td.kind==='mosfet-n'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');if(tc.mq07FetRcDelay||tc.mq07MosfetHealth){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','S');if(tc.mq07FetRcDelay)tc._mq07GateSampleV=v;if(tc.mq07MosfetHealth)tc._mq07HealthGateV=v}on=v!==null&&v>=4}
         else if(td.kind==='jfet-n'){stateKey='_jfetOn';v=net.dcVoltage(tc,'G','S');const cutoff=Math.abs(Number(td.gateCutoffVoltage)||3);on=v===null?false:v>-cutoff}
         else if(td.kind==='mosfet-p'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'S','G');on=v!==null&&v>=4}
-        else if(td.kind==='igbt-n'){stateKey='_igbtOn';v=net.dcVoltage(tc,'G','E');on=v!==null&&v>=4}
+        else if(td.kind==='igbt-n'){stateKey='_igbtOn';v=net.dcVoltage(tc,'G','E');if(tc.mq07DcPwmDimmer){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','E');tc._sc12GateVoltage=v}on=v!==null&&Number.isFinite(v)&&v>=4}
         else if(td.kind==='scr'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','K');on=v!==null&&v>=.7}
         else if(td.kind==='triac'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','MT1');on=v!==null&&Math.abs(v)>=.7}
         else if(td.kind==='diac'){stateKey='_diacOn';v=net.dcVoltage(tc,'A1','A2');on=v!==null&&Math.abs(v)>=30}
