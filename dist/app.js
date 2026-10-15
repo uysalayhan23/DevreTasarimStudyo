@@ -627,7 +627,7 @@
     if(!wireGuardEdit())return;
     if(!pendingPort){
       if(window.DTSTutorialMode?.allowsGuidedWiring?.(project)&&!window.DTSTutorialMode.canStart(project,ref)){toast('Önce yanıp sönen terminali seçin.');return}
-      pendingPort=ref;const line=Lines.analyze(project,byId).at(ref);if(line.role&&!line.freeColor)wireColor=Lines.chooseColor(project,line.role,line.color||wireColor);draftPoints=[];draftMouse=absolutePort(ref);setStatus('Kabloyu yönlendirin: alana tıklayarak dönüş noktası ekleyin','warn');render();return}
+      pendingPort=ref;const line=Lines.analyze(project,byId).at(ref);const fixed=Lines.netPowerColor(project,byId,line.members)||Lines.endpointPowerColor(project,byId,ref);if(fixed&&fixed!=='CONFLICT')wireColor=fixed;else if(line.role&&!line.freeColor)wireColor=Lines.chooseColor(project,line.role,line.color||wireColor);draftPoints=[];draftMouse=absolutePort(ref);setStatus('Kabloyu yönlendirin: alana tıklayarak dönüş noktası ekleyin','warn');render();return}
     if(endpointEqual(pendingPort,ref)){resetDraft();setStatus('Bağlantı iptal edildi');render();return}
     finishConnection(ref);
   }
