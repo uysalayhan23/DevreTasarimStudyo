@@ -140,3 +140,9 @@ This contract is a software-only educational representation, not electrical hard
 - **MQ-12:** controlled live native V8 fixture **PASS**; authentic `node --test` suites, actual full-product catalog / 1,655 lesson audit, `node scripts/check.cjs` and Windows `file:///dist/index.html` interactive QA **NOT_RUN**. `dist/library.js` (~1.8 MB) is unavailable through connected text fetch; container cannot resolve GitHub to clone.
 - **MQ-13:** updates on `main` only with `[skip ci]`; no force-push, no workflow dispatch or Actions runs. Verification and unmet gates recorded in-repo, no duplicate backlog ID.
 - **MQ-00 verdict:** **REVIEW / CONDITIONAL**. Physical manufacturer-calibrated RPM, flyback and thermal safety remain outside scope. Do not close the SC11 review item until the complete Node and Windows checks actually pass.
+
+
+## 2026-10-15 user Windows observation — SC11 working
+- User reports the "MOSFET ile DC motor hız kontrolü" circuit now works correctly on Windows and no remaining visible problem in that lesson. Preserve the currently working SC11 project, PWM1 classification, electrical contacts, solver and tutorial controls.
+- This is user-observed application functionality, not a substitute for full autonomous native Node/1,655-lesson regression and physical device calibration; do not alter acceptance evidence retroactively.
+- Production sequence now advances to SC12 IGBT dimmer (see `docs/MQ07_SC12_IGBT_DC_PWM_DIMMER_20261015.md`). Do not reopen SC11 without a concrete new regression.
