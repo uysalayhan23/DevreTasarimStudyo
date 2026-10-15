@@ -1126,6 +1126,31 @@ function setSc12PwmDuty(project,value){
  if(l?.id!=='electronic-switching-src-12'||!generator||!Number.isFinite(duty)||duty<0||duty>100)return false;
  generator.dutyPercent=duty;root.DTSEditor?.render?.();sync(project);return true;
 }
+function sc17TriacDimmerPanel(project){
+ const src=project?.components?.find(c=>c.id==='ac1'),t=project?.components?.find(c=>c.id==='trg1'),
+  q=project?.components?.find(c=>c.id==='q1'),lamp=project?.components?.find(c=>c.id==='h1');
+ const wave=t?._sc17Wave||[],angle=Number(t?.triggerAngleDeg??90);
+ const line=key=>wave.map((p,i)=>(i?'L':'M')+(6+p.deg).toFixed(1)+' '+(63-(Number(p[key])||0)*2.2).toFixed(1)).join(' ');
+ const graph=wave.length?'<svg viewBox="0 0 372 128" width="100%" role="img" aria-label="Çift yarım periyot AC kaynak, işaret değiştiren gate darbeleri ve triyak yük gerilimi"><rect width="372" height="128" rx="6" fill="#152536"/><path d="M6 63h360M186 9v105" stroke="#677a8a" stroke-width="1" stroke-dasharray="3 4"/><path d="'+line('sourceV')+'" stroke="#67d3ff" stroke-width="2" fill="none"/><path d="'+line('loadV')+'" stroke="#86f7a4" stroke-width="2.5" fill="none"/><path d="'+line('gateV')+'" stroke="#ffcb76" stroke-width="1.5" fill="none"/><text x="10" y="120" font-size="10" fill="#e1e9f2">Mavi AC · Yeşil yük · Sarı gate / ± yarım periyot</text></svg>':
+ '<p>Dalga, simülasyon START sonrasında hesaplanacaktır.</p>';
+ const measured=Number.isFinite(lamp?._sc17RmsV)?Number(lamp._sc17RmsV).toFixed(2)+' V':'—',
+  signed=Number.isFinite(lamp?._sc17LoadV)?Number(lamp._sc17LoadV).toFixed(2)+' V':'—',
+  phase=Number.isFinite(src?._sc17PhaseDeg)?Number(src._sc17PhaseDeg).toFixed(0)+'°':'—';
+ return '<section class="tutorial-sc11-pwm"><h3>BTA16 · çift yarım periyot AC dimmer</h3>'+
+  '<p>Yalıtılmış sanal kaynak: 12 V RMS · 50 Hz · ateşleme <strong>'+esc(String(angle))+'°</strong></p>'+
+  '<p>Faz '+phase+' · anlık yük '+signed+' · gerçek sanal dalgadan yük RMS <strong>'+measured+'</strong></p>'+
+  '<p>TRG1 gate OUT: '+(Number.isFinite(t?._sc17GateV)?Number(t._sc17GateV).toFixed(1)+' V':'—')+
+  ' · Q1 '+(q?._sc17Conducting?'iletimde':'kesimde')+'</p>'+graph+
+  '<div class="tutorial-sc11-pwm-actions">'+[0,45,90,135,170].map(a=>
+    '<button type="button" data-sc17-phase-angle="'+a+'">'+a+'° ateşleme</button>').join('')+'</div>'+
+  '<small>Yalnız düşük gerilimli yazılım simülasyonu. Gerçek BTA16 gate quadrant, ısı ve şebeke ölçümü değildir.</small></section>';
+}
+function setSc17PhaseAngle(project,value){
+ const lesson=lessonFor(project),t=project?.components?.find(c=>c.id==='trg1'&&c.typeId==='virtual-ac-triac-trigger-v1'),
+ angle=Number(value);
+ if(lesson?.id!=='electronic-switching-src-17'||!t||!Number.isFinite(angle)||angle<0||angle>170)return false;
+ t.triggerAngleDeg=angle;root.DTSEditor?.render?.();sync(project);return true;
+}
 function sc16TriacPanel(project){
  const q=project?.components?.find(c=>c.id==='q1'),sg=project?.components?.find(c=>c.id==='sg'),
   sp=project?.components?.find(c=>c.id==='sp'),h=project?.components?.find(c=>c.id==='h1');
@@ -1240,6 +1265,7 @@ function noteHtml(l,session,project){
  (l.id==='electronic-switching-src-12'?sc12PwmDimmerPanel(project):'')+
  (l.id==='electronic-switching-src-15'?sc15AcPanel(project):'')+
  (l.id==='electronic-switching-src-16'?sc16TriacPanel(project):'')+
+ (l.id==='electronic-switching-src-17'?sc17TriacDimmerPanel(project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1346,6 +1372,7 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const sc17Button=e.target.closest?.('[data-sc17-phase-angle]');if(sc17Button){e.preventDefault();setSc17PhaseAngle(root.DTSEditor?.getProject?.(),sc17Button.dataset.sc17PhaseAngle);return}
    const sc16Button=e.target.closest?.('[data-sc16-triac-contact]');if(sc16Button){e.preventDefault();setSc16TriacContact(root.DTSEditor?.getProject?.(),sc16Button.dataset.sc16TriacContact);return}
    const sc15Button=e.target.closest?.('[data-sc15-phase-angle]');if(sc15Button){e.preventDefault();setSc15PhaseAngle(root.DTSEditor?.getProject?.(),sc15Button.dataset.sc15PhaseAngle);return}
    const sc12DutyButton=e.target.closest?.('[data-sc12-pwm-duty]');if(sc12DutyButton){e.preventDefault();setSc12PwmDuty(root.DTSEditor?.getProject?.(),sc12DutyButton.dataset.sc12PwmDuty);return}
@@ -1438,6 +1465,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact,setSc17PhaseAngle};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
