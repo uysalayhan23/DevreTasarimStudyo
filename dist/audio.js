@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  const rotating=d=>!!d&&!d.isPLC&&(/motor|fan|generator/.test(d.kind)||d.rotating);
+  const rotating=d=>!!d&&!d.isPLC&&(d.kind!=='pwm-generator'&&(/motor|fan|generator/.test(d.kind)||d.rotating));
   const ref=s=>String(s||'').trim().normalize('NFKC').toLocaleUpperCase('tr-TR');
   function state(project,byId,running){
     const contactors=new Set(),alarms=new Map();let motors=0;
