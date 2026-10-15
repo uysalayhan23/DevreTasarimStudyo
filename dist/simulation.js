@@ -288,7 +288,20 @@
           reason:'bell-transformer-required'};
       }
     }
-    const now=Number.isFinite(options.now)?options.now:Date.now(),timedStates=new Map();for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);if(ed?.incrementalEncoder38mm){const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef;IncrementalEncoder.state(c,ed,now,true)}}if(c.typeId===V20.id)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};if(c.typeId===ACS.id)c._acs800Frame={now,base:c._acs800?JSON.parse(JSON.stringify(c._acs800)):null};if(c.typeId===HCFA.id)c._hcfaFrame={now,base:c._hcfa?JSON.parse(JSON.stringify(c._hcfa)):null};}
+    const now=Number.isFinite(options.now)?options.now:Date.now(),timedStates=new Map();
+    // MQ-05 SC11: PWM drives a *virtual switch command*; all MOSFET and
+    // motor electrical outcomes remain owned by the original nodal solver.
+    // This is no motor speed, torque or hardware driver model.
+    for(const sw of project.components.filter(c=>c.mq05PwmGateSwitch===true)){
+      const cfg=project.mq05VirtualPwm||{},valid=Number.isFinite(cfg.dutyPercent)&&
+        cfg.dutyPercent>=0&&cfg.dutyPercent<=100&&Number.isFinite(cfg.frequencyHz)&&
+        cfg.frequencyHz>0&&Number.isFinite(now)&&now>=0;
+      const period=valid?1000/cfg.frequencyHz:0;
+      sw.state=!!(valid&&Number.isFinite(period)&&period>0&&
+        (cfg.dutyPercent===100||(cfg.dutyPercent>0&&(now%period)<period*cfg.dutyPercent/100)));
+      sw._mq05PwmValid=!!valid;
+    }
+for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);if(ed?.incrementalEncoder38mm){const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef;IncrementalEncoder.state(c,ed,now,true)}}if(c.typeId===V20.id)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};if(c.typeId===ACS.id)c._acs800Frame={now,base:c._acs800?JSON.parse(JSON.stringify(c._acs800)):null};if(c.typeId===HCFA.id)c._hcfaFrame={now,base:c._hcfa?JSON.parse(JSON.stringify(c._hcfa)):null};}
     let actuators=new Map(),sensors=new Set();
     for(const c of project.components){const d=definition(byId,c);if(d&&['overload','thermal-magnetic'].includes(d.kind)&&c.state&&normalizeRef(c.ref))actuators.set('thermal:'+normalizeRef(c.ref),true)}
     if(!options.reset)for(const c of project.components){const d=definition(byId,c);if(d&&coils.has(d.kind)&&c._active&&normalizeRef(c.ref))actuators.set(normalizeRef(c.ref),true)}
