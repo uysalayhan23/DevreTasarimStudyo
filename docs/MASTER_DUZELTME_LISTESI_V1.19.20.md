@@ -2097,3 +2097,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - sensor-analog-apps-src-02: PTC algılayıcıya 2 kΩ bölücü, U1 pin 2/3 düzeltmesi, gerçek katalog IRF540N ve H1 240 Ω sanal yük, 13 bileşen/19 kablo.
 - İzole V8: 35 °C OFF → 65 °C ON (~100 mA) → 35 °C OFF; gate/yük kopukluğu fail-closed. Tam Node/Windows/üretici doğrulaması çalıştırılmadı; **MQ-00 REVIEW**.
 - NTC SC20, SC11–SC19, ana dal ve kilitler korunur, Actions yok, [skip ci]. Detay docs/MQ07_SC21_PTC_TEMPERATURE_SWITCH_20261015.md. Sıradaki aday sensor-analog-apps-src-03.
+
+
+## 2026-10-15 MQ-07 SC22 TERMOKUPL MV OLCUMU
+
+- sensor-analog-apps-src-03: K tipi termokupl/ET4420 3 parça 4 kablo kaynak sahnesine UT33D+ DCV 200mV ve iki sanal prob eklendi (6/6). Yalnız SC22 opt-in ölçüm sürekliliği.
+- İzole V8: 25/100/200 °C -> 0/3,096/7,138 mV; PV 25/100/200 °C; ters prob işareti ters; kontrolör ters/kopuk TC girişinde hata. Tam Node/Windows QA yok, fiziksel kabul yok, MQ-00 REVIEW.
+- Korunan SC11–SC21, kilitler, Actions kullanılmadı ve [skip ci]. Detay docs/MQ07_SC22_THERMOCOUPLE_MV_20261015.md. Sıradaki sensor-analog-apps-src-04 PT100.

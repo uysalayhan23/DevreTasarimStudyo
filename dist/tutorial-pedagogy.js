@@ -3991,6 +3991,60 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız 24 V sanal PTC devresi; gerçek ürün, ısıl limit, eşik toleransı ve üretici donanım kabulü yapılmadı.';
 }
 
+
+/* MQ07 SC22: only target thermocouple lesson uses native numeric
+   UT33D+ DCV 200mV via virtual probe-to-plug connection. */
+{
+ const id='sensor-analog-apps-src-03',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==3||p.wires.length!==4||
+  !p.components.some(c=>c.id==='tc'&&c.typeId==='thermocouple')||
+  !p.components.some(c=>c.id==='ctl'&&c.typeId==='temperature-controller')||
+  !p.components.some(c=>c.id==='g1'&&c.typeId==='supply-1p'))
+  throw Error('SC22 canonical baseline changed');
+ const tc=p.components.find(c=>c.id==='tc'),ctl=p.components.find(c=>c.id==='ctl');
+ Object.assign(tc,{temperature:100,coldJunction:25,thermocoupleType:'K'});
+ ctl.instrumentSettings={...(ctl.instrumentSettings||{}),input:'K',supply:'UV',displayOnly:'on',set:150,filter:1};
+ p.components.push(
+  C('v1','unit-ut33d-plus',1000,155,'V1','UNI-T UT33D+ sanal DCV 200 mV',{meterPosition:1}),
+  C('v1-red','test-probe-red',920,380,'PRV1','Kırmızı sanal TC+ probu',
+    {probeTarget:{c:'tc',p:'+'},mq07ThermocoupleMeterProbe:true}),
+  C('v1-black','test-probe-black',1180,380,'PBV1','Siyah sanal TC− probu',
+    {probeTarget:{c:'tc',p:'−'},mq07ThermocoupleMeterProbe:true})
+ );
+ p.wires.push(
+  W('v1','V','v1-red','PLUG','V1/VΩmA → kırmızı sanal prob',
+    'DCV 200 mV gerilim ölçümü için VΩmA giriş kablosu.','#e53935','MEASURE'),
+  W('v1','COM','v1-black','PLUG','V1/COM → siyah sanal prob',
+    'Termokupl soğuk ucu karşılaştırma COM giriş kablosu.','#111827','MEASURE')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='Sanal K tipi termokuplun sıcak-soğuk birleşim farkından üretilen milivolt sinyali UNI-T UT33D+ DCV 200 mV ve ET4420 sıcaklık göstergesiyle karşılaştırılır.';
+ l.explanation='YALNIZ YAZILIM: K tipi TC1 sıcak birleşim sıcaklığı ve coldJunction soğuk birleşim referansı ayrı değerlerdir. Referans 25 °C iken sıcak uç 25 °C için 0,000 mV, 100 °C için yaklaşık 3,096 mV, 200 °C için yaklaşık 7,138 mV üretir (NIST tabanlı eğri). Önceden kayıtlı TC+/TC− uçları ENDA ET4420 kontrolörün sanal K sensör girişindedir; ET4420 ekranı ölçüm gerilimini değil yaklaşık °C sıcaklık değerini gösterir. Yazılımda kontrolör salt gösterge modundadır ve çıkış rölesi veya SSR sıcaklık yükü kontrolü olarak kabul edilmez. Besleme terminalinin görüntüsü gerçek şebeke bağlantısı talimatı değildir. V1 UNI-T UT33D+ 200 mV DCV modunda kırmızı VΩmA prob TC+ hedefine, siyah COM prob TC− hedefine temas eder. Özgün sayısal çözücüde 100 °C durumunda V1 yaklaşık 3,100 mV gösterir; sanal ölçüm probu kutupları terslenirse eksi işaretli okunur. ET4420 TC sensörü ters ya da kopuksa geçerli PV yerine hata verir. Kullanıcı sanal sıcaklığı TC özelliklerinden değiştirir. Soğuk birleşim telafisi, üretici kalibrasyonu, gerçek donanım toleransı veya fiziksel güvenlik onaylanmış değildir.';
+ l.learningGoal='Sanal K tipi termokupl için 25, 100 ve 200 °C sıcaklıkta TC+/TC− milivolt farkını ET4420 sıcaklık PV değerinden ayırmak ve ters/kopuk sensör hatasını tanımak.';
+ l.beginnerSteps=[
+  'Sanal TC+/TC− uçlarını ve ET4420 K sensör girişini tanımla.',
+  'ET4420 yalnız gösterge modundadır; kontrol rölesi/yük kullanımı kapsam dışıdır.',
+  'UT33D+ sanal DCV 200 mV ayarını, kırmızı VΩmA ve siyah COM kablolarını bul.',
+  'Prob uçlarını sanal TC+ ve TC− hedeflerinde doğrula; mV ile °C birimlerini ayır.',
+  'Sanal sıcaklığı 25 °C seç: referans 25 °C iken V1≈0 mV.',
+  '100 °C seç: V1≈3,1 mV ve ET4420 PV≈100 °C.',
+  '200 °C seç: V1≈7,1 mV ve ET4420 PV≈200 °C.',
+  'Sanal probları tersle, sonra TC sensör bağlantısını aç/tersle; işaret ve hata durumunu karşılaştır.'
+ ];
+ l.quiz={question:'Sanal K termokupl 100 °C ve soğuk birleşim 25 °C iken ne beklenir?',
+  options:['UT33D+ yaklaşık +3,1 mV ölçer, ET4420 yaklaşık 100 °C gösterir.',
+   'Termokupl direnci her zaman 10 kΩ olur.','Termokupl 100 VDC üretir.'],
+  answer:0,why:'Termokupl mV üretir; kontrolörün °C sıcaklık gösterimi mV ile aynı birim değildir.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'TC_K_CJC_MV_METER_SOURCE_ALIGNED',
+  mq07ThermocoupleExperiment:{type:'K',coldJunctionC:25,meterRangeV:.2,
+    onlyTargetProbeOptIn:true,sourceV8Verified:true,fullNodeSuiteExecuted:false,manufacturerCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal yazılım termokupl ve kontrolör deneyi; gerçek elektrik, şebeke, üretici, ısıl veya donanım güvenlik kabulü yapılmaz.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
