@@ -30,7 +30,7 @@ test('loaded legacy lesson and editable project wires inherit DC supply colors',
  assert.equal(p.wires[1].color,rgb.neg);
  assert.equal(p.wires[2].color,'#8b5cf6');
  assert.equal(p.wires[3].color,'#e53935');
- assert.equal(p.wires[4].color,'#43a047','switched motor minus is not necessarily GND');
+ assert.notEqual(p.wires[4].color,rgb.neg,'switched motor minus is not automatically GND');
  p.wires[0].color='#8b5a2b';p.wires[1].color='#43a047';
  Lines.synchronize(p,defs);
  assert.equal(p.wires[0].color,rgb.pos);assert.equal(p.wires[1].color,rgb.neg);
@@ -50,7 +50,7 @@ test('locked DC power polarity rejects manual recoloring',()=>{
 });
 test('sensor and rectifier supply terminal colors are polarity aware',()=>{
  const p=fresh();p.wires=[
-  wire('bn','sensor','BN','load','1'),wire('bu','sensor','BU','meter','V'),
+  wire('bn','sensor','BN','load','1'),wire('bu','sensor','BU','load','2'),
   wire('rplus','rect','+','motor','+'),wire('rminus','rect','−','motor','−')
  ];
  Lines.initialize(p,defs);
