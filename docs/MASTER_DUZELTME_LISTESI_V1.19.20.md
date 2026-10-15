@@ -2126,3 +2126,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-06` (KY-021 Reed): özgün 3 bileşen / 5 kablo korunarak sanal magnet sürgüsü %65 eşik → Arduino UNO D2 `digitalRead(2)` bağlandı. Eski `state` kalıntısı yerine yalnız bu derste anlık `reedMagnet` değeri kullanılır. Gerçek sanal 5 V kaynağı/VCC/GND zorunlu; DO kablosu açık ise sensör HIGH olabilir ama D2 LOW kalır.
 - Kaynak V8 QA: **13/13 senaryo PASS**, aynı proje canlı 0/1/0/1/0 geçişi PASS, bayraksız tarihsel Reed behavior PASS. Müfredat 1.655 dersten yalnız SC25 kaydı değişti, SC11–SC24 ve teknik kilitler korundu.
 - Tam Node/Windows etkileşimli test ve fiziksel üretici kalibrasyonu yapılmadı; **MQ-00 REVIEW**. Actions yok, `[skip ci]`. Ayrıntı `docs/MQ07_SC25_REED_MAGNET_D2_20261015.md`; hedef test kaynağı `tests/qa-mq07-sc25-reed-magnet-d2-v11920.test.cjs`. Sıradaki `sensor-analog-apps-src-07` Hall.
+
+
+## 2026-10-15 MQ-07 SC26 HALL PNP MAGNET RELAY
+
+- `sensor-analog-apps-src-07`: 24 V gerçek katalog `arduino-bench-supply` + Hall PNP (BN/BU/BK) → K1 bobin → K1 NO (13/14) → H1 lambası; 5 ürün/7 kablo ve 7 adım korunarak 10 mm eğitim amaçlı manyetik hedef algısı eklendi.
+- Özgün 949 kataloglu JS elektriksel simülasyonda 12/12 hedef PASS; 20/5/18/7/20 mm manyetik yakın–uzak geçişleri ve tarihsel state fallback PASS. Plastik hedef, yanlış hizalama, kopuk sensör/güç/kontrol/yük hatları, 0/12 V kaynak güvenli OFF. Genel DC kaynak davranışına müdahale edilmedi.
+- Yalnız SC26 müfredat kaydı değişti, 1655 ders yüklendi; SC11–SC25, lock ve physical false korunur. Node tam suite/Windows UI ve fiziksel ürün QA yok: **MQ-00 REVIEW**. Actions kullanma, `[skip ci]`.
+- Kanıt: `docs/MQ07_SC26_HALL_PNP_RELAY_LAMP_20261015.md`; Node hedef kaynağı `tests/qa-mq07-sc26-hall-pnp-relay-lamp-v11920.test.cjs`; sıradaki `sensor-analog-apps-src-08` Piezo.

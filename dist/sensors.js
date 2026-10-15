@@ -3,7 +3,7 @@
   const MM=5,materials=[['none','Hedef yok · elle tetikle'],['metal','Metal parça'],['plastic','Plastik parça'],['wood','Ahşap parça'],['liquid','Sıvı dolu kap'],['reflector','Reflektör'],['magnet','Mıknatıs']];
   const attr=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const clamp=(v,a,b,f=a)=>Number.isFinite(Number(v))?Math.max(a,Math.min(b,Number(v))):f;
-  const supported=d=>!!d&&(d.reedSensor||(['sensor','detector'].includes(d.kind)&&['inductive','capacitive','optical','ultrasonic'].includes(d.sensorPrinciple)));
+  const supported=d=>!!d&&(d.reedSensor||(['sensor','detector'].includes(d.kind)&&(['inductive','capacitive','optical','ultrasonic'].includes(d.sensorPrinciple)||(d.id==='sensor-hall'&&d.sensorPrinciple==='magnetic'))));
   function settings(c,d){
     const s=c.sensing||{},range=clamp(s.range,.1,400,d.sensingRange||(d.sensorPrinciple==='optical'?40:d.sensorPrinciple==='capacitive'?10:4));
     const freeSide=['right','left','bottom','top'].sort((a,b)=>d.pins.filter(p=>p.side===a).length-d.pins.filter(p=>p.side===b).length)[0];
@@ -12,7 +12,7 @@
   function detect(c,d){
     if(!supported(d))return {enabled:false,detected:!!c.state};
     const s=settings(c,d),enabled=s.target!=='none';
-    const compatible=d.reedSensor?s.target==='magnet':d.sensorPrinciple==='inductive'?s.target==='metal':d.sensorPrinciple==='optical'?['metal','plastic','wood','reflector'].includes(s.target):s.target!=='none';
+    const compatible=d.reedSensor?s.target==='magnet':d.id==='sensor-hall'&&d.sensorPrinciple==='magnetic'?s.target==='magnet':d.sensorPrinciple==='inductive'?s.target==='metal':d.sensorPrinciple==='optical'?['metal','plastic','wood','reflector'].includes(s.target):s.target!=='none';
     const within=s.distance<=s.range+1e-8&&s.distance>=(d.sensorMinimum||0)&&Math.abs(s.offset)<=(d.sensorPrinciple==='ultrasonic'?Math.max(3,s.distance*Math.tan(Math.PI/30)):6);
     return {...s,enabled,compatible,within,detected:enabled?compatible&&within:!!c.state};
   }
@@ -43,12 +43,12 @@
     }
     const {s,origin,center,v,n}=geometry(c,d),r=s.range*s.mm,status=detect(c,d),active=status.detected&&c._active;
     const end={x:origin.x+v.x*r,y:origin.y+v.y*r};
-    const color={metal:'#94a3b8',plastic:'#f59e0b',wood:'#ad7046',liquid:'#38bdf8',reflector:'#ef4444'}[s.target];
+    const color={metal:'#94a3b8',plastic:'#f59e0b',wood:'#ad7046',liquid:'#38bdf8',reflector:'#ef4444',magnet:'#cbd5e1'}[s.target];
     let texture='';
     if(s.target==='metal')texture='<path d="M-14 -10h22m-22 6h12m-12 7h28" stroke="#dbeafe" stroke-width="2"/><circle cx="11" cy="10" r="3" fill="#64748b"/>';
     if(s.target==='wood')texture='<path d="M-15 -9q18 8 30 0M-15 0q18 8 30 0M-15 9q18 8 30 0" fill="none" stroke="#774929"/>';
     if(s.target==='liquid')texture='<path d="M-16 -3q8-5 16 0t16 0v18h-32z" fill="#0284c7"/><path d="M-9 -15v7" stroke="white" stroke-width="3"/>';
-    if(s.target==='reflector')texture='<path d="M-14 -12l28 24m0-24l-28 24M0-17v34M-17 0h34" stroke="#fecaca" stroke-width="2"/>';
+    if(s.target==='reflector')texture='<path d="M-14 -12l28 24m0-24l-28 24M0-17v34M-17 0h34" stroke="#fecaca" stroke-width="2"/>';if(s.target==='magnet')texture='<g data-hall-magnet-icon="1"><rect x="-15" y="-12" width="15" height="24" fill="#d94646"/><rect x="0" y="-12" width="15" height="24" fill="#3776bd"/><text x="-8" y="4" text-anchor="middle" fill="white" font-size="10">N</text><text x="8" y="4" text-anchor="middle" fill="white" font-size="10">S</text></g>';
     return `<g class="sensor-environment ${active?'target-detected':''}" transform="rotate(${c.rotation||0} ${d.w/2} ${d.h/2})"><path class="sensor-range" d="M${origin.x} ${origin.y}L${end.x+n.x*14} ${end.y+n.y*14}L${end.x-n.x*14} ${end.y-n.y*14}Z"/><path class="sensor-beam" d="M${origin.x} ${origin.y}L${end.x} ${end.y}"/><line class="sensor-limit" x1="${end.x+n.x*18}" y1="${end.y+n.y*18}" x2="${end.x-n.x*18}" y2="${end.y-n.y*18}"/><g class="sensor-target" data-sensor-target="${attr(c.id)}" transform="translate(${center.x} ${center.y})" role="button" tabindex="0" aria-label="Sensör hedefini sürükleyin"><rect class="target-hit" x="-25" y="-25" width="50" height="50" rx="6"/><rect class="target-solid" x="-18" y="-18" width="36" height="36" rx="4" fill="${color}"/>${texture}<path d="M-8 24h16m-5-4l5 4-5 4m-6-8l-5 4 5 4" fill="none" stroke="#64748b" stroke-width="1.5"/></g></g>`;
   }
   const api={MM,materials,supported,settings,detect,actuated,geometry,beginDrag,drag,advance,markup};

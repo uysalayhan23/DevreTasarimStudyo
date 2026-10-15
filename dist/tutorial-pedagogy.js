@@ -4200,6 +4200,55 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız bilgisayarda sanal KY-021 Reed ve Arduino dijital girişi; fiziksel modül polaritesi, gerçek elektriksel tasarım ve üretici kabulü yapılmamıştır.';
 }
 
+
+/* MQ-07 SC26: only Hall sensor lesson's magnetic target and PNP 24V relay load. */
+{
+ const id='sensor-analog-apps-src-07',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+  !p.components.some(x=>x.id==='s1'&&x.typeId==='sensor-hall')||
+  !p.components.some(x=>x.id==='k1'&&x.typeId==='coil-relay')||
+  !p.components.some(x=>x.id==='ka1'&&x.typeId==='contact-no')||
+  !p.components.some(x=>x.id==='h1'&&x.typeId==='lamp-green')||
+  !p.components.some(x=>x.id==='g1'&&x.typeId==='arduino-bench-supply'))
+  throw Error('MQ-07 SC26 canonical Hall source graph changed');
+ const wired=(a,ap,b,bp)=>p.wires.some(w=>w.from?.c===a&&w.from.p===ap&&w.to?.c===b&&w.to.p===bp);
+ if(![['g1','P','s1','BN'],['g1','M','s1','BU'],['s1','BK','k1','A1'],
+ ['k1','A2','g1','M'],['g1','P','ka1','13'],['ka1','14','h1','X1'],
+ ['h1','X2','g1','M']].every(x=>wired(...x)))
+  throw Error('MQ-07 SC26 Hall PNP/relay/lamp terminals changed');
+ const g=p.components.find(x=>x.id==='g1'),s=p.components.find(x=>x.id==='s1');
+ g.dcVoltage=24;s.outputType='PNP';s.state=false;
+ s.sensing={target:'magnet',range:10,distance:20,offset:0,face:'right',auto:false,travelDirection:-1};
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='24 V sanal Hall PNP sensöründe mıknatıs algılanınca BK çıkışı K1 bobinini enerjiler; K1 NO 13/14 kontağı ayrı yük kolundaki H1 lambasını çalıştırır.';
+ l.explanation='Yalnız yazılımsal 24 VDC deneydir. Gerçek katalogdaki ayarlanabilir G1 sanal masa güç kaynağı P (+) ucundan B1 Hall sensör BN (kahverengi) ucuna, M (0 V) ucundan BU (mavi) ucuna gider. PNP BK (siyah) çıkışı K1 bobin A1 ucuna, K1 A2 ise 0 V a bağlıdır. H1 yük kolu ayrı güç döngüsüdür: G1 P → K1 NO 13/14 → H1 X1 → H1 X2 → G1 M. Mıknatıs yakınken BK hattı +24 V taşır, K1 çeker, NO kontak kapanır ve H1 yanar; mıknatıs uzaklaştığında K1 ve H1 söner. Eğitimde sanal magnet hedefi için 10 mm örnek algılama eşiği ve 6 mm hizalama sınırı kullanılır. Bunlar ürün datasheet gerçek manyetik alan şiddeti, ölçülmüş mT veya algılama mesafesi olarak yorumlanamaz. Varsayılan sanal mıknatıs 20 mm uzaktadır; 5 mm ye yaklaştırıldığında sensör algılar. Plastik hedef algılanmaz, hizalama bozulursa OFF olur. BN veya BU beslemesi koparsa sensör çıkışı çalışmaz; BK sinyali kesilirse sensör algılasa da röle ve lamba çalışmaz. Sanal masa kaynağı 0 V olursa hem K1 hem H1 OFF, 12 V olursa bu 24 V nominal sensör-kumanda modeli OFF kalır. Güç kaynağı elektriksel çözücüde zaten c.dcVoltage ile izlendiğinden global kaynak davranışı değiştirilmez. Fiziksel pano, sigorta, bobin ters EMK bastırma, gerçek Hall eşik kalibrasyonu ve üretici arayüz kabulü bu derste doğrulanmamıştır.';
+ l.learningGoal='Mıknatısın Hall sanal algılama hedefi oluşunu, PNP BK kontrol sinyalini, K1 bobin ve 13/14 NO kontakla ayrı H1 yük beslemesini ayırt edip kesinti ve sıcak/sinyal hatlarını karşılaştırmak.';
+ l.beginnerSteps=[
+  'G1 sanal 24 VDC P/M çıkışlarını Hall BN/BU sensör besleme uçlarında kontrol et.',
+  'Hall PNP BK ucundan K1/A1 bobine ve K1/A2 ucundan 0 V hattına bak.',
+  'K1 NO 13/14 kontağının H1 yük kolunu ayrı anahtarladığını göster.',
+  'Mıknatıs uzakta (20 mm) K1 ve H1 OFF olduğunu gözle.',
+  'Mıknatısı 5 mm sanal yaklaştır: BK PNP HIGH, K1 ON, NO kapalı ve H1 ON.',
+  'Mıknatısı tekrar uzaklaştır: K1 bırakır, H1 söner.',
+  'Sanal BN/BU besleme veya BK sinyal kablosunu ayır ve H1 fail-closed OFF durumunu doğrula.',
+  'Sanal 24 V kaynağını 0 V yap: H1 OFF. 10 mm eşik sanal eğitim ayarıdır, üretici toleransı değildir.'
+ ];
+ l.quiz={question:'Sanal 24 V Hall PNP sensörü mıknatısı algıladığında H1 neden yanar?',
+ options:['Hall BK PNP sinyali K1 bobinini çeker; K1 NO 13/14 kontağı H1 yük devresini kapatır.',
+ 'Hall sensörü tek başına şebekeden 230 V üretir ve lambayı besler.',
+ 'PNP BK yalnız direnç ölçer ve bobini etkileyemez.'],
+ answer:0,why:'PNP sensör bobin kontrol yoluna sinyal üretir, lamba ayrı K1 NO güç kontağıyla beslenir.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'HALL_PNP_24V_RELAY_LAMP_SOURCE_ALIGNED',
+  mq07HallMagnetic:{virtualNominalV:24,target:'magnet',exampleThresholdMm:10,
+  isolatedSourceTested:true,manufacturerCalibrationVerified:false,fullNodeSuiteExecuted:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 24 VDC sanal ders; gerçek fiziksel bağlantı, manyetik ölçüm/kalibrasyon, üretici röle koruma ve saha güvenliği kabul edilmedi.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
