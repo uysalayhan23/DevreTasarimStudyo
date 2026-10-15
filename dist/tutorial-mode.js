@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261014-mq07-ir-optical-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-rc-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -916,6 +916,50 @@ function setPiezoVirtualSample(project,value){
  project.tutorialLesson.lastFeedback=now+' ms: sanal piezo gerilimi '+(Number(sensor._piezoMv)||0).toFixed(3)+' mV. Üretici verisi değildir.';
  root.DTSEditor?.render?.();sync(project);return true;
 }
+function isRcTimingLesson(l){return !!l?.pedagogyReview?.mq07RcTiming&&['electronic-switching-src-06','electronic-switching-src-07'].includes(l.id)}
+function rcTimingPanel(l,session,project){
+ const cap=project?.components?.find(c=>c.id==='c1'),transistor=project?.components?.find(c=>c.id==='q1'),
+  v1=project?.components?.find(c=>c.id==='v1'),status=session?.rcPhase||'idle';
+ return '<section class="tutorial-rc-timing"><h3>Sanal RC · bas / tut / bırak</h3>'+
+  '<p>Gerçek simülasyon motorunda C1 gerilimini, Q1 BD139 eşik durumunu ve UT33D+ ölçümünü adım adım karşılaştır.</p>'+
+  '<div class="tutorial-rc-readout"><strong>C1 = '+esc((Number(cap?._capacitorVoltage)||0).toFixed(3))+' V</strong>'+
+  '<strong>Q1 = '+(transistor?._active?'ON':'OFF')+'</strong>'+
+  '<strong>V1 = '+esc(v1?._meter?.display||'Henüz ölçülmedi')+' '+esc(v1?._meter?.unit||'')+'</strong></div>'+
+  '<p>Faz: '+esc(status)+' · örnekleme: 250 ms · süre: '+esc((session?.rcTime??0)/1000)+' s</p>'+
+  '<div class="tutorial-rc-controls">'+
+  '<button type="button" data-rc-action="reset">Sıfırla</button>'+
+  '<button type="button" data-rc-action="press">S1 bas / 2 sn tut</button>'+
+  '<button type="button" data-rc-action="release">S1 bırak / süreyi izle</button></div>'+
+  '<small>Bu öğretici sanal modeldir; üretici test sertifikası veya fiziksel devre kurma yönergesi değildir.</small></section>';
+}
+function setRcTimingPhase(project,action){
+ const l=lessonFor(project),session=project?.tutorialLesson,
+  button=project?.components?.find(c=>c.id==='s1'),cap=project?.components?.find(c=>c.id==='c1');
+ if(!isRcTimingLesson(l)||!session||!button||!cap||!['reset','press','release'].includes(action))return false;
+ const solve=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
+ if(typeof solve!=='function'||!defs){session.lastFeedback='Özgün elektriksel solver hazır değil; sonuç doğrulanmadı.';sync(project);return false}
+ if(action==='press'&&session.rcPhase!=='idle'){session.lastFeedback='Önce Sıfırla komutunu kullan.';sync(project);return false}
+ if(action==='release'&&session.rcPhase!=='pressed'){session.lastFeedback='Önce S1 bas / 2 sn tut komutunu çalıştır.';sync(project);return false}
+ if(action==='reset'){button.state=false;cap._capacitorVoltage=0;delete cap._reactiveNow;
+   session.rcTime=0;session.rcPhase='idle';}
+ else button.state=action==='press';
+ const start=action==='reset'?0:Number(session.rcTime??0)+250,
+  stop=action==='reset'?0:action==='press'?2000:l.pedagogyReview.mq07RcTiming.mode==='on'?7500:4000;
+ let stable=true,steps=0,firstTransition=null,previous=!!project.components.find(c=>c.id==='q1')?._active;
+ for(let t=start;t<=stop;t+=action==='reset'?1:250){
+  const result=solve(project,defs,{now:t}),q=project.components.find(c=>c.id==='q1');
+  if(!result?.stable||result.blocked||result.shortCircuit||result.oscillating){stable=false;break}
+  if(firstTransition===null&&!!q?._active!==previous)firstTransition=t;
+  previous=!!q?._active;steps++;session.rcTime=t;
+ }
+ if(!stable){session.lastFeedback='RC transient çözücü kararlı değil: inceleme açık.';sync(project);return false}
+ if(action!=='reset')session.rcPhase=action==='press'?'pressed':'released';
+ const q=project.components.find(c=>c.id==='q1'),meter=project.components.find(c=>c.id==='v1');
+ session.lastFeedback='✓ RC '+action+' · '+steps+' çözüm · C1 '+(Number(cap._capacitorVoltage)||0).toFixed(3)+' V · Q1 '+(q?._active?'ON':'OFF')+
+  ' · V1 '+(meter?._meter?.display||'—')+' '+(meter?._meter?.unit||'V')+
+  (firstTransition===null?'':' · ilk durum değişimi '+firstTransition+' ms');
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -949,6 +993,7 @@ function noteHtml(l,session,project){
  (l.beginnerSteps?.length?'<div class="tutorial-beginner-steps"><h3>Sıfırdan öğrenme sırası</h3><ol>'+l.beginnerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol></div>':'')+
  (l.practiceGuide?.steps?.length?'<div class="tutorial-beginner-steps tutorial-virtual-practice"><h3>'+esc(l.practiceGuide.heading)+'</h3><p><strong>Yalnız sanal eğitim:</strong> Bu rehber dersin kodlanmış şema ve materyallerini açıklar; gerçek donanım testi veya nihai fiziksel kabul değildir.</p><ol>'+l.practiceGuide.steps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+(l.practiceGuide.observations?.length?'<h3>Gözlem ve öz değerlendirme</h3><ul>'+l.practiceGuide.observations.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</div>':'')+
  (isPiezoVirtualLesson(l)?piezoVirtualPanel(l,session,project):'')+
+ (isRcTimingLesson(l)?rcTimingPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
  current+
  '<footer class="tutorial-actions">'+
@@ -1039,6 +1084,7 @@ function bind(){
    const coachToggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(coachToggle){e.preventDefault();const coach=root.document?.querySelector('#tutorialCoach');setCoachVisible(!!coach?.hidden);return}
    const coachClose=e.target.closest?.('[data-tutorial-coach-close]');if(coachClose){e.preventDefault();setCoachVisible(false);return}
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
+   const rcButton=e.target.closest?.('[data-rc-action]');if(rcButton){e.preventDefault();setRcTimingPhase(root.DTSEditor?.getProject?.(),rcButton.dataset.rcAction);return}
    const piezoButton=e.target.closest?.('[data-piezo-sample]');if(piezoButton){e.preventDefault();setPiezoVirtualSample(root.DTSEditor?.getProject?.(),piezoButton.dataset.piezoSample);return}
    const energyPreset=e.target.closest?.('[data-energy-preset]');if(energyPreset){e.preventDefault();setEnergyAnalyzerPreset(root.DTSEditor?.getProject?.(),energyPreset.dataset.energyPreset);return}
    const frequencyPreset=e.target.closest?.('[data-frequency-preset]');if(frequencyPreset){e.preventDefault();setFrequencyMeasurePreset(root.DTSEditor?.getProject?.(),frequencyPreset.dataset.frequencyPreset);return}
@@ -1124,6 +1170,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);

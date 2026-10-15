@@ -7,7 +7,7 @@ const L=QA.curriculum(),defs=QA.catalog(),p=L.byId['electronic-switching-src-01'
 test('MQ07 relay terminal tutorial is wired with 24 V NO and NC paths',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,55);
+ assert.equal(L.mq07Batch200.reviewIds.length,52);
  assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id==='electronic-switching-src-01'));
  assert.equal(L.byId['electronic-switching-src-01'].kind,'wiring');
  assert.deepEqual(p.components.map(c=>c.typeId),['arduino-bench-supply','push-no','coil-relay','lamp-green','contact-no','contact-nc','lamp-red']);

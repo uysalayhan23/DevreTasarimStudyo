@@ -2717,6 +2717,85 @@ for(const lessonId of ['opamp-apps-src-11','opamp-apps-src-12']){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
+
+/* MQ-07: two separate physical RC/BJT topology exercises.  The capacitor's
+   implicit-Euler state is advanced by the existing native current-model solver.
+   These are educational 24 V virtual circuits, not manufacturer SPICE models. */
+for(const spec of [
+ {id:'electronic-switching-src-06',mode:'on',chargeOhm:47000,bleedOhm:10000,capFarad:.001,chargeLabel:'47 kΩ',bleedLabel:'10 kΩ',capLabel:'1000 µF'},
+ {id:'electronic-switching-src-07',mode:'off',chargeOhm:1000,bleedOhm:2000,capFarad:.0001,chargeLabel:'1 kΩ',bleedLabel:'2 kΩ',capLabel:'100 µF'}
+]){
+ const l=L.byId[spec.id],id=spec.id;
+ if(!l||!L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_RC_TIMING_EVIDENCE'))
+  throw Error('MQ07 RC canonical baseline not in review: '+id);
+ if(!l.project?.components.some(x=>x.typeId==='bd139-npn')||l.project.components.some(x=>x.typeId==='capacitor'))
+  throw Error('MQ07 RC unexpected source graph: '+id);
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',80,150,'G1','Sanal 24 VDC masa kaynağı',{dcVoltage:24}),
+  C('s1','push-no',285,160,'S1','Sanal START / bırak butonu'),
+  C('rb','resistor',475,160,'RB','Şarj direnci · '+spec.chargeLabel,{resistance:spec.chargeOhm}),
+  C('c1','capacitor',680,195,'C1','Depolama kondansatörü · '+spec.capLabel,{capacitance:spec.capFarad}),
+  C('rp','resistor',880,190,'RP','Deşarj direnci · '+spec.bleedLabel,{resistance:spec.bleedOhm}),
+  C('q1','bd139-npn',690,405,'Q1','BD139 NPN anahtar'),
+  C('rl','resistor',900,410,'RL','1 kΩ kolektör yükü',{resistance:1000}),
+  C('v1','unit-ut33d-plus',1100,160,'V1','UNI-T UT33D+ · DCV 20 V',{meterPosition:3}),
+  C('v1-red','test-probe-red',1050,370,'PRV1','Kırmızı prob',{probeTarget:{c:'c1',p:'1'}}),
+  C('v1-black','test-probe-black',1260,375,'PBV1','Siyah prob',{probeTarget:{c:'c1',p:'2'}})
+ ];
+ p.wires.push(
+  W('g1','P','s1','13','G1/P → S1/13','Sanal +24 V besleme normalde açık S1 butonuna ulaşır.'),
+  W('s1','14','rb','1','S1/14 → RB/1','S1 basıldığında RB üzerinden kondansatör düğümüne şarj akımı akar.'),
+  W('rb','2','c1','1','RB/2 → C1/1','C1 üst elektrodu zamanla potansiyel kazanır.','#43a047','SIGNAL'),
+  W('rb','2','q1','B','RC düğümü → Q1/B','Şarj gerilimi BJT baz eşiğine ulaştığında NPN iletime geçebilir.','#43a047','SIGNAL'),
+  W('rp','1','c1','1','RP/1 → C1/1','RP, C1 üst elektroduna bağlı paralel sönümleme yoludur.'),
+  W('rp','2','g1','M','RP/2 → G1/M','Buton bırakıldığında C1 gerilimi RP üzerinden boşalır.','#111827','0V'),
+  W('c1','2','g1','M','C1/2 → G1/M','Kondansatörün alt elektrodu 0 V referansıdır.','#111827','0V'),
+  W('q1','E','g1','M','Q1/E → G1/M','NPN emitter 0 V sanal referans yoluna bağlıdır.','#111827','0V'),
+  W('g1','P','rl','1','G1/P → RL/1','RL kolektör yükü +24 V kaynağa bağlıdır.'),
+  W('rl','2','q1','C','RL/2 → Q1/C','Q1 iletimdeyken kolektör yükünden akım akar.'),
+  W('v1','V','v1-red','PLUG','V1/VΩmA → kırmızı prob','Kondansatör geriliminin DCV 20 V ölçümü için kırmızı prob girişidir.','#e53935','MEASURE'),
+  W('v1','COM','v1-black','PLUG','V1/COM → siyah prob','Siyah prob kondansatör alt elektrodundaki 0 V noktasına temas eder.','#111827','MEASURE')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ const focus=spec.mode==='on'?'Gecikmeli açmada C1 şarj olurken baz gerilimi eşik altında kalır; Q1 başlangıçta OFF durumundadır.':'Gecikmeli kapamada C1 depoladığı enerjiyi RP üzerinden boşaltırken, S1 bırakılmış olsa bile Q1 bir süre ON kalabilir.';
+ l.summary=focus+' Şebeke üzerinde değil, gerçek RC durumunu kullanan 24 V sanal BD139 dersinde bas-bırak zaman çizelgesini gözlemle.';
+ l.explanation='Sanal G1/P (+24 V) → S1/13–14 → RB/1–2 ('+spec.chargeLabel+') → C1/1 ve Q1/B düğümüne gider. C1 ('+spec.capLabel+') alt elektrodu C1/2 → G1/M yoluyla 0 V’a döner. RP ('+spec.bleedLabel+') C1/1 ile 0 V arasında paraleldir: S1 açıldığında depolanan yük bu yoldan azalır. Q1 BD139 emitter E → 0 V, collector C → RL/2, RL/1 → +24 V. BJT baz–emitter gerilimi simülasyon eşiği yaklaşık 0,62 V’u geçtiğinde kolektör anahtarlaması açılır. V1 UNI-T UT33D+ DCV 20 V konumundadır; VΩmA ve COM girişlerindeki fiziksel kırmızı/siyah problar C1/1 ve C1/2 elektrotlarını ölçer. Bu devrede süre, RB, RP, C1, başlangıç gerilimi ve BJT eşiğiyle değişir; yalnız RB×C1 hesabını doğrudan anahtarlama süresi ilan etme. '+'Sanal buton S1 ve C1 durumları orijinal simülasyon çözücüsüyle 250 ms aralıklarda ilerletilir. '+(spec.mode==='on'?'Basıldıktan sonra başlangıç OFF → eşik sonrası ON geçişini izle.':'Basılı durumda hızlı ON olduktan sonra bırakmayı izle; gerilim azalana kadar ON kalır, sonra OFF olur.')+' Değerler üretici veri sayfasına göre kalibre edilmiş bir zamanlama veya fiziksel devre güvenlik kabulü değildir.';
+ l.learningGoal='S1/13-14, RB/1-2, C1/1-2, RP/1-2, Q1/B-C-E, RL/1-2 ve V1 prob temaslarını bulup '+(spec.mode==='on'?'gecikmeli AÇMA':'gecikmeli KAPAMA')+' durum değişimini V1 ve Q1 üzerinden doğrulamak.';
+ l.beginnerSteps=[
+  'Sanal G1/P → S1/13–14 → RB/1-2 kablolarını ve C1/1 üzerinden C1/2 → 0 V hattını izle.',
+  'Q1/B, Q1/E ve Q1/C terminallerini; RL/1–2 kolektör yük yolunu ayırt et.',
+  'RP direncinin C1 ile paralel bağlantısının buton bırakılınca enerji boşalma yolu olduğunu göster.',
+  'V1 kırmızı/siyah problarını C1/1 ve C1/2 uçlarında doğrula; DCV 20 V kademesini seç.',
+  '“Sıfırla” düğmesiyle kapasitörün ve Q1’in başlangıç değerlerini sıfırla.',
+  'S1’e sanal bas–tut komutunu uygula; Q1 ON zamanını ve C1 gerilim değişimini izle.',
+  'S1’i bırak; C1 deşarjının ve Q1 OFF geçişinin neden aynı anda oluşmadığını gözlemle.',
+  'Bu sonuçları yalnız sanal solver davranışı olarak yorumla; üretici fiziksel testini PASS sayma.'
+ ];
+ const purpose={g1:'G1 düşük gerilimli sanal DC enerjiyi sağlar.',
+  s1:'S1 13–14 butonu RC ağını beslemeye bağlar veya ayırır.',
+  rb:'RB '+spec.chargeLabel+' ile C1 şarj akımını sınırlar.',
+  c1:'C1 '+spec.capLabel+' kapasitansıyla gerçek sanal depolanan gerilimi taşır.',
+  rp:'RP '+spec.bleedLabel+' ile C1 elektriksel deşarj yolu oluşturur.',
+  q1:'Q1 BD139 B/C/E terminalinde baz eşiğine bağlı anahtar durumudur.',
+  rl:'RL 1 kΩ, Q1 kolektör yoluna seri sanal yük oluşturur.',
+  v1:'V1 UT33D+ 20 V DCV kademesiyle C1 gerilimini ölçer.',
+  'v1-red':'Kırmızı prob C1/1 üst elektroduna temas eder.',
+  'v1-black':'Siyah prob C1/2 alt elektroduna temas eder.'};
+ l.materials=materialRows(p).map(m=>({...m,why:purpose[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_RC_SOURCE_ALIGNED',
+  mq07RcTiming:{mode:spec.mode,chargeOhm:spec.chargeOhm,bleedOhm:spec.bleedOhm,capacitanceF:spec.capFarad,
+    nativeSolverRequired:true,stepMs:250,manufacturerTimeAcceptance:false},
+  previousReason:'NO_RC_TIMING_EVIDENCE',physicalAcceptance:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız simüle edilen düşük gerilimli RC/BJT eğitim devresi. 24 V ve RC sayıları model varsayımıdır; gerçek donanım/üretici kabulü değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

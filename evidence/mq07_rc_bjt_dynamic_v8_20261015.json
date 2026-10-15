@@ -1,0 +1,106 @@
+{
+  "date": "2026-10-15",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "task": "MQ-07 RC on/off transistor timing repair",
+  "scope": {
+    "onId": "electronic-switching-src-06",
+    "offId": "electronic-switching-src-07",
+    "newComponentsEach": 10,
+    "wiresEach": 12,
+    "actualRc": true,
+    "bd139": true,
+    "ut33dDC20V": true,
+    "actionsUsed": false
+  },
+  "nativeSolver": "original dist/simulation.js + original dist/current-model.js in V8, unchanged engine",
+  "dynamicSampling": {
+    "stepMs": 250,
+    "buttonPressedFromMs": 250,
+    "buttonReleasedAtMs": 2250,
+    "onDelay": {
+      "rChargeOhm": 47000,
+      "cFarad": 0.001,
+      "rDischargeOhm": 10000,
+      "qOffAtMs": [
+        0,
+        250,
+        500,
+        1000,
+        1250
+      ],
+      "qOnFromMs": 1500,
+      "qOffAgainAtMs": 5750,
+      "vcAtMs": {
+        "1000": 0.474,
+        "1500": 0.691,
+        "2000": 0.895,
+        "5750": 0.618
+      }
+    },
+    "offDelay": {
+      "rChargeOhm": 1000,
+      "cFarad": 0.0001,
+      "rDischargeOhm": 2000,
+      "qOnFromMs": 250,
+      "qStillOnAtMs": 3000,
+      "qOffAtMs": 3250,
+      "vcAtMs": {
+        "250": 12.631,
+        "2000": 15.999,
+        "2250": 7.11,
+        "3000": 0.624,
+        "3250": 0.277
+      }
+    }
+  },
+  "fullSourceV8Audit": {
+    "status": "PASS",
+    "lessons": 1655,
+    "rich": 136,
+    "definitionCount": 940,
+    "wired": 729,
+    "stable": 729,
+    "componentsChecked": 7280,
+    "wireEndpointsChecked": 16616,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "blocked": 0,
+    "shortCircuits": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicateIds": 0
+  },
+  "uiV8": {
+    "id": "electronic-switching-src-06",
+    "reset": {
+      "rcTime": 0,
+      "qOn": false
+    },
+    "press": {
+      "rcTime": 2000,
+      "qOn": true,
+      "firstTransitionMs": 1500
+    },
+    "release": {
+      "rcTime": 7500,
+      "qOn": false,
+      "firstTransitionMs": 5750
+    },
+    "allOperationsNativeSolver": true
+  },
+  "openReviewCountBefore": 54,
+  "openReviewCountAfter": 52,
+  "remainingReasons": {
+    "NO_WIRED_CIRCUIT": 51,
+    "MISSING_DIMMER_POWER_STAGE": 1
+  },
+  "notExecuted": [
+    "node --test native process",
+    "Windows file:/// visual inspection",
+    "manufacturer calibration or physical bench test",
+    "independent pedagogical sign-off"
+  ],
+  "mq00Decision": "VIRTUAL_RC_SOURCE_PASS; independent physical/visual/student acceptance REVIEW"
+}

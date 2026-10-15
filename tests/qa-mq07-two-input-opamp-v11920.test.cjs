@@ -11,7 +11,7 @@ const lessons=['opamp-apps-src-11','opamp-apps-src-12'];
 test('two-input subtractor and summing lessons use two actual virtual controls, canonical terminals and child-readable steps',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(l=>l.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,55);
+ assert.equal(L.mq07Batch200.reviewIds.length,52);
  for(const id of lessons){
   const lesson=L.byId[id],p=lesson.project;
   assert.equal(lesson.kind,'wiring');
