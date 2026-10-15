@@ -3396,13 +3396,48 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
+/* MQ-07 SC18: TLP521-1 optically isolated LED/phototransistor software test.
+   Two sources are independent; never join their ground return rails. */
 {
- const l=L.byId['electronic-switching-src-18'];
- if(l){
- l.summary="Optokuplör giriş-çıkış izolasyonu — Giriş LED'i ile foto-transistör arasında ışık aktarımı, iletken tel aktarımı değil.";
- l.explanation="AMAÇ: Giriş LED'i ile foto-transistör arasında ışık aktarımı, iletken tel aktarımı değil. HESAP VE VARSAYIM: Örnek olarak giriş kaynağı 5 V, LED ileri gerilimi varsayımsal 1,2 V ve 1 kΩ seri direnç kabul edilirse giriş LED akımı yaklaşık (5−1,2)/1000=3,8 mA'dir; foto-transistör çıkış akımı CTR bilinmeden hesaplanamaz. ÖĞRENCİ DENEYİ: Giriş tarafında anot/katot ve akım sınırlama direncini, çıkışta kolektör/emiteri ayrı göster. İki farklı devre referansını neden birleştirmemek gerektiğini açıkla. KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: TLP521-1 modeline özel CTR, izolasyon dayanımı ve gerçek foto-transistör anahtarlama testi yapılmamıştır.";
- l.learningGoal="Optokuplör giriş-çıkış izolasyonu konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
- }
+ const id='electronic-switching-src-18',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+    throw Error('SC18 unwired review baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,180,'G1','Sanal 5 V LED giriş beslemesi',{dcVoltage:5}),
+  C('sg','push-no',300,150,'SG','Sanal LED tetikleme butonu',{state:false}),
+  C('rin','resistor',530,160,'RIN','1 kΩ sanal LED giriş direnci',{resistance:1000}),
+  C('u1','arduino-tlp521-1',840,310,'U1','TLP521-1 PDIP-4 · 1=A 2=K 3=E 4=C',{mq07OptoVirtual:true,mq07VirtualCtr:0.5,mq07VirtualLedDropV:1.2,mq07VirtualVceSatV:0.2}),
+  C('g2','arduino-bench-supply',1030,120,'G2','Bağımsız 5 V sanal çıkış beslemesi',{dcVoltage:5}),
+  C('rout','resistor',1320,200,'ROUT','4,7 kΩ sanal fototransistör yükü',{resistance:4700})
+ ];
+ p.wires.push(
+  W('g1','P','sg','13','G1/P → SG/13','Giriş LED devresi pozitif sanal kaynağı.','#e53935','+24V'),
+  W('sg','14','rin','1','SG/14 → RIN/1','Sanal LED akım sınırlama hattı.','#8b5cf6','SIGNAL'),
+  W('rin','2','u1','1','RIN/2 → U1/1','TLP521 pin 1 LED anot.','#8b5cf6','SIGNAL'),
+  W('u1','2','g1','M','U1/2 → G1/M','TLP521 pin 2 LED katot giriş referansına döner.','#111827','0V'),
+  W('g2','P','rout','1','G2/P → ROUT/1','Bağımsız sanal çıkış pozitif hattı.','#e53935','+24V'),
+  W('rout','2','u1','4','ROUT/2 → U1/4','Pin 4 çıkış fototransistörü collector.','#8b5cf6','SIGNAL'),
+  W('u1','3','g2','M','U1/3 → G2/M','Pin 3 emitter yalnızca G2 negatif hattına döner.','#111827','0V')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'TLP521-1 optokuplörde sanal giriş LED akımını ve ayrı beslemeli fototransistör kolektör gerilimini karşılaştır. LED tetikleme OFF/ON/OFF olduğunda ışıkla iletim değişmeli; iki tarafta ortak kablo veya ortak GND olmamalı.',
+  explanation:'AMAÇ: Yalnız yazılımsal 5 V DC devrede TLP521-1 optokuplörün LED girişini (1 anot, 2 katot) ve fototransistör çıkışını (3 emitter, 4 collector) elektriksel olarak ayrı görmek. Sanal G1 → SG → RIN 1 kΩ → U1/1 → U1/2 → G1/M giriş akımı yoludur. Bağımsız G2 → ROUT 4,7 kΩ → U1/4 → U1/3 → G2/M çıkış akımı yoludur. G1/M ile G2/M kabloyla birleştirilmez. SG OFF iken LED akımı sıfır, fototransistör OFF ve collector yaklaşık 5 V gözlenir. SG ON iken idealize 1,2 V LED ileri düşümüyle giriş akımı 3,8 mA, temsilî ve üretici tarafından doğrulanmamış yüzde 50 CTR varsayımıyla yeterli çıkış akımı oluşursa collector yaklaşık 0,2 V seviyesine iner. SG bırakılınca çıkış yeniden açık hale döner. Giriş ya da çıkış kablosu koparıldığında devrenin ayrı tepkileri incelenir. DİKKAT: Bu işlev testi gerçek TLP521-1 cihazının kesin sağlamlığı, izolasyon dayanımı veya üretici CTR ölçümü değildir; gerçek donanım testi yapılmamıştır.'
+ });
+ l.materials=materialRows(p);
+ l.learningGoal='TLP521-1 dört DIP terminalini tanı; giriş LED akımı ile çıkış fototransistörü iletimini ve fiziksel kablo olmadan optik yalıtımı sanal değerlerle ayırt et.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'REVIEW_TLP521_OPTICALLY_ISOLATED_SIM',
+  catalogProductId:'arduino-tlp521-1',
+  virtualOpto:{separateSourceDomains:true,virtualCtr:0.5,manufacturerCtrCalibrated:false,physicalIsolationTested:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız yazılım içi iki ayrı düşük gerilimli sanal kaynak; gerçek izolasyon dayanım veya sağlamlık testi değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 {
  const l=L.byId['electronic-switching-src-19'];
