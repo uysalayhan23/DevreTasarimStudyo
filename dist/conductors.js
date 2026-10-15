@@ -12,6 +12,37 @@
   function sizeNumber(s){const n=parseFloat(String(s||'').replace(',','.'));return Number.isFinite(n)&&n>0?Math.max(.25,Math.min(240,n)):1.5}
   const sizeLabel=s=>String(sizeNumber(s)).replace('.',',')+' mm²';
   const width=s=>2.5*Math.sqrt(sizeNumber(s)/1.5);
+  // Fixed DC supply colors are determined by an electrical power TERMINAL,
+  // never from generic signal +/- names or AC L/N/PE wire roles.
+  const DC_POSITIVE='#e53935',DC_NEGATIVE='#111827';
+  function powerTerminalPolarity(d,p){
+    if(!d||!p||d.diagramOnly||d.visualOnly||p.mechanical)return null;
+    const id=String(p.id||'').toUpperCase().replace(/\\s+/g,'').replace(/[−–]/g,'-');
+    const kind=String(d.kind||'');
+    const supply=kind.startsWith('supply-dc')||kind==='power24'||d.arduinoRole==='bench-supply'||d.excitationSource===true;
+    if(supply&&id==='P')return 'positive';
+    if(supply&&id==='M')return 'negative';
+    if((kind==='battery'||kind==='rectifier')&&id==='+')return 'positive';
+    if((kind==='battery'||kind==='rectifier')&&id==='-')return 'negative';
+    if(['sensor','detector'].includes(kind)&&id==='BN')return 'positive';
+    if(['sensor','detector'].includes(kind)&&id==='BU')return 'negative';
+    if(/^(?:GND[0-9]*|AGND|DGND|PGND|SGND|0V|VSS[0-9]*|V-|DC-|PWR-|SUPPLY-)$/.test(id))return 'negative';
+    if(/^(?:V\\+|VCC[0-9]*|VDD[0-9]*|VS\\+|VIN\\+?|VBAT\\+?|DC\\+|PWR\\+|SUPPLY\\+|\\+?(?:3V3|5V|12V|24V|48V))$/.test(id))return 'positive';
+    return null;
+  }
+  function netPowerColor(project,byId,members=[]){
+    const polarity=new Set();
+    for(const {c,p} of members){const v=powerTerminalPolarity(byId[c?.typeId],p);if(v)polarity.add(v)}
+    return polarity.size>1?'CONFLICT':polarity.has('positive')?DC_POSITIVE:polarity.has('negative')?DC_NEGATIVE:null;
+  }
+  function endpointPowerColor(project,byId,...refs){
+    const members=[];
+    for(const ref of refs){if(!ref?.c||!ref?.p)continue;
+      const c=project.components.find(c=>c.id===ref.c),d=c&&byId[c.typeId],p=d?.pins?.find(p=>p.id===ref.p);
+      if(c&&p)members.push({c,p});
+    }
+    return netPowerColor(project,byId,members);
+  }
   function permanentPairs(d,c){
     if(!d||d.diagramOnly||d.isPLC||d.visualOnly)return [];
     if(d.terminalCount)return Array.from({length:d.terminalCount},(_,i)=>[String(2*i+1),String(2*i+2)]);
@@ -102,6 +133,9 @@
   function plan(project,byId,from,to,preferred,size,ignoreWireId){
     const result=check(project,byId,from,to,ignoreWireId);if(!result.ok)return result;
     if(result.probeLead)return {...result,size:'6 mm²'};
+    const fixed=netPowerColor(project,byId,[...result.a.members,...result.b.members]);
+    if(fixed==='CONFLICT')return {ok:false,reason:'DC+ ile DC−/GND besleme uçları doğrudan birleştirilemez.'};
+    if(fixed)return {...result,role:result.role|| (fixed===DC_POSITIVE?'+24V':'0V'),color:fixed,size:sizeLabel(project.colorSizes?.[fixed]||size)};
     if(result.freeColor)return {...result,role:'FREE',color:normalizeColor(preferred),size:sizeLabel(project.colorSizes?.[preferred]||size)};
     const role=result.role||project.colorLocks?.[preferred]||project.colorRoles?.[preferred]||'CONTROL';
     const color=chooseColor(project,role,result.b.color||result.a.color||preferred);
@@ -112,8 +146,17 @@
     for(const c of project.components)c._terminalLines={};
     const ordered=[...graph.nets.values()].sort((a,b)=>b.anchors.length-a.anchors.length);
     for(const n of ordered){
-      if(n.roles.size>1||n.domains.size>1){warnings.push(n);for(const w of n.wires)w._lineConflict=true;continue}
+      const fixed=netPowerColor(project,byId,n.members);
+      if(n.roles.size>1||n.domains.size>1||fixed==='CONFLICT'){warnings.push(n);for(const w of n.wires)w._lineConflict=true;continue}
       if(!n.wires.length)continue;
+      if(fixed){
+        const role=[...n.roles][0]|| (fixed===DC_POSITIVE?'+24V':'0V');
+        if(!project.colorSizes[fixed])project.colorSizes[fixed]=sizeLabel(n.wires.find(w=>w.size)?.size||1.5);
+        const bound=!!n.anchors.length||n.wires.some(w=>w.roleBound);
+        for(const w of n.wires){delete w.freeColor;w.roleBound=bound;w.color=fixed;w.role=role;w.size=project.colorSizes[fixed];w._lineConflict=false}
+        for(const {c,p} of n.members)c._terminalLines[p.id]={role,color:fixed,size:project.colorSizes[fixed]};
+        continue;
+      }
       if(n.freeColor){for(const w of n.wires){w.color=normalizeColor(w.color);w.role='FREE';w.freeColor=true;w.roleBound=false;w.size=project.colorSizes[w.color]||sizeLabel(w.size);w._lineConflict=false}for(const {c,p} of n.members)c._terminalLines[p.id]={role:'FREE',freeColor:true,color:n.wires[0].color,size:n.wires[0].size};continue}
       for(const w of n.wires)delete w.freeColor;
       const role=[...n.roles][0]||project.colorRoles[n.color]||'CONTROL',color=chooseColor(project,role,n.color);
@@ -135,7 +178,12 @@
   function recolor(project,byId,wireId,color,size){
     const w=project.wires.find(w=>w.id===wireId);if(!w)return {ok:false,reason:'Kablo bulunamadı.'};
     const lead=Leads.info(project,byId,w);if(lead){w.probeSize=sizeLabel(size||w.probeSize||6);Leads.prepare(project,byId);return {ok:true,role:lead.role,color:lead.color}}
-    const net=analyze(project,byId).at(w.from);if(net.freeColor){w.color=normalizeColor(color);if(size)setSize(project,w.color,size);synchronize(project,byId);return {ok:true,role:'FREE',color:w.color}}
+    const net=analyze(project,byId).at(w.from);
+    const fixed=netPowerColor(project,byId,net.members);
+    if(fixed==='CONFLICT')return {ok:false,reason:'DC+ ve DC−/GND polariteleri aynı hatta bağlanmış.'};
+    if(fixed){if(normalizeColor(color)!==fixed)return {ok:false,reason:'DC besleme ucu sabit kablo rengi: '+(fixed===DC_POSITIVE?'kırmızı':'siyah')+'.'};
+      if(size)project.colorSizes[fixed]=sizeLabel(size);synchronize(project,byId);return {ok:true,role:net.role||(fixed===DC_POSITIVE?'+24V':'0V'),color:fixed};}
+    if(net.freeColor){w.color=normalizeColor(color);if(size)setSize(project,w.color,size);synchronize(project,byId);return {ok:true,role:'FREE',color:w.color}}
     const role=net.role||w.role;
     color=normalizeColor(color);if(project.colorLocks?.[color]&&project.colorLocks[color]!==role)return {ok:false,reason:'Bu renk '+project.colorLocks[color]+' hattına kilitli; '+role+' olarak atanamaz.'};
     bind(project,role,color);project.colorPreferences[role]=color;if(size)project.colorSizes[color]=sizeLabel(size);for(const wire of project.wires)if(!wire.freeColor&&!Leads.info(project,byId,wire)&&wire.role===role)wire.color=color;synchronize(project,byId);return {ok:true,role,color};
@@ -150,6 +198,6 @@
   }
   function setVoltage(project,color,value){if(!voltageOptions.includes(value))return false;state(project);project.colorVoltages[normalizeColor(color)]=value;return true}
   const voltageLabel=(project,color)=>project.colorVoltages?.[color]&&project.colorVoltages[color]!=='Otomatik'?project.colorVoltages[color]:'';
-  const api={colorNames,voltageOptions,freePins,configureColor,setVoltage,voltageLabel,defaults,sizes,key,sizeNumber,sizeLabel,width,sourceLines,permanentPairs,analyze,check,plan,bind,initialize,synchronize,recolor,setSize,chooseColor};
+  const api={colorNames,voltageOptions,freePins,configureColor,setVoltage,voltageLabel,defaults,sizes,key,sizeNumber,sizeLabel,width,sourceLines,permanentPairs,powerTerminalPolarity,endpointPowerColor,netPowerColor,DC_POSITIVE,DC_NEGATIVE,analyze,check,plan,bind,initialize,synchronize,recolor,setSize,chooseColor};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.CCSConductors=api;
 })(typeof window==='undefined'?globalThis:window);
