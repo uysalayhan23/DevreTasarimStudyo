@@ -106,6 +106,12 @@ add(box('tutorial-dac','DAC · Dijital → Analog','Dijital-analog dönüştür�
 
 add(box('tutorial-mosfet','MOSFET','Alan etkili güç anahtarı',[P('G','G',0,50,'left'),P('D','D',150,30,'right'),P('S','S',150,72,'right')],{refPrefix:'Q'}));
 add(box('tutorial-igbt','IGBT','Yalıtılmış kapılı güç transistörü',[P('G','G',0,50,'left'),P('C','C',150,30,'right'),P('E','E',150,72,'right')],{refPrefix:'Q'}));
+// Functional software-only SCR for MQ-07 low-voltage virtual teaching.
+// Never use the diagram-only tutorial-scr as a conductive semiconductor.
+add({id:'mq07-scr-virtual',name:'Sanal SCR (DC gate)',model:'İdealize gate-eşik eğitim modeli',
+ kind:'scr',w:150,h:100,pins:[P('G','G',0,50,'left'),P('A','A',150,30,'right'),P('K','K',150,72,'right')],
+ tutorialOnly:true,catalogGroup:'electronics',refPrefix:'Q',
+ physicalAcceptance:false,symbolSource:{file:'MQ-07',pages:'SC13',basis:'Özgün SCR solver gate-eşik / A-K anahtarlama; fiziksel tutma akımı yoktur.'}});
 add(box('tutorial-scr','Tristör / SCR','Anot-katot-kapı',[P('G','G',0,50,'left'),P('A','A',150,30,'right'),P('K','K',150,72,'right')],{refPrefix:'V'}));
 add(box('tutorial-triac','Triyak','MT1-MT2-kapı',[P('G','G',0,50,'left'),P('MT1','MT1',150,30,'right'),P('MT2','MT2',150,72,'right')],{refPrefix:'V'}));
 
