@@ -8,7 +8,37 @@
     const screw=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#adb5bb" stroke="#58616a"/><path d="M${x-2} ${y}h4" stroke="#334155"/>`;
     const box=(x,y,bw,bh,fill=`url(#${gid})`)=>`<path d="M${x+4} ${y+bh+4}h${bw}v-${bh}l-4-4z" fill="#9ba5ad"/><rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${fill}" stroke="#737f8b"/>`;
     let art='';
-    if(['ac-virtual-source','ac-scr-trigger','ac-triac-trigger'].includes(d.kind)){
+    if(d.kind==='opto-flasher-timer'){
+      const hz=Number.isFinite(c.frequencyHz)?c.frequencyHz:d.defaultFrequencyHz??2;
+      const duty=Number.isFinite(c.dutyPercent)?c.dutyPercent:d.defaultDutyPercent??50;
+      art='<rect x="12" y="14" width="'+(w-24)+'" height="'+(h-28)+'" rx="10" fill="#243c4c" stroke="#a2bac8" stroke-width="2.5"/>'+
+       '<rect x="22" y="24" width="'+(w-44)+'" height="23" rx="4" fill="#0d2637"/>'+
+       '<text x="'+cx+'" y="40" fill="#e8f4ff" text-anchor="middle" font-size="12" font-weight="bold">LED FLASH TIMER</text>'+
+       '<rect x="24" y="55" width="'+(w-48)+'" height="36" rx="4" fill="#0d3638" stroke="#528c8f"/>'+
+       '<text x="30" y="69" font-family="monospace" font-size="11" fill="#afffce">'+esc(hz)+' Hz</text>'+
+       '<text x="30" y="83" font-family="monospace" font-size="11" fill="#afffce">DUTY '+esc(duty)+'%</text>'+
+       '<path d="M27 107h17v-10h21v10h20v-10h21v10h22" fill="none" stroke="#5bd7fa" stroke-width="2.3"/>'+
+       '<circle cx="'+(w-25)+'" cy="'+(h-20)+'" r="5" fill="'+(c._sc19TimerHigh?'#40eb9a':'#657887')+'"/>'+
+       '<text x="17" y="29" fill="#e5f1f8" font-size="9">V+</text>'+
+       '<text x="17" y="117" fill="#e5f1f8" font-size="9">GND</text>'+
+       '<text x="'+(w-18)+'" y="65" fill="#e5f1f8" font-size="9" text-anchor="end">OUT</text>';
+    }else if(d.kind==='opto-triac'){
+      art='<g data-virtual-coupling="optical" data-front-view="orthographic">'+
+       '<rect x="18" y="11" width="'+(w-36)+'" height="'+(h-22)+'" rx="9" fill="#272c34" stroke="#7a8792" stroke-width="3"/>'+
+       '<path d="M27 20h'+(w-54)+'v27H27Z" fill="#38444e"/>'+
+       '<circle cx="'+cx+'" cy="27" r="4" fill="#161f28" stroke="#637683"/>'+
+       '<text x="'+cx+'" y="56" text-anchor="middle" font-family="Arial" font-size="15" font-weight="bold" fill="#eaf2f9">MOC3021</text>'+
+       '<path d="M'+cx+' 66v55" stroke="#52bfcb" stroke-width="2" stroke-dasharray="4 4"/>'+
+       '<text x="27" y="86" font-size="10" fill="#b7f5c7">LED</text>'+
+       '<text x="'+(w-27)+'" y="86" text-anchor="end" font-size="10" fill="#a8ddff">TRIAC</text>'+
+       '<path d="M28 102h35m-9 -8l9 8 -9 8" fill="none" stroke="#e8d779" stroke-width="2"/>'+
+       '<text x="27" y="31" font-size="9" fill="#f3fcff">1 A</text>'+
+       '<text x="27" y="126" font-size="9" fill="#f3fcff">2 K</text>'+
+       '<text x="'+(w-26)+'" y="31" text-anchor="end" font-size="9" fill="#f3fcff">6 T2</text>'+
+       '<text x="'+(w-26)+'" y="126" text-anchor="end" font-size="9" fill="#f3fcff">4 T1</text>'+
+       '<circle cx="'+(cx-22)+'" cy="119" r="4" fill="'+(c._sc19LedOn?'#4ade80':'#667788')+'"/>'+
+       '<text x="'+cx+'" y="'+(h-15)+'" font-size="8" text-anchor="middle" fill="#aabfca">OPTICAL · VIRTUAL</text></g>';
+    }else     if(['ac-virtual-source','ac-scr-trigger','ac-triac-trigger'].includes(d.kind)){
       const isSource=d.kind==='ac-virtual-source';
       const angle=Number.isFinite(c.triggerAngleDeg)?c.triggerAngleDeg:d.defaultTriggerAngleDeg??90;
       const wave=Array.from({length:29},(_,i)=>(i?'L':'M')+(22+i*(w-44)/28).toFixed(1)+' '+(89-16*Math.sin(i*2*Math.PI/28)).toFixed(1)).join(' ');
