@@ -3243,6 +3243,47 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* SC16 DC triac: native-solver-powered gate/MT1-MT2 educational example.
+   AC phase dimming and real holding-current dynamics remain unsupported. */
+{
+ const id='electronic-switching-src-16',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))
+  throw Error('SC16 source baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,145,'G1','Yalnız sanal 12 V DC',{dcVoltage:12}),
+  C('sw','push-no',330,135,'S1','Sanal gate butonu',{state:false}),
+  C('rg','resistor',515,160,'RG','1 kΩ gate direnci',{resistance:1000}),
+  C('q1','mq07-triac-virtual',810,330,'Q1','Elektriksel triyak MT1/MT2/G sanal modeli'),
+  C('h1','standard-light',1100,315,'H1','Sanal 120 Ω yük',{resistance:120})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','Tetikleme kontrol kaynağı.'),
+  W('sw','14','rg','1','S1/14 → RG/1','Kontrol S1 üstünden geçer.'),
+  W('rg','2','q1','G','RG/2 → Q1/G','Gate eşiği özgün çözücü tarafından değerlendirilir.'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Güç yoluna sanal pozitif kaynak.'),
+  W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','Yük ile ana güç terminali arasındaki bağ.'),
+  W('q1','MT1','g1','M','Q1/MT1 → G1/M','Referans dönüşü.')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'Triyakın sanal DC gate tetikleme deneyi: G–MT1 kontrol gerilimi ile MT2–MT1 yük yolu ayrı incelenir.',
+  explanation:'AMAÇ: Triyakın MT1, MT2 ve G uçlarını ayırarak sanal DC gate anahtarlamasını gözlemek. Bu, AC faz kontrollü dimmer değildir. MALZEMELER: G1 yalnız sanal 12 V kaynak, S1 tetikleme anahtarı, RG 1 kΩ gate direnci, Q1 işlevsel sanal triyak, H1 sanal 120 Ω yük. KONTROL BAĞLANTILARI: G1/P → S1/13–14 → RG/1–2 → Q1/G, Q1/MT1 → G1/M. GÜÇ BAĞLANTILARI: G1/P → H1/X1–X2 → Q1/MT2 → Q1/MT1 → G1/M. ÇALIŞMA: S1 bırakıldığında gate tetiklenmez; basıldığında özgün solver G–MT1 eşik koşulunu kontrol eder. S1 bırakıldığında sanal eşik tekrar değerlendirilir; gerçek triyak tutma akımı ve doğal komütasyon davranışı modellenmez. HESAP: İdeal direnç varsayımı altında 12 V / 120 Ω = 0,1 A; bu hesap teoriktir, ölçülmüş akım ya da cihaz garantisi değildir. ÖĞRENCİ DENEYİ: S1 bırak/bas/bırak durumlarında Q1 ve H1 durumunu karşılaştır; RG–G veya H1–MT2 bağlantısı kaldırıldığında kontrol ile güç yolunun farkını açıkla. KONTROL SORULARI: MT1 neden gate referansı kabul edilir? DC deneyi neden AC faz dimmer kabulü değildir? Tutma akımı olmayan sanal model neyi açıklayamaz?');
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_DC_TRIAC_GATE_NATIVE_SWITCHING',
+  previousReason:'NO_WIRED_CIRCUIT',dcTriacVirtual:{realHoldingCurrent:false,acPhaseAngle:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal düşük gerilimli triyak giriş-çıkış gösterimi; gerçek AC faz kontrolü ve elektriksel donanım uygulaması değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
