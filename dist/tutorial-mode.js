@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-fet-rc-delay-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-mosfet-health-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -1067,6 +1067,39 @@ function setFetRcDelayPhase(project,action){
   (transition===null?'':' · geçiş '+transition+' ms')+'. Üretici kalibrasyonu değildir.';
  root.DTSEditor?.render?.();sync(project);return true;
 }
+function isMq07MosfetHealth(l){return l?.id==='electronic-switching-src-10'&&!!l?.pedagogyReview?.mosfetHealthVirtual}
+function mosfetHealthPanel(l,session,project){
+ const q=project?.components?.find(c=>c.id==='q1'),s=project?.components?.find(c=>c.id==='sw'),h=project?.components?.find(c=>c.id==='h1'),
+  gate=project?.components?.find(c=>c.id==='vg'),load=project?.components?.find(c=>c.id==='vl');
+ return '<section class="tutorial-mosfet-health"><h3>MOSFET · sanal G/D/S işlev taraması</h3>'+
+  '<p>12 VDC eğitim devresi · VG ölçeri G–S, VL ölçeri H1 yükünün X1–X2 uçları arasındadır.</p>'+
+  '<p><strong>S1 '+(s?.state?'ON':'OFF')+'</strong> · Q1 '+(q?._active?'ON':'OFF')+
+  ' · H1 '+(h?._active?'ON':'OFF')+'</p>'+
+  '<p><strong>VG G–S: '+esc(gate?._meter?.display||'—')+' '+esc(gate?._meter?.unit||'V')+
+  '</strong> · <strong>VL yük: '+esc(load?._meter?.display||'—')+' '+esc(load?._meter?.unit||'V')+'</strong></p>'+
+  '<div class="tutorial-mosfet-health-actions"><button type="button" data-mosfet-health-action="off">S1 bırak · OFF</button>'+
+  '<button type="button" data-mosfet-health-action="on">S1 bas · ON</button></div>'+
+  '<small>Bu, sanal anahtarlama fonksiyonunun kontrolüdür. Gerçek IRF540N gövde diyodu, termal güvenlik veya fiziksel sağlamlık sertifikası değildir.</small></section>';
+}
+function setMosfetHealthPhase(project,action){
+ const l=lessonFor(project),s=project?.tutorialLesson,button=project?.components?.find(c=>c.id==='sw'),
+  q=project?.components?.find(c=>c.id==='q1'),
+  gate=project?.components?.find(c=>c.id==='vg'),load=project?.components?.find(c=>c.id==='vl');
+ if(!isMq07MosfetHealth(l)||!s||!button||!q||!gate||!load||!['on','off'].includes(action))return false;
+ const solve=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
+ if(typeof solve!=='function'||!defs){s.lastFeedback='Özgün elektriksel solver hazır değil, MOSFET testi doğrulanamaz.';sync(project);return false}
+ button.state=action==='on';
+ const result=solve(project,defs,{now:1000});
+ if(!result?.stable||result.shortCircuit||result.blocked||result.oscillating||
+  gate._meter?.warning||load._meter?.warning||
+  !Number.isFinite(gate._meter?.value)||!Number.isFinite(load._meter?.value)){
+  s.lastFeedback='MOSFET testi kararsız veya ölçüm cihazı geçersiz: inceleme açık.';sync(project);return false;
+ }
+ const gateV=Number(gate._meter.value),loadV=Number(load._meter.value);
+ s.lastFeedback='Sanal '+action.toUpperCase()+' · VG(G-S) '+gateV.toFixed(3)+' V · VL(H1) '+loadV.toFixed(3)+
+  ' V · Q1 '+(q._active?'ON':'OFF')+'. Fiziksel ürün sağlamlığı doğrulanmadı.';
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -1102,6 +1135,7 @@ function noteHtml(l,session,project){
  (isPiezoVirtualLesson(l)?piezoVirtualPanel(l,session,project):'')+
  (isRcTimingLesson(l)?rcTimingPanel(l,session,project):'')+
  (isFetRcDelayLesson(l)?fetRcDelayPanel(l,session,project):'')+
+ (isMq07MosfetHealth(l)?mosfetHealthPanel(l,session,project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1196,6 +1230,7 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const mosfetHealthButton=e.target.closest?.('[data-mosfet-health-action]');if(mosfetHealthButton){e.preventDefault();setMosfetHealthPhase(root.DTSEditor?.getProject?.(),mosfetHealthButton.dataset.mosfetHealthAction);return}
    const fetRcButton=e.target.closest?.('[data-fet-rc-action]');if(fetRcButton){e.preventDefault();setFetRcDelayPhase(root.DTSEditor?.getProject?.(),fetRcButton.dataset.fetRcAction);return}
    const rcButton=e.target.closest?.('[data-rc-action]');if(rcButton){e.preventDefault();setRcTimingPhase(root.DTSEditor?.getProject?.(),rcButton.dataset.rcAction);return}
    const piezoButton=e.target.closest?.('[data-piezo-sample]');if(piezoButton){e.preventDefault();setPiezoVirtualSample(root.DTSEditor?.getProject?.(),piezoButton.dataset.piezoSample);return}
@@ -1283,6 +1318,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);

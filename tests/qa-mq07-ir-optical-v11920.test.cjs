@@ -33,8 +33,8 @@ test('actual source solver produces optical OFF→ON→OFF with true relay and l
 });
 test('unchanged bell-transformer lock, 1655-source and practice-guide regressions remain valid',()=>{
  const r=QA.audit({L,defs,Simulation:S});
- assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,731);
- assert.equal(r.stable,731);assert.equal(r.definitionCount,940);assert.equal(r.rich,136);
+ assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,732);
+ assert.equal(r.stable,732);assert.equal(r.definitionCount,940);assert.equal(r.rich,136);
  assert.deepEqual(r.errors,[]);assert.deepEqual(r.invalidWireEndpoints,[]);
  const bell=Bell.audit({L,defs,solver:S});
  assert.equal(bell.status,'PASS');assert.equal(bell.count,15);
@@ -43,7 +43,7 @@ test('unchanged bell-transformer lock, 1655-source and practice-guide regression
  assert.equal(practice.sourceStatus,'PASS');assert.equal(practice.examined,1519);
  assert.equal(practice.wired,532);assert.equal(practice.referenceOnly,916);
  assert.equal(practice.referenceWithWires,71);assert.deepEqual(practice.issues,[]);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
 });
 test('old direct-phase virtual bells are rejected instead of silently bypassing transformer',()=>{
  const sample=JSON.parse(JSON.stringify(L.byId['bells-1']));

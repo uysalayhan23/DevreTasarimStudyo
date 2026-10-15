@@ -44,10 +44,10 @@ test('MQ12 original native solve reads 0, 100, 50.6, 1.06, 0 mV at five virtual 
 });
 test('MQ12 full original 1655 curriculum and 731 wired startup native solve stay consistent',()=>{
  const r=QA.audit({L,defs,Simulation:Native});
- assert.equal(r.total,1655);assert.equal(r.withWires,731);assert.equal(r.stable,731);
+ assert.equal(r.total,1655);assert.equal(r.withWires,732);assert.equal(r.stable,732);
  assert.equal(r.rich,136);assert.equal(r.status,'PASS');
  for(const key of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.deepEqual(r[key],[],key);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(L.mq07Batch200.reviewIds.some(x=>x.id===id),false);
 });

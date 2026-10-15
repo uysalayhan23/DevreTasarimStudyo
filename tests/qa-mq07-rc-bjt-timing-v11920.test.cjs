@@ -20,7 +20,7 @@ function scenario(id){
 }
 test('MQ-07 RC charge/discharge circuits have actual capacitor and real BD139 pins, no mock timer relay',()=>{
  assert.equal(L.lessons.length,1655);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(defs.capacitor.kind,'capacitor');
  assert.equal(defs['bd139-npn'].kind,'bjt-npn');
  for(const id of ids){
@@ -74,7 +74,7 @@ test('MQ-12 OFF-delay: press energizes Q1; releasing S1 retains ON until capacit
 test('MQ-12 all 1655 lessons and 730 startup native solver circuits preserve source integrity',()=>{
  const r=QA.audit({L,defs,Simulation:Native});
  assert.equal(r.status,'PASS');assert.equal(r.total,1655);
- assert.equal(r.rich,136);assert.equal(r.withWires,731);assert.equal(r.stable,731);
+ assert.equal(r.rich,136);assert.equal(r.withWires,732);assert.equal(r.stable,732);
  assert.equal(r.definitionCount,940);
  for(const key of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.deepEqual(r[key],[],key);

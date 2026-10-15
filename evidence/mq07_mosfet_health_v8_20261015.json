@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-15",
+  "task": "MQ-07 MOSFET sağlamlık kontrolü sanal işlev taraması",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "source": "Original native JS V8 browser code + opt-in mq07MosfetHealth numeric gate sample",
+  "electrical": {
+    "id": "electronic-switching-src-10",
+    "typeId": "irf540n-mosfet",
+    "pins": [
+      "G",
+      "D",
+      "S"
+    ],
+    "parts": 12,
+    "wires": 12,
+    "supplyV": 12,
+    "meters": [
+      "VG UT33D+ DCV20 V G-S",
+      "VL UT33D+ DCV20 V H1 X1-X2"
+    ]
+  },
+  "cases": [
+    {
+      "name": "off",
+      "gateV": 0,
+      "loadV": 0,
+      "lamp": false
+    },
+    {
+      "name": "on",
+      "gateV": 11.88001188001188,
+      "loadV": 12,
+      "lamp": true
+    },
+    {
+      "name": "offAgain",
+      "gateV": 0,
+      "loadV": 0,
+      "lamp": false
+    },
+    {
+      "name": "gateWireDisconnected",
+      "gateV": 0,
+      "loadV": 0,
+      "lamp": false
+    },
+    {
+      "name": "DSBypass",
+      "gateV": 0,
+      "loadV": 12,
+      "lamp": true
+    }
+  ],
+  "nativeQa": {
+    "total": 1655,
+    "rich": 136,
+    "definitions": 940,
+    "wired": 732,
+    "stable": 732,
+    "components": 7296,
+    "wireEndpoints": 16672,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "shortCircuits": 0,
+    "blocked": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicateIds": 0
+  },
+  "uiV8": {
+    "actions": [
+      "off",
+      "on",
+      "off"
+    ],
+    "passed": 3
+  },
+  "reviewBefore": 49,
+  "reviewAfter": 48,
+  "physicalApproval": false,
+  "manufacturerCalibrationVerified": false,
+  "independentPedagogicalAcceptance": false,
+  "windowsVisualAcceptance": false,
+  "notRun": [
+    "Node node --test",
+    "Windows file:/// visual",
+    "physical body diode RDS SOA tests"
+  ],
+  "actionsUsed": false,
+  "mq00": "Virtual topology and native V8 PASS; global DONE stays REVIEW"
+}

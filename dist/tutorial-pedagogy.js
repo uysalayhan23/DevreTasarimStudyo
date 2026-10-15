@@ -3020,6 +3020,93 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* MQ-07: powered low-voltage G/D/S functional MOSFET screening with two
+   electrically simulated UT33D+ probe pairs. Not a diode-mode/physical
+   manufacturer device-health certification or a test on live equipment. */
+{
+ const id='electronic-switching-src-10',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MOSFET health canonical REVIEW baseline absent');
+ if(!L.mq07Batch200.noWireTriage?.applicationRepairIds?.includes(id))
+  throw Error('MOSFET health not in application review class');
+ if(!l.project.components.some(x=>x.typeId==='irf540n-mosfet')||l.project.wires.length)
+  throw Error('MOSFET health source changed unexpectedly');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',80,160,'G1','Sanal 12 VDC test beslemesi',{dcVoltage:12}),
+  C('sw','push-no',310,155,'S1','Sanal gate test butonu',{state:false}),
+  C('rg','resistor',485,160,'RG','1 kΩ gate sınırlama direnci',{resistance:1000}),
+  C('rp','resistor',525,390,'RP','100 kΩ gate pull-down',{resistance:100000}),
+  C('q1','irf540n-mosfet',810,360,'Q1','IRF540N G/D/S terminal test modeli',{mq07MosfetHealth:true,physicalAcceptance:false}),
+  C('h1','standard-light',1070,340,'H1','12 V test lambası',{resistance:120}),
+  C('vg','unit-ut33d-plus',775,65,'VG','UNI-T UT33D+ · gate ölçümü DCV 20 V',{meterPosition:3}),
+  C('vl','unit-ut33d-plus',1150,85,'VL','UNI-T UT33D+ · yük ölçümü DCV 20 V',{meterPosition:3}),
+  C('vg-red','test-probe-red',680,560,'PRG','VG kırmızı prob',{probeTarget:{c:'q1',p:'G'}}),
+  C('vg-black','test-probe-black',850,560,'PBG','VG siyah prob',{probeTarget:{c:'q1',p:'S'}}),
+  C('vl-red','test-probe-red',1040,555,'PRL','VL kırmızı prob',{probeTarget:{c:'h1',p:'X1'}}),
+  C('vl-black','test-probe-black',1260,555,'PBL','VL siyah prob',{probeTarget:{c:'h1',p:'X2'}})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','Gate test anahtarı 12 V sanal beslemeden enerjilenir.'),
+  W('sw','14','rg','1','S1/14 → RG/1','Basılınca RG üzerinden gate test gerilimi oluşur.'),
+  W('rg','2','q1','G','RG/2 → Q1/G','IRF540N G terminaline sınırlanmış gate kontrolü ulaşır.','#43a047','SIGNAL'),
+  W('rp','1','q1','G','RP/1 → Q1/G','Gate bırakılınca RP üst ucu üzerinden G-S düşürülür.','#43a047','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → G1/M','RP 100 kΩ gate pull-down 0 V dönüşüdür.','#111827','0V'),
+  W('q1','S','g1','M','Q1/S → G1/M','IRF540N Source 0 V referansıdır.','#111827','0V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Sanal test lambası 12 V yük beslemesine bağlanır.'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','Yük akımı Q1 drain-source kanalından akar.'),
+  W('vg','V','vg-red','PLUG','VG/VΩmA → kırmızı gate probu','VG kırmızı VΩmA girişini Q1/G test probuna bağlar.','#e53935','MEASURE'),
+  W('vg','COM','vg-black','PLUG','VG/COM → siyah source probu','VG COM probu Q1/S referansına temas eder.','#111827','MEASURE'),
+  W('vl','V','vl-red','PLUG','VL/VΩmA → kırmızı yük probu','VL kırmızı probu H1/X1 besleme noktasına temas eder.','#e53935','MEASURE'),
+  W('vl','COM','vl-black','PLUG','VL/COM → siyah yük probu','VL siyah probu H1/X2 noktasına temas eder.','#111827','MEASURE')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='Sanal IRF540N G/D/S fonksiyon taraması: 12 VDC düşük gerilimli kaynak ve S1 gate komutu ile VG multimetrede VGS ve VL multimetrede 120 Ω yük gerilimi ölçülür. S1 bırakıkken VG≈0 V, VL≈0 V; S1 basılıyken VG≈11,88 V, VL≈12 V. Tek test/tek ohm okuması gerçek cihazın kesin sağlamlığını kanıtlamaz.';
+ l.explanation='Sanal test kaynağı G1/P 12 V → S1/13-14 → RG/1-2 1 kΩ → Q1/G. RP 100 kΩ, Q1/G → G1/M pull-down hattıdır; Q1/S → G1/M. Güç yolu ayrıdır: G1/P → H1/X1–X2 (120 Ω sanal yük) → Q1/D → Q1/S → G1/M. Q1 IRF540N modelinin G, D, S uçları katalogdan birebir alınır; MOSFET gate gerilimi özgün düğüm çözücüsünde RG/RP direnç bölücüsünden türetilir. VG UNI-T UT33D+ DCV 20 V ölçümünde kırmızı fiziksel sanal prob Q1/G, siyah Q1/S üzerindedir. VL ikinci UT33D+ DCV 20 V cihazında kırmızı prob H1/X1, siyah H1/X2 üzerindedir. S1 OFF→ON→OFF olduğunda VG ≈0→11,88→0 V, VL ≈0→12→0 V ve H1 OFF→ON→OFF beklenir. RG ile gate bağlantısı kopuk senaryosu MOSFET sağlam olsa bile VL=0 gösterir: bu kablo arızasıdır, bozuk MOSFET teşhisi değildir. S1 OFF iken D–S sanal köprüleme VL=12 V oluşturur: bu istenmeyen sürekli iletim davranışıdır, ancak köprüleme testinde fiziksel MOSFET arızası kanıtı sayılmaz. Bu model ideal 4 V gate eşiği kullanan sanal N-MOS anahtardır; üretici IRF540N toleransları, RDS(on), gate kapasitansı, body-diode ölçümü, termal/SOA, fiziksel üretici ve gerçek cihaz sağlamlığı doğrulanmış değildir.';
+ l.learningGoal='IRF540N G, D, S terminallerini güç ve kontrol yollarında ayırt etmek; VG ve VL UT33D+ gerçek sanal prob ölçümlerinde S1 OFF/ON/OFF işlev taramasını görmek, kopuk gate ve D–S istenmeyen iletim işaretlerini kesin fiziksel arıza teşhisi olmadan karşılaştırmak.';
+ l.beginnerSteps=[
+  'Sanal 12 V kaynak, IRF540N G/D/S, RG 1 kΩ, RP 100 kΩ ve H1 test lambasını tanı.',
+  'S1/13–14 üzerinden RG/1-2 ve Q1/G kontrol yolunu; Q1/S 0 V referansını incele.',
+  'H1/X1–X2 ve Q1/D–S yük yolunun gate hattından ayrı olduğunu doğrula.',
+  'VG kırmızı VΩmA ve siyah COM fiziksel sanal problarının Q1/G ve Q1/S uçlarında olduğunu kontrol et.',
+  'VL kırmızı/siyah UT33D+ problarını H1/X1-X2 terminal uçlarında doğrula.',
+  'Sanal S1 OFF iken iki multimetre yaklaşık 0 V ve H1 OFF okumalı.',
+  'Sanal S1 ON yap: VG≈11,88 V, VL≈12 V ve H1 ON sonucunu özgün solver ölçümünden oku.',
+  'Sanal S1 OFF yap: gate pull-down VL≈0 V ve H1 OFF durumuna dönmeli.',
+  'Gate kopuk veya drain-source baypas simülasyonu olasılıklarını ayırt et; gerçek MOSFET sağlam ilan etme.'
+ ];
+ const purposes={
+ g1:'Sadece 12 VDC sanal test kaynağıdır; şebeke veya fiziksel güvenlik testi değildir.',
+ sw:'S1 sanal gate kontrol anahtarı; Q1’in gate sürmesini başlatır/bırakır.',
+ rg:'RG 1 kΩ sanal gate yoluna seri yerleştirilmiş kontroldür.',
+ rp:'RP 100 kΩ gate-source gerilimini test OFF durumunda sıfıra indirir.',
+ q1:'IRF540N Q1 için G/D/S doğrulanmış katalog uçları; threshold eğitim MOSFET modelidir.',
+ h1:'H1 120 Ω test yükü Q1’in D–S gücü anahtarladığını gözlemletir.',
+ vg:'VG UT33D+ DCV 20 V sanal multimetre G–S gerilimini ölçer.',
+ vl:'VL UT33D+ DCV 20 V sanal multimetre H1 yük uçları arasını ölçer.',
+ 'vg-red':'VG/VΩmA üzerinden kırmızı sanal prob Q1/G üzerinde.',
+ 'vg-black':'VG/COM üzerinden siyah sanal prob Q1/S üzerinde.',
+ 'vl-red':'VL/VΩmA üzerinden kırmızı sanal prob H1/X1 üzerinde.',
+ 'vl-black':'VL/COM üzerinden siyah sanal prob H1/X2 üzerinde.'
+ };
+ l.materials=materialRows(p).map(m=>({...m,why:purposes[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_IRF540N_GDS_FUNCTIONAL_SCREEN_ALIGNED',
+  mosfetHealthVirtual:{supplyV:12,device:'irf540n-mosfet',pins:['G','D','S'],
+    meterGate:'vg',meterLoad:'vl',realManufacturerDiagnosis:false,
+    bodyDiodeAndRdsMeasured:false,operationalThresholdV:4},
+  previousReason:'NO_WIRED_CIRCUIT',physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız düşük gerilimli sanal MOSFET işlev taraması; bu sonuç fiziksel devrenin güvenli olduğunu veya gerçek IRF540N ürününün sağlam olduğunu kanıtlamaz.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

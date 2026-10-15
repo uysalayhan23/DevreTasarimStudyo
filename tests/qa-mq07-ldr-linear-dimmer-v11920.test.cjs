@@ -63,8 +63,8 @@ test('MQ-12 1655 lessons / 731 wired / 940 definitions native solver source regr
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.status,'PASS');assert.equal(a.total,1655);
  assert.equal(a.rich,136);assert.equal(a.definitionCount,940);
- assert.equal(a.withWires,731);assert.equal(a.stable,731);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(a.withWires,732);assert.equal(a.stable,732);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(L.mq07Batch200.reviewIds.some(x=>x.id===id),false);
  for(const k of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.deepEqual(a[k],[],k);

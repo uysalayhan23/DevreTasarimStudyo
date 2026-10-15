@@ -75,8 +75,8 @@ test('MQ-12 full 1655 lesson/731 wired circuit regression and 49 still-REVIEW co
  const audit=QA.audit({L,defs,Simulation:Native});
  assert.equal(audit.status,'PASS');assert.equal(audit.total,1655);
  assert.equal(audit.rich,136);assert.equal(audit.definitionCount,940);
- assert.equal(audit.withWires,731);assert.equal(audit.stable,731);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(audit.withWires,732);assert.equal(audit.stable,732);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(L.mq07Batch200.noWireTriage.conceptPreservedIds.length,14);
  assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id===id));
  for(const key of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])

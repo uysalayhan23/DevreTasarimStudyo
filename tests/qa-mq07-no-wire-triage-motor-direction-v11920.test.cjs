@@ -11,9 +11,9 @@ test('MQ-07 51-reference triage has exactly 14 preserved quizzes and 35 pending 
  const t=L.mq07Batch200.noWireTriage;
  assert.equal(t.originalTotal,51);
  assert.equal(t.conceptPreservedIds.length,14);
- assert.equal(t.applicationRepairIds.length,35);
- assert.deepEqual(t.repairedVirtualIds,[id,'electronic-switching-src-09']);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(t.applicationRepairIds.length,34);
+ assert.deepEqual(t.repairedVirtualIds,[id,'electronic-switching-src-09','electronic-switching-src-10']);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(L.mq07Batch200.reviewIds.every(x=>x.reason==='NO_WIRED_CIRCUIT'),true);
  const protectedSet=new Set(t.conceptPreservedIds);
  const pendingSet=new Set(t.applicationRepairIds);
@@ -79,7 +79,7 @@ test('MQ-12 original full source audit validates 1655 and 731 wired, preserving 
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.status,'PASS');
  assert.equal(a.total,1655);assert.equal(a.rich,136);
- assert.equal(a.withWires,731);assert.equal(a.stable,731);
+ assert.equal(a.withWires,732);assert.equal(a.stable,732);
  assert.equal(a.definitionCount,940);
  assert.equal(a.componentsChecked,7286);
  assert.equal(a.wireEndpointsChecked,16648);

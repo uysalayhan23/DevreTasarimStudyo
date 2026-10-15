@@ -27,7 +27,7 @@ function validateCircuit(l,model){
 test('two review lessons have real matched low-voltage sensor and relay wiring',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,49);
+ assert.equal(L.mq07Batch200.reviewIds.length,48);
  assert.equal(L.lessons.filter(x=>x.project.wires.length>0).length,730);
  for(const v of cases){const l=L.byId[v.id];assert.ok(l);validateCircuit(l,v.type);
   assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id===v.id));}
@@ -46,7 +46,7 @@ test('both low voltage scenarios switch relay and lamp OFF→ON→OFF using orig
 });
 test('full source and locked transformer remain unchanged in acceptance scope',()=>{
  const r=QA.audit({L,defs,Simulation});
- assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,731);
+ assert.equal(r.status,'PASS');assert.equal(r.total,1655);assert.equal(r.withWires,732);
  assert.equal(r.rich,136);assert.equal(r.missingDefinitions.length,0);
  assert.equal(r.invalidWireEndpoints.length,0);
  const b=Bell.audit({L,defs,solver:Simulation});
