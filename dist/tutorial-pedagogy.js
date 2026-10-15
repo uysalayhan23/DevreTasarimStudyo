@@ -3638,6 +3638,41 @@ for(const id of ['opamp-apps-src-09','opamp-apps-src-10','opamp-apps-src-15','os
   physicalAcceptance:false,windowsVisualAcceptance:false};
 }
 
+
+/* MQ-07 material-fidelity correction: replace simulated stand-in part identity
+   with the real existing semiconductor catalog product (still low-voltage software
+   demonstrations, NEVER manufacturer-calibrated power-circuit acceptance). */
+for(const repair of [
+ {id:'electronic-switching-src-12',from:'mq07-igbt-virtual',to:'fga25n120antd-igbt',
+  label:'onsemi FGA25N120ANTD · TO-3P · G/C/E (sanal 12 V eğitim devresi)',
+  source:'https://www.onsemi.com/pdf/datasheet/fga25n120antdtu-d.pdf',
+  kind:'IGBT',pins:['G','C','E']},
+ {id:'electronic-switching-src-16',from:'mq07-triac-virtual',to:'bta16-600b-triac',
+  label:'ST BTA16-600B · TO-220AB yalıtılmış · MT1/MT2/G; AC devre henüz kurulmadı',
+  source:'https://www.st.com/resource/en/datasheet/bta16.pdf',
+  kind:'TRIAC',pins:['MT1','MT2','G']}
+]){
+ const lesson=L.byId[repair.id],p=lesson?.project;
+ const device=p?.components?.find(c=>c.id==='q1');
+ if(!lesson||lesson.designStandard==='rich-reference-v1'||!device||
+    device.typeId!==repair.from)throw Error('MQ07 catalog replacement baseline changed: '+repair.id);
+ device.typeId=repair.to;device.label=repair.label;
+ device.tutorialPurpose='Gerçek ürün kimliği ve '+repair.pins.join('/')+' terminalleriyle eğitim amaçlı karşılaştırma; güç elektroniğinin üretici özellikleri sanal solverda kalibre değildir.';
+ lesson.materials=materialRows(p);
+ lesson.explanation+=' ÜRÜN KÜTÜPHANESİ: Şemadaki Q1 artık genel sanal sembol değil, serbest elektronik atölye kütüphanesindeki '+repair.label+'. Üretici kaynağı: '+repair.source+'. Çizim ve terminal kimliği ürün kaydına dayanır; fiziksel paket boyutu, uzun süreli iletim, ısıl kayıp veya AC faz çözümü doğrulanmadan donanım kabulü yapılmaz.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+   catalogProductId:repair.to,catalogManufacturerSource:repair.source,
+   originalVirtualTypeId:repair.from,actualManufacturerModelRecorded:true,
+   physicalAcceptance:false,manufacturerCalibrationVerified:false,
+   independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ if(repair.kind==='TRIAC'){
+  if(lesson.kind!=='quiz'||(p.wires||[]).length||!p.referenceOnly)
+   throw Error('TRIAC AC source must remain unwired REVIEW');
+  lesson.pedagogyReview.titleTopologyIssue='NO_WIRED_CIRCUIT';
+  lesson.pedagogyReview.titleTopologyStatus='REVIEW_REAL_BTA16_AC_DRIVE_UNAVAILABLE';
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
