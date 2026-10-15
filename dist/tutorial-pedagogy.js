@@ -3302,13 +3302,37 @@ for(const spec of [
 
 /* MQ-07: case-specific source teaching for unsupported AC/opto control lessons.
    Keep NO_WIRED_CIRCUIT open; these are honest explanatory repairs, not solver acceptance. */
+/* MQ-07 SC15: Isolated 12V RMS sine, explicit AC phase trigger and SCR A/K/G load. */
 {
- const l=L.byId['electronic-switching-src-15'];
- if(l){
- l.summary="SCR AC yarım periyot — AC pozitif yarım periyodunda anot-katot kutuplanması ve gate zamanlaması.";
- l.explanation="AMAÇ: AC pozitif yarım periyodunda anot-katot kutuplanması ve gate zamanlaması. HESAP VE VARSAYIM: Sinüzoidal AC için sıfır geçişi ωt=0°, 180°, 360° konumlarındadır. Faz açısı α=90° seçilirse teorik gate komutu pozitif yarım periyodun ortasında gelir; bu yalnız zamanlama örneğidir. ÖĞRENCİ DENEYİ: Anot-katot ve gate uçlarını ayır. Önce α=0° sonra α=90° tetikleme zamanlarını kağıt üzerindeki AC dalgasında göster. Negatif yarım periyotta hangi kutuplama değişir? KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: Gerçek SCR tutma akımı, sıfır geçiş komütasyonu ve AC dalga biçimi bu sayfada elektriksel olarak çözülmüyor.";
- l.learningGoal="SCR AC yarım periyot konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
- }
+ const id='electronic-switching-src-15',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))throw Error('SC15 original REVIEW baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('ac1','virtual-isolated-ac-12v',90,220,'AC1','Yalıtılmış sanal AC',{"rmsVoltage":12,"frequencyHz":50,"sourceEnabled":true}),
+  C('trg1','virtual-ac-scr-trigger-v1',380,185,'TRG1','SCR faz tetikleyici',{"triggerAngleDeg":90,"pulseWidthDeg":25,"triggerEnabled":true}),
+  C('rg','resistor',680,250,'RG','1 kΩ gate direnci',{"resistance":1000}),
+  C('q1','tyn612rg-scr',1030,420,'Q1','TYN612RG SCR',{}),
+  C('h1','standard-light',1350,245,'H1','120 Ω sanal AC yük',{"resistance":120}) 
+ ];
+ p.wires.push(
+  W('ac1','AC','h1','X1','ac1/AC → h1/X1','Sanal düşük gerilimli faz ve terminal bağlantısı.','#e53935','L1'),
+  W('h1','X2','q1','A','h1/X2 → q1/A','Sanal düşük gerilimli faz ve terminal bağlantısı.','#8b5cf6','LOAD'),
+  W('q1','K','ac1','RET','q1/K → ac1/RET','Sanal düşük gerilimli faz ve terminal bağlantısı.','#1e88e5','N'),
+  W('ac1','AC','trg1','AC','ac1/AC → trg1/AC','Sanal düşük gerilimli faz ve terminal bağlantısı.','#e53935','L1'),
+  W('ac1','RET','trg1','RET','ac1/RET → trg1/RET','Sanal düşük gerilimli faz ve terminal bağlantısı.','#1e88e5','N'),
+  W('trg1','OUT','rg','1','trg1/OUT → rg/1','Sanal düşük gerilimli faz ve terminal bağlantısı.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','rg/2 → q1/G','Sanal düşük gerilimli faz ve terminal bağlantısı.','#8b5cf6','SIGNAL')
+ );
+ setLesson(l,p,{kind:'wiring',summary:'Yalıtılmış 12 V RMS/50 Hz sanal AC kaynağı ve gate tetikleyiciyle SCR pozitif yarım periyot ve sıfır geçişini incele.',
+  explanation:'AC1 yalnızca 12 V RMS yalıtılmış yazılımsal sinüs kaynağıdır. TRG1, AC1/AC ve RET uçlarından faz referansı alır; çıkışı RG direnci üzerinden TYN612RG SCR gate ucunu sürer. AC1/AC → H1/X1–X2 → Q1/A–K → AC1/RET güç yoludur. Ateşleme açısı 0°–170° arasında değişir; gate darbesinden sonra sanal tutma akımı yeterliyse SCR yalnız pozitif yarım periyotta iletir ve sıfır geçişinde kapanır. Negatif yarım periyotta anot akımı yoktur. Panelde zaman dalgası, gate darbesi ve hesaplanan yük RMS gerilimi izlenebilir. Gerçek TYN612RG üretici SPICE, termal davranış veya fiziksel uygulama kabulü değildir.'});
+ l.materials=materialRows(p);
+ l.learningGoal='SCR gate gecikmesini, pozitif/negatif yarım periyot farkını ve sıfır geçişinde akım tutmasının kaybını incele.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,titleTopologyStatus:'REVIEW_ISOLATED_AC_SCR_WAVE',acSc15Virtual:{waveform:true,zeroCrossing:true,isolatedLowVoltage:true,manufacturerCalibrated:false},physicalAcceptance:false,manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız yazılımsal 12 V AC deneyidir. Şebeke ve fiziksel devre bağlantı talimatı değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 {
  const l=L.byId['electronic-switching-src-17'];
