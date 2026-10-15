@@ -3685,6 +3685,17 @@ for(const repair of [
 ]){
  const lesson=L.byId[repair.id],p=lesson?.project;
  const device=p?.components?.find(c=>c.id==='q1');
+ // SC12 is now already constructed with the real IGBT identity. It must not
+ // be converted a second time from the removed virtual stand-in.
+ if(repair.id==='electronic-switching-src-12'&&device?.typeId===repair.to&&
+    lesson?.kind==='wiring'&&p.wires.length>0){
+   lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+     catalogProductId:repair.to,catalogManufacturerSource:repair.source,
+     actualManufacturerModelRecorded:true,physicalAcceptance:false,
+     manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,
+     windowsVisualAcceptance:false};
+   continue;
+ }
  if(!lesson||lesson.designStandard==='rich-reference-v1'||!device||
     device.typeId!==repair.from)throw Error('MQ07 catalog replacement baseline changed: '+repair.id);
  device.typeId=repair.to;device.label=repair.label;
