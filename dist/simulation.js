@@ -167,8 +167,8 @@
       // the same DC supply domain, rather than mutating a pushbutton state.
       for(const c of project.components){
         if(definition(byId,c)?.kind!=='pwm-generator')continue;
-        const duty=Number(c.dutyPercent),hz=Number(c.frequencyHz);
-        const valid=Number.isFinite(duty)&&duty>=0&&duty<=100&&
+        const duty=c.dutyPercent,hz=c.frequencyHz;
+        const valid=typeof duty==='number'&&typeof hz==='number'&&Number.isFinite(duty)&&duty>=0&&duty<=100&&
           Number.isFinite(hz)&&hz>0&&Number.isFinite(now)&&now>=0;
         const feeds=at(c,'V+').filter(v=>v.type==='dc'&&v.leg==='+');
         const returns=at(c,'GND').filter(v=>v.type==='dc'&&v.leg==='0');
