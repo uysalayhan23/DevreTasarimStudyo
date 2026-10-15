@@ -72,8 +72,17 @@ function stepsFromWires(l){
  return wires.filter(w=>!isProbeLeadWire(l,w)).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'İşaretlenen terminalleri bağlayın.',why:w.tutorialWhy||'Bu bağlantı dersin gerçek devre yolunu tamamlar.',color:w.color,role:w.role,size:w.size}));
 }
 function ensureGuidedLesson(l){
- if(!l?.project)return l;const wires=Array.isArray(l.project.wires)?l.project.wires:[],guided=l.kind==='wiring'||l.project?.tutorialLesson?.phase==='demo'||(Array.isArray(l.steps)&&l.steps.length>0);
- if(wires.length&&guided){l.kind='wiring';if(!Array.isArray(l.steps)||l.steps.length!==wires.length)l.steps=stepsFromWires(l)}
+ if(!l?.project)return l;
+ // Runtime normalization only: do not rewrite canonical source files or topology.
+ if(!l._dcSupplyWireColorsApplied&&root.CCSConductors&&root.DTSEditor?.byId){
+  root.CCSConductors.synchronize(l.project,root.DTSEditor.byId);
+  l._dcSupplyWireColorsApplied=true;
+ }
+ const wires=Array.isArray(l.project.wires)?l.project.wires:[],guided=l.kind==='wiring'||l.project?.tutorialLesson?.phase==='demo'||(Array.isArray(l.steps)&&l.steps.length>0);
+ if(wires.length&&guided){
+  l.kind='wiring';if(!Array.isArray(l.steps)||l.steps.length!==wires.length)l.steps=stepsFromWires(l);
+  else for(const step of l.steps){const w=wires.find(w=>sameWire(step,w.from,w.to));if(w)step.color=w.color}
+ }
  return l;
 }
 function lessonFor(project){const lessons=root.DTSTutorialLessons||L;return project?.tutorialLesson?.id?ensureGuidedLesson(lessons.byId[project.tutorialLesson.id]):null}
