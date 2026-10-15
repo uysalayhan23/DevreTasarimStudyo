@@ -3332,8 +3332,8 @@ for(const spec of [
  }
 }
 
-/* SC12 — solver-backed IGBT DC gate/collector/emitter educational switch.
-   AC dimmer physics is not supported and is explicitly excluded. */
+/* SC12 — IGBT driven LOW-VOLTAGE DC PWM brightness experiment.
+   This is not an AC phase-angle dimmer or manufacturer-calibrated photometry. */
 {
  const id='electronic-switching-src-12',l=L.byId[id];
  if(!l||l.kind!=='quiz'||l.project.wires.length||
@@ -3341,33 +3341,36 @@ for(const spec of [
     !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))throw Error('SC12 source REVIEW baseline changed');
  const p=base(id,l.title);
  p.components=[
-  C('g1','arduino-bench-supply',65,155,'G1','Sanal 12 V DC',{dcVoltage:12}),
-  C('sw','push-no',315,125,'S1','Gate kumanda anahtarı',{state:false}),
-  C('rg','resistor',485,150,'RG','1 kΩ gate kontrol direnci',{resistance:1000}),
-  C('rp','resistor',620,415,'RP','100 kΩ gate referansı',{resistance:100000}),
-  C('q1','mq07-igbt-virtual',830,335,'Q1','İşlevsel sanal IGBT G/C/E'),
-  C('h1','standard-light',1080,310,'H1','120 Ω sanal yük',{resistance:120})
+  C('g1','arduino-bench-supply',100,200,'G1','12 V sanal DC kaynak',{dcVoltage:12}),
+  C('pwm1','virtual-pwm-generator-v1',330,180,'PWM1','Beslemeli PWM üreteci · DC',{dutyPercent:50,frequencyHz:1000}),
+  C('rg','resistor',610,215,'RG','1 kΩ gate direnci',{resistance:1000}),
+  C('rp','resistor',740,510,'RP','100 kΩ gate-emitter referansı',{resistance:100000}),
+  C('q1','fga25n120antd-igbt',1020,420,'Q1','FGA25N120ANTD · IGBT G/C/E',{mq07DcPwmDimmer:true}),
+  C('h1','standard-light',1320,240,'H1','12 V sanal dimmer yükü',{resistance:120,mq07DcPwmLamp:true})
  ];
  p.wires.push(
-  W('g1','P','sw','13','G1/P → S1/13','12 V sanal kumanda başlangıcı.'),
-  W('sw','14','rg','1','S1/14 → RG/1','S1 gate kontrol yolunu kapatır.'),
-  W('rg','2','q1','G','RG/2 → Q1/G','Gate, kontrol yolunun son terminalidir.'),
-  W('rp','1','q1','G','RP/1 → Q1/G','Gate referans kolu.'),
-  W('rp','2','g1','M','RP/2 → G1/M','Gate referansı kaynak eksi ucuna döner.'),
-  W('q1','E','g1','M','Q1/E → G1/M','Emitter sanal referanstır.'),
-  W('g1','P','h1','X1','G1/P → H1/X1','Yük pozitif besleme.'),
-  W('h1','X2','q1','C','H1/X2 → Q1/C','Kollektör yük akım yoludur.')
+  W('g1','P','pwm1','V+','G1/P → PWM1/V+','PWM üretecinin gerçek elektriksel besleme ucu.'),
+  W('pwm1','GND','g1','M','PWM1/GND → G1/M','PWM üreteci ile IGBT ortak referansı.','#111827','0V'),
+  W('pwm1','OUT','rg','1','PWM1/OUT → RG/1','Kare dalga gate direnç yoluna gider.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','IGBT gate kontrolü.','#8b5cf6','SIGNAL'),
+  W('rp','1','q1','G','RP/1 → Q1/G','Gate referans direnci.','#8b5cf6','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → G1/M','Gate referansı emitter ile ortak.','#111827','0V'),
+  W('q1','E','g1','M','Q1/E → G1/M','IGBT emitter DC dönüş hattı.','#111827','0V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Sanal lambanın beslemesi.'),
+  W('h1','X2','q1','C','H1/X2 → Q1/C','IGBT collector yük akım yolu.','#8b5cf6','SIGNAL')
  );
  setLesson(l,p,{kind:'wiring',
-  summary:'IGBT G/C/E sanal DC anahtarlama: S1 gate komutunu, H1 güç yükünü kontrol eder; AC dimmer kabulü değildir.',
-  explanation:'AMAÇ: IGBT gate-emitter kumandası ile collector-emitter güç yolunu sanal devrede ayırmak. MALZEMELER: G1 12 VDC sanal kaynak, S1 gate butonu, RG 1 kΩ kontrol yolu, RP 100 kΩ gate referansı, Q1 sanal IGBT G/C/E ve H1 120 Ω yük. KUMANDA BAĞLANTILARI: G1/P → S1/13–14 → RG/1–2 → Q1/G, RP/1 → Q1/G, RP/2 ve Q1/E → G1/M. GÜÇ BAĞLANTILARI: G1/P → H1/X1–X2 → Q1/C → Q1/E → G1/M. ELEKTRİKSEL ÇALIŞMA: S1 OFF durumunda RP ile gate referansa döner; S1 ON durumunda özgün solver G–E eşiğini değerlendirip C–E anahtarlamasını hesaplar. İDEAL HESAP: Yükün yalnız direnç varsayımı altında 12/120=0,1 A ve 12×0,1=1,2 W teorik değerlerdir; gerçek ürün ölçümü değildir. ÖĞRENCİ DENEYİ: S1 OFF→ON→OFF durumlarını gözle; RG→G kopukluğu ile H1→C kopukluğunda neden yük enerjisinin bulunmayacağını düşün. KONTROL SORULARI: Gate akımı yerine G–E eşik bilgisi neden kullanıldı? Gate yolu ile C–E güç yolu hangi terminallerde ayrılır? IGBT gerçek sürücüsü, doyum gerilimi, termal/anahtarlama kaybı ve AC dimmer davranışı neden doğrulanmamıştır?' });
+  summary:'12 V DC PWM ile IGBT kontrollü sanal ışık kısma. Duty 0–100% elektriksel ON/OFF örneklenir; AC faz dimmeri değildir.',
+  explanation:'AMAÇ: IGBT ile PWM duty değiştirildiğinde düşük gerilimli DC yükün enerjili kaldığı zaman oranını incelemek. MALZEMELER: G1 12 V sanal DC kaynak, PWM1 fonksiyonel sanal PWM sinyal üreteci, RG 1 kΩ, RP 100 kΩ, FGA25N120ANTD IGBT (G/C/E), H1 sanal ışık yükü. KUMANDA: G1/P → PWM1/V+, PWM1/GND → G1/M, PWM1/OUT → RG/1–2 → Q1/G, RP/1 → Q1/G, RP/2 ve Q1/E → G1/M. GÜÇ: G1/P → H1/X1–X2 → Q1/C → Q1/E → G1/M. İŞLEYİŞ: PWM1 OUT kare dalgası gate-emitter gerilimini sürer; özgün solver C-E iletimini ve yükün anlık enerjisini her fazda çözer. Duty %0 / %25 / %50 / %75 / %100 seçerek yükün zaman içindeki iletim oranını gözle. Gösterilen parlaklık yüzdesi faz örneklerinden türetilmiş eğitim amaçlı normalize gösterimdir; ölçülmüş lümen, gerçek sürücü kaybı, doğrulanmış IGBT doyum gerilimi veya AC şebeke faz kontrolü değildir. PWM1 OUT kesilirse ya da gate, collector veya emitter yolu koparsa dimmer devre dışı kalmalıdır.'
+ });
  l.materials=materialRows(p);
- l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
-  titleTopologyStatus:'VIRTUAL_IGBT_DC_GATE_LOAD_SOURCE_ALIGNED',
-  previousReason:'NO_WIRED_CIRCUIT',igbtVirtual:{realAcDimmer:false,manufacturerCalibrated:false},
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'REVIEW_DC_PWM_IGBT_DIMMER_NOT_AC_PHASE',
+  previousReason:'NO_WIRED_CIRCUIT',
+  igbtVirtual:{realAcDimmer:false,manufacturerCalibrated:false,normalizedBrightnessOnly:true},
   physicalAcceptance:false,manufacturerCalibrationVerified:false,
   independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
- l.safety='Yalnız 12 V DC sanal IGBT gate/yük göstergesi; gerçek cihaz sürme ve AC güç elektroniği talimatı değildir.';
+ l.safety='Yalnız 12 V DC sanal PWM/IGBT yük deneyi. AC şebeke faz dimmeri ve gerçek sürücü tasarımı değildir.';
  L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
