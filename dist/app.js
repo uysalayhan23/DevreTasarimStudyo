@@ -235,14 +235,14 @@
   function renderComponentBackdrop(c,parent=els.scene){
     const d=byId[c.typeId];if(!d||!wireOverDeviceBody(d))return;
     const g=svg('g',{class:'component-backdrop material-device-body','data-component-backdrop':c.id,'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
-    if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
+    if(Number.isFinite(c._sc11SpeedPercent))g.setAttribute('style','--shaft-duration:'+Math.max(.4,8/Math.max(.1,c._sc11SpeedPercent/10))+'s');else if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
     g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireBodyOnly:true});
     parent.appendChild(g);
   }
   function renderComponent(c,parent=els.scene){
     const d=byId[c.typeId];if(!d)return;
     const g=svg('g',{class:Symbols.classes(d,c,appearance)+(selectedIds.has(c.id)?' selected':''),'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
-    if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
+    if(Number.isFinite(c._sc11SpeedPercent))g.setAttribute('style','--shaft-duration:'+Math.max(.4,8/Math.max(.1,c._sc11SpeedPercent/10))+'s');else if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
     g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireOverlayOnly:wireOverDeviceBody(d)});
     if(d.kind==='clamp-meter'){
       g.dataset.clampJawState=c._clampJawOpen?'open':'closed';
@@ -267,7 +267,7 @@
     for(const g of els.scene.querySelectorAll('g.component')){
       const c=project.components.find(c=>c.id===g.dataset.id),d=c&&byId[c.typeId];if(!d)continue;
       if(c.id===selected&&d.positions)$('#propPacketPosition').value=c.position||0;
-      if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');else g.removeAttribute('style');
+      if(Number.isFinite(c._sc11SpeedPercent))g.setAttribute('style','--shaft-duration:'+Math.max(.4,8/Math.max(.1,c._sc11SpeedPercent/10))+'s');else if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');else g.removeAttribute('style');
       g.setAttribute('class',Symbols.classes(d,c,appearance)+(selectedIds.has(c.id)?' selected':''));
       if(appearance!=='material'||d.materialSymbol||d.designMaterial||c.auxFor||c._damaging||d.liveMaterial||d.id==='sinamics-v20-1p'||d.instrument||d.kind==='multimeter'){
         const motion=g.querySelector('.motion-indicator');
