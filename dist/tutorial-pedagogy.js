@@ -2940,6 +2940,86 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[id];
 }
 
+
+/* MQ-07 / FET delay-stop: replace the legacy two-symbol unwired JFET quiz
+   with a virtual 12 VDC MOSFET + physical terminal-based RC hold-up circuit.
+   This is a simplified threshold-switch educational MOSFET, not J113 SPICE. */
+{
+ const id='electronic-switching-src-09',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||!L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 delay-stop canonical review baseline missing');
+ if(!L.mq07Batch200.noWireTriage?.applicationRepairIds?.includes(id))
+  throw Error('MQ07 delay-stop target not in application-repair triage');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,205,'G1','Sanal 12 V DC kaynağı',{dcVoltage:12}),
+  C('sw','push-no',300,155,'S1','Bas / bırak kontrol butonu',{state:false}),
+  C('rc','resistor',505,130,'RŞ','1 kΩ şarj direnci',{resistance:1000}),
+  C('c1','capacitor',710,200,'C1','100 µF enerji depolama',{capacitance:.0001}),
+  C('rd','resistor',900,190,'RD','20 kΩ kapı deşarj direnci',{resistance:20000}),
+  C('q1','mosfet-n',785,430,'Q1','N-kanal FET · sanal eşik anahtarı',{mq07FetRcDelay:true,physicalAcceptance:false}),
+  C('h1','standard-light',1090,385,'H1','12 V sanal yük lambası',{resistance:120}),
+  C('v1','unit-ut33d-plus',1130,115,'V1','UNI-T UT33D+ · DCV 20 V',{meterPosition:3}),
+  C('v1-red','test-probe-red',1130,270,'PRV1','Kırmızı sanal prob',{probeTarget:{c:'c1',p:'1'}}),
+  C('v1-black','test-probe-black',1335,265,'PBV1','Siyah sanal prob',{probeTarget:{c:'c1',p:'2'}})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','12 V sanal kaynak butonun 13 girişine ulaşır.'),
+  W('sw','14','rc','1','S1/14 → RŞ/1','Buton basılınca şarj akımı RŞ üzerinden akar.'),
+  W('rc','2','c1','1','RŞ/2 → C1/1','Şarj edilen C1 üst elektrodudur.','#43a047','SIGNAL'),
+  W('rc','2','q1','G','RC düğümü → Q1/G','Depolanmış elektrik potansiyeli N-kanal FET gate ucunda kalır.','#43a047','SIGNAL'),
+  W('c1','2','g1','M','C1/2 → G1/M','Kondansatörün alt elektrodu sanal sıfır volt referansıdır.','#111827','0V'),
+  W('rd','1','c1','1','RD/1 → C1/1','20 kΩ boşalma direnci gate düğümüne bağlıdır.'),
+  W('rd','2','g1','M','RD/2 → G1/M','Bırakınca gate yükü RD üzerinden azalır.','#111827','0V'),
+  W('q1','S','g1','M','Q1/S → G1/M','Kaynak (source) ucu 0 V referansına döner.','#111827','0V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Lamba gücü kontrol kapasitöründen değil beslemeden alınır.'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','Lamba akımı FET drain-source anahtar yolundan akar.'),
+  W('v1','V','v1-red','PLUG','V1/VΩmA → kırmızı prob','DCV 20 V ölçümünün giriş prob kablosudur.','#e53935','MEASURE'),
+  W('v1','COM','v1-black','PLUG','V1/COM → siyah prob','COM referans prob kablosudur.','#111827','MEASURE')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='Sanal 12 VDC FET gecikmeli durma devresi: S1 basılınca C1 gate düğümünü şarj eder, Q1 iletime geçip H1 yük lambasını yakar. S1 bırakılınca C1 RD üzerinden boşalır; Q1/H1 bir süre ON kalır, gate yaklaşık 4 V altına düşünce OFF olur. Gecikme, gerçek sayısal RC ve anahtarlama eşiğiyle çözülür.';
+ l.explanation='Kontrol yolu: G1/P 12 V → S1/13-14 → RŞ/1-2 1 kΩ → C1/1 ve Q1/G. C1/2 → G1/M; RD 20 kΩ direnci C1/1 ve 0 V arasında boşalma sağlar. Güç yolu ayrıdır: +12 V → H1/X1-X2 (120 Ω sanal yük) → Q1/D-S → 0 V. V1 UNI-T UT33D+ DCV 20 V modunda, kırmızı VΩmA ve siyah COM probları C1/1 ile C1/2 elektrotlarına temas eder. Modelde S1 basıldığı anda kapasitör gerilimi yükselir ve MOSFET eşiği yaklaşık 4 V’u geçince H1 çalışır. S1 bırakılınca gate hemen sıfıra düşmez; C1 ve RD üzerinden deşarj ile yaklaşık 2 saniye daha eşik üstünde kalır. Eğitsel R×C=20 kΩ×100 µF=2 s zaman sabiti, OFF geçişi ile birebir aynı süre demek değildir: eşik ve başlangıç gerilimi ayrıca rol oynar. Sayısal çözücü 250 ms’lik ayrık anlarla örneklenir. Q1, eski J113 grafik sembolünün yerine geçen **işlevsel sanal N-MOSFET eşdeğeridir**; birebir üretici J113 veya IRF540N veri sayfası/SPICE modeli değildir. Gerçek kapı sızıntısı, eşik toleransı, sıcaklık, güvenli çalışma bölgesi ve fiziksel devre kabulü modellenmemiştir.';
+ l.learningGoal='S1/13–14, C1/1–2, RŞ/1–2, RD/1–2, Q1/G-D-S ve H1/X1–X2 bağlantılarını tanımlayıp sanal S1 OFF→ON→OFF dizisinde Q1 ON→gecikmeli OFF davranışını V1 ölçümüyle açıklamak.';
+ l.beginnerSteps=[
+  'Sanal G1 12 VDC ve S1/13-14 butonuyla şarj kontrol kolunu bul.',
+  'RŞ 1 kΩ sonrası C1/1 ile Q1/G’nin aynı kontrol düğümünde olduğunu göster.',
+  'C1/2 ve Q1/S terminallerinin 0 V hattına döndüğünü, RD 20 kΩ direncinin kapasitörü boşalttığını açıkla.',
+  'H1/X1-X2 → Q1/D-S yük yolunun kontrol sinyali hattından ayrı olduğunu doğrula.',
+  'UT33D+ DCV 20 V kırmızı/siyah fiziksel sanal problarının C1/1 ve C1/2 üzerinde olduğunu kontrol et.',
+  'Sıfırla; S1 bas / 1 saniye tut; H1 ON ve C1 yükselişini gözlemle.',
+  'S1 bırak / zamanla ilerlet; H1’in yaklaşık 2 saniye daha yanıp ardından OFF olduğunu göster.',
+  'Bunu yalnız sanal N-kanal FET eşdeğeri say; gerçek JFET ve üretici kalibrasyonunu kabul edilmiş sayma.'
+ ];
+ const why={
+  g1:'12 VDC sanal düşük gerilim besleme; şebeke kaynağı değildir.',
+  sw:'S1/13-14 enerji verdiğinde C1 şarj olur, bırakıldığında besleme yolu açılır.',
+  rc:'RŞ 1 kΩ C1’e ilk şarj akımını sınırlar.',
+  c1:'C1 100 µF gate gerilimini geçici olarak saklayan gerçek sayısal reaktif elemandır.',
+  rd:'RD 20 kΩ C1’in kademeli deşarj yoludur; R×C ≈2 saniye yalnız zaman sabitidir.',
+  q1:'Q1, G-S gate eşiğine dayalı eğitim MOSFET’idir; D-S lambanın akım yoludur.',
+  h1:'H1 12 V sanal lamba Q1 iletim durumuna göre enerji alır.',
+  v1:'V1 UT33D+ DCV 20 V ile C1 üst ve alt elektrotları arasındaki gerilimi ölçer.',
+  'v1-red':'Kırmızı prob VΩmA girişinden C1/1 noktasına temas eder.',
+  'v1-black':'Siyah prob COM girişinden C1/2 noktasına temas eder.'
+ };
+ l.materials=materialRows(p).map(m=>({...m,why:why[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_FET_RC_DELAY_STOP_SOURCE_ALIGNED',
+  previousReason:'NO_WIRED_CIRCUIT',fetRcDelayVirtual:{
+   gateMode:'NUMERIC_GS_RC_SAMPLED',chargeOhm:1000,bleedOhm:20000,capacitanceF:.0001,
+   sourceV:12,thresholdV:4,sampleMs:250,physicalJfetVerified:false},
+  manufacturerCalibrationVerified:false,physicalAcceptance:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 12 V sanal MOSFET/RC zamanlama eğitimi; üretici fiziksel JFET modeli, gerçek motor güvenliği, gerçek kablolu donanım ve termal kabul değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

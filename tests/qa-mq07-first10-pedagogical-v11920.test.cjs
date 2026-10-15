@@ -79,8 +79,8 @@ test('MQ-05 first 10 dynamic simulations separate responsive vs passive circuits
 });
 test('MQ-12 1655 source solver topology stays intact; no missing terminals',()=>{
  const L=QA.curriculum(),defs=QA.catalog(),result=QA.audit({L,defs,Simulation:Native});
- assert.equal(result.total,1655);assert.equal(result.withWires,730);
- assert.equal(result.stable,730);assert.equal(result.status,'PASS');
+ assert.equal(result.total,1655);assert.equal(result.withWires,731);
+ assert.equal(result.stable,731);assert.equal(result.status,'PASS');
  assert.deepEqual(result.missingDefinitions,[]);
  assert.deepEqual(result.invalidWireEndpoints,[]);
  assert.deepEqual(result.shortCircuits,[]);

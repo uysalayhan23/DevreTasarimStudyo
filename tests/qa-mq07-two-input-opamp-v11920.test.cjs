@@ -11,7 +11,7 @@ const lessons=['opamp-apps-src-11','opamp-apps-src-12'];
 test('two-input subtractor and summing lessons use two actual virtual controls, canonical terminals and child-readable steps',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(l=>l.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,50);
+ assert.equal(L.mq07Batch200.reviewIds.length,49);
  for(const id of lessons){
   const lesson=L.byId[id],p=lesson.project;
   assert.equal(lesson.kind,'wiring');
@@ -48,8 +48,8 @@ test('original electrical solver responds to BOTH independently adjusted virtual
 test('1655-source, locked bell transformer, and all 1519 generated guides remain consistent',()=>{
  const audit=QA.audit({L,defs,Simulation});
  assert.equal(audit.status,'PASS');assert.equal(audit.total,1655);
- assert.equal(audit.rich,136);assert.equal(audit.withWires,730);
- assert.equal(audit.stable,730);assert.equal(audit.definitionCount,940);
+ assert.equal(audit.rich,136);assert.equal(audit.withWires,731);
+ assert.equal(audit.stable,731);assert.equal(audit.definitionCount,940);
  assert.deepEqual(audit.errors,[]);assert.deepEqual(audit.invalidWireEndpoints,[]);
  const bell=Bell.audit({L,defs,solver:Simulation});
  assert.equal(bell.status,'PASS');assert.equal(bell.count,15);

@@ -1,0 +1,129 @@
+{
+  "date": "2026-10-15",
+  "task": "MQ-07 electronic-switching-src-09 FET delay-stop repair",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "sourceType": "original CCSSimulation.solve + DTSCurrentModel capacitor implicit-Euler executed as actual V8 JavaScript; targeted numeric gate sampling only when mq07FetRcDelay flag enabled",
+  "reviewPrior": 50,
+  "reviewAfter": 49,
+  "virtualScene": {
+    "id": "electronic-switching-src-09",
+    "title": "FET’li zaman gecikmeli duran devre",
+    "components": 10,
+    "wires": 12,
+    "sourceV": 12,
+    "mosfetId": "mosfet-n",
+    "capacitorF": 0.0001,
+    "chargeOhm": 1000,
+    "bleedOhm": 20000,
+    "thresholdV": 4,
+    "physicalJfetVerified": false,
+    "manufacturerCalibrated": false
+  },
+  "dynamic": {
+    "buttonPressedMs": 250,
+    "buttonReleasedMs": 1250,
+    "samplingMs": 250,
+    "states": [
+      {
+        "ms": 0,
+        "mosfet": false,
+        "lamp": false,
+        "gateV": 0,
+        "capV": 0
+      },
+      {
+        "ms": 250,
+        "mosfet": true,
+        "lamp": true,
+        "gateV": 8.275291359216606,
+        "capV": 8.275291359216606
+      },
+      {
+        "ms": 1000,
+        "mosfet": true,
+        "lamp": true,
+        "gateV": 11.361322602330413,
+        "capV": 11.361322602330413
+      },
+      {
+        "ms": 1250,
+        "mosfet": true,
+        "lamp": true,
+        "gateV": 10.096709711024586,
+        "capV": 10.096709711024586
+      },
+      {
+        "ms": 3000,
+        "mosfet": true,
+        "lamp": true,
+        "gateV": 4.420147060976407,
+        "capV": 4.420147060976407
+      },
+      {
+        "ms": 3250,
+        "mosfet": false,
+        "lamp": false,
+        "gateV": 3.9281466882705245,
+        "capV": 3.9281466882705245
+      },
+      {
+        "ms": 4250,
+        "mosfet": false,
+        "lamp": false,
+        "gateV": 2.4501440072428298,
+        "capV": 2.4501440072428298
+      }
+    ],
+    "stable": true,
+    "blocked": false,
+    "shortCircuit": false,
+    "oscillating": false,
+    "ut33dWarning": false
+  },
+  "negativeScenarios": {
+    "gateDisconnected": "OFF always",
+    "lampSupplyDisconnected": "lamp OFF even with FET ON",
+    "capacitorRemoved": "OFF at same frame as button release (1250 ms)",
+    "bleedResistance10000": "OFF at 2250 ms versus 3250 ms default"
+  },
+  "fullSourceV8Audit": {
+    "status": "PASS",
+    "lessons": 1655,
+    "rich": 136,
+    "definitions": 940,
+    "wired": 731,
+    "stable": 731,
+    "componentsChecked": 7286,
+    "wireEndpointsChecked": 16648,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "blocked": 0,
+    "shortCircuits": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicates": 0
+  },
+  "uiSourceV8": {
+    "prerequisiteResetEnforced": true,
+    "reset": "OFF",
+    "press": "ON",
+    "release": "OFF, transition at 3250 ms",
+    "actionsAllNativeSolve": true
+  },
+  "triage": {
+    "conceptPreserved": 14,
+    "repairCandidatesStillOpen": 35,
+    "otherOpenReviews": 14
+  },
+  "notRun": [
+    "node --test real shell",
+    "Windows file:/// GUI inspection",
+    "real physical J113 device",
+    "independent instructional acceptance"
+  ],
+  "actionsUsed": false,
+  "commitInstruction": "[skip ci]",
+  "mq00Decision": "VIRTUAL_RC_TOPOLOGY_AND_NATIVE_V8_SOLVER_PASS; PHYSICAL_AND_VISUAL_ACCEPTANCE_REVIEW"
+}
