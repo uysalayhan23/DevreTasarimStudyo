@@ -3160,6 +3160,46 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* MQ-07 SC13: real wired virtual DC SCR gate test; native solver owns state.
+   This is an educational trigger test, NOT calibrated holding-current physics. */
+{
+ const id='electronic-switching-src-13',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))
+  throw Error('SC13 original REVIEW baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,150,'G1','Sanal 12 V DC kaynak',{dcVoltage:12}),
+  C('sw','push-no',325,160,'S1','Sanal gate tetikleme butonu',{state:false}),
+  C('rg','resistor',520,175,'RG','1 kΩ sanal gate direnci',{resistance:1000}),
+  C('q1','tutorial-scr',810,335,'Q1','SCR gate-anot-katot eğitim modeli'),
+  C('h1','standard-light',1090,330,'H1','120 Ω sanal DC yük',{resistance:120})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','Sanal gate komutu 12 V kaynaktan gelir.'),
+  W('sw','14','rg','1','S1/14 → RG/1','S1 açıkken gate kontrol yolu ayrılır.'),
+  W('rg','2','q1','G','RG/2 → Q1/G','RG üzerinden SCR gate tetikleme girişi.'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Yük için sanal pozitif güç yolu.'),
+  W('h1','X2','q1','A','H1/X2 → Q1/A','Yükten SCR anot terminaline güç yolu.'),
+  W('q1','K','g1','M','Q1/K → G1/M','Katot sanal dönüş referansına bağlanır.')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'DC SCR sanal tetikleme uygulaması: S1–RG gate kontrol yolu ile H1–Q1/A–K güç yolunu ayrı incele; buton öncesi ve sonrası özgün solver durumunu karşılaştır.',
+  explanation:'AMAÇ: Tristörün gate (G) ile kontrol edilen anot (A)–katot (K) iletimini düşük gerilimli sanal ortamda gözlemek. MALZEMELER: G1 sanal 12 V DC kaynak; S1 gate komutu; RG 1 kΩ gate direnci; Q1 SCR A/K/G terminalleri; H1 120 Ω eğitim yükü. KONTROL YOLU: G1/P → S1/13-14 → RG/1-2 → Q1/G. GÜÇ YOLU: G1/P → H1/X1-X2 → Q1/A → Q1/K → G1/M. Gate geri dönüşü katotun 0 V referansına göredir. HESAP ÖRNEĞİ: İdeal direnç yükünde kaynak 12 V ve yük 120 Ω ise yalnız güç yolu ilettiği varsayımında teorik I=12/120=0,1 A, P=12×0,1=1,2 W; bunlar özgün solverda ölçülmüş akım ya da gerçek SCR gerilim düşümü değildir. ÇALIŞMA: Başlangıç S1 OFF; S1 ON yapıldığında gate yolunu ve H1 durumunu özgün elektriksel solverda incele; S1 bırakılınca yeniden çözüm al. Model gerçek SCR tutma akımıyla latch etme, ters gerilim, anahtarlama süresi veya termal davranış hesaplamaz; S1 bırakıldığında sanal modelin sonucu fiziksel SCR kesim garantisi değildir. ÖĞRENCİ DENEYİ: RG→G bağlantısı kaldırılırsa H1 neden iletim göstermemelidir? H1→A bağlantısı kesilirse gate komutu neden yükü enerjileyemez? KONTROL SORULARI: A/K güç yolu ile G kontrol yolu neden farklıdır; hesaplanan 0,1 A değeri hangi ideal varsayıma dayanır; bu basitleştirilmiş model neden gerçek tristörün tutma akımını doğrulamaz? GERÇEK DONANIM UYARISI: Yalnız yazılım tabanlı kavram gösterimidir.'});
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_DC_SCR_GATE_SOURCE_ALIGNED',
+  previousReason:'NO_WIRED_CIRCUIT',scrVirtual:{physicalHoldingCurrentModel:false,manufacturerCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal 12 V SCR gate/akım yolu gösterimi; gerçek tutma akımı ve fiziksel çalışma kabulü yoktur.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
