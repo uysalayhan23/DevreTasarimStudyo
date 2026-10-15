@@ -93,3 +93,10 @@ This contract is a software-only educational representation, not electrical hard
 - MQ-03/MQ-10: user screenshot still requires visual rerender and manual wire/label overlap audit. No screenshot acceptance yet.
 - MQ-00 decision: **PARTIAL / REVIEW**, not DONE. No validated motor RPM/average current/torque/thermal model, no independent electrical numerical acceptance. Confirm browser library discovery and exact fail-closed semantics on disconnected reference before release.
 - MQ-13: `main` direct UTF-8 changes, `[skip ci]`, no workflow run, no force push. 
+
+
+## 2026-10-15 PWM1 fail-closed regression follow-up
+- Added a native SC11 negative-case test for physically removing `G1/P → PWM1/V+`, `PWM1/GND → G1/M`, or `PWM1/OUT → RG/1`; source-availability, PWM state and motor state must fail closed as applicable.
+- Removed obsolete `project.mq05VirtualPwm` configuration from SC11 template, to avoid an unused, duplicated project-level switch-control field. The PWM1 component now owns duty and frequency. Legacy old-project switch compatibility remains in solver pending separate migration audit.
+- Execution constraint: `node -v` returned `v22.16.0`, but `git ls-remote` failed because `github.com` could not resolve from the local runtime. Full authentic Node tests and Windows browser acceptance remain **NOT_RUN**; the added assertions are a regression specification, not proof of PASS.
+- MQ-00 decision: **REVIEW**. Next: run the targeted native tests and full curriculum from a complete checkout, then inspect actual visible PWM1 front view, pin placement and routing in Windows. No Actions used.
