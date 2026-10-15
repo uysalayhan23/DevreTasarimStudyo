@@ -100,3 +100,10 @@ This contract is a software-only educational representation, not electrical hard
 - Removed obsolete `project.mq05VirtualPwm` configuration from SC11 template, to avoid an unused, duplicated project-level switch-control field. The PWM1 component now owns duty and frequency. Legacy old-project switch compatibility remains in solver pending separate migration audit.
 - Execution constraint: `node -v` returned `v22.16.0`, but `git ls-remote` failed because `github.com` could not resolve from the local runtime. Full authentic Node tests and Windows browser acceptance remain **NOT_RUN**; the added assertions are a regression specification, not proof of PASS.
 - MQ-00 decision: **REVIEW**. Next: run the targeted native tests and full curriculum from a complete checkout, then inspect actual visible PWM1 front view, pin placement and routing in Windows. No Actions used.
+
+
+## 2026-10-15 PWM1 terminal and invalid-control audit, follow-up
+- MQ-04 static geometry: PWM1 definition has three independent terminals `V+` (left x=0,y=30), `GND` (left x=0,y=113) and `OUT` (right x=184,y=71) in its 184x142 scene envelope. This does **not** prove visual rendering or verified manufacturer mm dimensions; component is a **virtual functional instrument**.
+- MQ-05 corrected generator validity check to reject missing, `null`, string or otherwise nonnumeric duty/frequency instead of coercing values with `Number(...)`. Legacy non-PWM lessons were not rewritten.
+- MQ-12 added test assertions for envelope/terminal sides and invalid-config fail-closed cases. Tests are **NOT_RUN**, and true Chrome/Edge visual checks are **NOT_RUN**. The local environment returned Node v22.16.0 but `git ls-remote` still reports `Could not resolve host: github.com`; GitHub connector reads/writes are functional.
+- MQ-00 remains **REVIEW**, G6/G7/G8 not accepted. Next verification: actual full-checkout native tests, rendered PWM1 terminal/label/hitbox alignment, actual Windows `file:///` view and wire collision inspection; do not certify only from this static test.
