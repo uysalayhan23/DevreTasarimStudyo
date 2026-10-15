@@ -20,7 +20,7 @@
   const followers=new Set(['contact-no','contact-nc','contact-both','delay-on-no','delay-on-nc','delay-off-no','delay-off-nc','contactor3']);
   const breakers=new Set(['breaker','breaker2','breaker3','rcd2','rcd4','fuse-switch','overload','thermal-magnetic']);
   const loads=new Set(['lamp','led','buzzer','siren','flasher','meter-v','meter-ohm','resistor','capacitor','diode','potentiometer','reactor']);
-  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery','bell-transformer']);
+  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery','bell-transformer','ac-virtual-source']);
   const phaseMotors=new Set(['motor3','motor-yd','motor-dahlender','motor-rotor','motor-2speed','generator','servo-motor']);
   const normalizeRef=s=>String(s||'').trim().normalize('NFKC').toLocaleUpperCase('tr-TR');
   const pinKey=(c,p)=>JSON.stringify([c,p]);
@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -137,7 +137,10 @@
     for(let pass=0;pass<Math.max(12,(derived.length+instruments.length)*3+4);pass++){
       potentials=new Map();faultDomains=new Set();faultRoots=new Set();
       for(const c of project.components){const d=definition(byId,c);if(!d||!sources.has(d.kind))continue;
-        if(d.kind==='bell-transformer'){
+        if(d.kind==='ac-virtual-source'){
+          if(c.sourceEnabled!==false){const rms=Number(c.rmsVoltage??d.defaultRmsVoltage??12);
+            if(Number.isFinite(rms)&&rms>=1&&rms<=24){seed(c,'AC','isolated-ac:'+c.id,'L1','ac',rms);seed(c,'RET','isolated-ac:'+c.id,'N','ac',rms)}}
+        }else if(d.kind==='bell-transformer'){
           // Educational isolated secondary: no exposed or wireable mains terminals.
           if(c.transformerEnabled!==false){seed(c,'S1','bell-secondary:'+c.id,'L1','ac',12);seed(c,'S2','bell-secondary:'+c.id,'N','ac',12)}
         }else if(d.kind==='supply'||d.kind==='supply3'){
@@ -584,7 +587,74 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
     return {result,sampled:!!valid,verified,highDrive,lowDrive,normalizedBrightnessPct:dutyDrive};
   }
 
-  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+
+  // MQ-05 SC15: isolated low-voltage AC, positive-half-wave SCR phase-angle training.
+  // The canonical AC solver uses phasors, so SC15 samples the instantaneous
+  // waveform using an actual terminal-connected resistive load and SCR threshold.
+  // This is an opt-in virtual model, not 230 V mains or a manufacturer SPICE model.
+  function solveSc15AcCycle(project,byId,options={}){
+    const scene=project?.tutorialLesson?.id==='electronic-switching-src-15'||
+      ['tutorial-electronic-switching-src-15','tutorial-session-source-electronic-switching-src-15'].includes(project?.projectId);
+    if(!scene)return {result:solve(project,byId,options),sampled:false};
+    const result=solve(project,byId,options);
+    const part=id=>project.components.find(c=>c.id===id),source=part('ac1'),trigger=part('trg1'),scr=part('q1'),lamp=part('h1'),rg=part('rg');
+    const good=!!(source&&trigger&&scr&&lamp&&rg&&byId[source.typeId]?.kind==='ac-virtual-source'&&
+      byId[trigger.typeId]?.kind==='ac-scr-trigger'&&byId[scr.typeId]?.kind==='scr'&&byId[lamp.typeId]?.kind==='lamp'&&byId[rg.typeId]?.kind==='resistor');
+    const pairs=new Map(),endpoint=x=>x?.j!==undefined?'j:'+x.j:x?.c&&x?.p?x.c+'/'+x.p:null;
+    const find=x=>{if(!pairs.has(x))pairs.set(x,x);let k=x;while(pairs.get(k)!==k)k=pairs.get(k);
+      while(pairs.get(x)!==x){const y=pairs.get(x);pairs.set(x,k);x=y}return k};
+    for(const w of project.wires||[]){if(w.mechanical||w.role==='MECHANICAL')continue;
+      const a=endpoint(w.from),b=endpoint(w.to);if(a&&b)pairs.set(find(a),find(b));}
+    const linked=(a,p,b,q)=>find(a+'/'+p)===find(b+'/'+q);
+    const wiring=good&&linked('ac1','AC','h1','X1')&&linked('h1','X2','q1','A')&&
+      linked('q1','K','ac1','RET')&&linked('ac1','AC','trg1','AC')&&
+      linked('ac1','RET','trg1','RET')&&linked('trg1','OUT','rg','1')&&linked('rg','2','q1','G')&&
+      !linked('ac1','AC','ac1','RET')&&!linked('q1','A','q1','K');
+    const rms=source?.rmsVoltage??byId[source?.typeId]?.defaultRmsVoltage;
+    const hz=source?.frequencyHz??byId[source?.typeId]?.defaultFrequencyHz;
+    const alpha=trigger?.triggerAngleDeg??byId[trigger?.typeId]?.defaultTriggerAngleDeg;
+    const pulse=trigger?.pulseWidthDeg??byId[trigger?.typeId]?.defaultPulseWidthDeg;
+    const resistance=lamp?.resistance,rgOhms=rg?.resistance;
+    const now=Number.isFinite(options.now)?options.now:Date.now();
+    const valid=!!(wiring&&result.stable&&!result.shortCircuit&&!result.blocked&&!result.oscillating&&
+      source.sourceEnabled!==false&&trigger.triggerEnabled!==false&&Number.isFinite(now)&&now>=0&&
+      typeof rms==='number'&&rms>=1&&rms<=24&&Number.isFinite(rms)&&
+      typeof hz==='number'&&hz>=45&&hz<=60&&Number.isFinite(hz)&&
+      typeof alpha==='number'&&alpha>=0&&alpha<=170&&Number.isFinite(alpha)&&
+      typeof pulse==='number'&&pulse>=1&&pulse<=45&&Number.isFinite(pulse)&&
+      typeof resistance==='number'&&resistance>=10&&resistance<=10000&&Number.isFinite(resistance)&&
+      typeof rgOhms==='number'&&rgOhms>=100&&rgOhms<=100000&&Number.isFinite(rgOhms));
+    const peak=valid?rms*Math.SQRT2:0,drop=1,holding=Math.max(.001,Number(byId[scr?.typeId]?.holdingCurrent)||.03);
+    const cutoff=valid?Math.asin(Math.min(1,(holding*resistance+drop)/peak))*180/Math.PI:180;
+    const fire=valid&&cutoff<=alpha+pulse?Math.max(alpha,cutoff):180;
+    const end=180-cutoff,conduct=valid&&fire<end;
+    const cycleAt=time=>{
+      const deg=((time*hz*.36)%360+360)%360,voltage=peak*Math.sin(deg*Math.PI/180);
+      const conducting=conduct&&deg>=fire&&deg<end;
+      const gate=valid&&deg>=alpha&&deg<Math.min(180,alpha+pulse);
+      return {deg,voltage,loadV:conducting?Math.max(0,voltage-drop):0,currentA:conducting?Math.max(0,(voltage-drop)/resistance):0,gateV:gate?5:0,conducting};
+    };
+    let squares=0,conducted=0;
+    const wave=[];
+    for(let deg=0;deg<360;deg+=2){
+      const voltage=peak*Math.sin(deg*Math.PI/180),on=conduct&&deg>=fire&&deg<end;
+      const loadV=on?Math.max(0,voltage-drop):0;
+      squares+=loadV*loadV; if(on)conducted++;
+      if(deg%10===0)wave.push({deg,sourceV:voltage,gateV:valid&&deg>=alpha&&deg<alpha+pulse?5:0,loadV});
+    }
+    const t=cycleAt(now),outputRmsV=Math.sqrt(squares/180);
+    if(source){source._sc15InstantSourceV=t.voltage;source._sc15PhaseDeg=t.deg;source._sc15Wave=wave}
+    if(trigger){trigger._sc15GateOutputV=t.gateV;trigger._sc15PhaseDeg=t.deg;trigger._sc15FiringAngleDeg=conduct?fire:null;trigger._sc15Wave=wave;trigger._active=!!(valid&&t.gateV>0)}
+    if(scr){scr._thyristorOn=!!t.conducting;scr._active=!!t.conducting;scr._sc15Conducting=!!t.conducting;scr._sc15CurrentA=t.currentA;scr._sc15FiringAngleDeg=conduct?fire:null}
+    if(lamp){lamp._active=!!t.conducting;lamp._powered=!!t.conducting;lamp._sc15InstantLoadV=t.loadV;lamp._sc15CurrentA=t.currentA;lamp._sc15OutputRmsV=outputRmsV;lamp._sc15ConductionPct=conducted/180*100;lamp._sc15Wave=wave}
+    return {result:{...result,timed:!!valid},sampled:!!valid,verified:!!valid,
+      rmsV:valid?outputRmsV:0,phaseDeg:t.deg,sourceV:t.voltage,gateV:t.gateV,
+      loadV:t.loadV,currentA:t.currentA,positiveHalf:t.deg<180,
+      fired:!!t.conducting,fireDeg:conduct?fire:null,
+      conductionPct:valid?conducted/180*100:0,zeroCrossing:Math.min(t.deg%180,180-t.deg%180)<.3};
+  }
+
+  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
