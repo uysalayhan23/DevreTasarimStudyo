@@ -97,7 +97,7 @@
     if(d.id==='bta16-600b-triac'&&p.type==='TO-220AB Insulated'){
       const coords=d.pins.map(x=>Number(x.x));
       const legs=coords.map(x=>'<path d="M'+x+' 119V'+h+'" stroke="#bec6cb" stroke-width="8"/><path d="M'+x+' 126V'+(h-18)+'" stroke="#e6e8e9" stroke-width="2"/>').join('');
-      const marks=['MT1','MT2','G'].map((name,i)=>'<text x="'+coords[i]+'" y="'+(h-6)+'" fill="#d0e8f2" text-anchor="middle" font-family="Arial" font-size="8">'+name+'</text>').join('');
+      const marks=['MT1','MT2','G'].map((name,i)=>'<rect x="'+(coords[i]-17)+'" y="'+(h-48)+'" width="34" height="15" rx="3" fill="#20323d" stroke="#658190"/><text x="'+coords[i]+'" y="'+(h-36)+'" fill="#e1f3fb" text-anchor="middle" font-family="Arial" font-size="9">'+name+'</text>').join('');
       return '<g data-real-package="TO-220AB-INSULATED" data-front-view="orthographic" data-product="ST-BTA16-600B">'+legs+
         '<path d="M29 4H'+(w-29)+'Q'+(w-23)+' 4 '+(w-23)+' 13V'+(h-79)+'H23V13Q23 4 29 4Z" fill="#22272a" stroke="#090d10" stroke-width="3"/>'+
         '<path d="M34 9H'+(w-34)+'V39H34Z" fill="#30393e"/>'+
