@@ -36,8 +36,8 @@ test('SC15 uses a low-voltage virtual AC source, a distinct phase trigger and TY
  const source=defs['virtual-isolated-ac-12v'],trigger=defs['virtual-ac-scr-trigger-v1'];
  assert.equal(source.kind,'ac-virtual-source');
  assert.equal(trigger.kind,'ac-scr-trigger');
- assert.deepEqual(source.pins.map(p=>p.id),['AC','RET']);
- assert.deepEqual(trigger.pins.map(p=>p.id),['AC','RET','OUT']);
+ assert.deepEqual(Array.from(source.pins,p=>p.id),['AC','RET']);
+ assert.deepEqual(Array.from(trigger.pins,p=>p.id),['AC','RET','OUT']);
  assert.equal(trigger.realPackage,null);
 });
 
