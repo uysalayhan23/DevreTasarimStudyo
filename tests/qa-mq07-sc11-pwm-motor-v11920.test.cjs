@@ -27,6 +27,8 @@ test('PWM1 OUT is electrical, has no SHAFT and is never classed as a motor',()=>
  const pwm=clone(defs['virtual-pwm-generator-v1']);
  const motor=clone(defs['motor-dc']);
  assert.ok(motor,'DC motor baseline must remain available');
+ pwm.pins.push({id:'SHAFT',mechanical:true,x:pwm.w,y:pwm.h/2,side:'right'});
+ pwm.mechanicalShaft=true;
  Encoder.installMechanicalPins([pwm,motor]);
  assert.equal(Encoder.isMotorDef(pwm),false);
  assert.equal(Encoder.isMotorDef(motor),true);
