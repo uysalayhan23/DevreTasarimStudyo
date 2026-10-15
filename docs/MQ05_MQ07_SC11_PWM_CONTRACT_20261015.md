@@ -107,3 +107,9 @@ This contract is a software-only educational representation, not electrical hard
 - MQ-05 corrected generator validity check to reject missing, `null`, string or otherwise nonnumeric duty/frequency instead of coercing values with `Number(...)`. Legacy non-PWM lessons were not rewritten.
 - MQ-12 added test assertions for envelope/terminal sides and invalid-config fail-closed cases. Tests are **NOT_RUN**, and true Chrome/Edge visual checks are **NOT_RUN**. The local environment returned Node v22.16.0 but `git ls-remote` still reports `Could not resolve host: github.com`; GitHub connector reads/writes are functional.
 - MQ-00 remains **REVIEW**, G6/G7/G8 not accepted. Next verification: actual full-checkout native tests, rendered PWM1 terminal/label/hitbox alignment, actual Windows `file:///` view and wire collision inspection; do not certify only from this static test.
+
+
+## 2026-10-15 MQ-03 renderer integration checkpoint
+- Traced `CCSMaterials.baseMarkup` dispatch: ordinary materials previously reached the generic sprite fallback. `pwm-generator` now explicitly calls `DTSDesignVisuals.markup`, where the PWM1 dedicated front includes status LED, timing waveform, duty/frequency display and named V+/GND/OUT contacts.
+- Added dedicated SVG markup regression assertions in `tests/qa-mq07-sc11-pwm-motor-v11920.test.cjs`. This tests the actual dedicated markup entrypoint and source dispatch contract, but is **NOT_RUN** in an authenticated full project checkout and is not Windows screenshot evidence.
+- Screenshot before the renderer fix showed fallback blank rectangular PWM1. Pending: new Windows screenshot, verify wire-to-contact position and overlapping labels/probe cables, verify panel controls and PWM electrical tests. MQ-00 stays REVIEW. GitHub Actions remains prohibited.
