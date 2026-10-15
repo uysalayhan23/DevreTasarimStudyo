@@ -10,6 +10,8 @@
   const DoldSafety=typeof module==='object'&&module.exports?require('./dold-safety.js'):root.DTSDoldSafety;
   const HCFAUI=typeof module==='object'&&module.exports?require('./hcfa-ui.js'):root.DTSHCFAUI;
   const Assemblies=typeof module==='object'&&module.exports?require('./assemblies.js'):root.DTSAssemblies;
+  const isRotatingMachine=d=>!!d&&!d.isPLC&&!d.diagramOnly&&d.arduinoRole!=='signal-generator'&&
+    (d.rotating===true||/^(?:motor(?:$|[-\\d])|generator$|fan$)/.test(String(d.kind||'')));
   const GRID=10;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const verticalSide={top:'right',right:'bottom',bottom:'left',left:'top'};
@@ -135,7 +137,7 @@
     if(d.kind==='motor-dahlender')annotations+=label('speed',c._active?(c._motorSpeed==='high'?'YÜKSEK DEVİR':'DÜŞÜK DEVİR'):'',{x:cx,y:y+=13},'subtitle');
     if(options.includeNote!==false)annotations+=noteMarkup(d,c,options);
     if(material&&d.brand)annotations+=label('brand',d.brand,{x:cx,y:cy-h/2-8},'subtitle material-brand');
-    const rotating=(/motor|fan|generator/.test(d.kind)||d.rotating)&&d.arduinoRole!=='signal-generator'&&!d.isPLC&&!d.diagramOnly;
+    const rotating=isRotatingMachine(d);
     if(rotating)annotations+=label('direction',directionText(c),{x:cx,y:material?cy+29:y+14},'rotation-label');
     // Every editable text lives outside the rotated geometry, including pin
     // numbers and the lettering inside a symbol. Artwork has the original pins.
@@ -146,7 +148,7 @@
   }
   const directionText=c=>c._spin?((c._spin<0?'SOL · CCW':'SAĞ · CW')+(c._motorHz!==undefined?' · '+c._motorHz.toFixed(1)+' Hz':'')):'DURDU';
   function motionMarkup(d,c={},includeLabel=true,mode='material'){
-    if(!(/motor|fan|generator/.test(d.kind)||d.rotating)||d.arduinoRole==='signal-generator'||d.isPLC||d.diagramOnly)return '';
+    if(!isRotatingMachine(d))return '';
     // A direction instrument remains upright when the equipment is rotated.
     const schematic=mode!=='material';
     return '<g class="motion-indicator '+(schematic?'schematic-motion':'')+'" transform="translate('+d.w/2+' '+(d.h/2)+')" pointer-events="none"><circle class="motion-dial" r="17"/><g transform="scale('+(schematic?3.15:1)+')"><g class="rotation-indicator"><g class="rotation-arrow"><path d="M0 -11 A11 11 0 1 1 -10 -4"/><path class="rotation-head" d="M-10 -4 L-15 -6 L-11 1 Z"/></g></g></g>'+(includeLabel?'<text class="rotation-label" text-anchor="middle" y="29">'+directionText(c)+'</text>':'')+'</g>';
