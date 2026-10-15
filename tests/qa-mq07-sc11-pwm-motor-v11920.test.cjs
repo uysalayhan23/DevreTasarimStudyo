@@ -21,6 +21,23 @@ test('SC11 has canonical motor and G/D/S wired terminals, no fake RPM claims',()
  const names=lesson.project.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p);
  for(const wire of ['g1/P>pwm1/V+','pwm1/GND>g1/M','pwm1/OUT>rg/1','rg/2>q1/G','q1/S>g1/M','g1/P>m1/+','m1/−>q1/D'])assert.ok(names.includes(wire),wire);
 });
+test('PWM1 OUT is electrical, has no SHAFT and is never classed as a motor',()=>{
+ const Encoder=require('../dist/incremental-encoder.js');
+ const Symbols=require('../dist/symbols.js');
+ const pwm=clone(defs['virtual-pwm-generator-v1']);
+ const motor=clone(defs['motor-dc']);
+ assert.ok(motor,'DC motor baseline must remain available');
+ Encoder.installMechanicalPins([pwm,motor]);
+ assert.equal(Encoder.isMotorDef(pwm),false);
+ assert.equal(Encoder.isMotorDef(motor),true);
+ assert.deepEqual(pwm.pins.map(p=>p.id).sort(),['GND','OUT','V+']);
+ assert.ok(!pwm.pins.some(p=>p.mechanical||p.id==='SHAFT'));
+ assert.equal(pwm.pins.find(p=>p.id==='OUT').mechanical,undefined);
+ assert.equal(pwm.mechanicalShaft,undefined);
+ assert.ok(motor.pins.some(p=>p.id==='SHAFT'&&p.mechanical===true));
+ assert.equal(Symbols.motionMarkup(pwm,{id:'pwm1'}),'');
+ assert.ok(Symbols.motionMarkup(motor,{id:'m1'}).includes('motion-indicator'));
+});
 test('native solver handles PWM OFF/ON phases and no fabricated motor RPM',()=>{
  const p=clone(lesson.project);
  for(const [duty,time,on] of [[0,0,false],[50,0,true],[50,.75,false],[100,.75,true],[0,1,false]]){
