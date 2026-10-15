@@ -3147,7 +3147,7 @@ for(const spec of [
  const p=base(id,l.title);
  p.components=[
   C('g1','arduino-bench-supply',80,135,'G1','12 V yalnız sanal besleme',{dcVoltage:12}),
-  C('pwm1','virtual-pwm-generator-v1',300,120,'PWM1','Beslemeli sanal PWM sinyal üreteci',{dutyPercent:50,frequencyHz:10}),
+  C('pwm1','virtual-pwm-generator-v1',300,120,'PWM1','Beslemeli sanal PWM sinyal üreteci',{dutyPercent:50,frequencyHz:1000}),
   C('rg','resistor',485,145,'RG','1 kΩ gate direnci',{resistance:1000}),
   C('rp','resistor',600,375,'RP','100 kΩ gate pull-down',{resistance:100000}),
   C('q1','irf540n-mosfet',810,345,'Q1','Sanal IRF540N G/D/S anahtar modeli',{mq07MosfetHealth:true}),
