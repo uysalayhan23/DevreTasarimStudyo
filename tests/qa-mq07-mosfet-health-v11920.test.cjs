@@ -47,8 +47,8 @@ test('MQ07 teaching UI calls native solver in OFF→ON→OFF order',()=>{
 test('full original 1655 lesson, 940 catalog and 732/732 stable native solver regression',()=>{
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.status,'PASS');assert.equal(a.total,1655);assert.equal(a.rich,136);
- assert.equal(a.definitionCount,940);assert.equal(a.withWires,732);assert.equal(a.stable,732);
- assert.equal(L.mq07Batch200.reviewIds.length,48);
+ assert.equal(a.definitionCount,940);assert.equal(a.withWires,733);assert.equal(a.stable,733);
+ assert.equal(L.mq07Batch200.reviewIds.length,47);
  assert.equal(L.mq07Batch200.reviewIds.some(x=>x.id===id),false);
  for(const k of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','shortCircuits','blocked','unstable','errors','duplicateIds'])assert.deepEqual(a[k],[],k);
 });
