@@ -21,6 +21,18 @@ test('SC11 samples 1 kHz ON/OFF using native solver, not 50 ms display alias',()
   assert.ok(Number.isFinite(part(p,'m1')._sc11SpeedPercent));
  }
 });
+test('SC11 meter probes explicitly conduct PLUG to TIP only in opted-in tutorial',()=>{
+ for(const [id,color,pin] of [['vgr','red','G'],['vgb','black','S']]){
+  const probe=part(scene.project,id),def=defs[probe.typeId];
+  assert.equal(def.probeColor,color);
+  assert.equal(probe.sc11MeasurementProbe,true);
+  assert.deepEqual(Native.conductingPairs(probe,def,new Map(),new Set()),[['PLUG','TIP']]);
+  const inactive={...probe,sc11MeasurementProbe:false};
+  assert.deepEqual(Native.conductingPairs(inactive,def,new Map(),new Set()),[]);
+  assert.equal(probe.probeTarget.c,'q1');
+  assert.equal(probe.probeTarget.p,pin);
+ }
+});
 test('SC11 phase-weighted VGS comes from connected virtual DCV probes, not duty label',()=>{
  const v=[0,50,100].map(d=>{
   const {p,out}=evaluate(d);
