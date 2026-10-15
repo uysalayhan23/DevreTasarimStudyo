@@ -2141,3 +2141,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-08`: önceden mevcut 5 bileşenli / 4 kablolu pasif Piezo + 1 MΩ R1 + UT33D+ DCV 200mV kaynak devresinde **eksik mekanik darbe UI komutu** ve 1600 ms otomatik mV güncelleme akışı SC27'ye özel opt-in ile tamamlandı. Sadece `dist/app.js`, `dist/symbols.js`, `dist/tutorial-pedagogy.js` kaynak davranışları güncellendi; fiziksel genel simülasyon kaynakları ve terminaller korunur.
 - Gerçek JS/V8 kaynak ölçümünde darbe 0/150/500/1000/1601 ms ≈ 100/50,57/10,30/1,06/0 mV; ters prob negatif, prob kablosu açık OL, prob uç teması açık 0 mV. Müfredat 1655, yalnız SC27 değişti. Tam Node/Windows/UI tıklama QA ve üretici fiziği NOT_RUN: **MQ-00 REVIEW**.
 - Kanıt: `docs/MQ07_SC27_PIEZO_IMPULSE_MV_20261015.md`; hedef test `tests/qa-mq07-sc27-piezo-impulse-mv-v11920.test.cjs`. SC11–SC26 ve locks korunur. Actions yok, `[skip ci]`. Sıradaki `sensor-analog-apps-src-09` load cell.
+
+
+## 2026-10-15 MQ-07 SC28 LOAD CELL MVV
+
+- `sensor-analog-apps-src-09`: Kullanıcının güncel açık talebiyle eski `REVIEW/NO_WIRED_CIRCUIT` 2 elemanlı kavram quiz'i, **yalnız bu hedefte** gerçek kataloğa dayalı kablolu 3 malzeme/6 kablo/6 adım ideal diferansiyel Load Cell/TX11 uygulamasına dönüştürüldü. Tarihsel `reviewIds` korunur, yeni uygulama triyaj sınıfına alınır. Diğer quiz kilitlerine dokunulmadı.
+- Gerçek izole solver 5 V uyartım, 2 mV/V, 1000 kg ölçeğinde 0/250/500/750/1000 kg → 0/2,5/5/7,5/10 mV ve TX11 ağırlık okuması doğrulandı; eksik EX/SIG/ters kablo ve geçersiz besleme hata. 4–20 mA dış yük bağlı DEĞİL, analog döngü warning: **MQ-00 REVIEW**.
+- Tam Node/Windows/browser/üretici 4 strain-gauge kalibrasyon veya fiziksel PASS doğrulanmadı. Yalnız SC28 değişti, 1655 dersin diğerleri, SC11–SC27 ve teknik kilitler korunur. `docs/MQ07_SC28_LOAD_CELL_TX11_20261015.md`, `tests/qa-mq07-sc28-load-cell-tx11-mvv-v11920.test.cjs`. Actions kullanılmaz, `[skip ci]`.
+- Sıradaki kaynak `sensor-analog-apps-src-10` LDR karanlıkta çalışan devre.

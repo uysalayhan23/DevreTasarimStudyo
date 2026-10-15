@@ -4295,6 +4295,68 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız yazılım içi Piezo sanal darbesi ve mV ölçümüdür. Gerçek mekanik vurma, enerjili devre, kuvvet kalibrasyonu, gerçek cihaz hassasiyeti veya fiziksel kabul değildir.';
 }
 
+
+/* MQ-07 SC28: explicit user-approved upgrade from historically protected
+ * NO_WIRED_CIRCUIT Load Cell quiz to dynamically measured source wiring.
+ * Historic MQ07 reviewIds remain an immutable record of the original gap.
+ * Only this target ID changes; the other concept quiz guards stay in force. */
+{
+ const id='sensor-analog-apps-src-09',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.components.length!==2||l.project.wires.length!==0||
+   l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+   !L.mq07Batch200?.noWireTriage?.conceptPreservedIds?.includes(id))
+  throw Error('MQ-07 SC28 protected initial Load Cell source changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',75,220,'G1','Sanal 24 VDC TX11 besleme',{dcVoltage:24,currentLimit:1}),
+  C('lc','load-cell',320,240,'B1','Kobastar SB2 · ideal 2 mV/V köprü',{loadCapacity:1000,loadWeight:500}),
+  C('tx','weighing-indicator',675,225,'TX1','BAYKON TX11 · tartım göstergesi',{
+   instrumentSettings:{zeroMv:0,spanMv:10,capacity:1000,output:'4-20mA'}
+  })
+ ];
+ p.wires.push(
+  W('g1','P','tx','+','24 VDC sanal besleme → TX11/+','TX11 gösterge elektroniğini sanal 24 VDC kaynağı besler.','#8b5a2b','+24V'),
+  W('g1','M','tx','−','0 VDC → TX11/−','Gösterge elektronik besleme ortak dönüşüdür.','#111827','0V'),
+  W('tx','EX+','lc','EX+','TX11 +Ex → SB2 EX+','TX11 5 VDC sanal Wheatstone köprüsü uyartımıdır.','#e53935','EXCITE'),
+  W('tx','EX−','lc','EX−','TX11 −Ex → SB2 EX−','Köprünün uyartım dönüş noktasıdır.','#111827','EXCITE'),
+  W('lc','SIG+','tx','S+','SB2 SIG+ → TX11 +Si','Köprünün pozitif mV diferansiyel ölçüm hattıdır.','#43a047','SIGNAL'),
+  W('lc','SIG−','tx','S−','SB2 SIG− → TX11 −Si','Köprünün negatif mV diferansiyel ölçüm hattıdır.','#111827','SIGNAL')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'Sanal Kobastar SB2 ideal 2 mV/V yük hücresi, BAYKON TX11 tartım göstergesinden 5 V uyartım alır. 1000 kg ayarında 0/250/500/750/1000 kg yük → 0/2,5/5/7,5/10 mV ve göstergede 0/250/500/750/1000 kg.',
+  explanation:'Yalnız SANAL ölçüm deneyi: Dört aktif Wheatstone köprüsü kolunun fiziksel direnç ve sıcaklık dengesizlikleri değil, katalogdaki 2 mV/V tam skala ideal köprü fark gerilimi hesaplanır. G1 sanal 24 VDC kaynağı TX11 güç girişini çalıştırır. TX11 EX+ / EX− uçlarından köprüye 5 VDC sağlar. SB2 EX+ / EX− uyartımı alır; SIG+ / SIG− birbirinden ayrı milivolt ölçüm yolları olarak TX11 S+ / S− girişlerine bağlanır. Yük hücresinin ayarlı kapasitesi 1000 kg, başlangıç yükü 500 kg ve TX11 sıfır/span eşleşmesi 0/10 mV → 0/1000 kg olarak ayarlanmıştır. İdeal çıkış mV = [2 mV/V]×[5 V]×[yük / 1000 kg]. Böylece yük 0, 250, 500, 750 ve 1000 kg olduğunda diferansiyel çıkış sırasıyla 0, 2,5, 5, 7,5 ve 10 mV olur. İndikatörün giriş ölçümü ile gösterdiği ağırlık solver tarafından hesaplanır; güç, herhangi bir uyartım veya SIG kablosu kesilirse geçerli ölçüm yerine hata çıkar. Fiziksel strain-gauge köprü kollarının dirençlerinin tek tek çözümü, sıcaklık telafisi, gerçek üretici ebatı/kalibrasyon sertifikası ve 4–20 mA çıkış yükü burada kanıtlanmaz: son çıkış terminalleri I/G harici yüke bağlanmadığı için analog çıkış döngüsü uyarısı olabilir. Gerçek cihaz enerjilendirmesi veya gerçek ağırlık kaldırma yönergesi DEĞİLDİR.',
+  goal:'Sanal yük/köprü gerilim değişimi, TX11 uyartımı ve mV/V fark sinyalinin TX11 ağırlık göstergesine dönüşmesini, besleme ve tel kopukluğu hatalarını ayırt et.',
+  beginnerSteps:[
+   'Önce sanal G1 ve TX11 enerji kaynak uçlarının ayrı olduğunu bul.',
+   'TX11 gösterge EX+ ve EX− ucunun sensörün iki uyartım ucuna ayrı ayrı bağlı olduğunu göster.',
+   'SB2 SIG+ ve SIG− uçlarının TX11 S+ ve S− diferansiyel girişlerine gittiğini doğrula.',
+   'TX11 sanal 24 VDC gücü açıkken loadWeight değerini 0 kg yap: 0 mV ve 0 kg gözle.',
+   '250 kg ayarında ideal 2,5 mV ve 250 kg bekle.',
+   '500 kg ayarında ideal 5,0 mV ve 500 kg bekle.',
+   '750 kg ayarında ideal 7,5 mV ve 750 kg bekle.',
+   '1000 kg ayarında ideal 10,0 mV ve 1000 kg bekle.',
+   'Yalnız sanal devrede EX+ / EX− / SIG+ / SIG− hatlarından birini çıkar: TX11 hata gösterir.',
+   'G1 beslemesini 0 V yap: göstergede besleme hatası bulunur. İdeal modelin üretici kalibrasyonu olmadığını belirt.'
+  ]
+ });
+ l.quiz={question:'Sanal 2 mV/V hassasiyetli, 5 V uyartımlı, 1000 kg kapasiteli load cell 500 kg yükte kaç mV üretir?',
+  options:['5 mV diferansiyel sinyal','500 mV diferansiyel sinyal','24 V sabit sinyal'],
+  answer:0,why:'2 mV/V × 5 V × (500/1000)=5 mV; göstergenin 24 V beslemesi ayrı enerjidir.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'LOAD_CELL_TX11_5V_MVV_VIRTUAL_SOURCE_ALIGNED',
+  mq07LoadCell:{bridge:'ideal 2mV/V differential equivalent, physical arms not modeled',
+   sourceSupplyV:24,nominalExcitationV:5,ratedMassKg:1000,fullScaleMv:10,
+   fourSensorLeadsChecked:true,indicatorMassReadoutChecked:true,
+   fourToTwentyMilliampExternalLoadVerified:false,realBridgeCalibrationVerified:false,
+   isolatedV8NativeSourceVerified:true,fullNodeSuiteExecuted:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal düşük gerilimli load cell/tartım göstergesi deneyi. Gerçek ağırlık kaldırma, elektriksel cihaz kurma veya üretici fiziksel kabulü yapılmadı.';
+ const triage=L.mq07Batch200.noWireTriage;
+ triage.conceptPreservedIds=triage.conceptPreservedIds.filter(x=>x!==id);
+ if(!triage.applicationRepairIds.includes(id))triage.applicationRepairIds.push(id);
+ triage.explicitUserOverrideForSc28='User requested proven dynamic wiring for Load Cell; original NO_WIRED_CIRCUIT review ledger remains unchanged';
+}
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
