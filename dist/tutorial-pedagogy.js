@@ -3284,6 +3284,41 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* MQ-07: case-specific source teaching for unsupported AC/opto control lessons.
+   Keep NO_WIRED_CIRCUIT open; these are honest explanatory repairs, not solver acceptance. */
+{
+ const l=L.byId['electronic-switching-src-15'];
+ if(l){
+ l.summary="SCR AC yarım periyot — AC pozitif yarım periyodunda anot-katot kutuplanması ve gate zamanlaması.";
+ l.explanation="AMAÇ: AC pozitif yarım periyodunda anot-katot kutuplanması ve gate zamanlaması. HESAP VE VARSAYIM: Sinüzoidal AC için sıfır geçişi ωt=0°, 180°, 360° konumlarındadır. Faz açısı α=90° seçilirse teorik gate komutu pozitif yarım periyodun ortasında gelir; bu yalnız zamanlama örneğidir. ÖĞRENCİ DENEYİ: Anot-katot ve gate uçlarını ayır. Önce α=0° sonra α=90° tetikleme zamanlarını kağıt üzerindeki AC dalgasında göster. Negatif yarım periyotta hangi kutuplama değişir? KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: Gerçek SCR tutma akımı, sıfır geçiş komütasyonu ve AC dalga biçimi bu sayfada elektriksel olarak çözülmüyor.";
+ l.learningGoal="SCR AC yarım periyot konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
+ }
+}
+{
+ const l=L.byId['electronic-switching-src-17'];
+ if(l){
+ l.summary="Triyak dimmer faz açısı — AC yükte ateşleme gecikmesi ve iletilen yarım periyot oranı.";
+ l.explanation="AMAÇ: AC yükte ateşleme gecikmesi ve iletilen yarım periyot oranı. HESAP VE VARSAYIM: 50 Hz kaynakta periyot T=20 ms ve yarım periyot 10 ms olur. α=90° teorik tetikleme gecikmesi 5 ms'dir; bu hesap gerçek RMS veya yük gücü ölçümü değildir. ÖĞRENCİ DENEYİ: MT1/MT2 güç yolu ile G kumanda girişini şemada işaretle. 30°, 90°, 150° ateşleme anlarını yarım periyoda yerleştir; RMS hesabı için sinüzoidal gerilimin neden gerekli olduğunu açıkla. KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: AC faz açısı, optik tetikleme ve RMS yük çözümü mevcut sanal devrede doğrulanmış değildir.";
+ l.learningGoal="Triyak dimmer faz açısı konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
+ }
+}
+{
+ const l=L.byId['electronic-switching-src-18'];
+ if(l){
+ l.summary="Optokuplör giriş-çıkış izolasyonu — Giriş LED'i ile foto-transistör arasında ışık aktarımı, iletken tel aktarımı değil.";
+ l.explanation="AMAÇ: Giriş LED'i ile foto-transistör arasında ışık aktarımı, iletken tel aktarımı değil. HESAP VE VARSAYIM: Örnek olarak giriş kaynağı 5 V, LED ileri gerilimi varsayımsal 1,2 V ve 1 kΩ seri direnç kabul edilirse giriş LED akımı yaklaşık (5−1,2)/1000=3,8 mA'dir; foto-transistör çıkış akımı CTR bilinmeden hesaplanamaz. ÖĞRENCİ DENEYİ: Giriş tarafında anot/katot ve akım sınırlama direncini, çıkışta kolektör/emiteri ayrı göster. İki farklı devre referansını neden birleştirmemek gerektiğini açıkla. KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: TLP521-1 modeline özel CTR, izolasyon dayanımı ve gerçek foto-transistör anahtarlama testi yapılmamıştır.";
+ l.learningGoal="Optokuplör giriş-çıkış izolasyonu konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
+ }
+}
+{
+ const l=L.byId['electronic-switching-src-19'];
+ if(l){
+ l.summary="Opto-triyakla triyak sürülmesi — Düşük gerilimli LED kumandası, optik güç tarafı ve zamanlayıcı birbirinden ayrı işlevlerdir.";
+ l.explanation="AMAÇ: Düşük gerilimli LED kumandası, optik güç tarafı ve zamanlayıcı birbirinden ayrı işlevlerdir. HESAP VE VARSAYIM: LED seri direnci ancak kaynak, LED ileri gerilimi ve hedef akım biliniyorsa hesaplanabilir. Flâşör frekansı f için ideal zamanlayıcı periyodu T=1/f'tir; tek triyak sembolü periyodik yanıp sönme oluşturmaz. ÖĞRENCİ DENEYİ: Giriş LED sürücüsü, optik çıkış, triyak güç yolu ve zamanlayıcı için dört ayrı işlevsel blok çiz. Zamanlayıcı kaldırılırsa otomatik yanıp sönme neden beklenemez? KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: Optik izolasyon, sıfır-geçiş davranışı, gerçek AC tetikleme ve flâşör zamanlayıcısı native solverda birlikte doğrulanmadı.";
+ l.learningGoal="Opto-triyakla triyak sürülmesi konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
+ }
+}
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
