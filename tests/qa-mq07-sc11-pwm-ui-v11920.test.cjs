@@ -12,7 +12,7 @@ test('SC11 educator controls call original solver and never invent RPM',()=>{
  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','dist','tutorial-mode.js'),'utf8'),{window:w},{filename:'tutorial-mode.js'});
  for(const duty of [0,50,100]){
   assert.equal(w.DTSTutorialMode.setSc11PwmDuty(p,String(duty)),true);
-  assert.equal(p.mq05VirtualPwm.dutyPercent,duty);
+  assert.equal(p.components.find(c=>c.id==='pwm1').dutyPercent,duty);
   assert.match(p.tutorialLesson.lastFeedback,/RPM hesaplanmadı/);
   assert.equal(p.components.find(c=>c.id==='m1')._motorRPM,undefined);
  }
