@@ -1126,6 +1126,32 @@ function setSc12PwmDuty(project,value){
  if(l?.id!=='electronic-switching-src-12'||!generator||!Number.isFinite(duty)||duty<0||duty>100)return false;
  generator.dutyPercent=duty;root.DTSEditor?.render?.();sync(project);return true;
 }
+function sc16TriacPanel(project){
+ const q=project?.components?.find(c=>c.id==='q1'),sg=project?.components?.find(c=>c.id==='sg'),
+  sp=project?.components?.find(c=>c.id==='sp'),h=project?.components?.find(c=>c.id==='h1');
+ return '<section class="tutorial-sc11-pwm"><h3>BTA16 · DC tetikleme ve STOP</h3>'+
+  '<p>SG gate: <strong>'+(sg?.state?'BASILI':'BIRAKILDI')+'</strong> · SP güç STOP: <strong>'+(sp?.state?'AÇIK / STOP':'KAPALI')+'</strong></p>'+
+  '<p>Gate–MT1: '+(q?._triacGateVoltage===undefined?'—':Number(q._triacGateVoltage).toFixed(1)+' V')+
+  ' · sanal akım: '+(q?._triacHoldingCurrentA===undefined?'—':Number(q._triacHoldingCurrentA).toFixed(3)+' A')+
+  ' · yük: <strong>'+(h?._active?'ON':'OFF')+'</strong> · latch: '+(q?._triacLatched?'TUTUYOR':'KESİK')+'</p>'+
+  '<div class="tutorial-sc11-pwm-actions">'+
+  '<button type="button" data-sc16-triac-contact="gate-on">SG gate bas</button>'+
+  '<button type="button" data-sc16-triac-contact="gate-off">SG bırak</button>'+
+  '<button type="button" data-sc16-triac-contact="stop-on">SP STOP bas</button>'+
+  '<button type="button" data-sc16-triac-contact="stop-off">SP bırak</button></div>'+
+  '<small>Yalnız 12 V sanal DC. SG bırakmak latched triyakın ana akımını kesmez; SP güç kolunu açar. AC davranışı ve gerçek ürün kalibrasyonu kapsam dışıdır.</small></section>';
+}
+function setSc16TriacContact(project,action){
+ const lesson=lessonFor(project),sg=project?.components?.find(c=>c.id==='sg'&&c.typeId==='push-no'),
+  sp=project?.components?.find(c=>c.id==='sp'&&c.typeId==='push-nc');
+ if(lesson?.id!=='electronic-switching-src-16'||!sg||!sp)return false;
+ if(action==='gate-on')sg.state=true;
+ else if(action==='gate-off')sg.state=false;
+ else if(action==='stop-on')sp.state=true;
+ else if(action==='stop-off')sp.state=false;
+ else return false;
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function sc15AcPanel(project){
  const t=project?.components?.find(c=>c.id==='trg1'),source=project?.components?.find(c=>c.id==='ac1'),load=project?.components?.find(c=>c.id==='h1');
  const wave=t?._sc15Wave||[],angle=Number(t?.triggerAngleDeg??90);
@@ -1213,6 +1239,7 @@ function noteHtml(l,session,project){
  (isSc11VirtualPwm(l)?sc11PwmPanel(l,session,project):'')+
  (l.id==='electronic-switching-src-12'?sc12PwmDimmerPanel(project):'')+
  (l.id==='electronic-switching-src-15'?sc15AcPanel(project):'')+
+ (l.id==='electronic-switching-src-16'?sc16TriacPanel(project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1319,6 +1346,7 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const sc16Button=e.target.closest?.('[data-sc16-triac-contact]');if(sc16Button){e.preventDefault();setSc16TriacContact(root.DTSEditor?.getProject?.(),sc16Button.dataset.sc16TriacContact);return}
    const sc15Button=e.target.closest?.('[data-sc15-phase-angle]');if(sc15Button){e.preventDefault();setSc15PhaseAngle(root.DTSEditor?.getProject?.(),sc15Button.dataset.sc15PhaseAngle);return}
    const sc12DutyButton=e.target.closest?.('[data-sc12-pwm-duty]');if(sc12DutyButton){e.preventDefault();setSc12PwmDuty(root.DTSEditor?.getProject?.(),sc12DutyButton.dataset.sc12PwmDuty);return}
    const sc11DutyButton=e.target.closest?.('[data-sc11-pwm-duty]');if(sc11DutyButton){e.preventDefault();setSc11PwmDuty(root.DTSEditor?.getProject?.(),sc11DutyButton.dataset.sc11PwmDuty);return}
@@ -1410,6 +1438,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
