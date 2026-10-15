@@ -3174,7 +3174,7 @@ for(const spec of [
   C('g1','arduino-bench-supply',70,150,'G1','Sanal 12 V DC kaynak',{dcVoltage:12}),
   C('sw','push-no',325,160,'S1','Sanal gate tetikleme butonu',{state:false}),
   C('rg','resistor',520,175,'RG','1 kΩ sanal gate direnci',{resistance:1000}),
-  C('q1','tutorial-scr',810,335,'Q1','SCR gate-anot-katot eğitim modeli'),
+  C('q1','mq07-scr-virtual',810,335,'Q1','Elektriksel SCR gate-anot-katot sanal modeli'),
   C('h1','standard-light',1090,330,'H1','120 Ω sanal DC yük',{resistance:120})
  ];
  p.wires.push(
