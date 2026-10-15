@@ -163,6 +163,22 @@
           const volts=Math.max(0,Math.min(5,Number(c.arduinoValue??d.arduinoDefault??0)/1023*5));seed(c,'AO','arduino-sensor:'+c.id,'+','dc',volts);if(d.pins.some(p=>p.id==='GND'))seed(c,'GND','arduino-sensor:'+c.id,'0','dc',volts);
         }
       }
+      // Terminalized virtual PWM source: the output is electrically referenced to
+      // the same DC supply domain, rather than mutating a pushbutton state.
+      for(const c of project.components){
+        if(definition(byId,c)?.kind!=='pwm-generator')continue;
+        const duty=Number(c.dutyPercent),hz=Number(c.frequencyHz);
+        const valid=Number.isFinite(duty)&&duty>=0&&duty<=100&&
+          Number.isFinite(hz)&&hz>0&&Number.isFinite(now)&&now>=0;
+        const feeds=at(c,'V+').filter(v=>v.type==='dc'&&v.leg==='+');
+        const returns=at(c,'GND').filter(v=>v.type==='dc'&&v.leg==='0');
+        const supply=feeds.find(v=>returns.some(g=>g.domain===v.domain));
+        const period=valid?1000/hz:NaN;
+        const enabled=!!(supply&&Number.isFinite(period)&&period>0);
+        const high=!!(enabled&&(duty===100||(duty>0&&now%period<period*duty/100)));
+        c._pwmSupplyValid=enabled;c._pwmHigh=high;
+        if(enabled)seed(c,'OUT',supply.domain,high?'+':'0','dc',supply.volts);
+      }
       for(const c of project.components){
         const d=definition(byId,c);if(!d?.digitalIc||!DigitalIC)continue;
         for(const o of DigitalIC.outputSeeds(c,d,{dcVoltage})){
