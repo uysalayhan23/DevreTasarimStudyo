@@ -3547,6 +3547,92 @@ for(const specification of [
  L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),id])];
 }
 
+
+/* MQ-07: replace conceptual source boards with actual supported native
+   diode-clipping and op-amp Schmitt terminal graphs. Dynamic QA remains open. */
+{
+ const id='oscillator-filter-apps-src-09',l=L.byId[id];
+ if(!l||l.designStandard==='rich-reference-v1'||l.kind!=='quiz'||(l.project?.wires||[]).length)
+  throw Error('MQ07 clipper canonical source changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','supply-dc-plus',70,205,'G1','Sanal 24 VDC besleme'),
+  C('rv','potentiometer',235,205,'RV1','10 kΩ sanal giriş ayarı',{potMax:10000,potentiometer:50}),
+  C('rin','resistor',470,185,'R1','22 kΩ seri sınırlama',{resistance:22000}),
+  C('d1','1n4148-do35',800,220,'D1','Gerçek 1N4148 DO-35 diyot, A/K'),
+  C('load','resistor',800,425,'R2','100 kΩ çıkış yükü',{resistance:100000}),
+  C('ref1','resistor',420,490,'R3','1 kΩ referans üst',{resistance:1000}),
+  C('ref2','resistor',600,490,'R4','1 kΩ referans alt',{resistance:1000}),
+  C('v1','meter-voltmeter',1095,280,'V1','DC çıkış voltmetresi')
+ ];
+ p.wires.push(
+  W('g1','P','rv','1','+24 V → RV1/1','Giriş üst ucu.'),
+  W('rv','3','g1','M','RV1/3 → 0 V','Giriş alt ucu.','#111827','0V'),
+  W('rv','2','rin','1','RV1/2 → R1/1','Giriş gerilimi 22 kΩ akım sınırlama yoluna girer.','#43a047','SIGNAL'),
+  W('rin','2','d1','A','R1/2 → D1/A','Sınırlandırılacak düğüm diyot anodudur.','#43a047','SIGNAL'),
+  W('rin','2','load','1','R1/2 → R2/1','Aynı düğümden çıkış yükü beslenir.','#43a047','SIGNAL'),
+  W('load','2','g1','M','R2/2 → 0 V','Yük dönüşü.','#111827','0V'),
+  W('g1','P','ref1','1','G1/P → R3/1','Referans bölücüsü üst kolu.'),
+  W('ref1','2','ref2','1','R3/2 → R4/1','Yaklaşık 12 V referans orta düğümü.','#43a047','SIGNAL'),
+  W('ref2','2','g1','M','R4/2 → G1/M','Referans alt kolu.','#111827','0V'),
+  W('d1','K','ref1','2','D1/K → 12 Vref','Katot referans tarafından tutulur.','#43a047','SIGNAL'),
+  W('rin','2','v1','1','Kırpılan çıkış → V1/1','Çıkış voltmetresinin artı ucu.','#43a047','SIGNAL'),
+  W('v1','2','g1','M','V1/2 → 0 V','DC ölçüm referansı.','#111827','0V')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'Kırpıcı devre, gerçek 1N4148 A/K diyot uçlarıyla 12 V referansına bağlı akım sınırlamalı ve ölçülebilir DC giriş aktarımıdır.',
+  explanation:'AMAÇ: Diyotlu genlik sınırlama işlevini sıradan buton veya çizim sembolü kullanmadan kurmak. MALZEMELER: 24 V sanal DC kaynak, RV1 10 kΩ, R1=22 kΩ, R2=100 kΩ yük, R3/R4=1 kΩ eşik bölücüsü, elektronik kütüphanesindeki 1N4148 DO-35 D1 ve V1 voltmetre. GERÇEK BAĞLANTILAR: G1/P→RV1/1, RV1/3→G1/M, RV1/2→R1/1, R1/2→D1/A ve R2/1, R2/2→G1/M. D1/K→R3/R4 orta referans düğümü; voltmetre çıkış ile 0 V arasındadır. ELEKTRİKSEL ÇALIŞMA: RV1 düşükken D1 kesimdedir, çıkışı R1/R2 gerilim bölücüsü belirler. RV1 yükselince çıkış, yaklaşık 12 V referans üzerine diyot ileri gerilimi kadar yükselmeye çalıştığında D1 iletime geçip üst genliği sınırlar. Diyotun gerçek ileri eğrisi ve bölücünün yüklendiğinde referans kayması vardır; ideal 12,7 V sert eşik varsayılmaz. ÖĞRENCİ DENEYİ: RV1 %10, %50, %90 konumlarını karşılaştır; D1/A ve D1/K yönünü, seri R1 olmadan akımın neden artacağını açıkla. SINIRLAR: Bu DC giriş taramalı bir kırpma örneğidir, AC sinüs dalgası ve ısıl ölçüm doğrulanmış değildir.',
+  goal:'Seri giriş direnci, diyot A/K polaritesi, referans bölücüsü ve yükü ayırt ederek gerçek DC kırpma topolojisi kurmak.',
+  beginnerSteps:[
+   'Kütüphanedeki 1N4148 diyotun A ve K uçlarını tespit et.',
+   'RV1/2 girişinden 22 kΩ R1 üzerinden çıkış düğümünü izle.',
+   'R3/R4 bölücüsünün nominal 12 V referansını hesapla.',
+   'D1/K katodunun referansa, D1/A anodunun kırpılan çıkışa bağlandığını göster.',
+   'Voltmetrenin giriş yerine çıkışı ölçtüğünü kontrol et.',
+   'Diyot ters yönde bağlansa kırpma davranışı neden değişir açıkla.'
+  ]});
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',previousReason:'NO_WIRED_CIRCUIT',
+  titleTopologyIssue:null,titleTopologyStatus:'DIODE_CLIPPER_GRAPH_REPAIRED',
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,
+  windowsVisualAcceptance:false,dcTransferAccepted:false,acWaveformAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),id])];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...new Set([...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id])];
+}
+{
+ const id='oscillator-filter-apps-src-13',l=L.byId[id];
+ if(!l||l.designStandard==='rich-reference-v1'||l.kind!=='quiz'||(l.project?.wires||[]).length)
+  throw Error('MQ07 oscillator Schmitt canonical source changed');
+ const p=opampCircuitProject(id,'Schmitt Trigger');
+ if(!p.components.some(c=>c.typeId==='lm358p-opamp-a')||
+    !p.wires.some(w=>w.from.c==='r1'&&w.to.c==='u1'&&w.to.p==='IN+')||
+    !p.wires.some(w=>w.from.c==='r2'&&w.to.c==='u1'&&w.to.p==='IN+'))
+  throw Error('MQ07 Schmitt input/feedback graph not created');
+ setLesson(l,p,{kind:'wiring',
+  summary:'LM358P Schmitt tetikleyici: RV1 giriş, R1=10 kΩ seri direnç, R2=47 kΩ pozitif geri besleme ve R3/R4 gerilim bölücü.',
+  explanation:'AMAÇ: Histerezisi gerçek pozitif geri beslemeli komparatör bağlantılarıyla öğretmek. MALZEMELER: Sanal 24 VDC kaynak, LM358P U1A, 10 kΩ RV1, R1=10 kΩ giriş, R2=47 kΩ OUT→IN+ geri besleme, R3/R4=10 kΩ 12 Vref bölücü ve V1 voltmetre. BAĞLANTILAR: RV1/2→R1/1→R1/2→U1/IN+. U1/OUT→R2/1→R2/2→U1/IN+; R3/R4 orta noktası U1/IN− ucundadır. U1 V+/V− 24/0 V raylarındadır. ÇALIŞMA: R1 ve R2 aynı IN+ düğümünde birleştiği için çıkış yüksekken ve düşükken eşik farklıdır. İdeal eşik formülü Vin≈12×(1+R1/R2)−Vout×R1/R2 olur. Gerçek LM358P çıkış salınımı güç raylarına tam ulaşmaz. ÖĞRENCİ DENEYİ: RV1 gerilimini yavaşça artırıp azalt; çıkışın açılış ve kapanış koşullarını karşılaştır. R2 kaldırılırsa pozitif geri besleme olmaz ve histerezis kaybolur. SINIR: Dinamik eşik davranışının solver ve Windows görsel kabulü henüz çalıştırılmadı.',
+  goal:'Giriş seri direnci ile OUT pozitif geri besleme direncini ayırmak ve iki farklı giriş eşiğini açıklamak.',
+  beginnerSteps:[
+   'LM358P V+/V− besleme uçlarını ve R3/R4 12 V referans bölücüsünü tanı.',
+   'RV1/2→R1/1→R1/2→IN+ giriş yolunu göster.',
+   'OUT→R2/1→R2/2→IN+ pozitif geri besleme döngüsünü göster.',
+   'IN− üzerindeki 12 V referansı doğrula.',
+   'RV1 ayarını artırırken ve azaltırken çıkış davranışını karşılaştır.',
+   'R2 çıkarıldığında neden histerezis oluşmayacağını açıkla.'
+  ]});
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',previousReason:'NO_WIRED_CIRCUIT',
+  titleTopologyIssue:null,titleTopologyStatus:'LM358_SCHMITT_GRAPH_REPAIRED',
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,
+  windowsVisualAcceptance:false,dynamicHysteresisAccepted:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),id])];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...new Set([...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id])];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
