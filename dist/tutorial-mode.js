@@ -1105,7 +1105,9 @@ function sc11PwmPanel(l,session,project){
  const cfg=project?.components?.find(c=>c.id==='pwm1')||{},m=project?.components?.find(c=>c.id==='m1'),q=project?.components?.find(c=>c.id==='q1');
  return '<section class="tutorial-sc11-pwm"><h3>Sanal PWM · MOSFET/DC motor</h3>'+
   '<p>Duty: <strong>'+esc(String(cfg.dutyPercent??0))+'%</strong> · frekans '+esc(String(cfg.frequencyHz??1000))+' Hz</p>'+
-  '<p>Q1 '+(q?._mosfetOn?'ON':'OFF')+' · M1 '+(m?._active?'ENERJİLİ':'OFF')+' · anlık yön '+esc(String(m?._spin??0))+'</p>'+
+  '<p>Q1 '+(q?._mosfetOn?'ON':'OFF')+' · M1 anlık '+(m?._active?'ENERJİLİ':'OFF')+'</p>'+
+  '<p>Motor eğitsel hız eğilimi: '+(Number.isFinite(m?._sc11SpeedPercent)?m._sc11SpeedPercent.toFixed(1)+'%':'ölçüm bekliyor')+' · çözücüyle doğrulanan hedef: '+(Number.isFinite(m?._sc11DriveTargetPercent)?m._sc11DriveTargetPercent.toFixed(0)+'%':'—')+'</p>'+
+  '<p>VG gerçek sanal G–S DCV ortalaması: '+(Number.isFinite(m?._sc11VgsMean)?m._sc11VgsMean.toFixed(2)+' V':'ölçüm doğrulanmadı')+'</p>'+
   '<div class="tutorial-sc11-pwm-actions">'+[0,50,100].map(d=>'<button type="button" data-sc11-pwm-duty="'+d+'">'+d+'% duty</button>').join('')+'</div>'+
   '<small>Görünen sonuç özgün elektriksel solverın anlık anahtarlama durumudur. RPM, tork ve termal doğrulama yoktur; gerçek motor sürücüsü değildir.</small></section>';
 }
