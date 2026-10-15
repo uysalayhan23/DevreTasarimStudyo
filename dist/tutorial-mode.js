@@ -1229,9 +1229,21 @@ function sync(project=root.DTSEditor?.getProject?.()){
 function cleanProject(l){
  const p=clone(l.project);p.defaultTemplate=undefined;p.projectId='tutorial-session-'+l.id;const initialPhase=l.kind==='quiz'?'quiz':l.kind==='explore'?'explore':'demo';p.tutorialLesson={id:l.id,topicId:l.topicId,phase:initialPhase,step:0,level:l.variant,lastFeedback:''};return p;
 }
+function checkedLessonProject(l){
+ const p=cleanProject(l),id=l.id,parts=p.components||[];
+ const has=t=>parts.some(c=>c.typeId===t);
+ if((id==='opamp-apps-src-13'||id==='opamp-apps-src-14')&&
+   (!has('lm358p-opamp-a')||!has('capacitor')||
+    !parts.some(c=>c.typeId==='resistor')||!(p.wires||[]).length))
+   throw Error('Dersin gerçek LM358/R-C devresi bulunamadı; ilgisiz 4–20 mA projesi açılamaz.');
+ if(id==='electronic-switching-src-16'&&
+   (!has('mq07-triac-virtual')||!(p.wires||[]).some(w=>w.to?.p==='MT2')))
+   throw Error('Triyak dersi için gerçek MT1/MT2/G devresi bulunamadı; sıradan anahtar/lamba projesi açılamaz.');
+ return p;
+}
 async function open(id){
  const l=L.byId[id];if(!l||!root.DTSStudio||!root.DTSEditor)return;lastLesson=id;hintOpen=false;closeHub();
- try{root.DTSStudio.load(cleanProject(l));root.DTSEditor.setAppearance?.('material');setTimeout(()=>sync(root.DTSEditor.getProject()),0)}catch(e){root.DTSEditor.toast('Öğretici ders açılamadı: '+(e?.message||e))}
+ try{root.DTSStudio.load(checkedLessonProject(l));root.DTSEditor.setAppearance?.('material');setTimeout(()=>sync(root.DTSEditor.getProject()),0)}catch(e){root.DTSEditor.toast('Öğretici ders açılamadı: '+(e?.message||e))}
 }
 function restoreMeasurementTargets(project,l){
  for(const source of l.project.components){const live=project.components.find(c=>c.id===source.id);if(!live)continue;if(source.probeTarget)live.probeTarget=clone(source.probeTarget);else delete live.probeTarget;if(source.typeId==='unit-ut200a'){delete live.clampedWireId;delete live.clampT}}
