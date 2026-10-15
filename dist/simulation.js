@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc18LedCurrentA;delete c._sc18CollectorCurrentA;delete c._sc18CollectorVoltageV;delete c._sc18LedOn;delete c._sc18TransistorOn;delete c._sc18Isolated;delete c._sc18VirtualCtr;delete c._sc18CurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -827,7 +827,71 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       conductionPct:valid?100*conduction/180:0};
   }
 
-  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,solveSc17TriacDimmerCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+
+  // SC18 opto model: two isolated virtual supplies, LED-to-phototransistor
+  // coupling ONLY through an illustrative CTR; never connect the DC rails.
+  function solveSc18OptocouplerCycle(project,byId,options={}){
+    const scene=project?.tutorialLesson?.id==='electronic-switching-src-18'||
+      ['tutorial-electronic-switching-src-18','tutorial-session-source-electronic-switching-src-18'].includes(project?.projectId);
+    if(!scene)return {result:solve(project,byId,options),verified:false};
+    const result=solve(project,byId,options),part=id=>project.components.find(c=>c.id===id);
+    const g1=part('g1'),g2=part('g2'),sg=part('sg'),rin=part('rin'),rout=part('rout'),u=part('u1');
+    const match=!!(g1?.typeId==='arduino-bench-supply'&&g2?.typeId==='arduino-bench-supply'&&
+      g1.id!==g2.id&&sg?.typeId==='push-no'&&rin?.typeId==='resistor'&&rout?.typeId==='resistor'&&
+      u?.typeId==='arduino-tlp521-1'&&u.mq07OptoVirtual===true&&
+      byId[u.typeId]?.pins?.map(p=>p.id).join(',')==='1,2,4,3');
+    const parents=new Map();
+    const key=x=>x?.j!==undefined?'j:'+x.j:x?.c&&x?.p?x.c+'/'+x.p:null;
+    const find=x=>{if(!parents.has(x))parents.set(x,x);let r=x;
+      while(parents.get(r)!==r)r=parents.get(r);
+      while(parents.get(x)!==x){const next=parents.get(x);parents.set(x,r);x=next}
+      return r};
+    for(const w of project.wires||[]){
+      if(w.mechanical||w.role==='MECHANICAL')continue;
+      const a=key(w.from),b=key(w.to);if(a&&b)parents.set(find(a),find(b));
+    }
+    const linked=(a,p,b,q)=>find(a+'/'+p)===find(b+'/'+q);
+    const separate=!!(match&&!linked('g1','M','g2','M')&&!linked('g1','P','g2','P')&&
+      !linked('g1','P','g2','M')&&!linked('g2','P','g1','M')&&
+      !linked('u1','1','u1','4')&&!linked('u1','2','u1','3')&&
+      !linked('u1','1','u1','2')&&!linked('u1','4','u1','3'));
+    const inputWired=!!(separate&&linked('g1','P','sg','13')&&linked('sg','14','rin','1')&&
+      linked('rin','2','u1','1')&&linked('u1','2','g1','M'));
+    const outputWired=!!(separate&&linked('g2','P','rout','1')&&
+      linked('rout','2','u1','4')&&linked('u1','3','g2','M'));
+    const vin=g1?.dcVoltage,vout=g2?.dcVoltage,ri=rin?.resistance,ro=rout?.resistance,
+      ctr=u?.mq07VirtualCtr,ledDrop=u?.mq07VirtualLedDropV,vceSat=u?.mq07VirtualVceSatV;
+    const validParams=!!(result.stable&&!result.shortCircuit&&!result.blocked&&!result.oscillating&&
+      typeof vin==='number'&&Number.isFinite(vin)&&vin>=1&&vin<=12&&
+      typeof vout==='number'&&Number.isFinite(vout)&&vout>=1&&vout<=12&&
+      typeof ri==='number'&&Number.isFinite(ri)&&ri>=100&&ri<=100000&&
+      typeof ro==='number'&&Number.isFinite(ro)&&ro>=100&&ro<=100000&&
+      typeof ctr==='number'&&Number.isFinite(ctr)&&ctr>0&&ctr<=2&&
+      typeof ledDrop==='number'&&Number.isFinite(ledDrop)&&ledDrop>=.5&&ledDrop<=2.5&&
+      typeof vceSat==='number'&&Number.isFinite(vceSat)&&vceSat>=.05&&vceSat<=1);
+    const inputReady=inputWired&&validParams,outputReady=outputWired&&validParams;
+    const ledA=inputReady&&sg.state===true?Math.max(0,(vin-ledDrop)/ri):0;
+    const limitA=outputReady?Math.max(0,(vout-vceSat)/ro):0;
+    const collectorA=inputReady&&outputReady?Math.min(limitA,ledA*ctr):0;
+    const conducting=collectorA>0.00001;
+    // No manufacturer CTR transfer curve or real isolation breakdown physics.
+    const collectorV=outputReady?Math.max(vceSat,vout-collectorA*ro):null;
+    if(u){
+      u._sc18LedCurrentA=ledA;u._sc18CollectorCurrentA=collectorA;
+      u._sc18CollectorVoltageV=collectorV;u._sc18LedOn=ledA>0;
+      u._sc18TransistorOn=conducting;u._sc18Isolated=separate;
+      u._sc18VirtualCtr=validParams?ctr:null;u._active=conducting;
+    }
+    if(rin){rin._sc18CurrentA=ledA;rin._currentValue=ledA;rin._active=ledA>0}
+    if(rout){rout._sc18CurrentA=collectorA;rout._currentValue=collectorA;
+      rout._voltageValue=collectorA*ro;rout._active=conducting}
+    return {result:{...result,timed:false},verified:!!(inputReady&&outputReady),
+      isolated:separate,inputReady,outputReady,ledOn:ledA>0,transistorOn:conducting,
+      ledCurrentA:ledA,collectorCurrentA:collectorA,collectorVoltageV:collectorV,
+      virtualCtr:validParams?ctr:null};
+  }
+
+  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,solveSc17TriacDimmerCycle,solveSc18OptocouplerCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
