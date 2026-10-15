@@ -3362,6 +3362,33 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* MQ-07: actual LM358P feedback-topology repair for former NO_WIRED_CIRCUIT
+   differentiator and integrator lessons. Transient transfer is NOT certified. */
+for(const spec of [
+ {id:'opamp-apps-src-13',topology:'türev',part:'Girişte C1=100 nF, çıkıştan IN− noktasına R2=47 kΩ',formula:'İdeal |Rf·C|=47 000 × 100 nF=0,0047 s; Vout=−Rf·C·dVin/dt bağıntısı yalnız ideal lineer aralıkta geçerlidir.',question:'C1 açık devre olursa IN− girişine sinyal akımı ulaşır mı?'},
+ {id:'opamp-apps-src-14',topology:'integral',part:'Girişte R1=10 kΩ, OUT–IN− arasında C1=1 µF',formula:'İdeal R·C=10 000 × 1 µF=0,01 s; Vout=−(1/RC)∫Vin dt + başlangıç değeri yalnız ideal modelin ifadesidir.',question:'C1 açık devre veya giriş R1 kopuk ise geri besleme ne olur?'}
+]){
+ const l=L.byId[spec.id];if(!l||l.kind!=='quiz'||l.project.wires.length||
+  !L.mq07Batch200.reviewIds.some(x=>x.id===spec.id&&x.reason==='NO_WIRED_CIRCUIT')||
+  !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(spec.id))throw Error('MQ07 opamp source baseline changed: '+spec.id);
+ const p=opampCircuitProject(spec.id,spec.topology==='türev'?'Op-amp türev alıcı':'Op-amp integral alıcı');
+ p.name=l.title;
+ setLesson(l,p,{kind:'wiring',
+  summary:l.title+' — LM358P IN+, IN−, OUT, V+, V− uçları ve gerçek R/C bağlantılarıyla sanal geri besleme devresi.',
+  explanation:'AMAÇ: '+l.title+'. ELEMANLAR: G1 sanal 24 V tek besleme; U1A LM358P, V+ besleme ve V− referans; RV1 sanal giriş ayarı; R1 giriş ağı; R2 geri besleme; C1 depolama elemanı; V1 OUT ile G1/M arasındaki voltmetredir. BAĞLANTILAR: G1/P→U1A/V+, G1/M→U1A/V−, V1/1→U1A/OUT, V1/2→G1/M. '+spec.part+'. IN+ referans olarak G1/M üzerindedir; IN− geri besleme düğümüdür. HESAP: '+spec.formula+' ÖĞRENCİ DENEYİ: Giriş potansiyometresini değiştir, V1 çıkışını gözle; kopuk R/C elemanında devre bütünlüğü neden bozulur tartış. KONTROL SORUSU: '+spec.question+' SINIRLAR: 24 V tek beslemeli LM358P, gerçek negatif çıkış salınımını veya dinamik dalga doğruluğunu garantilemez. Yerel solver sonucu olmadan ölçülmüş dalga ya da kazanç ilan edilmez.'});
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_LM358P_RC_FEEDBACK_GRAPH',previousReason:'NO_WIRED_CIRCUIT',
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,
+  transientWaveformAccepted:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==spec.id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),spec.id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==spec.id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),spec.id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
