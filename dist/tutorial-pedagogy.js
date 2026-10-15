@@ -3244,46 +3244,29 @@ for(const spec of [
 }
 
 
-/* SC16 DC triac: native-solver-powered gate/MT1-MT2 educational example.
-   AC phase dimming and real holding-current dynamics remain unsupported. */
+/* SC16 corrected: actual bidirectional AC triac lesson cannot be represented
+   by an ordinary pushbutton + resistive lamp in a DC virtual switch test.
+   Keep a proper triac device as an explicit reference and REVIEW the circuit. */
 {
  const id='electronic-switching-src-16',l=L.byId[id];
- if(!l||l.kind!=='quiz'||l.project.wires.length||
-    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
-    !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))
-  throw Error('SC16 source baseline changed');
+ if(!l||l.kind!=='quiz'||l.project.wires.length)throw Error('SC16 quiz source changed');
  const p=base(id,l.title);
- p.components=[
-  C('g1','arduino-bench-supply',70,145,'G1','Yalnız sanal 12 V DC',{dcVoltage:12}),
-  C('sw','push-no',330,135,'S1','Sanal gate butonu',{state:false}),
-  C('rg','resistor',515,160,'RG','1 kΩ gate direnci',{resistance:1000}),
-  C('q1','mq07-triac-virtual',810,330,'Q1','Elektriksel triyak MT1/MT2/G sanal modeli'),
-  C('h1','standard-light',1100,315,'H1','Sanal 120 Ω yük',{resistance:120})
- ];
- p.wires.push(
-  W('g1','P','sw','13','G1/P → S1/13','Tetikleme kontrol kaynağı.'),
-  W('sw','14','rg','1','S1/14 → RG/1','Kontrol S1 üstünden geçer.'),
-  W('rg','2','q1','G','RG/2 → Q1/G','Gate eşiği özgün çözücü tarafından değerlendirilir.'),
-  W('g1','P','h1','X1','G1/P → H1/X1','Güç yoluna sanal pozitif kaynak.'),
-  W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','Yük ile ana güç terminali arasındaki bağ.'),
-  W('q1','MT1','g1','M','Q1/MT1 → G1/M','Referans dönüşü.')
- );
- setLesson(l,p,{kind:'wiring',
-  summary:'Triyakın sanal DC gate tetikleme deneyi: G–MT1 kontrol gerilimi ile MT2–MT1 yük yolu ayrı incelenir.',
-  explanation:'AMAÇ: Triyakın MT1, MT2 ve G uçlarını ayırarak sanal DC gate anahtarlamasını gözlemek. Bu, AC faz kontrollü dimmer değildir. MALZEMELER: G1 yalnız sanal 12 V kaynak, S1 tetikleme anahtarı, RG 1 kΩ gate direnci, Q1 işlevsel sanal triyak, H1 sanal 120 Ω yük. KONTROL BAĞLANTILARI: G1/P → S1/13–14 → RG/1–2 → Q1/G, Q1/MT1 → G1/M. GÜÇ BAĞLANTILARI: G1/P → H1/X1–X2 → Q1/MT2 → Q1/MT1 → G1/M. ÇALIŞMA: S1 bırakıldığında gate tetiklenmez; basıldığında özgün solver G–MT1 eşik koşulunu kontrol eder. S1 bırakıldığında sanal eşik tekrar değerlendirilir; gerçek triyak tutma akımı ve doğal komütasyon davranışı modellenmez. HESAP: İdeal direnç varsayımı altında 12 V / 120 Ω = 0,1 A; bu hesap teoriktir, ölçülmüş akım ya da cihaz garantisi değildir. ÖĞRENCİ DENEYİ: S1 bırak/bas/bırak durumlarında Q1 ve H1 durumunu karşılaştır; RG–G veya H1–MT2 bağlantısı kaldırıldığında kontrol ile güç yolunun farkını açıkla. KONTROL SORULARI: MT1 neden gate referansı kabul edilir? DC deneyi neden AC faz dimmer kabulü değildir? Tutma akımı olmayan sanal model neyi açıklayamaz?');
+ p.referenceOnly=true;
+ p.components=[C('q1','mq07-triac-virtual',670,300,'Q1','Sanal triyak G / MT1 / MT2; üretici BTA16 modeli değildir')];
+ setLesson(l,p,{kind:'quiz',
+  summary:'Triyak çift yönlü AC anahtarlamayı ve doğal sıfır geçişini inceler. Gerçek gate sürücüsü, AC dalga çözümü ve uygun elemanlar tamamlanmadığı için kablolu simülasyon kabulü açık.',
+  explanation:'KONU: Triyak güç terminalleri MT1/MT2 ve gate G ile her iki AC yarım periyotta tetiklenebilir. ÖNEMLİ: Sıradan buton veya lambayla hazırlanan DC anahtarlama testi, gerçek çift yönlü faz kontrollü triyak devresi değildir. GEREKLİ MALZEMELER: Üretici verisi doğrulanmış gerçek triyak, uygun optik tetikleyici/gate sürme devresi, AC sinyal modeli, sınırlayıcı/koruyucu elemanlar ve konuya uygun ölçümler. İNCELENECEKLER: MT1, MT2 ve gate görevleri; pozitif/negatif yarım periyot; tetikleme eşiği ve tutma akımı; sıfır geçişi ve faz gecikmesi. ÖĞRENCİ SORUSU: Bir yönde çalışan DC sanal anahtarlama modeli neden iki yönlü AC triyak davranışını kanıtlamaz? Üretici belgeleri ve özgün solver henüz fiziksel devre kabulüne yeterli değil.'});
  l.materials=materialRows(p);
  l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
-  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_DC_TRIAC_GATE_NATIVE_SWITCHING',
-  previousReason:'NO_WIRED_CIRCUIT',dcTriacVirtual:{realHoldingCurrent:false,acPhaseAngle:false},
+  titleTopologyIssue:'NO_WIRED_CIRCUIT',titleTopologyStatus:'BLOCKED_REQUIRED_AC_TRIAC_DRIVER',
   physicalAcceptance:false,manufacturerCalibrationVerified:false,
   independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
- l.safety='Yalnız sanal düşük gerilimli triyak giriş-çıkış gösterimi; gerçek AC faz kontrolü ve elektriksel donanım uygulaması değildir.';
- L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
- L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
- L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
- L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+ l.safety='Sanal sembol ile gerçek AC sürücü eşdeğer değildir; test edilmemiş devre işlevsel olarak gösterilmez.';
+ if(!L.mq07Batch200.reviewIds.some(x=>x.id===id))
+  L.mq07Batch200.reviewIds.push({id,reason:'NO_WIRED_CIRCUIT'});
+ if(!L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))
+  L.mq07Batch200.noWireTriage.applicationRepairIds.push(id);
 }
-
 
 /* MQ-07: case-specific source teaching for unsupported AC/opto control lessons.
    Keep NO_WIRED_CIRCUIT open; these are honest explanatory repairs, not solver acceptance. */
