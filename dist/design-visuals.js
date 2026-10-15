@@ -8,16 +8,16 @@
     const screw=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#adb5bb" stroke="#58616a"/><path d="M${x-2} ${y}h4" stroke="#334155"/>`;
     const box=(x,y,bw,bh,fill=`url(#${gid})`)=>`<path d="M${x+4} ${y+bh+4}h${bw}v-${bh}l-4-4z" fill="#9ba5ad"/><rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${fill}" stroke="#737f8b"/>`;
     let art='';
-    if(d.kind==='ac-virtual-source'||d.kind==='ac-scr-trigger'){
+    if(['ac-virtual-source','ac-scr-trigger','ac-triac-trigger'].includes(d.kind)){
       const isSource=d.kind==='ac-virtual-source';
       const angle=Number.isFinite(c.triggerAngleDeg)?c.triggerAngleDeg:d.defaultTriggerAngleDeg??90;
       const wave=Array.from({length:29},(_,i)=>(i?'L':'M')+(22+i*(w-44)/28).toFixed(1)+' '+(89-16*Math.sin(i*2*Math.PI/28)).toFixed(1)).join(' ');
       art='<rect x="10" y="12" width="'+(w-20)+'" height="'+(h-24)+'" rx="11" fill="#293c4b" stroke="#a9c0d2" stroke-width="3"/>'+
         '<rect x="18" y="22" width="'+(w-36)+'" height="25" rx="4" fill="#102638"/>'+
-        '<text x="'+cx+'" y="39" text-anchor="middle" font-size="11" font-weight="bold" fill="#edf8ff">'+(isSource?'ISOLATED AC 12V':'SCR PHASE TRIGGER')+'</text>'+
+        '<text x="'+cx+'" y="39" text-anchor="middle" font-size="11" font-weight="bold" fill="#edf8ff">'+(isSource?'ISOLATED AC 12V':d.kind==='ac-triac-trigger'?'TRIAC PHASE DRIVER':'SCR PHASE TRIGGER')+'</text>'+
         '<rect x="19" y="53" width="'+(w-38)+'" height="20" rx="3" fill="#104542"/>'+
         '<text x="'+cx+'" y="67" text-anchor="middle" font-family="monospace" font-size="11" fill="#8affca">'+(isSource?'12 V RMS / 50 Hz':'FIRE '+esc(angle)+'°')+'</text>'+
-        '<path d="'+(isSource?wave:('M22 92h30v-13h22v13h43'))+'" fill="none" stroke="#59d8ff" stroke-width="2.5"/>'+
+        '<path d="'+(isSource?wave:d.kind==='ac-triac-trigger'?'M22 86h24v-13h20v13h16v12h20v-12h26':('M22 92h30v-13h22v13h43'))+'" fill="none" stroke="#59d8ff" stroke-width="2.5"/>'+
         '<text x="20" y="'+(h-14)+'" font-size="8" fill="#d7e6ef">'+(isSource?'VIRTUAL · NO MAINS':'AC REFERENCED · VIRTUAL')+'</text>'+
         (isSource?'<text x="'+(w-24)+'" y="34" text-anchor="end" font-size="9" fill="white">AC</text><text x="'+(w-24)+'" y="104" text-anchor="end" font-size="9" fill="white">RET</text>':'<text x="20" y="31" font-size="9" fill="white">AC</text><text x="20" y="111" font-size="9" fill="white">RET</text><text x="'+(w-20)+'" y="66" font-size="9" fill="white" text-anchor="end">OUT</text>');
     }else     if(d.kind==='pwm-generator'||id==='virtual-pwm-generator-v1'){
