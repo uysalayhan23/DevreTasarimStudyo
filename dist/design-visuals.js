@@ -13,13 +13,17 @@
       const hz=typeof c.frequencyHz==='number'&&Number.isFinite(c.frequencyHz)?c.frequencyHz:d.defaultFrequencyHz??1000;
       const on=!!c._pwmHigh,active=!!c._pwmSupplyValid;
       const left=22,right=w-22,top=16,bottom=h-15;
+      // Schematic waveform is an illustrative duty ratio, not an oscilloscope measurement.
+      const waveWidth=Math.max(20,(right-left-28)/2),waveStart=left+14,waveLow=top+89,waveHigh=waveLow-10;
+      const pulse=(x)=>duty<=0?`M${x} ${waveLow}h${waveWidth}`:duty>=100?`M${x} ${waveHigh}h${waveWidth}`:`M${x} ${waveLow}v-10h${waveWidth*duty/100}v10h${waveWidth*(100-duty)/100}`;
+      const waveform=pulse(waveStart)+' '+pulse(waveStart+waveWidth);
       art=`<rect x="${left}" y="${top}" width="${right-left}" height="${bottom-top}" rx="12" fill="#253747" stroke="#a7b8c6" stroke-width="3"/>
         <rect x="${left+9}" y="${top+9}" width="${right-left-18}" height="23" rx="4" fill="#101f2d" stroke="#506777"/>
         <text x="${cx}" y="${top+25}" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#ecfaff">PWM GENERATOR</text>
         <rect x="${left+10}" y="${top+42}" width="${right-left-20}" height="34" rx="5" fill="#072c2c" stroke="#55a99f"/>
         <text x="${left+18}" y="${top+56}" font-family="monospace" font-size="10" fill="#9df5bf">DUTY ${esc(duty)}%</text>
         <text x="${left+18}" y="${top+69}" font-family="monospace" font-size="10" fill="#9df5bf">FREQ ${esc(hz)} Hz</text>
-        <path d="M${left+14} ${top+89}h17v-10h18v10h18v-10h18v10h18" stroke="#65d6f7" fill="none" stroke-width="2.5"/>
+        <path d="${waveform}" stroke="${active?'#65d6f7':'#667586'}" fill="none" stroke-width="2.5"/>
         <circle cx="${right-17}" cy="${bottom-19}" r="5" fill="${active?(on?'#35e6a7':'#e6ae43'):'#667586'}" stroke="#d0e5f1"/>
         <text x="${left+14}" y="${bottom-12}" fill="#deebf3" font-size="8">VIRTUAL · DC PWM</text>
         <rect x="4" y="24" width="18" height="12" rx="3" fill="#e4ebf2" stroke="#556778"/>
