@@ -54,3 +54,33 @@ This contract is a software-only educational representation, not electrical hard
 - Added `scripts/RUN_MQ12_SC11_LOCAL.cmd` in `main`: it invokes the standalone PWM contract tests, SC11 native motor/UI tests, all `qa-mq07-*.test.cjs` tests, and the 1,655-lesson native suite using actual `node --test` calls, preserving a nonzero exit status on any failure. This script has **not yet been executed** and is not proof of a passing suite.
 - Preconditions: complete local checkout/ZIP with `dist/`, `scripts/`, `tests/` folders; Node on PATH. Invoking the script is independent of GitHub Actions; no server is started.
 - **MQ-12** actual test evidence: NOT_RUN. **MQ-13** main-only commit with `[skip ci]`, no force push, no Actions. **MQ-00** remains REVIEW / execution blocked; physical/Windows/browser acceptance remains separate even when unit tests eventually pass.
+
+
+## 2026-10-15 MQ-00 reopened: S1 is not a PWM source (user screenshot audit)
+**Status: REOPEN / P1 material-topology mismatch. Previous SC11 `wiring` and PWM time sampling are NOT lesson acceptance.**
+
+### Observed mismatch (MQ-07 lead / MQ-05 cross-check)
+- `dist/tutorial-pedagogy.js` builds SC11 with `C('sw','push-no',...,'S1',...)` and a `G1/P → S1/13 → S1/14 → RG → Q1/G` branch.
+- `dist/simulation.js` mutates the pushbutton's `state` from project-wide `mq05VirtualPwm` duty and clock. The apparent PWM function belongs to external project state, not a selectable, terminalized PWM generator material. The screenshot confirms the physical mismatch.
+- Merely changing `S1` caption, graphics, or renaming `push-no` to `PWM` is explicitly **not an acceptable repair**.
+- Screenshot also shows gate/probe wires and MOSFET labels overlapping; this remains a separate MQ-03/MQ-04/MQ-10 visual gate.
+
+### Mandatory replacement contract (MQ-09/MQ-04 → MQ-05 → MQ-07)
+1. Add a **dedicated PWM generator** library definition with distinct component identity and terminals `V+`, `GND`, `OUT`, not `push-no` and not a hidden tutorial-only component. Its body must visibly show PWM generator, frequency and duty; any physical model/orthographic dimensions require an identified manufacturer, else label it **virtual functional generator** rather than pretending to be a real manufacturer's device.
+2. Establish `V+` and `GND` supply/reference connections and a **real solver-owned** time-varying `OUT` drive. Valid generator supply, GND return, duty/frequency and `OUT → RG → Q1/G` must determine behavior. An unpowered generator, floating ground, severed OUT or invalid duty must fail closed. Do not modify a pushbutton's state as a proxy.
+3. SC11 must use `PWM1` with `G1/P → PWM1/V+`, `PWM1/GND → G1/M`, `PWM1/OUT → RG/1`, `RG/2 → Q1/G`, `RP → G1/M`; leave motor/MOSFET power path and original solver semantics intact. Place instrument and wires without overlaps.
+4. Lesson guidance and rebuild steps must refer to generator terminals, not S1/13-14. PWM duty/frequency controls must modify generator properties; the generator shall be available in free-design library, not only in lesson.
+5. Tests must assert **absence of S1/push-no**, generator catalog visibility/terminals, each input/output wire, 0/50/100% OFF/ON temporal response, missing supply/GND/OUT failure, invalid config, broken motor/G/D/S path, and untouched other lessons. Existing SC11 tests that assert `sw`, `mq05PwmGateSwitch` or 9 solves via an S1 proxy MUST be rewritten, not rebaselined deceptively.
+6. Numeric RPM, current, average motor voltage, torque and heat are not accepted until the model genuinely computes them. A functional virtual PWM output is not a calibrated manufacturer's PWM module.
+7. MQ-12 must execute relevant Node tests, 1,655-lesson regression and independent Windows `file:///` visual QA before PASS. GitHub Actions remains forbidden. MQ-13 checks unchanged locked refs, `main`, `[skip ci]`, no force push.
+8. MQ-00: retain **REOPEN / NOT DONE** until every applicable G0–G8 gate has evidence. Do not infer success from documentation or schema alone.
+
+### Sequencing and accountability
+- MQ-09 lead: choose the proper catalog object and its real-vs-virtual classification.
+- MQ-04 cross-check: source, reference and output terminal geometry.
+- MQ-05: independent generator electrical state and solver integration, fail-closed negative cases.
+- MQ-07: replace SC11 circuit and tutorial instructions only after functional electrical source exists.
+- MQ-03/MQ-10: remove screenshot-visible placement and label collisions.
+- MQ-12/MQ-13/MQ-00: execution evidence, repository continuity and final decision respectively.
+
+**This entry is a source-review and concrete acceptance contract, not a claim that the replacement has been coded or tests passed.**
