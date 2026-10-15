@@ -2042,3 +2042,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - New `tests/qa-mq07-sc11-pwm-cycle-v11920.test.cjs` is present and picked up by the local all-test script, with duty and path-disconnection cases. Edited source/test JavaScript syntax PASS; standalone PWM timing contract was executed via connected source in isolated JS runtime PASS.
 - **MQ-12 original SC11 integration tests, 1,655-lesson suite, Node check, Windows Edge file:/// visual QA: NOT_RUN** (no local full checkout, GitHub DNS unavailable). No Actions invoked.
 - **MQ-00 acceptance:** OPEN / REVIEW. Native electrical test evidence, measured VGS checks and Windows motor response review are required before changing this existing item to DONE; manufacturer-calibrated physical RPM/flyback/thermal claims are excluded.
+
+#### 2026-10-15 MQ-00 / MQ-12 / MQ-13 SC11 acceptance evidence refinement
+- Same existing MQ-05/MQ-07 SC11 issue, **no new defect ID**: controlled native test uncovered disconnected `PLUG↔TIP` probe contacts causing a false zero UT33D+ VGS display even though native MOSFET gate model returned ≈11.881188 V.
+- `dist/simulation.js` now joins only opted-in `sc11MeasurementProbe` test leads; `dist/tutorial-pedagogy.js` marks SC11 red and black probe. Other lesson measurement leads are untouched.
+- **MQ-12 limited executable evidence:** GitHub production native simulation plus 18 real modules executed in isolated V8 on an explicitly reconstructed SC11 9-component circuit. Duty 0/25/50/82/100% produced VGS 0/2.970/5.940/9.742/11.880 V and drive targets 0/25/50/82/100%. Six disconnected circuits drove target 0; invalid frequency/HOLD/disconnected probes were fail-closed; response rose and decayed without reporting real RPM.
+- File: `evidence/mq07_sc11_vgs_pwm_fixture_20261015.json`. Regression assertion for opted-in probe continuity added to `tests/qa-mq07-sc11-pwm-cycle-v11920.test.cjs`.
+- **MQ-12 open:** full repository authentic Node test suite, complete 1,655 lesson audit and Windows visual acceptance **NOT_RUN**. Fixture evidence is not full-product acceptance or safe motor calibration.
+- **MQ-13 review:** main fast-forward with `[skip ci]`, no force-push/Actions, file paths remain stable. **MQ-00 decision:** REVIEW, no DONE until full independent Node/Windows evidence is captured.
