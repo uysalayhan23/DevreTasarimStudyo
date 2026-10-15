@@ -519,7 +519,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       black?.probeTarget?.c==='q1'&&black.probeTarget.p==='S'&&
       wired('vg','V','vgr','PLUG')&&wired('vg','COM','vgb','PLUG');
     let vgsMean=null;
-    if(proven&&probes&&Number.isFinite(high.vgs)&&Number.isFinite(low.vgs)&&
+    if(proven&&probes&&!meter.meterHold&&Number.isFinite(high.vgs)&&Number.isFinite(low.vgs)&&
         meter?._meter?.mode==='DCV'&&!meter._meter.warning){
       vgsMean=high.vgs*duty/100+low.vgs*(100-duty)/100;
       if(!meter.meterHold){
