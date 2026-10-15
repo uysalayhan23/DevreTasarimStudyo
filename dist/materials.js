@@ -92,6 +92,22 @@
       const bx=34,bw=w-68,by=9,bh=h-18;let legs='';for(const q of d.pins){if(q.side==='left')legs+='<path d="M0 '+q.y+'H'+bx+'" stroke="#c8cdd0" stroke-width="7"/>';else if(q.side==='right')legs+='<path d="M'+(w-bx)+' '+q.y+'H'+w+'" stroke="#c8cdd0" stroke-width="7"/>'}
       return '<g data-real-package="PDIP">'+legs+'<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="7" fill="#17191b" stroke="#050607" stroke-width="3"/><path d="M'+(w/2-15)+' '+by+'a15 15 0 0 0 30 0" fill="#050607"/><circle cx="'+(bx+12)+'" cy="'+(by+17)+'" r="4.5" fill="#8a9094"/><text x="'+(w/2)+'" y="'+(h/2+2)+'" text-anchor="middle" font-size="13" font-weight="800" fill="#e7eaec">'+mark+'</text></g>';
     }
+    // Manufacturer-identified insulated BTA16, orthographic front, zero perspective.
+    // Geometry and scale remain NOT manufacturer-verified; do not imply production CAD.
+    if(d.id==='bta16-600b-triac'&&p.type==='TO-220AB Insulated'){
+      const coords=d.pins.map(x=>Number(x.x));
+      const legs=coords.map(x=>'<path d="M'+x+' 119V'+h+'" stroke="#bec6cb" stroke-width="8"/><path d="M'+x+' 126V'+(h-18)+'" stroke="#e6e8e9" stroke-width="2"/>').join('');
+      const marks=['MT1','MT2','G'].map((name,i)=>'<text x="'+coords[i]+'" y="'+(h-6)+'" fill="#d0e8f2" text-anchor="middle" font-family="Arial" font-size="8">'+name+'</text>').join('');
+      return '<g data-real-package="TO-220AB-INSULATED" data-front-view="orthographic" data-product="ST-BTA16-600B">'+legs+
+        '<path d="M29 4H'+(w-29)+'Q'+(w-23)+' 4 '+(w-23)+' 13V'+(h-79)+'H23V13Q23 4 29 4Z" fill="#22272a" stroke="#090d10" stroke-width="3"/>'+
+        '<path d="M34 9H'+(w-34)+'V39H34Z" fill="#30393e"/>'+
+        '<circle cx="'+(w/2)+'" cy="20" r="7.5" fill="#171e21" stroke="#5a656b" stroke-width="2"/>'+
+        '<path d="M30 43H'+(w-30)+'V'+(h-87)+'H30Z" fill="#242b2f" stroke="#434d52"/>'+
+        '<text x="'+(w/2)+'" y="69" fill="#dce6eb" font-size="14" font-weight="700" font-family="Arial" text-anchor="middle">ST</text>'+
+        '<text x="'+(w/2)+'" y="87" fill="#ecf1f3" font-size="12" font-weight="700" font-family="Arial" text-anchor="middle">BTA16</text>'+
+        '<text x="'+(w/2)+'" y="102" fill="#acbac2" font-size="9" font-family="Arial" text-anchor="middle">600B</text>'+
+        marks+'</g>';
+    }
     if(/^TO-220|^TO-3P/.test(p.type)){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' '+(h-70)+'V'+h+'" stroke="#c8cdd0" stroke-width="9"/>';return '<g data-real-package="'+escReal(p.type)+'">'+legs+'<rect x="25" y="18" width="'+(w-50)+'" height="'+(h-90)+'" rx="6" fill="#181a1c" stroke="#050607" stroke-width="3"/><rect x="34" y="3" width="'+(w-68)+'" height="25" rx="4" fill="#c7cbcd" stroke="#6c7276" stroke-width="2"/><circle cx="'+(w/2)+'" cy="15" r="7" fill="#f7f8f8" stroke="#7c8285"/><text x="'+(w/2)+'" y="'+(h/2)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#eceff1">'+mark+'</text></g>'}
     if(p.type==='TO-92'){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' 92V'+h+'" stroke="#c8cdd0" stroke-width="6"/>';return '<g data-real-package="TO-92">'+legs+'<path d="M25 88V45a42 42 0 0 1 85 0v43z" fill="#16191b" stroke="#050607" stroke-width="3"/><text x="'+(w/2)+'" y="59" text-anchor="middle" font-size="12" font-weight="800" fill="#e9edef">'+mark+'</text></g>'}
     if(p.type==='TO-126'){let legs='';for(const q of d.pins)legs+='<path d="M'+q.x+' 92V'+h+'" stroke="#c8cdd0" stroke-width="7"/>';return '<g data-real-package="TO-126">'+legs+'<rect x="28" y="22" width="'+(w-56)+'" height="76" rx="7" fill="#17191b" stroke="#050607" stroke-width="3"/><rect x="38" y="6" width="'+(w-76)+'" height="24" rx="3" fill="#b8bec2" stroke="#737b80" stroke-width="2"/><circle cx="'+(w/2)+'" cy="18" r="6" fill="#f5f7f8" stroke="#7a8287"/><text x="'+(w/2)+'" y="67" text-anchor="middle" font-size="13" font-weight="800" fill="#edf0f2">'+mark+'</text></g>'}
