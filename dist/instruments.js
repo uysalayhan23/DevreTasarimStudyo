@@ -17,6 +17,22 @@
  function sensor(c,d,project,byId,net){
   if(cfg(c,'input','K')==='L')return {error:'L tipi için sayısal eğri desteklenmiyor'};
   const pt=cfg(c,'input',d.instrument==='hmt'?'PT100':'K').startsWith('PT'),a=d.instrument==='hmt'?'4':'9',b=d.instrument==='hmt'?'5':'10';
+
+  // MQ-07 SC23: explicit THREE-lead ET4420 PT100 virtual source validation.
+  // B1/B2 are equivalent sensor-side contacts but independent lead edges;
+  // the 8-9 bridge from the TWO-wire model must not certify a three-wire lead.
+  if(pt&&d.instrument==='et4420'&&c.mq07Pt100ThreeWireInput===true){
+   const sensors=project.components.filter(s=>byId[s.typeId]?.id==='sensor-pt100'&&byId[s.typeId]?.ptWires===3);
+   if(sensors.length!==1)return {error:'PT100 3 telli sensör eksik / belirsiz'};
+   const s=sensors[0],has=(a,b)=>project.wires.some(w=>
+    w.from?.c===s.id&&w.from.p===a&&w.to?.c===c.id&&w.to.p===b||
+    w.to?.c===s.id&&w.to.p===a&&w.from?.c===c.id&&w.from.p===b);
+   const paired=has('B1','8')&&has('B2','9')||has('B1','9')&&has('B2','8');
+   if(!has('A','10')||!paired)return {error:'PT100 3 telli giriş bağlantısı eksik / yanlış'};
+   const value=num(s.temperature,-200,850,25);
+   return {value,source:s.id,resistance:T.resistance(value),leadModel:'ideal-3-wire-no-resistance-compensation'};
+  }
+
   for(const s of project.components){const sd=byId[s.typeId];if(!sd)continue;
    if(pt&&sd.ptWires){
     const direct=same(net,s,'A',c,a)&&same(net,s,'B1',c,b),reverse=same(net,s,'A',c,b)&&same(net,s,'B1',c,a);

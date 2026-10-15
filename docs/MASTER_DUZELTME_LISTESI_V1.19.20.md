@@ -2104,3 +2104,11 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - sensor-analog-apps-src-03: K tipi termokupl/ET4420 3 parça 4 kablo kaynak sahnesine UT33D+ DCV 200mV ve iki sanal prob eklendi (6/6). Yalnız SC22 opt-in ölçüm sürekliliği.
 - İzole V8: 25/100/200 °C -> 0/3,096/7,138 mV; PV 25/100/200 °C; ters prob işareti ters; kontrolör ters/kopuk TC girişinde hata. Tam Node/Windows QA yok, fiziksel kabul yok, MQ-00 REVIEW.
 - Korunan SC11–SC21, kilitler, Actions kullanılmadı ve [skip ci]. Detay docs/MQ07_SC22_THERMOCOUPLE_MV_20261015.md. Sıradaki sensor-analog-apps-src-04 PT100.
+
+
+## 2026-10-15 MQ-07 SC23 PT100 THREE WIRE
+
+- `sensor-analog-apps-src-04` PT100 3 telli eşleme ve ET4420 sanal kontrolör kontrolü hedefli onarıldı; 3 bileşen, 5 kablo korunur. 2 telli 8–9 köprüsüyle 3 tel bütünlüğü karıştırılmaz.
+- İzole özgün JS simülasyonunda PT100 0/25/100 °C → PV 0/25/100 °C, ideal 100/109,735/138,505 Ω; çift taraf kablo değişimi PASS, üç tel kopma, yanlış giriş ve besleme kopması hata, tarihsel 2 telli köprü PASS (toplam 10/10 kaynak V8 senaryosu).
+- 1.655 kaynaktan yalnız SC23 değişti, SC11–SC22 ve kilitler korundu. Gerçek kablo direnç telafisi, tam Node/Windows UI QA ve fiziksel üretici kabulü YOK: **MQ-00 REVIEW**. Actions kullanılmadı, `[skip ci]`.
+- Detay: `docs/MQ07_SC23_PT100_THREE_WIRE_20261015.md`; Node hedef kaynağı: `tests/qa-mq07-sc23-pt100-three-wire-v11920.test.cjs`; sonraki ders `sensor-analog-apps-src-05` LM35.

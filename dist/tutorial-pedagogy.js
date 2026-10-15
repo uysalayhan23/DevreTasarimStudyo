@@ -4045,6 +4045,60 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız sanal yazılım termokupl ve kontrolör deneyi; gerçek elektrik, şebeke, üretici, ısıl veya donanım güvenlik kabulü yapılmaz.';
 }
 
+
+/* MQ-07 SC23 / PT100: three distinct virtual leads and matching ET4420
+   software terminals. This source change is scoped to only this lesson. */
+{
+ const id='sensor-analog-apps-src-04',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==3||p.wires.length!==5||
+    !p.components.some(c=>c.id==='pt'&&c.typeId==='sensor-pt100')||
+    !p.components.some(c=>c.id==='ctl'&&c.typeId==='temperature-controller')||
+    !p.components.some(c=>c.id==='g1'&&c.typeId==='supply-1p'))
+   throw Error('MQ07 SC23 PT100 canonical graph changed');
+ const pt=p.components.find(c=>c.id==='pt'),ctl=p.components.find(c=>c.id==='ctl');
+ const wA=p.wires.find(w=>w.from.c==='pt'&&w.from.p==='A'&&w.to.c==='ctl'&&w.to.p==='8');
+ const wB1=p.wires.find(w=>w.from.c==='pt'&&w.from.p==='B1'&&w.to.c==='ctl'&&w.to.p==='9');
+ const wB2=p.wires.find(w=>w.from.c==='pt'&&w.from.p==='B2'&&w.to.c==='ctl'&&w.to.p==='10');
+ if(!wA||!wB1||!wB2)throw Error('MQ07 SC23 original PT100 lead endpoints changed');
+ wA.to.p='10';wA.tutorialHint='PT100 tek uç → sanal TIC1/10';
+ wA.tutorialWhy='Üç telli sanal RTD ölçümündeki tek taraf ucudur.';
+ wB1.to.p='8';wB1.tutorialHint='PT100 B1 → sanal TIC1/8';
+ wB1.tutorialWhy='Ortak tarafın ilk ayrı sanal ölçüm telidir.';
+ wB2.to.p='9';wB2.tutorialHint='PT100 B2 → sanal TIC1/9';
+ wB2.tutorialWhy='Ortak tarafın ikinci ayrı sanal ölçüm telidir.';
+ pt.temperature=25;
+ ctl.mq07Pt100ThreeWireInput=true;
+ ctl.instrumentSettings={...(ctl.instrumentSettings||{}),input:'PT100',supply:'UV',displayOnly:'on',set:150,filter:1};
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='Sanal 3 telli PT100 ölçümü: ideal 0 °C 100 Ω, 25 °C 109,73 Ω ve 100 °C 138,51 Ω; üç ayrı terminal yolu geçerliyse ET4420 ideal sıcaklığı gösterir.';
+ l.explanation='Yalnız düşük riskli yazılım simülasyonudur. PT100 sensöründe A bir uç tarafı, B1 ve B2 ortak diğer uç tarafının iki ayrı kablosudur. ET4420 sanal giriş modelinde A, tek uç 10 numaralı sanal noktaya; B1 ve B2 eşdeğer ortak uç kabloları bağımsız 8 ve 9 numaralı sanal noktalara gider. Üç kablo da ayrı ayrı doğrulanır, B1/B2 yer değişimi aynı sensör tarafı olduğu için kabul edilir. İki telli PT100 için 8–9 simülasyon köprüsü politikası ayrıdır; burada üçüncü telin yerine geçmez. ET4420 yalnız gösterge modundadır; röle/SSR yük çıkışları etkin eğitim yükü olarak kabul edilmez. İdeal PT100 direnç modeli 0 °C=100 Ω, 25 °C≈109,735 Ω, 100 °C≈138,505 Ω üretir ve yazılım kontrolörü buna uygun ideal PV gösterir. Bu hesap gerçek kablo direnci telafisini, dengesiz hatları, belirsizlik kalibrasyonunu veya fiziksel ürün/üretici hassasiyetini modellemez. Sensör sıcaklığını yazılım özelliklerinden değiştir; üç sanal sensör hattından biri kopuk veya yanlış uçta ise gösterge hata vermelidir. Görseldeki besleme uçları gerçek şebeke veya fiziksel pano bağlantısı için talimat değildir.';
+ l.learningGoal='Sanal PT100 için 3 ayrı hat varlığını ve 0/25/100 °C ideal direnç-PV ilişkisini gözlemek; tel kopukluğu ve yanlış terminali geçerli sıcaklıkla karıştırmamak.';
+ l.beginnerSteps=[
+  'Sanal PT100 üzerinde A tek uç ve B1/B2 ortak taraf uçlarını ayırt et.',
+  'Üç ayrı sanal sensör sinyal yolunun ET4420 farklı girişlerine ulaştığını gör.',
+  'ET4420 sanal PT100 seçimini ve yalnız gösterge modunu doğrula.',
+  '0 °C sıcaklıkta ideal 100 Ω ve PV≈0 °C sonucunu denetle.',
+  '25 °C sıcaklıkta ideal 109,73 Ω ve PV≈25 °C sonucunu denetle.',
+  '100 °C sıcaklıkta ideal 138,51 Ω ve PV≈100 °C sonucunu denetle.',
+  'Sanal B1/B2 eşdeğer uçlarını yer değiştir: sonuç korunmalıdır.',
+  'Yalnız yazılımda herhangi bir RTD telini kopart veya yanlış girişle eşleştir: kontrolör hata göstermelidir; fiziksel kablo telafisi onaylı değildir.'
+ ];
+ l.quiz={question:'3 telli sanal PT100 ölçümünde hangi ifade doğrudur?',
+   options:['0 °C için yaklaşık 100 Ω olur; üç ayrı tel doğruysa ideal sıcaklık PV okunur.',
+    'PT100 ısı artınca sıfır direnç olur.',
+    'PT100 termokupl gibi aynı sensör mV gerilimini üretir.'],
+   answer:0,why:'PT100 bir direnç sıcaklık sensörüdür. Yazılım ayrı üç kabloyu denetler ama gerçek kablo telafisi yapmaz.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+   titleTopologyStatus:'PT100_THREE_WIRE_VIRTUAL_TERMINAL_ALIGNED',
+   mq07Pt100ThreeWire:{nominalOhmAt0C:100,leadCount:3,
+    explicitWirePresenceChecked:true,physicalLeadCompensationVerified:false,
+    isolatedNativeSourceVerified:true,fullNodeSuiteExecuted:false},
+   physicalAcceptance:false,manufacturerCalibrationVerified:false,
+   independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal PT100 ölçüm ve sıcaklık görüntüleme deneyidir; gerçek enerjili şebeke/donanım bağlantısı ve üretici fiziksel kabulü yoktur.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
