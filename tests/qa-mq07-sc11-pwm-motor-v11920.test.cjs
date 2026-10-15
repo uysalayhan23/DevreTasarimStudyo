@@ -60,6 +60,30 @@ test('invalid duty commands stay OFF in native solver',()=>{
   assert.equal(x.motor,false);
  }
 });
+test('PWM1 terminals occupy a consistent non-overlapping component envelope',()=>{
+ const d=defs['virtual-pwm-generator-v1'];
+ assert.equal(d.kind,'pwm-generator');
+ assert.equal(d.virtualInstrument,true);
+ assert.ok(d.w>0&&d.h>0);
+ const pins=['V+','GND','OUT'].map(id=>d.pins.find(p=>p.id===id));
+ assert.ok(pins.every(Boolean));
+ for(const p of pins){assert.ok(p.x>=0&&p.x<=d.w);assert.ok(p.y>=0&&p.y<=d.h);}
+ assert.equal(pins[0].side,'left');
+ assert.equal(pins[1].side,'left');
+ assert.equal(pins[2].side,'right');
+ assert.ok(Math.abs(pins[0].y-pins[1].y)>20);
+});
+test('missing or nonnumeric PWM settings fail closed',()=>{
+ for(const setting of [{dutyPercent:null},{dutyPercent:'100'},{frequencyHz:null},{frequencyHz:'1000'},{dutyPercent:undefined}]){
+  const p=clone(lesson.project);
+  Object.assign(part(p,'pwm1'),setting);
+  const result=Native.solve(p,defs,{now:0});
+  assert.equal(result.shortCircuit,false);
+  assert.equal(part(p,'pwm1')._pwmSupplyValid,false);
+  assert.equal(!!part(p,'pwm1')._pwmHigh,false);
+  assert.equal(!!part(p,'m1')._active,false);
+ }
+});
 test('whole original curriculum and catalog remain available',()=>{
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.total,1655);
