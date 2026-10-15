@@ -1126,6 +1126,25 @@ function setSc12PwmDuty(project,value){
  if(l?.id!=='electronic-switching-src-12'||!generator||!Number.isFinite(duty)||duty<0||duty>100)return false;
  generator.dutyPercent=duty;root.DTSEditor?.render?.();sync(project);return true;
 }
+function sc18OptoPanel(project){
+ const u=project?.components?.find(c=>c.id==='u1'),sg=project?.components?.find(c=>c.id==='sg');
+ const led=Number.isFinite(u?._sc18LedCurrentA)?(u._sc18LedCurrentA*1000).toFixed(2)+' mA':'—';
+ const col=Number.isFinite(u?._sc18CollectorCurrentA)?(u._sc18CollectorCurrentA*1000).toFixed(2)+' mA':'—';
+ const vc=Number.isFinite(u?._sc18CollectorVoltageV)?u._sc18CollectorVoltageV.toFixed(2)+' V':'—';
+ const isolated=u?._sc18Isolated===true?'ayrı sanal devreler':'doğrulanmadı';
+ return '<section class="tutorial-sc11-pwm"><h3>TLP521-1 · LED / fototransistör testi</h3>'+
+ '<p>SG giriş: <strong>'+(sg?.state?'ON':'OFF')+'</strong> · LED akımı <strong>'+led+'</strong></p>'+
+ '<p>Fototransistör kolektör akımı <strong>'+col+'</strong> · C–E '+vc+'</p>'+
+ '<p>G1 ve G2 dönüş hatları: <strong>'+isolated+'</strong> · İletim '+(u?._sc18TransistorOn?'ON':'OFF')+'</p>'+
+ '<div class="tutorial-sc11-pwm-actions"><button type="button" data-sc18-opto-input="on">SG giriş LED aç</button>'+
+ '<button type="button" data-sc18-opto-input="off">SG giriş LED kapat</button></div>'+
+ '<small>Yalnız sanal CTR=%50 varsayımı; giriş ve çıkış arasında kablo yoktur. Bu test fiziksel izolasyon dayanımını veya gerçek cihazın sağlamlığını kanıtlamaz.</small></section>';
+}
+function setSc18OptoInput(project,value){
+ const lesson=lessonFor(project),sw=project?.components?.find(c=>c.id==='sg'&&c.typeId==='push-no');
+ if(lesson?.id!=='electronic-switching-src-18'||!sw||!['on','off'].includes(value))return false;
+ sw.state=value==='on';root.DTSEditor?.render?.();sync(project);return true;
+}
 function sc17TriacDimmerPanel(project){
  const src=project?.components?.find(c=>c.id==='ac1'),t=project?.components?.find(c=>c.id==='trg1'),
   q=project?.components?.find(c=>c.id==='q1'),lamp=project?.components?.find(c=>c.id==='h1');
@@ -1266,6 +1285,7 @@ function noteHtml(l,session,project){
  (l.id==='electronic-switching-src-15'?sc15AcPanel(project):'')+
  (l.id==='electronic-switching-src-16'?sc16TriacPanel(project):'')+
  (l.id==='electronic-switching-src-17'?sc17TriacDimmerPanel(project):'')+
+ (l.id==='electronic-switching-src-18'?sc18OptoPanel(project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1372,6 +1392,7 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const sc18Button=e.target.closest?.('[data-sc18-opto-input]');if(sc18Button){e.preventDefault();setSc18OptoInput(root.DTSEditor?.getProject?.(),sc18Button.dataset.sc18OptoInput);return}
    const sc17Button=e.target.closest?.('[data-sc17-phase-angle]');if(sc17Button){e.preventDefault();setSc17PhaseAngle(root.DTSEditor?.getProject?.(),sc17Button.dataset.sc17PhaseAngle);return}
    const sc16Button=e.target.closest?.('[data-sc16-triac-contact]');if(sc16Button){e.preventDefault();setSc16TriacContact(root.DTSEditor?.getProject?.(),sc16Button.dataset.sc16TriacContact);return}
    const sc15Button=e.target.closest?.('[data-sc15-phase-angle]');if(sc15Button){e.preventDefault();setSc15PhaseAngle(root.DTSEditor?.getProject?.(),sc15Button.dataset.sc15PhaseAngle);return}
@@ -1465,6 +1486,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact,setSc17PhaseAngle};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact,setSc17PhaseAngle,setSc18OptoInput};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
