@@ -128,6 +128,7 @@
     }
     const latest=(typeof module==='object'&&module.exports?require('./materials-v111.js'):root.DTSMaterials111)?.markup(d,c);if(latest)return latest;
     const modern=Modern.markup(d,c,sprite);if(modern)return modern;
+    if(d.kind==='pwm-generator'||d.id==='virtual-pwm-generator-v1')return Design.markup(d,c);
     if(d.materialSymbol||d.designMaterial)return Design.markup(d,c);
     if(d.id==='sensor-level-analog'){
       const handle=String(c.id||d.id).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x])),id='level-'+(c.id||d.id).replace(/[^a-zA-Z0-9_-]/g,'_'),position=Math.max(0,Math.min(100,Number(c.analogPosition??50))),y=220-position*1.4;
