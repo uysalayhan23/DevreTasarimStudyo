@@ -26,3 +26,10 @@ This contract is a software-only educational representation, not electrical hard
 - Added `tests/qa-mq07-sc11-pwm-motor-v11920.test.cjs` with duty 0/50/100%, invalid input, disconnected paths, canonical terminals, and full curriculum assertions. The previous full-regression test files may contain hardcoded 732/48 pre-SC11 expectations: rebaseline and run them before claiming MQ-12 PASS.
 - **NOT_RUN**: Node test commands and Windows `file:///` QA were not executed; do not infer 5 tests pass simply because files were committed.
 - **OPEN:** Tutorial Mode user-facing duty controls, average motor terminal voltage/current coupling, RPM, flyback transient modeling, thermal/EMF calibration, cross-test harmonization. MQ-00 verdict: **PARTIAL / REVIEW, not DONE**.
+
+## 2026-10-15 MQ-12 / MQ-13 / MQ-00 follow-up
+- Tutorial Mode includes 0/50/100% SC11 controls, which sample native `Simulation.solve` at 0/.25/.75 ms. They show instantaneous motor energized state only, not RPM.
+- Added `tests/qa-mq07-sc11-pwm-ui-v11920.test.cjs` to specify 9 native solve calls, one render per duty selection and invalid-input rejection.
+- Updated four older MQ-07 test fixtures to expect 733 wired source lessons / 47 source `NO_WIRED_CIRCUIT` review entries. This is a static rebaseline, **not evidence of a passing test suite**. The audit report counts may need reconciliation with updated definitions and fixtures.
+- The connected GitHub API supports repository edits but no Node execution. The local command environment could not resolve github.com for cloning. Accordingly **node --test, full 1655 audit, Windows file:/// browser review and independent physical/pedagogical acceptance are NOT_RUN**.
+- MQ-13: `main` only, no Actions calls, no force-push, each change `[skip ci]`. MQ-00 decision: **IMPLEMENTED, AWAITING EXECUTION EVIDENCE / REVIEW**. Do not mark SC11 DONE or reduce overall accepted project blockers solely from source edits.
