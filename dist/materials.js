@@ -128,6 +128,7 @@
     }
     const latest=(typeof module==='object'&&module.exports?require('./materials-v111.js'):root.DTSMaterials111)?.markup(d,c);if(latest)return latest;
     const modern=Modern.markup(d,c,sprite);if(modern)return modern;
+    if(['ac-virtual-source','ac-scr-trigger'].includes(d.kind))return Design.markup(d,c);
     if(d.kind==='pwm-generator'||d.id==='virtual-pwm-generator-v1')return Design.markup(d,c);
     if(d.materialSymbol||d.designMaterial)return Design.markup(d,c);
     if(d.id==='sensor-level-analog'){
