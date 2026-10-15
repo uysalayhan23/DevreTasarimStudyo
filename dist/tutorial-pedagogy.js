@@ -543,12 +543,20 @@ function opampCircuitProject(id,title){
   p.wires.push(W('g1','P','ref1','1','+24 V → R3','Karşılaştırıcı için orta referans bölücüsüdür.','#8b5a2b','+24V'),W('ref1','2','ref2','1','R3 → R4','Yaklaşık 12 V referans düğümüdür.','#43a047','SIGNAL'),W('ref2','2','g1','M','R4 → 0 V','Referans bölücünün dönüşüdür.','#111827','0V'),W('ref1','2','u1','IN-','12 Vref → IN−','Karşılaştırma eşiği eviren girişe uygulanır.','#43a047','SIGNAL'),W('in',inputPin,'u1','IN+','Giriş → IN+','Giriş referansla karşılaştırılır.','#43a047','SIGNAL'));
   if(/schmitt/.test(t))p.wires.push(W('u1','OUT','r2','1','OUT → R2','Pozitif geri besleme histerezis oluşturur.','#43a047','SIGNAL'),W('r2','2','u1','IN+','R2 → IN+','Schmitt trigger eşiğini çıkış durumuna göre kaydırır.','#43a047','SIGNAL'));
  }else if(/türev/.test(t)){
-  p.components.push(C('c1','capacitor',360,390,'C1','100 nF giriş kondansatörü',{capacitance:100e-9}));
+  // R1 is not used by this differentiator; do not display a misleading orphan resistor.
+  p.components=p.components.filter(c=>c.id!=='r1');
+  p.components.find(c=>c.id==='r2').x=760;
+  p.components.find(c=>c.id==='r2').y=480;
+  p.components.push(C('c1','capacitor',360,410,'C1','100 nF giriş kondansatörü',{capacitance:100e-9}));
   p.components.push(C('ref1','resistor',350,180,'R3','10 kΩ üst referans',{resistance:10000}),C('ref2','resistor',350,270,'R4','10 kΩ alt referans',{resistance:10000}));
   p.wires.push(W('g1','P','ref1','1','24 V → R3','Vref üst kolu.'),W('ref1','2','ref2','1','R3/2 → R4/1','Orta referans düğümü.'),W('ref2','2','g1','M','R4 → 0 V','Vref alt kolu.'));
   p.wires.push(W('in',inputPin,'c1','1','Giriş → C1','Türev alıcıda giriş elemanı kondansatördür.','#43a047','SIGNAL'),W('c1','2','u1','IN-','C1 → IN−','Kondansatörün akımı toplama düğümüne gelir.','#43a047','SIGNAL'),W('ref1','2','u1','IN+','12 V Vref → IN+','Tek beslemede 10 kΩ / 10 kΩ direnç bölücünün orta noktası referanstır.','#43a047','SIGNAL'),W('u1','OUT','r2','1','OUT → R2','Geri besleme direnci çıkıştan gelir.','#43a047','SIGNAL'),W('r2','2','u1','IN-','R2 → IN−','Rf-C ağı türev davranışını belirler.','#43a047','SIGNAL'));
  }else if(/integral/.test(t)){
-  p.components.push(C('c1','capacitor',610,500,'C1','1 µF geri besleme kondansatörü',{capacitance:1e-6}));
+  // C1 replaces R2 as the feedback element: remove the orphan R2 and overlap.
+  p.components=p.components.filter(c=>c.id!=='r2');
+  p.components.find(c=>c.id==='r1').x=350;
+  p.components.find(c=>c.id==='r1').y=455;
+  p.components.push(C('c1','capacitor',775,470,'C1','1 µF geri besleme kondansatörü',{capacitance:1e-6}));
   p.components.push(C('ref1','resistor',350,180,'R3','10 kΩ üst referans',{resistance:10000}),C('ref2','resistor',350,270,'R4','10 kΩ alt referans',{resistance:10000}));
   p.wires.push(W('g1','P','ref1','1','24 V → R3','Vref üst kolu.'),W('ref1','2','ref2','1','R3/2 → R4/1','Orta referans düğümü.'),W('ref2','2','g1','M','R4 → 0 V','Vref alt kolu.'));
   p.wires.push(W('in',inputPin,'r1','1','Giriş → R1','İntegratörde giriş direnci seri elemandır.','#43a047','SIGNAL'),W('r1','2','u1','IN-','R1 → IN−','Giriş akımı toplama düğümüne akar.','#43a047','SIGNAL'),W('ref1','2','u1','IN+','12 V Vref → IN+','Tek beslemede 10 kΩ / 10 kΩ direnç bölücünün orta noktası referanstır.','#43a047','SIGNAL'),W('u1','OUT','c1','1','OUT → C1','Geri besleme elemanı kondansatördür.','#43a047','SIGNAL'),W('c1','2','u1','IN-','C1 → IN−','C geri beslemesi integral davranışı oluşturur.','#43a047','SIGNAL'));
