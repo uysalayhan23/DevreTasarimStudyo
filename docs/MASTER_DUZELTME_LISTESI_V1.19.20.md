@@ -2050,3 +2050,12 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - File: `evidence/mq07_sc11_vgs_pwm_fixture_20261015.json`. Regression assertion for opted-in probe continuity added to `tests/qa-mq07-sc11-pwm-cycle-v11920.test.cjs`.
 - **MQ-12 open:** full repository authentic Node test suite, complete 1,655 lesson audit and Windows visual acceptance **NOT_RUN**. Fixture evidence is not full-product acceptance or safe motor calibration.
 - **MQ-13 review:** main fast-forward with `[skip ci]`, no force-push/Actions, file paths remain stable. **MQ-00 decision:** REVIEW, no DONE until full independent Node/Windows evidence is captured.
+
+
+## 2026-10-15 · MQ-07 SC16 BTA16 DC tristör/triyak dersi — açık kabul
+
+- **Mevcut MQ-07 ilk 200 ders denetiminin alt işi; yeni bağımsız defect ID oluşturulmadı.** SC16 eski kablosuz referans kartından 7 bağlantılı, ST BTA16-600B MT1/MT2/G kimlikli, sanal 12 V DC tetikleme ve STOP deneyine dönüştürüldü.
+- Öğretici modeli: SG kısa gate tetiklemesi → akım tutma; SG bırakıldığında akım devam eder; SP NC STOP ana akımı keser; SP geri kapanınca yeni tetikleme gereklidir. Tutma eşiği 30 mA yalnız sanal eğitim varsayımıdır, BTA16 üretici ölçümü değildir. Gate kablosu sonradan koptuğunda mevcut latch kaybolmaz; güç kolu koparsa kaybolur.
+- BTA16 yalıtımlı TO-220AB ortografik görünümü ve 1=MT1, 2=MT2, 3=G terminal etiketleri ayrı oluşturuldu; gerçek mil/dönüş görseli yok. Üretici mm boyutlarının kesin fiziksel kabulü hâlâ açık.
+- **MQ-12 hedefli çalışma:** `tests/qa-mq07-sc16-triac-dc-hold-v11920.test.cjs` gerçek GitHub kaynaklarından hazırlanmış yalıtılmış JS çalıştırmada **8/8 PASS**; `dist/tutorial-...` katmanları 1.655 ders olarak yükleniyor. **Tam Node, tüm 1.655 dersin regresyonu ve Windows kabulü NOT_RUN.**
+- Ayrıntılı kanıt: `docs/MQ07_SC16_BTA16_DC_TRIAC_20261015.md`. Lider MQ-07 → bağımsız MQ-04/MQ-05/MQ-03 → MQ-12 → MQ-13 → MQ-00. **MQ-00 = REVIEW (DONE değil)**. Sıradaki SC17 AC triyak dimmer; SC11–SC15 elektriksel dersleri korunur. Actions çalıştırılmadı; `[skip ci]`.
