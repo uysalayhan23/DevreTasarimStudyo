@@ -6,13 +6,16 @@ for(const [id,wires] of [['electronic-switching-src-13',6],['electronic-switchin
  test(id+' has functional SCR A/K/G component with native wire endpoints',()=>{
   const l=L.byId[id],p=l.project,s=p.components.find(c=>c.id==='q1');
   assert.equal(l.kind,'wiring');assert.equal(p.wires.length,wires);
-  assert.equal(s.typeId,'mq07-scr-virtual');
+  assert.equal(s.typeId,'tyn612rg-scr');
+  assert.equal(l.pedagogyReview.catalogProductId,'tyn612rg-scr');
+  assert.equal(l.pedagogyReview.manufacturerGeometryAccepted,false);
   assert.equal(defs[s.typeId].kind,'scr');
   for(const w of p.wires)for(const ep of [w.from,w.to]){
    const c=p.components.find(c=>c.id===ep.c);assert.ok(c,ep.c);
    assert.ok(defs[c.typeId].pins.some(x=>x.id===ep.p),ep.c+'/'+ep.p);
   }
   assert.equal(l.pedagogyReview.physicalAcceptance,false);
+  assert.equal(l.pedagogyReview.windowsVisualAcceptance,false);
  });
 }
 test('SC14 native solver gate ON versus anode STOP open scenario',()=>{
