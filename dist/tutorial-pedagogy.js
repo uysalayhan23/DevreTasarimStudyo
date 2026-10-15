@@ -3153,8 +3153,8 @@ for(const spec of [
   C('q1','irf540n-mosfet',810,345,'Q1','Sanal IRF540N G/D/S anahtar modeli',{mq07MosfetHealth:true}),
   C('m1','motor-dc',1080,275,'M1','12 V sanal DC motor'),
   C('vg','unit-ut33d-plus',840,70,'VG','Gate-source sanal DC voltmetre',{meterPosition:3}),
-  C('vgr','test-probe-red',700,535,'PR','VG kırmızı sanal prob',{probeTarget:{c:'q1',p:'G'}}),
-  C('vgb','test-probe-black',880,535,'PB','VG siyah sanal prob',{probeTarget:{c:'q1',p:'S'}})
+  C('vgr','test-probe-red',700,535,'PR','VG kırmızı sanal prob',{sc11MeasurementProbe:true,probeTarget:{c:'q1',p:'G'}}),
+  C('vgb','test-probe-black',880,535,'PB','VG siyah sanal prob',{sc11MeasurementProbe:true,probeTarget:{c:'q1',p:'S'}})
  ];
  p.colorRoles={...p.colorRoles,'#b57b40':'DC+','#8b5cf6':'SIGNAL','#111827':'0V'};
  p.wires.push(
