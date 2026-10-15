@@ -40,6 +40,15 @@ test('SC16 uses real named BTA16 MT1/MT2/G, insulated front and seven electrical
  }
 });
 
+test('BTA16 insulated TO-220AB front uses correct names without motor mechanics',()=>{
+ const Materials=require('../dist/materials.js');
+ const html=Materials.markup(defs['bta16-600b-triac'],{id:'q1'});
+ assert.match(html,/data-real-package="TO-220AB-INSULATED"/);
+ assert.match(html,/data-front-view="orthographic"/);
+ assert.match(html,/BTA16/);
+ for(const pin of ['MT1','MT2','G'])assert.ok(html.includes('>'+pin+'</text>'),pin);
+ assert.ok(!/SHAFT|motion-indicator/i.test(html));
+});
 test('SC16 DC gate pulse latches current through the load after release',()=>{
  const p=clone(lesson.project);
  let r=frame(p,false,false);
