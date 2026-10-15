@@ -13,6 +13,7 @@
   const driveState=c=>c._acs800||c._v20||c._hcfa, isDrive=d=>d?.id===V20.id||d?.id===ACS.id||d?.id===HCFA.id;
   const Numeric=typeof module==='object'&&module.exports?require('./current-model.js'):root.DTSCurrentModel;
   const SignedFlow=typeof module==='object'&&module.exports?require('./signed-flow.js'):root.DTSSignedFlow;
+  const Multimeter=typeof module==='object'&&module.exports?require('./multimeter.js'):root.DTSMultimeter;
   const PLC=typeof module==='object'&&module.exports?require('./plc-runtime.js'):root.DTSPLCRuntime;
   const DigitalIC=typeof module==='object'&&module.exports?require('./digital-ic-runtime-v11920.js'):root.DTSDigitalICRuntime;
   const coils=new Set(['coil','timer','coil-valve','coil-flasher','coil-pulse','relay-protection']);
@@ -26,7 +27,7 @@
   const endpointKey=r=>r?.j?JSON.stringify(['junction',r.j]):pinKey(r?.c,r?.p);
   const definition=(byId,c)=>byId[c.typeId];
   function clear(project){
-    for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;}
+    for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
     for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
@@ -443,7 +444,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
         const polarity=phaseMotors.has(k)?net.phaseDirection(c,k==='motor-dahlender'&&c._motorSpeed==='high'?['X','Y','Z']:ids.slice(0,3)):d.id==='motor-1p'?(net.find(pinKey(c.id,'U'))===net.find(pinKey(c.id,'Z1'))?1:-1):k==='motor-dc'?net.dcDirection(c,ids[0],ids[1]):1;
         c._spin=polarity*(c.direction==='ccw'?-1:1);
         const source=net.at(c,ids[0]).find(v=>v.domain.startsWith('out:')),physicalHCFA=d.id===HCFA.motorId?project.components.find(x=>definition(byId,x)?.id===HCFA.id&&['U','V','W'].every((p,i)=>net.find(pinKey(x.id,p))===net.find(pinKey(c.id,p)))):null,drive=source&&project.components.find(x=>'out:'+x.id===source.domain&&isDrive(definition(byId,x)))||physicalHCFA;
-        if(drive){c._motorDrive=drive.id;const ds=driveState(drive)||{},signedRpm=Number(ds.rpm||0);c._motorHz=Math.abs(Number(ds.hz||0));c._motorRPM=Math.abs(signedRpm);if(signedRpm<0)c._spin=-Math.abs(c._spin||1);else if(signedRpm>0)c._spin=Math.abs(c._spin||1)}else c._motorRPM=Math.abs(Number(c.motorRatedRpm??d.motorSpec?.ratedRpm??d.ratedRpm??1500));c._motorAngle=((c._motorAngle||0)+Number(c._motorRPM||0)*.12*(options.now?1:.3)*Math.sign(c._spin||1))%360;
+        if(drive){c._motorDrive=drive.id;const ds=driveState(drive)||{},signedRpm=Number(ds.rpm||0);c._motorHz=Math.abs(Number(ds.hz||0));c._motorRPM=Math.abs(signedRpm);if(signedRpm<0)c._spin=-Math.abs(c._spin||1);else if(signedRpm>0)c._spin=Math.abs(c._spin||1)}else if(project.projectId==='tutorial-session-source-electronic-switching-src-11'||project.tutorialLesson?.id==='electronic-switching-src-11'){delete c._motorRPM;}else c._motorRPM=Math.abs(Number(c.motorRatedRpm??d.motorSpec?.ratedRpm??d.ratedRpm??1500));c._motorAngle=((c._motorAngle||0)+Number(c._motorRPM||0)*.12*(options.now?1:.3)*Math.sign(c._spin||1))%360;
       }
     }
     for(const c of project.components){const d=definition(byId,c);if(!d?.incrementalEncoder38mm)continue;const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor)IncrementalEncoder.syncMotor(c,d,project,byId,now,true);else{delete c._encoderMotorId;delete c._encoderMotorRef;}}
@@ -466,7 +467,71 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
     return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
   }
-  const api={solve,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+  // SC11 samples electrical ON/OFF phases through the original nodal solver.
+  // Speed is an explicitly *uncalibrated normalized educational response*, never RPM.
+  function solveSc11Cycle(project,byId,options={}){
+    const scene=project?.projectId==='tutorial-session-source-electronic-switching-src-11'||
+      project?.tutorialLesson?.id==='electronic-switching-src-11';
+    if(!scene)return {result:solve(project,byId,options),sampled:false};
+    const now=Number.isFinite(options.now)?options.now:Date.now();
+    const component=id=>project.components.find(c=>c.id===id);
+    const pwm=component('pwm1'),motor=component('m1'),q=component('q1'),meter=component('vg');
+    const duty=pwm?.dutyPercent,hz=pwm?.frequencyHz;
+    const valid=typeof duty==='number'&&Number.isFinite(duty)&&duty>=0&&duty<=100&&
+      typeof hz==='number'&&Number.isFinite(hz)&&hz>0&&Number.isFinite(now)&&now>=0;
+    const phase=valid?1000/hz:0;
+    const capture=at=>{
+      const result=solve(project,byId,{...options,now:at});
+      return {valid:!!(result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating),
+        supply:!!pwm?._pwmSupplyValid,high:!!pwm?._pwmHigh,
+        mosfet:!!q?._mosfetOn,motor:!!motor?._active,
+        vgs:meter?._meter?.mode==='DCV'&&!meter?._meter?.warning&&
+          Number.isFinite(meter?._meter?.value)?meter._meter.value:null};
+    };
+    const high=valid?capture(phase*duty/200):null;
+    const low=valid?capture(phase*(duty/100+(1-duty/100)/2)):null;
+    // Restore original real-time state after deliberate sub-period observations.
+    const result=solve(project,byId,options);
+    const proven=!!(valid&&high?.valid&&low?.valid&&high.supply&&low.supply);
+    const highDrive=proven&&high.high&&high.mosfet&&high.motor;
+    const lowDrive=proven&&low.high&&low.mosfet&&low.motor;
+    const target=proven?(highDrive?duty:0)+(lowDrive?100-duty:0):0;
+    if(motor){
+      const last=Number(motor._sc11ResponseNow),previous=Math.max(0,Math.min(100,Number(motor._sc11SpeedPercent)||0));
+      // First-order visual response: 350 ms education-only inertia, no RPM claim.
+      const dt=Number.isFinite(last)&&now>=last?Math.min(.2,(now-last)/1000):.05;
+      const speed=previous+(target-previous)*(1-Math.exp(-dt/.35));
+      motor._sc11SpeedPercent=Math.max(0,Math.min(100,speed));
+      motor._sc11DriveTargetPercent=target;
+      motor._sc11ResponseNow=now;
+      motor._motorAngle=((Number(motor._motorAngle)||0)+360*dt*(speed/100))%360;
+      delete motor._motorRPM;
+    }
+    // DCV reading is phase-weighted from two actually measured VGS samples.
+    // Never substitute PWM command average if probes, mode or source are invalid.
+    const red=component('vgr'),black=component('vgb');
+    const wired=(a,ap,b,bp)=>project.wires.some(w=>
+      (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+      (w.to?.c===a&&w.to?.p===ap&&w.from?.c===b&&w.from?.p===bp));
+    const probes=red?.probeTarget?.c==='q1'&&red.probeTarget.p==='G'&&
+      black?.probeTarget?.c==='q1'&&black.probeTarget.p==='S'&&
+      wired('vg','V','vgr','PLUG')&&wired('vg','COM','vgb','PLUG');
+    let vgsMean=null;
+    if(proven&&probes&&Number.isFinite(high.vgs)&&Number.isFinite(low.vgs)&&
+        meter?._meter?.mode==='DCV'&&!meter._meter.warning){
+      vgsMean=high.vgs*duty/100+low.vgs*(100-duty)/100;
+      if(!meter.meterHold){
+        const range=meter._meter.range,display=Multimeter.format(vgsMean,'DCV',range,meter.meterContinuity);
+        meter._meter={...meter._meter,value:vgsMean,display:display.display,unit:display.unit};
+      }
+    }
+    if(motor)motor._sc11VgsMean=vgsMean;
+    return {result,sampled:!!valid,valid:proven,dutyPercent:duty,
+      highDrive:!!highDrive,lowDrive:!!lowDrive,driveTargetPercent:target,
+      vgsDcAverage:vgsMean,physicalRpm:null};
+  }
+
+  const api={solve,solveSc11Cycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
