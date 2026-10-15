@@ -4357,6 +4357,76 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  if(!triage.applicationRepairIds.includes(id))triage.applicationRepairIds.push(id);
  triage.explicitUserOverrideForSc28='User requested proven dynamic wiring for Load Cell; original NO_WIRED_CIRCUIT review ledger remains unchanged';
 }
+
+/* MQ-07 SC29 — LDR dark-triggered comparator + protected 24 V virtual load.
+   Separate from SC20/SC21 thermistor and SC30 DC linear-dimmer models. */
+{
+ const id='sensor-analog-apps-src-10',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==9||p.wires.length!==12||
+    l.pedagogyReview?.titleTopologyStatus!=='SOURCE_ALIGNED'||
+    !p.components.some(c=>c.id==='s1'&&c.typeId==='ldr-gl5528')||
+    !p.components.some(c=>c.id==='u1'&&c.typeId==='lm358p-dip8')||
+    !p.components.some(c=>c.id==='v1'&&c.typeId==='unit-ut33d-plus'))
+  throw Error('MQ-07 SC29 canonical LDR comparator baseline changed');
+ const one=(a,ap,b,bp)=>p.wires.filter(w=>w.from?.c===a&&w.from.p===ap&&w.to?.c===b&&w.to.p===bp);
+ const sense=one('s1','2','u1','3'),reference=one('r2','2','u1','2');
+ if(sense.length!==1||reference.length!==1)
+  throw Error('MQ-07 SC29 original comparator inputs missing or ambiguous');
+ // Dark: upper GL5528 increases its resistance, LOWERING sense node.
+ // Comparator must therefore compare Vref on pin 3 versus Vsense on pin 2.
+ sense[0].to.p='2';
+ sense[0].tutorialHint='B1 sensör düğümü → U1/2 (IN−)';
+ sense[0].tutorialWhy='Karanlıkta GL5528 direnci yükselince IN− gerilimi düşer.';
+ reference[0].to.p='3';
+ reference[0].tutorialHint='R2/R3 12 V sanal eşik → U1/3 (IN+)';
+ reference[0].tutorialWhy='IN+ > IN− olduğunda LM358P sanal çıkışı yüksek olur.';
+ const src=p.components.find(c=>c.id==='g1'),ldr=p.components.find(c=>c.id==='s1');
+ if(src.dcVoltage!==24||p.wires.some(w=>w.from?.c==='u1'&&w.from.p==='1'))
+  throw Error('MQ-07 SC29 expected 24 V comparator output graph changed');
+ ldr.illuminationLux=100;
+ p.components.push(
+  C('rg','resistor',850,135,'RG','10 kΩ gate üst',{resistance:10000}),
+  C('rp','resistor',850,330,'RP','10 kΩ gate alt',{resistance:10000}),
+  C('q1','irf540n-mosfet',1090,365,'Q1','IRF540N sanal düşük-taraf anahtarı',{mq07LdrDarkSwitch:true}),
+  C('h1','standard-light',1190,180,'H1','24 V / 240 Ω sanal karanlık lambası',{resistance:240})
+ );
+ p.wires.push(
+  W('u1','1','rg','1','LM358P/1 → RG/1','Karşılaştırıcı OUT işareti gerçek gate bölücüsüne gider.','#43a047','SIGNAL'),
+  W('rg','2','rp','1','RG/2 → RP/1','RG/RP gerçek seri bölücüsü gate gerilimini sınırlamaya yardım eder.','#43a047','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','MOSFET G yalnız gerçek sanal düğümden sürülür.','#43a047','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → G1/M','Gate pull-down enerji kesilince sıfıra indirir.','#111827','0V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','24 V sanal yük beslemesi kendi güç kolundadır.','#8b5a2b','+24V'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','Gövde akımı MOSFET drain ucundan geçer.','#8b5a2b','+24V'),
+  W('q1','S','g1','M','Q1/S → G1/M','Gerçek sanal yük dönüş yolu 0 V’dur.','#111827','0V')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='Karanlıkta yükselen GL5528 direnci, R1 ile 24 V bölücünün sensör düğümünü düşürür. U1 LM358P 12 V eşikle karşılaştırır, sanal IRF540N Q1 anahtarı ile 24 V / 240 Ω H1 lambayı karanlıkta çalıştırır. Ürün kalibrasyonu değil, yalnız eğitim eşdeğeridir.';
+ l.explanation='Yalnız sanal deneydir. G1 24 V kaynak ve GL5528 B1 LDR üst kolu ile R1 10 kΩ alt kol bir gerilim bölücüsü yapar: Vsens=24×10000/(R_LDR+10000). R2/R3 her biri 10 kΩ olduğundan Vref≈12 V. GL5528 foto direncinin gölgede artan direnci Vsens düğümünü DÜŞÜRÜR: B1/2 → U1 pin 2 IN−, referans R2/2 → U1 pin 3 IN+ olarak düzeltilmiştir. Karanlıkta (ör. 1–10 lux) IN+ > IN− ve LM358P model çıkışı yüksek olur. Çıkış RG ve RP 10 kΩ üzerinden gerçek U1/1→Q1/G bölücüsüne aktarılır; sanal MOSFET kaynak 0 V ve H1 240 Ω yük 24 V ile ayrı güç devresinde çalışır. G1/P→H1→Q1/D→Q1/S→G1/M sanal yolu tamamlanınca H1 ≈0,1 A (≈2,4 W) akım çeker. Daha aydınlıkta (ör. 50/100 lux) sensör direnci düşer, IN− artar, karşılaştırıcı çıkışı ve Q1 gate düşer, H1 söner. Eğitim eşiği verilen GL5528 R10=15 kΩ ve gamma=0,6 modeli altında yaklaşık 19,66 lux’tur; gerçek optik kalibrasyon değildir. U1 ve MOSFET devresinde gerçek kapasitans/histerezis/bobin yoktur; eşiğe yakın titreme, gerçek LM358P çıkış akımı, MOSFET ısınması, üretici gate hassasiyeti, fiziksel sigorta ve saha güvenliği DOĞRULANMAMIŞTIR. UT33D+ V1 probu U1/1 ve 0 V arasındaki gerilimi gözlemlemek içindir; multimetrenin fiziksel cihaz kabulü veya gerçek lamp gücü ölçümü sayılmaz. Elektriksel çizimdeki 24 V hatları gerçek enerjili bağlantı yönergesi değildir.';
+ l.learningGoal='LDR ışık seviyesi ↓ → R_LDR ↑ → 24 V bölücü sensör düğümü ↓ → LM358P eşik sonucu ↑ → IRF540N gate ↑ → 24 V sanal lamba ON zincirini ve aydınlıkta OFF durumunu ayırt etmek.';
+ l.beginnerSteps=[
+ 'Yalnız sanal devrede B1 LDR, R1 10 kΩ alt kol ve G1 24 V sanal beslemesini tanı.',
+ 'B1/2–U1/2 IN− sensör düğümü ile R2/R3 12 V–U1/3 IN+ referansını ayırt et.',
+ '100 lux seç: düşük GL5528 direnci, IN− > IN+, U1/1 LOW ve H1 OFF olmalı.',
+ '10 lux seç: GL5528≈15 kΩ, Vsens≈9,6 V, U1/1 HIGH, H1 ON olmalı.',
+ '1 lux seç: GL5528≈59,7 kΩ, Vsens≈3,44 V, Q1 gate ≈11 V ve H1 ≈0,1 A olmalı.',
+ 'Kontrolü G1/24 V, U1/1→RG/RP→Q1/G ve ayrı H1→Q1/D/S yük kolu üzerinde izle.',
+ 'Sanal MOSFET G veya H1 güç yolu kablosunu çıkar: yük OFF olmalı; enerjisiz gerçek donanım deneyi yapma.',
+ 'Tekrar 50 lux seç: karşılaştırıcı ve H1 LOW/OFF durumuna dönmeli.'
+ ];
+ l.quiz={question:'Üst kolda LDR, alt kolda 10 kΩ R1 varsa karanlıkta H1’in yanması için LM358P girişleri nasıl olmalı?',
+  options:['Sensör düğümü IN− pin 2, 12 V referans IN+ pin 3; karanlıkta OUT HIGH ile Q1 anahtarı açılır.',
+   'Sensör düğümü IN+ pin 3, referans IN− pin 2; karanlıkta her zaman OUT HIGH olur.',
+   'B1 LDR tek başına 24 V lamba akımı üretir.'],
+  answer:0,why:'GL5528 karanlıkta yüksek dirençli olduğu için üst LDR/alt R1 bölücünün Vsens gerilimi azalır.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyStatus:'LDR_DARK_SWITCH_LOADED_SOURCE_ALIGNED',titleTopologyIssue:null,
+  mq07LdrDark:{source:'GL5528_LUX_DEPENDENT_RESISTANCE',supplyV:24,referenceV:12,gateResistorsOhm:[10000,10000],loadOhm:240,output:'IRF540N_LOADED_SWITCH',nominalLampCurrentA:0.1,
+    sourceIsolatedElectricalTestsVerified:true,manufacturerIlluminanceCalibrationVerified:false,fullNodeSuiteExecuted:false,windowsVisualAcceptance:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 24 VDC sanal karşılaştırıcı + dirençli yük öğretim devresi; üretici, fiziksel elektrik, ısı, EMC ve saha güvenliği kabulü yoktur.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

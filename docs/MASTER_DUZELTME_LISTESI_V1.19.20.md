@@ -2149,3 +2149,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Gerçek izole solver 5 V uyartım, 2 mV/V, 1000 kg ölçeğinde 0/250/500/750/1000 kg → 0/2,5/5/7,5/10 mV ve TX11 ağırlık okuması doğrulandı; eksik EX/SIG/ters kablo ve geçersiz besleme hata. 4–20 mA dış yük bağlı DEĞİL, analog döngü warning: **MQ-00 REVIEW**.
 - Tam Node/Windows/browser/üretici 4 strain-gauge kalibrasyon veya fiziksel PASS doğrulanmadı. Yalnız SC28 değişti, 1655 dersin diğerleri, SC11–SC27 ve teknik kilitler korunur. `docs/MQ07_SC28_LOAD_CELL_TX11_20261015.md`, `tests/qa-mq07-sc28-load-cell-tx11-mvv-v11920.test.cjs`. Actions kullanılmaz, `[skip ci]`.
 - Sıradaki kaynak `sensor-analog-apps-src-10` LDR karanlıkta çalışan devre.
+
+
+## 2026-10-15 MQ-07 SC29 LDR DARK SWITCH
+
+- `sensor-analog-apps-src-10`: 9 ürün/12 kablolu GL5528–LM358P karşılaştırıcı doğru karanlık polaritesine düzeltildi ve gerçek katalog IRF540N + RG/RP 10 kΩ + H1 240 Ω sanal 24 V yük katıyla **13 ürün/19 kablo/19 adım** oldu.
+- Mevcut 949 kataloglu V8 gerçek numeric kaynak izolasyonunda 0,1/1/5/10 lux → ON ~0,100 A; 30/50/100/1000 lux → OFF; G1 kapalı, MOSFET gate kopuk, H1 yük yolu kopuk, U1 24 V girişi kopuk → OFF (**12/12 hedefli senaryo**). Yalnız SC29 opt-in `_mq07LdrGateV`; önceki NTC/PTC ve SC30 dimmer davranışı korunur.
+- 1.655 dersin yalnız SC29 kaydı değişti; SC11–SC28 kilitler, önceden doğrulanan kaynaklar, fiziksel kabul false. Tam Node, Windows UI ve fiziksel üretici QA NOT_RUN, MQ-00 **REVIEW**. Kanıt `docs/MQ07_SC29_LDR_DARK_SWITCH_20261015.md`, Node hedef kaynağı `tests/qa-mq07-sc29-ldr-dark-switch-v11920.test.cjs`. Actions yok, `[skip ci]`. Sonraki `sensor-analog-apps-src-11` LDR dimmer.
