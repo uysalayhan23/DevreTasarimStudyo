@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-15",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "lessonId": "electronic-switching-src-11",
+  "acceptance": "PARTIAL_NATIVE_FIXTURE_PASS_FULL_MQ12_NOT_RUN",
+  "scope": {
+    "method": "Genuine GitHub dist/simulation.js plus 18 production CommonJS module dependencies evaluated in isolated V8; controlled explicit nine-component SC11 definition fixture; does NOT equal full catalog, authentic Node test suite or Windows visual QA",
+    "moduleCount": 19,
+    "fixtureComponents": 9,
+    "frequencyHz": 1000,
+    "terminalizedWiring": true,
+    "actionsInvoked": false
+  },
+  "rootCause": "SC11 measurement probes had electrical TIP target and PLUG meter-wire endpoints, but neither a conductingPair nor a direct virtual link between PLUG and TIP. MOSFET original Numeric.update produced ~11.881188 V gate potential while UT33D+ remained at 0 V; prob model lacked terminal continuity.",
+  "fix": {
+    "implementation": "dist/simulation.js: opt-in conductingPairs ['PLUG','TIP'] only for sc11MeasurementProbe=true, and dist/tutorial-pedagogy.js marks vgr/vgb",
+    "globalProbeBehaviorChanged": false,
+    "existingNativeMosfetThresholdChanged": false,
+    "physicalRPMModel": false
+  },
+  "dutySamples": [
+    {
+      "dutyPercent": 0,
+      "virtualVgsDcvMean": 0,
+      "motorDriveTargetPercent": 0
+    },
+    {
+      "dutyPercent": 25,
+      "virtualVgsDcvMean": 2.97000297000297,
+      "motorDriveTargetPercent": 25
+    },
+    {
+      "dutyPercent": 50,
+      "virtualVgsDcvMean": 5.94000594000594,
+      "motorDriveTargetPercent": 50
+    },
+    {
+      "dutyPercent": 82,
+      "virtualVgsDcvMean": 9.741609741609743,
+      "motorDriveTargetPercent": 82
+    },
+    {
+      "dutyPercent": 100,
+      "virtualVgsDcvMean": 11.88001188001188,
+      "motorDriveTargetPercent": 100
+    }
+  ],
+  "negativeTests": {
+    "openWires": [
+      "rg>q1",
+      "m1>q1",
+      "g1>m1",
+      "g1>pwm1",
+      "pwm1>rg",
+      "pwm1>g1"
+    ],
+    "driveTargetForEveryOpenWire": 0,
+    "invalidFrequencyHz0": {
+      "valid": false,
+      "driveTargetPercent": 0,
+      "vgsDcvMean": null
+    },
+    "meterHold": {
+      "vgsDcvMean": null
+    },
+    "disconnectedMeterLeads": {
+      "vgsDcvMean": null
+    }
+  },
+  "normalizedMotorResponse": {
+    "dutySequence": [
+      0,
+      100,
+      100,
+      0
+    ],
+    "simulationTimesMs": [
+      1000,
+      1050,
+      1100,
+      1150
+    ],
+    "speedPercentApprox": [
+      0,
+      13.312210024981841,
+      24.852270692471414,
+      21.54388422191261
+    ],
+    "note": "Uncalibrated display-only response; no actual RPM/torque/thermal model"
+  },
+  "checks": {
+    "verifiedNativeFixture": {
+      "dutyTarget": true,
+      "vgsMonotonic": true,
+      "openPathsFailClosed": true,
+      "invalidFrequencyFailClosed": true,
+      "meterHoldNotFresh": true,
+      "disconnectedProbeFailClosed": true,
+      "motorInertiaTrend": true,
+      "noInventedRpm": true
+    },
+    "javascriptParse": "PASS",
+    "nodeTest": "NOT_RUN",
+    "full1655Regression": "NOT_RUN",
+    "windowsFileVisual": "NOT_RUN"
+  },
+  "limitations": [
+    "dist/library.js is 1.8 MB and connected GitHub fetch_file returned empty content; cannot validate original full catalog inside V8 fixture",
+    "GitHub clone via container fails DNS; authentic Node repo test cannot be executed in this session",
+    "No actual Windows browser or oscilloscope capture",
+    "Not an electrical safety or manufacturer-calibrated motor model"
+  ],
+  "mq12": "FIXTURE_PASS; AUTHENTIC_NODE_NOT_RUN",
+  "mq13": "main-only, no force-push, all commits [skip ci], no GitHub Actions invocation",
+  "mq00": "REVIEW: require full repo node --test, node scripts/run-tests.cjs, node scripts/check.cjs and Windows file:/// SC11 acceptance before DONE"
+}
