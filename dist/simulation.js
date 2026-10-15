@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -735,7 +735,99 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       virtualHoldingCurrentA:verified?holding:null};
   }
 
-  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+
+  // SC17 opt-in: bipolar AC TRIAC with two *independent* half-cycle firings.
+  // Educational low-voltage virtual source; not a product SPICE or mains model.
+  function solveSc17TriacDimmerCycle(project,byId,options={}){
+    const scene=project?.tutorialLesson?.id==='electronic-switching-src-17'||
+      ['tutorial-electronic-switching-src-17','tutorial-session-source-electronic-switching-src-17'].includes(project?.projectId);
+    if(!scene)return {result:solve(project,byId,options),verified:false};
+    const result=solve(project,byId,options),part=id=>project.components.find(c=>c.id===id);
+    const src=part('ac1'),driver=part('trg1'),triac=part('q1'),lamp=part('h1'),rg=part('rg');
+    const defsGood=src?.typeId==='virtual-isolated-ac-12v'&&
+      driver?.typeId==='virtual-ac-triac-trigger-v1'&&triac?.typeId==='bta16-600b-triac'&&
+      rg?.typeId==='resistor'&&lamp?.typeId==='standard-light'&&
+      byId[triac?.typeId]?.kind==='triac'&&
+      byId[triac?.typeId]?.pins?.map(p=>p.id).join(',')==='MT1,MT2,G';
+    // Preserve junction wire unions. Never infer a connection from proximity.
+    const parents=new Map();
+    const key=x=>x?.j!==undefined?'j:'+x.j:x?.c&&x?.p?x.c+'/'+x.p:null;
+    const find=x=>{if(!parents.has(x))parents.set(x,x);let r=x;
+      while(parents.get(r)!==r)r=parents.get(r);
+      while(parents.get(x)!==x){const q=parents.get(x);parents.set(x,r);x=q}return r;};
+    for(const w of project.wires||[]){
+      if(w.mechanical||w.role==='MECHANICAL')continue;
+      const a=key(w.from),b=key(w.to);if(a&&b)parents.set(find(a),find(b));
+    }
+    const linked=(a,pa,b,pb)=>find(a+'/'+pa)===find(b+'/'+pb);
+    const wired=!!(defsGood&&
+      linked('ac1','AC','h1','X1')&&linked('h1','X2','q1','MT2')&&
+      linked('q1','MT1','ac1','RET')&&
+      linked('ac1','AC','trg1','AC')&&linked('ac1','RET','trg1','RET')&&
+      linked('trg1','OUT','rg','1')&&linked('rg','2','q1','G')&&
+      !linked('ac1','AC','ac1','RET')&&
+      !linked('q1','MT2','q1','MT1')&&
+      !linked('trg1','OUT','ac1','AC')&&!linked('trg1','OUT','ac1','RET'));
+    const rms=src?.rmsVoltage,hz=src?.frequencyHz,angle=driver?.triggerAngleDeg,
+      width=driver?.pulseWidthDeg,resistance=lamp?.resistance,gateR=rg?.resistance,
+      holding=triac?.mq07VirtualHoldingCurrentA,now=Number.isFinite(options.now)?options.now:Date.now();
+    const valid=!!(wired&&result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating&&
+      src.sourceEnabled!==false&&driver.triggerEnabled!==false&&
+      Number.isFinite(now)&&now>=0&&
+      typeof rms==='number'&&Number.isFinite(rms)&&rms>=1&&rms<=24&&
+      typeof hz==='number'&&Number.isFinite(hz)&&hz>=45&&hz<=60&&
+      typeof angle==='number'&&Number.isFinite(angle)&&angle>=0&&angle<=170&&
+      typeof width==='number'&&Number.isFinite(width)&&width>=1&&width<=45&&
+      typeof resistance==='number'&&Number.isFinite(resistance)&&resistance>=10&&resistance<=10000&&
+      typeof gateR==='number'&&Number.isFinite(gateR)&&gateR>=100&&gateR<=100000&&
+      typeof holding==='number'&&Number.isFinite(holding)&&holding>=.001&&holding<=.5);
+    const peak=valid?rms*Math.SQRT2:0,virtualDrop=1;
+    // Resistive load; only above a teaching-model holding-current threshold.
+    const cutoff=valid?Math.asin(Math.min(1,(holding*resistance+virtualDrop)/peak))*180/Math.PI:180;
+    const fire=valid&&cutoff<=angle+width?Math.max(cutoff,angle):180;
+    const extinguish=180-cutoff,canFire=valid&&fire<extinguish;
+    const atAngle=phase=>{
+      const deg=((phase%360)+360)%360,half=deg<180?0:1,
+        local=deg-half*180,sign=half===0?1:-1,rad=deg*Math.PI/180,
+        sine=peak*Math.sin(rad);
+      const gatePulse=valid&&local>=angle&&local<Math.min(180,angle+width);
+      const on=canFire&&local>=fire&&local<extinguish;
+      const loadV=on?sign*Math.max(0,Math.abs(sine)-virtualDrop):0,
+        currentA=loadV/(resistance||1);
+      return {deg,sourceV:sine,gateV:gatePulse?5*sign:0,loadV,currentA,conducting:on,
+        half:half===0?'positive':'negative',zeroCrossing:local<.3||180-local<.3};
+    };
+    let rmsSquares=0,conduction=0;
+    const waveform=[];
+    // 2-degree samples over one full cycle; RMS is not an angle-slider proxy.
+    for(let deg=0;deg<360;deg+=2){
+      const x=atAngle(deg);rmsSquares+=x.loadV*x.loadV;if(x.conducting)conduction++;
+      if(deg%10===0)waveform.push({deg,sourceV:x.sourceV,gateV:x.gateV,loadV:x.loadV,
+        currentA:x.currentA});
+    }
+    const outputRmsV=valid?Math.sqrt(rmsSquares/180):0,
+      phase=(now*hz*.36)%360,instant=atAngle(phase);
+    if(src){src._sc17Wave=waveform;src._sc17PhaseDeg=instant.deg;src._sc17SourceV=instant.sourceV}
+    if(driver){driver._sc17Wave=waveform;driver._sc17GateV=instant.gateV;
+      driver._sc17PhaseDeg=instant.deg;driver._sc17FiringAngleDeg=canFire?fire:null;
+      driver._active=valid&&instant.gateV!==0}
+    if(triac){triac._sc17Wave=waveform;triac._sc17CurrentA=instant.currentA;
+      triac._sc17Conducting=instant.conducting;triac._sc17Half=instant.half;
+      triac._thyristorOn=instant.conducting;triac._active=instant.conducting}
+    if(lamp){lamp._sc17Wave=waveform;lamp._sc17RmsV=outputRmsV;
+      lamp._sc17LoadV=instant.loadV;lamp._sc17CurrentA=instant.currentA;
+      lamp._sc17ConductionPct=valid?100*conduction/180:0;
+      lamp._active=instant.conducting;lamp._lampActive=instant.conducting;
+      lamp._powered=instant.conducting;lamp._currentValue=Math.abs(instant.currentA)}
+    return {result:{...result,timed:valid},verified:valid,
+      phaseDeg:instant.deg,half:instant.half,zeroCrossing:instant.zeroCrossing,
+      sourceV:instant.sourceV,gateV:instant.gateV,loadV:instant.loadV,
+      currentA:instant.currentA,conducting:instant.conducting,
+      firedAtDeg:canFire?fire:null,rmsV:outputRmsV,
+      conductionPct:valid?100*conduction/180:0};
+  }
+
+  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,solveSc17TriacDimmerCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
