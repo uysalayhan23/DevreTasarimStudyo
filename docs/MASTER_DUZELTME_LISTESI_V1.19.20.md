@@ -2112,3 +2112,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - İzole özgün JS simülasyonunda PT100 0/25/100 °C → PV 0/25/100 °C, ideal 100/109,735/138,505 Ω; çift taraf kablo değişimi PASS, üç tel kopma, yanlış giriş ve besleme kopması hata, tarihsel 2 telli köprü PASS (toplam 10/10 kaynak V8 senaryosu).
 - 1.655 kaynaktan yalnız SC23 değişti, SC11–SC22 ve kilitler korundu. Gerçek kablo direnç telafisi, tam Node/Windows UI QA ve fiziksel üretici kabulü YOK: **MQ-00 REVIEW**. Actions kullanılmadı, `[skip ci]`.
 - Detay: `docs/MQ07_SC23_PT100_THREE_WIRE_20261015.md`; Node hedef kaynağı: `tests/qa-mq07-sc23-pt100-three-wire-v11920.test.cjs`; sonraki ders `sensor-analog-apps-src-05` LM35.
+
+
+## 2026-10-15 MQ-07 SC24 LM35 ANALOG ADC
+
+- `sensor-analog-apps-src-05`: Mevcut 3 parça / 5 kablo korunarak sanal 5 V LM35 10 mV/°C → Arduino UNO A0 10-bit ADC davranışı düzeltildi (0/25/50/100/125 °C → ADC 0/51/102/205/256). Sadece SC24 özel sayısal model bayrağı kullanıldı.
+- İzole gerçek JS kaynak V8 koşumunda sıcaklık, gerçek besleme/şase, AO kopukluğu, 0/4 V sanal kaynak: **10/10 hedefli PASS**. Tam Node/Windows/UI ve üretici fiziksel kalibrasyon yapılmadı: **MQ-00 REVIEW**.
+- 1655 müfredatta yalnız SC24 içerik değişikliği, SC11–SC23 ve teknik kilitler korunur. GitHub Actions yok; `[skip ci]`. Detay `docs/MQ07_SC24_LM35_ARDUINO_ADC_20261015.md`, Node hedef testi `tests/qa-mq07-sc24-lm35-arduino-adc-v11920.test.cjs`. Sıradaki `sensor-analog-apps-src-06` Reed.

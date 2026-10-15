@@ -4099,6 +4099,56 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız sanal PT100 ölçüm ve sıcaklık görüntüleme deneyidir; gerçek enerjili şebeke/donanım bağlantısı ve üretici fiziksel kabulü yoktur.';
 }
 
+
+/* MQ-07 SC24 only: turn LM35 10mV/C analog output into a real Arduino
+   A0 ADC source. Other Arduino sensors and SC11–SC23 remain unchanged. */
+{
+ const id='sensor-analog-apps-src-05',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==3||p.wires.length!==5||
+  !p.components.some(x=>x.id==='ps'&&x.typeId==='arduino-bench-supply')||
+  !p.components.some(x=>x.id==='s1'&&x.typeId==='arduino-lm35')||
+  !p.components.some(x=>x.id==='u1'&&x.typeId==='arduino-uno'))
+  throw Error('MQ-07 SC24 LM35 canonical graph changed');
+ const ps=p.components.find(x=>x.id==='ps'),s=p.components.find(x=>x.id==='s1'),
+       uno=p.components.find(x=>x.id==='u1');
+ const wired=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp);
+ if(![['ps','P','s1','VCC'],['ps','M','s1','GND'],
+       ['ps','P','u1','5V'],['ps','M','u1','GND'],['s1','AO','u1','A0']].every(x=>wired(...x)))
+  throw Error('MQ-07 SC24 original LM35 terminal path changed');
+ ps.dcVoltage=5; s.arduinoValue=25; s.mq07Lm35Model=true;
+ uno.arduinoSketch='int adc=0;float voltage=0;float tempC=0;void setup(){}void loop(){adc=analogRead(A0);voltage=adc*5.0/1023.0;tempC=voltage*100.0;delay(1);}';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='Yalnız sanal 5 V LM35 sıcaklık ölçümü: sensör 10 mV/°C analog gerilim üretir ve Arduino UNO A0 üzerinde 10-bit analogRead ile sıcaklık hesaplanır.';
+ l.explanation='Sadece sanal Arduino laboratuvarı: G1 5 VDC masa kaynağı P/+ ucu LM35 VCC ve UNO 5V ucuna, G1 M/0 V ucu LM35 GND ve UNO GND ucuna bağlanır. Sensör AO/OUT terminali UNO A0 analog girişine ayrı bir kabloyla bağlıdır. Yalnız bu dersteki MQ07 LM35 sayısal modelinde çıkış gerilimi Vout=temperature(°C)×0,010 V olarak hesaplanır; eğitim aralığı 0–125 °C, ADC referansı 5,00 V, beklenen ADC kodu round(Vout/5×1023). 0 °C→0 V→0, 25 °C→0,25 V→51, 50 °C→0,50 V→102, 100 °C→1,00 V→205, 125 °C→1,25 V→256. UNO sketch analogRead(A0) değerini adc değişkeninde tutar; voltage=adc×5/1023, tempC=voltage×100 ile yaklaşık sıcaklığı hesaplar. Arduino kodu A0 ADC kuantalaması nedeniyle hesaplanan sıcaklık ideal sensör ayarından biraz farklı olabilir. G1 sanal 5 V besleme, VCC ya da GND bağlantısı hatalıysa LM35 analog sıcaklık modeli enerjisiz sayılır ve ADC 0 okur; AO–A0 kablosu koparsa A0 kaynaktan veri alamaz. Sensor arayüzündeki arduinoValue değeri bu ders için °C sıcaklıktır, ham ADC kodu DEĞİLDİR. Başka Arduino temperature sensörleri veya normal analog modül ADC davranışları değiştirilmez. Sensörün gerçek akım sınırlaması, ADC gürültüsü, besleme toleransı, üretici sıcaklık doğruluğu, uç termal kayıpları ve donanım kalibrasyonu modellenmemiştir. Bu yalnız bilgisayar simülasyonudur; fiziksel elektrik devresi kurulum yönergesi değildir.';
+ l.learningGoal='Sanal LM35 sıcaklığının 10 mV/°C gerilimine ve UNO 10 bit A0 ADC sayısına dönüşmesini, ortak 5 V referansın zorunluluğunu ve açık AO/VCC/GND kablosundaki sıfır ölçümünü ayırmak.';
+ l.beginnerSteps=[
+  'Sanal 5 VDC G1 kaynağının +/0 V hatlarını LM35 VCC/GND ve UNO 5V/GND ile karşılaştır.',
+  'LM35 AO/OUT kablosunun gerçek UNO A0 girişine bağlı olduğunu göster.',
+  'Arduino sketch içinde analogRead(A0), adc, voltage ve tempC değişkenlerini incele.',
+  'LM35 arduinoValue ayarını 0 °C seç ve 0 V / ADC 0 okunduğunu gözle.',
+  '25 °C seç, 0,25 V ve ADC yaklaşık 51 değerini karşılaştır.',
+  '50 °C seç, 0,50 V ve ADC yaklaşık 102 değerini karşılaştır.',
+  '100 °C seç, 1,00 V ve ADC yaklaşık 205 değerini karşılaştır.',
+  'Yalnız yazılım içinde AO, VCC ya da GND kablosunu ayır; ADC’nin ölçümü neden kaybettiğini ve bunun gerçek ürün kalibrasyonu olmadığını açıkla.'
+ ];
+ l.quiz={question:'Sanal LM35 25 °C ve UNO 5 V ADC referansındayken doğru A0 okuması nedir?',
+  options:['Yaklaşık 0,25 V ve ADC kodu 51.',
+   'Yaklaşık 25 V ve ADC kodu 1023.',
+   'Sıcaklık direnç gibi 25 Ω olur.'],
+  answer:0,why:'LM35 sanal modeli 10 mV/°C, UNO A0 5 V / 1023 kod ölçeklemesi kullanır.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'LM35_5V_ANALOG_ADC_SOURCE_ALIGNED',
+  mq07Lm35Arduino:{supplyV:5,referenceV:5,millivoltPerC:10,adcBits:10,
+   temperatureMinC:0,temperatureMaxC:125,sourceV8ScenariosPassed:10,
+   voltageAndGndWiresChecked:true,fullNodeSuiteExecuted:false,
+   physicalCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız yazılım sanal 5 V Arduino/LM35 deneyi. Gerçek donanım, üretici kalibrasyonu veya fiziksel güvenlik kabulü yapılmadı.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

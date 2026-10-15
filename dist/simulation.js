@@ -167,7 +167,15 @@
           const volts=Math.max(0,Math.min(30,Number(c.dcVoltage??d.defaultVoltage??5)));seed(c,'P','arduino-bench:'+c.id,'+','dc',volts);seed(c,'M','arduino-bench:'+c.id,'0','dc',volts);
         }else if(d.arduinoRole==='signal-generator'){
           const volts=Math.max(0,Math.min(5,Number(c._signalVoltage??0)));seed(c,'OUT','arduino-generator:'+c.id,'+','dc',volts);seed(c,'GND','arduino-generator:'+c.id,'0','dc',volts);
-        }else if(d.arduinoRole==='analog'&&d.pins?.some(p=>p.id==='AO')){
+        }else if(d.id==='arduino-lm35'&&c.mq07Lm35Model===true){
+ const feed=at(c,'VCC').filter(x=>x.type==='dc'&&x.leg==='+');
+ const returns=at(c,'GND').filter(x=>x.type==='dc'&&x.leg==='0');
+ const supply=feed.find(x=>Math.abs(x.volts-5)<.01&&returns.some(y=>y.domain===x.domain));
+ const temp=Math.max(0,Math.min(125,Number(c.arduinoValue??d.arduinoDefault??25)));
+ const volts=supply?temp*.01:0;
+ c._mq07Lm35AnalogV=volts;c._mq07Lm35SupplyOk=!!supply;
+ if(supply){seed(c,'AO','mq07-lm35:'+c.id,'+','dc',volts);seed(c,'GND','mq07-lm35:'+c.id,'0','dc',volts)}
+ }else if(d.arduinoRole==='analog'&&d.pins?.some(p=>p.id==='AO')){
           const volts=Math.max(0,Math.min(5,Number(c.arduinoValue??d.arduinoDefault??0)/1023*5));seed(c,'AO','arduino-sensor:'+c.id,'+','dc',volts);if(d.pins.some(p=>p.id==='GND'))seed(c,'GND','arduino-sensor:'+c.id,'0','dc',volts);
         }
       }
