@@ -1126,6 +1126,37 @@ function setSc12PwmDuty(project,value){
  if(l?.id!=='electronic-switching-src-12'||!generator||!Number.isFinite(duty)||duty<0||duty>100)return false;
  generator.dutyPercent=duty;root.DTSEditor?.render?.();sync(project);return true;
 }
+function sc19OptoTriacPanel(project){
+ const timer=project?.components?.find(c=>c.id==='t1'),
+   opto=project?.components?.find(c=>c.id==='u1'),
+   ac=project?.components?.find(c=>c.id==='ac1'),
+   lamp=project?.components?.find(c=>c.id==='h1'),
+   q=project?.components?.find(c=>c.id==='q1');
+ const wave=lamp?._sc19Wave||[];
+ const line=key=>wave.map((v,i)=>(i?'L':'M')+(6+v.deg).toFixed(1)+' '+(65-(Number(v[key])||0)*2.1).toFixed(1)).join(' ');
+ const graph=wave.length?'<svg viewBox="0 0 372 128" width="100%" role="img" aria-label="AC kaynak, optik gate ve iki yarım periyotta sanal yük gerilimi"><rect width="372" height="128" rx="6" fill="#152536"/><path d="M6 65h360M186 12v98" stroke="#62798a" stroke-dasharray="3 4"/><path d="'+line('sourceV')+'" fill="none" stroke="#5bd7ff" stroke-width="1.8"/><path d="'+line('loadV')+'" fill="none" stroke="#88eea4" stroke-width="2.2"/><path d="'+line('gateV')+'" fill="none" stroke="#ffca76" stroke-width="1.2"/><text x="12" y="120" fill="#e9f1f9" font-size="10">Mavi AC · Yeşil yük · Sarı opto gate</text></svg>':'<p>START sonrası dalga hesaplanır.</p>';
+ const led=Number.isFinite(opto?._sc19LedCurrentA)?(1000*opto._sc19LedCurrentA).toFixed(2)+' mA':'—';
+ const rms=Number.isFinite(lamp?._sc19RmsV)?lamp._sc19RmsV.toFixed(2)+' V':'—';
+ const hz=timer?.frequencyHz??2,duty=timer?.dutyPercent??50;
+ return '<section class="tutorial-sc11-pwm"><h3>MOC3021 → BTA16 · sanal optik flaşör</h3>'+
+ '<p>DC LED: <strong>'+led+'</strong> · T1 '+esc(String(hz))+' Hz · '+esc(String(duty))+'% duty</p>'+
+ '<p>Optik bağlantı '+(opto?._sc19Isolated?'ayrı kumanda/AC':'doğrulanmadı')+
+ ' · Opto '+(opto?._sc19OptoOn?'tetikliyor':'kapalı')+
+ ' · BTA16 '+(q?._sc19Conducting?'iletimde':'kesimde')+'</p>'+
+ '<p>AC fazı '+(Number.isFinite(ac?._sc19PhaseDeg)?ac._sc19PhaseDeg.toFixed(0)+'°':'—')+
+ ' · yük RMS <strong>'+rms+'</strong></p>'+graph+
+ '<div class="tutorial-sc11-pwm-actions">'+[0,25,50,75,100].map(d=>'<button type="button" data-sc19-duty="'+d+'">'+d+'% duty</button>').join('')+
+ [1,2,4].map(f=>'<button type="button" data-sc19-hz="'+f+'">'+f+' Hz</button>').join('')+'</div>'+
+ '<small>Yalnız yazılımsal 5 V giriş ve bağımsız yalıtılmış 12 V AC. Gerçek optik izolasyon test edilmedi; şebeke ve donanım modeli değildir.</small></section>';
+}
+function setSc19Timer(project,key,value){
+ const l=lessonFor(project),timer=project?.components?.find(c=>c.id==='t1'&&c.typeId==='virtual-opto-flasher-timer-v1'),n=Number(value);
+ if(l?.id!=='electronic-switching-src-19'||!timer||!Number.isFinite(n))return false;
+ if(key==='dutyPercent'&&(n<0||n>100))return false;
+ if(key==='frequencyHz'&&(n<.2||n>10))return false;
+ if(!['dutyPercent','frequencyHz'].includes(key))return false;
+ timer[key]=n;root.DTSEditor?.render?.();sync(project);return true;
+}
 function sc18OptoPanel(project){
  const u=project?.components?.find(c=>c.id==='u1'),sg=project?.components?.find(c=>c.id==='sg');
  const led=Number.isFinite(u?._sc18LedCurrentA)?(u._sc18LedCurrentA*1000).toFixed(2)+' mA':'—';
@@ -1286,6 +1317,7 @@ function noteHtml(l,session,project){
  (l.id==='electronic-switching-src-16'?sc16TriacPanel(project):'')+
  (l.id==='electronic-switching-src-17'?sc17TriacDimmerPanel(project):'')+
  (l.id==='electronic-switching-src-18'?sc18OptoPanel(project):'')+
+ (l.id==='electronic-switching-src-19'?sc19OptoTriacPanel(project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1392,6 +1424,8 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const sc19Duty=e.target.closest?.('[data-sc19-duty]');if(sc19Duty){e.preventDefault();setSc19Timer(root.DTSEditor?.getProject?.(),'dutyPercent',sc19Duty.dataset.sc19Duty);return}
+   const sc19Hz=e.target.closest?.('[data-sc19-hz]');if(sc19Hz){e.preventDefault();setSc19Timer(root.DTSEditor?.getProject?.(),'frequencyHz',sc19Hz.dataset.sc19Hz);return}
    const sc18Button=e.target.closest?.('[data-sc18-opto-input]');if(sc18Button){e.preventDefault();setSc18OptoInput(root.DTSEditor?.getProject?.(),sc18Button.dataset.sc18OptoInput);return}
    const sc17Button=e.target.closest?.('[data-sc17-phase-angle]');if(sc17Button){e.preventDefault();setSc17PhaseAngle(root.DTSEditor?.getProject?.(),sc17Button.dataset.sc17PhaseAngle);return}
    const sc16Button=e.target.closest?.('[data-sc16-triac-contact]');if(sc16Button){e.preventDefault();setSc16TriacContact(root.DTSEditor?.getProject?.(),sc16Button.dataset.sc16TriacContact);return}
@@ -1486,6 +1520,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact,setSc17PhaseAngle,setSc18OptoInput};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty,setSc15PhaseAngle,setSc16TriacContact,setSc17PhaseAngle,setSc18OptoInput,setSc19Timer};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
