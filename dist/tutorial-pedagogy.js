@@ -542,10 +542,22 @@ function opampCircuitProject(id,title){
   p.wires.push(W('in',inputPin,'u1','IN+','Giriş → IN+','Gerilim izleyicide giriş evirmeyen uca uygulanır.','#43a047','SIGNAL'),W('u1','OUT','u1','IN-','OUT → IN−','Birim kazançlı negatif geri besleme doğrudan çıkıştan yapılır.','#43a047','SIGNAL'));
  }else if(/karşılaştırıcı|schmitt/.test(t)){
   // Comparator uses R3/R4 reference divider, Schmitt additionally uses R2 feedback.
-  p.components=p.components.filter(c=>c.id!=='r1'&&(/schmitt/.test(t)||c.id!=='r2'));
+  p.components=p.components.filter(c=>/schmitt/.test(t)|| (c.id!=='r1'&&c.id!=='r2'));
   p.components.push(C('ref1','resistor',350,180,'R3','10 kΩ referans üst',{resistance:10000}),C('ref2','resistor',350,270,'R4','10 kΩ referans alt',{resistance:10000}));
   p.wires.push(W('g1','P','ref1','1','+24 V → R3','Karşılaştırıcı için orta referans bölücüsüdür.','#8b5a2b','+24V'),W('ref1','2','ref2','1','R3 → R4','Yaklaşık 12 V referans düğümüdür.','#43a047','SIGNAL'),W('ref2','2','g1','M','R4 → 0 V','Referans bölücünün dönüşüdür.','#111827','0V'),W('ref1','2','u1','IN-','12 Vref → IN−','Karşılaştırma eşiği eviren girişe uygulanır.','#43a047','SIGNAL'),W('in',inputPin,'u1','IN+','Giriş → IN+','Giriş referansla karşılaştırılır.','#43a047','SIGNAL'));
-  if(/schmitt/.test(t))p.wires.push(W('u1','OUT','r2','1','OUT → R2','Pozitif geri besleme histerezis oluşturur.','#43a047','SIGNAL'),W('r2','2','u1','IN+','R2 → IN+','Schmitt trigger eşiğini çıkış durumuna göre kaydırır.','#43a047','SIGNAL'));
+  if(/schmitt/.test(t)){
+   // Input resistance is essential: a direct low-impedance potentiometer wiper
+   // bypasses the feedback contribution and does not teach usable hysteresis.
+   p.wires=p.wires.filter(w=>!(w.from?.c==='in'&&w.to?.c==='u1'&&w.to?.p==='IN+'));
+   p.components.find(c=>c.id==='r1').label='R1 · 10 kΩ giriş direnci';
+   p.components.find(c=>c.id==='r2').label='R2 · 47 kΩ pozitif geri besleme';
+   p.wires.push(
+    W('in',inputPin,'r1','1','Giriş → R1/1','Sinyal IN+ girişine doğrudan değil, R1 üzerinden ulaşır.','#43a047','SIGNAL'),
+    W('r1','2','u1','IN+','R1/2 → U1/IN+','Giriş direnci çıkış geri beslemesiyle IN+ düğümünde birleşir.','#43a047','SIGNAL'),
+    W('u1','OUT','r2','1','OUT → R2','Pozitif geri besleme histerezis oluşturur.','#43a047','SIGNAL'),
+    W('r2','2','u1','IN+','R2 → IN+','R1/R2 oranı yükselen ve düşen eşikleri ayırır.','#43a047','SIGNAL')
+   );
+  }
  }else if(/türev/.test(t)){
   // R1 is not used by this differentiator; do not display a misleading orphan resistor.
   p.components=p.components.filter(c=>c.id!=='r1');
