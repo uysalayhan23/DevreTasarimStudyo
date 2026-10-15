@@ -20,7 +20,7 @@ function scenario(id){
 }
 test('MQ-07 RC charge/discharge circuits have actual capacitor and real BD139 pins, no mock timer relay',()=>{
  assert.equal(L.lessons.length,1655);
- assert.equal(L.mq07Batch200.reviewIds.length,52);
+ assert.equal(L.mq07Batch200.reviewIds.length,51);
  assert.equal(defs.capacitor.kind,'capacitor');
  assert.equal(defs['bd139-npn'].kind,'bjt-npn');
  for(const id of ids){

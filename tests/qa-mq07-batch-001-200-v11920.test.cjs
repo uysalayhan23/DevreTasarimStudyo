@@ -61,9 +61,10 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
 });
 
 test('all known unbuilt first-200 circuits remain REVIEW, not false pedagogy acceptance',()=>{
- assert.equal(batch.reviewIds.length,52);
+ assert.equal(batch.reviewIds.length,51);
  assert.equal(batch.reviewIds.some(x=>['opamp-apps-src-11','opamp-apps-src-12'].includes(x.id)),false,'two-input source topology now repaired');
- assert.ok(batch.reviewIds.some(x=>x.id==='sensor-analog-apps-src-11'&&x.reason==='MISSING_DIMMER_POWER_STAGE'));
+ assert.equal(batch.reviewIds.some(x=>x.id==='sensor-analog-apps-src-11'),false);
+ assert.ok(L.byId['sensor-analog-apps-src-11'].project.components.some(c=>c.virtualLdrDimmer));
  assert.equal(batch.reviewIds.some(x=>x.id==='opamp-apps-src-07'),false);
  assert.equal(semanticAudit({L}).fullPedagogicalAcceptance,false);
  assert.equal(semanticAudit({L}).fullWindowsVisualAcceptance,false);

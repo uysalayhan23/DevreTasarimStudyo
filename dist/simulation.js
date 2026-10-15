@@ -57,6 +57,7 @@
     const groups=Components.contactGroups(d);
     if(groups.length)return groups.filter(g=>s.groups[g.id]).map(g=>[g.a,g.b]);
     if(['bjt-npn','bjt-pnp'].includes(k))return c._bjtOn?[['C','E']]:[];
+    if(k==='mosfet-n'&&c.virtualLdrDimmer)return [];// Channel solved numerically, never short D–S.
     if(k==='mosfet-n'||k==='mosfet-p')return c._mosfetOn?[['D','S']]:[];
     if(k==='jfet-n')return c._jfetOn?[['D','S']]:[];
     if(k==='igbt-n')return c._igbtOn?[['C','E']]:[];
@@ -422,7 +423,16 @@
       const numeric=typeof module==='object'&&module.exports?require('./current-model.js'):root.DTSCurrentModel;
       numericState=numeric.update(project,byId,network(project,byId,actuators,sensors,true,now),{now});
     }
-    for(const c of project.components){const d=definition(byId,c),current=Math.abs(Number(c._currentValue)||0);if(d?.kind==='resistor'&&current>1e-6)c._active=c._powered=true;if(d?.kind==='led'){c._active=c._lampActive=c._powered=current>1e-6;if(c._active&&!c._hot.includes('A'))c._hot.push('A')}}
+    for(const c of project.components){const d=definition(byId,c),current=Math.abs(Number(c._currentValue)||0);if(d?.kind==='resistor'&&current>1e-6)c._active=c._powered=true;if(d?.kind==='led'){c._active=c._lampActive=c._powered=current>1e-6;if(c._active&&!c._hot.includes('A'))c._hot.push('A')}
+      if(d?.kind==='mosfet-n'&&c.virtualLdrDimmer){c._active=c._powered=current>1e-6}
+      if(d?.kind==='lamp'&&c.virtualLdrLamp){
+       const rated=Math.max(1,Number(c.lampRatedVoltage)||12),r=Math.max(1,Number(c.resistance)||120),
+       p=current*Math.max(0,Number(c._voltageValue)||0);
+       c._dimmerBrightnessPct=Math.max(0,Math.min(100,100*p/(rated*rated/r)));
+       c._dimmerPowerW=p;c._dimmerCurrentA=current;
+       c._active=c._lampActive=c._powered=c._dimmerBrightnessPct>0.1;
+      }
+    }
     for(const w of project.wires){if(w.mechanical||w.role==='MECHANICAL'){w._fault=false;w._active=false;continue}const r=net.find(endpointKey(w.from)),atPotential=[...(net.potentials.get(r)?.values()||[])].some(p=>!net.faultDomains.has(p.domain)&&hot(p)),atSolvedVoltage=endpoint=>{if(!numericState||!endpoint?.c)return false;const c=project.components.find(x=>x.id===endpoint.c);if(!c)return false;const v=numericState.voltages.get(numericState.pin(c,endpoint.p));return !!v&&Math.hypot(v[0],v[1])>.25};w._fault=net.faultRoots.has(r);w._active=atPotential||atSolvedVoltage(w.from)||atSolvedVoltage(w.to);}
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
     return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0))),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};

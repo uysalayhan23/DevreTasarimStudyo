@@ -27,7 +27,7 @@ function validateCircuit(l,model){
 test('two review lessons have real matched low-voltage sensor and relay wiring',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,52);
+ assert.equal(L.mq07Batch200.reviewIds.length,51);
  assert.equal(L.lessons.filter(x=>x.project.wires.length>0).length,729);
  for(const v of cases){const l=L.byId[v.id];assert.ok(l);validateCircuit(l,v.type);
   assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id===v.id));}

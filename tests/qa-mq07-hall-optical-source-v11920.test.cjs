@@ -9,7 +9,7 @@ const L=QA.curriculum(),defs=QA.catalog();
 const cases=[['sensor-analog-apps-src-20','sensor-hall'],['sensor-analog-apps-src-22','sensor-through-beam']];
 const edges=[['g1','P','s1','BN'],['g1','M','s1','BU'],['s1','BK','k1','A1'],['k1','A2','g1','M'],['g1','P','ka1','13'],['ka1','14','h1','X1'],['h1','X2','g1','M']];
 test('Hall and optical first-200 lessons now have verified 5-element, 7-wire scenes',()=>{
- assert.equal(L.mq07Batch200.reviewIds.length,52);
+ assert.equal(L.mq07Batch200.reviewIds.length,51);
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(l=>l.designStandard==='rich-reference-v1').length,136);
  for(const [id,typ] of cases){

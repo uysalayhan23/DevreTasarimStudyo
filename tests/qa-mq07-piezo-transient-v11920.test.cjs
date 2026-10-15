@@ -48,6 +48,6 @@ test('MQ12 full original 1655 curriculum and 729 wired startup native solve stay
  assert.equal(r.rich,136);assert.equal(r.status,'PASS');
  for(const key of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.deepEqual(r[key],[],key);
- assert.equal(L.mq07Batch200.reviewIds.length,52);
+ assert.equal(L.mq07Batch200.reviewIds.length,51);
  assert.equal(L.mq07Batch200.reviewIds.some(x=>x.id===id),false);
 });

@@ -25,7 +25,7 @@
   const UT=typeof module==='object'&&module.exports?require('./multimeter.js'):root.DTSMultimeter;
   const Clamp=typeof module==='object'&&module.exports?require('./clamp-meter.js'):root.DTSClampMeter;
   const Analyzer=typeof module==='object'&&module.exports?require('./energy-analyzer.js'):root.DTSEnergyAnalyzer;
-  const branches=[],fixed=new Map(),acNodes=new Set(),dcNodes=new Set(),cts=[],meters=[],reactive=[],diodes=[],opamps=[],injected=new Map(),pin=(c,p)=>net.find(key(c.id,p)),add=(c,a,b,r,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,r:Math.max(1e-6,r),c,role};branches.push(branch);return branch},addY=(c,a,b,y,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,y,c,role};branches.push(branch);return branch};
+  const branches=[],fixed=new Map(),acNodes=new Set(),dcNodes=new Set(),cts=[],meters=[],reactive=[],diodes=[],opamps=[],dimmerStages=[],injected=new Map(),pin=(c,p)=>net.find(key(c.id,p)),add=(c,a,b,r,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,r:Math.max(1e-6,r),c,role};branches.push(branch);return branch},addY=(c,a,b,y,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,y,c,role};branches.push(branch);return branch};
   const now=Number(options.now??Date.now()),defaultDt=.05,inject=(a,b,value)=>{if(!Number.isFinite(value)||Math.abs(value)<1e-15)return;injected.set(a,[(injected.get(a)?.[0]||0)+value,(injected.get(a)?.[1]||0)]);injected.set(b,[(injected.get(b)?.[0]||0)-value,(injected.get(b)?.[1]||0)])};
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
@@ -40,6 +40,11 @@
     c._ldrResistance=r;add(c,d.pins[0].id,d.pins[1].id,Math.max(.01,r),'ldr');
    }
    else if(['resistor','lamp'].includes(d.kind))add(c,d.pins[0].id,d.pins[1].id,Math.max(.01,Number(c.resistance)||1000),'load');
+   else if(d.kind==='mosfet-n'&&c.virtualLdrDimmer){
+    // A bounded educational linear-pass equivalent, only when explicitly opted in.
+    // Other MOSFETs retain their canonical ideal contact model.
+    dimmerStages.push(add(c,'D','S',1e7,'virtual-ldr-linear-channel'));
+   }
    else if(d.kind==='energy-training-load'){
     const nominal=Math.max(1,Number(c.nominalVoltage??d.nominalVoltage??230)),apparent=Math.max(1,Number(c.apparentPowerVA??d.apparentPowerVA??230)),pf=Math.max(.05,Math.min(1,Number(c.powerFactor??d.powerFactor??1))),character=c.loadCharacter||d.loadCharacter||'resistive';
     const active=apparent*pf,qmag=apparent*Math.sqrt(Math.max(0,1-pf*pf)),reactive=character==='inductive'?qmag:character==='capacitive'?-qmag:0,g=active/(nominal*nominal),susceptance=-reactive/(nominal*nominal),hz=sourceFrequency(c);
@@ -118,6 +123,23 @@
    secondary=guess;
    for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
   }
+  // Resolve the *wired* gate divider through original nodal-analysis
+  // equations, then solve the lamp power loop with a voltage-dependent Rds.
+  // This is a 12 V linear-pass teaching equivalent, not verified IRF540N SPICE.
+  if(dimmerStages.length){
+   for(let step=0;step<5;step++){
+    let changed=false;
+    for(const br of dimmerStages){
+     const c=br.c, vg=(secondary.get(pin(c,'G'))?.[0]||0)-(secondary.get(pin(c,'S'))?.[0]||0);
+     const fraction=Math.max(0,Math.min(1,(vg-2)/8));
+     const rds=fraction<=0?1e7:Math.max(1,120*(1-fraction)/fraction);
+     if(Math.abs(br.r-rds)>1e-4)changed=true;
+     br.r=rds;c._dimmerGateV=vg;c._dimmerResistanceOhm=rds;
+    }
+    if(!changed)break;
+    secondary=solveSecondary();
+   }
+  }
   for(const b of reactive){
    const va=secondary.get(b.a)||[0,0],vb=secondary.get(b.b)||[0,0],vr=[va[0]-vb[0],va[1]-vb[1]],vm=Math.hypot(vr[0],vr[1]);let amps=current(b,secondary);
    if(b.role==='capacitor-dc'){const signed=(vr[0]-b.previous)/b.r;b._signedFlowCurrent=[signed,0];amps=Math.abs(signed);if(!options.sampleOnly){b.c._capacitorVoltage=vr[0];b.c._reactiveNow=now}}
@@ -128,6 +150,10 @@
   for(const {c} of diodes){const a=secondary.get(pin(c,'A'))||[0,0],k=secondary.get(pin(c,'K'))||[0,0],b=branches.find(x=>x.c===c&&x.role==='diode');c._voltageValue=Math.abs(a[0]-k[0]);c._currentValue=b?current(b,secondary):0}
   for(const b of branches.filter(b=>b.role==='load'&&['resistor','lamp'].includes(byId[b.c.typeId]?.kind))){const a=secondary.get(b.a),z=secondary.get(b.b);b.c._currentValue=current(b,secondary);b.c._voltageValue=a&&z?Math.hypot(a[0]-z[0],a[1]-z[1]):0}
   for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){b.c._speakerPowerW=amps*amps*b.r;b.c._active=b.c._speakerPowerW>1e-5}else{b.c._crystalFrequencyHz=b.hz||0;b.c._active=amps>1e-9}}
+  for(const br of dimmerStages){
+   br.c._currentValue=current(br,secondary);
+   br.c._dimmerDissipationW=br.c._currentValue*br.c._currentValue*br.r;
+  }
   for(const b of meters)b.c._currentValue=current(b,secondary);
   for(const b of branches.filter(b=>b.energyTraining)){
    const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot((a[0]||0)-(z[0]||0),(a[1]||0)-(z[1]||0)),amps=current(b,secondary),g=b.y?.[0]||0,sus=b.y?.[1]||0,active=vm*vm*g,reactive=-vm*vm*sus,apparent=vm*amps,pf=apparent>1e-9?Math.max(0,Math.min(1,active/apparent)):0;

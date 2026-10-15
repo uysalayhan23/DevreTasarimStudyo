@@ -18,7 +18,7 @@ test('MQ07 single light is a real four-wire, correctly named virtual circuit',()
  assert.ok(l.explanation.includes('Kayıtlı şemadan izlenecek bağlantılar:'));
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,52);
+ assert.equal(L.mq07Batch200.reviewIds.length,51);
 });
 test('MQ05 virtual open/close/isolated lighting behavior is real solver, not a text-only claim',()=>{
  const seen=[];

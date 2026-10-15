@@ -1,0 +1,102 @@
+{
+  "task": "MQ07 GL5528 LDR virtual DC linear dimmer",
+  "date": "2026-10-15",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "source": "native original dist/simulation.js + native dist/current-model.js enhanced only by opt-in virtualLdrDimmer path; browser source V8 execution",
+  "prior": "c12c0320626f326aaa88fb1c71ffe1c71996cf9b",
+  "sourceKind": "12 VDC virtual linear-pass dimmer, not AC triac or verified physical MOSFET",
+  "circuit": {
+    "parts": 5,
+    "wires": 7,
+    "control": "GL5528 LDR / 10kΩ divider to N-MOS gate",
+    "power": "12VDC → 120Ω lamp → MOSFET Drain-Source → 0V",
+    "brightness": "P_lamp/(12²/120) × 100",
+    "manufacturerApproval": false
+  },
+  "measured": [
+    {
+      "lux": 0.1,
+      "ldrOhm": 237733.97886916698,
+      "gateV": 0.4843905569505032,
+      "brightnessPct": 0
+    },
+    {
+      "lux": 1,
+      "ldrOhm": 59716.07558302458,
+      "gateV": 1.721267282996911,
+      "brightnessPct": 0
+    },
+    {
+      "lux": 10,
+      "ldrOhm": 15000,
+      "gateV": 4.8,
+      "lampCurrentA": 0.035,
+      "lampPowerW": 0.147,
+      "brightnessPct": 12.25
+    },
+    {
+      "lux": 100,
+      "ldrOhm": 3767.82964726437,
+      "gateV": 8.715970713934833,
+      "lampCurrentA": 0.08394963392418542,
+      "lampPowerW": 0.8457049243205692,
+      "brightnessPct": 70.47541036004743
+    },
+    {
+      "lux": 1000,
+      "ldrOhm": 946.43601672029,
+      "gateV": 10.962472152278997,
+      "lampCurrentA": 0.09917355371900825,
+      "lampPowerW": 1.180247250870842,
+      "brightnessPct": 98.35393757257016
+    }
+  ],
+  "fullV8": {
+    "status": "PASS",
+    "lessons": 1655,
+    "rich": 136,
+    "definitions": 940,
+    "wired": 729,
+    "stable": 729,
+    "components": 7276,
+    "terminalsChecked": 16606,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "shorts": 0,
+    "blocked": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicateIds": 0
+  },
+  "uiV8": {
+    "presets": [
+      0.1,
+      10,
+      100,
+      1000
+    ],
+    "allNativeSolve": true,
+    "results": [
+      "0.00%",
+      "12.25%",
+      "70.48%",
+      "98.35%"
+    ]
+  },
+  "ledger": {
+    "prior": 52,
+    "next": 51,
+    "reasonCounts": {
+      "NO_WIRED_CIRCUIT": 51
+    }
+  },
+  "explicitlyNotRun": [
+    "node --test shell",
+    "Windows file:/// GUI",
+    "manufacturer model thermal SOA",
+    "independent pedagogy and real hardware acceptance"
+  ],
+  "actionsUsed": false,
+  "mq00": "VIRTUAL_SOURCE_PASS; PHYSICAL_WINDOWS_INDEPENDENT_ACCEPTANCE_OPEN"
+}

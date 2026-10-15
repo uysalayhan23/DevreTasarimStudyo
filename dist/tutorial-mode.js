@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-rc-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-ldr-dimmer-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -960,6 +960,35 @@ function setRcTimingPhase(project,action){
   (firstTransition===null?'':' · ilk durum değişimi '+firstTransition+' ms');
  root.DTSEditor?.render?.();sync(project);return true;
 }
+function isLdrVirtualDimmerLesson(l){return l?.id==='sensor-analog-apps-src-11'&&!!l?.pedagogyReview?.ldrVirtualDimmer}
+function ldrDimmerPanel(l,session,project){
+ const sensor=project?.components?.find(c=>c.id==='s1'),q=project?.components?.find(c=>c.id==='q1'),
+  lamp=project?.components?.find(c=>c.id==='h1'),lux=Number(sensor?.illuminationLux??10);
+ const pct=Number(lamp?._dimmerBrightnessPct)||0,power=Number(lamp?._dimmerPowerW)||0;
+ return '<section class="tutorial-ldr-virtual"><h3>LDR · DC sanal karartma</h3>'+
+ '<p>GL5528 LDR kontrol düğümünü sürer; Q1/G–D–S sanal lineer güç katı H1 yüküne enerji sağlar. AC faz kontrolü değildir.</p>'+
+ '<p><strong>Aydınlık: '+esc(lux)+' lux</strong> · LDR: '+esc((Number(sensor?._ldrResistance)||0).toFixed(1))+' Ω · Q1/G: '+esc((Number(q?._dimmerGateV)||0).toFixed(3))+' V</p>'+
+ '<p><strong>H1 parlaklık: %'+esc(pct.toFixed(2))+'</strong> · I='+esc((Number(lamp?._dimmerCurrentA)||0).toFixed(5))+' A · P='+esc(power.toFixed(3))+' W</p>'+
+ '<div class="tutorial-ldr-presets">'+[0.1,1,10,100,1000].map(v=>'<button type="button" data-ldr-dimmer-lux="'+v+'" aria-pressed="'+(lux===v)+'">'+esc(v)+' lux</button>').join('')+'</div>'+
+ '<small>Yüzde, sanal lamba elektrik gücünden hesaplanır; fiziksel lümen/üretici kabulü değildir.</small></section>';
+}
+function setLdrDimmerLux(project,luxValue){
+ const lesson=lessonFor(project),sensor=project?.components?.find(c=>c.id==='s1'),
+  lamp=project?.components?.find(c=>c.id==='h1'),q=project?.components?.find(c=>c.id==='q1'),lux=Number(luxValue);
+ if(!isLdrVirtualDimmerLesson(lesson)||!sensor||!lamp||!q||![0.1,1,10,100,1000].includes(lux))return false;
+ const solver=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
+ if(typeof solver!=='function'||!defs){project.tutorialLesson.lastFeedback='Özgün solver hazır değil; dimmer ölçümü doğrulanamadı.';sync(project);return false}
+ sensor.illuminationLux=lux;
+ const result=solver(project,defs,{now:1000});
+ if(!result?.stable||result.blocked||result.shortCircuit||result.oscillating||
+   !Number.isFinite(q._dimmerGateV)||!Number.isFinite(lamp._dimmerBrightnessPct)){
+  project.tutorialLesson.lastFeedback='LDR dimmer çözümü kararsız veya geçersiz; REVIEW.';sync(project);return false;
+ }
+ project.tutorialLesson.lastFeedback='Sanal LDR '+lux+' lux → Q1/G '+q._dimmerGateV.toFixed(3)+' V; H1 P='+
+  (Number(lamp._dimmerPowerW)||0).toFixed(3)+' W, parlaklık %'+lamp._dimmerBrightnessPct.toFixed(2)+
+  '. Fiziksel ürün verisi değildir.';
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -994,6 +1023,7 @@ function noteHtml(l,session,project){
  (l.practiceGuide?.steps?.length?'<div class="tutorial-beginner-steps tutorial-virtual-practice"><h3>'+esc(l.practiceGuide.heading)+'</h3><p><strong>Yalnız sanal eğitim:</strong> Bu rehber dersin kodlanmış şema ve materyallerini açıklar; gerçek donanım testi veya nihai fiziksel kabul değildir.</p><ol>'+l.practiceGuide.steps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+(l.practiceGuide.observations?.length?'<h3>Gözlem ve öz değerlendirme</h3><ul>'+l.practiceGuide.observations.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</div>':'')+
  (isPiezoVirtualLesson(l)?piezoVirtualPanel(l,session,project):'')+
  (isRcTimingLesson(l)?rcTimingPanel(l,session,project):'')+
+ (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
  current+
  '<footer class="tutorial-actions">'+
@@ -1084,6 +1114,7 @@ function bind(){
    const coachToggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(coachToggle){e.preventDefault();const coach=root.document?.querySelector('#tutorialCoach');setCoachVisible(!!coach?.hidden);return}
    const coachClose=e.target.closest?.('[data-tutorial-coach-close]');if(coachClose){e.preventDefault();setCoachVisible(false);return}
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
+   const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
    const rcButton=e.target.closest?.('[data-rc-action]');if(rcButton){e.preventDefault();setRcTimingPhase(root.DTSEditor?.getProject?.(),rcButton.dataset.rcAction);return}
    const piezoButton=e.target.closest?.('[data-piezo-sample]');if(piezoButton){e.preventDefault();setPiezoVirtualSample(root.DTSEditor?.getProject?.(),piezoButton.dataset.piezoSample);return}
    const energyPreset=e.target.closest?.('[data-energy-preset]');if(energyPreset){e.preventDefault();setEnergyAnalyzerPreset(root.DTSEditor?.getProject?.(),energyPreset.dataset.energyPreset);return}
@@ -1170,6 +1201,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);

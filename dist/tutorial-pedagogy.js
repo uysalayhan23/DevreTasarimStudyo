@@ -2796,6 +2796,65 @@ for(const spec of [
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
+/* MQ-07 LDR dimmer: a wired 12 VDC linear-pass teaching model.
+   The native nodal solver resolves real LDR/resistor gate voltage and lamp
+   power through the bounded MOSFET channel, without inventing AC phase control. */
+{
+ const id='sensor-analog-apps-src-11',l=L.byId[id];
+ if(!l||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='MISSING_DIMMER_POWER_STAGE'))
+  throw Error('MQ07 LDR dimmer REVIEW baseline missing');
+ if(!l.project.components.some(c=>c.typeId==='ldr-gl5528')||l.project.components.some(c=>c.typeId==='mosfet-n'))
+  throw Error('MQ07 LDR dimmer source has changed unexpectedly');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',85,160,'G1','12 VDC sanal laboratuvar beslemesi',{dcVoltage:12}),
+  C('s1','ldr-gl5528',335,165,'B1','GL5528 LDR · ortam aydınlığı',{illuminationLux:10}),
+  C('r1','resistor',335,335,'R1','10 kΩ kontrol bölücü',{resistance:10000}),
+  C('q1','mosfet-n',770,310,'Q1','N-kanal MOSFET · sanal lineer sürücü',{virtualLdrDimmer:true,physicalAcceptance:false}),
+  C('h1','standard-light',990,245,'H1','12 V sanal dirençli lamba',{resistance:120,lampRatedVoltage:12,virtualLdrLamp:true})
+ ];
+ p.wires.push(
+  W('g1','P','s1','1','G1/P → B1/1','12 V sanal kaynak LDR bölücünün üst kolunu besler.','#8b5a2b','+24V'),
+  W('s1','2','r1','1','B1/2 → R1/1','Işığa göre direnç değişimi kontrol düğümünü oluşturur.','#43a047','SIGNAL'),
+  W('r1','2','g1','M','R1/2 → G1/M','10 kΩ bölücü alt kolu 0 V referansına döner.','#111827','0V'),
+  W('s1','2','q1','G','Kontrol düğümü → Q1/G','Gerçek sanal düğüm gerilimi MOSFET G terminalini sürer.','#43a047','SIGNAL'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Yük güç yolu kontrol bölücüsünden ayrıdır.','#8b5a2b','+24V'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','Lamba akımı MOSFET drain ucundan geçer.'),
+  W('q1','S','g1','M','Q1/S → G1/M','Sürücü üzerinden gelen yük akımı 0 V dönüşüne gider.','#111827','0V')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='12 VDC sanal devrede B1 LDR, R1 bölücü ve Q1 N-kanal MOSFET lineer güç katı H1 lambasının akımını değiştirir. Daha aydınlık ortamda GL5528 direnci küçülür, Q1/G gerilimi yükselir ve H1 gücü artar. Bu AC triyak faz-açısı dimmeri değildir.';
+ l.explanation='Bu ders mevcut AC faz kontrolünü taklit etmez: düşük gerilimli DC lineer karartmayı öğretir. Kontrol kolunda G1/P (12 V) → B1/1-2 GL5528 LDR → R1/1-2 (10 kΩ) → G1/M vardır. B1/2–R1/1 düğümü Q1/G terminaline gider. Aydınlık yükseldikçe LDR direnci gerçek sanal GL5528 direnç bağıntısına göre düşer ve Q1 gate gerilimi yükselir. Güç kolu bağımsızdır: +12 V → H1/X1–X2 (120 Ω örnek dirençli lamba) → Q1/D–S → G1/M. Q1, yalnız bu ders için atanmış, gate gerilimiyle kanal direnci değişen sanal N-kanal lineer-pass eşdeğeridir; diğer MOSFET modelini değiştirmez. Orijinal elektriksel düğüm çözücüsü gate gerilimini kontrol bölücüsünden, lamba akım ve gücünü güç yolundan hesaplar. Ortalama lamba parlaklık yüzdesi nominal 12 V / 120 Ω güç referansına göre hesaplanır. Sanal Q1 kaybı I²Rdir, yüksek ara dirençte fiziksel ısınma olabilir; bu nedenle gerçek cihaz ve soğutucu seçimi burada doğrulanmış değildir. Eğitsel noktalar: 0,1 lux ≈ %0, 10 lux ≈ %12, 100 lux ≈ %70, 1000 lux ≈ %98. Bu yüzdeler hesaplanan örnek modelin çıktısıdır, fiziksel lümen veya üretici verisi değildir. Gerçek AC faz açısı dimmeri ve kalibre edilmiş fiziksel Q1 güç davranışı hâlâ kabul edilmemiştir.';
+ l.learningGoal='B1 LDR–R1 gerilim bölücü kontrol kolunu Q1/G terminaline; H1/X1-X2–Q1/D-S kolunu ayrı güç yoluna bağlamak, aydınlık değişiminde hesaplanan akım/güç/parlaklığı ölçüp açıklamak.';
+ l.beginnerSteps=[
+  'B1 GL5528 LDR ve R1 10 kΩ ile 12 V sanal kontrol gerilim bölücüsünü bul.',
+  'B1/2–R1/1 ortak düğümünü Q1/G terminaline bağla; Q1/S referansının G1/M olduğunu göster.',
+  'G1/P → H1/X1 → H1/X2 → Q1/D → Q1/S → G1/M güç yolunu ayrıca izle.',
+  '0,1 lux karanlık sanal ölçümünü çalıştır; Q1/G ve lamba gücünün neden düşük olduğunu gözlemle.',
+  '10, 100 ve 1000 lux sanal değerlerini sırayla uygula; Q1/G, H1 akımını ve parlaklığı karşılaştır.',
+  'Kontrol kolu veya güç kolu kesilirse lamba akımının nasıl etkilendiğini incele.',
+  'Bu DC lineer modelin gerçek AC triyak dimmer veya kalibre IRF540N/SPICE güç katı olmadığını açıkla.'
+ ];
+ const why={
+  g1:'Yalnız 12 VDC sanal masa kaynağı; AC şebeke değildir.',
+  s1:'B1 GL5528 LDR, aydınlık arttıkça kendi simüle edilen gerçek direnç bağıntısıyla daha küçük direnç verir.',
+  r1:'R1 10 kΩ, LDR ile birlikte gate kontrol gerilimini oluşturur.',
+  q1:'Q1 G/D/S sanal N kanal lineer güç elemanı; gate gerilimine bağlı kanal direnci gerçek kaynak kodunda düğüm çözücüye eklenir.',
+  h1:'H1 sanal 12 V / 120 Ω dirençli yük; I, V ve P çözümünden eğitim parlaklığı hesaplanır.'
+ };
+ l.materials=materialRows(p).map(m=>({...m,why:why[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_DC_LINEAR_DIMMER_SOURCE_ALIGNED',
+  ldrVirtualDimmer:{source:'GL5528_REAL_NUMERIC_RESISTANCE',power:'N_MOSFET_GATE_DEPENDENT_LINEAR_CHANNEL',output:'LAMP_MEASURED_POWER',supplyV:12,acPhaseControl:false},
+  previousReason:'MISSING_DIMMER_POWER_STAGE',physicalAcceptance:false,
+  manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 12 VDC sanal lineer karartma eğitim eşdeğeri; gerçek MOSFET SOA/termal güvenlik, fiziksel kalibrasyon ve AC şebeke dimmer onayı yoktur.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
