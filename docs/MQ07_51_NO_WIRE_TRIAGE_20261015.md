@@ -1,5 +1,7 @@
 # MQ-07 — 51 NO_WIRED_CIRCUIT kaydının ayrıntılı sınıflandırması (15.10.2026)
 
+**Güncel ek (2026-10-15, HEAD `210111df3b16b5857b9456c43db18c6b73a0c5fa`):** Bu belge başlangıçtaki 51 adayın tarihsel fotoğrafıdır; aşağıdaki ilk tabloyu geriye dönük silmeyin. Sonraki onarımlar `electronic-switching-src-03` (röleli motor yönü), `electronic-switching-src-09` (FET RC gecikme) ve `electronic-switching-src-10` (MOSFET G/D/S fonksiyon kontrolü) için sanal kaynak ve özgün V8 solver düzeyinde kayıtlıdır. **Güncel açık teknik REVIEW: 48 = 14 kavramsal + 34 henüz onarılmamış uygulama**; bu 3 onarımın fiziksel/Windows/bağımsız pedagojik kabulü yine açık olduğundan tüm dersler DONE değildir. Yeni iş adayı `electronic-switching-src-11` (MOSFET ile DC motor hız kontrolü); PWM/gate sürüşü ve motor solver davranışı gerçekten desteklenmeden `quiz` → `rich` veya tam kabul yapılmamalıdır. Bu ek yalnız belge senkronizasyonudur; yeni test koşulmadı. Dayanak: `docs/MASTER_DUZELTME_LISTESI_V1.19.20.md` son üç MQ-07 kaydı ve `evidence/mq07_mosfet_health_v8_20261015.json`.
+
 **Aktif kaynak:** `uysalayhan23/DevreTasarimStudyo`, `main`; başlangıç HEAD `fc0dc590edea27f25e06d38dab4022c20e3a3618`.
 
 **Kaynak:** 51/51 `quiz`, 50/51 sıfır bağlantı, 1/51 sadece iki referans/ölçüm prob bağlantısı. Kategoriler: **14 korunan kavramsal**, **37 uygulama adayı**, bunların **1'i doğrulanmış sanal röle-motor yön devresi**, **36'sı hâlâ uygulama onarımı için REVIEW**. 14 kavramsal da orijinal kabul kapıları sağlanana kadar REVIEW'da tutulur.
