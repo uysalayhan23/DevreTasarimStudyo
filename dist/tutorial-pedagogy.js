@@ -3145,7 +3145,6 @@ for(const spec of [
     !L.mq07Batch200.noWireTriage?.applicationRepairIds?.includes(id)||l.project.wires.length)
    throw Error('SC11 canonical no-wire review baseline changed');
  const p=base(id,l.title);
- p.mq05VirtualPwm={dutyPercent:0,frequencyHz:1000,sourceVoltage:12,mode:'IDEAL_GATE_COMMAND_ONLY'};
  p.components=[
   C('g1','arduino-bench-supply',80,135,'G1','12 V yalnız sanal besleme',{dcVoltage:12}),
   C('pwm1','virtual-pwm-generator-v1',300,120,'PWM1','Beslemeli sanal PWM sinyal üreteci',{dutyPercent:0,frequencyHz:1000}),
