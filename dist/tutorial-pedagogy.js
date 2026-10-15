@@ -3374,32 +3374,8 @@ for(const spec of [
 }
 
 
-/* MQ-07: actual LM358P feedback-topology repair for former NO_WIRED_CIRCUIT
-   differentiator and integrator lessons. Transient transfer is NOT certified. */
-for(const spec of [
- {id:'opamp-apps-src-13',topology:'türev',part:'Girişte C1=100 nF, çıkıştan IN− noktasına R2=47 kΩ',formula:'İdeal |Rf·C|=47 000 × 100 nF=0,0047 s; Vout=−Rf·C·dVin/dt bağıntısı yalnız ideal lineer aralıkta geçerlidir.',question:'C1 açık devre olursa IN− girişine sinyal akımı ulaşır mı?'},
- {id:'opamp-apps-src-14',topology:'integral',part:'Girişte R1=10 kΩ, OUT–IN− arasında C1=1 µF',formula:'İdeal R·C=10 000 × 1 µF=0,01 s; Vout=−(1/RC)∫Vin dt + başlangıç değeri yalnız ideal modelin ifadesidir.',question:'C1 açık devre veya giriş R1 kopuk ise geri besleme ne olur?'}
-]){
- const l=L.byId[spec.id];if(!l||l.kind!=='quiz'||l.project.wires.length||
-  !L.mq07Batch200.reviewIds.some(x=>x.id===spec.id&&x.reason==='NO_WIRED_CIRCUIT')||
-  !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(spec.id))throw Error('MQ07 opamp source baseline changed: '+spec.id);
- const p=opampCircuitProject(spec.id,spec.topology==='türev'?'Op-amp türev alıcı':'Op-amp integral alıcı');
- p.name=l.title;
- setLesson(l,p,{kind:'wiring',
-  summary:l.title+' — LM358P IN+, IN−, OUT, V+, V− uçları ve gerçek R/C bağlantılarıyla sanal geri besleme devresi.',
-  explanation:'AMAÇ: '+l.title+'. ELEMANLAR: G1 sanal 24 V tek besleme; U1A LM358P, V+ besleme ve V− referans; RV1 sanal giriş ayarı; '+(spec.topology==='türev'?'C1 100 nF giriş kondansatörü ve R2 47 kΩ çıkış geri beslemesi':'R1 10 kΩ giriş direnci ve C1 1 µF çıkış geri beslemesi')+'; R3/R4 orta besleme referansı; V1 OUT ile G1/M arasındaki voltmetredir. BAĞLANTILAR: G1/P→U1A/V+, G1/M→U1A/V−, V1/1→U1A/OUT, V1/2→G1/M. '+spec.part+'. R3=10 kΩ ve R4=10 kΩ bölücüsüyle IN+ yaklaşık 12 V orta referansa bağlanır; IN− geri besleme düğümüdür. İdeal çıkış değişimi bu 12 V referansa göredir; tek beslemede çıkış 0–24 V sınırlarının dışına taşamaz. HESAP: '+spec.formula+' ÖĞRENCİ DENEYİ: Giriş potansiyometresini değiştir, V1 çıkışını gözle; kopuk R/C elemanında devre bütünlüğü neden bozulur tartış. KONTROL SORUSU: '+spec.question+' SINIRLAR: 24 V tek beslemeli LM358P, gerçek negatif çıkış salınımını veya dinamik dalga doğruluğunu garantilemez. Yerel solver sonucu olmadan ölçülmüş dalga ya da kazanç ilan edilmez.'});
- l.materials=materialRows(p);
- l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
-  titleTopologyStatus:'VIRTUAL_LM358P_RC_FEEDBACK_GRAPH',previousReason:'NO_WIRED_CIRCUIT',
-  physicalAcceptance:false,manufacturerCalibrationVerified:false,
-  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,
-  transientWaveformAccepted:false};
- L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==spec.id);
- L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),spec.id];
- L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==spec.id);
- L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),spec.id];
-}
-
+/* Canonical LM358P differentiator/integrator graphs were already wired.
+   Preserve their physical DIP-8 pins, probes and accepted original elements. */
 // Mandatory no-substitutes gate: never show an unrelated transmitter or 4-20 mA
 // loop as an op-amp circuit even when later lesson overrides change.
 for(let n=1;n<=17;n++){
@@ -3407,7 +3383,7 @@ for(let n=1;n<=17;n++){
  if(!l)continue;
  if((l.project?.components||[]).some(c=>/420|transmitter|loop-ammeter/i.test(c.typeId||'')))
   throw Error('LESSON_MATERIAL_FIDELITY: wrong op-amp device '+id);
- if(l.kind==='wiring'&&!l.project.components.some(c=>c.typeId==='lm358p-opamp-a'))
+ if(l.kind==='wiring'&&!l.project.components.some(c=>['lm358p-opamp-a','lm358p-dip8'].includes(c.typeId)))
   throw Error('LESSON_MATERIAL_FIDELITY: missing functional op-amp '+id);
 }
 
@@ -3421,10 +3397,9 @@ for(const specification of [
   chargeOhms:1000,bleedOhms:100000,capFarads:100e-6}
 ]){
  const l=L.byId[specification.id];
- if(!l||l.designStandard==='rich-reference-v1'||!l.project||
-    !l.project.components.some(c=>c.id==='u1')||
-    l.project.components.some(c=>c.id==='c1')||
-    l.project.components.some(c=>c.id==='rch'))throw Error('MQ07 timing lesson baseline changed: '+specification.id);
+ if(!l||l.designStandard==='rich-reference-v1'||!l.project||l.kind!=='quiz'||
+    (l.project.wires||[]).length||l.project.components.some(c=>c.id==='c1'||c.id==='rch'))
+    throw Error('MQ07 timing lesson baseline changed: '+specification.id);
  const on=specification.mode==='ON',p=base(specification.id,l.title);
  p.components=[
   C('g1','supply-dc-plus',70,245,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
@@ -3493,8 +3468,8 @@ for(const specification of [
 {
  const id='opamp-apps-src-15',l=L.byId[id];
  if(!l||l.designStandard==='rich-reference-v1'||!l.project||
-   l.project.components.some(c=>c.typeId==='1n4148-do35')||
-   !l.project.components.some(c=>c.id==='u1'))throw Error('MQ07 precision rectifier baseline changed');
+   l.kind!=='quiz'||(l.project.wires||[]).length||
+   l.project.components.some(c=>c.typeId==='1n4148-do35'))throw Error('MQ07 precision rectifier baseline changed');
  const p=base(id,l.title);
  p.components=[
   C('g1','supply-dc-plus',65,190,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
