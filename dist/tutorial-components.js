@@ -105,6 +105,11 @@ add(box('tutorial-adc','ADC · Analog → Dijital','Analog-dijital dönüştür�
 add(box('tutorial-dac','DAC · Dijital → Analog','Dijital-analog dönüştürücü',[P('DIN','DIN',0,50,'left'),P('AOUT','AOUT',150,50,'right')],{refPrefix:'U'}));
 
 add(box('tutorial-mosfet','MOSFET','Alan etkili güç anahtarı',[P('G','G',0,50,'left'),P('D','D',150,30,'right'),P('S','S',150,72,'right')],{refPrefix:'Q'}));
+// MQ-07 SC12 functionally simulated ideal IGBT; drawing-only symbol remains unchanged.
+add({id:'mq07-igbt-virtual',name:'Sanal IGBT (DC)',model:'Eşik-temelli eğitim IGBT',kind:'igbt-n',w:150,h:100,
+ pins:[P('G','G',0,50,'left'),P('C','C',150,30,'right'),P('E','E',150,72,'right')],
+ tutorialOnly:true,catalogGroup:'electronics',refPrefix:'Q',physicalAcceptance:false,
+ symbolSource:{file:'MQ-07',pages:'SC12',basis:'Yerel native solver G-E eşiği ve C-E anahtarlama; gerçek gate sürücü ve termal model içermez.'}});
 add(box('tutorial-igbt','IGBT','Yalıtılmış kapılı güç transistörü',[P('G','G',0,50,'left'),P('C','C',150,30,'right'),P('E','E',150,72,'right')],{refPrefix:'Q'}));
 // Functional software-only SCR for MQ-07 low-voltage virtual teaching.
 // Never use the diagram-only tutorial-scr as a conductive semiconductor.
