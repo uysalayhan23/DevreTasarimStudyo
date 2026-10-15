@@ -65,3 +65,11 @@
 **Öncelik:** `electronic-switching-src-03` röleli motor yön değişimi ilk uygulama adayıdır; gerçek `coil-relay` K1 ve iki `contact-both` kontağı, `motor-dc` polarite çözücüsü ile test edildi. Sonraki uygulama adayı `electronic-switching-src-09` FET'li gecikmeli durma devresi; canlı FET ve RC modelinin desteklenip desteklenmediği doğrulanmadan yeni şema kabul edilmeyecek. Ölçüm cihazı/modeli bulunmayan topraklama ve yalıtım konuları gerçek ölçüm gibi gösterilmeyecek.
 
 **MQ-00:** Sanal motor devre topolojisi ve V8 motor yönü solver kapısı PASS; tüm müfredatın Node/Windows görsel/ürün fiziksel/bağımsız pedagojik kabul kapıları açık. Actions kullanılmadı; commitler `[skip ci]`.
+
+## 2026-10-15 — SC11 PWM/DC motor hız modeli için kaynak denetimi (BLOCKED)
+
+- Aday: `electronic-switching-src-11` — MOSFET ile DC motor hız kontrolü; tarihsel `NO_WIRED_CIRCUIT` / `quiz` kaydı, açık teknik REVIEW kapsamındadır.
+- MQ-05 kaynak incelemesi: `dist/simulation.js` içindeki `motor-dc` dalı `_active=net.voltage(...)` ve `_spin=net.dcDirection(...)` hesaplar; `generatorDuty`/PWM frekansı ile motor devir veya ortalama tork/hız durumunu çözen bir sözleşme bu dalda görünmez. Bir PWM komutu bulunması, motorun PWM hız çözücüsünün mevcut olduğunu kanıtlamaz.
+- MQ-07 kaynak sözleşmesi: `dist/tutorial-pedagogy.js` ilgili ders için, `motor/PWM simülasyonu yoksa sonucu sayısallaştırma` uyarısını taşır; bu koruma sürdürülmelidir.
+- **Karar:** Dersi sahte duty→RPM çıktısı, temsili animasyon veya fiziksel PWM kabulüyle onarmak yasaktır. Önce PWM girişinin sanal gate sürüşü ile entegrasyonu, MOSFET D/S akım yolu ve motorun çözücü-türevli hız/duty durum sözleşmesi tasarlanıp test edilmelidir. Daha sonra `lesson.project` bağlantı geometrisi, Öğretici Modu düğmeleri ve OFF / düşük duty / yüksek duty / kablo kopuk / diyot senaryoları çapraz doğrulanmalıdır.
+- **MQ-12:** Bu turda yeni runtime testi çalıştırılmadı; `PASS` yok. **MQ-13:** Sadece belgede audit güncellemesi, Actions yok ve `[skip ci]`. **MQ-00:** `BLOCKED / REVIEW`, 48 açık teknik kayıt değişmedi. Bu not, motor güç devresini gerçek donanımda kurma veya kullanma yönergesi değildir.
