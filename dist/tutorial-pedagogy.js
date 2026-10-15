@@ -3398,6 +3398,81 @@ for(let n=1;n<=17;n++){
  if(l.kind==='wiring'&&!l.project.components.some(c=>c.typeId==='lm358p-opamp-a'))
   throw Error('LESSON_MATERIAL_FIDELITY: missing functional op-amp '+id);
 }
+
+/* MQ07 001–200 — subject-faithful op-amp ON/OFF delay lessons.
+ * The previous generic inverting-amplifier project contained no timing capacitor.
+ * Build two native DC RC/comparator graphs instead. No acceptance is inferred. */
+for(const specification of [
+ {id:'opamp-apps-src-09',name:'Op-amp turn-on gecikme',mode:'ON',
+  chargeOhms:100000,bleedOhms:1000000,capFarads:100e-6},
+ {id:'opamp-apps-src-10',name:'Op-amp turn-off gecikme',mode:'OFF',
+  chargeOhms:1000,bleedOhms:100000,capFarads:100e-6}
+]){
+ const l=L.byId[specification.id];
+ if(!l||l.designStandard==='rich-reference-v1'||!l.project||
+    !l.project.components.some(c=>c.id==='u1')||
+    l.project.components.some(c=>c.id==='c1')||
+    l.project.components.some(c=>c.id==='rch'))throw Error('MQ07 timing lesson baseline changed: '+specification.id);
+ const on=specification.mode==='ON',p=base(specification.id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,245,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
+  C('s1','push-no',290,110,'S1','Başlatma butonu',{state:false}),
+  C('rch','resistor',465,125,'R1',on?'100 kΩ yavaş şarj':'1 kΩ hızlı şarj',{resistance:specification.chargeOhms}),
+  C('c1','capacitor',680,155,'C1','100 µF zamanlama kondansatörü',{capacitance:specification.capFarads}),
+  C('rd','resistor',510,410,'R2',on?'1 MΩ boşalma yolu':'100 kΩ boşalma yolu',{resistance:specification.bleedOhms}),
+  C('ref1','resistor',420,590,'R3','10 kΩ Vref üst kol',{resistance:10000}),
+  C('ref2','resistor',610,590,'R4','10 kΩ Vref alt kol',{resistance:10000}),
+  C('u1','lm358p-opamp-a',895,270,'U1A','LM358P · komparatör'),
+  C('v1','meter-voltmeter',1120,370,'V1','Çıkış DC voltmetresi')
+ ];
+ p.wires.push(
+  W('g1','P','s1','13','G1/P → S1/13','Kontrol kaynağının pozitif ucu.'),
+  W('s1','14','rch','1','S1/14 → R1/1','S1 yalnızca RC şarj yolunu açıp kapatır.'),
+  W('rch','2','c1','1','R1/2 → C1/1','R1 üzerindeki akım kondansatörü şarj eder.','#43a047','SIGNAL'),
+  W('c1','2','g1','M','C1/2 → G1/M','Kondansatör dönüş yoludur.','#111827','0V'),
+  W('rch','2','rd','1','C1/1 → R2/1','R2 zamanlama düğümünün boşalma yoludur.','#43a047','SIGNAL'),
+  W('rd','2','g1','M','R2/2 → G1/M','Boşalma yolu besleme referansına döner.','#111827','0V'),
+  W('rch','2','u1','IN+','C1/1 → U1/IN+','Kondansatör gerilimi evirmeyen girişte izlenir.','#43a047','SIGNAL'),
+  W('g1','P','ref1','1','G1/P → R3/1','Eşik bölücüsünün üst beslemesi.'),
+  W('ref1','2','ref2','1','R3/2 → R4/1','Eşik orta düğümü Vref ≈ 12 V.','#43a047','SIGNAL'),
+  W('ref2','2','g1','M','R4/2 → G1/M','Eşik bölücüsü 0 V dönüşü.','#111827','0V'),
+  W('ref1','2','u1','IN-','Vref → U1/IN−','U1 eviren girişte 12 V referansı karşılaştırır.','#43a047','SIGNAL'),
+  W('g1','P','u1','V+','G1/P → U1/V+','LM358P pozitif besleme.'),
+  W('g1','M','u1','V-','G1/M → U1/V−','LM358P negatif besleme/0 V.','#111827','0V'),
+  W('u1','OUT','v1','1','U1/OUT → V1/1','OUT gerilimi seri yüke bağlanmadan ölçülür.','#43a047','SIGNAL'),
+  W('v1','2','g1','M','V1/2 → G1/M','Voltmetre ortak 0 V referansı.','#111827','0V')
+ );
+ const tauCharge=on?'100 kΩ × 100 µF = 10 s nominal R1×C':'1 kΩ × 100 µF = 0,1 s nominal R1×C';
+ const tauDischarge=on?'1 MΩ × 100 µF = 100 s':'100 kΩ × 100 µF = 10 s';
+ const calc=on?
+  'R2 yüklemesi altında son RC düğüm gerilimi yaklaşık 21,82 V, eşdeğer şarj zaman sabiti 9,09 s ve 12 V eşiğe teorik ulaşım yaklaşık 7,26 s olur. Buton bırakıldığında boşalma çok daha uzundur; yeni deneyden önce C1 sıfırlanmalıdır.':
+  'S1 basılıyken R1=1 kΩ üzerinden hızlı şarj olur. S1 bırakılınca C1, R2=100 kΩ üzerinden deşarj olur; 24 V civarından 12 V eşiğe teorik süre yaklaşık 10 × ln(2) = 6,93 s olur.';
+ setLesson(l,p,{kind:'wiring',
+  summary:l.title+' — LM358P karşılaştırıcısı, R1–R2–C1 zamanlama ağı ve R3–R4 referans bölücüsüyle '+(on?'gecikmeli açma':'gecikmeli kapama')+' için kablolu sanal deney.',
+  explanation:'DERSİN AMACI: '+(on?'Başlatma butonu basılıyken kondansatör gerilimi yavaşça yükselir ve referansı geçince çıkış durumu değişir.':'Başlatma butonu bırakıldıktan sonra C1 yavaşça boşalır ve referansın altına düşünce çıkış durumu değişir.')+
+   ' MALZEMELER: G1 24 VDC sanal kaynak, S1 normalde açık buton, R1 şarj direnci, C1 100 µF kondansatör, R2 boşalma direnci, R3/R4 10 kΩ eşik bölücüsü, LM358P U1A ve V1 DC voltmetre. BAĞLANTILAR: G1/P→S1/13–14→R1/1–2→C1/1; C1/2→G1/M. R2, C1 ile paralel boşalma yoludur. C1/1→U1/IN+; R3/R4 orta noktası→U1/IN−. U1 V+/V− uçları G1 P/M raylarına, OUT→V1/1 ve V1/2→G1/M bağlıdır. HESAP: '+tauCharge+'; boşalma sabiti '+tauDischarge+'. '+calc+
+   ' ÖĞRENCİ DENEYİ: Devre enerjili fakat S1 bırakılmışken OUT değerini incele; butona bas, C1 gerilimi 12 V eşiğini geçene kadar zamanın etkisini izlemeyi dene; S1 bırakıldığında çıkışın değişme koşulunu açıkla. KONTROL SORUSU: S1 ve R2 görevleri nedir? R2 çıkarılırsa C1 ne şekilde boşalır? R3/R4 oranı değişirse eşik neden kayar? SINIRLAR: Süreler ideal RC tahminleridir. Kaydedilmiş özgün solver zaman adımları ve Windows UI görsel doğrulaması olmadan gözlenen süre PASS ilan edilmez.',
+  goal: 'LM358P karşılaştırıcısı ile R-C zamanlama düğümünün hangi terminal ve eşik değerine göre gecikme ürettiğini ayırt etmek.',
+  beginnerSteps:[
+   'Sanal G1/P ve G1/M uçlarını, U1A V+/V− besleme terminallerini ayır.',
+   'S1/13–14 ve R1/1–2 seri kolundan C1/1 zamanlama düğümüne ulaş.',
+   'R2 boşalma direncinin C1/1 ve 0 V arasındaki paralel görevini göster.',
+   'R3/R4 10 kΩ gerilim bölücüsünden U1/IN− için 12 V eşiğini hesapla.',
+   'C1/1→U1/IN+ ve OUT→V1 ölçüm bağlantılarını takip et.',
+   on?'Buton basılı tutulduğunda gecikmeli çıkış değişimini, bırakıldıktan sonraki boşalmayla karşılaştır.':'Buton basılıyken hızlı şarjı, bırakıldıktan sonra R2 üzerinden yavaş boşalmayı karşılaştır.'
+  ]
+ });
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  previousTopologyIssue:'MISSING_RC_TIMING_STAGE',titleTopologyIssue:null,
+  titleTopologyStatus:'RC_COMPARATOR_GRAPH_REPAIRED_DYNAMIC_QA_PENDING',
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,dynamicTimingAccepted:false};
+ l.safety='Yalnız düşük gerilimli sanal RC ve karşılaştırıcı deneyi. Gerçek donanım veya fiziksel ölçüm kabulü yoktur.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==specification.id);
+ L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),specification.id])];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
