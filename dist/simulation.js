@@ -504,6 +504,8 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       motor._sc11SpeedPercent=Math.max(0,Math.min(100,speed));
       motor._sc11DriveTargetPercent=target;
       motor._sc11ResponseNow=now;
+      // Rotate the educational shaft from normalized inertia, not alias-prone instant ON/OFF.
+      motor._spin=speed>0.5?(motor.direction==='ccw'?-1:1):0;
       motor._motorAngle=((Number(motor._motorAngle)||0)+360*dt*(speed/100))%360;
       delete motor._motorRPM;
     }
