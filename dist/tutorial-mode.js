@@ -1102,7 +1102,7 @@ function setMosfetHealthPhase(project,action){
 }
 function isSc11VirtualPwm(l){return l?.id==='electronic-switching-src-11'&&!!l?.pedagogyReview?.mq05PwmVirtual}
 function sc11PwmPanel(l,session,project){
- const cfg=project?.mq05VirtualPwm||{},m=project?.components?.find(c=>c.id==='m1'),q=project?.components?.find(c=>c.id==='q1');
+ const cfg=project?.components?.find(c=>c.id==='pwm1')||{},m=project?.components?.find(c=>c.id==='m1'),q=project?.components?.find(c=>c.id==='q1');
  return '<section class="tutorial-sc11-pwm"><h3>Sanal PWM · MOSFET/DC motor</h3>'+
   '<p>Duty: <strong>'+esc(String(cfg.dutyPercent??0))+'%</strong> · frekans '+esc(String(cfg.frequencyHz??1000))+' Hz</p>'+
   '<p>Q1 '+(q?._mosfetOn?'ON':'OFF')+' · M1 '+(m?._active?'ENERJİLİ':'OFF')+' · anlık yön '+esc(String(m?._spin??0))+'</p>'+
@@ -1112,16 +1112,17 @@ function sc11PwmPanel(l,session,project){
 function setSc11PwmDuty(project,value){
  const l=lessonFor(project),session=project?.tutorialLesson,solver=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
  const duty=Number(value),allowed=[0,50,100].includes(duty);
- if(!isSc11VirtualPwm(l)||!session||!project?.mq05VirtualPwm||!allowed)return false;
+ const generator=project?.components?.find(c=>c.id==='pwm1'&&c.typeId==='virtual-pwm-generator-v1');
+ if(!isSc11VirtualPwm(l)||!session||!generator||!allowed)return false;
  if(typeof solver!=='function'||!defs){session.lastFeedback='PWM özgün solver kullanılamıyor; doğrulama bekliyor.';sync(project);return false}
- const before=project.mq05VirtualPwm.dutyPercent;project.mq05VirtualPwm.dutyPercent=duty;
+ const before=generator.dutyPercent;generator.dutyPercent=duty;
  const samples=[0,.25,.75].map(now=>{const result=solver(project,defs,{now});
   const q=project.components.find(c=>c.id==='q1'),m=project.components.find(c=>c.id==='m1');
   return {valid:!!(result?.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating),
    fet:!!q?._mosfetOn,motor:!!m?._active,spin:Number(m?._spin)||0};
  });
  if(samples.some(x=>!x.valid)){
-  project.mq05VirtualPwm.dutyPercent=before;
+  generator.dutyPercent=before;
   session.lastFeedback='PWM elektriksel durum kararsız; sonuç kabul edilmedi.';sync(project);return false;
  }
  session.lastFeedback='Sanal '+duty+'% PWM · 0/.25/.75 ms anlık motor durumları: '+
