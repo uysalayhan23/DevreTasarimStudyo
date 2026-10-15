@@ -27,6 +27,7 @@
   const endpointKey=r=>r?.j?JSON.stringify(['junction',r.j]):pinKey(r?.c,r?.p);
   const definition=(byId,c)=>byId[c.typeId];
   function clear(project){
+    for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
     for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
@@ -536,7 +537,40 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       vgsDcAverage:vgsMean,physicalRpm:null};
   }
 
-  const api={solve,solveSc11Cycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+
+  // SC12: phase sample the real IGBT gate and DC load path.
+  // The output is a normalized education-only duty response (NOT lumens or watts).
+  function solveSc12DimmerCycle(project,byId,options={}){
+    const scene=project?.projectId==='tutorial-session-source-electronic-switching-src-12'||
+      project?.tutorialLesson?.id==='electronic-switching-src-12';
+    if(!scene)return {result:solve(project,byId,options),sampled:false};
+    const part=id=>project.components.find(c=>c.id===id);
+    const pwm=part('pwm1'),igbt=part('q1'),lamp=part('h1');
+    const duty=pwm?.dutyPercent,hz=pwm?.frequencyHz,now=Number.isFinite(options.now)?options.now:Date.now();
+    const valid=typeof duty==='number'&&Number.isFinite(duty)&&duty>=0&&duty<=100&&
+      typeof hz==='number'&&Number.isFinite(hz)&&hz>0&&Number.isFinite(now)&&now>=0;
+    const period=valid?1000/hz:0;
+    const sample=at=>{
+      const r=solve(project,byId,{...options,now:at});
+      return {valid:!!(r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating),
+        supply:!!pwm?._pwmSupplyValid,high:!!pwm?._pwmHigh,
+        switchOn:!!igbt?._igbtOn,loadOn:!!lamp?._active};
+    };
+    const high=valid?sample(period*duty/200):null;
+    const low=valid?sample(period*(duty/100+(1-duty/100)/2)):null;
+    const result=solve(project,byId,options);
+    const verified=!!(valid&&high?.valid&&low?.valid&&high.supply&&low.supply&&pwm&&igbt&&lamp);
+    const highDrive=!!(verified&&high.high&&high.switchOn&&high.loadOn);
+    const lowDrive=!!(verified&&low.high&&low.switchOn&&low.loadOn);
+    const dutyDrive=verified?(highDrive?duty:0)+(lowDrive?100-duty:0):0;
+    if(lamp){
+      lamp._sc12BrightnessPct=Math.max(0,Math.min(100,dutyDrive));
+      lamp._sc12DimmerVerified=verified;
+    }
+    return {result,sampled:!!valid,verified,highDrive,lowDrive,normalizedBrightnessPct:dutyDrive};
+  }
+
+  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
