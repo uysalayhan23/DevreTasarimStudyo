@@ -694,20 +694,21 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       if(a&&b)parent.set(find(a),find(b));
     }
     const linked=(a,ap,b,bp)=>find(a+'/'+ap)===find(b+'/'+bp);
-    const wired=!!(correct&&
-      linked('g1','P','sg','13')&&linked('sg','14','rg','1')&&
-      linked('rg','2','q1','G')&&linked('q1','MT1','g1','M')&&
+    const powerWired=!!(correct&&linked('q1','MT1','g1','M')&&
       linked('g1','P','sp','11')&&linked('sp','12','h1','X1')&&
       linked('h1','X2','q1','MT2')&&!linked('g1','P','g1','M')&&
       !linked('q1','MT1','q1','MT2'));
+    const gateWired=!!(correct&&linked('g1','P','sg','13')&&
+      linked('sg','14','rg','1')&&linked('rg','2','q1','G'));
     const voltage=source?.dcVoltage,resistance=load?.resistance,gateOhms=resistor?.resistance,
       holding=triac?.mq07VirtualHoldingCurrentA;
-    const verified=!!(wired&&result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating&&
+    const powerValid=!!(powerWired&&result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating&&
       typeof voltage==='number'&&Number.isFinite(voltage)&&voltage>=1&&voltage<=24&&
       typeof resistance==='number'&&Number.isFinite(resistance)&&resistance>=10&&resistance<=10000&&
       typeof gateOhms==='number'&&Number.isFinite(gateOhms)&&gateOhms>=100&&gateOhms<=100000&&
       typeof holding==='number'&&Number.isFinite(holding)&&holding>=.001&&holding<=.5);
-    const mainPath=verified&&stop.state!==true;
+    const verified=!!(powerValid&&gateWired);
+    const mainPath=powerValid&&stop.state!==true;
     const availableI=mainPath?voltage/resistance:0;
     const gatePulse=verified&&gate.state===true;
     const currentEnough=availableI>=holding;
@@ -729,7 +730,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       load._currentValue=current;load._voltageValue=latched?voltage:0;
       load._sc16CurrentA=current;
     }
-    return {result:{...result,timed:false},verified,gatePulse,mainPath,latched,
+    return {result:{...result,timed:false},verified,gateWired,powerValid,gatePulse,mainPath,latched,
       currentA:current,gateV:gatePulse?voltage:0,voltageV:latched?voltage:0,
       virtualHoldingCurrentA:verified?holding:null};
   }
