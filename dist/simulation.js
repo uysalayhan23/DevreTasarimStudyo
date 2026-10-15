@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -667,7 +667,74 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       conductionPct:valid?conducted/180*100:0,zeroCrossing:Math.min(t.deg%180,180-t.deg%180)<.3};
   }
 
-  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+
+  // SC16 only. Explicitly model a virtual low-voltage DC TRIAC in series with
+  // the actual wired load. No physical BTA16 calibration or AC behavior claimed.
+  function solveSc16DcCycle(project,byId,options={}){
+    const scene=project?.tutorialLesson?.id==='electronic-switching-src-16'||
+      ['tutorial-electronic-switching-src-16','tutorial-session-source-electronic-switching-src-16'].includes(project?.projectId);
+    if(!scene)return {result:solve(project,byId,options),verified:false};
+    const part=id=>project.components.find(c=>c.id===id);
+    const source=part('g1'),gate=part('sg'),resistor=part('rg'),stop=part('sp'),triac=part('q1'),load=part('h1');
+    const priorLatch=!!triac?._triacLatched;
+    const result=solve(project,byId,options);
+    const correct=source?.typeId==='arduino-bench-supply'&&gate?.typeId==='push-no'&&
+      stop?.typeId==='push-nc'&&resistor?.typeId==='resistor'&&
+      triac?.typeId==='bta16-600b-triac'&&triac.mq07DcTriacLesson===true&&
+      load?.typeId==='standard-light';
+    const parent=new Map();
+    const key=x=>x?.j!==undefined?'junction:'+x.j:x?.c&&x?.p?x.c+'/'+x.p:null;
+    const find=x=>{if(!parent.has(x))parent.set(x,x);let root=x;
+      while(parent.get(root)!==root)root=parent.get(root);
+      while(parent.get(x)!==x){const next=parent.get(x);parent.set(x,root);x=next}
+      return root;};
+    for(const w of project.wires||[]){
+      if(w.mechanical||w.role==='MECHANICAL')continue;
+      const a=key(w.from),b=key(w.to);
+      if(a&&b)parent.set(find(a),find(b));
+    }
+    const linked=(a,ap,b,bp)=>find(a+'/'+ap)===find(b+'/'+bp);
+    const wired=!!(correct&&
+      linked('g1','P','sg','13')&&linked('sg','14','rg','1')&&
+      linked('rg','2','q1','G')&&linked('q1','MT1','g1','M')&&
+      linked('g1','P','sp','11')&&linked('sp','12','h1','X1')&&
+      linked('h1','X2','q1','MT2')&&!linked('g1','P','g1','M')&&
+      !linked('q1','MT1','q1','MT2'));
+    const voltage=source?.dcVoltage,resistance=load?.resistance,gateOhms=resistor?.resistance,
+      holding=triac?.mq07VirtualHoldingCurrentA;
+    const verified=!!(wired&&result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating&&
+      typeof voltage==='number'&&Number.isFinite(voltage)&&voltage>=1&&voltage<=24&&
+      typeof resistance==='number'&&Number.isFinite(resistance)&&resistance>=10&&resistance<=10000&&
+      typeof gateOhms==='number'&&Number.isFinite(gateOhms)&&gateOhms>=100&&gateOhms<=100000&&
+      typeof holding==='number'&&Number.isFinite(holding)&&holding>=.001&&holding<=.5);
+    const mainPath=verified&&stop.state!==true;
+    const availableI=mainPath?voltage/resistance:0;
+    const gatePulse=verified&&gate.state===true;
+    const currentEnough=availableI>=holding;
+    const latched=!!(mainPath&&currentEnough&&(gatePulse||priorLatch));
+    const current=latched?availableI:0;
+    if(triac){
+      triac._triacGateVoltage=gatePulse?voltage:0;
+      triac._triacHoldingCurrentA=current;
+      triac._triacLatched=latched;
+      triac._thyristorOn=latched;
+      triac._active=latched;
+      triac._powered=latched;
+      triac._currentValue=current;
+      triac._sc16DcValid=verified;
+      triac._sc16PowerPath=!!mainPath;
+    }
+    if(load){
+      load._active=latched;load._lampActive=latched;load._powered=latched;
+      load._currentValue=current;load._voltageValue=latched?voltage:0;
+      load._sc16CurrentA=current;
+    }
+    return {result:{...result,timed:false},verified,gatePulse,mainPath,latched,
+      currentA:current,gateV:gatePulse?voltage:0,voltageV:latched?voltage:0,
+      virtualHoldingCurrentA:verified?holding:null};
+  }
+
+  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
