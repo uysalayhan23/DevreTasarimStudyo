@@ -4249,6 +4249,52 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız 24 VDC sanal ders; gerçek fiziksel bağlantı, manyetik ölçüm/kalibrasyon, üretici röle koruma ve saha güvenliği kabul edilmedi.';
 }
 
+
+/* MQ-07 SC27: source-aligned passive Piezo, real virtual impulse button and
+   continuously refreshed transient on the UT33D+ 200 mV voltage range. */
+{
+ const id='sensor-analog-apps-src-08',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==4||
+  l.pedagogyReview?.titleTopologyStatus!=='VIRTUAL_PIEZO_SOURCE_ALIGNED')
+  throw Error('MQ07 SC27 Piezo canonical source graph changed');
+ const lead=(a,ap,b,bp)=>p.wires.some(w=>w.from?.c===a&&w.from.p===ap&&w.to?.c===b&&w.to.p===bp);
+ if(![['pz','+','r1','1'],['r1','2','pz','−'],['v1','V','v1-red','PLUG'],['v1','COM','v1-black','PLUG']].every(x=>lead(...x)))
+  throw Error('MQ07 SC27 Piezo measurement source terminals changed');
+ const pz=p.components.find(c=>c.id==='pz'),v=p.components.find(c=>c.id==='v1'),
+  red=p.components.find(c=>c.id==='v1-red'),black=p.components.find(c=>c.id==='v1-black');
+ if(!pz||pz.typeId!=='tutorial-piezo'||!v||v.typeId!=='unit-ut33d-plus'||
+  !red||red.typeId!=='test-probe-red'||!black||black.typeId!=='test-probe-black'||
+  red.probeTarget?.c!=='pz'||red.probeTarget.p!=='+'||
+  black.probeTarget?.c!=='pz'||black.probeTarget.p!=='−')
+  throw Error('MQ07 SC27 Piezo original physical contact identity changed');
+ pz.mq07PiezoTapUi=true;pz.piezoTapAt=null;pz.piezoTapMv=100;
+ v.meterPosition=1;
+ l.summary='Piezoelektrik sanal elemana ekranındaki “Sanal darbe uygula” denetimiyle kısa mekanik darbe uygula; UT33D+ 200 mV DCV kademesinde geçici gerilimi ve kendiliğinden sıfıra sönmesini izle. Gerçek kuvvet kalibrasyonu yapılmış değildir.';
+ l.explanation+=' Sanal ders sırasında önce SİMÜLE ET başlatılır; yalnız B1 piezo bileşeninde görünen “Sanal darbe uygula” denetimine tıklanınca geçen süre performans saatiyle yeniden başlatılır ve UT33D+ göstergesi darbe devam ederken otomatik yenilenir. Her yeni sanal darbe 100 mV başlangıç, 220 ms ideal üstel sönüm varsayımıdır; yaklaşık 1,6 saniye sonunda 0 mV olur. Kırmızı veya siyah prob fiş kablosu ayrılırsa multimetre OL gösterir; probun Piezo elektroduna temas ucu ayrılırsa ölçülen gerilim 0 mV olur. Problar terslenirse DCV negatif işaret gösterir. Direnç teli ayrılsa bile yazılımdaki gerilim kaynağı ideal geçici EMK olduğu için 1 MΩ yükün gerçek fiziksel sönüm süresi hesaplanmaz. Fiziksel Piezo karakteristiği, tam SPICE eşdeğeri, üretici parametreleri veya gerçek mekanik kuvvet ölçümü doğrulanmamıştır.';
+ l.beginnerSteps=[
+  'B1 üzerindeki + ve − elektrotları ile R1 1 MΩ sanal yükün bağlantılarını kontrol et.',
+  'V1 UT33D+ ölçü aletinin DCV 200 mV kademesini, kırmızı VΩmA ve siyah COM prob fişlerini doğrula.',
+  'SİMÜLE ET komutunu başlat; darbe öncesi UT33D+ değerinin 0 mV olduğunu gözle.',
+  'Piezo B1 bileşeni üzerindeki “Sanal darbe uygula” kontrolüne tıkla: yaklaşık +100 mV anlık gerilim oluşur.',
+  'Gösterge otomatik yenilenirken yaklaşık 150 ms sonra +50,57 mV, 500 ms sonra +10,30 mV ve 1.601 ms sonra 0 mV model sonucunu izle.',
+  'Yalnız sanal devrede ölçü problarını ters çevir; işaretin eksiye dönmesini incele. Prob kablosunu çıkararak OL ve temas ucunu ayırarak 0 mV durumunu gör.',
+  'Bu değerlerin gerçek Piezo sensörün kuvvet hassasiyetine veya gerçek 1 MΩ/kapasitans RC çözümüne ait olmadığını açıkla.'
+ ];
+ l.learningGoal='Sanal kullanıcı darbesi → iki elektrot arasında geçici 100 mV → otomatik sönüm ve UT33D+ gerilim ölçümü zincirini, prob polaritesini ve eksik bağlantı arızasını ayırt etmek.';
+ l.quiz={question:'SC27 Piezo sanal darbe sonrası UT33D+ ne göstermelidir?',
+  options:['Başta geçici +100 mV, 220 ms zaman sabitiyle azalan değer ve darbe sonrasında 0 mV.',
+   'Harici 24 V besleme olmadan sürekli sabit 24 V.',
+   'Mekanik basınç değişmeden sonsuz süre +100 mV.'],
+  answer:0,why:'Piezo ideal geçici EMK eğitim modelidir; gerçek üretici kuvvet/kapasitans kalibrasyonu değildir.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyStatus:'PIEZO_INTERACTIVE_IMPULSE_MV_SOURCE_ALIGNED',
+  mq07PiezoImpulse:{virtualAmplitudeMv:100,virtualTauMs:220,endAfterMs:1600,probeMeter:'UT33D+ 200 mV DCV',
+   sourceVoltageDecayVerified:true,targetedMeterLeadFailureVerified:true,
+   physicalCalibrationVerified:false,fullNodeSuiteExecuted:false,windowsInteractiveTestExecuted:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız yazılım içi Piezo sanal darbesi ve mV ölçümüdür. Gerçek mekanik vurma, enerjili devre, kuvvet kalibrasyonu, gerçek cihaz hassasiyeti veya fiziksel kabul değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

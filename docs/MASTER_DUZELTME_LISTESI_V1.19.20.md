@@ -2134,3 +2134,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Özgün 949 kataloglu JS elektriksel simülasyonda 12/12 hedef PASS; 20/5/18/7/20 mm manyetik yakın–uzak geçişleri ve tarihsel state fallback PASS. Plastik hedef, yanlış hizalama, kopuk sensör/güç/kontrol/yük hatları, 0/12 V kaynak güvenli OFF. Genel DC kaynak davranışına müdahale edilmedi.
 - Yalnız SC26 müfredat kaydı değişti, 1655 ders yüklendi; SC11–SC25, lock ve physical false korunur. Node tam suite/Windows UI ve fiziksel ürün QA yok: **MQ-00 REVIEW**. Actions kullanma, `[skip ci]`.
 - Kanıt: `docs/MQ07_SC26_HALL_PNP_RELAY_LAMP_20261015.md`; Node hedef kaynağı `tests/qa-mq07-sc26-hall-pnp-relay-lamp-v11920.test.cjs`; sıradaki `sensor-analog-apps-src-08` Piezo.
+
+
+## 2026-10-15 MQ-07 SC27 PIEZO TAP
+
+- `sensor-analog-apps-src-08`: önceden mevcut 5 bileşenli / 4 kablolu pasif Piezo + 1 MΩ R1 + UT33D+ DCV 200mV kaynak devresinde **eksik mekanik darbe UI komutu** ve 1600 ms otomatik mV güncelleme akışı SC27'ye özel opt-in ile tamamlandı. Sadece `dist/app.js`, `dist/symbols.js`, `dist/tutorial-pedagogy.js` kaynak davranışları güncellendi; fiziksel genel simülasyon kaynakları ve terminaller korunur.
+- Gerçek JS/V8 kaynak ölçümünde darbe 0/150/500/1000/1601 ms ≈ 100/50,57/10,30/1,06/0 mV; ters prob negatif, prob kablosu açık OL, prob uç teması açık 0 mV. Müfredat 1655, yalnız SC27 değişti. Tam Node/Windows/UI tıklama QA ve üretici fiziği NOT_RUN: **MQ-00 REVIEW**.
+- Kanıt: `docs/MQ07_SC27_PIEZO_IMPULSE_MV_20261015.md`; hedef test `tests/qa-mq07-sc27-piezo-impulse-mv-v11920.test.cjs`. SC11–SC26 ve locks korunur. Actions yok, `[skip ci]`. Sıradaki `sensor-analog-apps-src-09` load cell.

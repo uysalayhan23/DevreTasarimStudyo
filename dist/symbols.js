@@ -144,7 +144,9 @@
     if(d._auxOnly)return pins+'<g class="component-annotations">'+annotations+'</g>';
     const geometry='<g class="component-geometry" transform="rotate('+rotation+' '+cx+' '+cy+')" fill="none" stroke-linecap="round" stroke-linejoin="round">'+(wireOverlayOnly?'':(d.transparentBody?'':'<rect class="body" width="'+d.w+'" height="'+d.h+'" rx="5"/>'))+art+'</g>';
     if(wireBodyOnly)return geometry;
-    return geometry+pins+(rotating?motionMarkup(d,c,false,material?'material':'iec'):'')+Sensors.markup(c,d)+'<g class="component-annotations">'+annotations+'</g>';
+    const piezoTapButton=d.id==='tutorial-piezo'&&c.mq07PiezoTapUi===true?
+      '<g data-piezo-tap="1" style="cursor:pointer" role="button" aria-label="Sanal piezo darbesi uygula"><rect x="18" y="12" width="114" height="30" rx="7" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.5"/><text x="75" y="31" text-anchor="middle" fill="#075985" stroke="none" font-size="11" font-weight="700">Sanal darbe uygula</text></g>':'';
+    return geometry+pins+(rotating?motionMarkup(d,c,false,material?'material':'iec'):'')+Sensors.markup(c,d)+piezoTapButton+'<g class="component-annotations">'+annotations+'</g>';
   }
   const directionText=c=>c._spin?((c._spin<0?'SOL · CCW':'SAĞ · CW')+(c._motorHz!==undefined?' · '+c._motorHz.toFixed(1)+' Hz':'')):'DURDU';
   function motionMarkup(d,c={},includeLabel=true,mode='material'){
