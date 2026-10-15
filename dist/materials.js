@@ -120,7 +120,7 @@
     return null;
   }
   function baseMarkup(d,c={}){
-    if(['ac-virtual-source','ac-scr-trigger'].includes(d.kind))return Design.markup(d,c);
+    if(['ac-virtual-source','ac-scr-trigger','ac-triac-trigger'].includes(d.kind))return Design.markup(d,c);
     const real=realPackageMarkup(d);if(real)return real;
     const arduino=ArduinoLibrary?.art?.(d,c);if(arduino)return arduino;
     if(d.id==='abb-acs800-r5')return (typeof module==='object'&&module.exports?require('./acs800-art.js'):root.DTSACS800Art).markup(d,c);
