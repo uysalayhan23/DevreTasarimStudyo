@@ -2163,3 +2163,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-11` kaynak 5 ürün / 7 kablo / 7 adım, gerçek sayısal GL5528 12 VDC kontrol ve MOSFET lineer yük kolu; AC faz kontrolü iddia edilmez. SC30 kaynak kablosundaki yanlış `+24V` etiketleri desteklenen `DC+` rolüne çevrildi. Eskiden kalan LM358P/ölçüm probu metadata kimlikleri gerçek beş parçaya uyarlandı.
 - Orijinal 949 ürünlü JS/V8 simülasyonda 0,1/1/10/100/1000 lux güç/parlaklık artışı, gate ve yük kopukluğu, 0 V ve 5 V kaynak koşulları **9/9 hedefli PASS**. H1 yaklaşık 0,0000012–0,09917 A ve 0–1,180 W; DC lineer örnek, fiziksel lümen veya AC faz açısı değil.
 - Eski `tests/qa-mq07-ldr-linear-dimmer-v11920.test.cjs` içindeki güncel olmayan global 940/733/47 sayaçlı SC30 kapsam dışı tam müfredat PASS iddiası temizlendi; hedefli ders testi korundu. 1.655 kaynaktan yalnız SC30 değişti; SC11–SC29 korunur. Tam Node/Windows UI/full audit/gerçek SOA-fiziksel kabul **NOT_RUN — MQ-00 REVIEW**. Ayrıntı `docs/MQ07_SC30_LDR_DC_LINEAR_20261015.md`. Actions yok, `[skip ci]`; sıradaki `sensor-analog-apps-src-12` IR.
+
+
+## 2026-10-15 MQ-07 SC31 IR OPTICAL REAL-SOURCE QA
+
+- `sensor-analog-apps-src-12` IR alıcı-verici sanal optik PNP + K1/H1: kaynakta 5 ürün / 7 kablo / 7 adım zaten işlevsel olduğundan genel simülatöre gereksiz değişiklik yapılmadı.
+- Gerçek 703 temel ürünlü kaynak, `CCSSensors`, `CCSComponents` ve orijinal `CCSSimulation` ile uzakta/yakında/40 mm sınırında algılama, plastik/sıvı hedef farkı, hizalama ve BN/BU/BK veya yük yolu kopukluğu **10/10 hedefli izole V8 PASS**. Canlı 80→2→75→10→80 mm yük OFF→ON→OFF→ON→OFF. Güncel 1.655 müfredatta SC11–SC30 koşulları korunur.
+- `tests/qa-mq07-sc31-ir-optical-pnp-v11920.test.cjs` Node tam katalog hedef testi ve `docs/MQ07_SC31_IR_OPTICAL_20261015.md` QA kanıtı eklendi. Tam Node, Windows `file:///`, iki ayrı fiziksel verici/alıcı, üretici optik ve yük güvenlik QA **NOT_RUN**: **MQ-00 REVIEW**. Actions kullanılmadı, `[skip ci]`. Sonraki `sensor-analog-apps-src-13` SC32.
