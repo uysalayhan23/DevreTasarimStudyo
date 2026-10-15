@@ -9,6 +9,10 @@
     if(!Array.isArray(lib))return;
     const enc=lib.find(d=>d.id==='encoder-incremental'||d.incrementalEncoder38mm);
     if(enc&&!enc.pins.some(p=>p.id==='SHAFT'))enc.pins.push({id:'SHAFT',label:'SHAFT · mekanik mil',x:0,y:72,side:'left',mechanical:true,signalType:'MECH',labelOffset:{x:16,y:-8},labelSize:6});
+    for(const d of lib)if(d?.kind==='pwm-generator'){
+      if(Array.isArray(d.pins))d.pins=d.pins.filter(p=>p.id!=='SHAFT'&&!p.mechanical);
+      delete d.mechanicalShaft;
+    }
     for(const d of lib)if(isMotorDef(d)&&!d.pins?.some(p=>p.id==='SHAFT')){
       d.pins=d.pins||[];const left=!!d.hcfaServoMotor;d.pins.push({id:'SHAFT',label:'SHAFT · mekanik çıkış',x:left?0:(d.w||160),y:Math.max(24,Math.round((d.h||120)/2)),side:left?'left':'right',mechanical:true,signalType:'MECH',labelOffset:{x:left?14:-14,y:-8},labelSize:6});
       d.mechanicalShaft=true;
