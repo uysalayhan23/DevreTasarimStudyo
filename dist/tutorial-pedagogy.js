@@ -3137,7 +3137,7 @@ for(const spec of [
   W('rp','2','g1','M','RP/2 → G1/M','Sanal sıfır volt referansı.'),
   W('q1','S','g1','M','Q1/S → G1/M','MOSFET Source referansı.'),
   W('g1','P','m1','+','G1/P → M1/+','Motor sanal güç yolunun pozitif tarafı.'),
-  W('m1','-','q1','D','M1/− → Q1/D','Motor dönüşü sanal MOSFET Drain üzerinden çözülür.'),
+  W('m1','−','q1','D','M1/− → Q1/D','Motor dönüşü sanal MOSFET Drain üzerinden çözülür.'),
   W('vg','V','vgr','PLUG','VG/VΩmA → kırmızı prob','Sanal gate voltaj ölçüm kablosu.'),
   W('vg','COM','vgb','PLUG','VG/COM → siyah prob','Sanal source referans ölçüm kablosu.')
  );
