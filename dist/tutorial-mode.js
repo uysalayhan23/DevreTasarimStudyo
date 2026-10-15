@@ -1100,6 +1100,34 @@ function setMosfetHealthPhase(project,action){
   ' V · Q1 '+(q._active?'ON':'OFF')+'. Fiziksel ürün sağlamlığı doğrulanmadı.';
  root.DTSEditor?.render?.();sync(project);return true;
 }
+function isSc11VirtualPwm(l){return l?.id==='electronic-switching-src-11'&&!!l?.pedagogyReview?.mq05PwmVirtual}
+function sc11PwmPanel(l,session,project){
+ const cfg=project?.mq05VirtualPwm||{},m=project?.components?.find(c=>c.id==='m1'),q=project?.components?.find(c=>c.id==='q1');
+ return '<section class="tutorial-sc11-pwm"><h3>Sanal PWM · MOSFET/DC motor</h3>'+
+  '<p>Duty: <strong>'+esc(String(cfg.dutyPercent??0))+'%</strong> · frekans '+esc(String(cfg.frequencyHz??1000))+' Hz</p>'+
+  '<p>Q1 '+(q?._mosfetOn?'ON':'OFF')+' · M1 '+(m?._active?'ENERJİLİ':'OFF')+' · anlık yön '+esc(String(m?._spin??0))+'</p>'+
+  '<div class="tutorial-sc11-pwm-actions">'+[0,50,100].map(d=>'<button type="button" data-sc11-pwm-duty="'+d+'">'+d+'% duty</button>').join('')+'</div>'+
+  '<small>Görünen sonuç özgün elektriksel solverın anlık anahtarlama durumudur. RPM, tork ve termal doğrulama yoktur; gerçek motor sürücüsü değildir.</small></section>';
+}
+function setSc11PwmDuty(project,value){
+ const l=lessonFor(project),session=project?.tutorialLesson,solver=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
+ const duty=Number(value),allowed=[0,50,100].includes(duty);
+ if(!isSc11VirtualPwm(l)||!session||!project?.mq05VirtualPwm||!allowed)return false;
+ if(typeof solver!=='function'||!defs){session.lastFeedback='PWM özgün solver kullanılamıyor; doğrulama bekliyor.';sync(project);return false}
+ const before=project.mq05VirtualPwm.dutyPercent;project.mq05VirtualPwm.dutyPercent=duty;
+ const samples=[0,.25,.75].map(now=>{const result=solver(project,defs,{now});
+  const q=project.components.find(c=>c.id==='q1'),m=project.components.find(c=>c.id==='m1');
+  return {valid:!!(result?.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating),
+   fet:!!q?._mosfetOn,motor:!!m?._active,spin:Number(m?._spin)||0};
+ });
+ if(samples.some(x=>!x.valid)){
+  project.mq05VirtualPwm.dutyPercent=before;
+  session.lastFeedback='PWM elektriksel durum kararsız; sonuç kabul edilmedi.';sync(project);return false;
+ }
+ session.lastFeedback='Sanal '+duty+'% PWM · 0/.25/.75 ms anlık motor durumları: '+
+  samples.map(x=>x.motor?'ON':'OFF').join(' / ')+'. RPM hesaplanmadı; fiziksel kabul yok.';
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -1136,6 +1164,7 @@ function noteHtml(l,session,project){
  (isRcTimingLesson(l)?rcTimingPanel(l,session,project):'')+
  (isFetRcDelayLesson(l)?fetRcDelayPanel(l,session,project):'')+
  (isMq07MosfetHealth(l)?mosfetHealthPanel(l,session,project):'')+
+ (isSc11VirtualPwm(l)?sc11PwmPanel(l,session,project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
  (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
@@ -1230,6 +1259,7 @@ function bind(){
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
    const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
+   const sc11DutyButton=e.target.closest?.('[data-sc11-pwm-duty]');if(sc11DutyButton){e.preventDefault();setSc11PwmDuty(root.DTSEditor?.getProject?.(),sc11DutyButton.dataset.sc11PwmDuty);return}
    const mosfetHealthButton=e.target.closest?.('[data-mosfet-health-action]');if(mosfetHealthButton){e.preventDefault();setMosfetHealthPhase(root.DTSEditor?.getProject?.(),mosfetHealthButton.dataset.mosfetHealthAction);return}
    const fetRcButton=e.target.closest?.('[data-fet-rc-action]');if(fetRcButton){e.preventDefault();setFetRcDelayPhase(root.DTSEditor?.getProject?.(),fetRcButton.dataset.fetRcAction);return}
    const rcButton=e.target.closest?.('[data-rc-action]');if(rcButton){e.preventDefault();setRcTimingPhase(root.DTSEditor?.getProject?.(),rcButton.dataset.rcAction);return}
@@ -1318,6 +1348,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection,setFetRcDelayPhase,setMosfetHealthPhase,setSc11PwmDuty};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);
