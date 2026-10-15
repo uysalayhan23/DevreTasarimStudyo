@@ -2083,3 +2083,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `tests/qa-mq07-sc19-opto-triac-flasher-v11920.test.cjs` **9/9 PASS** — gerçek repo koduyla yalıtılmış JS yürütmesi; **tam Node testleri / bağımsız 1.655 ders QA / Windows file:/// görsel kabulü / osiloskop gerçek arayüz ölçümü NOT_RUN**. Ders veri kümesi 1.655 olarak açılıyor, SC19 wiring.
 - Kanıt dosyası: `docs/MQ07_SC19_OPTO_TRIAC_FLASHER_20261015.md`. MQ-07 → MQ-09 → MQ-04 → MQ-05 → MQ-03/MQ-10 → MQ-12 → MQ-13 → MQ-00: **REVIEW** (DONE değil). SC11–SC18 korunur. Sıradaki müfredat: `sensor-analog-apps-src-01` (NTC ile sıcaklıkta çalışan devre).
 - GitHub Actions kullanılmadı, yalnız `main` ve `[skip ci]`, force-push/geçici branch yok.
+
+
+## 2026-10-15 MQ-07 SC20 NTC ISI ANAHTARLAMA
+
+- NTC sensör + LM358P karşılaştırıcıya IRF540N sanal yük kolu eklendi: 9/12 → 13/19 (bileşen/kablo), yalnız sensor-analog-apps-src-01.
+- Kaynak V8 simülasyonunda düşük-yüksek-düşük sıcaklık ve gate/güç kopukluğu; tam Node/Windows QA **çalıştırılmadı**. MQ-00 **REVIEW**, fiziksel kabul yok.
+- Ayrıntı docs/MQ07_SC20_NTC_TEMPERATURE_SWITCH_20261015.md, hedef test tests/qa-mq07-sc20-ntc-temperature-switch-v11920.test.cjs. SC11–SC19 değişmez, Actions yok, [skip ci]. Sıradaki kaynak: sensor-analog-apps-src-02.

@@ -3875,6 +3875,56 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
   windowsVisualAcceptance:false,dynamicLatchingAccepted:false};
 }
 
+
+/* MQ-07 SC20 only: retain LM358P NTC divider and add a separate IRF540N
+   virtual 24 V temperature-controlled load. No SC11-SC19 modification. */
+{
+ const id='sensor-analog-apps-src-01',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==9||p.wires.length!==12||
+  !p.components.some(x=>x.id==='u1'&&x.typeId==='lm358p-dip8')||
+  !p.components.some(x=>x.id==='s1'&&x.typeId==='sensor-ntc')||
+  p.components.some(x=>x.id==='h1'||x.id==='q1'))
+  throw Error('SC20 NTC baseline changed');
+ p.components.push(
+  C('rg','resistor',810,105,'RG','10 kΩ gate üst',{resistance:10000}),
+  C('rp','resistor',810,300,'RP','10 kΩ gate alt',{resistance:10000}),
+  C('q1','irf540n-mosfet',1050,360,'Q1','IRF540N sanal G/D/S yük anahtarı',{mq07NtcThermalSwitch:true}),
+  C('h1','standard-light',1200,205,'H1','240 Ω sanal 24 V gösterge',{resistance:240})
+ );
+ p.wires.push(
+  W('u1','1','rg','1','U1/1 OUT → RG/1','Karşılaştırıcı çıkışı gate bölücüsünü besler.','#43a047','SIGNAL'),
+  W('rg','2','rp','1','RG/2 → RP/1','Sanal MOSFET gate düğümünün 10k/10k direnç bölücüsü.','#43a047','SIGNAL'),
+  W('rg','2','q1','G','Bölücü → Q1/G','Kontrol akımı gate yüküne doğrudan değil bölücüyle aktarılır.','#43a047','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → 0 V','Gate düğümü için dirençli dönüş yolu.','#111827','0V'),
+  W('g1','P','h1','X1','+24 V → H1/X1','Yük enerjisi op-amp OUT üzerinden çekilmez.','#8b5a2b','+24V'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','Ayrı güç kolunun drain bağlantısı.','#8b5a2b','+24V'),
+  W('q1','S','g1','M','Q1/S → 0 V','Yük akımının sıfır volt dönüşü.','#111827','0V')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='NTC sıcaklık artışında çalışan sanal yük: B1 sıcaklığa duyarlı direnç, LM358P karşılaştırıcı, RG/RP kapı bölücüsü, IRF540N anahtar ve ayrı H1 yükü.';
+ l.explanation='B1 NTC üst kol, R1 10 kΩ alt koldur; B1/2 U1 pin 3 IN+ ucuna bağlıdır. G1 24 V sanal besleme, R2/R3 10 kΩ orta düğümünü U1 pin 2 IN− için 12 V referans yapar; U1 pin 8 +24 V ve pin 4 0 V. LM358P U1 pin 1 OUT → RG 10 kΩ → IRF540N Q1/G; RP 10 kΩ Q1/G düğümünden 0 V noktasına gider, gate yüksek düzeyi yaklaşık 11 V ile sınırlar. Ayrı güç akımı: G1/P → H1/X1–X2 (240 Ω) → Q1/D–S → G1/M. Sanal 15 °C için NTC yaklaşık 15,84 kΩ, IN+ yaklaşık 9,29 V, OUT LOW, H1 OFF; sanal 35 °C için NTC yaklaşık 6,51 kΩ, IN+ yaklaşık 14,54 V, OUT HIGH, H1 ON yaklaşık 100 mA. B1 sıcaklığını özellikler panelinden 15→35→15 °C ayarla. Mevcut UNI-T UT33D+ DCV ve kırmızı/siyah VΩmA/COM problarıyla sanal düğüm gerilimini ölç. 25 °C yakınında Schmitt histerezisi yoktur; fiziksel LM358P çıkış akımı, IRF540N gerçek eşik/ısıl toleransı, güç kayıpları ve fiziksel donanım kabulü hesaplanmamıştır.';
+ l.learningGoal='NTC sıcaklığını 15→35→15 °C değiştirerek LM358P çıkışını, IRF540N G/D/S terminalini ve H1 sanal yük OFF→ON→OFF akımını açıklamak.';
+ l.beginnerSteps=[
+  'B1 NTC ve R1 10 kΩ algılama bölücüsünü incele.',
+  'R2/R3 10 kΩ ile U1 pin 2 referansında 12 V oluştuğunu doğrula.',
+  'B1/2 → U1 pin 3 ve U1 pin 8/4 besleme bağlantılarını ayırt et.',
+  'U1 pin 1 → RG/RP gate bölücüsü → IRF540N Q1/G yolunu takip et.',
+  'G1/P → H1 → Q1/D-S → 0 V güç yolunu op-amp çıkışından ayrı göster.',
+  'B1 sıcaklığını sanal 15 °C ayarla ve H1 OFF durumunu gözlemle.',
+  'Sıcaklığı 35 °C yap; H1 ON ve yaklaşık 100 mA sayısal akımını gözlemle.',
+  '15 °C ye geri dönerek H1 OFF durumunu karşılaştır; gerçek donanım kabulü çıkarma.'
+ ];
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'NTC_THERMAL_LOADED_SWITCH_SOURCE_ALIGNED',
+  ntcThermalSwitch:{supplyV:24,referenceV:12,ntcR25Ohm:10000,
+   ntcBetaK:3950,gateDividerOhm:[10000,10000],loadOhm:240,
+   isolatedSolverVerified:true,nodeSuiteExecuted:false,manufacturerCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 24 V düşük gerilimli sanal NTC devresi; gerçek ürün, ısıl, şebeke ve üretici donanım kabulü yapılmadı.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
