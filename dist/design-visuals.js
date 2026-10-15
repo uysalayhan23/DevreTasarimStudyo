@@ -8,7 +8,27 @@
     const screw=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.5" fill="#adb5bb" stroke="#58616a"/><path d="M${x-2} ${y}h4" stroke="#334155"/>`;
     const box=(x,y,bw,bh,fill=`url(#${gid})`)=>`<path d="M${x+4} ${y+bh+4}h${bw}v-${bh}l-4-4z" fill="#9ba5ad"/><rect x="${x}" y="${y}" width="${bw}" height="${bh}" rx="5" fill="${fill}" stroke="#737f8b"/>`;
     let art='';
-    if(['bjt-npn','bjt-pnp','mosfet-n','mosfet-p','igbt-n','scr','triac','diac','opamp'].includes(id)){
+    if(d.kind==='pwm-generator'||id==='virtual-pwm-generator-v1'){
+      const duty=typeof c.dutyPercent==='number'&&Number.isFinite(c.dutyPercent)?Math.max(0,Math.min(100,c.dutyPercent)):d.defaultDutyPercent??0;
+      const hz=typeof c.frequencyHz==='number'&&Number.isFinite(c.frequencyHz)?c.frequencyHz:d.defaultFrequencyHz??1000;
+      const on=!!c._pwmHigh,active=!!c._pwmSupplyValid;
+      const left=22,right=w-22,top=16,bottom=h-15;
+      art=`<rect x="${left}" y="${top}" width="${right-left}" height="${bottom-top}" rx="12" fill="#253747" stroke="#a7b8c6" stroke-width="3"/>
+        <rect x="${left+9}" y="${top+9}" width="${right-left-18}" height="23" rx="4" fill="#101f2d" stroke="#506777"/>
+        <text x="${cx}" y="${top+25}" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="bold" fill="#ecfaff">PWM GENERATOR</text>
+        <rect x="${left+10}" y="${top+42}" width="${right-left-20}" height="34" rx="5" fill="#072c2c" stroke="#55a99f"/>
+        <text x="${left+18}" y="${top+56}" font-family="monospace" font-size="10" fill="#9df5bf">DUTY ${esc(duty)}%</text>
+        <text x="${left+18}" y="${top+69}" font-family="monospace" font-size="10" fill="#9df5bf">FREQ ${esc(hz)} Hz</text>
+        <path d="M${left+14} ${top+89}h17v-10h18v10h18v-10h18v10h18" stroke="#65d6f7" fill="none" stroke-width="2.5"/>
+        <circle cx="${right-17}" cy="${bottom-19}" r="5" fill="${active?(on?'#35e6a7':'#e6ae43'):'#667586'}" stroke="#d0e5f1"/>
+        <text x="${left+14}" y="${bottom-12}" fill="#deebf3" font-size="8">VIRTUAL · DC PWM</text>
+        <rect x="4" y="24" width="18" height="12" rx="3" fill="#e4ebf2" stroke="#556778"/>
+        <rect x="4" y="107" width="18" height="12" rx="3" fill="#e4ebf2" stroke="#556778"/>
+        <rect x="${w-22}" y="65" width="18" height="12" rx="3" fill="#e4ebf2" stroke="#556778"/>
+        <text x="25" y="30" font-size="9" fill="#e3edf5">V+</text>
+        <text x="25" y="116" font-size="9" fill="#e3edf5">GND</text>
+        <text x="${w-26}" y="62" font-size="9" fill="#e3edf5" text-anchor="end">OUT</text>`;
+    }else     if(['bjt-npn','bjt-pnp','mosfet-n','mosfet-p','igbt-n','scr','triac','diac','opamp'].includes(id)){
       const pkg=/bjt-/.test(id)?'TO-92':id==='diac'?'DO-35':id==='opamp'?'DIP-8':id==='igbt-n'?'TO-247':'TO-220';
       if(pkg==='TO-92'){
         art=`<path d="M${cx-17} ${cy-18}Q${cx} ${cy-34} ${cx+17} ${cy-18}V${cy+5}Q${cx} ${cy+18} ${cx-17} ${cy+5}Z" fill="#26343d" stroke="#101820"/><path d="M${cx-17} ${cy-12}h34" stroke="#4f6974"/><text x="${cx}" y="${cy}" fill="#e7eff2" font-size="7" text-anchor="middle">${id==='bjt-npn'?'NPN':'PNP'}</text><path d="M${cx-11} ${cy+8}v34m0-34v34m11-34v34" stroke="#b6bec2" stroke-width="3"/>`;
