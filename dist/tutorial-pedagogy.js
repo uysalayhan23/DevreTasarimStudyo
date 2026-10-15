@@ -3427,7 +3427,7 @@ for(const specification of [
     l.project.components.some(c=>c.id==='rch'))throw Error('MQ07 timing lesson baseline changed: '+specification.id);
  const on=specification.mode==='ON',p=base(specification.id,l.title);
  p.components=[
-  C('g1','arduino-bench-supply',70,245,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
+  C('g1','supply-dc-plus',70,245,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
   C('s1','push-no',290,110,'S1','Başlatma butonu',{state:false}),
   C('rch','resistor',465,125,'R1',on?'100 kΩ yavaş şarj':'1 kΩ hızlı şarj',{resistance:specification.chargeOhms}),
   C('c1','capacitor',680,155,'C1','100 µF zamanlama kondansatörü',{capacitance:specification.capFarads}),
@@ -3497,7 +3497,7 @@ for(const specification of [
    !l.project.components.some(c=>c.id==='u1'))throw Error('MQ07 precision rectifier baseline changed');
  const p=base(id,l.title);
  p.components=[
-  C('g1','arduino-bench-supply',65,190,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
+  C('g1','supply-dc-plus',65,190,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
   C('rv1','potentiometer',245,200,'RV1','10 kΩ sanal giriş ayarı',{potMax:10000,potentiometer:50}),
   C('r3','resistor',370,445,'R3','10 kΩ Vref üst direnç',{resistance:10000}),
   C('r4','resistor',570,445,'R4','10 kΩ Vref alt direnç',{resistance:10000}),
