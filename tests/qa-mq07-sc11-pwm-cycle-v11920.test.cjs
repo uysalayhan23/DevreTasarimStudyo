@@ -35,6 +35,8 @@ test('SC11 phase-weighted VGS comes from connected virtual DCV probes, not duty 
  assert.ok(v[2]>v[1]&&v[1]>v[0],'phase averaged G-S voltage follows duty');
  const {p,out}=evaluate(50,1000,q=>{q.wires=q.wires.filter(w=>w.from.c!=='vg'&&w.to.c!=='vg')});
  assert.equal(out.vgsDcAverage,null,'missing DMM lead is never silently estimated');
+ const held=evaluate(50,1000,q=>{part(q,'vg').meterHold=true});
+ assert.equal(held.out.vgsDcAverage,null,'HOLD must never be treated as a fresh two-phase measurement');
 });
 test('SC11 motor is fail-closed for broken control/power paths',()=>{
  for(const [a,b] of [['rg','q1'],['m1','q1'],['g1','m1'],['g1','pwm1'],['pwm1','rg'],['pwm1','g1']]){
