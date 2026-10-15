@@ -3107,6 +3107,59 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
+
+/* MQ-07 SC11: virtual PWM-to-native-solver wired motor lesson.
+   The switch state is clocked inside Simulation.solve; RPM and current control
+   are deliberately NOT manufacturer-calibrated. */
+{
+ const id='electronic-switching-src-11',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200.noWireTriage?.applicationRepairIds?.includes(id)||l.project.wires.length)
+   throw Error('SC11 canonical no-wire review baseline changed');
+ const p=base(id,l.title);
+ p.mq05VirtualPwm={dutyPercent:0,frequencyHz:1000,sourceVoltage:12,mode:'IDEAL_GATE_COMMAND_ONLY'};
+ p.components=[
+  C('g1','arduino-bench-supply',80,135,'G1','12 V yalnız sanal besleme',{dcVoltage:12}),
+  C('sw','push-no',310,130,'S1','Çözücü-türevli PWM sanal gate anahtarı',{mq05PwmGateSwitch:true}),
+  C('rg','resistor',485,145,'RG','1 kΩ gate direnci',{resistance:1000}),
+  C('rp','resistor',600,375,'RP','100 kΩ gate pull-down',{resistance:100000}),
+  C('q1','irf540n-mosfet',810,345,'Q1','Sanal IRF540N G/D/S anahtar modeli',{mq07MosfetHealth:true}),
+  C('m1','motor-dc',1080,275,'M1','12 V sanal DC motor'),
+  C('vg','unit-ut33d-plus',840,70,'VG','Gate-source sanal DC voltmetre',{meterPosition:3}),
+  C('vgr','test-probe-red',700,535,'PR','VG kırmızı sanal prob',{probeTarget:{c:'q1',p:'G'}}),
+  C('vgb','test-probe-black',880,535,'PB','VG siyah sanal prob',{probeTarget:{c:'q1',p:'S'}})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','Yalnız simülasyonda sanal PWM anahtarına pozitif giriş.'),
+  W('sw','14','rg','1','S1/14 → RG/1','Kontrol darbesi gate direncine aktarılır.'),
+  W('rg','2','q1','G','RG/2 → Q1/G','Q1 Gate kontrol noktasıdır.'),
+  W('rp','1','q1','G','RP/1 → Q1/G','Gate komutu yokken sanal referans hattı sağlar.'),
+  W('rp','2','g1','M','RP/2 → G1/M','Sanal sıfır volt referansı.'),
+  W('q1','S','g1','M','Q1/S → G1/M','MOSFET Source referansı.'),
+  W('g1','P','m1','+','G1/P → M1/+','Motor sanal güç yolunun pozitif tarafı.'),
+  W('m1','-','q1','D','M1/− → Q1/D','Motor dönüşü sanal MOSFET Drain üzerinden çözülür.'),
+  W('vg','V','vgr','PLUG','VG/VΩmA → kırmızı prob','Sanal gate voltaj ölçüm kablosu.'),
+  W('vg','COM','vgb','PLUG','VG/COM → siyah prob','Sanal source referans ölçüm kablosu.')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='Sanal MOSFET ve DC motor: S1 durumu 0/50/100% PWM örnekleriyle özgün Simulation.solve içinde üretilir; motorun sadece anlık enerji ve yön durumu doğrulanır. Gerçek RPM veya tork hesaplanmaz.';
+ l.explanation='Kaynak G1, sanal PWM anahtarı S1, gate direnci RG, pull-down RP, IRF540N G/D/S ve M1 sanal DC motor devresidir. S1 durumu PWM frekans/duty/time girdisinden türetilir. Gate ve Drain/Source yolu elektriksel solver üzerinden çözülür. OFF, yüksek/düşük anlık durum ve kopuk gate/motor kablosu ayrıca doğrulanmalıdır. Motor hız sayısı, geri EMK, PWM ripple, diyot geçişi, koruma, termal ve üretici kalibrasyonu bu modelde bulunmaz.';
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_PWM_MOSFET_MOTOR_NATIVE_SWITCHING',
+  mq05PwmVirtual:{supplyV:12,frequencyHz:1000,validDuty:[0,50,100],
+    realRpmModel:false,motorSpeedVerified:false,physicalAcceptance:false},
+  previousReason:'NO_WIRED_CIRCUIT',physicalAcceptance:false,
+  manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal düşük gerilimli anahtarlama ve öğretici veri; gerçek bir motor sürücüsü veya fiziksel kablolama talimatı değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
