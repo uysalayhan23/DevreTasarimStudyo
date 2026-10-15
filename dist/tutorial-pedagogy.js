@@ -3608,6 +3608,36 @@ for(const specification of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...new Set([...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id])];
 }
 
+
+/* MQ-07 manufacturer part integrity: newly repaired teaching circuits must use
+   the visible LM358P PDIP-8 product, not hidden legacy A-channel logical alias.
+   Only the A channel pins are connected; B channel remains unused. */
+for(const id of ['opamp-apps-src-09','opamp-apps-src-10','opamp-apps-src-15','oscillator-filter-apps-src-13']){
+ const l=L.byId[id],p=l?.project,u=p?.components?.find(c=>c.id==='u1');
+ if(!l||l.designStandard==='rich-reference-v1'||l.kind!=='wiring'||!u)
+  throw Error('MQ07 physical LM358 source changed: '+id);
+ if(u.typeId!=='lm358p-opamp-a')throw Error('Expected original logical unit before DIP-8 migration: '+id);
+ u.typeId='lm358p-dip8';u.ref='U1';u.label='Texas Instruments LM358P PDIP-8 · kanal A · 1/2/3, besleme 8/4';
+ const pins={'OUT':'1','IN-':'2','IN+':'3','V-':'4','V+':'8'};
+ for(const wire of p.wires){
+  for(const point of ['from','to']){
+   const end=wire[point];
+   if(end.c==='u1'){
+    if(!pins[end.p]&&!['1','2','3','4','8'].includes(end.p))
+     throw Error('Unrecognized LM358 pin '+end.p+' in '+id);
+    if(pins[end.p])end.p=pins[end.p];
+   }
+  }
+ }
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint||'',why:w.tutorialWhy||'',color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.explanation+=' FİZİKSEL KÜTÜPHANE EŞLEMESİ: U1 LM358P DIP-8 çift op-amp paketidir. Kullanılan A kanalı OUT=1, IN−=2, IN+=3, V−=4, V+=8 gerçek paket pinleriyle çizilmiştir. Diğer B kanalı bu çalışmada kullanılmaz. Bu pin bilgisi şemanın doğrulanmış ürün kimliğine dayanır; dinamik/Windows kabulünün yapıldığı anlamına gelmez.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),manufacturerPartId:'lm358p-dip8',
+  manufacturerPinMap:'LM358P A: 1=OUT,2=IN-,3=IN+,4=V-,8=V+',
+  physicalAcceptance:false,windowsVisualAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
