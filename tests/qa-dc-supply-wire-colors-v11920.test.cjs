@@ -36,7 +36,7 @@ test('loaded legacy lesson and editable project wires inherit DC supply colors',
  assert.equal(p.wires[0].color,rgb.pos);assert.equal(p.wires[1].color,rgb.neg);
 });
 test('new wire and reconnect planning prefers fixed terminal colors',()=>{
- const p=fresh();
+ const p=fresh();Lines.initialize(p,defs);
  assert.equal(Lines.plan(p,defs,{c:'dc',p:'P'},{c:'load',p:'1'},'#808080','1.5').color,rgb.pos);
  assert.equal(Lines.plan(p,defs,{c:'bench',p:'M'},{c:'pwm',p:'GND'},'#e53935','1.5').color,rgb.neg);
  assert.equal(Lines.plan(p,defs,{c:'pwm',p:'OUT'},{c:'load',p:'2'},'#8b5cf6','1.5').color,'#8b5cf6');
