@@ -43,6 +43,16 @@ test('broken G, D or motor path fails motor drive, not animation-only',()=>{
   assert.equal(x.motor,false);
  }
 });
+test('PWM source is fail-closed when its power, GND or OUT wire is removed',()=>{
+ for(const [from,to] of [['g1','pwm1'],['pwm1','g1'],['pwm1','rg']]){
+  const p=clone(lesson.project);
+  p.wires=p.wires.filter(w=>!(w.from.c===from&&w.to.c===to));
+  const x=frame(p,100,0);
+  assert.equal(part(p,'pwm1')._pwmSupplyValid,from==='pwm1'&&to==='rg',from+'>'+to);
+  if(from!=='pwm1'||to!=='rg')assert.equal(x.pwmHigh,false);
+  assert.equal(x.motor,false,from+'>'+to);
+ }
+});
 test('invalid duty commands stay OFF in native solver',()=>{
  for(const duty of [-1,101,NaN]){
   const p=clone(lesson.project);const x=frame(p,duty,0);
