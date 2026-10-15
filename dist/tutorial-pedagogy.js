@@ -3372,6 +3372,16 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),spec.id];
 }
 
+// Mandatory no-substitutes gate: never show an unrelated transmitter or 4-20 mA
+// loop as an op-amp circuit even when later lesson overrides change.
+for(let n=1;n<=17;n++){
+ const id='opamp-apps-src-'+String(n).padStart(2,'0'),l=L.byId[id];
+ if(!l)continue;
+ if((l.project?.components||[]).some(c=>/420|transmitter|loop-ammeter/i.test(c.typeId||'')))
+  throw Error('LESSON_MATERIAL_FIDELITY: wrong op-amp device '+id);
+ if(l.kind==='wiring'&&!l.project.components.some(c=>c.typeId==='lm358p-opamp-a'))
+  throw Error('LESSON_MATERIAL_FIDELITY: missing functional op-amp '+id);
+}
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
