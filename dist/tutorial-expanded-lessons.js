@@ -149,7 +149,28 @@ sensorTitles.forEach((x,i)=>{
 
 /* Op-amp temrinleri 36-52 */
 const opampTitles=['Eviren yükselteç AC giriş','Eviren yükselteç DC giriş','Evirmeyen yükselteç AC giriş','Evirmeyen yükselteç DC giriş','Gerilim izleyici','İşlemsel yükselteçli karşılaştırıcı','LDR’li karşılaştırıcı','NTC’li karşılaştırıcı','Op-amp turn-on gecikme','Op-amp turn-off gecikme','Çıkarıcı devre','Toplayıcı devre','Türev alıcı','İntegral alıcı','Yarım dalga doğrultmaç','Enstrümantasyon yükselteci','Op-amp Schmitt Trigger'];
-opampTitles.forEach(x=>addLesson('opamp-apps',x,'loop-420-4',{kind:'quiz',quiz:{question:'İşlemsel yükselteçli devrelerde geri besleme ağı en çok neyi belirler?',options:['Kazanç ve çalışma biçimini','Şebeke frekansını','Motor faz sırasını'],answer:0,why:'Op-amp devresindeki geri besleme ve giriş elemanları kazancı ve fonksiyonu belirler.'},sourceDocs:['ANA','ELA']}));
+// Source accuracy: never seed op-amp lessons with a 4-20 mA transmitter circuit.
+// This is a non-wired *topic reference* until the pedagogy layer builds a
+// subject-specific topology. No fictitious connections or substitutes.
+opampTitles.forEach((x,i)=>{
+ const lesson=addLesson('opamp-apps',x,'loop-420-4',{kind:'quiz',
+ quiz:{question:'İşlemsel yükselteçli devrelerde geri besleme ağı en çok neyi belirler?',
+ options:['Kazanç ve çalışma biçimini','Şebeke frekansını','Motor faz sırasını'],
+ answer:0,why:'Op-amp devresindeki geri besleme ve giriş elemanları kazancı ve fonksiyonu belirler.'},
+ sourceDocs:['ANA','ELA']});
+ const l=L.byId['opamp-apps-src-'+String(i+1).padStart(2,'0')]||L.lessons[L.lessons.length-1];
+ const p=base(l.id,l.title);
+ p.referenceOnly=true;p.wires=[];
+ p.components=[
+  C('u1','lm358p-opamp-a',570,280,'U1A','LM358P · işlemsel yükselteç'),
+  C('r1','resistor',270,325,'R1','Giriş veya geri besleme direnç örneği',{resistance:10000})
+ ];
+ if(/türev|integral/.test(x.toLocaleLowerCase('tr-TR')))
+  p.components.push(C('c1','capacitor',765,340,'C1','Konuyla ilgili kondansatör',{capacitance:/türev/i.test(x)?100e-9:1e-6}));
+ p.projectId='tutorial-session-source-'+l.id;p.tutorialLesson={id:l.id,topicId:l.topicId,phase:'quiz',step:0,level:l.variant};
+ l.project=p;l.kind='quiz';l.steps=[];l.workspaceMode=p.workspaceMode;
+ l.summary='Konuya ait gerçek LM358P/R-C elemanları gösterilir; bağlantı yoksa simülasyon sonucu iddia edilemez.';
+});
 
 /* Osilatör, 555, filtre, RF ve ses */
 const oscTitles=['Colpitts osilatör','Hartley osilatör','Kristal osilatör','RC faz kaymalı osilatör','Wien köprü osilatörü','Transistörlü tek kararlı multivibratör','Transistörlü çift kararlı multivibratör','Transistörlü kararsız multivibratör','Kırpıcı devre','Kenetleyici devre','Miller devresi','Boot strap devresi','Schmitt Trigger','555 osilatör','555 PWM','555 tek kararlı multivibratör','555 çift kararlı multivibratör','Alçak geçiren aktif filtre','Yüksek geçiren aktif filtre','Bant geçiren aktif filtre','Bant durduran aktif filtre','FM verici','FM alıcı','Ön yükselteç','Mikser','Bas-tiz kontrol','Eko','VU metre','14 W ses yükselteci','100 W ses yükselteci'];
