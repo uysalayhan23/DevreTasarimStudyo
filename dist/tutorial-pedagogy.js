@@ -3354,13 +3354,47 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
+/* MQ-07 SC17: isolated virtual 12 V RMS AC *dual-half* TRIAC dimmer.
+   Two signed gate pulses per full cycle and computed load waveform RMS. */
 {
- const l=L.byId['electronic-switching-src-17'];
- if(l){
- l.summary="Triyak dimmer faz açısı — AC yükte ateşleme gecikmesi ve iletilen yarım periyot oranı.";
- l.explanation="AMAÇ: AC yükte ateşleme gecikmesi ve iletilen yarım periyot oranı. HESAP VE VARSAYIM: 50 Hz kaynakta periyot T=20 ms ve yarım periyot 10 ms olur. α=90° teorik tetikleme gecikmesi 5 ms'dir; bu hesap gerçek RMS veya yük gücü ölçümü değildir. ÖĞRENCİ DENEYİ: MT1/MT2 güç yolu ile G kumanda girişini şemada işaretle. 30°, 90°, 150° ateşleme anlarını yarım periyoda yerleştir; RMS hesabı için sinüzoidal gerilimin neden gerekli olduğunu açıkla. KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: AC faz açısı, optik tetikleme ve RMS yük çözümü mevcut sanal devrede doğrulanmış değildir.";
- l.learningGoal="Triyak dimmer faz açısı konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
- }
+ const id='electronic-switching-src-17',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+   !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+   throw Error('SC17 unwired baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('ac1','virtual-isolated-ac-12v',100,200,'AC1','Yalıtılmış 12 V RMS 50 Hz sanal kaynak',{rmsVoltage:12,frequencyHz:50,sourceEnabled:true}),
+  C('trg1','virtual-ac-triac-trigger-v1',390,210,'TRG1','Çift yarım periyot faz tetikleyici',{triggerAngleDeg:90,pulseWidthDeg:25,triggerEnabled:true}),
+  C('rg','resistor',680,255,'RG','Sanal gate akımı sınırlama · 1 kΩ',{resistance:1000}),
+  C('q1','bta16-600b-triac',1040,440,'Q1','ST BTA16-600B · MT1/MT2/G',{mq07VirtualHoldingCurrentA:0.03}),
+  C('h1','standard-light',1365,245,'H1','Dirençli sanal dimmer yükü · 120 Ω',{resistance:120,mq07Sc17AcLoad:true})
+ ];
+ p.wires.push(
+  W('ac1','AC','h1','X1','AC1/AC → H1/X1','Sanal yükün izole AC girişi.','#e53935','L1'),
+  W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','AC yükün güç yolu.','#8b5cf6','LOAD'),
+  W('q1','MT1','ac1','RET','Q1/MT1 → AC1/RET','AC referansı, DC GND olarak gösterilmez.','#1e88e5','N'),
+  W('ac1','AC','trg1','AC','AC1/AC → TRG1/AC','İki yarım periyodun kaynak faz referansı.','#e53935','L1'),
+  W('ac1','RET','trg1','RET','AC1/RET → TRG1/RET','Yalıtılmış kaynak referansı.','#1e88e5','N'),
+  W('trg1','OUT','rg','1','TRG1/OUT → RG/1','Her yarım periyoda ayrı sanal gate darbesi.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','BTA16 G terminaline sanal kumanda.','#8b5cf6','SIGNAL')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'ST BTA16 MT1/MT2/G ile yalıtılmış sanal 12 V AC dimmer: pozitif ve negatif yarım periyotlarda ayarlanabilir tetikleme, akım tutma, sıfır geçişinde sönme ve örneklenmiş yük RMS.',
+  explanation:'AMAÇ: Gerçek ürün kimlikli BTA16 triyakın yazılım içindeki AC dimmer modelini incelemek. SANAL DEVRE: AC1 yalıtılmış 12 V RMS/50 Hz sanal kaynak; TRG1 iki yarım periyotlu, sıfır geçişine eşzamanlı sanal tetikleyici; RG 1 kΩ; ST BTA16-600B MT1/MT2/G; H1 120 Ω sanal dirençli yük. Güç yolu AC1/AC → H1/X1–X2 → Q1/MT2 → Q1/MT1 → AC1/RET, kontrol yolu AC1/AC ve RET referansından TRG1/AC–RET; TRG1/OUT → RG/1–2 → Q1/G. GÖZLEM: Tetikleme açısı 0°, 45°, 90°, 135° veya 170° değiştikçe her iki yarım periyot için sanal gate darbesi zamanlanır. Yük akımı sanal tutma eşiğinin üstündeyken gate darbesinden sonra iletim sürer, her sıfır geçişinde ana akım eşiğin altına düştüğü için kapanır, sonraki ters polariteli yarım periyotta yeniden tetiklenir. Anlık yük geriliminin işareti AC polaritesiyle birlikte değişir. Yük RMS değeri sinüs ve iletim dalgasının 360° sayısal örneklerinden hesaplanır; fiziksel lümen, faz kesme donanımı, gerçek üretici gate quadrant değerleri, ısı ve üretici SPICE kalibrasyonu değildir. Şebeke veya gerçek bağlantı uygulaması değildir.'
+ });
+ l.materials=materialRows(p);
+ l.learningGoal='BTA16 MT1/MT2/G görevlerini, iki yarım periyotta ayrı gate tetiklemesini, sıfır geçişinde sönmeyi ve yük RMS faz açısı ilişkisini sanal dalgada ayırt etmek.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  titleTopologyIssue:null,titleTopologyStatus:'REVIEW_ISOLATED_AC_TRIAC_DUAL_HALF',
+  catalogProductId:'bta16-600b-triac',catalogManufacturerSource:'https://www.st.com/resource/en/datasheet/bta16.pdf',
+  acTriacVirtual:{bidirectionalWaveform:true,zeroCrossing:true,simulatedHoldingCurrentA:0.03,calibratedManufacturerQuadrants:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız yazılımsal yalıtılmış düşük gerilimli sanal AC deneyidir; şebeke bağlantısı veya gerçek triyak sürücü kılavuzu değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 {
  const l=L.byId['electronic-switching-src-18'];
