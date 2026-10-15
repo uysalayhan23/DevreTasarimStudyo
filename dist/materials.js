@@ -164,7 +164,16 @@
     }
     const customColor=/^#[0-9a-f]{6}$/i.test(c.deviceColor||'')?c.deviceColor:(d.color||'#20b26b');
     if(region&&c.deviceColor&&/push|mushroom|estop|jog/.test(d.id))result=result.slice(0,-4)+shape(region,fit,'fill="'+customColor+'" fill-opacity=".8" stroke="#24313b" stroke-width="1"')+'</g>';
-    if(['lamp','led','flasher'].includes(d.kind))result+='<circle class="custom-lamp-color" cx="'+(d.w/2)+'" cy="'+(d.h/2)+'" r="'+Math.min(d.w,d.h)*.23+'" fill="'+customColor+'" opacity="'+(c._active?'.85':'.28')+'"'+(c._active?' style="filter:drop-shadow(0 0 7px '+customColor+')"':'')+'/>';
+    if(['lamp','led','flasher'].includes(d.kind)){
+      // SC12: show the solver-measured ON-time ratio, never alleged real lumens.
+      const pct=c.mq07DcPwmLamp&&Number.isFinite(c._sc12BrightnessPct)?
+        Math.max(0,Math.min(100,c._sc12BrightnessPct)):null;
+      const opacity=pct!==null?(0.18+0.8*pct/100):(c._active?.85:.28);
+      const glow=pct!==null?pct>0.1:c._active;
+      result+='<circle class="custom-lamp-color" cx="'+(d.w/2)+'" cy="'+(d.h/2)+
+        '" r="'+Math.min(d.w,d.h)*.23+'" fill="'+customColor+'" opacity="'+opacity.toFixed(3)+'"'+
+        (glow?' style="filter:drop-shadow(0 0 '+(pct!==null?2+pct*.10:7).toFixed(1)+'px '+customColor+')"':'')+'/>';
+    }
     if(d.kind==='switch-packet')result+='<text class="packet-position" x="'+d.w/2+'" y="'+(d.h-24)+'" fill="#172033" font-size="14" text-anchor="middle">'+d.positions[c.position||0]+'</text>';
     if(d.kind==='contactor3'||d.id==='coil-contactor'||/contact-(no|nc|both)$/.test(d.kind)){
       const core=assets[id].core||[.30,.34,.40,.28,'rect'];
