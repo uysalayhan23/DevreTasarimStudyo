@@ -3925,6 +3925,72 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız 24 V düşük gerilimli sanal NTC devresi; gerçek ürün, ısıl, şebeke ve üretici donanım kabulü yapılmadı.';
 }
 
+
+/* MQ-07 SC21: PTC thermistor changes the comparator polarity and drives a
+   real separate virtual load. Existing NTC and SC11-SC19 remain untouched. */
+{
+ const id='sensor-analog-apps-src-02',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==9||p.wires.length!==12||
+    !p.components.some(x=>x.id==='s1'&&x.typeId==='sensor-ptc')||
+    !p.components.some(x=>x.id==='u1'&&x.typeId==='lm358p-dip8')||
+    p.components.some(x=>x.id==='q1'||x.id==='h1'))
+   throw Error('MQ07 SC21 PTC canonical baseline changed');
+ const r1=p.components.find(x=>x.id==='r1');
+ if(!r1||r1.resistance!==10000)throw Error('PTC original R1 baseline changed');
+ r1.resistance=2000;r1.label='R1 · 2 kΩ PTC alt bölücü';
+ const sensorInput=p.wires.find(w=>w.from.c==='s1'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='3');
+ const referenceInput=p.wires.find(w=>w.from.c==='r2'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='2');
+ if(!sensorInput||!referenceInput)throw Error('PTC original LM358P input wire mismatch');
+ sensorInput.to.p='2';sensorInput.tutorialHint='PTC algılama → U1 pin 2 IN−';
+ sensorInput.tutorialWhy='PTC ısınınca direnç artar ve alt düğüm gerilimi düşer.';
+ referenceInput.to.p='3';referenceInput.tutorialHint='12 V referans → U1 pin 3 IN+';
+ referenceInput.tutorialWhy='Sıcaklık yükseldiğinde IN+ > IN− olduğunda çıkış yükselir.';
+ p.components.push(
+  C('rg','resistor',810,105,'RG','10 kΩ gate üst',{resistance:10000}),
+  C('rp','resistor',810,300,'RP','10 kΩ gate alt',{resistance:10000}),
+  C('q1','irf540n-mosfet',1050,360,'Q1','IRF540N sanal G/D/S yük anahtarı',{mq07PtcThermalSwitch:true}),
+  C('h1','standard-light',1200,205,'H1','240 Ω / 24 V sanal yük',{resistance:240})
+ );
+ p.wires.push(
+  W('u1','1','rg','1','U1/1 OUT → RG/1','Karşılaştırıcı çıkışı 10 kΩ gate bölücüsüne bağlıdır.','#43a047','SIGNAL'),
+  W('rg','2','rp','1','RG/2 → RP/1','Gate gerilimi 10k/10k direnç bölücüsüyle sınırlandırılır.','#43a047','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','Elektriksel gerilim MOSFET kontrol ucuna iletilir.','#43a047','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → 0 V','Gate kontrol kolunun dirençli dönüşü.','#111827','0V'),
+  W('g1','P','h1','X1','+24 V → H1/X1','Ayrı 24 V güç kolunun beslemesidir.','#8b5a2b','+24V'),
+  W('h1','X2','q1','D','H1/X2 → Q1/D','H1 akımı MOSFET drain yolundan akar.','#8b5a2b','+24V'),
+  W('q1','S','g1','M','Q1/S → 0 V','Sanal yük akımı 0 V referansına döner.','#111827','0V')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='PTC ısındığında artan sensör direnci 2 kΩ alt bölücünün gerilimini düşürür; LM358P 12 V referansıyla karşılaştırıp IRF540N sanal yükü yaklaşık 53 °C eşik üzerinde açar.';
+ l.explanation='Yalnız düşük gerilimli 24 V sanal PTC eğitim devresinde B1 sensör direnci 25 °C’de 1 kΩ, sıcaklıkla üstel artış modeli 0,025/°C katsayılıdır. G1/P → B1/1–2 → R1 2 kΩ → G1/M bölücüsü; B1/2 U1 pin 2 IN− ucuna bağlanır. R2/R3 10k/10k bölücüsü U1 pin 3 IN+ için 12 V referansı verir. LM358P U1 pin 8 +24 V ve pin 4 0 V. Isınırken PTC artar, IN− gerilimi düşer; yaklaşık 52,7 °C civarında IN− = 12 V geçilir ve karşılaştırıcı OUT (pin 1) yükselir. OUT → RG 10 kΩ → IRF540N Q1/G; RP 10 kΩ gate ile 0 V arasında, yüksek gate yaklaşık 11 V. Ayrı yük kolu G1/P → H1/X1-X2 (240 Ω) → Q1/D-S → G1/M. 35 °C’de PTC ≈1,284 kΩ, IN− ≈14,62 V, H1 OFF. 65 °C’de PTC ≈2,718 kΩ, IN− ≈10,17 V, H1 ON yaklaşık 100 mA. PTC sıcaklık ayarı B1 özelliklerinden 35→65→35 °C seçilir. UNI-T UT33D+ mevcut kırmızı VΩmA ve siyah COM probuyla sanal karşılaştırma düğümleri ölçülür. Basitleştirilmiş modelde histerezis yoktur; gerçek PTC, LM358P çıkış yükü, IRF540N sıcaklık/ısıl kaybı ve fiziksel güvenlik onaylanmamıştır.';
+ l.learningGoal='PTC sıcaklığı 35→65→35 °C değiştiğinde algılama direnci artarken IN− geriliminin düştüğünü, IN+/IN− eşik geçişini ve sanal H1 yükünün OFF→ON→OFF olmasını açıklamak.';
+ l.beginnerSteps=[
+  '24 V besleme, B1 PTC ve 2 kΩ R1 alt bölücüsünü bul.',
+  'R2/R3 10 kΩ üzerinden 12 V referansı LM358P pin 3 IN+ üzerinde göster.',
+  'B1/2 → U1 pin 2 IN− ve U1 pin 8/4 besleme uçlarını doğrula.',
+  'U1 pin 1 çıkışı, RG/RP 10 kΩ ve IRF540N Q1/G kontrol yolunu incele.',
+  'G1/P → H1 → Q1/D-S → 0 V ana yük akım yolunu izle.',
+  'PTC sıcaklığını 35 °C yap, karşılaştırıcı düşük ve H1 OFF durumunu kontrol et.',
+  '65 °C yap, PTC direnci yükseldiğinde H1 ON yaklaşık 100 mA sonucunu gözlemle.',
+  '35 °C ye dön, H1 OFF olduğunu gözlemle. Gerçek cihaz testi yaptığını iddia etme.'
+ ];
+ l.quiz={question:'Sanal PTC ısı kontrollü devrede 65 °C olduğunda H1 neden açılır?',
+  options:['PTC direnci artar, IN− düşer ve LM358P çıkışı Q1 gate ucunu sürer.',
+   'PTC direnci azalır ve doğrudan H1 üzerinden akım geçirir.',
+   'R2 ve R3 dirençleri fiziksel sıcaklık sensörüne dönüşür.'],answer:0,
+  why:'PTC artan sıcaklıkla artan dirençtir; bu bağlantıda 12 V referansına göre IN− düşmesi MOSFET kontrolünü açar.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'PTC_THERMAL_LOADED_SWITCH_SOURCE_ALIGNED',
+  ptcThermalSwitch:{supplyV:24,referenceV:12,ptcR25Ohm:1000,
+    betaPerC:.025,r1Ohm:2000,nominalThresholdC:52.73,gateDividerOhm:[10000,10000],
+    loadOhm:240,isolatedSolverVerified:true,fullNodeSuiteExecuted:false,
+    manufacturerCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 24 V sanal PTC devresi; gerçek ürün, ısıl limit, eşik toleransı ve üretici donanım kabulü yapılmadı.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

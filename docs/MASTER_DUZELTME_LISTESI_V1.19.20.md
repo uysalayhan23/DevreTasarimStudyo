@@ -2090,3 +2090,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - NTC sensör + LM358P karşılaştırıcıya IRF540N sanal yük kolu eklendi: 9/12 → 13/19 (bileşen/kablo), yalnız sensor-analog-apps-src-01.
 - Kaynak V8 simülasyonunda düşük-yüksek-düşük sıcaklık ve gate/güç kopukluğu; tam Node/Windows QA **çalıştırılmadı**. MQ-00 **REVIEW**, fiziksel kabul yok.
 - Ayrıntı docs/MQ07_SC20_NTC_TEMPERATURE_SWITCH_20261015.md, hedef test tests/qa-mq07-sc20-ntc-temperature-switch-v11920.test.cjs. SC11–SC19 değişmez, Actions yok, [skip ci]. Sıradaki kaynak: sensor-analog-apps-src-02.
+
+
+## 2026-10-15 MQ-07 SC21 PTC ISI ANAHTARLAMA
+
+- sensor-analog-apps-src-02: PTC algılayıcıya 2 kΩ bölücü, U1 pin 2/3 düzeltmesi, gerçek katalog IRF540N ve H1 240 Ω sanal yük, 13 bileşen/19 kablo.
+- İzole V8: 35 °C OFF → 65 °C ON (~100 mA) → 35 °C OFF; gate/yük kopukluğu fail-closed. Tam Node/Windows/üretici doğrulaması çalıştırılmadı; **MQ-00 REVIEW**.
+- NTC SC20, SC11–SC19, ana dal ve kilitler korunur, Actions yok, [skip ci]. Detay docs/MQ07_SC21_PTC_TEMPERATURE_SWITCH_20261015.md. Sıradaki aday sensor-analog-apps-src-03.
