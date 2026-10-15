@@ -4,7 +4,7 @@
   const clamp=(v,a,b,f=a)=>Number.isFinite(Number(v))?Math.max(a,Math.min(b,Number(v))):f;
   const mod=(n,m)=>((n%m)+m)%m;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const isMotorDef=d=>!!d&&!d.incrementalEncoder38mm&&(d.hcfaServoMotor||/motor|generator/.test(String(d.kind||'')));
+  const isMotorDef=d=>!!d&&!d.incrementalEncoder38mm&&(d.hcfaServoMotor||/^(?:motor(?:$|[-\d])|generator$|fan$)/.test(String(d.kind||'')));
   function installMechanicalPins(lib=root.COMPONENT_LIBRARY){
     if(!Array.isArray(lib))return;
     const enc=lib.find(d=>d.id==='encoder-incremental'||d.incrementalEncoder38mm);
