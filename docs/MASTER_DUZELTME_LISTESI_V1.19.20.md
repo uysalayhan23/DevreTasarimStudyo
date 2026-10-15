@@ -2119,3 +2119,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-05`: Mevcut 3 parça / 5 kablo korunarak sanal 5 V LM35 10 mV/°C → Arduino UNO A0 10-bit ADC davranışı düzeltildi (0/25/50/100/125 °C → ADC 0/51/102/205/256). Sadece SC24 özel sayısal model bayrağı kullanıldı.
 - İzole gerçek JS kaynak V8 koşumunda sıcaklık, gerçek besleme/şase, AO kopukluğu, 0/4 V sanal kaynak: **10/10 hedefli PASS**. Tam Node/Windows/UI ve üretici fiziksel kalibrasyon yapılmadı: **MQ-00 REVIEW**.
 - 1655 müfredatta yalnız SC24 içerik değişikliği, SC11–SC23 ve teknik kilitler korunur. GitHub Actions yok; `[skip ci]`. Detay `docs/MQ07_SC24_LM35_ARDUINO_ADC_20261015.md`, Node hedef testi `tests/qa-mq07-sc24-lm35-arduino-adc-v11920.test.cjs`. Sıradaki `sensor-analog-apps-src-06` Reed.
+
+
+## 2026-10-15 MQ-07 SC25 REED D2 MAGNET
+
+- `sensor-analog-apps-src-06` (KY-021 Reed): özgün 3 bileşen / 5 kablo korunarak sanal magnet sürgüsü %65 eşik → Arduino UNO D2 `digitalRead(2)` bağlandı. Eski `state` kalıntısı yerine yalnız bu derste anlık `reedMagnet` değeri kullanılır. Gerçek sanal 5 V kaynağı/VCC/GND zorunlu; DO kablosu açık ise sensör HIGH olabilir ama D2 LOW kalır.
+- Kaynak V8 QA: **13/13 senaryo PASS**, aynı proje canlı 0/1/0/1/0 geçişi PASS, bayraksız tarihsel Reed behavior PASS. Müfredat 1.655 dersten yalnız SC25 kaydı değişti, SC11–SC24 ve teknik kilitler korundu.
+- Tam Node/Windows etkileşimli test ve fiziksel üretici kalibrasyonu yapılmadı; **MQ-00 REVIEW**. Actions yok, `[skip ci]`. Ayrıntı `docs/MQ07_SC25_REED_MAGNET_D2_20261015.md`; hedef test kaynağı `tests/qa-mq07-sc25-reed-magnet-d2-v11920.test.cjs`. Sıradaki `sensor-analog-apps-src-07` Hall.

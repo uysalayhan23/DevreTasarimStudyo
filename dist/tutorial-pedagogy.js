@@ -4149,6 +4149,57 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız yazılım sanal 5 V Arduino/LM35 deneyi. Gerçek donanım, üretici kalibrasyonu veya fiziksel güvenlik kabulü yapılmadı.';
 }
 
+
+/* MQ-07 SC25 only: KY-021 Reed magnetic slider (>=65%) -> powered
+   5 V digital output -> actual Arduino UNO D2 read. SC11–SC24 unchanged. */
+{
+ const id='sensor-analog-apps-src-06',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==3||p.wires.length!==5||
+  !p.components.some(c=>c.id==='ps'&&c.typeId==='arduino-bench-supply')||
+  !p.components.some(c=>c.id==='s1'&&c.typeId==='arduino-reed')||
+  !p.components.some(c=>c.id==='u1'&&c.typeId==='arduino-uno'))
+  throw Error('MQ-07 SC25 Reed canonical source graph changed');
+ const power=p.components.find(c=>c.id==='ps'),sensor=p.components.find(c=>c.id==='s1'),
+       uno=p.components.find(c=>c.id==='u1');
+ const has=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp);
+ if(![['ps','P','s1','VCC'],['ps','M','s1','GND'],
+       ['ps','P','u1','5V'],['ps','M','u1','GND'],['s1','DO','u1','D2']].every(row=>has(...row)))
+  throw Error('MQ-07 SC25 original Reed terminal connections changed');
+ power.dcVoltage=5;sensor.reedMagnet=0;sensor.state=false;
+ sensor.mq07ReedDigitalModel=true;
+ uno.arduinoSketch='int reed=0;void setup(){pinMode(2,INPUT);}void loop(){reed=digitalRead(2);delay(1);}';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='Sanal KY-021 Reed uygulaması: mıknatıs sürgüsü %65 veya üzerine geldiğinde 5 V beslemeli sensörün DO sinyali HIGH olur, Arduino UNO D2 digitalRead değeri 1 okur; uzaklaştırılınca 0.';
+ l.explanation='Bu ders yalnız yazılım simülasyonudur. KY-021 mini Reed sensörü görselinde manyetik sürgü reedMagnet=0..100 olarak değişir; malzeme görünümü zaten %65 ve üstünü yakın mıknatıs olarak renklendirir. Yalnız SC25 opt-in dijital modelinde mıknatıs ≥65 ise mantık HIGH (1), daha küçükse LOW (0) olarak hesaplanır. Bir önceki elle saklanan state değeri ölçümün yerine geçmez; sürgü gerçekte hangi konumdaysa o okunur. G1 sanal 5 VDC kaynağının P/M uçları sensör VCC/GND ve UNO 5V/GND ile ortak doğru elektriksel düğümlerde olmalıdır. KY-021 DO ayrı Arduino UNO D2 girişindedir. UNO sketch pinMode(2,INPUT); reed=digitalRead(2) kullanır ve 0/1 değerini gösterir. Mıknatıs 0/60/64 konumunda D2 LOW, 65/80/100 konumunda D2 HIGH olur; mıknatıs 0→80→20→100→0 hareket ettirilince Arduino sırasıyla 0→1→0→1→0 izler. Sensörün 5 V beslemesi ya da ortak GND kesilirse DO düşük/enerjisiz kabul edilir; DO/D2 kablosu kesilirse sensör doğru tetiklense bile Arduino D2 üzerinde geçerli HIGH okunamaz. Bu yalnız dijital eğitim modelidir: gerçek KY-021 çıkış modülü iç topolojisi, farklı modül NO/NC polaritesi, çekme direnci karakteristiği, gerçek manyetik alan şiddeti ve histerezis üretici kalibrasyonuyla doğrulanmamıştır. Reed temasının tek başına enerji üretmediği; 5 V beslemenin sanal modüle ait olduğu ve gerçek devre bağlantı tarifi yapılmadığı vurgulanır.';
+ l.learningGoal='Sanal mıknatıs sürgüsü ve 5 V beslemeye bağlı KY-021 DO terminalindeki 0/1 durumunu Arduino D2 digitalRead ile karşılaştırmak; eski state verisi ve kopuk güç/sinyal kablolarından yanlış HIGH çıkarılmasını önlemek.';
+ l.beginnerSteps=[
+  'Sanal KY-021 ve UNO arasındaki P→VCC, M→GND, DO→D2 bağlantılarını bul.',
+  'Arduino sketch içinde pinMode(2,INPUT) ve reed=digitalRead(2) ifadelerini göster.',
+  'Mıknatısı görsel sürgüde 0 ve 60 değerine taşı: D2 0 olmalı.',
+  'Mıknatısı 64 değerine getir: sınırın altı LOW durumudur.',
+  'Mıknatısı 65 ve ardından 80 değerine getir: D2 1 olmalı.',
+  'Mıknatısı uzaklaştırıp 20 değerine dön: D2 yeniden 0 olmalı.',
+  '0→80→20→100→0 sanal geçişinde okumanın 0→1→0→1→0 olduğunu doğrula.',
+  'Yalnız sanal devrede VCC/GND veya DO/D2 bağlantısını açıp sensör DO ile Arduino D2 okumasını ayır; bu fiziksel ürün kabulü değildir.'
+ ];
+ l.quiz={question:'Sanal Reed sürgüsü 80 konumunda iken DO→D2 kablosu koparsa ne olur?',
+  options:['Sanal sensör tetiklenmiş olabilir fakat Arduino D2 geçerli HIGH okumaz.',
+   'Arduino D2 kablo olmadan sürekli HIGH olur.',
+   'Reed sensörü elektrik enerjisi ürettiğinden besleme gerekmez.'],
+  answer:0,why:'Sensör çıkışındaki durum ile Arduino girişindeki elektriksel okuma ayrı kontrol edilir; kablo kopuksa sensör sinyali D2’ye ulaşmaz.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:null,
+  titleTopologyStatus:'KY021_REED_MAGNET_D2_SOURCE_ALIGNED',
+  mq07ReedArduino:{virtualSupplyV:5,magnetSliderThreshold:65,
+   expectedLogic:[0,1,0,1,0],sourceScenariosPassed:13,
+   digitalInput:'D2',sourceTested:true,fullNodeSuiteExecuted:false,
+   physicalProductPolarityCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız bilgisayarda sanal KY-021 Reed ve Arduino dijital girişi; fiziksel modül polaritesi, gerçek elektriksel tasarım ve üretici kabulü yapılmamıştır.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
