@@ -3156,18 +3156,19 @@ for(const spec of [
   C('vgr','test-probe-red',700,535,'PR','VG kırmızı sanal prob',{probeTarget:{c:'q1',p:'G'}}),
   C('vgb','test-probe-black',880,535,'PB','VG siyah sanal prob',{probeTarget:{c:'q1',p:'S'}})
  ];
+ p.colorRoles={...p.colorRoles,'#b57b40':'DC+','#8b5cf6':'SIGNAL','#111827':'0V'};
  p.wires.push(
-  W('g1','P','pwm1','V+','G1/P → PWM1/V+','PWM üreteci pozitif besleme.'),
-  W('pwm1','GND','g1','M','PWM1/GND → G1/M','PWM üreteci kaynak referansı.'),
-  W('pwm1','OUT','rg','1','PWM1/OUT → RG/1','Üretilen PWM dalgası gate direncine aktarılır.'),
-  W('rg','2','q1','G','RG/2 → Q1/G','Q1 Gate kontrol noktasıdır.'),
-  W('rp','1','q1','G','RP/1 → Q1/G','Gate komutu yokken sanal referans hattı sağlar.'),
-  W('rp','2','g1','M','RP/2 → G1/M','Sanal sıfır volt referansı.'),
-  W('q1','S','g1','M','Q1/S → G1/M','MOSFET Source referansı.'),
-  W('g1','P','m1','+','G1/P → M1/+','Motor sanal güç yolunun pozitif tarafı.'),
-  W('m1','−','q1','D','M1/− → Q1/D','Motor dönüşü sanal MOSFET Drain üzerinden çözülür.'),
-  W('vg','V','vgr','PLUG','VG/VΩmA → kırmızı prob','Sanal gate voltaj ölçüm kablosu.'),
-  W('vg','COM','vgb','PLUG','VG/COM → siyah prob','Sanal source referans ölçüm kablosu.')
+  W('g1','P','pwm1','V+','G1/P → PWM1/V+','PWM üreteci 12 V pozitif besleme.','#b57b40','DC+'),
+  W('pwm1','GND','g1','M','PWM1/GND → G1/M','PWM üreteci 0 V ortak referans.','#111827','0V'),
+  W('pwm1','OUT','rg','1','PWM1/OUT → RG/1','PWM gate komutu, motor güç hattı değildir.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','Q1 Gate kontrol noktasıdır.','#8b5cf6','SIGNAL'),
+  W('rp','1','q1','G','RP/1 → Q1/G','Gate pull-down kontrol düğümü.','#8b5cf6','SIGNAL'),
+  W('rp','2','g1','M','RP/2 → G1/M','Gate pull-down 0 V dönüşü.','#111827','0V'),
+  W('q1','S','g1','M','Q1/S → G1/M','MOSFET Source 0 V güç dönüşü.','#111827','0V'),
+  W('g1','P','m1','+','G1/P → M1/+','Motorun ayrı 12 V güç beslemesi.','#b57b40','DC+'),
+  W('m1','−','q1','D','M1/− → Q1/D','Motorun MOSFET üzerinden anahtarlanan yük güç yolu.','#b57b40','DC+'),
+  W('vg','V','vgr','PLUG','VG/VΩmA → kırmızı prob','Sanal gate voltaj ölçüm kablosu.','#e53935','CONTROL'),
+  W('vg','COM','vgb','PLUG','VG/COM → siyah prob','Sanal source referans ölçüm kablosu.','#111827','CONTROL')
  );
  p.projectId='tutorial-session-source-'+id;
  l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
