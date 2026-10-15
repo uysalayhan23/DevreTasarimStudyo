@@ -3673,6 +3673,32 @@ for(const repair of [
  }
 }
 
+
+/* MQ-07: SC13/SC14 manufacturer-product identity correction.
+   Preserve existing teaching wires, only replace the virtual SCR stand-in.
+   Manufacturer pin order is K-A-G on TO-220AB front view, while software
+   terminals are named K/A/G independently of physical pin number. */
+for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
+ const l=L.byId[id],p=l?.project,q=p?.components.find(c=>c.id==='q1');
+ if(!l||l.designStandard==='rich-reference-v1'||l.kind!=='wiring'||
+    !q||q.typeId!=='mq07-scr-virtual'||
+    !p.wires.some(w=>(w.from.c==='q1'||w.to.c==='q1')&&(w.from.p==='G'||w.to.p==='G'))||
+    !p.wires.some(w=>(w.from.c==='q1'||w.to.c==='q1')&&(w.from.p==='A'||w.to.p==='A'))||
+    !p.wires.some(w=>(w.from.c==='q1'||w.to.c==='q1')&&(w.from.p==='K'||w.to.p==='K')))
+   throw Error('Manufacturer SCR graph baseline changed: '+id);
+ q.typeId='tyn612rg-scr';
+ q.label='STMicroelectronics TYN612RG · TO-220AB SCR · fiziksel pin 1 K / 2 A / 3 G';
+ q.tutorialPurpose='ST TYN612RG gerçek ürün kimliği; terminal adları K/A/G, veri sayfasında ön görünümde 1=K, 2=A, 3=G. Native solver kapı-eşik örneğidir; gerçek tutma/latch fiziği kabul edilmedi.';
+ l.materials=materialRows(p);
+ l.explanation+=' MALZEME DOĞRULAMASI: Q1 artık sanal çizim yerine elektronik atölyesi kütüphanesinin TYN612RG TO-220AB ürün kaydıdır. ST üretici çiziminde pin 1=K, 2=A, 3=G sırasındadır. Buradaki 12 V sanal öğretici devre fiziksel SCR tutma akımını, gate akımı sınırını ve ısıl karakteristiği tam hesaplamaz. Ürün kaynağı: https://www.st.com/resource/en/datasheet/tyn612.pdf .';
+ l.pedagogyReview={...(l.pedagogyReview||{}),catalogProductId:'tyn612rg-scr',
+  catalogManufacturerSource:'https://www.st.com/resource/en/datasheet/tyn612.pdf',
+  originalVirtualTypeId:'mq07-scr-virtual',manufacturerPinMap:'front view 1=K,2=A,3=G',
+  manufacturerGeometryAccepted:false,manufacturerCalibrationVerified:false,
+  physicalAcceptance:false,independentPedagogicalAcceptance:false,
+  windowsVisualAcceptance:false,dynamicLatchingAccepted:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
