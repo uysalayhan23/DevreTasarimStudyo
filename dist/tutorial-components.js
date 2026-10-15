@@ -113,6 +113,11 @@ add({id:'mq07-scr-virtual',name:'Sanal SCR (DC gate)',model:'İdealize gate-eşi
  tutorialOnly:true,catalogGroup:'electronics',refPrefix:'Q',
  physicalAcceptance:false,symbolSource:{file:'MQ-07',pages:'SC13',basis:'Özgün SCR solver gate-eşik / A-K anahtarlama; fiziksel tutma akımı yoktur.'}});
 add(box('tutorial-scr','Tristör / SCR','Anot-katot-kapı',[P('G','G',0,50,'left'),P('A','A',150,30,'right'),P('K','K',150,72,'right')],{refPrefix:'V'}));
+// Functional low-voltage virtual triac for MQ-07 SC16, distinct from diagram-only symbol.
+add({id:'mq07-triac-virtual',name:'Sanal triyak (DC gate)',model:'Eşik anahtarlamalı eğitim modeli',kind:'triac',w:150,h:100,
+ pins:[P('G','G',0,50,'left'),P('MT1','MT1',150,72,'right'),P('MT2','MT2',150,30,'right')],
+ tutorialOnly:true,physicalAcceptance:false,catalogGroup:'electronics',refPrefix:'Q',
+ symbolSource:{file:'MQ-07',pages:'SC16',basis:'Yalnız özgün solver gate/MT1 eşiği ve MT1-MT2 anahtarlama; fiziksel AC faz modeli değildir.'}});
 add(box('tutorial-triac','Triyak','MT1-MT2-kapı',[P('G','G',0,50,'left'),P('MT1','MT1',150,30,'right'),P('MT2','MT2',150,72,'right')],{refPrefix:'V'}));
 
 add(box('tutorial-synchronous-motor','Senkron Motor','Senkron motor eğitim sembolü',[P('U','U',0,25,'left'),P('V','V',0,50,'left'),P('W','W',0,75,'left'),P('PE','PE',150,75,'right')],{refPrefix:'M'}));
