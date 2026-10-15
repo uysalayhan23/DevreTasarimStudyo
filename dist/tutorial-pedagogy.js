@@ -3203,7 +3203,7 @@ for(const spec of [
   C('g1','arduino-bench-supply',70,150,'G1','Sanal 12 V DC kaynak',{dcVoltage:12}),
   C('sw','push-no',325,160,'S1','Sanal gate tetikleme butonu',{state:false}),
   C('rg','resistor',520,175,'RG','1 kΩ sanal gate direnci',{resistance:1000}),
-  C('q1','mq07-scr-virtual',810,335,'Q1','Elektriksel SCR gate-anot-katot sanal modeli'),
+  C('q1','mq07-scr-virtual',810,335,'Q1','Elektriksel SCR gate-anot-katot sanal modeli',{mq07ScrHoldLesson:true}),
   C('h1','standard-light',1090,330,'H1','120 Ω sanal DC yük',{resistance:120})
  ];
  p.wires.push(
@@ -3215,14 +3215,16 @@ for(const spec of [
   W('q1','K','g1','M','Q1/K → G1/M','Katot sanal dönüş referansına bağlanır.')
  );
  setLesson(l,p,{kind:'wiring',
-  summary:'DC SCR sanal tetikleme uygulaması: S1–RG gate kontrol yolu ile H1–Q1/A–K güç yolunu ayrı incele; buton öncesi ve sonrası özgün solver durumunu karşılaştır.',
+  summary:'DC SCR tetikleme/tutma deneyi: S1 kısa gate darbesi sonrasında anot akımı yeterliyse iletimin sürmesini gözle.',
   explanation:'AMAÇ: Tristörün gate (G) ile kontrol edilen anot (A)–katot (K) iletimini düşük gerilimli sanal ortamda gözlemek. MALZEMELER: G1 sanal 12 V DC kaynak; S1 gate komutu; RG 1 kΩ gate direnci; Q1 SCR A/K/G terminalleri; H1 120 Ω eğitim yükü. KONTROL YOLU: G1/P → S1/13-14 → RG/1-2 → Q1/G. GÜÇ YOLU: G1/P → H1/X1-X2 → Q1/A → Q1/K → G1/M. Gate geri dönüşü katotun 0 V referansına göredir. HESAP ÖRNEĞİ: İdeal direnç yükünde kaynak 12 V ve yük 120 Ω ise yalnız güç yolu ilettiği varsayımında teorik I=12/120=0,1 A, P=12×0,1=1,2 W; bunlar özgün solverda ölçülmüş akım ya da gerçek SCR gerilim düşümü değildir. ÇALIŞMA: Başlangıç S1 OFF; S1 ON yapıldığında gate yolunu ve H1 durumunu özgün elektriksel solverda incele; S1 bırakılınca yeniden çözüm al. Model gerçek SCR tutma akımıyla latch etme, ters gerilim, anahtarlama süresi veya termal davranış hesaplamaz; S1 bırakıldığında sanal modelin sonucu fiziksel SCR kesim garantisi değildir. ÖĞRENCİ DENEYİ: RG→G bağlantısı kaldırılırsa H1 neden iletim göstermemelidir? H1→A bağlantısı kesilirse gate komutu neden yükü enerjileyemez? KONTROL SORULARI: A/K güç yolu ile G kontrol yolu neden farklıdır; hesaplanan 0,1 A değeri hangi ideal varsayıma dayanır; bu basitleştirilmiş model neden gerçek tristörün tutma akımını doğrulamaz? GERÇEK DONANIM UYARISI: Yalnız yazılım tabanlı kavram gösterimidir.'});
  l.materials=materialRows(p);
  l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
   titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_DC_SCR_GATE_SOURCE_ALIGNED',
-  previousReason:'NO_WIRED_CIRCUIT',scrVirtual:{physicalHoldingCurrentModel:false,manufacturerCalibrated:false},
+  previousReason:'NO_WIRED_CIRCUIT',scrVirtual:{nativeHoldingCurrentThreshold:true,manufacturerCalibrated:false},
   physicalAcceptance:false,manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
- l.safety='Yalnız sanal 12 V SCR gate/akım yolu gösterimi; gerçek tutma akımı ve fiziksel çalışma kabulü yoktur.';
+ l.safety='Yalnız sanal 12 V SCR tutma akımı ve gate tetikleme modeli; gerçek ürün ölçümleri ve ısıl/fiziksel kabul yoktur.';
+ l.learningGoal='Gate bırakıldığında DC SCR akım tutmasının sürmesini, anot/katot yolu kesildiğinde latch durumunun sıfırlanmasını gözlemlemek.';
+ l.explanation='AMAÇ: DC SCR gate komutu ile anot akımı tutmasını ayırt etmek. ELEMANLAR: G1 sanal 12 V kaynak, S1 gate butonu, RG 1 kΩ, Q1 TYN612RG kimlikli SCR ve H1 dirençli eğitim yükü. KUMANDA: G1/P → S1/13–14 → RG/1–2 → Q1/G. GÜÇ: G1/P → H1/X1–X2 → Q1/A → Q1/K → G1/M. GÖZLEM: İlk durumda S1 OFF/H1 OFF. S1 basılıyken sayısal gate-katot gerilimi hesaplanır; A–K güç yolunda en az sanal tutma akımı varsa SCR latch olur. S1 bırakıldığında gate düşer ama anot akımı eşik üzerindeyse H1 ON kalır. Anot/kathot yolu kesilince akım düşer; tekrar bağlansa bile yeni gate tetiklemesi gerekir. 12 V/120 Ω ideal yüke göre 0,1 A teoriktir; üreticinin fiziksel tetikleme/tutma, sıcaklık ve güç kaybı davranışı kalibre edilmemiştir. Yalnız düşük gerilimli yazılım simülasyonudur.';
  L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
