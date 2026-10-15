@@ -10,8 +10,8 @@
   const DoldSafety=typeof module==='object'&&module.exports?require('./dold-safety.js'):root.DTSDoldSafety;
   const HCFAUI=typeof module==='object'&&module.exports?require('./hcfa-ui.js'):root.DTSHCFAUI;
   const Assemblies=typeof module==='object'&&module.exports?require('./assemblies.js'):root.DTSAssemblies;
-  const isRotatingMachine=d=>!!d&&!d.isPLC&&!d.diagramOnly&&d.arduinoRole!=='signal-generator'&&
-    (d.rotating===true||/^(?:motor(?:$|[-\\d])|generator$|fan$)/.test(String(d.kind||'')));
+  const isRotatingMachine=d=>!!d&&!d.isPLC&&!d.diagramOnly&&d.arduinoRole!=='signal-generator'&&d.kind!=='pwm-generator'&&
+    (d.rotating===true||/motor|fan|generator/.test(String(d.kind||'')));
   const GRID=10;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const verticalSide={top:'right',right:'bottom',bottom:'left',left:'top'};
