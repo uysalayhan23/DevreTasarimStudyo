@@ -3276,28 +3276,48 @@ for(const spec of [
 }
 
 
-/* SC16 corrected: actual bidirectional AC triac lesson cannot be represented
-   by an ordinary pushbutton + resistive lamp in a DC virtual switch test.
-   Keep a proper triac device as an explicit reference and REVIEW the circuit. */
+/* MQ-07 SC16: low-voltage virtual DC holding / power-interruption experiment.
+   Physical ST BTA16 product identity but not manufacturer-calibrated electrical behavior.
+   A DC supply has NO natural zero crossing; do not call this an AC triac dimmer. */
 {
  const id='electronic-switching-src-16',l=L.byId[id];
- if(!l||l.kind!=='quiz'||l.project.wires.length)throw Error('SC16 quiz source changed');
+ if(!l||l.kind!=='quiz'||l.project.wires.length)throw Error('SC16 source baseline changed');
  const p=base(id,l.title);
- p.referenceOnly=true;
- p.components=[C('q1','mq07-triac-virtual',670,300,'Q1','Sanal triyak G / MT1 / MT2; üretici BTA16 modeli değildir')];
- setLesson(l,p,{kind:'quiz',
-  summary:'Triyak çift yönlü AC anahtarlamayı ve doğal sıfır geçişini inceler. Gerçek gate sürücüsü, AC dalga çözümü ve uygun elemanlar tamamlanmadığı için kablolu simülasyon kabulü açık.',
-  explanation:'KONU: Triyak güç terminalleri MT1/MT2 ve gate G ile her iki AC yarım periyotta tetiklenebilir. ÖNEMLİ: Sıradan buton veya lambayla hazırlanan DC anahtarlama testi, gerçek çift yönlü faz kontrollü triyak devresi değildir. GEREKLİ MALZEMELER: Üretici verisi doğrulanmış gerçek triyak, uygun optik tetikleyici/gate sürme devresi, AC sinyal modeli, sınırlayıcı/koruyucu elemanlar ve konuya uygun ölçümler. İNCELENECEKLER: MT1, MT2 ve gate görevleri; pozitif/negatif yarım periyot; tetikleme eşiği ve tutma akımı; sıfır geçişi ve faz gecikmesi. ÖĞRENCİ SORUSU: Bir yönde çalışan DC sanal anahtarlama modeli neden iki yönlü AC triyak davranışını kanıtlamaz? Üretici belgeleri ve özgün solver henüz fiziksel devre kabulüne yeterli değil.'});
+ p.components=[
+  C('g1','arduino-bench-supply',95,175,'G1','12 V sanal DC güç kaynağı',{dcVoltage:12}),
+  C('sg','push-no',342,182,'SG','Kısa gate tetikleme butonu',{state:false}),
+  C('rg','resistor',595,187,'RG','1 kΩ gate akım sınırlama',{resistance:1000}),
+  C('sp','push-nc',355,430,'SP','Normalde kapalı STOP · güç kesme',{state:false}),
+  C('q1','bta16-600b-triac',1010,415,'Q1','ST BTA16-600B · MT1/MT2/G',{mq07DcTriacLesson:true,mq07VirtualHoldingCurrentA:0.03}),
+  C('h1','standard-light',1320,235,'H1','120 Ω düşük gerilimli sanal yük',{resistance:120})
+ ];
+ p.wires.push(
+  W('g1','P','sg','13','G1/P → SG/13','Gate tetiklemesinin sanal pozitif kaynağı.','#e53935','+24V'),
+  W('sg','14','rg','1','SG/14 → RG/1','Tetikleme butonu üzerinden 1 kΩ sınırlama.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','BTA16 G tetikleme terminali.','#8b5cf6','SIGNAL'),
+  W('g1','P','sp','11','G1/P → SP/11','MT2 yük akımını kesen STOP kolunun beslemesi.','#e53935','+24V'),
+  W('sp','12','h1','X1','SP/12 → H1/X1','Normalde kapalı STOP ve lamba seri güç yoludur.','#8b5cf6','CONTROL'),
+  W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','BTA16 gerçek isimli MT2 güç ucu.','#8b5cf6','LOAD'),
+  W('q1','MT1','g1','M','Q1/MT1 → G1/M','MT1 ve gate için ortak DC eksi referansı.','#111827','0V')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'ST BTA16 MT1/MT2/G ile 12 V sanal DC tetikleme: SG gate darbesiyle aç, gate bırakınca akımı koru, SP STOP ile güç akımını kes.',
+  explanation:'AMAÇ: BTA16 triyakın DC ortamında doğal sıfır geçişi olmadığını ve ana akım devam ederken gate bırakmanın iletimi durdurmayacağını gözlemlemek. MALZEMELER: 12 V sanal DC G1, SG normalde açık gate tetikleme, 1 kΩ RG, SP normalde kapalı STOP, ST BTA16-600B MT1/MT2/G ürün kaydı, sanal H1 120 Ω yük. KUMANDA: G1/P → SG/13–14 → RG/1–2 → Q1/G. GÜÇ: G1/P → SP/11–12 → H1/X1–X2 → Q1/MT2 → Q1/MT1 → G1/M. Başlangıçta SG bırakılmış ve H1 OFF olur. SG kısa süre tetiklendiğinde gate-MT1 farkı sayısal ağ üzerinden hesaplanır, akım sanal tutma eşiğinin üzerine çıkarsa triyak latch olur; SG bırakıldığında H1 yanmaya devam eder. SP STOP açılınca yük akımı kesilir ve latch düşer; SP tekrar kapatılsa bile yeni SG darbesi gelmeden H1 yanmaz. SG hâlâ basılı tutuluyorsa STOP bırakılır bırakılmaz yeniden tetiklenebilir. Yalnız DC sanal eğitim modelidir: çift yönlü AC faz, fiziksel BTA16 tutma/gate akımı, sıcaklık ve gerçek donanım güvenliği doğrulanmış değildir.'
+ });
  l.materials=materialRows(p);
- l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
-  titleTopologyIssue:'NO_WIRED_CIRCUIT',titleTopologyStatus:'BLOCKED_REQUIRED_AC_TRIAC_DRIVER',
+ l.learningGoal='DC triyak tetiklemesini, tutma akımını ve güç kesme ile durdurmayı birbirinden ayırt etmek; AC çift yönlü iletimi DC sonuçlarına dayanarak iddia etmemek.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
+  titleTopologyStatus:'REVIEW_LOW_VOLTAGE_DC_TRIAC_HOLDING',
+  originalVirtualTypeId:'mq07-triac-virtual',catalogProductId:'bta16-600b-triac',
+  catalogManufacturerSource:'https://www.st.com/resource/en/datasheet/bta16.pdf',
+  virtualDcBehavior:{gateMt1Nodal:true,holdingCurrentA:0.03,stopOpensMainCurrent:true,manufacturerCalibrated:false,acBidirectionalVerified:false},
   physicalAcceptance:false,manufacturerCalibrationVerified:false,
   independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
- l.safety='Sanal sembol ile gerçek AC sürücü eşdeğer değildir; test edilmemiş devre işlevsel olarak gösterilmez.';
- if(!L.mq07Batch200.reviewIds.some(x=>x.id===id))
-  L.mq07Batch200.reviewIds.push({id,reason:'NO_WIRED_CIRCUIT'});
- if(!L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))
-  L.mq07Batch200.noWireTriage.applicationRepairIds.push(id);
+ l.safety='Yalnız düşük gerilimli sanal DC triyak deneyi. Gerçek şebeke, triyak sürme bağlantısı veya donanım kullanım kılavuzu değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
 /* MQ-07: case-specific source teaching for unsupported AC/opto control lessons.
@@ -3687,8 +3707,8 @@ for(const repair of [
  const device=p?.components?.find(c=>c.id==='q1');
  // SC12 is now already constructed with the real IGBT identity. It must not
  // be converted a second time from the removed virtual stand-in.
- if(repair.id==='electronic-switching-src-12'&&device?.typeId===repair.to&&
-    lesson?.kind==='wiring'&&p.wires.length>0){
+ if(['electronic-switching-src-12','electronic-switching-src-16'].includes(repair.id)&&
+    device?.typeId===repair.to&&lesson?.kind==='wiring'&&p.wires.length>0){
    lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
      catalogProductId:repair.to,catalogManufacturerSource:repair.source,
      actualManufacturerModelRecorded:true,physicalAcceptance:false,
