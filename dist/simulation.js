@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     for(const w of project.wires){w._active=false;w._fault=false;for(const k of ['_flowActive','_flowDirection','_flowMode','_flowCertainty','_flowMagnitude','_flowCurrentRe','_flowCurrentIm'])delete w[k]}
   }
   function polePairs(d){
@@ -350,7 +350,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
         else if(td.kind==='mosfet-p'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'S','G');on=v!==null&&v>=4}
         else if(td.kind==='igbt-n'){stateKey='_igbtOn';v=net.dcVoltage(tc,'G','E');if(tc.mq07DcPwmDimmer){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','E');tc._sc12GateVoltage=v}on=v!==null&&Number.isFinite(v)&&v>=4}
         else if(td.kind==='scr'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','K');if(tc.mq07ScrHoldLesson){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','K');tc._scrGateVoltage=v}on=(v!==null&&Number.isFinite(v)&&v>=.7)||(!!tc.mq07ScrHoldLesson&&!!tc._scrLatched)}
-        else if(td.kind==='triac'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','MT1');on=v!==null&&Math.abs(v)>=.7}
+        else if(td.kind==='triac'){stateKey='_thyristorOn';v=net.dcVoltage(tc,'G','MT1');if(tc.mq07DcTriacLesson===true){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','MT1');tc._triacGateVoltage=v}on=(v!==null&&Number.isFinite(v)&&Math.abs(v)>=.7)||(tc.mq07DcTriacLesson===true&&!!tc._triacLatched)}
         else if(td.kind==='diac'){stateKey='_diacOn';v=net.dcVoltage(tc,'A1','A2');on=v!==null&&Math.abs(v)>=30}
         if(stateKey&&on!==!!tc[stateKey]){tc[stateKey]=on;semiconductorChanged=true}
       }
@@ -471,6 +471,19 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       c._scrHoldingCurrentA=current;c._scrLatched=sustained;
       // A previously latched SCR loses conduction when load current collapses.
       if(!sustained&&(!Number.isFinite(c._scrGateVoltage)||c._scrGateVoltage<.7)){
+        c._thyristorOn=false;c._active=false;
+      }
+    }
+    // SC16 software-only DC TRIAC latch: MT2 load current holds after gate release.
+    // No mains operation, AC commutation, or manufacturer-specific physics implied.
+    for(const c of project.components.filter(c=>c.mq07DcTriacLesson===true&&definition(byId,c)?.kind==='triac')){
+      const load=project.components.find(x=>x.id==='h1'&&definition(byId,x)?.kind==='lamp');
+      const current=Math.abs(Number(load?._currentValue)||0);
+      const threshold=typeof c.mq07VirtualHoldingCurrentA==='number'&&
+        Number.isFinite(c.mq07VirtualHoldingCurrentA)?Math.max(.001,c.mq07VirtualHoldingCurrentA):.03;
+      const sustained=!!(stable&&!oscillating&&load?._active&&current>=threshold&&c._thyristorOn);
+      c._triacHoldingCurrentA=current;c._triacLatched=sustained;
+      if(!sustained&&(!Number.isFinite(c._triacGateVoltage)||Math.abs(c._triacGateVoltage)<.7)){
         c._thyristorOn=false;c._active=false;
       }
     }
