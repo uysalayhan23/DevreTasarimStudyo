@@ -3439,13 +3439,58 @@ for(const spec of [
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
  L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
+/* SC19 — MOC3021 LED-driven opto TRIAC + ST BTA16. Virtual, isolated, low voltage. */
 {
- const l=L.byId['electronic-switching-src-19'];
- if(l){
- l.summary="Opto-triyakla triyak sürülmesi — Düşük gerilimli LED kumandası, optik güç tarafı ve zamanlayıcı birbirinden ayrı işlevlerdir.";
- l.explanation="AMAÇ: Düşük gerilimli LED kumandası, optik güç tarafı ve zamanlayıcı birbirinden ayrı işlevlerdir. HESAP VE VARSAYIM: LED seri direnci ancak kaynak, LED ileri gerilimi ve hedef akım biliniyorsa hesaplanabilir. Flâşör frekansı f için ideal zamanlayıcı periyodu T=1/f'tir; tek triyak sembolü periyodik yanıp sönme oluşturmaz. ÖĞRENCİ DENEYİ: Giriş LED sürücüsü, optik çıkış, triyak güç yolu ve zamanlayıcı için dört ayrı işlevsel blok çiz. Zamanlayıcı kaldırılırsa otomatik yanıp sönme neden beklenemez? KONTROL SORUSU: Konsept devresi ile işlevsel, ölçülebilir sanal devre arasındaki fark nedir? SINIRLAR: Optik izolasyon, sıfır-geçiş davranışı, gerçek AC tetikleme ve flâşör zamanlayıcısı native solverda birlikte doğrulanmadı.";
- l.learningGoal="Opto-triyakla triyak sürülmesi konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
- }
+ const id='electronic-switching-src-19',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+   !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+   throw Error('SC19 unwired source baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',60,130,'G1','5 V sanal DC giriş kaynağı',{dcVoltage:5}),
+  C('t1','virtual-opto-flasher-timer-v1',280,155,'T1','5 V beslemeli sanal flaşör',{frequencyHz:2,dutyPercent:50}),
+  C('rin','resistor',520,170,'RIN','LED akım sınırlama · 330 Ω',{resistance:330}),
+  C('u1','moc3021-opto-triac',830,250,'U1','MOC3021 · 1=A,2=K,4=T1,6=T2',{virtualLedDropV:1.2,virtualLedThresholdA:0.006}),
+  C('ac1','virtual-isolated-ac-12v',80,500,'AC1','Bağımsız yalıtılmış 12 V RMS · 50 Hz',{rmsVoltage:12,frequencyHz:50,sourceEnabled:true}),
+  C('h1','standard-light',500,570,'H1','120 Ω sanal AC yük',{resistance:120,mq07Sc19Load:true}),
+  C('q1','bta16-600b-triac',1100,565,'Q1','ST BTA16-600B · MT1/MT2/G',{mq07VirtualHoldingCurrentA:0.03}),
+  C('rdrive','resistor',1080,285,'RDR','330 Ω sanal opto güç yolu',{resistance:330}),
+  C('rg','resistor',1090,385,'RG','180 Ω sanal gate yolu',{resistance:180}),
+  C('rref','resistor',1310,565,'RREF','10 kΩ sanal gate–MT1 referansı',{resistance:10000})
+ ];
+ p.wires.push(
+  W('g1','P','t1','V+','G1/P → T1/V+','Sanal flaşör DC pozitif beslemesi.','#e53935','+24V'),
+  W('t1','GND','g1','M','T1/GND → G1/M','DC kontrol referansı.','#111827','0V'),
+  W('t1','OUT','rin','1','T1/OUT → RIN/1','Zamanlayıcı LED çıkışı.','#8b5cf6','SIGNAL'),
+  W('rin','2','u1','1','RIN/2 → U1/1','MOC3021 LED anot pin 1.','#8b5cf6','SIGNAL'),
+  W('u1','2','g1','M','U1/2 → G1/M','MOC3021 LED katot pin 2.','#111827','0V'),
+  W('ac1','AC','h1','X1','AC1/AC → H1/X1','Bağımsız yalıtılmış AC yük beslemesi.','#e53935','L1'),
+  W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','ST BTA16 MT2 güç terminali.','#8b5cf6','LOAD'),
+  W('q1','MT1','ac1','RET','Q1/MT1 → AC1/RET','Yalıtılmış AC dönüşü; DC GND ile birleşmez.','#1e88e5','N'),
+  W('q1','MT2','rdrive','1','Q1/MT2 → RDR/1','Opto-triyak AC tarafındaki tetikleme enerjisi.','#8b5cf6','SIGNAL'),
+  W('rdrive','2','u1','6','RDR/2 → U1/6','MOC3021 AC T2 pin 6.','#8b5cf6','SIGNAL'),
+  W('u1','4','rg','1','U1/4 → RG/1','MOC3021 AC T1 pin 4.','#8b5cf6','SIGNAL'),
+  W('rg','2','q1','G','RG/2 → Q1/G','BTA16 gate MT1 referanslı sanal tetikleme.','#8b5cf6','SIGNAL'),
+  W('q1','G','rref','1','Q1/G → RREF/1','Gate referans/kaçak yolu.','#8b5cf6','SIGNAL'),
+  W('rref','2','q1','MT1','RREF/2 → Q1/MT1','AC tarafı gate referansı.','#1e88e5','N')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'Sanal 5 V flaşör, MOC3021 opto-triyak ve BTA16 ile yalıtılmış 12 V AC yükün iki yarım periyotta yanıp sönmesini incele. Kumanda ve yük kabloları fiziksel olarak ayrı kalır.',
+  explanation:'AMAÇ: Sanal DC flaşörün LED akımıyla MOC3021 üzerinden BTA16 triyakını tetiklemesini ve bağımsız yalıtılmış AC yükün iki yarım periyotta davranışını incelemek. DC GİRİŞ: G1/P → T1/V+, T1/GND → G1/M, T1/OUT → RIN/1–2 → MOC3021 pin 1 LED anodu, pin 2 → G1/M. AC GÜÇ: AC1/AC → H1/X1–X2 → BTA16/MT2 → MT1 → AC1/RET. OPTİK ÇIKIŞ TARAFI: MT2 → RDR → MOC3021 pin 6 (AC T2), pin 4 (AC T1) → RG → BTA16 G; RREF gate–MT1 referansı. G1/M ile AC1/RET arasında hiçbir doğrudan bağlantı yoktur. Sanal T1 flaşör 2 Hz, yüzde 50 duty ile LED kontrol eder; optik iletim yalnız hesaplanan giriş akımı eşiği aşıldığında etkinleşir. BTA16 sanal modeli, her iki AC yarım periyotta optik tetikleme ile iletime geçer ve ana yük akımı tutma eşiği üstündeyken gate LED kapansa bile aynı yarım periyot boyunca tutar. Sıfır geçişine yakın kapanır; LED kapalıyken yeni yarım periyot tetiklenmez. Gerilim, akım ve RMS dalga üzerinden hesaplanır. DERS SINIRI: Bu bir fiziksel MOC3021 izolasyon/IGT testi, gerçek şebeke, üretici SPICE veya garantili sürücü devresi değildir. Tüm değerler yazılım içi düşük gerilimli sanal eğitim modelidir.'
+ });
+ l.materials=materialRows(p);
+ l.learningGoal='MOC3021 LED girişini (1/2) opto-triyak çıkışından (4/6), ST BTA16 MT1/MT2/G güç devresinden ve T1 flaşör zamanlamasından ayırarak sanal DC/AC izolasyonunu gözlemlemek.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
+  titleTopologyStatus:'REVIEW_ISOLATED_OPTO_TRIAC_AC_FLASHER',
+  catalogProductIds:['moc3021-opto-triac','bta16-600b-triac'],
+  virtualOptoTriac:{softwareIsolationOnly:true,manufacturerIsolationTested:false,opticalThresholdCalibrated:false,zeroCrossModel:true,acBidirectionalVirtual:true},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız iki ayrı yazılım içi düşük gerilimli sanal devredir. AC şebeke veya gerçek fiziksel opto-triyak sürme yönergesi değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
 }
 
 /* SC12 — IGBT driven LOW-VOLTAGE DC PWM brightness experiment.
