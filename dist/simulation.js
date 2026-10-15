@@ -45,6 +45,9 @@
   }
   function conductingPairs(c,d,actuators,sensors){
     if(d.instrument)return Instruments.links(c,d,actuators);
+    // Only SC11 tutorial leads form a virtual conductive plug-to-tip measurement path.
+    // Other probe models are unchanged until independent regression acceptance.
+    if(d.probeColor&&c.sc11MeasurementProbe===true)return [['PLUG','TIP']];
     if(d.doldSafety)return DoldSafety.links(c,d,!!actuators.get('@'+c.id),c._solveNow??Date.now());
     if(d.isPLC&&PLC)return PLC.links(c,d);
     if(d.terminalCount)return Array.from({length:d.terminalCount},(_,i)=>[String(2*i+1),String(2*i+2)]);
