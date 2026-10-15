@@ -1,0 +1,134 @@
+{
+  "task": "MQ-07 51 no-wire triage, 1 DC relay-motor polarity virtual repair",
+  "date": "2026-10-15",
+  "repo": "uysalayhan23/DevreTasarimStudyo",
+  "branch": "main",
+  "baseHead": "fc0dc590edea27f25e06d38dab4022c20e3a3618",
+  "source": "Original GitHub JS loaded with V8; original native dist/simulation.js, current-model.js, original complete catalog and QA.audit. No GitHub Actions.",
+  "triage": {
+    "original51": 51,
+    "allQuiz": 51,
+    "zeroWire": 50,
+    "probeOnlyWiring": 1,
+    "protectedConcepts": 14,
+    "applicationCandidates": 37,
+    "applicationRepaired": 1,
+    "applicationStillPending": 36,
+    "remainingReview": 50,
+    "conceptualApproval": "PRESERVE QUIZ; NOT DONE"
+  },
+  "target": {
+    "id": "electronic-switching-src-03",
+    "title": "Röle ile motor yönü değiştirme",
+    "voltageDC": 24,
+    "parts": 6,
+    "wires": 9,
+    "coilAndTwoChangeoverRefs": "K1",
+    "states": [
+      {
+        "buttonPressed": false,
+        "coil": false,
+        "motor": true,
+        "spin": 1,
+        "stable": true,
+        "shortCircuit": false
+      },
+      {
+        "buttonPressed": true,
+        "coil": true,
+        "motor": true,
+        "spin": -1,
+        "stable": true,
+        "shortCircuit": false
+      },
+      {
+        "buttonPressed": false,
+        "coil": false,
+        "motor": true,
+        "spin": 1,
+        "stable": true,
+        "shortCircuit": false
+      },
+      {
+        "buttonPressed": true,
+        "coil": true,
+        "motor": true,
+        "spin": -1,
+        "stable": true,
+        "shortCircuit": false
+      },
+      {
+        "buttonPressed": false,
+        "coil": false,
+        "motor": true,
+        "spin": 1,
+        "stable": true,
+        "shortCircuit": false
+      }
+    ],
+    "negative": [
+      {
+        "scenario": "motor negative terminal disconnected",
+        "motorActive": false,
+        "spin": 0,
+        "stable": true
+      },
+      {
+        "scenario": "coil supply wire disconnected",
+        "motorActive": true,
+        "spin": 1,
+        "stable": true
+      },
+      {
+        "scenario": "K1B ref changed to K2",
+        "motorActive": false,
+        "spin": 0,
+        "stable": true
+      }
+    ],
+    "uiV8": [
+      {
+        "requested": "forward",
+        "result": true,
+        "spin": 1
+      },
+      {
+        "requested": "reverse",
+        "result": true,
+        "spin": -1
+      },
+      {
+        "requested": "forward",
+        "result": true,
+        "spin": 1
+      }
+    ]
+  },
+  "nativeOriginalFullV8QA": {
+    "status": "PASS",
+    "lessons": 1655,
+    "rich136": 136,
+    "catalogDefinitions": 940,
+    "nonEmptyWiring": 730,
+    "stableWiring": 730,
+    "componentsChecked": 7278,
+    "wireEndpointsChecked": 16624,
+    "missingDefinitions": 0,
+    "invalidGuidedSteps": 0,
+    "invalidWireEndpoints": 0,
+    "shorts": 0,
+    "blocked": 0,
+    "unstable": 0,
+    "errors": 0,
+    "duplicateIds": 0
+  },
+  "notRun": [
+    "native node --test process",
+    "Windows file:/// visual",
+    "manufacturer-certified relay or motor physical safety",
+    "independent pedagogical acceptance"
+  ],
+  "mq00Verdict": "VIRTUAL_MOTOR_TOPOLOGY_NATIVE_SOLVER_PASS; GLOBAL_COURSE_DONE_NOT_GRANTED",
+  "forcePush": false,
+  "actionsInvoked": false
+}

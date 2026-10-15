@@ -36,7 +36,7 @@ function loadScript(src){
 }
 async function ensureCurriculumLoaded(){
  if(curriculumLoaded)return true;if(curriculumPromise)return curriculumPromise;
- curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-ldr-dimmer-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
+ curriculumPromise=(async()=>{await loadScript('tutorial-expanded-lessons.js?v=1.19.0-source1');await loadScript('tutorial-source-outline.js?v=1.19.0-outline1');await loadScript('tutorial-pedagogy.js?v=20261015-mq07-no-wire-triage-v1');await loadScript('tutorial-measurement-batch-a.js?v=1.19.20-batch-a1');await loadScript('tutorial-measurement-batch-b.js?v=1.19.20-batch-b1');await loadScript('tutorial-measurement-batch-c.js?v=1.19.20-batch-c1');await loadScript('tutorial-measurement-batch-d.js?v=1.19.20-batch-d2');await loadScript('tutorial-dc-batch-e.js?v=1.19.20-dc-batch-e1');await loadScript('tutorial-control-batch-f.js?v=1.19.20-control-batch-f1');await loadScript('tutorial-timer-batch-g.js?v=1.19.20-timer-batch-g1');await loadScript('tutorial-installation-batch-h.js?v=20261014-bell-trafo-v1');await loadScript('tutorial-next-batch-i.js?v=1.19.20-next-batch-i1');await loadScript('tutorial-sensor-batch-j.js?v=1.19.20-sensor-batch-j2');await loadScript('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1');await loadScript('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1');await loadScript('tutorial-topic-review-batch-m.js?v=20261011-topic-m1');await loadScript('tutorial-practice-guide-batch-n.js?v=20261012-practice-n1b');await loadScript('tutorial-curriculum.js?v=1.19.20-meb1');curriculumLoaded=true;return true})().catch(e=>{curriculumPromise=null;root.DTSEditor?.toast?.('Öğretici içerikleri yüklenemedi: '+(e?.message||e));throw e});
  return curriculumPromise;
 }
 async function openHub(){
@@ -890,7 +890,8 @@ const MQ07_TOPOLOGY_REVIEW_REASONS=Object.freeze({
 });
 function topologyReviewNotice(l){
  const issue=l?.pedagogyReview?.titleTopologyIssue;if(!issue)return '';
- const message=MQ07_TOPOLOGY_REVIEW_REASONS[issue]||'Bu dersin kaynak devresi ve başlık/topoloji eşleşmesi incelemede.';
+ const protectedConcept=issue==='NO_WIRED_CIRCUIT'&&L?.mq07Batch200?.noWireTriage?.conceptPreservedIds?.includes(l.id);
+ const message=protectedConcept?'Bu sayfa korunmuş bir kavramsal/quiz dersidir; kablolu uygulama bulunmaması tek başına bozuk devre anlamına gelmez. Sanal deney veya fiziksel uygulama kabulü yapılmamıştır.':MQ07_TOPOLOGY_REVIEW_REASONS[issue]||'Bu dersin kaynak devresi ve başlık/topoloji eşleşmesi incelemede.';
  return '<div class="tutorial-feedback warn tutorial-review-warning" role="status"><strong>DEVRE İNCELEMEDE · '+esc(issue)+'</strong><p>'+esc(message)+'</p><p>Bu model, doğrulanmış fiziksel devre veya tamamlanmış simülasyon kabulü değildir.</p></div>';
 }
 
@@ -989,6 +990,37 @@ function setLdrDimmerLux(project,luxValue){
   '. Fiziksel ürün verisi değildir.';
  root.DTSEditor?.render?.();sync(project);return true;
 }
+function isRelayMotorReversal(l){return l?.id==='electronic-switching-src-03'&&!!l?.pedagogyReview?.relayReversalVirtual}
+function relayMotorPanel(l,session,project){
+ const btn=project?.components?.find(c=>c.id==='sw'),coil=project?.components?.find(c=>c.id==='k1'),motor=project?.components?.find(c=>c.id==='m1');
+ const spin=Number(motor?._spin)||0;
+ return '<section class="tutorial-relay-motor-virtual"><h3>24 V sanal DC motor · röle ile yön değiştirme</h3>'+
+ '<p>S1 ve K1 bobini ayrı kontrol yolundadır; K1A/K1B iki değiştirici kontak M1 motor kutbunu birlikte değiştirir.</p>'+
+ '<p><strong>S1: '+(btn?.state?'BASILI':'BIRAKILMIŞ')+'</strong> · K1: '+(coil?._active?'ON':'OFF')+
+ ' · M1: '+(spin>0?'İLERİ':spin<0?'GERİ':'DURUYOR')+'</p>'+
+ '<div class="tutorial-relay-controls">'+
+ '<button type="button" data-mq07-motor-direction="forward">S1 bırak · ileri</button>'+
+ '<button type="button" data-mq07-motor-direction="reverse">S1 bas · geri</button></div>'+
+ '<small>Gerçek motorun yük altında ani terslenmesi, mekanik geçiş ve güvenlik kilitleri simüle edilmemiştir.</small></section>';
+}
+function setRelayMotorDirection(project,value){
+ const lesson=lessonFor(project),sw=project?.components?.find(c=>c.id==='sw'),
+  coil=project?.components?.find(c=>c.id==='k1'),motor=project?.components?.find(c=>c.id==='m1');
+ if(!isRelayMotorReversal(lesson)||!sw||!coil||!motor||!['forward','reverse'].includes(value))return false;
+ const solver=root.CCSSimulation?.solve,defs=root.DTSEditor?.byId;
+ if(typeof solver!=='function'||!defs){project.tutorialLesson.lastFeedback='Özgün motor solver bulunamadı; sonuç kabul edilmedi.';sync(project);return false}
+ sw.state=value==='reverse';
+ const r=solver(project,defs,{now:1000});
+ const expected=value==='reverse'?-1:1;
+ if(!r?.stable||r.blocked||r.shortCircuit||r.oscillating||!motor._active||
+   !coil._active!==!sw.state||Math.sign(motor._spin)!==expected){
+  project.tutorialLesson.lastFeedback='Röle/motor kutup değişimi kararlı doğrulanmadı; REVIEW.';sync(project);return false;
+ }
+ project.tutorialLesson.lastFeedback='Sanal S1 '+(sw.state?'BASILI':'BIRAKILMIŞ')+
+  ' · K1 '+(coil._active?'ON':'OFF')+' · M1 '+(expected===1?'İLERİ (+1)':'GERİ (−1)')+
+  '. Bu fiziksel motor güvenlik testi değildir.';
+ root.DTSEditor?.render?.();sync(project);return true;
+}
 function noteHtml(l,session,project){
  if(isEnergyAnalyzerLesson(l))return energyAnalyzerNoteHtml(l,session,project);
  if(isFrequencyMeasurementLesson(l))return frequencyMeasurementNoteHtml(l,session,project);
@@ -1024,6 +1056,7 @@ function noteHtml(l,session,project){
  (isPiezoVirtualLesson(l)?piezoVirtualPanel(l,session,project):'')+
  (isRcTimingLesson(l)?rcTimingPanel(l,session,project):'')+
  (isLdrVirtualDimmerLesson(l)?ldrDimmerPanel(l,session,project):'')+
+ (isRelayMotorReversal(l)?relayMotorPanel(l,session,project):'')+
  '<div class="tutorial-concepts">'+l.concepts.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>'+(l.sourceDocs?.length?'<div class="tutorial-source"><strong>Kaynak kapsamı:</strong> '+l.sourceDocs.map(esc).join(' · ')+'</div>':'')+(l.powerExplanation?'<div class="tutorial-power"><h3>Motor güç bağlantısı nasıl yapıldı?</h3><p>'+esc(l.powerExplanation)+'</p>'+(l.powerSteps?.length?'<ol>'+l.powerSteps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>':'')+'</div>':'')+(l.safety?'<div class="tutorial-safety">⚠ '+esc(l.safety)+'</div>':'')+'</section>'+
  current+
  '<footer class="tutorial-actions">'+
@@ -1114,6 +1147,7 @@ function bind(){
    const coachToggle=e.target.closest?.('[data-tutorial-coach-toggle]');if(coachToggle){e.preventDefault();const coach=root.document?.querySelector('#tutorialCoach');setCoachVisible(!!coach?.hidden);return}
    const coachClose=e.target.closest?.('[data-tutorial-coach-close]');if(coachClose){e.preventDefault();setCoachVisible(false);return}
    const coachMin=e.target.closest?.('[data-tutorial-coach-minimize]');if(coachMin){e.preventDefault();toggleCoachMinimize();return}
+   const relayButton=e.target.closest?.('[data-mq07-motor-direction]');if(relayButton){e.preventDefault();setRelayMotorDirection(root.DTSEditor?.getProject?.(),relayButton.dataset.mq07MotorDirection);return}
    const ldrButton=e.target.closest?.('[data-ldr-dimmer-lux]');if(ldrButton){e.preventDefault();setLdrDimmerLux(root.DTSEditor?.getProject?.(),ldrButton.dataset.ldrDimmerLux);return}
    const rcButton=e.target.closest?.('[data-rc-action]');if(rcButton){e.preventDefault();setRcTimingPhase(root.DTSEditor?.getProject?.(),rcButton.dataset.rcAction);return}
    const piezoButton=e.target.closest?.('[data-piezo-sample]');if(piezoButton){e.preventDefault();setPiezoVirtualSample(root.DTSEditor?.getProject?.(),piezoButton.dataset.piezoSample);return}
@@ -1201,6 +1235,6 @@ function bind(){
  const search=root.document.querySelector('#tutorialSearch');if(search)search.addEventListener('input',e=>{query=e.target.value;renderDashboard()});
  root.addEventListener('pageshow',()=>{if(curriculumLoaded&&root.document.body.classList.contains('tutorial-page-open'))renderDashboard()});
 }
-const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux};
+const api={renderDashboard,open,openHub,closeHub,sync,locksEditing,allowsGuidedWiring,explainLock,canStart,beforeWire,afterWire,startRebuild,showExample,restart,progress,ensureCurriculumLoaded,ensureGuidedLesson,topologyReviewNotice,setPiezoVirtualSample,setRcTimingPhase,setLdrDimmerLux,setRelayMotorDirection};
 root.DTSTutorialMode=api;if(root.document?.readyState==='loading')root.document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })(typeof window==='undefined'?globalThis:window);

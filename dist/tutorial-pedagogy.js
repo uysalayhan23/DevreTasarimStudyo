@@ -2855,6 +2855,91 @@ for(const spec of [
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
 
+
+/* MQ-07: classify all 51 previously reference-only quiz scenes.  These
+   buckets do NOT promote a quiz to accepted working simulation. */
+{
+ const original=L.mq07Batch200?.reviewIds||[];
+ if(original.length!==51||original.some(x=>x.reason!=='NO_WIRED_CIRCUIT'))throw Error('MQ07 triage source ledger changed');
+ const protectedIds=[
+  'installation-grounding-src-03','installation-grounding-src-04',
+  'installation-grounding-src-05','installation-grounding-src-06',
+  'installation-grounding-src-09','installation-systems-src-07',
+  'sensor-analog-apps-src-09','sensor-analog-apps-src-17',
+  'sensor-analog-apps-src-18','sensor-analog-apps-src-19',
+  'electronic-switching-src-08','opamp-apps-src-16',
+  'oscillator-filter-apps-src-11','oscillator-filter-apps-src-12'
+ ];
+ const protect=new Set(protectedIds);
+ for(const id of protectedIds){if(!original.some(x=>x.id===id)||L.byId[id]?.kind!=='quiz')throw Error('MQ07 protected concept changed: '+id)}
+ const pending=original.map(x=>x.id).filter(id=>!protect.has(id));
+ L.mq07Batch200.noWireTriage={
+  originalTotal:51,conceptPreservedIds:protectedIds,
+  applicationRepairIds:pending,requiredEvidence:'WORKING_TERMINAL_GRAPH_PLUS_NATIVE_DYNAMIC_SOLVER',
+  rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
+ };
+}
+{
+ const id='electronic-switching-src-03',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 DC motor reversal canonical quiz source not in REVIEW');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',70,240,'G1','Sanal 24 VDC kaynak',{dcVoltage:24}),
+  C('sw','push-no',340,90,'S1','Sanal yön değiştirme butonu',{state:false}),
+  C('k1','coil-relay',610,90,'K1','24 V DC röle bobini'),
+  C('ka','contact-both',370,335,'K1','K1A değiştirici kontağı'),
+  C('kb','contact-both',630,335,'K1','K1B değiştirici kontağı'),
+  C('m1','motor-dc',900,370,'M1','24 V sanal DC motor')
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','S1 butonunun sanal +24 V kontrol girişidir.','#8b5a2b','+24V'),
+  W('sw','14','k1','A1','S1/14 → K1/A1','S1 basılırsa K1 bobini enerjilenir.','#43a047','CONTROL'),
+  W('k1','A2','g1','M','K1/A2 → G1/M','Bobin dönüşü 0 V referansıdır.','#111827','0V'),
+  W('g1','P','ka','21','G1/P → K1A/21','K1A normalde kapalı tarafta M1 pozitif kutbuna +24 V verir.','#8b5a2b','+24V'),
+  W('g1','P','kb','13','G1/P → K1B/13','K1B normalde açık tarafta M1 ters dönüş için +24 V verir.','#8b5a2b','+24V'),
+  W('g1','M','ka','13','G1/M → K1A/13','K1A normalde açık tarafta ters kutup 0 V verir.','#111827','0V'),
+  W('g1','M','kb','21','G1/M → K1B/21','K1B normalde kapalı tarafta 0 V verir.','#111827','0V'),
+  W('ka','11','m1','+','K1A/11 → M1/+','Ortak A kontağı M1/+ kutbuna bağlanır.','#43a047','CONTROL'),
+  W('kb','11','m1','−','K1B/11 → M1/−','Ortak B kontağı M1/− kutbuna bağlanır.','#43a047','CONTROL')
+ );
+ p.projectId='tutorial-session-source-'+id;
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='24 VDC yalnız sanal eğitim modelinde bir K1 röle bobini aynı anda K1A/K1B iki değiştirici kontağı kumanda eder. S1 bırakılmışken M1 kutbu +/− ve ileri, basılmışken −/+ ve geri olur. Motor yönü sahte animasyonla değil gerçek devre kutupluluğuyla çözülür.';
+ l.explanation='Bu devrede kontrol ve yük kontakları ayrıdır. Kontrol yolu: sanal G1/P → S1/13-14 → K1/A1, K1/A2 → G1/M. K1A/11 ve K1B/11 ortak terminalleri M1/+ ve M1/− motor uçlarına gider. K1 bobini enerjisizken (normal durum) K1A/11-21 ve K1B/11-21 kapalıdır; K1A/21 +24 V, K1B/21 0 V olduğundan motor ileri döner. S1 basılı iken K1 enerjilenir, K1A/11-13 ve K1B/11-13 kapanır; K1A/13 0 V ve K1B/13 +24 V olduğundan motor kutupluluğu tersine döner. Kontakların aynı K1 referansını paylaşması iki kutbun birlikte değiştirilmesi için zorunludur. Bu bir düşük gerilimli ideal değiştirici röle/motor sanal modelidir; gerçek kontaktaki geçiş boşluğu, ters akım darbeleri, mekanik frenleme, kilitleme, yük altında anlık tersleme ve bobin diyodu güvenliği modellenmiş değildir. Gerçek motor veya tesisat üzerinde doğrudan uygulama talimatı değildir.';
+ l.learningGoal='K1/A1-A2 röle bobinini, K1A/K1B 11–13–21 kontaklarını ve M1/+–M1/− kutup değişimini açıklamak; sanal S1 OFF→ON→OFF dizisinde motor _spin işaretinin +1→−1→+1 olmasını özgün solver ile göstermek.';
+ l.beginnerSteps=[
+  'Yalnız sanal 24 V G1 ve M1 motor modelini bul; S1 butonunun bobine bağlı kontrol yolu olduğunu göster.',
+  'K1 bobini ile K1A ve K1B kontaklarının aynı K1 referansını paylaştığını doğrula.',
+  'S1 bırakılmışken K1A/11–21 ve K1B/11–21 normal kapalı kontak yolunu incele.',
+  'İleri motor kutupluluğunun M1/+ = +24 V ve M1/− = 0 V olduğunu sanal solver ile gözlemle.',
+  'Sanal S1 butonuna bas; iki ortak kontağın 11–13 tarafına geçtiğini ve motor spin işaretinin ters döndüğünü kontrol et.',
+  'S1’i bırakıp ileri dönüşün geri geldiğini göster. Fiziksel yük altında ani yön terslemenin burada güvenlik doğrulaması yapılmadığını belirt.'
+ ];
+ const purpose={
+  g1:'G1 yalnız sanal 24 VDC kaynak; gerçek pano veya şebeke beslemesi değildir.',
+  sw:'S1 13–14 normalde açık sanal buton K1 bobinini besler.',
+  k1:'K1 A1–A2 kumanda bobini iki mekanik değiştirici kontağı aynı referansla sürer.',
+  ka:'K1A/11–21 (NC), 11–13 (NO) ilk motor kutbunun seçicisidir.',
+  kb:'K1B/11–21 (NC), 11–13 (NO) ikinci motor kutbunun seçicisidir.',
+  m1:'M1/+ ve M1/− kutupluluk farkına göre ileri/geri dönüş işareti alan ideal DC motor modelidir.'
+ };
+ l.materials=materialRows(p).map(m=>({...m,why:purpose[m.componentId]||m.why}));
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  previousReason:'NO_WIRED_CIRCUIT',titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_DUAL_CHANGEOVER_MOTOR_REVERSAL_ALIGNED',
+  relayReversalVirtual:{coilRef:'K1',contactIds:['ka','kb'],motorId:'m1',sourceV:24,
+    forwardSpin:1,reverseSpin:-1,physicalInterlockVerified:false,mechanicalTransientVerified:false},
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,
+  manufacturerCalibrationVerified:false,physicalAcceptance:false};
+ l.safety='Yalnız sanal 24 VDC motor yönü eğitim modeli. Gerçek motorda aniden yön değiştirme, kilitleme, kontaktör seçimi ve fiziksel güvenlik bu dersin simülasyonunda doğrulanmamıştır.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

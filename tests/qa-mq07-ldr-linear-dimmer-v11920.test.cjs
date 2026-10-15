@@ -59,12 +59,12 @@ test('disconnecting real control/gate or power wire fails electrically closed',(
  p=fresh();p.wires=p.wires.filter(w=>!(w.from.c==='h1'&&w.to.c==='q1'));
  const withoutPower=step(p,1000);assert.ok(withoutPower.brightness<.1);
 });
-test('MQ-12 1655 lessons / 729 wired / 940 definitions native solver source regression',()=>{
+test('MQ-12 1655 lessons / 730 wired / 940 definitions native solver source regression',()=>{
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.status,'PASS');assert.equal(a.total,1655);
  assert.equal(a.rich,136);assert.equal(a.definitionCount,940);
- assert.equal(a.withWires,729);assert.equal(a.stable,729);
- assert.equal(L.mq07Batch200.reviewIds.length,51);
+ assert.equal(a.withWires,730);assert.equal(a.stable,730);
+ assert.equal(L.mq07Batch200.reviewIds.length,50);
  assert.equal(L.mq07Batch200.reviewIds.some(x=>x.id===id),false);
  for(const k of ['missingDefinitions','invalidGuidedSteps','invalidWireEndpoints','blocked','shortCircuits','unstable','errors','duplicateIds'])
   assert.deepEqual(a[k],[],k);
