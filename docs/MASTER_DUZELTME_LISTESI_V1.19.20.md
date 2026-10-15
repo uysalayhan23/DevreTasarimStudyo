@@ -2156,3 +2156,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-10`: 9 ürün/12 kablolu GL5528–LM358P karşılaştırıcı doğru karanlık polaritesine düzeltildi ve gerçek katalog IRF540N + RG/RP 10 kΩ + H1 240 Ω sanal 24 V yük katıyla **13 ürün/19 kablo/19 adım** oldu.
 - Mevcut 949 kataloglu V8 gerçek numeric kaynak izolasyonunda 0,1/1/5/10 lux → ON ~0,100 A; 30/50/100/1000 lux → OFF; G1 kapalı, MOSFET gate kopuk, H1 yük yolu kopuk, U1 24 V girişi kopuk → OFF (**12/12 hedefli senaryo**). Yalnız SC29 opt-in `_mq07LdrGateV`; önceki NTC/PTC ve SC30 dimmer davranışı korunur.
 - 1.655 dersin yalnız SC29 kaydı değişti; SC11–SC28 kilitler, önceden doğrulanan kaynaklar, fiziksel kabul false. Tam Node, Windows UI ve fiziksel üretici QA NOT_RUN, MQ-00 **REVIEW**. Kanıt `docs/MQ07_SC29_LDR_DARK_SWITCH_20261015.md`, Node hedef kaynağı `tests/qa-mq07-sc29-ldr-dark-switch-v11920.test.cjs`. Actions yok, `[skip ci]`. Sonraki `sensor-analog-apps-src-11` LDR dimmer.
+
+
+## 2026-10-15 MQ-07 SC30 LDR DC LINEAR DIMMER
+
+- `sensor-analog-apps-src-11` kaynak 5 ürün / 7 kablo / 7 adım, gerçek sayısal GL5528 12 VDC kontrol ve MOSFET lineer yük kolu; AC faz kontrolü iddia edilmez. SC30 kaynak kablosundaki yanlış `+24V` etiketleri desteklenen `DC+` rolüne çevrildi. Eskiden kalan LM358P/ölçüm probu metadata kimlikleri gerçek beş parçaya uyarlandı.
+- Orijinal 949 ürünlü JS/V8 simülasyonda 0,1/1/10/100/1000 lux güç/parlaklık artışı, gate ve yük kopukluğu, 0 V ve 5 V kaynak koşulları **9/9 hedefli PASS**. H1 yaklaşık 0,0000012–0,09917 A ve 0–1,180 W; DC lineer örnek, fiziksel lümen veya AC faz açısı değil.
+- Eski `tests/qa-mq07-ldr-linear-dimmer-v11920.test.cjs` içindeki güncel olmayan global 940/733/47 sayaçlı SC30 kapsam dışı tam müfredat PASS iddiası temizlendi; hedefli ders testi korundu. 1.655 kaynaktan yalnız SC30 değişti; SC11–SC29 korunur. Tam Node/Windows UI/full audit/gerçek SOA-fiziksel kabul **NOT_RUN — MQ-00 REVIEW**. Ayrıntı `docs/MQ07_SC30_LDR_DC_LINEAR_20261015.md`. Actions yok, `[skip ci]`; sıradaki `sensor-analog-apps-src-12` IR.

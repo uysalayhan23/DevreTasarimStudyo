@@ -2842,11 +2842,11 @@ for(const spec of [
   C('h1','standard-light',990,245,'H1','12 V sanal dirençli lamba',{resistance:120,lampRatedVoltage:12,virtualLdrLamp:true})
  ];
  p.wires.push(
-  W('g1','P','s1','1','G1/P → B1/1','12 V sanal kaynak LDR bölücünün üst kolunu besler.','#8b5a2b','+24V'),
+  W('g1','P','s1','1','G1/P → B1/1','12 V sanal kaynak LDR bölücünün üst kolunu besler.','#8b5a2b','DC+'),
   W('s1','2','r1','1','B1/2 → R1/1','Işığa göre direnç değişimi kontrol düğümünü oluşturur.','#43a047','SIGNAL'),
   W('r1','2','g1','M','R1/2 → G1/M','10 kΩ bölücü alt kolu 0 V referansına döner.','#111827','0V'),
   W('s1','2','q1','G','Kontrol düğümü → Q1/G','Gerçek sanal düğüm gerilimi MOSFET G terminalini sürer.','#43a047','SIGNAL'),
-  W('g1','P','h1','X1','G1/P → H1/X1','Yük güç yolu kontrol bölücüsünden ayrıdır.','#8b5a2b','+24V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Yük güç yolu kontrol bölücüsünden ayrıdır.','#8b5a2b','DC+'),
   W('h1','X2','q1','D','H1/X2 → Q1/D','Lamba akımı MOSFET drain ucundan geçer.'),
   W('q1','S','g1','M','Q1/S → G1/M','Sürücü üzerinden gelen yük akımı 0 V dönüşüne gider.','#111827','0V')
  );
@@ -2879,6 +2879,14 @@ for(const spec of [
   previousReason:'MISSING_DIMMER_POWER_STAGE',physicalAcceptance:false,
   manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
  l.safety='Yalnız 12 VDC sanal lineer karartma eğitim eşdeğeri; gerçek MOSFET SOA/termal güvenlik, fiziksel kalibrasyon ve AC şebeke dimmer onayı yoktur.';
+ // SC30 source correction: no LM358 package exists in this new DC MOSFET project.
+ // Use the selected physical product IDs, not obsolete pre-repair component IDs.
+ l.pedagogyReview.componentIds=p.components.map(c=>c.typeId);
+ delete l.pedagogyReview.lm358PhysicalPackage;
+ delete l.pedagogyReview.realPackagePolicy;
+ l.pedagogyReview.ldrVirtualDimmer.domain='DC_12V_ONLY';
+ l.pedagogyReview.ldrVirtualDimmer.manufacturerPowerStageVerified=false;
+ l.pedagogyReview.ldrVirtualDimmer.calibratedLuminanceVerified=false;
  L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
 }
