@@ -11,7 +11,8 @@ const defs={
  load:{id:'load',kind:'resistor',pins:[{id:'1'},{id:'2'}]},
  ac:{id:'ac',kind:'supply',pins:[{id:'L'},{id:'N'}]},
  meter:{id:'meter',kind:'multimeter',pins:[{id:'V'},{id:'COM'}]},
- rect:{id:'rect',kind:'rectifier',pins:[{id:'+'},{id:'−'}]}
+ rect:{id:'rect',kind:'rectifier',pins:[{id:'+'},{id:'−'}]},
+ loadcell:{id:'load-cell',kind:'load-cell',pins:[{id:'EX+'},{id:'EX−'},{id:'SIG+'},{id:'SIG−'}]}
 };
 const wire=(id,a,ap,b,bp,color='#8b5a2b',role='CONTROL')=>
  ({id,from:{c:a,p:ap},to:{c:b,p:bp},color,role,size:'1.5 mm²',points:[]});
@@ -63,4 +64,16 @@ test('DC positive and negative cannot be joined without a conflict',()=>{
  const p=fresh();
  const attempt=Lines.plan(p,defs,{c:'dc',p:'P'},{c:'pwm',p:'GND'},'#808080','1.5');
  assert.equal(attempt.ok,false);
+});
+
+test('load cell excitation is power but differential SIG terminals are not',()=>{
+ const p=fresh();p.wires=[
+  wire('explus','loadcell','EX+','load','1'),
+  wire('exminus','loadcell','EX−','load','2')
+ ];
+ Lines.initialize(p,defs);
+ assert.equal(p.wires[0].color,rgb.pos);
+ assert.equal(p.wires[1].color,rgb.neg);
+ assert.equal(Lines.powerTerminalPolarity(defs.loadcell,{id:'SIG+'}),null);
+ assert.equal(Lines.powerTerminalPolarity(defs.loadcell,{id:'SIG−'}),null);
 });
