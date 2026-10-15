@@ -3319,6 +3319,49 @@ for(const spec of [
  l.learningGoal="Opto-triyakla triyak sürülmesi konusunda kontrol ve güç işlevlerini ayırmak ve desteklenmeyen simülasyon çıktısı üretmemek.";
  }
 }
+
+/* SC12 — solver-backed IGBT DC gate/collector/emitter educational switch.
+   AC dimmer physics is not supported and is explicitly excluded. */
+{
+ const id='electronic-switching-src-12',l=L.byId[id];
+ if(!l||l.kind!=='quiz'||l.project.wires.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200.noWireTriage.applicationRepairIds.includes(id))throw Error('SC12 source REVIEW baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',65,155,'G1','Sanal 12 V DC',{dcVoltage:12}),
+  C('sw','push-no',315,125,'S1','Gate kumanda anahtarı',{state:false}),
+  C('rg','resistor',485,150,'RG','1 kΩ gate kontrol direnci',{resistance:1000}),
+  C('rp','resistor',620,415,'RP','100 kΩ gate referansı',{resistance:100000}),
+  C('q1','mq07-igbt-virtual',830,335,'Q1','İşlevsel sanal IGBT G/C/E'),
+  C('h1','standard-light',1080,310,'H1','120 Ω sanal yük',{resistance:120})
+ ];
+ p.wires.push(
+  W('g1','P','sw','13','G1/P → S1/13','12 V sanal kumanda başlangıcı.'),
+  W('sw','14','rg','1','S1/14 → RG/1','S1 gate kontrol yolunu kapatır.'),
+  W('rg','2','q1','G','RG/2 → Q1/G','Gate, kontrol yolunun son terminalidir.'),
+  W('rp','1','q1','G','RP/1 → Q1/G','Gate referans kolu.'),
+  W('rp','2','g1','M','RP/2 → G1/M','Gate referansı kaynak eksi ucuna döner.'),
+  W('q1','E','g1','M','Q1/E → G1/M','Emitter sanal referanstır.'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Yük pozitif besleme.'),
+  W('h1','X2','q1','C','H1/X2 → Q1/C','Kollektör yük akım yoludur.')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'IGBT G/C/E sanal DC anahtarlama: S1 gate komutunu, H1 güç yükünü kontrol eder; AC dimmer kabulü değildir.',
+  explanation:'AMAÇ: IGBT gate-emitter kumandası ile collector-emitter güç yolunu sanal devrede ayırmak. MALZEMELER: G1 12 VDC sanal kaynak, S1 gate butonu, RG 1 kΩ kontrol yolu, RP 100 kΩ gate referansı, Q1 sanal IGBT G/C/E ve H1 120 Ω yük. KUMANDA BAĞLANTILARI: G1/P → S1/13–14 → RG/1–2 → Q1/G, RP/1 → Q1/G, RP/2 ve Q1/E → G1/M. GÜÇ BAĞLANTILARI: G1/P → H1/X1–X2 → Q1/C → Q1/E → G1/M. ELEKTRİKSEL ÇALIŞMA: S1 OFF durumunda RP ile gate referansa döner; S1 ON durumunda özgün solver G–E eşiğini değerlendirip C–E anahtarlamasını hesaplar. İDEAL HESAP: Yükün yalnız direnç varsayımı altında 12/120=0,1 A ve 12×0,1=1,2 W teorik değerlerdir; gerçek ürün ölçümü değildir. ÖĞRENCİ DENEYİ: S1 OFF→ON→OFF durumlarını gözle; RG→G kopukluğu ile H1→C kopukluğunda neden yük enerjisinin bulunmayacağını düşün. KONTROL SORULARI: Gate akımı yerine G–E eşik bilgisi neden kullanıldı? Gate yolu ile C–E güç yolu hangi terminallerde ayrılır? IGBT gerçek sürücüsü, doyum gerilimi, termal/anahtarlama kaybı ve AC dimmer davranışı neden doğrulanmamıştır?');
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_IGBT_DC_GATE_LOAD_SOURCE_ALIGNED',
+  previousReason:'NO_WIRED_CIRCUIT',igbtVirtual:{realAcDimmer:false,manufacturerCalibrated:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 12 V DC sanal IGBT gate/yük göstergesi; gerçek cihaz sürme ve AC güç elektroniği talimatı değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+ L.mq07Batch200.noWireTriage.repairedVirtualIds=[...(L.mq07Batch200.noWireTriage.repairedVirtualIds||[]),id];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
