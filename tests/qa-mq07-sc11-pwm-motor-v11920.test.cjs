@@ -84,6 +84,19 @@ test('missing or nonnumeric PWM settings fail closed',()=>{
   assert.equal(!!part(p,'m1')._active,false);
  }
 });
+test('PWM1 uses a dedicated visible front rather than fallback material body',()=>{
+ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+ const source=fs.readFileSync(path.join(__dirname,'../dist/design-visuals.js'),'utf8');
+ const w={DTSInstallation:{material(){return null}}};
+ vm.runInNewContext(source,{window:w});
+ const definition=defs['virtual-pwm-generator-v1'];
+ const svg=w.DTSDesignVisuals.markup(definition,{id:'pwm1',dutyPercent:50,frequencyHz:1000,_pwmSupplyValid:true,_pwmHigh:true});
+ for(const token of ['PWM GENERATOR','DUTY 50%','FREQ 1000 Hz','V+','GND','OUT','VIRTUAL'])
+  assert.ok(svg.includes(token),'PWM1 face missing '+token);
+ assert.ok(!svg.includes('data-material="design-' + definition.id + '"')||svg.includes('PWM GENERATOR'));
+ const materialSource=fs.readFileSync(path.join(__dirname,'../dist/materials.js'),'utf8');
+ assert.match(materialSource,/d\.kind==='pwm-generator'[^\n]*Design\.markup\(d,c\)/);
+});
 test('whole original curriculum and catalog remain available',()=>{
  const a=QA.audit({L,defs,Simulation:Native});
  assert.equal(a.total,1655);
