@@ -3485,6 +3485,68 @@ for(const specification of [
  L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),specification.id])];
 }
 
+
+/* MQ07 001–200 — replace the false 'precision half-wave rectifier'
+   inverting amplifier (no diode) with a real 1N4148 superdiode network.
+   Input potentiometer samples positive/negative excursions relative to Vref;
+   this is a DC transfer demonstration, not verified sine-wave rectification. */
+{
+ const id='opamp-apps-src-15',l=L.byId[id];
+ if(!l||l.designStandard==='rich-reference-v1'||!l.project||
+   l.project.components.some(c=>c.typeId==='1n4148-do35')||
+   !l.project.components.some(c=>c.id==='u1'))throw Error('MQ07 precision rectifier baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',65,190,'G1','Sanal 24 V DC kaynak',{dcVoltage:24}),
+  C('rv1','potentiometer',245,200,'RV1','10 kΩ sanal giriş ayarı',{potMax:10000,potentiometer:50}),
+  C('r3','resistor',370,445,'R3','10 kΩ Vref üst direnç',{resistance:10000}),
+  C('r4','resistor',570,445,'R4','10 kΩ Vref alt direnç',{resistance:10000}),
+  C('u1','lm358p-opamp-a',680,255,'U1A','LM358P A kanalı · hassas doğrultucu'),
+  C('d1','1n4148-do35',900,260,'D1','1N4148 DO-35 gerçek diyot A/K'),
+  C('r5','resistor',970,445,'R5','100 kΩ çıkış referans yükü',{resistance:100000}),
+  C('v1','meter-voltmeter',1135,300,'V1','Vrect − Vref voltmetresi')
+ ];
+ p.wires.push(
+  W('g1','P','rv1','1','G1/P → RV1/1','Giriş ayarının +24 V tarafı.'),
+  W('rv1','3','g1','M','RV1/3 → G1/M','Giriş ayarının 0 V tarafı.','#111827','0V'),
+  W('rv1','2','u1','IN+','RV1/2 → U1/IN+','Sanal pozitif/negatif yarım periyot örneklemesi için giriş seviyesi.','#43a047','SIGNAL'),
+  W('g1','P','r3','1','G1/P → R3/1','Referans bölücünün üst kolu.'),
+  W('r3','2','r4','1','R3/2 → R4/1','12 V orta referans düğümü.','#43a047','SIGNAL'),
+  W('r4','2','g1','M','R4/2 → G1/M','Referans bölücüsü 0 V dönüşü.','#111827','0V'),
+  W('g1','P','u1','V+','G1/P → U1/V+','LM358P besleme rayı.'),
+  W('g1','M','u1','V-','G1/M → U1/V−','LM358P negatif besleme rayı.','#111827','0V'),
+  W('u1','OUT','d1','A','U1/OUT → D1/A','Op-amp çıkışı diyot anodunu sürer.','#43a047','SIGNAL'),
+  W('d1','K','u1','IN-','D1/K → U1/IN−','Diyot katodundan negatif geri besleme alınır.','#43a047','SIGNAL'),
+  W('d1','K','r5','1','D1/K → R5/1','Doğrultulmuş çıkış düğümü.','#43a047','SIGNAL'),
+  W('r5','2','r3','2','R5/2 → Vref','Diyot kesimdeyken ölçüm çıkışı orta referansta tutulur.','#43a047','SIGNAL'),
+  W('d1','K','v1','1','D1/K → V1/1','Doğrultulmuş çıkış ölçümünün pozitif ucu.','#43a047','SIGNAL'),
+  W('v1','2','r3','2','V1/2 → Vref','Ölçüm gerilimi 12 V referansa göre tanımlıdır.','#43a047','SIGNAL')
+ );
+ setLesson(l,p,{kind:'wiring',
+  summary:'LM358P + gerçek 1N4148 DO-35 diyot ile 12 V orta referanslı hassas pozitif yarım-dalga aktarım devresi. Genel eviren yükselteç yerine diyotlu geri besleme kurulur.',
+  explanation:'DERSİN AMACI: Normal yarım dalga diyotta yaklaşık 0,7 V ileri gerilim düşümü varken op-amp ile çıkış geri beslemesine dahil edilen D1 diyotun düşük seviyeli sinyallerdeki hatası azaltılabilir. PARÇALAR: G1 sanal 24 V DC; RV1 10 kΩ giriş ayarı; LM358P U1 A kanalı; 1N4148 DO-35 D1 (A/K gerçek terminalleri); R3=R4=10 kΩ orta referans; R5=100 kΩ referans yükü; V1 voltmetre. REFERANS: R3/R4 gerilimi yaklaşık 12 V yapar; RV1 bunun altına/üstüne ayarlanarak sırasıyla negatif/pozitif yarım dalga örneklemesi yapılır. BAĞLANTILAR: RV1/2→U1/IN+; U1/OUT→D1/A; D1/K→U1/IN−, R5/1 ve V1/1. R5/2 ile V1/2 12 Vref düğümüne bağlıdır. U1 V+ ve V− G1/P ve G1/M uçlarındadır. İDEAL DAVRANIŞ: RV1 giriş gerilimi Vref üzerindeyken D1 ile geri besleme kapanır ve V1 ≈ Vin−Vref okunması beklenir; giriş Vref altında kalınca D1 kesime gider ve R5 çıkışı Vref yakınında tutar, V1 ≈ 0 gösterir. Bu ifade ideal, doyuma girmeyen çalışma için geçerlidir. ÖĞRENCİ DENEYİ: RV1 %25, %50 ve %75 konumlarıyla girişin eşik altı/üstü etkisini karşılaştır; D1 diyodunun A/K uçlarını bul ve ters bağlanırsa neyin değişeceğini açıkla. SINIR: Bu devre sanal DC giriş taramasıyla doğrultma aktarımını öğretir; özgün solverda zamanla değişen AC sinüsün fiziksel yarım dalga çıktısı, gerçek LM358 çıkış sınırları ve dinamik toparlanma henüz doğrulanmadığından AC dalga PASS verilemez.',
+  goal:'Op-amp çıkış diyodu D1 ve negatif geri besleme terminalleri üzerinden hassas yarım dalga doğrultmanın çalışma mantığını göstermek.',
+  beginnerSteps:[
+   'LM358P V+/V− beslemesini ve R3/R4 ile 12 V orta referans düğümünü bul.',
+   'RV1 10 kΩ giriş potansiyometresinin 1/2/3 terminallerini ayırt et.',
+   'U1/OUT → D1/A ve D1/K → U1/IN− ile diyotlu geri beslemeyi izle.',
+   'R5 çıkış yükünün 12 V referansa bağlanma nedenini açıkla.',
+   'Voltmetrenin D1/K ile 12 Vref arasını ölçtüğünü doğrula.',
+   'RV1 ayarı referansın altında/eşitinde/üstünde iken teorik V1 davranışını karşılaştır.'
+  ]
+ });
+ l.materials=materialRows(p);
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  previousTopologyIssue:'MISSING_PRECISION_RECTIFIER_DIODE',titleTopologyIssue:null,
+  titleTopologyStatus:'1N4148_PRECISION_RECTIFIER_GRAPH_DYNAMIC_QA_PENDING',
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false,
+  acWaveformAcceptance:false,dcTransferAccepted:false};
+ l.safety='24 V düşük gerilimli sanal DC eğitim modeli. Fiziksel AC şebeke uygulaması değildir.';
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...new Set([...(L.mq07Batch200.circuitRepairs||[]),id])];
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
