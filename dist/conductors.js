@@ -24,6 +24,8 @@
     if(supply&&id==='M')return 'negative';
     if((kind==='battery'||kind==='rectifier')&&id==='+')return 'positive';
     if((kind==='battery'||kind==='rectifier')&&id==='-')return 'negative';
+    if((d.id==='load-cell'||d.instrument==='tx11')&&id==='EX+')return 'positive';
+    if((d.id==='load-cell'||d.instrument==='tx11')&&id==='EX-')return 'negative';
     if(['sensor','detector'].includes(kind)&&id==='BN')return 'positive';
     if(['sensor','detector'].includes(kind)&&id==='BU')return 'negative';
     if(/^(?:GND[0-9]*|AGND|DGND|PGND|SGND|0V|VSS[0-9]*|V-|DC-|PWR-|SUPPLY-)$/.test(id))return 'negative';
