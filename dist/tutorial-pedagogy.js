@@ -2335,6 +2335,43 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+/* MQ07_SC98_SC109_SEQUENTIAL: exact IC behavior; these are not wired simulations. */
+const mq07SequentialReference98to109=[
+ ['01','sn74hc00n','RS mandalı iki NAND kapısının çapraz geri beslemesiyle kurulur; karttaki SN74HC00N tek başına hazır bir flip-flop değildir.','Aktif-düşük /S,/R için 11→önceki Q korunur, 01→Q=1 (SET), 10→Q=0 (RESET), 00→yasak/belirsiz; besleme ve bağlantı kurulmamıştır.'],
+ ['02','cd4027be','CD4027BE JK flip-flop saat kontrollü durum saklar.','Etkin saat olayında JK=00→koru, 01→RESET, 10→SET, 11→TOGGLE; doğrudan SET/RESET uçları ayrıca değerlendirilmelidir.'],
+ ['03','sn74hc74n','SN74HC74N pozitif saat kenarında D bilgisini Q çıkışına aktaran D flip-floptur.','Pozitif CLK kenarında Q(n+1)=D, diğer zamanlarda Q korunur; /PRE ve /CLR aktif-düşük asenkron girişlerdir.'],
+ ['04','cd4027be','T davranışı, CD4027BE JK flip-flopun J=K=T bağlanmasıyla elde edilebilir; ürün ayrı bir T flip-flop değildir.','Etkin saat olayında T=0→Q korunur, T=1→Q terslenir; J/K bağları ve saat kablolanmadan toggle simülasyonu yoktur.'],
+ ['05','arduino-cd4017','Asenkron yukarı sayıcıda taşıma bir kademeden sonraki kademeye geçer; farklı flip-flopların saatleri aynı anda tetiklenmez.','Kartta gösterilen CD4017 çözümlenmiş on çıkışlı Johnson sayaçtır, asenkron ikili ripple sayaç değildir; burada çalışan 3-bit asenkron zincir yoktur.'],
+ ['06','arduino-cd4017','Senkron ikili yukarı sayaçta tüm flip-floplar ortak saat alır ve sonraki durum mantığı aynı saat kenarında güncellenir.','Gösterilen CD4017 Johnson/on çıkışlı sayaçtır; 3-bit senkron ikili up-counter bağlantısı bu kartta kurulmamıştır.'],
+ ['07','arduino-cd4017','Johnson sayacı terslenmiş son kademe bitini ilk kademeye geri besleyen kaydırma dizisidir.','CD4017 iç mimarisi Johnson sayıcı ve çözülmüş Q0–Q9 çıkışları kullanır; burada clock/reset kablolanmamıştır.'],
+ ['08','arduino-cd4017','CD4017, uygun saat ve reset ile Q0–Q9 arasında sırayla seçili çıkış üretir.','On sayımda sıfıra dönen mod-10 çıkış dizisiyle, dört bit BCD sayaç durumlarını birbirine karıştırma; kartta gerçek clock kablosu yoktur.'],
+ ['09','arduino-cd4017','Halka sayıcıda tek etkin bit kaydırma kayıtları arasında dolaşır; Johnson sayaçta ise ters geri besleme kullanılır.','CD4017 iç yapısı Johnson sayacıdır, Q0–Q9 çıkışları tek etkin çıkış şeklinde kod çözülür; bu kartta ayrı halka sayaç bağlantısı yoktur.'],
+ ['10','arduino-74hc595','74HC595 seri girişli sekiz bit kaydırmalı register ve ayrıca çıkış tutma/latch katı içerir.','SER verisi SHCP/SRCLK kenarında kaydırılır, STCP/RCLK kenarında çıkış latchine aktarılır; /OE etkinliği ayrı kontroldür.'],
+ ['11','adc0804lcn','ADC0804LCN analog giriş seviyesini 8 bit dijital koda dönüştüren ADC entegresidir.','Referans, saat ve /WR–/RD dönüştürme/okuma uçları doğru bağlanmadan gerçek ölçüm ve sayısal dönüşüm doğrulanmış sayılamaz.'],
+ ['12','dac0808lcn','DAC0808LCN dijital giriş koduna ve referans akımına göre analog akım çıkışı üretir.','Doğrudan hassas gerilim çıkışı varsayma; akım-gerilim dönüştürücü op-amp veya yük ağı, Vref ve gerçek bağlantılar bu kartta yoktur.']
+];
+for(const [suffix,chip,concept,table] of mq07SequentialReference98to109){
+ const id='digital-sequential-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='quiz'||(lesson.project?.wires||[]).length||
+    !lesson.project.components.some(c=>c.typeId===chip))
+   throw Error('MQ07 SC98–109 sequential reference mismatch '+id);
+ lesson.summary=concept+' Bu kablosuz referans kartıdır.';
+ lesson.explanation=concept+' '+table+' Çalışan lojik devre veya zaman diyagramı simüle edilmiş değildir.';
+ lesson.learningGoal=concept+' '+table;
+ lesson.beginnerSteps=[
+  'Başlıktaki sıralı devreyi ve gösterilen entegreyi karşılaştır.',
+  'Saat/etkinleştirme ve durum kuralını oku: '+table,
+  'Gösterilen çipin devre başlığıyla hangi açılardan farklı olduğunu belirle.',
+  'Gerçek bağlantı ve saat testi bulunmadığı için elektriksel PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
+
 
 /* MQ07_SC83_SC97_LOGIC: truthful digital truth-table reference lessons; no fabricated wires. */
 const mq07LogicCases83to97=[
