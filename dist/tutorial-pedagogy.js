@@ -2385,6 +2385,43 @@ for(const [suffix,issue,concept,limits] of mq07PlcScope182to200){
 }
 
 
+/* MQ07_SC201_SC203_PLC: next three source cards retain original quiz/DOL graphs and reject unsupported acceptance. */
+const mq07PlcFollowup201to203=[
+ ['20','NO_ANALOG_IO_WIRING',false,
+  'PLC analog girişte gerilim/akım sensör sinyali A/D dönüşümü ve kanal ölçeklemesi, analog çıkışta ise uygun modül ve D/A referansıyla kontrol yapar.',
+  'SM 1231 AI, SM 1232 AO, analog seviye sensörü ve S7-1211C burada yalnız referans malzemeleridir. Besleme, modül ortak uçları, analog kanal ve sensör kabloları yoktur; gerçek kanal okuması, PLC konfigürasyonu veya ölçülen analog çıkış bulunmaz.'],
+ ['21','MISSING_TIMED_STOP_PROGRAM',true,
+  'PLC ile motorun zaman ayarlı durdurulması, bir süre koşulu ve durdurma önceliğini belirleyen program davranışı gerektirir.',
+  'Kayıtlı 18 kablolu örnek yalnız bir START X10:7, NC STOP X10:8, X12:3 kontaktör çıkışı ve start-stop-latch programıdır. Zamanlayıcı bloğu, ayarlı gecikme ve gecikmeli STOP çıkışı yoktur; sanal STOP kontaktörü doğrudan bırakır.'],
+ ['22','NO_PLC_VFD_CONTROL_WIRING',false,
+  'PLC ile invertör kontrolü için ortak referans, uygun dijital/analog kontrol uçları, sürücü komut kaynağı ve gerçek hız/yön parametre eşleşmesi gerekir.',
+  'S7-1211C ve SINAMICS V20 yalnız malzeme kartları olarak gösterilir. PLC–V20 kontrol kablosu, sürücü parametresi, motor güç yolu ve canlı PLC komut programı yoktur; hız, yön veya haberleşme kontrolü simüle edilmez.']
+];
+for(const [suffix,issue,wired,concept,limits] of mq07PlcFollowup201to203){
+ const id='plc-hardware-programming-src-'+suffix,lesson=L.byId[id],p=lesson?.project;
+ if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?18:0))
+  throw Error('MQ07 SC201–SC203 PLC canonical scope changed: '+id);
+ const types=p.components.map(c=>c.typeId);
+ if(!types.includes('plc-hw-6es7211-1ae40-0xb0')||
+    (suffix==='20'&&(!types.includes('plc-0-10')||!types.includes('plc-0-12')||!types.includes('sensor-level-analog')))||
+    (suffix==='21'&&(['motor-3p','coil-contactor','push-no','push-nc'].some(t=>types.filter(x=>x===t).length!==1)))||
+    (suffix==='22'&&!types.includes('sinamics-v20-1p')))
+  throw Error('MQ07 SC201–SC203 PLC component mismatch: '+id);
+ lesson.summary=concept+' Bu dersin mevcut malzeme/şema kapsamı ayrıca sınırlandırılmıştır.';
+ lesson.explanation=concept+' '+limits+' Bu değerlendirme sanal kaynak grafiği içindir; gerçek donanım, üretici kabulü veya Windows görsel testi değildir.';
+ lesson.learningGoal=concept+' Kaydedilen terminal ve kabloları gerekli program, ölçüm ve bağlantı şartlarıyla karşılaştırmak.';
+ lesson.beginnerSteps=[
+  'Ekrandaki cihazların gerçek terminal bağlantılarını ve devrenin kablolu olup olmadığını say.',
+  'Beklenen işlev: '+concept,
+  limits,
+  'Gerçek kablo, program, zaman ya da ölçüm kanıtı olmadan işlevsel veya fiziksel PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+  mq07PlcScope:'SC201_SC203',titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  plcAdvancedLogicAcceptance:false};
+}
+
 /* MQ07_SC172_SC181_MOTOR_SEQUENCE: preserve canonical DOL; disclose absent multiple motors and control. */
 const mq07SequenceScope172to181=[
  ['01','MISSING_SECOND_MOTOR_SEQUENCING','İki motor sıralı kumandası M1/M2, K1/K2 ve ikinci motoru başlatan koşul gerektirir.','Kaydedilmiş devre tek motorlu START–mühürleme–STOP devresidir; ikinci motor veya sıra yoktur.'],
