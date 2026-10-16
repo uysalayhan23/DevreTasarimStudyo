@@ -2334,6 +2334,56 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC182_SC200_PLC: accurately distinguish PLC live DOL demo from unwired concept cards. */
+const mq07PlcScope182to200=[
+ ['01','NO_WIRED_CIRCUIT','PLC, girişleri okuyup tanımlı lojik programa göre çıkışları süren endüstriyel denetleyicidir.','Bu kartta PLC modeli vardır fakat fiziksel giriş, çıkış, program veya röleli karşılaştırma devresi kablolanmamıştır.'],
+ ['02','NO_WIRED_CIRCUIT','PLC CPU, besleme ve dijital/analog giriş-çıkış modüllerinin farklı görevleri vardır.','Gösterilen CPU/modüller malzeme referansıdır; slot, hat, veri yolu ve besleme bağlantısı oluşturulmamıştır.'],
+ ['03','NO_WIRED_CIRCUIT','PLC seçimi gerçek 24 VDC besleme, giriş/çıkış sayısı, PNP/NPN seviyesi, transistor/röle çıkışı ve modül uyumuna göre yapılır.','Gösterilen donanım özellik karşılaştırmasıdır; yeterli I/O hesabı veya yük akımı kabulü yapılmamıştır.'],
+ ['04',null,'S7-1211C DC/DC/DC sanal PLC besleme uçları X10:1 ve X10:2, 24 VDC güç kaynağının +/0 V hatlarından beslenir.','X10:6 dijital giriş ortak referansı, X12:1/2 çıkış beslemesi, X12:3 bobin kontrol çıkışıdır. Bu aynı kablolu örnek START/STOP mühürleme programını da içerir; gerçek PLC donanım güvenliği sınanmamıştır.'],
+ ['05',null,'PLC dijital START girişi X10:7, normalde kapalı STOP giriş devresi X10:8 ile okunur; giriş ortak referansı X10:6 dır.','START basıldığında X10:7 HIGH, STOP basıldığında X10:8 LOW olur. Mevcut simülasyon aynı start-stop-latch programını çalıştırır; farklı giriş modları kanıtlanmaz.'],
+ ['06',null,'Transistör PLC çıkışı X12:3 sanal kontaktör bobini A1 ucuna, bobin A2 ise 0 V a bağlanmıştır.','S7-1211C DC/DC/DC çıkış beslemesi X12:1/2 dir; bobin gerçek akım kapasitesi, söndürme diyodu veya ısıl koruma burada doğrulanmaz.'],
+ ['07','NO_WIRED_CIRCUIT','LAD (merdiven diyagramı) kontak-bobin mantığı, FBD ise işlev bloklarıyla aynı lojik ilişkileri ifade edebilir.','PLC ürün kartında çalıştırılan LAD/FBD programı veya ekranda doğrulanmış çevrim tablosu yoktur.'],
+ ['08','NO_WIRED_CIRCUIT','PLC programındaki normalde kapalı mantık kontağı, bir giriş bitinin tersini sınar; fiziksel STOP NC terminali ile birebir aynı kavram değildir.','Kartta yalnız PLC ve buton referansları bulunur; LAD kontak durumu fiziksel terminalle bağlanmamıştır.'],
+ ['09','NO_WIRED_CIRCUIT','START ve STOP butonlarının NO/NC kontak farkı, PLC girişine bağlanınca doğru sinyal seviyesinde yorumlanmalıdır.','Bu kartta butonlar ve PLC kablolanmamıştır, çalışan giriş değişimi ölçülmez.'],
+ ['10','NO_WIRED_CIRCUIT','PLC mantık fonksiyonlarında AND, OR, NOT davranışı giriş bitleri ve tanımlı programla doğrulanır.','Kablolu lojik test veya PLC programındaki doğruluk tablosu simüle edilmez.'],
+ ['11','NO_WIRED_CIRCUIT','Ara vaviyen benzeri iki noktadan anahtarlamada girişlerin XOR/kenar veya durum mantığıyla yorumlanması gerekir.','İki anahtar sinyali, gerçek PLC girişleri ve yazılmış program bu kartta yoktur.'],
+ ['12',null,'PLC ile motora doğrudan yol vermede X10:7 START ve X10:8 STOP koşulları çıkış X12:3 üzerinden kontaktör bobinini yönetir.','Mevcut sanal start-stop-latch programı, kontaktörün ana kontaklarını ve üç fazlı motorun çalışmasını gösterir; gerçek termik koruma ve şebeke testi değildir.'],
+ ['13','MISSING_SECOND_START_STOP_STATION','Birden fazla noktadan PLC motor kumandası, ayrı kumanda istasyonlarının girişlerini ve STOP önceliğini programda birleştirir.','Mevcut devre yalnız tek START X10:7 ve tek STOP X10:8 girişine sahiptir; ikinci istasyon veya çok merkezli program yoktur.'],
+ ['14','MISSING_REVERSE_MOTOR_CONTACTOR','İleri-geri motor kumandası iki yön kontaktörü, karşılıklı kilitleme ve iki fazın yer değiştirdiği ayrı güç yolları gerektirir.','Mevcut tek kontaktör ve start-stop-latch programı yalnız bir yönde DOL çalıştırır; ikinci kontaktör, yön seçimi ve interlock bulunmaz.'],
+ ['15','NO_WIRED_CIRCUIT','SET/RESET mantığı bir bitin tutulması ve sıfırlanması için iki farklı giriş koşulu tanımlar.','Kartta PLC, START/STOP butonları referans olarak vardır; gerçek SET/RESET programı yürütülmez.'],
+ ['16','NO_WIRED_CIRCUIT','Tek butonla çalıştır-durdur için yükselen kenarda saklanan durumu tersleyen toggle mantığı gerekir.','Tek butonlu program ve giriş kenarı simülasyonu bu kartta yoktur.'],
+ ['17','NO_WIRED_CIRCUIT','Kenar tetiklemesi, girişin 0→1 ya da 1→0 geçişinde yalnız tek çevrimlik olay üretir.','Çalışan kenar algılama programı veya PLC tarama çevrimi izlemesi bulunmaz.'],
+ ['18','NO_WIRED_CIRCUIT','PLC zamanlayıcılarında TON, TOF veya TP çıkışı zaman ve tetik şartına göre farklı değişir.','PLC ve lamba ürünleri yalnız referanstır; zamanlayıcı bloğu, ayarlı süre, kablo veya zaman eğrisi bulunmaz.'],
+ ['19','NO_WIRED_CIRCUIT','PLC sayıcılarında CTU/CTD sayma girişinin uygun kenarlarıyla değeri değişir; reset ve preset ayrı ele alınır.','Enkoder ve PLC malzeme kartları kablosuzdur; gerçek pals, sayım değeri veya çalışan program yoktur.']
+];
+for(const [suffix,issue,concept,limits] of mq07PlcScope182to200){
+ const id='plc-hardware-programming-src-'+suffix,lesson=L.byId[id],i=Number(suffix);
+ const wired=[4,5,6,12,13,14].includes(i),p=lesson?.project;
+ if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?18:0)||
+    !p.components.some(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0'))
+  throw Error('MQ07 SC182–SC200 PLC canonical card changed: '+id);
+ if(wired){
+  if(p.components.filter(c=>c.typeId==='motor-3p').length!==1||
+     p.components.filter(c=>c.typeId==='coil-contactor').length!==1||
+     p.components.filter(c=>c.typeId==='push-no').length!==1||
+     p.components.filter(c=>c.typeId==='push-nc').length!==1)
+   throw Error('MQ07 PLC DOL hardware mismatch '+id);
+ }
+ lesson.summary=concept+' Gösterilen kartın gerçek bağlantı kapsamı sınırlıdır.';
+ lesson.explanation=concept+' '+limits+' Yalnız kaydedilmiş sanal bağlantı ve Node durumu incelenmiştir; fiziksel PLC veya şebeke uygunluğu doğrulanmamıştır.';
+ lesson.learningGoal=concept+' Kablolu örnek ile eksik PLC programı veya ürün referansını ayırt etmek.';
+ lesson.beginnerSteps=[
+  'PLC modelini ve mevcut fiziksel terminal etiketlerini kontrol et.',
+  'İşlev: '+concept,
+  limits,
+  'Kablo, program veya çalışma zamanı ölçümü yoksa elektriksel PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',mq07PlcScope:'SC182_SC200',
+  titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  plcAdvancedLogicAcceptance:false};
+}
+
 
 /* MQ07_SC172_SC181_MOTOR_SEQUENCE: preserve canonical DOL; disclose absent multiple motors and control. */
 const mq07SequenceScope172to181=[
