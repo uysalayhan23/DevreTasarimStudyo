@@ -6,9 +6,9 @@ test('SC13 contains an electrically functional SCR, not a diagram-only symbol',(
  assert.equal(lesson.kind,'wiring');
  assert.equal(lesson.project.wires.length,6);
  const scr=lesson.project.components.find(c=>c.id==='q1');
- assert.equal(scr.typeId,'mq07-scr-virtual');
+ assert.equal(scr.typeId,'tyn612rg-scr');
  assert.equal(defs[scr.typeId].kind,'scr');
- assert.deepEqual(defs[scr.typeId].pins.map(p=>p.id),['G','A','K']);
+ assert.deepEqual(Array.from(defs[scr.typeId].pins.map(p=>p.id)),['K','A','G']);
  assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
 });
 test('SC13 original native solver DC gate OFF and ON; open A path fails closed',()=>{
