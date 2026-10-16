@@ -6,7 +6,7 @@ const rows=[["01","NO_VFD_ARCHITECTURE_PARAMETER_EVIDENCE",["sinamics-v20-1p","m
 for(const [suffix,reason,types] of rows)test('SC'+(203+Number(suffix))+' VFD/servo reference acceptance is blocked',()=>{
  const lesson=L.byId['vfd-servo-control-src-'+suffix],p=lesson?.project;
  assert.ok(lesson);assert.equal(lesson.kind,'quiz');assert.equal(p.referenceOnly,true);assert.equal(p.wires.length,0);
- assert.deepEqual(p.components.map(c=>c.typeId),types);
+ assert.deepEqual(Array.from(p.components,c=>c.typeId),types);
  for(const type of types)assert.ok(defs[type],type+' catalog missing');
  assert.equal(lesson.pedagogyReview.titleTopologyIssue,reason);
  assert.equal(lesson.pedagogyReview.mq07DriveScope,'SC204_SC213');
