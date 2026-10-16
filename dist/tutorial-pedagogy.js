@@ -5132,6 +5132,47 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
  l.safety='Bu sanal eğitim kaydı, gerçek enerjili pano, motor, ölçüm, onarım veya röle güvenliği için uygulama talimatı veya cihaz kabulü değildir.';
 }
 
+
+/* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
+const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
+for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
+ const l=L.byId[id],old=l?.project;if(!l||!old)throw Error('MQ07 missing '+id);
+ if(id==='electronic-switching-outline-024'){
+  const golden=L.byId['electronic-switching-src-06']?.project;
+  if(l.kind!=='wiring'||old.wires.length!==8||golden?.wires.length!==12||
+     golden.components.find(c=>c.id==='c1')?.capacitance!==.001)
+   throw Error('MQ07 RC golden baseline changed');
+  const p=clone(golden);
+  p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'demo'};
+  l.project=p;
+  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Terminali incele.',
+   why:w.tutorialWhy||'RC/BJT yolu.',color:w.color,role:w.role,size:w.size}));
+  l.materials=materialRows(p);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ if(id==='electronic-switching-outline-026'||id==='electronic-switching-outline-027'){
+  if(l.kind!=='wiring'||old.wires.length!==8)throw Error('MQ07 BJT generic baseline changed '+id);
+  const parts=id.endsWith('-026')?
+   [['bd139-npn','BD139 NPN'],['potentiometer','Potansiyometre'],['resistor','Sınırlayıcı direnç']]:
+   [['bd139-npn','NPN Q1'],['bd139-npn','NPN Q2'],['resistor','Geri besleme kavramı']];
+  const p=board(id,l.title,parts);
+  p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'quiz'};
+  l.project=p;l.kind='quiz';l.steps=[];l.materials=materialRows(p);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ if(l.project.wires.length!==expectedWires||Boolean(l.project.referenceOnly)!==(expectedWires===0))
+  throw Error('MQ07 topology changed '+id);
+ l.summary=concept+' Kaynak kapsamı ayrıca belirtilmiştir.';
+ l.explanation=concept+' '+limit+' Gerçek donanım, üretici kabulü veya görsel Windows onayı değildir.';
+ l.learningGoal=concept+' Gösterilen materyal ve doğrulanmış davranış arasındaki farkı açıklamak.';
+ l.beginnerSteps=['Malzemeleri ve kabloları kaynak başlığıyla karşılaştır.',
+  'Kavram: '+concept,limit,'Dinamik iz veya ölçüm kanıtı olmadan PASS verme.'];
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07BjtRcScope:'SC252_SC265',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,nativeDynamicAcceptance:false,
+  physicalAcceptance:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal düşük gerilimli eğitim; fiziksel cihaz, ısı veya elektrik güvenlik kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
