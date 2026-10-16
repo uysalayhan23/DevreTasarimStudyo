@@ -1390,7 +1390,7 @@ function checkedLessonProject(l){
     !parts.some(c=>c.typeId==='resistor')||!(p.wires||[]).length))
    throw Error('Dersin gerçek LM358/R-C devresi bulunamadı; ilgisiz 4–20 mA projesi açılamaz.');
  if(id==='electronic-switching-src-16'&&
-   (!has('mq07-triac-virtual')||!(p.wires||[]).some(w=>w.to?.p==='MT2')))
+   (!has('bta16-600b-triac')||!(p.wires||[]).some(w=>w.to?.p==='MT2')))
    throw Error('Triyak dersi için gerçek MT1/MT2/G devresi bulunamadı; sıradan anahtar/lamba projesi açılamaz.');
  return p;
 }
