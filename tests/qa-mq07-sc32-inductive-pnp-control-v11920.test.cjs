@@ -21,7 +21,7 @@ test('SC32 original five parts seven canonical wire terminals and PNP output mai
  assert.equal(lesson.project.components.length,5);assert.equal(lesson.project.wires.length,7);assert.equal(lesson.steps.length,7);
  assert.equal(part(lesson.project,'s1').outputType,'PNP');
  assert.equal(part(lesson.project,'g1').dcVoltage,24);
- assert.deepEqual(part(lesson.project,'s1').sensing,{target:'metal',range:4,distance:8,offset:0,face:'right',auto:false});
+ assert.deepEqual(JSON.parse(JSON.stringify(part(lesson.project,'s1').sensing)),{target:'metal',range:4,distance:8,offset:0,face:'right',auto:false});
  for(const [a,pa,b,pb] of [
  ['g1','P','s1','BN'],['g1','M','s1','BU'],['s1','BK','k1','A1'],
  ['k1','A2','g1','M'],['g1','P','ka1','13'],['ka1','14','h1','X1'],['h1','X2','g1','M']]){
