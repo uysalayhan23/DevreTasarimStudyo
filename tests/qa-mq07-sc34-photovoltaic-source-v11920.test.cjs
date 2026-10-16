@@ -11,8 +11,8 @@ test('MQ-07 SC34 photovoltaic lesson uses solar product instead of unrelated sen
  assert.match(lesson.title,/güneş pili/i);
  assert.equal(lesson.kind,'quiz','No unverified wired PV solver should be claimed');
  assert.equal(lesson.project.referenceOnly,true);
- assert.equal(lesson.project.wires.length,0);
+ assert.equal(lesson.project.wires.length,2,'UNI-T probe plug leads must remain');
  const types=lesson.project.components.map(c=>c.typeId);
- assert.deepEqual(types,['tutorial-solar-cell','unit-ut33d-plus','resistor']);
+ assert.deepEqual(Array.from(types),['tutorial-solar-cell','unit-ut33d-plus','resistor','test-probe-red','test-probe-black']);
  for(const id of types)assert.ok(defs[id],`Catalog product missing: ${id}`);
 });
