@@ -2335,6 +2335,47 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+
+/* MQ07_SC83_SC97_LOGIC: truthful digital truth-table reference lessons; no fabricated wires. */
+const mq07LogicCases83to97=[
+ ['01','sn74hc08n','İki girişli VE kapısı; Y=A∧B.','A B → Y: 00→0, 01→0, 10→0, 11→1.','Yalnız iki giriş de 1 ise çıkış 1 olur.'],
+ ['02','sn74hc32n','İki girişli VEYA kapısı; Y=A∨B.','A B → Y: 00→0, 01→1, 10→1, 11→1.','Girişlerden en az biri 1 ise çıkış 1 olur.'],
+ ['03','sn74hc04n','DEĞİL evirici kapısı; Y=¬A.','A → Y: 0→1, 1→0.','Girişin lojik seviyesinin tersini üretir.'],
+ ['04','sn74hc125n','Üç durumlu BUFFER; çıkış etkinleştirmesi /OE aktiftir.','/OE=0 iken Y=A; /OE=1 iken Y=Z (yüksek empedans).','BUFFER yalnız etkinleştirildiğinde giriş seviyesini aktarır; Z lojik 0 değildir.'],
+ ['05','sn74hc00n','İki girişli VE-DEĞİL kapısı; Y=¬(A∧B).','A B → Y: 00→1, 01→1, 10→1, 11→0.','Yalnız iki giriş de 1 iken çıkış 0 olur.'],
+ ['06','sn74hc02n','İki girişli VEYA-DEĞİL kapısı; Y=¬(A∨B).','A B → Y: 00→1, 01→0, 10→0, 11→0.','Yalnız iki giriş de 0 iken çıkış 1 olur.'],
+ ['07','sn74hc86n','İki girişli özel VEYA kapısı; Y=A⊕B.','A B → Y: 00→0, 01→1, 10→1, 11→0.','Girişler birbirinden farklıysa çıkış 1 olur.'],
+ ['08','cd4077be','İki girişli özel VEYA-DEĞİL kapısı; Y=¬(A⊕B).','A B → Y: 00→1, 01→0, 10→0, 11→1.','Girişler aynıysa çıkış 1 olur.'],
+ ['09','sn74hc148n','Öncelikli 8→3 kodlayıcı; 74HC148 etkin girişleri ve kod çıkışları aktif düşüktür.','Birden fazla aktif giriş varsa daha yüksek öncelikli giriş kodlanır; kod doğrudan aktif-yüksek üç bit sanılamaz.','Etkinleştirme, öncelik ve aktif-düşük kutuplamayı ayrı yorumla.'],
+ ['10','sn74hc138n','3→8 kod çözücü; G1=1, /G2A=0 ve /G2B=0 iken seçilen tek Y hattı LOW olur.','S2 S1 S0 adresi 000→Y0 LOW, 111→Y7 LOW; diğer Y hatları HIGH.','Aktif-düşük çıkış ile lojik 1 seçili çıkışı karıştırma.'],
+ ['11','arduino-cd4511','CD4511 BCD→7 segment sürücü; uygun ortak katotlu gösterge için aktif-yüksek segment kontrolü üretir.','Geçerli BCD 0000→0, 0001→1, ... 1001→9; blank/latch/test işlevleri ayrı kontrol edilmelidir.','Gerçek segment direnci, ortak uç ve sürücü bağlantısı kartta kurulmamıştır.'],
+ ['12','sn74hc151n','74HC151 tipi 8→1 multiplexer; seçim girişleriyle sekiz veri girişinden biri seçilir.','S2 S1 S0=000→D0; 111→D7, izin/etkinleştirme ve ters çıkış uçları ayrıca kontrol edilir.','Multiplexer seçici; ayrı çoklu veri kaynağı ve çıkış bağlantısı olmadan aktarım simüle edilmez.'],
+ ['13','sn74hc138n','74HC138 ile aktif-düşük tek çıkış seçimi, demultiplexer öğretimi için ancak veri/izin kapılaması belirtilerek yorumlanabilir.','Adres 000 seçili Y0 LOW; 111 seçili Y7 LOW; gerçek 1→8 veri yönlendirme devresi kablolanmamıştır.','Kod çözücü ile veri yönlendiricinin farkını belirt; 74HC138 kendiliğinden 1→8 tam demux değildir.'],
+ ['14','cd74hc283e','74HC283 dört bit ikili toplayıcı; A[3:0]+B[3:0]+Cin → S[3:0], Cout.','Tek bit tam toplayıcıda S=A⊕B⊕Cin ve Cout=(A∧B)∨(Cin∧(A⊕B)).','Gösterilen entegre dört bitliktir; giriş/taşıma bağlantıları olmadan hesaplanmış çıktı iddia etme.'],
+ ['15','cd74hc85e','74HC85 dört bit büyüklük karşılaştırıcısı; A>B, A=B veya A<B ilişkisini üretir.','4 bit A=0101 ve B=0011 için A>B; eşit girişte A=B beklenir.','Kademeli karşılaştırma girişleri ve çıkış pinleri bağlanmadan ölçüm varmış gibi gösterme.']
+];
+for(const [suffix,chip,definition,table,point] of mq07LogicCases83to97){
+ const id='digital-logic-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='quiz'||(lesson.project?.wires||[]).length||
+    !lesson.project.components.some(c=>c.typeId===chip))
+   throw Error('MQ07 SC83–SC97 canonical digital reference mismatch '+id);
+ lesson.summary=definition+' Bu ders kablosuz bir referans kartıdır.';
+ lesson.explanation=definition+' '+table+' '+point+' Gerçek besleme, giriş, çıkış ve gösterge bağlantısı yapılmadığından bu bir elektriksel simülasyon sonucu değildir.';
+ lesson.learningGoal=definition+' '+point;
+ lesson.beginnerSteps=[
+  'Gösterilen entegreyi ve başlıktaki lojik işlevi eşleştir.',
+  'Kuramsal doğruluk/işlev ilişkisini incele: '+table,
+  point,
+  'Bu kartta gerçek kablo ve besleme yok; giriş değişimi veya donanım çalışması için PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
+
 /* MQ07_SC72_SC82_SCOPE: keep unwired reference lessons educationally truthful.
  * No virtual AC/RF/audio power output is synthesized by these cards.
  */
