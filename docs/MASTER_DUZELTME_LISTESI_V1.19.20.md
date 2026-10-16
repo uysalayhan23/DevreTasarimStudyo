@@ -2170,3 +2170,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-12` IR alıcı-verici sanal optik PNP + K1/H1: kaynakta 5 ürün / 7 kablo / 7 adım zaten işlevsel olduğundan genel simülatöre gereksiz değişiklik yapılmadı.
 - Gerçek 703 temel ürünlü kaynak, `CCSSensors`, `CCSComponents` ve orijinal `CCSSimulation` ile uzakta/yakında/40 mm sınırında algılama, plastik/sıvı hedef farkı, hizalama ve BN/BU/BK veya yük yolu kopukluğu **10/10 hedefli izole V8 PASS**. Canlı 80→2→75→10→80 mm yük OFF→ON→OFF→ON→OFF. Güncel 1.655 müfredatta SC11–SC30 koşulları korunur.
 - `tests/qa-mq07-sc31-ir-optical-pnp-v11920.test.cjs` Node tam katalog hedef testi ve `docs/MQ07_SC31_IR_OPTICAL_20261015.md` QA kanıtı eklendi. Tam Node, Windows `file:///`, iki ayrı fiziksel verici/alıcı, üretici optik ve yük güvenlik QA **NOT_RUN**: **MQ-00 REVIEW**. Actions kullanılmadı, `[skip ci]`. Sonraki `sensor-analog-apps-src-13` SC32.
+
+
+## 2026-10-16 MQ-07 SC32 INDUCTIVE SENSOR PNP
+
+- `sensor-analog-apps-src-13`: 5 katalog bileşeni / 7 terminal bağlantısı korunarak gerçek sanal endüktif metal hedefi etkinleştirildi. Hedef 8 mm başlangıç OFF, eğitim 4 mm sınırı, 2/4 mm ON, 5 mm OFF. Plastik hedef ve yanlış hizalama reddedilir.
+- Orijinal 949 kataloglu V8 elektriksel kaynakta 14/14 hedef bağımsız senaryo, aynı projede 8 adımlı canlı hedef hareketi ve tarihsel targetsız state fallback PASS. BN/BU/BK/k1A2/yük kopukluklarında güvenli OFF; yük kopuksa yalnız bobin ON.
+- 1.655 dersin yalnız SC32 kaydı değişti, SC11–SC31 korunur, fiziksel ürün menzili, tam Node/Windows QA ve gerçek akım kalibrasyonu NOT_RUN: **MQ-00 REVIEW**, physicalAcceptance=false. `docs/MQ07_SC32_INDUCTIVE_PNP_CONTROL_20261016.md`; `tests/qa-mq07-sc32-inductive-pnp-control-v11920.test.cjs`. Actions yok, `[skip ci]`. Sıradaki `sensor-analog-apps-src-14`.

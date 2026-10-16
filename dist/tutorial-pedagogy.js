@@ -4435,6 +4435,62 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız 24 VDC sanal karşılaştırıcı + dirençli yük öğretim devresi; üretici, fiziksel elektrik, ısı, EMC ve saha güvenliği kabulü yoktur.';
 }
 
+
+/* MQ-07 SC32: only the endüktif PNP sensor-control lesson. Native
+   Sensors.detect and CCSSimulation already model the relay and NO lamp;
+   this opt-in lesson defines a physically meaningful draggable metal target. */
+{
+ const id='sensor-analog-apps-src-13',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    !p.components.some(c=>c.id==='s1'&&c.typeId==='proximity')||
+    !p.components.some(c=>c.id==='g1'&&c.typeId==='arduino-bench-supply')||
+    !p.components.some(c=>c.id==='k1'&&c.typeId==='coil-relay')||
+    !p.components.some(c=>c.id==='ka1'&&c.typeId==='contact-no')||
+    !p.components.some(c=>c.id==='h1'&&c.typeId==='lamp-green'))
+    throw Error('MQ-07 SC32 original PNP sensor load graph changed');
+ const canonical=[
+  ['g1','P','s1','BN'],['g1','M','s1','BU'],
+  ['s1','BK','k1','A1'],['k1','A2','g1','M'],
+  ['g1','P','ka1','13'],['ka1','14','h1','X1'],['h1','X2','g1','M']
+ ];
+ if(!canonical.every(([a,ap,b,bp])=>p.wires.some(w=>
+    w.from?.c===a&&w.from.p===ap&&w.to?.c===b&&w.to.p===bp)))
+   throw Error('MQ-07 SC32 source pin order changed');
+ const s=p.components.find(c=>c.id==='s1'),g=p.components.find(c=>c.id==='g1');
+ if(s.sensing||s.outputType!=='PNP'||Number(g.dcVoltage)!==24)
+   throw Error('MQ-07 SC32 sensor baseline modified');
+ s.sensing={target:'metal',range:4,distance:8,offset:0,face:'right',auto:false};
+ s.state=false;
+ s.tutorialPurpose='Sanal indüktif metal hedefini sürükleyerek röle ve lambanın tepkisini incele. 4 mm eğitim eşiği üretici algılama mesafesi değildir.';
+ l.summary='24 VDC sanal sensör kumandası: B1 üç telli indüktif PNP sensör metal hedefi algıladığında BK çıkışından K1 röle bobinini sürer; K1 NO 13/14 kapanınca H1 yanar. Algılama mesafesi ve kablo bütünlüğü test edilir.';
+ l.explanation='Yalnız sanal 24 VDC eğitim devresidir: G1 P (+24 V) → B1 BN (kahverengi), G1 M (0 V) → B1 BU (mavi), B1 BK (PNP çıkış) → K1 A1 ve K1 A2 → G1 M. Yük kolu ayrıdır: G1 P → K1 13/14 normalde açık kontak → H1 X1/X2 → G1 M. B1 sanal indüktif sensör sadece metal hedefi algılar. Metal hedef başlangıçta 8 mm uzakta ve OFF; eğitim için varsayılan menzil 4 mm olarak gösterilir. Aynı hizada metal hedef 2 mm ya da 4 mm içeri çekildiğinde B1 algılar, PNP çıkış K1 bobinini enerjilendirir ve H1 yanar; 5 mm uzaklaştırınca röle ve lamba kapanır. Plastik hedef veya 8 mm sanal hizalama hatasında algılama yoktur. Besleme 0 V/12 V olursa, BN ya da BU koparsa algılama çıkışı enerjisiz kalır. BK koparsa sensör algılasa bile K1 bobini çalışmaz; NO kontak ve H1 kapanır. Yük kablosu koparsa sensör ve bobin algılamayı sürdürür ama H1 enerjilenmez. Bu dersin 4 mm algılama eşiği ve 6 mm hizalama toleransı gerçek üretici hassasiyeti, montaj açıklığı veya fiziksel ölçüm değildir. DC sanal yük rölesi ve lamba yalnız yazılımdaki sayısal elektrik modeliyle sınanır; fiziksel ürün seçimi ve gerçek enerjili bağlantı onayı verilmez.';
+ l.learningGoal='İndüktif metal algılaması → PNP BK → K1 A1/A2 bobini → K1 13/14 NO → H1 lamba zincirini ayırmak; sanal hedef uzaklığı, farklı hedef materyali ve kopuk telin sonuçlarını karşılaştırmak.';
+ l.beginnerSteps=[
+  'B1 sanal indüktif PNP sensörün BN, BU ve BK uçlarını tanımla.',
+  'G1 sanal 24 VDC beslemenin B1 BN ve BU üzerindeki farklı görevlerini ayırt et.',
+  'B1 BK çıkışının K1 A1 bobinine ve K1 A2 ucunun 0 V hattına gittiğini izle.',
+  'K1 13/14 normalde açık kontağın H1 yük güç kolundan ayrı olduğunu göster.',
+  'Sanal metal hedefi başlangıçtaki 8 mm konumundan 2 mm yakına getir, B1/K1/H1 değişimini gözle.',
+  'Hedefi 5 mm uzaklaştır veya plastik hedef seç; K1 ve H1 kapalı kalmalı.',
+  'Sanal BK kablosunu kaldır: B1 algılayabilir ancak K1 bobini ve H1 enerjisiz kalmalı.',
+  'Yalnız yazılımda kaynak/besleme/yük kablosu bağlantılarını kaldır; ON sanılan ama enerjisiz kalan kolu belirle.'
+ ];
+ l.quiz={question:'Sanal indüktif PNP sensör metal algıladığında BK telini kaldırırsan H1 ne olur?',
+  options:['B1 algılar, fakat K1 bobini beslenmez ve H1 sönük kalır.',
+   'K1 bobini otomatik olarak metalden bağımsız beslenir.',
+   'Plastik hedef metal gibi mutlaka algılanır.'],
+  answer:0,why:'B1 BK uçtaki sinyal K1 A1’e ancak gerçek sanal kablo yoluyla ulaşır.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  titleTopologyIssue:null,
+  titleTopologyStatus:'INDUCTIVE_PNP_SENSOR_RELAY_LAMP_SOURCE_ALIGNED',
+  mq07SensorControl:{target:'metal',virtualRangeMm:4,virtualAlignmentMm:6,
+   falseTargetRejected:true,isolatedNativeSolverScenariosPassed:14,
+   fullNodeSuiteExecuted:false,manufacturerDetectionRangeVerified:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Yalnız 24 VDC sanal sensör/röle/lamba modeli; fiziksel indüktif menzil ve gerçek devre güvenlik kabulü yoktur.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
