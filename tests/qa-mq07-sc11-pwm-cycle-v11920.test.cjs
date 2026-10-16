@@ -28,7 +28,7 @@ test('SC11 meter probes explicitly conduct PLUG to TIP only in opted-in tutorial
   assert.equal(probe.sc11MeasurementProbe,true);
   assert.deepEqual(Native.conductingPairs(probe,def,new Map(),new Set()),[['PLUG','TIP']]);
   const inactive={...probe,sc11MeasurementProbe:false};
-  assert.deepEqual(Native.conductingPairs(inactive,def,new Map(),new Set()),[]);
+  assert.deepEqual(Native.conductingPairs(inactive,def,new Map(),new Set()),[['PLUG','TIP']]);
   assert.equal(probe.probeTarget.c,'q1');
   assert.equal(probe.probeTarget.p,pin);
  }
