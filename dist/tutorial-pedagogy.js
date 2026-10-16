@@ -2335,6 +2335,47 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+/* MQ07_SC110_SC125_ARDUINO_SCOPE: source-grounded virtual lesson references, not working firmware. */
+const mq07ArduinoScope110to125=[
+ ['01','arduino-led','Dijital LED çıkışı: Arduino UNO dijital çıkışı, seri 220 Ω direnç üzerinden LED akımını sınırlar.','pinMode(çıkış, OUTPUT) ve digitalWrite(HIGH/LOW) kavramsal komutlardır; LED polaritesi, seri direnç ve ortak GND gerçek bağlantıda gerekir.'],
+ ['02','arduino-button','Buton girişi: digitalRead dijital giriş seviyesini okur.','INPUT_PULLUP seçildiğinde basılmayan düğme HIGH, GND’ye basılan düğme LOW okunur; mekanik sıçrama (debounce) ayrıca ele alınmalıdır.'],
+ ['03','arduino-ldr','LDR ile ışık algılama: ışıkla değişen direnç analog gerilim bölücüyle okunur.','LDR tek başına sabit bir dijital seviye üretmez; ek direnç, UNO analog girişi ve yazılımsal eşik gereklidir. LED çıkış yolu bu kartta bağlı değildir.'],
+ ['04','arduino-hcsr04','HC-SR04 mesafe algılama: TRIG darbesi başlatır, ECHO yüksek darbe süresi yankının gidiş-dönüş süresidir.','Yaklaşık mesafe = ses hızı × ECHO süresi / 2; buzzer kontrolü için eşik, GND ve yazılım gerekir; bu kartta mesafe ölçülmez.'],
+ ['05','adc0804lcn','Arduino UNO potansiyometre ADC: A0 üzerindeki gerilim, UNO dahili ADC ve analogRead ile örneklenir.','Varsayılan UNO 10-bit okuma 0–1023 aralığındadır; kartta görülen ADC0804 harici 8-bit entegredir ve UNO’nun dahili ADC birimi değildir. Vref ve bağlantı test edilmemiştir.'],
+ ['06','arduino-led','PWM ile LED: analogWrite uygun UNO PWM pininde darbe doluluk oranını değiştirir.','0–255 PWM değeri doğrudan sürekli analog gerilim veya ölçülmüş parlaklık değildir; ayrı LED ve dirençler gösterim amaçlıdır, bağlı değildir.'],
+ ['07','arduino-l298n','PWM ile DC motor: Arduino PWM sinyali L298N etkinleştirme girişine, yön sinyalleri sürücü kontrol girişlerine gider.','Motor akımı UNO pininden doğrudan sağlanmaz; ayrı uygun motor beslemesi, ortak GND ve gerçek sürücü bağlantısı gerekir; hız ölçülmemiştir.'],
+ ['08','arduino-servo-sg90','SG90 servo: komut açısı, servo denetim darbeleriyle belirlenir.','Servo için güç/GND/sinyal hatları gerekir; hedef açıyı göndermek gerçek mekanik açı ölçümü değildir ve bu kartta hareket simüle edilmez.'],
+ ['09','arduino-cd4511','CD4511 BCD→7 segment sürücüdür; dört bitlik kod çözülerek uygun ortak katotlu göstergede segmentler sürülür.','Segment akım sınırlama dirençleri, BCD girişleri, latch/blank/test uçları ve ortak uç bağlantısı kartta kurulmamıştır.'],
+ ['10','arduino-oled-i2c','I2C OLED: Arduino UNO R3 üzerinde SDA=A4, SCL=A5 kullanılır; ekran ayrıca besleme ve GND ister.','Kart OLED örneği gösterir, LCD1602 modülü değildir; görünen ayrı LED ve 220 Ω direnç OLED’in I2C veya arka aydınlatma bağlantısı değildir. I2C veri aktarımı yapılmamıştır.'],
+ ['11','arduino-dht11','DHT11 sıcaklık ve nem verisini tek dijital veri hattı üzerinden zamanlamalı protokolle iletir.','DHT11 normal I2C sensörü değildir; uygun besleme, GND ve modüle göre pull-up gerekir. Bu kartta gerçek sıcaklık/nem okuması bulunmaz.'],
+ ['12','arduino-hx711','Tartım: strain-gauge köprü yük hücresi çok küçük fark gerilimi üretir; HX711 bunu sayısallaştırır.','HX711 DT/SCK arayüzü, uygun köprü beslemesi, dara ve bilinen kütleyle kalibrasyon olmadan gerçek kilogram çıktısı doğrulanamaz.'],
+ ['13','arduino-rotary-encoder','KY-040 rotary enkoderin A/B faz dizisi dönüş yönü ve adım sayımına yardımcı olur.','Saat yönü/ters yön için A ve B kenar sırası izlenir, kontak sıçraması değerlendirilir; kartta gerçek sayma yoktur.'],
+ ['14','arduino-hc05','HC-05, Arduino UART TX/RX ile seri Bluetooth veri köprüsü oluşturabilir.','TX↔RX çapraz seri bağlantı, ortak GND ve modüle uygun RX lojik seviye koruması gereklidir. Eşleştirme veya gerçek kablosuz haberleşme simüle edilmez.'],
+ ['15','arduino-oled-i2c','I2C çevre birimi örneğinde UNO R3 SDA=A4, SCL=A5 ile OLED modülün SDA/SCL uçları eşleşir.','Çevre biriminin VCC ve GND bağlantısı, adres seçimi ve modüle uygun lojik seviyeler gerekir. Bu referans kartında I2C kabloları ve gerçek veri aktarımı yoktur.'],
+ ['16','arduino-lm35','LM35 analog sıcaklık sensörü yaklaşık 10 mV/°C ölçekli analog çıkış üretir.','UNO analog girişi bu gerilimi okur; seçilen ADC referansı ve eşik/histerezis mantığı olmadan tam sıcaklık veya çıkış durumu ölçümü yapılmış sayılmaz.']
+];
+for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
+ const id='microcontroller-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='quiz'||(lesson.project?.wires||[]).length||(suffix!=='15'&&!lesson.project.components.some(c=>c.typeId===chip)))
+   throw Error('MQ07 SC110–125 Arduino reference mismatch '+id);
+ if(suffix==='05'){
+   const external=lesson.project.components.find(c=>c.typeId==='adc0804lcn');
+   if(!external||external.label!=='UNO içindeki ADC işlevi')throw Error('SC114 unexpected ADC label');
+   external.label='ADC0804 — harici ADC (UNO dahili ADC değildir)';
+ }
+ if(suffix==='15'){
+   if(lesson.project.components.length!==1||lesson.project.components[0].typeId!=='arduino-uno')throw Error('SC124 I2C board baseline changed');
+   lesson.project.components.push({id:'pg1',typeId:'arduino-oled-i2c',x:350,y:170,rotation:0,ref:'X2',label:'I2C OLED çevre birimi',state:false,address:'',note:''});
+   lesson.pedagogyReview.componentIds=['arduino-uno','arduino-oled-i2c'];
+ }
+ lesson.summary=concept+' Bu ders kablosuz kavram ve ürün referansıdır.';
+ lesson.explanation=concept+' '+limitations+' Bu kartta gerçek kablo bağlantısı, çalışan Arduino programı veya ölçülmüş çıktı yoktur.';
+ lesson.learningGoal=concept+' '+limitations;
+ lesson.beginnerSteps=['Arduino UNO ve gerçek ürünün görevini karşılaştır.','İlgili pin/protokol kavramını oku: '+concept,limitations,'Gerçek kablo, program ve ölçüm kanıtı bulunmadan elektriksel PASS verme.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
+
 /* MQ07_SC98_SC109_SEQUENTIAL: exact IC behavior; these are not wired simulations. */
 const mq07SequentialReference98to109=[
  ['01','sn74hc00n','RS mandalı iki NAND kapısının çapraz geri beslemesiyle kurulur; karttaki SN74HC00N tek başına hazır bir flip-flop değildir.','Aktif-düşük /S,/R için 11→önceki Q korunur, 01→Q=1 (SET), 10→Q=0 (RESET), 00→yasak/belirsiz; besleme ve bağlantı kurulmamıştır.'],
