@@ -1386,7 +1386,7 @@ function checkedLessonProject(l){
  const p=cleanProject(l),id=l.id,parts=p.components||[];
  const has=t=>parts.some(c=>c.typeId===t);
  if((id==='opamp-apps-src-13'||id==='opamp-apps-src-14')&&
-   (!has('lm358p-opamp-a')||!has('capacitor')||
+   (!has('lm358p-dip8')||!has('capacitor')||
     !parts.some(c=>c.typeId==='resistor')||!(p.wires||[]).length))
    throw Error('Dersin gerçek LM358/R-C devresi bulunamadı; ilgisiz 4–20 mA projesi açılamaz.');
  if(id==='electronic-switching-src-16'&&
