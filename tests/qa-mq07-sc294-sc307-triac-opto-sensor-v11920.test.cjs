@@ -27,7 +27,7 @@ test('SC297 DC and SC298 AC references remain distinct, no false dimmer acceptan
 });
 test('SC299–303 have relevant opto family rather than power-triac-only cards',()=>{
  const parts=id=>L.byId[id].project.components.map(c=>c.typeId);
- for(const n of [56,57,58,59])assert.ok(parts('electronic-switching-outline-'+n).includes('arduino-tlp521-1'));
+ for(const n of [56,57,58,59])assert.ok(parts('electronic-switching-outline-'+String(n).padStart(3,'0')).includes('arduino-tlp521-1'));
  assert.ok(parts('electronic-switching-outline-060').includes('moc3021-opto-triac'));
  assert.ok(parts('electronic-switching-outline-060').includes('virtual-opto-flasher-timer-v1'));
 });
