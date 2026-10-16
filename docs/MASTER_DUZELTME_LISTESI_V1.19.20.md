@@ -2177,3 +2177,10 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - `sensor-analog-apps-src-13`: 5 katalog bileşeni / 7 terminal bağlantısı korunarak gerçek sanal endüktif metal hedefi etkinleştirildi. Hedef 8 mm başlangıç OFF, eğitim 4 mm sınırı, 2/4 mm ON, 5 mm OFF. Plastik hedef ve yanlış hizalama reddedilir.
 - Orijinal 949 kataloglu V8 elektriksel kaynakta 14/14 hedef bağımsız senaryo, aynı projede 8 adımlı canlı hedef hareketi ve tarihsel targetsız state fallback PASS. BN/BU/BK/k1A2/yük kopukluklarında güvenli OFF; yük kopuksa yalnız bobin ON.
 - 1.655 dersin yalnız SC32 kaydı değişti, SC11–SC31 korunur, fiziksel ürün menzili, tam Node/Windows QA ve gerçek akım kalibrasyonu NOT_RUN: **MQ-00 REVIEW**, physicalAcceptance=false. `docs/MQ07_SC32_INDUCTIVE_PNP_CONTROL_20261016.md`; `tests/qa-mq07-sc32-inductive-pnp-control-v11920.test.cjs`. Actions yok, `[skip ci]`. Sıradaki `sensor-analog-apps-src-14`.
+
+
+## 2026-10-16 MQ-07 SC33 IR RECEIVER OPTICAL
+
+- `sensor-analog-apps-src-14` B1 optik PNP sanal hedefi 80 mm OFF / 40 mm ve yakın ON, 6 mm sanal hizalama; 5 mevcut katalog ürünü / 7 kablo / 7 adım aynen korunur. Optik algılama → PNP BK → K1 A1/A2 → K1 NO 13/14 → H1 ayrı sürücü/yük zinciri kaynakla sınandı.
+- 949 ürünlü gerçek kaynak V8 elektriksel izole denetiminde uzak/yakın ve sınır durumları, hedef uyumu, sensör/bobin/lamba kopuklukları, 0/12 V kaynak **13/13 PASS**. 1.655 dersin yalnız SC33 içeriği değişti; SC11–SC32 ve teknik kilitler korunur.
+- Ayrı fiziksel IR verici/alıcı, PNP/bobin gerçek yük akımı, donanım kalibrasyonu, tam Node/Windows QA **NOT_RUN — MQ-00 REVIEW**, physicalAcceptance=false. Actions yok, `[skip ci]`. Kanıt `docs/MQ07_SC33_IR_RECEIVER_PNP_RELAY_20261016.md`; Node hedefi `tests/qa-mq07-sc33-ir-receiver-pnp-v11920.test.cjs`. Sıradaki `sensor-analog-apps-src-15` güneş pili.

@@ -4491,6 +4491,58 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız 24 VDC sanal sensör/röle/lamba modeli; fiziksel indüktif menzil ve gerçek devre güvenlik kabulü yoktur.';
 }
 
+
+/* MQ-07 SC33: only source-14 IR virtual target and measured PNP K1/H1 chain. */
+{
+ const id='sensor-analog-apps-src-14',l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+   l.pedagogyReview?.titleTopologyStatus!=='SOURCE_ALIGNED')
+  throw Error('MQ07 SC33 original IR circuit changed');
+ const items=[['g1','arduino-bench-supply'],['s1','sensor-through-beam'],
+  ['k1','coil-relay'],['ka1','contact-no'],['h1','lamp-green']];
+ const paths=[['g1','P','s1','BN'],['g1','M','s1','BU'],
+  ['s1','BK','k1','A1'],['k1','A2','g1','M'],['g1','P','ka1','13'],
+  ['ka1','14','h1','X1'],['h1','X2','g1','M']];
+ if(items.some(([cid,t])=>!p.components.some(c=>c.id===cid&&c.typeId===t))||
+   paths.some(([a,ap,b,bp])=>!p.wires.some(w=>w.from?.c===a&&
+     w.from.p===ap&&w.to?.c===b&&w.to.p===bp)))
+  throw Error('MQ07 SC33 protected pin route changed');
+ const supply=p.components.find(c=>c.id==='g1'),sensor=p.components.find(c=>c.id==='s1');
+ if(supply.dcVoltage!==24||sensor.outputType!=='PNP'||sensor.sensing)
+  throw Error('MQ07 SC33 source settings changed');
+ sensor.state=false;
+ sensor.sensing={target:'plastic',range:40,distance:80,offset:0,face:'right',auto:false};
+ sensor.tutorialPurpose='Tek sanal IR optik sensör: 80 mm uzakta OFF, 40 mm ve yakında PNP BK ON; fiziksel ayrı verici/alıcı veya üretici mesafe onayı değildir.';
+ l.summary='Sanal IR alıcıyla optik hedef algılama ve yük kontrolü: B1 plastik hedefi 40 mm içinde algılayınca 24 V PNP BK çıkışı K1 bobinini çalıştırır; K1/13–14 normalde açık kontaktan H1 lamba yanar. Uzak hedefte yük OFF kalır.';
+ l.explanation='Sadece 24 VDC YAZILIM SİMÜLASYONU: B1, ayrı fiziksel IR verici ve alıcı çiftinin optik hedef algılama işlevini tek sanal modelde temsil eder; taşıyıcı frekansı ve gerçek optik demodülasyon modellenmez. Plastik sanal hedef başlangıçta 80 mm dışarıdadır. Eğitim amaçlı sanal 40 mm algılama menzilinin içinde ve sanal 6 mm hizalama toleransıyla hedef algılanır; bunlar gerçek üretici değerleri değildir. G1 24 VDC P/M uçları sensörün BN pozitif besleme ve BU sıfır volt dönüş hatlarına gider. B1/BK, PNP modelin anahtarlamalı dijital çıkışıdır. BK üzerinden K1/A1 beslenir, K1/A2 sıfır volta döner; röle çekince K1/13–14 NO kontak kapanır. Ayrı H1 yük kolu G1/P → K1/13 → K1/14 → H1/X1 → H1/X2 → G1/M yolundan enerji alır. Hedef 41 veya 80 mm uzaklaşınca röle ve lamba OFF kalır. B1 BN/BU kablosu kopuksa optik hedef görülse bile elektriksel PNP çıkış çalışmaz. BK kopuksa sensör algılar ama K1 ve H1 OFF kalır; bobin A2 kopuksa röle çekmez; H1 X2 kopuksa bobin çekebilir ama lamba OFF kalır. Yalnız sanal 24 V besleme geçerlidir, 0/12 V kaynağı hata senaryosudur. Burada ayrı bir güç transistörü yoktur; PNP çıkışı doğrudan sanal röleyi sürer. Gerçek sensör çıkış akımı, bobin akımı, bobin koruması, optik verici-alıcı ayrımı ve kalibrasyon fiziksel kabul görmemiştir; gerçek donanım kurulum yönergesi değildir.';
+ l.learningGoal='Sanal optik plastik hedef için 80→2→80 mm OFF→ON→OFF durumunu takip etmek, PNP sensör BK çıkışı, K1 bobini, 13–14 NO kontak ve H1 yük akım yolunu ayrı ayrı tanımlamak.';
+ l.beginnerSteps=[
+  'Sanal G1 24 VDC kaynağı ve B1 BN/BU sensör besleme uçlarını tanı.',
+  'B1 plastik sanal hedefi 80 mm uzakta tut: sensör, bobin ve lamba OFF.',
+  'Hedefi 2 mm yaklaştır: B1/BK PNP çıkışı ve K1/A1 bobini ON olur; K1/13–14 kapanır ve H1 yanar.',
+  'Hedefi 40 mm sınırına getir: ON; sonra 41 mm uzakta: OFF.',
+  'Uyumsuz sıvı hedefini veya 7 mm yanal kaymayı dene: algılama OFF.',
+  'Yalnız sanal şemada BN veya BU hattını çıkar: sensör çıkışı ve yük OFF.',
+  'BK hattını çıkar: sensör optik olarak algılasa bile K1 ve H1 OFF.',
+  'H1 X2 yük dönüşünü çıkar: K1 ON olabilir ama H1 OFF.',
+  'Gerçek PNP akım sınırı, bobin bastırma ve fiziksel optik kalibrasyonun bu deneyde yapılmadığını açıkla.'
+ ];
+ l.quiz={question:'B1 optik hedefi algıladığı sırada PNP BK ile K1 A1 arası koparsa ne olur?',
+  options:['B1 algılayabilir fakat K1 bobini ve H1 lamba OFF kalır.',
+   'H1 kesinlikle ON kalır; bobin bağlantısı gerekmez.',
+   'B1 gerçek şebeke gerilimi üretir.'],
+  answer:0,why:'Algılama, röle bobini sürme ve NO yük kontağı üç ayrı neden-sonuç aşamasıdır.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  titleTopologyIssue:null,titleTopologyStatus:'IR_RECEIVER_OPTICAL_PNP_RELAY_SOURCE_ALIGNED',
+  mq07IrReceiver:{virtualTarget:'plastic',virtualRangeMm:40,virtualAlignmentMm:6,
+   isolatedSolverScenariosPassed:13,relayDriver:'virtual-direct-PNP',
+   physicalOpticalCalibrationVerified:false,manufacturerCurrentLimitVerified:false,
+   fullNodeSuiteExecuted:false,windowsVisualAcceptance:false},
+  physicalAcceptance:false,manufacturerCalibrationVerified:false,
+  independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
+ l.safety='Sadece sanal 24 VDC optik PNP röle deneyi; fiziksel IR alıcı-verici, bobin koruma ve gerçek cihaz güvenliği onaylı değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
