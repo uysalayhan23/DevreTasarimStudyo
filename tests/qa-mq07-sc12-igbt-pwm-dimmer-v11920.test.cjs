@@ -13,7 +13,7 @@ test('SC12 contains IGBT, standalone electrical PWM and real DC load, not S1',()
  assert.equal(comp(lesson.project,'q1').typeId,'fga25n120antd-igbt');
  assert.equal(comp(lesson.project,'h1').typeId,'standard-light');
  assert.equal(comp(lesson.project,'sw'),undefined);
- assert.deepEqual(defs['fga25n120antd-igbt'].pins.map(p=>p.id),['G','C','E']);
+ assert.deepEqual(Array.from(defs['fga25n120antd-igbt'].pins.map(p=>p.id)),['G','C','E']);
  const names=lesson.project.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p);
  for(const edge of ['g1/P>pwm1/V+','pwm1/GND>g1/M','pwm1/OUT>rg/1','rg/2>q1/G','q1/E>g1/M','g1/P>h1/X1','h1/X2>q1/C'])assert.ok(names.includes(edge),edge);
  assert.equal(lesson.pedagogyReview.igbtVirtual.realAcDimmer,false);
