@@ -2334,6 +2334,40 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+
+/* MQ07_SC172_SC181_MOTOR_SEQUENCE: preserve canonical DOL; disclose absent multiple motors and control. */
+const mq07SequenceScope172to181=[
+ ['01','MISSING_SECOND_MOTOR_SEQUENCING','İki motor sıralı kumandası M1/M2, K1/K2 ve ikinci motoru başlatan koşul gerektirir.','Kaydedilmiş devre tek motorlu START–mühürleme–STOP devresidir; ikinci motor veya sıra yoktur.'],
+ ['02','MISSING_PERIODIC_TWO_MOTOR_CYCLE','İki motorun periyodik çalışması ayrı motor yolları ve zamanlama/sayma döngüsü gerektirir.','Yalnız tek motor ve tek kontaktör vardır; iki motor veya periyodik timer bulunmaz.'],
+ ['03','MISSING_REVERSE_DELAYED_SEQUENCE','Bir motor ileri, ikinci motor ters zamanlı çalışacaksa iki motor, yön kumandası ve zaman koşulları gerekir.','Tek motorlu DOL örneğinde ikinci motor, yön değiştirme ve zamanlayıcı yoktur.'],
+ ['04','MISSING_DUAL_OVERLOAD_CHAIN','İki motorun ortak aşırı akım duruşu ayrı termik rölelerin NC kontakları ve iki motor çıkışı gerektirir.','Tek motorlu devrede M2 ve M1/M2 termikleri bulunmadığından aşırı akım ortak STOP testi yoktur.'],
+ ['05','MISSING_LIMIT_REVERSE_CONTINUOUS','Sınır anahtarlı ileri/geri hareket iki yön kontaktörü, kilitleme ve uç konum bilgisi gerektirir.','Kayıtlı tek kontaktörde ileri/geri değişimi veya limit switch yoktur.'],
+ ['06','MISSING_TIMED_FORWARD_REVERSE','Zaman ayarlı ileri/geri çalıştırma yön kontaktörleri, timer ve karşılıklı kilit gerektirir.','Kaydedilen DOL motor devresinde ikinci yön kontaktörü veya zamanlayıcı yoktur.'],
+ ['07','UNSPECIFIED_MOTOR_PROBLEM_1','Üç fazlı motor problem tasarımı ölçülebilir özel problem koşulları üzerinden sınanmalıdır.','Bu kart yalnız standart tek motor mühürlemeli DOL içerir; problem-1 özel koşulları doğrulanmadı.'],
+ ['08','UNSPECIFIED_MOTOR_PROBLEM_2','İkinci motor tasarım problemi ilkinden farklı şartlar ve ayrı doğrulama gerektirir.','Problem-1 ile aynı DOL devresi açılır; problem-2 farkı veya özel test sonucu yoktur.'],
+ ['09','MISSING_INDEPENDENT_TWO_MOTOR_CONTROL','İki motorun isteğe bağlı kumandasında ayrı motor, kontaktör ve seçim kontrolü gerekir.','Kaydedilmiş devrede tek motor, tek kontaktör ve tek START vardır; ikinci motor seçimi yoktur.'],
+ ['10','MISSING_CONVEYOR_CONDITIONAL_SEQUENCE','Konveyörde koşullu motor sırası iki motor ve algılayıcıdan kontrol edilen başlatma şartı gerektirir.','Tek motorlu DOL devresinde ikinci konveyör motoru, koşul sensörü ve sıralama lojik yolu yoktur.']
+];
+for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
+ const id='motor-sequence-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='wiring'||lesson.project?.wires?.length!==13||
+    lesson.project.components.filter(c=>c.typeId==='motor-3p').length!==1||
+    lesson.project.components.filter(c=>c.typeId==='coil-contactor').length!==1)
+  throw Error('MQ07 SC172–181 original topology changed: '+id);
+ lesson.summary=concept+' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.';
+ lesson.explanation=concept+' '+limitation+' Node ile tek motorun START/hold/STOP davranışı sınanır; çok motorlu veya fiziksel çalışma kabul edilmemiştir.';
+ lesson.learningGoal=concept+' Başlıktaki şartları çizilmiş motor, kontaktör ve kumanda kablolarıyla karşılaştırmak.';
+ lesson.beginnerSteps=[
+  'Ekrandaki motorları ve ayrı kontaktörleri say.',
+  'START, mühürleme ve STOP tepkilerini sanal Node çözümünde karşılaştır.',
+  limitation,
+  'Eksik ikinci motor, timer, limit ya da termik röle işlevlerine elektriksel PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC172_SC181',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,multiMotorAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC164_SC171_SPECIAL_MOTOR: documented mismatch only; canonical physical graph remains unchanged. */
 const mq07SpecialMotorScope164to171=[
  ['01','MISSING_SINGLE_PHASE_AUX_WINDING','Tek faz yardımcı sargılı asenkron motorda ana ve yardımcı sargılar ayrı uçlara bağlanır; yol verme yöntemi kapasitör/anahtar türüne bağlıdır.','Görünen devre 3 Faz + N + PE beslemeli, U/V/W uçlu motor-3p ileri/geri kontaktör devresidir; ana/yardımcı sargı uçları veya kapasitör/kalkış anahtarı gösterilmez.'],
@@ -3561,14 +3595,14 @@ for(const spec of [
   W('g1','P','sg','13','G1/P → SG/13','Sanal gate komut başlangıcı.'),
   W('sg','14','rg','1','SG/14 → RG/1','Gate butonu RG girişini besler.'),
   W('rg','2','q1','G','RG/2 → Q1/G','Tetikleme yolu gate terminalinde biter.'),
-  W('g1','P','sp','21','G1/P → SP/11','Güç kolunda ayrı bir durdurma kontrolü.'),
-  W('sp','22','h1','X1','SP/12 → H1/X1','STOP açıkken güç kaynağı yükten ayrılır.'),
+  W('g1','P','sp','21','G1/P → SP/21','Güç kolunda ayrı bir durdurma kontrolü.'),
+  W('sp','22','h1','X1','SP/22 → H1/X1','STOP açıkken güç kaynağı yükten ayrılır.'),
   W('h1','X2','q1','A','H1/X2 → Q1/A','Yük akımı anot terminaline yönlenir.'),
   W('q1','K','g1','M','Q1/K → G1/M','Sanal katot dönüş referansı.')
  );
  setLesson(l,p,{kind:'wiring',
   summary:'SCR DC durdurma deneyi: kısa gate tetiklemesinden sonra SG bırakıldığında iletim sürer; SP STOP anot akımını kesince SCR kapanır ve kendiliğinden yeniden başlamaz.',
-  explanation:'AMAÇ: DC tristörün gate bırakıldığında neden açık kalabildiğini, ancak anot akımı kesildiğinde neden durduğunu gözlemlemek. MALZEMELER: G1 düşük gerilimli sanal kaynak; SG normalde açık kısa gate tetikleme butonu; RG 1 kΩ; SP normalde kapalı STOP butonu; Q1 TYN612RG SCR ve H1 dirençli gösterge yükü. KUMANDA: G1/P → SG/13–14 → RG/1–2 → Q1/G; Q1/K → G1/M. GÜÇ: G1/P → SP/11–12 → H1/X1–X2 → Q1/A → Q1/K → G1/M. SANAL ÇALIŞMA: Başlangıçta SG OFF, SP kapalı ve H1 OFF. SG kısa süre basıldığında Q1 gate-katot gerilimi sayısal çözülür; anot akımı sanal tutma eşiğini karşılayınca SCR latch olur ve H1 yanar. SG bırakıldığında gate sinyali kesilir, fakat anot akımı devam ettiği için H1 yanmaya devam eder. SP basıldığında güç akımı kesilir ve SCR latch bırakır; SP bırakılıp güç yolu yeniden kapansa bile SG tekrar tetiklenmeden H1 yanmaz. SG STOP sırasında hâlâ basılı tutulursa SP bırakıldığı anda yeni gate komutuyla yeniden tetiklenmesi mümkündür; önce SG bırakılmalıdır. Gate hattının tek başına ayrılması latched SCR yi durdurmaz. Elektriksel model yalnız eğitim amaçlıdır: gerçek tetikleme akımı, tutma akımı eğrisi, sıcaklık, transient ve üretici kalibrasyonu doğrulanmış değildir.'});
+  explanation:'AMAÇ: DC tristörün gate bırakıldığında neden açık kalabildiğini, ancak anot akımı kesildiğinde neden durduğunu gözlemlemek. MALZEMELER: G1 düşük gerilimli sanal kaynak; SG normalde açık kısa gate tetikleme butonu; RG 1 kΩ; SP normalde kapalı STOP butonu; Q1 TYN612RG SCR ve H1 dirençli gösterge yükü. KUMANDA: G1/P → SG/13–14 → RG/1–2 → Q1/G; Q1/K → G1/M. GÜÇ: G1/P → SP/21–22 → H1/X1–X2 → Q1/A → Q1/K → G1/M. SANAL ÇALIŞMA: Başlangıçta SG OFF, SP kapalı ve H1 OFF. SG kısa süre basıldığında Q1 gate-katot gerilimi sayısal çözülür; anot akımı sanal tutma eşiğini karşılayınca SCR latch olur ve H1 yanar. SG bırakıldığında gate sinyali kesilir, fakat anot akımı devam ettiği için H1 yanmaya devam eder. SP basıldığında güç akımı kesilir ve SCR latch bırakır; SP bırakılıp güç yolu yeniden kapansa bile SG tekrar tetiklenmeden H1 yanmaz. SG STOP sırasında hâlâ basılı tutulursa SP bırakıldığı anda yeni gate komutuyla yeniden tetiklenmesi mümkündür; önce SG bırakılmalıdır. Gate hattının tek başına ayrılması latched SCR yi durdurmaz. Elektriksel model yalnız eğitim amaçlıdır: gerçek tetikleme akımı, tutma akımı eğrisi, sıcaklık, transient ve üretici kalibrasyonu doğrulanmış değildir.'});
  l.materials=materialRows(p);
  l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',titleTopologyIssue:null,
   titleTopologyStatus:'DC_SCR_LATCH_ANODE_STOP_RETRIGGER_REQUIRED',
@@ -3603,14 +3637,14 @@ for(const spec of [
   W('g1','P','sg','13','G1/P → SG/13','Gate tetiklemesinin sanal pozitif kaynağı.','#e53935','+24V'),
   W('sg','14','rg','1','SG/14 → RG/1','Tetikleme butonu üzerinden 1 kΩ sınırlama.','#8b5cf6','SIGNAL'),
   W('rg','2','q1','G','RG/2 → Q1/G','BTA16 G tetikleme terminali.','#8b5cf6','SIGNAL'),
-  W('g1','P','sp','21','G1/P → SP/11','MT2 yük akımını kesen STOP kolunun beslemesi.','#e53935','+24V'),
-  W('sp','22','h1','X1','SP/12 → H1/X1','Normalde kapalı STOP ve lamba seri güç yoludur.','#8b5cf6','CONTROL'),
+  W('g1','P','sp','21','G1/P → SP/21','MT2 yük akımını kesen STOP kolunun beslemesi.','#e53935','+24V'),
+  W('sp','22','h1','X1','SP/22 → H1/X1','Normalde kapalı STOP ve lamba seri güç yoludur.','#8b5cf6','CONTROL'),
   W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','BTA16 gerçek isimli MT2 güç ucu.','#8b5cf6','LOAD'),
   W('q1','MT1','g1','M','Q1/MT1 → G1/M','MT1 ve gate için ortak DC eksi referansı.','#111827','0V')
  );
  setLesson(l,p,{kind:'wiring',
   summary:'ST BTA16 MT1/MT2/G ile 12 V sanal DC tetikleme: SG gate darbesiyle aç, gate bırakınca akımı koru, SP STOP ile güç akımını kes.',
-  explanation:'AMAÇ: BTA16 triyakın DC ortamında doğal sıfır geçişi olmadığını ve ana akım devam ederken gate bırakmanın iletimi durdurmayacağını gözlemlemek. MALZEMELER: 12 V sanal DC G1, SG normalde açık gate tetikleme, 1 kΩ RG, SP normalde kapalı STOP, ST BTA16-600B MT1/MT2/G ürün kaydı, sanal H1 120 Ω yük. KUMANDA: G1/P → SG/13–14 → RG/1–2 → Q1/G. GÜÇ: G1/P → SP/11–12 → H1/X1–X2 → Q1/MT2 → Q1/MT1 → G1/M. Başlangıçta SG bırakılmış ve H1 OFF olur. SG kısa süre tetiklendiğinde gate-MT1 farkı sayısal ağ üzerinden hesaplanır, akım sanal tutma eşiğinin üzerine çıkarsa triyak latch olur; SG bırakıldığında H1 yanmaya devam eder. SP STOP açılınca yük akımı kesilir ve latch düşer; SP tekrar kapatılsa bile yeni SG darbesi gelmeden H1 yanmaz. SG hâlâ basılı tutuluyorsa STOP bırakılır bırakılmaz yeniden tetiklenebilir. Yalnız DC sanal eğitim modelidir: çift yönlü AC faz, fiziksel BTA16 tutma/gate akımı, sıcaklık ve gerçek donanım güvenliği doğrulanmış değildir.'
+  explanation:'AMAÇ: BTA16 triyakın DC ortamında doğal sıfır geçişi olmadığını ve ana akım devam ederken gate bırakmanın iletimi durdurmayacağını gözlemlemek. MALZEMELER: 12 V sanal DC G1, SG normalde açık gate tetikleme, 1 kΩ RG, SP normalde kapalı STOP, ST BTA16-600B MT1/MT2/G ürün kaydı, sanal H1 120 Ω yük. KUMANDA: G1/P → SG/13–14 → RG/1–2 → Q1/G. GÜÇ: G1/P → SP/21–22 → H1/X1–X2 → Q1/MT2 → Q1/MT1 → G1/M. Başlangıçta SG bırakılmış ve H1 OFF olur. SG kısa süre tetiklendiğinde gate-MT1 farkı sayısal ağ üzerinden hesaplanır, akım sanal tutma eşiğinin üzerine çıkarsa triyak latch olur; SG bırakıldığında H1 yanmaya devam eder. SP STOP açılınca yük akımı kesilir ve latch düşer; SP tekrar kapatılsa bile yeni SG darbesi gelmeden H1 yanmaz. SG hâlâ basılı tutuluyorsa STOP bırakılır bırakılmaz yeniden tetiklenebilir. Yalnız DC sanal eğitim modelidir: çift yönlü AC faz, fiziksel BTA16 tutma/gate akımı, sıcaklık ve gerçek donanım güvenliği doğrulanmış değildir.'
  });
  l.materials=materialRows(p);
  l.learningGoal='DC triyak tetiklemesini, tutma akımını ve güç kesme ile durdurmayı birbirinden ayırt etmek; AC çift yönlü iletimi DC sonuçlarına dayanarak iddia etmemek.';
