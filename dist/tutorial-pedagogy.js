@@ -2335,6 +2335,48 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+/* MQ07_SC126_SC143_MOTOR: no replacement of canonical project wires or products.
+ * Distinguish a shared DOL sample from a working lesson-specific function.
+ * A stable numerical result does not prove physical safety or title coverage. */
+const mq07MotorScope126to143=[
+ ['01','DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','Motor etiketi için anma gerilimi, güç, frekans, yıldız/üçgen tanımı ve altı uçlu klemens kutusu gerekir.','Ekrandaki gerçek devre STOP/START/kontaktör ve U/V/W uçlu üç faz motoruyla doğrudan yol verme örneğidir; motor etiketi veya altı uçlu klemens şeması değildir.'],
+ ['02','MISSING_SIX_TERMINAL_STAR_DELTA','Yıldız bağlantıda U2/V2/W2 ortak, üçgende sargı uçları çapraz köprülenir; etiket gerilimi bağlantıyı belirler.','Bu kartta yalnız U/V/W uçlu motor ve DOL kontaktör vardır; U1/V1/W1/U2/V2/W2 klemensleri ve köprüleri bulunmaz.'],
+ ['03','MISSING_PHASE_SEQUENCE_CHANGE','Üç faz motorun yönü, uygulanan faz sırasının değişmesine bağlıdır.','Burada fazları yer değiştiren yön kontrol yolu yoktur: tek kontaktörlü DOL örneği aynı faz sırasını korur.'],
+ ['04',null,'Kesik çalıştırmada START basılıyken bobin ve motor etkin, START bırakıldığında her ikisi pasif olmalıdır.','Sanal devrede mühürleme kontağı bulunmaz; gerçek Node START bas/bırak testiyle davranış sınanır.'],
+ ['05',null,'Sürekli çalıştırmada START geçici basıldıktan sonra mühürleme yardımcı kontağı bobini enerjili tutar; STOP bu durumu sıfırlar.','Bu örnek START, STOP ve hold yardımcı kontağıyla DOL mühürleme davranışını gösterir; gerçek motor koruma donanımı kapsam dışında kalır.'],
+ ['06','MISSING_JOG_RUN_SELECTOR','Kesik/sürekli kip seçimi için mühürlemeyi devreye alan veya atlayan ayrı kip kumandası gerekir.','Kartta yalnız mühürlemeli DOL devresi vardır; kesik çalışma için gerekli mod seçimi ve bypass yolu yoktur.'],
+ ['07','MISSING_SECOND_CONTROL_STATION','Birden fazla kumanda merkezinde START komutları uygun paralel, STOP komutları güvenli seri kontrol mantığında birleştirilir.','Kartta ikinci merkez/ikinci START/STOP bileşenleri yoktur; yalnız tek merkezli DOL gösterilir.'],
+ ['08','MISSING_PACKAGE_SWITCH','Paket şalter ile kontrol, şalterin ayrı kontak ve anahtarlama durumlarını gerektirir.','Kartta paket şalter bulunmaz; START/STOP ve kontaktörlü DOL örneği gösterilir.'],
+ ['09','MISSING_ON_DELAY_RELAY','Düz zaman rölesinin zamanlama ve kontak davranışı, seçilen gecikme ve bağlantıya göre sınanmalıdır.','Bu devrede zaman rölesi veya gecikmeli kontak yoktur; DOL START/STOP örneği zaman ayarlı durdurma kanıtı değildir.'],
+ ['10','MISSING_OFF_DELAY_RELAY','Ters zaman/gecikmeli bırakma için ayrı zamanlayıcı/kontak davranışı ve durdurma dizisi gerekir.','Kartta zaman rölesi ve zaman gecikmeli bırakma yolu yoktur; DOL devresinin anlık STOP sonucu gecikme kanıtı değildir.'],
+ ['11','MISSING_SPEED_CONTROL','İki yönlü motor kumandasında çapraz kilitleme ve iki sınır NC kontağı bulunur.','Kart ileri/geri kontaktörlerinin yön ve sınır durdurma mantığını gösterir; farklı motor devir hızı/tek başına otomatik ters dönüş kanıtlanmaz.'],
+ ['12','MISSING_SINGLE_BUTTON_TOGGLE','Tek butonla aç/kapa hafıza veya darbe rölesi gibi durum saklayan mantık gerektirir.','Kartta ayrı START ve STOP butonları bulunur; tek butonlu toggle devresi değildir.'],
+ ['13','MISSING_PROTECTION_RELAY','Koruma rölesiyle motor çalıştırmada gerçek koruma algısı ve açtırma kontak yolu doğrulanmalıdır.','Bu kartta ayrı koruma rölesi yer almaz; yalnız kontaktörlü DOL devresi vardır.'],
+ ['14',null,'Sağ/sol kontrol iki kontaktör, karşılıklı NC kilitleme ve karşı yönde iki fazın yer değiştirmesiyle temsil edilir.','Sanal devrenin yön geçişini ve iki bobinin aynı anda etkin olmamasını gerçek Node çözümüyle doğrula.'],
+ ['15','MISSING_OVERLOAD_RELAY','Termik aşırı akım koruması için gerçek motor termiği ve yardımcı NC kesme yolu gereklidir.','Kartta termik aşırı akım rölesi veya aşırı yük tetik simülasyonu bulunmaz; yalnız DOL yol verme örneğidir.'],
+ ['16','MISSING_PHASE_MONITOR','Faz sırası/faz kaybı rölesi üç faz girişlerini ve güvenlik çıkışını izlemelidir.','Kartta faz koruma veya faz sırası izleme rölesi bulunmaz; üç faz motorun bağlı olması faz izleme testi değildir.'],
+ ['17','MISSING_AUTOMATIC_RETURN','İleri/geri yön kilitlemesi ve iki NC sınır anahtarı ilgili yönde hareketi durdurabilir.','Sınır anahtarına basınca ilgili bobin açılır; otomatik ters yönde yeniden başlatan yol veya PLC dizisi bu kartta kurulmamıştır.'],
+ ['18','PLC_PROGRAM_NOT_VALIDATED','PLC-kontaktör güç katında PLC çıkışı bobine bağlanırken PLC giriş/çıkış programının çalışması ayrı kanıt ister.','PLC, START/STOP, kontaktör ve güç katı bağlıdır; gerçek PLC programı/komut dizisi kabul edilmeden otomatik motor çalışması PASS sayılamaz.']
+];
+for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
+ const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
+  throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
+ const p=lesson.project;
+ const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':p.components.some(c=>c.id==='plc')?'PLC kontaktör güç':'tek kontaktörlü DOL';
+ lesson.summary=concept+' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.';
+ lesson.explanation=concept+' '+limitation+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
+ lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
+ lesson.beginnerSteps=['Önce ekrandaki gerçek motor/kontaktör/buton ürünlerini belirle.',
+  'Sanal bağlantıların hangi işlevi desteklediğini kontrol et: '+actual+'.',
+  limitation,
+  'Sadece gerçek Node çıktısıyla çalışmayı yorumla; eksik başlık işlevine veya fiziksel kuruluma PASS verme.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC126_SC143',
+  titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
+
 /* MQ07_SC110_SC125_ARDUINO_SCOPE: source-grounded virtual lesson references, not working firmware. */
 const mq07ArduinoScope110to125=[
  ['01','arduino-led','Dijital LED çıkışı: Arduino UNO dijital çıkışı, seri 220 Ω direnç üzerinden LED akımını sınırlar.','pinMode(çıkış, OUTPUT) ve digitalWrite(HIGH/LOW) kavramsal komutlardır; LED polaritesi, seri direnç ve ortak GND gerçek bağlantıda gerekir.'],
