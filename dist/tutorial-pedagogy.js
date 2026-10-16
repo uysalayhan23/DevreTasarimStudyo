@@ -3262,8 +3262,8 @@ for(const spec of [
   W('g1','P','sg','13','G1/P → SG/13','Sanal gate komut başlangıcı.'),
   W('sg','14','rg','1','SG/14 → RG/1','Gate butonu RG girişini besler.'),
   W('rg','2','q1','G','RG/2 → Q1/G','Tetikleme yolu gate terminalinde biter.'),
-  W('g1','P','sp','11','G1/P → SP/11','Güç kolunda ayrı bir durdurma kontrolü.'),
-  W('sp','12','h1','X1','SP/12 → H1/X1','STOP açıkken güç kaynağı yükten ayrılır.'),
+  W('g1','P','sp','21','G1/P → SP/11','Güç kolunda ayrı bir durdurma kontrolü.'),
+  W('sp','22','h1','X1','SP/12 → H1/X1','STOP açıkken güç kaynağı yükten ayrılır.'),
   W('h1','X2','q1','A','H1/X2 → Q1/A','Yük akımı anot terminaline yönlenir.'),
   W('q1','K','g1','M','Q1/K → G1/M','Sanal katot dönüş referansı.')
  );
@@ -3304,8 +3304,8 @@ for(const spec of [
   W('g1','P','sg','13','G1/P → SG/13','Gate tetiklemesinin sanal pozitif kaynağı.','#e53935','+24V'),
   W('sg','14','rg','1','SG/14 → RG/1','Tetikleme butonu üzerinden 1 kΩ sınırlama.','#8b5cf6','SIGNAL'),
   W('rg','2','q1','G','RG/2 → Q1/G','BTA16 G tetikleme terminali.','#8b5cf6','SIGNAL'),
-  W('g1','P','sp','11','G1/P → SP/11','MT2 yük akımını kesen STOP kolunun beslemesi.','#e53935','+24V'),
-  W('sp','12','h1','X1','SP/12 → H1/X1','Normalde kapalı STOP ve lamba seri güç yoludur.','#8b5cf6','CONTROL'),
+  W('g1','P','sp','21','G1/P → SP/11','MT2 yük akımını kesen STOP kolunun beslemesi.','#e53935','+24V'),
+  W('sp','22','h1','X1','SP/12 → H1/X1','Normalde kapalı STOP ve lamba seri güç yoludur.','#8b5cf6','CONTROL'),
   W('h1','X2','q1','MT2','H1/X2 → Q1/MT2','BTA16 gerçek isimli MT2 güç ucu.','#8b5cf6','LOAD'),
   W('q1','MT1','g1','M','Q1/MT1 → G1/M','MT1 ve gate için ortak DC eksi referansı.','#111827','0V')
  );
