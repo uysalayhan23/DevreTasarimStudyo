@@ -710,7 +710,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
     }
     const linked=(a,ap,b,bp)=>find(a+'/'+ap)===find(b+'/'+bp);
     const powerWired=!!(correct&&linked('q1','MT1','g1','M')&&
-      linked('g1','P','sp','11')&&linked('sp','12','h1','X1')&&
+      linked('g1','P','sp','21')&&linked('sp','22','h1','X1')&&
       linked('h1','X2','q1','MT2')&&!linked('g1','P','g1','M')&&
       !linked('q1','MT1','q1','MT2'));
     const gateWired=!!(correct&&linked('g1','P','sg','13')&&
