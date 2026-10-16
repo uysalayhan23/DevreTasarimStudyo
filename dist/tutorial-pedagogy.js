@@ -5028,6 +5028,44 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Yalnız sanal 5 V bağlantı eğitimi; gerçek alkış algılama, Arduino programı ve buzzer sürme güvenliği doğrulanmamıştır.';
 }
 
+
+/* MQ07_SC214_SC227_PANEL_SCOPE: repair two irrelevant DC meter cards; never infer wiring acceptance. */
+const mq07PanelRows=[["01","NO_PANEL_WIRING_SCHEMATIC","Pano şeması koruma, kumanda, klemens ve PE yollarını ayırır.","Genel MCB, kontaktör, klemens ve PE barası vardır; gerçek pano bağlantı şeması yoktur."],["02","NO_DIN_RAIL_DUCT_LAYOUT","DIN ray ve kablo kanalının ölçüsü gerçek pano yerleşimine bağlıdır.","Ray klemensi ve kanal malzeme referansıdır; mm yerleşim, kanal doluluğu ve montaj testi yoktur."],["03","NO_BUTTON_LAMP_MOUNTING_CIRCUIT","NO/NC butonlar ile sinyal lambaları farklı elektriksel görevler taşır.","Bu malzemelerin panel montajı, terminal bağlantısı ve çalışan lamba devresi yoktur."],["04","NO_MCB_RCD_INSTALLED_TEST","MCB ve RCD farklı koruma ilkelerine sahiptir.","Yanlış DC ampermetre/prob grafiği kaldırıldı; yeni MCB/RCD kartında gerçek kaçak testi veya montaj yoktur."],["05","NO_MOTOR_PROTECTION_SWITCH_SELECTION","Kontaktör, termik aşırı yük rölesi ve motor görevleri ayrı değerlendirilir.","Kartta ayrı motor koruma şalteri veya doğrulanmış ayar ve koordinasyon bulunmaz."],["06","NO_FERRULE_CRIMP_LABEL_VALIDATION","İletken pabucu, yüksük ve numaralandırma farklı sonlandırma/izleme işleridir.","Klemens ve kablo markörü referanstır; krimp, pabuç/yüksük ve doğrulanmış iletken kodu yoktur."],["07","NO_TERMINAL_CONDUCTOR_CONNECTION","PE klemensi ile geçiş klemensi farklı elektriksel bağlantı rollerine sahiptir.","Gerçek iletken, terminal bağlantısı, kesit denetimi veya PE süreklilik ölçümü bulunmaz."],["08","NO_INSULATION_MEASUREMENT_EVIDENCE","Yalıtkanlık direnci ölçümü uygun cihaz ve güvenli uzman kontrolü gerektirir.","Yalıtım test cihazı yalnız referanstır; gerçek test, ölçüm değeri ve pano kabulü yoktur."],["09","NO_ELEVATOR_CONTROL_TOPOLOGY","Asansör panosunda özel kumanda ve emniyet işlevleri ayrıca kanıtlanmalıdır.","Kart genel koruma/kontaktör/klemenslerden ibarettir, gerçek asansör kontrolü yoktur."],["10","NO_INDUSTRIAL_METER_TERMINAL_WIRING","Üç faz sayaç bağlantısı seçili sayaç ve enerji sistemi yapısına bağlıdır.","Sayaç malzeme referansıdır; gerçek sayaç uç bağlantısı veya ölçüm sonucu yoktur."],["11","NO_CT_SECONDARY_METER_WIRING","100/5 akım trafosu ile kombi sayaç eşleşmesi primer/sekonder ölçüm sistemidir.","Yanlış DC ampermetre/prob grafiği kaldırıldı; CT/kombi sayaç kartında gerçek bağlantı veya ölçüm yoktur."],["12","NO_DISTRIBUTION_SINGLE_LINE_SCHEMATIC","Dağıtım panosu güç ve koruma şemaları ürün bağlantılarıyla ilişkilendirilmelidir.","Yalnız genel semboller yer alır; gerçek tek hat, seçicilik veya güç dağıtım devresi yoktur."],["13","NO_TWELVE_STAGE_COMPENSATION_SYSTEM","12 kademeli kompanzasyon ayrı kademe, ölçüm ve kontrol gerektirir.","Sadece tek kondansatör, reaktör ve kontaktör vardır; 12 kademe veya kontrol programı yoktur."],["14","NO_TRANSFORMER_PROTECTION_COORDINATION","Trafo ile koruma ve parafudr eşleşmesi kaynak verisi gerektirir.","Malzeme referansı vardır; gerçek trafo bağlantısı, koordinasyon hesabı veya donanım kabulü yoktur."]];
+for(const [suffix,issue,concept,limits] of mq07PanelRows){
+ const id='panel-power-systems-src-'+suffix,lesson=L.byId[id],p=lesson?.project,n=Number(suffix);
+ if(!lesson||lesson.kind!=='quiz'||!p?.referenceOnly)
+  throw Error('MQ07 panel canonical reference changed '+id);
+ if(n===4||n===11){
+  const stale=['arduino-bench-supply','unit-ut33d-plus','resistor','test-probe-red','test-probe-black'];
+  if(p.wires.length!==2||p.components.length!==stale.length||
+     stale.some((x,i)=>p.components[i].typeId!==x))
+   throw Error('MQ07 panel stale meter graph changed '+id);
+  const parts=n===4?
+   [['mcb-1p','Otomatik sigorta'],['rcd-2p','Kaçak akım koruma düzeni']]:
+   [['meter-combined-ct','X/5 kombi sayaç'],['current-transformer','100/5 akım trafosu']];
+  const replacement=board(id,lesson.title,parts);
+  replacement.projectId=p.projectId;replacement.name=p.name;
+  replacement.tutorialLesson={...p.tutorialLesson,phase:'quiz'};
+  lesson.project=replacement;lesson.workspaceMode=replacement.workspaceMode;
+  lesson.steps=[];lesson.materials=materialRows(replacement);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+   componentIds:replacement.components.map(c=>c.typeId)};
+ }else if(p.wires.length)throw Error('MQ07 unexpected panel wires '+id);
+ lesson.summary=concept+' Bu sayfa gerçek kablolu pano uygulaması değildir.';
+ lesson.explanation=concept+' '+limits+' Referans kartı kurulmuş pano veya üretici kaynaklı mühendislik kabulü değildir.';
+ lesson.learningGoal=concept+' Referans malzeme ile doğrulanmış elektriksel/pano uygulamasını ayırt etmek.';
+ lesson.beginnerSteps=[
+  'Karttaki gerçek elemanları ve kablo sayısını incele.',
+  'Kavram: '+concept,limits,
+  'Gerçek pano, ölçüm veya işlev doğrulaması yoksa PASS verme.'
+ ];
+ lesson.safety='Yalnız çevrimdışı sanal malzeme referansıdır; gerçek pano montajı, enerjili tesisat uygulaması veya güvenlik kabulü değildir.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+  mq07PanelScope:'SC214_SC227',titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  panelEngineeringAcceptance:false,electricalSafetyAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
