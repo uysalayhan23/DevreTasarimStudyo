@@ -2207,3 +2207,9 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 - Yeni `tests/qa-mq07-sc35-clap-dynamic-v11920.test.cjs` ve yenilenen `tests/qa-mq07-sc35-clap-sensor-source-v11920.test.cjs` yerel Node 22 ile **2/2 PASS**. Yerel kaynak-topoloji SC34–SC39 + yeni SC35 dinamik **7/7 PASS**; `scripts/check.cjs` PASS (372 syntax files, 106 dependencies, 729 catalog definitions, 58 protected projects). GitHub'a kaynak, hedef test güncellemesi ve dinamik test `[skip ci]` ile kaydedildi.
 - 1655 derslik ilk-state QA **FAIL**: 748/748 kablolu solver kararlı ve 0 invalid endpoint, fakat 11 `topic-review-m1` kaydı hâlâ eksik (`sensor-analog-apps-src-02..10`, `src-13..14`). Bu kayıtlar bağımsız pedagojik inceleme olmadan tamamlanmış gösterilmedi.
 - SC36/SC38 AC voltmetre `OL` ve SC37/SC39 DC gain sweep önceki açık kabul olarak devam ediyor: bu çalışma onlara PASS vermiyor. MQ-00: SC35 *virtual runtime only* PASS; genel kalite REVIEW / NOT_DONE. GitHub Actions kullanılmadı.
+
+## 2026-10-16 MQ-05 SC37/SC39 DC potansiyometre solver sweep bulgusu
+
+- Kullanıcı ZIP'indeki 729 katalog ürünü ve gerçek `dist/simulation.js` ile `potentiometer` oranı `0,1,2,3,5,10,20,35,50,65,80%` üzerinde bağımsız çözüm tekrarlandı. SC37 (`opamp-apps-src-02`) 20%: ~0.027 V, 50%: ~10.856 V, 65%: ~22.010 V, 80%: ~22.008 V; alt/üst doygunluk beklentiyle tutarlı olsa da tam kazanç sözleşmesi henüz kabul edilmedi.
+- SC39 (`opamp-apps-src-04`) 0% dahil tüm tarama noktalarında voltmetre ~22.0066 V (stable). İdeal evirmeyen 5.7 kazanç için düşük girişlerde değişim beklenir; **kök nedeni doğrulanması gereken solver/topoloji uyuşmazlığı, PASS değil**. Bu veri potansiyometre/net modeli ile LM358 ortak-mod çözümünün ayrıştırılmasını gerektirir. SC36/SC38 AC `OL` hâlâ açık.
+- MQ-00: gerçek yerel başlangıç sweep kanıtı kaydedildi, hatayı düzeltmeden genel DONE/Windows kabul yok. GitHub Actions kullanılmadı.
