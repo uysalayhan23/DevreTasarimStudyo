@@ -98,7 +98,7 @@ test('SC16 disconnecting gate prevents firing but cannot unlatch an already-on D
 });
 
 test('SC16 power supply, STOP, load, MT1/MT2 cuts release the DC latch',()=>{
- const powerWires=[['g1','P','sp','11'],['sp','12','h1','X1'],
+ const powerWires=[['g1','P','sp','21'],['sp','22','h1','X1'],
   ['h1','X2','q1','MT2'],['q1','MT1','g1','M']];
  for(const [a,ap,b,bp] of powerWires){
   const p=clone(lesson.project);
