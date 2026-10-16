@@ -3,9 +3,9 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const text=fs.readFileSync(path.join(__dirname,'../dist/tutorial-mode.js'),'utf8');
-const begin=text.indexOf('function checkedLessonProject(l){'),end=text.indexOf('\nasync function open(id){',begin);
+const begin=text.indexOf('function cleanProject(l){'),end=text.indexOf('\nasync function open(id){',begin);
 assert.ok(begin>=0&&end>begin,'actual lesson-open guard must exist');
-const make=vm.runInNewContext('(function(clone){return '+text.slice(begin,end)+';})')((x)=>JSON.parse(JSON.stringify(x)));
+const context={clone:(x)=>JSON.parse(JSON.stringify(x))};vm.createContext(context);vm.runInContext(text.slice(begin,end),context);const make=context.checkedLessonProject;
 const curriculum=QA.curriculum();
 test('SC48/SC49 canonical LM358 DIP8 RC lessons pass actual opening gate',()=>{
  for(const id of ['opamp-apps-src-13','opamp-apps-src-14']){
