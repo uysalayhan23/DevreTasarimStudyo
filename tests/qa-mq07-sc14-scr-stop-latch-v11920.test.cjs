@@ -70,7 +70,7 @@ test('SC14 removing the gate wire does not stop an already latched SCR',()=>{
 
 test('SC14 removing DC anode or cathode path releases SCR latch, no automatic restart',()=>{
  for(const [a,ap,b,bp] of [
-  ['g1','P','sp','11'],['sp','12','h1','X1'],
+  ['g1','P','sp','21'],['sp','22','h1','X1'],
   ['h1','X2','q1','A'],['q1','K','g1','M']
  ]){
   const p=clone(lesson.project);
