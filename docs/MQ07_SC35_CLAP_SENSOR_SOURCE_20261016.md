@@ -12,3 +12,6 @@ Yalnız SC35'in özet, açıklama, öğrenme hedefi, adımları, kabul sınırla
 Kaynak koruma testi: `tests/qa-mq07-sc35-clap-sensor-source-v11920.test.cjs`; ders/katalog kimliği, 4 eleman, 8 bağlantı, DO→D2, D9→SIG ve fail-closed kabul bayrakları. **Node testi bu oturumda çalıştırılmadı (NOT_RUN)**; gerçek Windows/Edge görsel kabulü de NOT_RUN. Bu nedenle SC35 genel DONE değil, **MQ-00 REVIEW**.
 
 GitHub Actions çalıştırılmadı; `main` üzerinde `[skip ci]` ile commit yapıldı. Sonraki iş: Actions'sız gerçek Node hedef testleri, Arduino yürütme modelinin doğrulanması ve sadece kanıtla dinamik alkış senaryosu.
+
+## 2026-10-16 takip düzeltmesi: sanal 5 V renk/hat kimliği
+SC35 proje gövdesindeki güç kaynağı `dcVoltage:5` olduğu halde ortak `soundSensorProject()` oluşturucusundan gelen üç pozitif kablonun `role` alanı `+24V` ve kahverengi `colorRoles` girdisi de `+24V` idi. Bu dersin yalnız pozitif PS1 kaynak kabloları `+5V` rolüne alındı, SC35 renk rolü eşleştirildi. `tests/qa-mq07-sc35-clap-sensor-source-v11920.test.cjs` içine regresyon beklentisi eklendi. Diğer derslerin kayıtları değiştirilmedi. **Node testleri ve Arduino program yürütmesi hâlâ NOT_RUN; otomatik alkış tepkisi PASS değildir.**
