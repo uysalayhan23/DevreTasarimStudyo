@@ -2334,6 +2334,38 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
+const mq07BrakingScope156to163=[
+ ['01','BRAKE_OVERVIEW_YDELTA_SUBSTITUTE','Frenleme sistemleri motorun enerjisinin kesilmesinden farklı olarak mekanik veya elektriksel yavaşlama/enerji kontrolünü hedefler.','Bu örnek yıldız–üçgen yol verme, zamanlı geçiş ve STOP ile beslemeyi kesme devresidir; mekanik fren, dinamik fren veya DC enjeksiyon devresi değildir.'],
+ ['02','MISSING_MECHANICAL_BRAKE','Balatalı fren mekanik sürtünme ile motor miline fren momenti uygular; fren bobini ve mekanik kilit durumu ayrıca değerlendirilir.','Kayıtlı devrede balata, yaylı fren veya fren bobini mevcut değildir; sadece yıldız–üçgen kontaktörleri vardır.'],
+ ['03','MISSING_STAR_DC_BRAKE','Yıldız bağlı motorun dinamik frenlemesi için güçten ayrılma ve frenleme enerjisinin kontrollü uygulandığı ayrı bir düzen gerekir.','Motor yıldız konumundan üçgene başlatılır; fren beslemesi, fren kontaktörü veya enerji sönümleme yolu bulunmaz.'],
+ ['04','MISSING_DELTA_DC_BRAKE','Üçgen bağlı motorun dinamik frenlenmesinde frenleme akımı, sargı konumu ve geçiş kilidi ayrı değerlendirilir.','Kaydedilmiş devre normal yıldız–üçgen çalıştırmadır; üçgen konumunda ayrı DC enjeksiyon ya da frenleme yolu bulunmaz.'],
+ ['05','MISSING_DC_INJECTION_CALC','DC enjeksiyon freninde gerilim seçimi, sargı direnci, akım, ısıl sınırlar ve uygulama süresine bağlıdır.','Kartta DC enjeksiyon kaynağı, sargı direnci ölçümü, fren akımı veya hesap parametreleri bulunmadığından sayısal enjeksiyon gerilimi hesaplanamaz.'],
+ ['06','MISSING_STAR_DELTA_BRAKE_TRANSFER','Yıldız–üçgen yol verilen bir motorda durdurma sonrası dinamik frenleme ayrı kumanda, kontaktör kilidi ve uygulama süresi gerektirir.','Kayıtlı devre yalnız START, yıldız–üçgen geçişi ve STOP ile enerjiyi kesmeyi gösterir; dinamik frenlemeye geçiş yolu yoktur.'],
+ ['07','MISSING_AUTOMATIC_BRAKE','Otomatik frenlemede hareketin durdurulması ayrı fren algısı/komutu ve frenleme kontrolünün zaman ya da durum geçişini gerektirir.','Şemada otomatik fren kontaktörü ya da fren algılama durumu bulunmaz; otomatik olan yıldız–üçgen geçişidir.'],
+ ['08','MISSING_TIMED_BRAKE','Zaman ayarlı frenlemede zamanlayıcı motor besleme kontaktöründen bağımsız frenleme durumunu belirlemelidir.','Mevcut zaman rölesi yalnız yıldızdan üçgene geçişi yönetir; frenleme zamanlayıcısı veya ölçülen durma süresi değildir.']
+];
+for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
+ const id='motor-braking-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='wiring'||lesson.project?.wires?.length!==38||
+    !lesson.project.components.some(c=>c.typeId==='motor-y-d')||
+    !lesson.project.components.some(c=>c.typeId==='coil-delay-on')||
+    lesson.project.components.some(c=>c.typeId==='supply-dc-plus'||c.typeId==='tutorial-mechanical-brake'))
+   throw Error('MQ07 SC156–163 braking project changed; re-audit '+id);
+ lesson.summary=concept+' Ekrandaki devre bir yıldız–üçgen yol verme örneğidir, başlıktaki fren devresi değildir.';
+ lesson.explanation=concept+' '+limitation+' Node çözümü yalnız yol verme, yıldız–üçgen geçişi ve STOP ile enerji kesilmesini gösterir; frenleme süreci doğrulanmamıştır. Fiziksel motor, şebeke ve fren güvenliği kabul edilmemiştir.';
+ lesson.learningGoal=concept+' Devrede çalışan START/STOP yol verme ile gerçek frenleme mekanizması arasındaki farkı ayırt etmek.';
+ lesson.beginnerSteps=[
+  'Ekranda üç faz besleme, zaman rölesi, yıldız ve üçgen kontaktörlerini ayırt et.',
+  'Sanal START, geçiş zamanı ve STOP durumlarını elektriksel kaynak üzerinde incele.',
+  limitation,
+  'Frenleme momenti, durma süresi veya DC enjeksiyon sonucu gösterilmediği için frenlemeye PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC156_SC163',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,brakingAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
 const mq07StartSpeedScope144to155=[
  ['01',null,'Paket şalter konumları 0, YILDIZ ve ÜÇGEN olarak seçilir; kayıtlı altı uçlu motor bu konumlarla sınanabilir.','Paket şalterli yıldız/üçgen seçimi Node modelinde doğrulanabilir; güvenlik, gerçek kalkış akımı ve mekanik performans ölçülmemiştir.'],
