@@ -2335,6 +2335,43 @@ for(const lesson of L.lessons.slice(0,200)){
 }
 L.mq07Batch200=mq07Batch200;
 
+/* MQ07_SC72_SC82_SCOPE: keep unwired reference lessons educationally truthful.
+ * No virtual AC/RF/audio power output is synthesized by these cards.
+ */
+const mq07ReferenceScope72to82={
+ '20':['Bant geçiren filtre, seçilen alt ve üst kesim frekansları arasında kalan bileşenleri geçirir.','Bu kartta alçak/yüksek geçiren aşamaların bağlantısı, gerçek kesim frekansları ve frekans taraması yoktur.'],
+ '21':['Bant durduran filtre, belirli frekans bandını zayıflatırken bu bandın dışındaki bileşenleri geçirir.','Devrede direnç ve kondansatör değerleriyle bağlanmış bir notch ağı ve frekans cevabı ölçümü yoktur.'],
+ '22':['FM vericide bilgi, taşıyıcı işaretin anlık frekansını değiştirerek iletilir.','Gösterilen RF bloğu kablosuz referanstır; modülasyon spektrumu, anten gücü veya gerçek yayın simülasyonu değildir.'],
+ '23':['FM alıcı, RF seçimi ve frekans demodülasyonu ile taşınan ses veya veri işaretini ayırır.','Gösterilen alıcı bloğunda bağlantılı RF katı, hassasiyet ya da demodülasyon testi yoktur.'],
+ '24':['Ön yükselteç, düşük seviyeli giriş sinyalini sonraki kat için uygun seviyeye çıkarır.','LM358 referans elemanıdır; kazanç, gürültü veya bant genişliği sanal devrede ölçülmedi.'],
+ '25':['Ses mikseri, birden çok bağımsız ses kanalının seviyesini dengeleyerek ortak çıkışa birleştirir.','Bu kartta kablolanmış çoklu giriş ve gerçek ses karıştırma ölçümü yoktur.'],
+ '26':['Bas-tiz kontrolü, düşük ve yüksek frekans bantlarının seviyelerini ayrı ayarlar.','Kartta potansiyometreler ve RC elemanları yer alır ama gerçek frekans cevabı veya ton ayarı simülasyonu yoktur.'],
+ '27':['Eko etkisi, işaretin gecikmiş ve çoğu zaman zayıflatılmış kopyasının asıl işaretle birleştirilmesiyle oluşur.','Bu kartta gecikme hattı, bellek veya ses örnekleme zinciri simüle edilmez.'],
+ '28':['VU metre, ses işaretinin düzeyini belirli bir gösterge tepkisiyle görselleştirmeyi amaçlar.','Gerçek ses RMS ölçümü, göstergenin zaman tepkisi ve kalibrasyonu burada mevcut değildir.'],
+ '29':['14 W ses yükselteci, yükü sürmek için yeterli güç katı ve ısıl tasarım gerektirir.','Gösterilen LM358, 14 W hoparlörü tek başına süren güç katı değildir; bu kartta güç sürücü bağlantısı, yük ve watt ölçümü yoktur.'],
+ '30':['100 W ses yükselteci, uygun güç transistörleri/entegresi, besleme, koruma ve ısıl tasarım gerektirir.','Gösterilen LM358, 100 W hoparlörü tek başına süren güç katı değildir; gerçek güç yükselteç şeması ve watt doğrulaması yoktur.']
+};
+for(const [index,notes] of Object.entries(mq07ReferenceScope72to82)){
+ const id='oscillator-filter-apps-src-'+index,lesson=L.byId[id];
+ if(!lesson||lesson.kind!=='quiz'||(lesson.project?.wires||[]).length!==0)
+  throw Error('MQ07 SC72–82 must remain unwired reference: '+id);
+ lesson.summary=notes[0]+' Bu ders şimdilik kablosuz kavram ve materyal referansıdır.';
+ lesson.explanation=notes[0]+' '+notes[1];
+ lesson.learningGoal=notes[0]+' Çalışan devre ile kablosuz referans kartını ayırt edebilmek.';
+ lesson.beginnerSteps=[
+  'Önce başlıktaki devrenin gerçek çalışma amacını oku.',
+  'Kullanılan elemanların görevlerini ve eksik bağlantıları karşılaştır.',
+  notes[1],
+  'Gerçek kablo bağlantısı ve ölçüm sonucu olmadan devreye elektriksel PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
+
 
 /* BELL_TRANSFORMER_V1: source circuits and learner explanations must agree. */
 for(const id of ['installation-systems-src-05','installation-systems-src-06']){
