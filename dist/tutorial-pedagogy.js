@@ -5096,6 +5096,42 @@ for(const [suffix,reason,partSpec,concept,limitation] of mq07WorkshopRows){
   workshopProcessAcceptance:false,toolSafetyAcceptance:false};
 }
 
+
+/* MQ07_SC238_SC251_FAULT_RELAY_SCOPE: source-aligned acceptance; preserve legacy schematic graphs/unique quizzes. */
+const mq07FaultRelayRows=[["electronic-component-basics-outline-001","NO_FAULT_METHOD_MEASUREMENT",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Arıza arama yöntemleri, belirtiler ve güvenli ön değerlendirme ile uygun ölçümün ayrı aşamalar olduğunu gösterir.","Burada prob uçları yalnız multimetreye takılıdır; arızalı devre, ölçüm noktası ve sonuç yoktur."],["electronic-component-basics-outline-002","NO_FAULT_DETECTION_SCENARIO",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Arıza tespiti gözlem ve karşılaştırılabilir veri gerektirir.","Yalnız ölçüm araçları ve iki prob fişi bulunur; gerçek arıza veya arıza tespit sonucu yoktur."],["electronic-component-basics-outline-003","NO_PREINSPECTION_TEST_EVIDENCE",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Ön kontrol, işlev denemesinden farklı bir hazırlık ve uygunluk incelemesidir.","Kartta gerçek donanım ön kontrolü, kusur kaydı ve emniyet doğrulaması yapılmaz."],["electronic-component-basics-outline-004","NO_COMPONENT_TEST_SCENARIO",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Elektronik eleman testi elemanın türüne özgü beklenti ve karşılaştırmalı ölçüm gerektirir.","Test edilen bileşen, ölçülen uç, kademe veya ölçüm sonucu gösterilmez."],["electronic-component-basics-outline-005","NO_FAULT_REPAIR_CONFIRMATION",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Arıza giderme, nedenin belirlenmesi ve düzeltmenin güvenli olarak yeniden doğrulanmasını içerir.","Tamir edilmiş eleman, önce/sonra ölçümü veya düzeltme başarı kanıtı bu kartta yoktur."],["electronic-switching-outline-020","NO_RELAY_SWITCHING_CIRCUIT",0,["coil-relay","contact-both","arduino-diode-1n4007"],"Röleli anahtarlamada bobin, değiştirici kontak ve varsa koruma elemanı farklı görevlerdedir.","Kart bir malzeme karşılaştırmasıdır; bobin enerjisi, kontak üzerinden yük veya gerçek röle geçişi kablolanmamıştır."],["electronic-component-basics-outline-006","NO_RELAY_MECHANICAL_VERIFICATION",0,["coil-relay","contact-both"],"Manyetik röle, bobin ile mekanik kontak işlevlerini birlikte içerir.","Bobin/kontak simgeleri vardır, ancak gerçek röle modeli için bağlantı, üretici ölçüsü ve mekanik hareket kanıtı yoktur."],["electronic-component-basics-outline-007","NO_RELAY_NAMEPLATE_RATING_EVIDENCE",0,["coil-relay","contact-both"],"Röle üzerindeki nominal değerler bobin ve kontaklar için farklı anlamlar taşır.","Kart belirli rölenin doğrulanmış bobin gerilimi, akım veya kontak kapasitesi verilerini sağlamaz."],["electronic-component-basics-outline-008","NO_RELAY_OPERATION_RUNTIME",0,["coil-relay","contact-both"],"Bobin uyarımı ve kontak konumunun değişmesi röle çalışma prensibinin temelidir.","Bobin beslemesi, kontak yükü ve simülasyonda doğrulanmış geçiş döngüsü bulunmaz."],["electronic-component-basics-outline-009","NO_RELAY_FLYBACK_PROTECTION_CIRCUIT",0,["1n4007-do41","coil-relay"],"Röle bobini ve 1N4007 diyodunun ayrı görevleriyle, bobin enerjisinin kesilmesinde indüktif etkiyi kavramsal olarak karşılaştırır.","Önceki iki diyot malzeme kartından biri röle bobiniyle düzeltildi; gerçek bobin-diyot bağlantısı, polarite deneyi ve bastırma ölçümü yoktur."],["electronic-component-basics-outline-010","NO_RELAY_FAULT_DIAGNOSIS",2,["unit-ut33d-plus","tutorial-troubleshooting","test-probe-red","test-probe-black"],"Röle arızası bobin ve kontak koşulları ile ölçüm kanıtına göre ayırt edilir.","Sanal kartta ölçülen röle bobini veya kontak arızası yoktur; iki bağlantı sadece prob fişlerini gösterir."],["electronic-component-basics-outline-011","NO_RELAY_PIN_IDENTIFICATION_MEASUREMENT",0,["coil-relay","contact-both"],"Röle uçlarının tanınması bobin ile ortak/NO/NC kontak görevlerini ayırmayı gerektirir.","Röle referans sembolleri bulunur; gerçek uç bulma ölçümü, pin eşlemesi ve saha doğrulaması yoktur."],["motor-direct-power-outline-019","CONTACTOR_SEAL_IN_NOT_STANDALONE_RELAY",13,["supply-3p","push-nc","push-no","coil-contactor","main-contact","motor-3p","contact-no"],"Mevcut 13 kablolu kaynak örneği START, NC STOP, K1 bobini ve K1 yardımcı NO mühürleme kontağıyla tek motoru sürer.","Devre bağımsız küçük röle uygulaması değil, üç faz motoru süren kontaktörlü mühürleme örneğidir; gerçek koruma cihazı ve donanım kabulü yoktur."],["motor-direct-power-outline-020","MISSING_MOTOR_REVERSAL_CONTACTOR_INTERLOCK",13,["supply-3p","push-nc","push-no","coil-contactor","main-contact","motor-3p","contact-no"],"Mevcut 13 kablolu tek kontaktörlü START–mühürleme–STOP devresi motoru yalnız sabit faz sırasında besler.","Röle ile motor yönü başlığı için ikinci yön kontaktörü, karşılıklı kilitleme ve faz sırası değiştirme yolu yoktur; ileri-geri simülasyonu kabul edilemez."]];
+for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRows){
+ const l=L.byId[id],p=l?.project;
+ if(!l||!p||p.wires.length!==wireCount||l.kind!==(wireCount===13?'wiring':'quiz'))
+  throw Error('MQ07 SC238–SC251 source topology changed '+id);
+ if(wireCount!==13&&p.referenceOnly!==true)
+  throw Error('MQ07 source reference status changed '+id);
+ const sourceParts=p.components.map(c=>c.typeId);
+ const original= id==='electronic-component-basics-outline-009'
+   ?['1n4007-do41','arduino-diode-1n4007']:expectedParts;
+ if(sourceParts.length!==original.length||original.some((x,i)=>sourceParts[i]!==x))
+  throw Error('MQ07 source component set changed '+id);
+ if(id==='electronic-component-basics-outline-009'){
+  const replacement=board(id,l.title,[['1n4007-do41','1N4007 koruma diyodu'],['coil-relay','Röle bobini · sanal referans']]);
+  replacement.projectId=p.projectId;replacement.name=p.name;
+  replacement.tutorialLesson={...p.tutorialLesson,phase:'quiz'};
+  l.project=replacement;l.materials=materialRows(replacement);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:replacement.components.map(c=>c.typeId)};
+ }
+ l.summary=concept+' Bu dersin mevcut sanal şema kapsamı aşağıdaki sınırlarla geçerlidir.';
+ l.explanation=concept+' '+limits+' Gerçek üretici/veri sayfası, elektriksel güvenlik veya Windows görsel onayı bu kayıttan çıkarılamaz.';
+ l.learningGoal=concept+' Gösterilen bağlantı ve cihazlarla başlığın kapsamını karşılaştırmak.';
+ l.beginnerSteps=[
+  'Başlıktaki işlevi, ekrandaki cihaz sayısı ve kablo sayısı ile karşılaştır.',
+  'Kavram: '+concept,limits,
+  'Gösterilmeyen çalışma, ölçüm veya fiziksel emniyet için PASS verme.'
+ ];
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  mq07FaultRelayScope:'SC238_SC251',titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  faultDiagnosisAcceptance:false,relayDynamicsAcceptance:false,motorReversalAcceptance:false};
+ l.safety='Bu sanal eğitim kaydı, gerçek enerjili pano, motor, ölçüm, onarım veya röle güvenliği için uygulama talimatı veya cihaz kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
