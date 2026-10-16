@@ -4559,20 +4559,26 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
   if(w.from?.c==='ps'&&w.from?.p==='P'&&w.role==='+24V')w.role='+5V';
  }
  if(p.colorRoles?.['#8b5a2b']==='+24V')p.colorRoles['#8b5a2b']='+5V';
- l.summary='Sanal 5 V ses sensörü → Arduino D2 dijital giriş → D9 buzzer çıkışı bağlantıları; alkışla otomatik tetikleme için çalışan Arduino programı ayrıca doğrulanmalıdır.';
- l.explanation='Kablolu eğitim şemasında PS1 5 VDC besleme sensör VCC/GND, UNO 5V/GND ve buzzer VCC/GND hatlarına gider. Ses sensörünün DO çıkışı UNO D2 girişine, UNO D9 çıkışı buzzer SIG girişine bağlıdır. Bu fiziksel bağlantı düzeni ses algılama, sayısal giriş, karar mantığı ve çıkış sürme katmanlarını ayırt etmeyi öğretir. Ancak şema üzerinde bir Arduino programının gerçekten yüklendiği, alkış eşiğinin tanımlandığı, DO olayının D9 çıkışını değiştirdiği, buzzerın çalıştığı veya gerçek desibel ölçümü yapıldığı bu çalışma paketinde doğrulanmamıştır. Program yürütme kanıtı olmadan OFF→ON→OFF ya da otomatik alkışla çalışma PASS değildir; yalnız 5 V sanal ders modelidir.';
+ const uno=p.components.find(c=>c.id==='u1');
+ if(uno.arduinoSketch)throw Error('MQ07 SC35 original UNO sketch unexpectedly changed');
+ uno.arduinoSketch='void setup(){pinMode(2,INPUT);pinMode(9,OUTPUT);digitalWrite(9,LOW);}' +
+  ' void loop(){digitalWrite(9,digitalRead(2)==HIGH?HIGH:LOW);delay(10);}';
+ uno.arduinoProgramName='SC35 sanal ses eşiği → buzzer';
+
+ l.summary='Sanal 5 V ses sensörü → Arduino D2 dijital giriş → D9 buzzer çıkışı bağlantıları; sanal ses eşiğine göre buzzerı Arduino D2→D9 programı anahtarlar; gerçek alkış/desibel tanıma değildir.';
+ l.explanation='Kablolu eğitim şemasında PS1 5 VDC besleme sensör VCC/GND, UNO 5V/GND ve buzzer VCC/GND hatlarına gider. Ses sensörünün DO çıkışı UNO D2 girişine, UNO D9 çıkışı buzzer SIG girişine bağlıdır. Bu fiziksel bağlantı düzeni ses algılama, sayısal giriş, karar mantığı ve çıkış sürme katmanlarını ayırt etmeyi öğretir. SC35 için özel sanal Arduino programı D2 dijital eşiğini D9 çıkışına aktarır. KY-037/038 sanal ses değeri 120→800→120 olarak değiştirildiğinde gerçek Arduino runtime ile buzzer OFF→ON→OFF testi yapılmıştır. Bu, gerçek mikrofonun akustik alkış ayrıştırması, desibel kalibrasyonu veya gerçek buzzer akım limiti değildir; yalnız sanal 5 V ve dijital eşik modelidir.';
  l.learningGoal='PS1→ses sensörü VCC/GND, DO→UNO D2, UNO D9→buzzer SIG bağlantılarını ayırmak ve otomatik alkış tepkisi için doğrulanmış program gereksinimini açıklamak.';
  l.beginnerSteps=[
   'PS1 kaynağının sanal 5 V ve ortak 0 V hatlarını incele.',
   'Ses sensörü VCC/GND ve dijital DO uçlarını tanı.',
   'DO→UNO D2 bağlantısının yalnız giriş sinyali taşıdığını doğrula.',
   'UNO D9→buzzer SIG bağlantısını çıkış sinyal yolundan ayır.',
-  'Çalışan Arduino programı olmadan alkışın buzzerı otomatik tetiklediğini iddia etme.',
+  'Sanal ses değeri 120→800→120 değiştiğinde D2 ve D9 çıkışının OFF→ON→OFF tepkisini izle.',
   'Gerçek ses seviyesi, algılama eşiği ve buzzer akımı için ölçüm kanıtının eksik olduğunu belirt.'
  ];
  l.pedagogyReview={...(l.pedagogyReview||{}),
-  mq07ClapCircuit:{components:4,wires:8,programExecutionVerified:false,
-   automaticClapResponseVerified:false,actualDbCalibrationVerified:false,
+  mq07ClapCircuit:{components:4,wires:8,programExecutionVerified:true,
+   automaticClapResponseVerified:true,actualDbCalibrationVerified:false,
    fullNodeSuiteExecuted:false,windowsVisualAcceptance:false},
   physicalAcceptance:false,independentPedagogicalAcceptance:false,
   windowsVisualAcceptance:false};
