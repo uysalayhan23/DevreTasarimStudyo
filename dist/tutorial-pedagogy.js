@@ -2334,6 +2334,43 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC164_SC171_SPECIAL_MOTOR: documented mismatch only; canonical physical graph remains unchanged. */
+const mq07SpecialMotorScope164to171=[
+ ['01','MISSING_SINGLE_PHASE_AUX_WINDING','Tek faz yardımcı sargılı asenkron motorda ana ve yardımcı sargılar ayrı uçlara bağlanır; yol verme yöntemi kapasitör/anahtar türüne bağlıdır.','Görünen devre 3 Faz + N + PE beslemeli, U/V/W uçlu motor-3p ileri/geri kontaktör devresidir; ana/yardımcı sargı uçları veya kapasitör/kalkış anahtarı gösterilmez.'],
+ ['02','MISSING_SINGLE_PHASE_START_RUN','Tek faz motorun sürekli çalıştırılması, uygun tek faz motor beslemesi ve yardımcı sargı başlangıç/çalışma düzeni gerektirir.','Ekrandaki motor üç fazlıdır; START sonrası tutma gerçek Node ile görülse de tek faz motoru sürekli sürme işlevi kanıtlanmaz.'],
+ ['03','MISSING_SINGLE_PHASE_AUX_REVERSAL','Tek faz motor yön değiştirmede motor tipine göre ana ya da yardımcı sargı bağlantısının göreli yönü değiştirilir.','Gösterilen iki kontaktör üç fazlı motorda iki fazın yerini değiştirir; tek faz yardımcı sargı terminalleri ve dönüş bağlantısı yoktur.'],
+ ['04','MISSING_SYNCHRONOUS_MOTOR_MODEL','Senkron motorda rotor manyetik alanı stator döner alanıyla senkron hızda kilitlenir; kutup sayısı ve besleme frekansı belirleyicidir.','Kayıtlı ürün motor-3p asenkron motordur; uyartım, rotor senkronizasyonu, yük açısı ve senkron hız doğrulaması yoktur.'],
+ ['05','MISSING_AUX_STARTER_MOTOR','Yardımcı motorla senkron motoru yol verme uygulamasında ayrı bir tahrik motoru, kuplaj ve senkrona bağlama/ayırma kontrolü gerekir.','Kayıtlı şemada tek motor-3p vardır; ikinci yardımcı motor, mekanik kuplaj ve senkronizasyon geçişi bulunmaz.'],
+ ['06','MISSING_INDUCTION_START_OF_SYNCHRONOUS','Senkron motoru asenkron gibi başlatmak için uygun damper sargısı/başlatma düzeni ve senkron alana geçiş izlenmelidir.','Devre tek üç fazlı asenkron motor ileri/geri kumandasıdır; senkron rotor, uyartım ve senkrona çekilme koşulu gösterilmez.'],
+ ['07','NO_WIRED_CIRCUIT','Senkron motora invertörle yol vermede VFD çıkış frekansı, gerilim/akım sınırları ve motora uygun sürüş yöntemi gerekir.','Bu kartta VFD ile senkron motor yalnız malzeme referansıdır; çıkış uçları kablolanmamış, hız/frekans rampası simüle edilmemiştir.'],
+ ['08','MISSING_PERMANENT_MAGNET_SYNCHRONOUS','Sabit mıknatıslı senkron motorun rotoru kalıcı mıknatıslıdır; sürücü ile akım/faz komütasyonu ve rotor pozisyonu ilişkisi belirlenir.','Gösterilen ürün üç fazlı asenkron motor-3p ve kontaktörlü ileri/geri devresidir; sabit mıknatıslı rotor veya uygun PMSM sürücü modeli yoktur.']
+];
+for(const [suffix,issue,concept,limitation] of mq07SpecialMotorScope164to171){
+ const id='motor-special-src-'+suffix,lesson=L.byId[id],ref=suffix==='07';
+ if(!lesson||lesson.kind!==(ref?'quiz':'wiring')||!!lesson.project.wires.length===ref)
+  throw Error('MQ07 SC164–171 structural mismatch: '+id);
+ const p=lesson.project;
+ if(ref){
+  if(p.components.length!==2||!p.components.some(c=>c.typeId==='vfd')||!p.components.some(c=>c.typeId==='tutorial-synchronous-motor'))
+   throw Error('MQ07 SC170 VFD reference changed');
+ }else if(p.wires.length!==30||!p.components.some(c=>c.typeId==='supply-3p')||
+   !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.id==='coilF')||!p.components.some(c=>c.id==='coilR'))
+  throw Error('MQ07 SC164–171 protected 3-phase motor graph changed: '+id);
+ lesson.summary=concept+' Bu dersin ekrandaki ürünleri başlıktaki motoru tam olarak temsil etmez.';
+ lesson.explanation=concept+' '+limitation+' Gerçek Node sonucu yalnız çizilen devrenin davranışına aittir; tek faz/senkron motor veya fiziksel şebeke çalışması doğrulanmamıştır.';
+ lesson.learningGoal=concept+' Gösterilen devreyle motorun gerçek sargı/rotor yapısını ayırt edebilmek.';
+ lesson.beginnerSteps=[
+  'Ekrandaki besleme ve motor ürün etiketlerini incele.',
+  'Motorun ana/yardımcı sargı veya senkron rotor uçlarını gerçek şemadan ayır.',
+  limitation,
+  'Eksik motor/sürücü modeli veya gerçek fiziksel ölçüm olmadan başlıktaki motor işlevine PASS verme.'
+ ];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC164_SC171',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  specialMotorAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
 const mq07BrakingScope156to163=[
  ['01','BRAKE_OVERVIEW_YDELTA_SUBSTITUTE','Frenleme sistemleri motorun enerjisinin kesilmesinden farklı olarak mekanik veya elektriksel yavaşlama/enerji kontrolünü hedefler.','Bu örnek yıldız–üçgen yol verme, zamanlı geçiş ve STOP ile beslemeyi kesme devresidir; mekanik fren, dinamik fren veya DC enjeksiyon devresi değildir.'],
