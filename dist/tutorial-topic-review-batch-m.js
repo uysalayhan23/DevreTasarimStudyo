@@ -25,11 +25,29 @@ const rules={
 'number-systems':['Taban dönüşümü, sayı değerini ve basamak ağırlıklarını korur.','Her tabanın basamak ağırlığı aynıdır.','Dönüşüm sayı değerini rastgele değiştirir.']
 };
 const generic=new Set(['Bu derste ekrandaki malzemeler neden özellikle seçildi?','Motor dersinde yük olarak hangi eleman gösterilmelidir?','Bu derste incelenen eleman türü hangisidir?','Bu derste sinyal işleme için merkezde hangi eleman bulunur?','PLC dersinde elektriksel karar/lojik işlemi yapan temel cihaz hangisidir?','PE koruma iletkeninin temel görevi nedir?','Motor hızını frekans değiştirerek kontrol eden cihaz hangisidir?','Servo sisteminde motor hareketini kontrollü yapan ana ikili hangisidir?','Paralel kollarda ortak olan büyüklük hangisidir?']);
-const seen=new Set(),stats={version:'topic-review-m1',scanned:0,replaced:0,richUntouched:0,keptNonGeneric:0,missingRules:[],byTopic:{}};
+/* MQ07_TOPIC_REVIEW_11: eleven circuit-specific sensor questions are deliberately preserved. */
+const sourceSpecificSensorIds=new Set([
+ 'sensor-analog-apps-src-02','sensor-analog-apps-src-03','sensor-analog-apps-src-04',
+ 'sensor-analog-apps-src-05','sensor-analog-apps-src-06','sensor-analog-apps-src-07',
+ 'sensor-analog-apps-src-08','sensor-analog-apps-src-09','sensor-analog-apps-src-10',
+ 'sensor-analog-apps-src-13','sensor-analog-apps-src-14'
+]);
+const seen=new Set(),stats={version:'topic-review-m1',scanned:0,replaced:0,richUntouched:0,keptNonGeneric:0,sourceSpecificPreserved:0,missingRules:[],byTopic:{}};
 for(const lesson of L.lessons){
  if(lesson.designStandard==='rich-reference-v1'){stats.richUntouched++;continue}
  stats.scanned++;
- if(!generic.has(lesson.quiz?.question)){stats.keptNonGeneric++;continue}
+ if(!generic.has(lesson.quiz?.question)){
+  stats.keptNonGeneric++;
+  if(sourceSpecificSensorIds.has(lesson.id)){
+   const q=lesson.quiz;
+   if(lesson.topicId!=='sensor-analog-apps'||!q||!q.question||!Array.isArray(q.options)||q.options.length<3||q.answer!==0||!q.why)
+    throw Error('Source-specific sensor quiz requires manual review: '+lesson.id);
+   lesson.topicReview={version:stats.version,scope:'source-specific-quiz-preserved',sourceLesson:lesson.id,
+    sourceQuestionPreserved:true,simulationAcceptance:false,visualAcceptance:false,sourceCircuitPreserved:true};
+   stats.sourceSpecificPreserved++;
+  }
+  continue;
+ }
  const options=rules[lesson.topicId];if(!options){stats.missingRules.push(lesson.id);continue}
  const title=String(lesson.title||lesson.topic||lesson.id).trim();
  let question='“'+title+'” konusunda hangi temel teknik ilke doğrudur?';
@@ -39,5 +57,7 @@ for(const lesson of L.lessons){
  lesson.topicReview={version:stats.version,scope:'topic-check-only-not-rich-acceptance',sourceLesson:lesson.id,simulationAcceptance:false,visualAcceptance:false,sourceCircuitPreserved:true};
  stats.replaced++;stats.byTopic[lesson.topicId]=(stats.byTopic[lesson.topicId]||0)+1;
 }
+if(stats.sourceSpecificPreserved!==sourceSpecificSensorIds.size||stats.sourceSpecificPreserved!==11)
+ throw Error('Source-specific sensor topic-review coverage changed: '+stats.sourceSpecificPreserved);
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
