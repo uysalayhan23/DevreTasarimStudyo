@@ -5173,6 +5173,41 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
  l.safety='Yalnız sanal düşük gerilimli eğitim; fiziksel cihaz, ısı veya elektrik güvenlik kabulü değildir.';
 }
 
+
+/* MQ07_SC266_SC279_FET_IGBT_SCOPE: reference cards are not verified live MOSFET/JFET/IGBT circuits. */
+const mq07FetIgbtRows=[["electronic-switching-outline-029","SINGLE_JFET_NOT_ALL_FET_FAMILIES",["j113-jfet","resistor"],"FET ailesinde kapı alan etkisiyle kanalın kontrol edilmesi temel ilkedir.","Kart yalnız J113 JFET ile direnç gösterir; tüm FET türlerinin terminal/karakteristik/ölçüm karşılaştırmasını yapmaz."],["electronic-switching-outline-030","FET_VARIETIES_REFERENCE_ONLY",["j113-jfet","irf540n-mosfet"],"JFET ve MOSFET farklı kapı yapısı ve sürme koşullarına sahip alan etkili transistörlerdir.","Önceki tek JFET ve direnç kartı, J113 ve IRF540N örnekleriyle düzeltildi; tür tablosu, ölçüm veya işleyen anahtarlama bulunmaz."],["electronic-switching-outline-031","JFET_TERMINALS_NOT_MEASURED",["j113-jfet","resistor"],"JFET üzerinde G/D/S görevleri ve kapı-kanal özellikleri ayrı incelenmelidir.","J113 sembolü bulunur, ancak gerçek G/D/S uç ölçümü veya bias çalışma eğrisi yoktur."],["electronic-switching-outline-032","MOSFET_TERMINALS_NOT_MEASURED",["irf540n-mosfet","resistor"],"MOSFET gate, drain ve source uçlarının model etiketleriyle tanınması gerekir.","IRF540N malzeme kartı fiziksel sağlamlık veya çalışan MOSFET sürme devresi değildir."],["electronic-switching-outline-033","NO_JFET_MOSFET_HEALTH_TEST",["j113-jfet","irf540n-mosfet"],"JFET ve MOSFET sağlamlık kontrolü cihaz türüne özgü uç ve ölçüm kanıtı gerektirir.","Önceki tek MOSFET kartına J113 eklendi; ölçü aleti, prob bağlantısı ve gerçek arıza tespit sonucu yoktur."],["electronic-switching-outline-034","NO_FET_RC_DELAY_RUNTIME",["j113-jfet","resistor","capacitor"],"FET gecikmeli durdurma başlığı enerji depolama, RC yolu ve kontrollü çıkış davranışı gerektirir.","J113 ve direnç yanına kondansatör kavramı eklendi. Kablo, RC yük/deşarj yolu, eşik ve ölçülmüş gecikme yoktur; MOSFET uygulamasıyla eşdeğer sayılmaz."],["electronic-switching-outline-035","NO_MOSFET_HEALTH_EXERCISE",["irf540n-mosfet","resistor"],"MOSFET sağlamlık uygulamasında modelin G/D/S uçları ile doğrulanabilir test sonucu gerekir.","IRF540N referansı gerçekte ölçülmüş MOSFET testi veya üretici uygunluk kanıtı değildir."],["motor-direct-power-outline-021","NO_MOSFET_PWM_MOTOR_SPEED_RUNTIME",["irf540n-mosfet","virtual-pwm-generator-v1","motor-dc"],"DC motor hız kontrolünde PWM komut kaynağı, MOSFET güç yolu ve motor yükü farklı işlevlerdir.","PWM, IRF540N ve DC motor kavramı aynı kartta gösterilir; kontrol/güç uçları kablosuzdur ve değişen motor hızı veya RPM kanıtlanmamıştır."],["electronic-switching-outline-036","NO_IGBT_SWITCHING_RUNTIME",["fga25n120antd-igbt","resistor"],"IGBT gate kontrolü ve kolektör-emiter güç yolu ayrı değerlendirilir.","IGBT ve direnç referansı gerçek sürücü ve yük anahtarlama devresi değildir."],["electronic-component-basics-outline-018","NO_IGBT_CHARACTERISTIC_MEASUREMENT",["fga25n120antd-igbt","resistor"],"IGBT birleşik MOS kapı ve bipolar iletim ilkesiyle açıklanır.","Tek IGBT örneğinde VGE, VCE veya anahtarlama ölçümü bulunmaz."],["electronic-component-basics-outline-019","NO_IGBT_INTERNAL_STRUCTURE_MEASUREMENT",["fga25n120antd-igbt","resistor"],"IGBT iç yapısı kapı yalıtımı ve akım taşıyan yarıiletken katmanlarla ilişkilidir.","Malzeme kartı ayrıntılı fiziksel kesit veya çip ölçümü değildir."],["electronic-component-basics-outline-020","SINGLE_IGBT_NOT_FULL_DEVICE_VARIETY",["fga25n120antd-igbt","resistor"],"IGBT çeşitleri paket, gerilim, akım ve anahtarlama özelliklerine göre ayrılır.","Kart yalnız tek FGA25N120ANTD örneği taşır; çeşitlerin karşılaştırması veya üretici katalog kabulü değildir."],["electronic-component-basics-outline-021","NO_AC_IGBT_DIMMER_RUNTIME",["fga25n120antd-igbt","supply-1p","standard-light"],"IGBT ile dimmer kavramında kontrollü anahtar, kaynak ve yük ayrı görevler üstlenir.","AC kaynak, IGBT ve lambanın kablosuz referansı gerçek AC faz-kesme veya PWM dimmer devresi değildir; şebeke bağlantısı/ışık eğrisi gösterilmez."],["electronic-switching-outline-037","NO_SCR_TRIGGER_LATCH_CIRCUIT",["tyn612rg-scr","arduino-bench-supply","resistor"],"Tristör tetikleme ve tutma davranışı kapı komutu, anot-katot yük yolu ve tutma akımıyla değerlendirilir.","SCR, DC kaynak ve direnç kablosuz malzeme kartıdır; latch, tetik ve akım davranışı simüle edilmemiştir."]];
+const mq07FetIgbtFixes={"electronic-switching-outline-030":{"old":["j113-jfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["irf540n-mosfet","IRF540N MOSFET"]]},"electronic-switching-outline-033":{"old":["irf540n-mosfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["irf540n-mosfet","IRF540N MOSFET"]]},"electronic-switching-outline-034":{"old":["j113-jfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["resistor","Direnç"],["capacitor","RC zamanlama kondansatörü"]]},"motor-direct-power-outline-021":{"old":["irf540n-mosfet","motor-dc"],"parts":[["irf540n-mosfet","IRF540N MOSFET"],["virtual-pwm-generator-v1","PWM kavramı"],["motor-dc","DC motor"]]}};
+for(const [id,issue,types,concept,limitation] of mq07FetIgbtRows){
+ const l=L.byId[id],p=l?.project;
+ if(!l||!p||l.kind!=='quiz'||p.referenceOnly!==true||p.wires.length!==0)
+  throw Error('MQ07 SC266-279 canonical source changed '+id);
+ const fix=mq07FetIgbtFixes[id];
+ if(fix){
+  const actual=p.components.map(c=>c.typeId);
+  if(actual.length!==fix.old.length||fix.old.some((type,i)=>actual[i]!==type))
+   throw Error('MQ07 reference baseline changed '+id);
+  const replacement=board(id,l.title,fix.parts);
+  replacement.projectId=p.projectId;replacement.name=p.name;
+  replacement.tutorialLesson={...p.tutorialLesson,phase:'quiz'};
+  l.project=replacement;l.materials=materialRows(replacement);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:replacement.components.map(c=>c.typeId)};
+ }
+ const current=l.project.components.map(c=>c.typeId);
+ if(current.length!==types.length||types.some((type,i)=>current[i]!==type))
+  throw Error('MQ07 SC266-279 unexpected device set '+id);
+ l.summary=concept+' Bu kart gerçek kablolu veya onaylı devre değildir.';
+ l.explanation=concept+' '+limitation+' Sanal malzeme referansı, üretici test veya gerçek fiziksel güvenlik kabulü yerine geçmez.';
+ l.learningGoal=concept+' Başlığı mevcut malzeme ve doğrulanmış simülasyon sınırlarıyla karşılaştırmak.';
+ l.beginnerSteps=['Cihaz kimliklerini, görevlerini ve sıfır kablo durumunu kontrol et.',
+  'Kavramsal ilke: '+concept,limitation,
+  'Elektriksel ölçüm, gerçek sürme veya dinamik test kanıtı olmadan PASS verme.'];
+ l.safety='Yalnız çevrimdışı sanal malzeme referansıdır. Gerçek motor, şebeke, ısı veya elektronik güvenlik kontrolü yapılmamıştır.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07FetIgbtScope:'SC266_SC279',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
