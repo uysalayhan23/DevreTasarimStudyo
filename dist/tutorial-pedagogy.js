@@ -4544,6 +4544,36 @@ for(const id of ['electronic-switching-src-13','electronic-switching-src-14']){
  l.safety='Sadece sanal 24 VDC optik PNP röle deneyi; fiziksel IR alıcı-verici, bobin koruma ve gerçek cihaz güvenliği onaylı değildir.';
 }
 
+
+/* MQ-07 SC35: wiring demonstrates signal roles, not proven clap firmware. */
+{
+ const l=L.byId['sensor-analog-apps-src-16'],p=l?.project;
+ if(!l||l.kind!=='wiring'||p?.components?.length!==4||p?.wires?.length!==8)
+  throw Error('MQ07 SC35 protected sound-sensor topology changed');
+ const expected=[['ps','arduino-bench-supply'],['s1','arduino-sound-sensor'],
+  ['u1','arduino-uno'],['bz','arduino-buzzer']];
+ if(expected.some(([id,typeId])=>!p.components.some(c=>c.id===id&&c.typeId===typeId)))
+  throw Error('MQ07 SC35 source component mismatch');
+ l.summary='Sanal 5 V ses sensörü → Arduino D2 dijital giriş → D9 buzzer çıkışı bağlantıları; alkışla otomatik tetikleme için çalışan Arduino programı ayrıca doğrulanmalıdır.';
+ l.explanation='Kablolu eğitim şemasında PS1 5 VDC besleme sensör VCC/GND, UNO 5V/GND ve buzzer VCC/GND hatlarına gider. Ses sensörünün DO çıkışı UNO D2 girişine, UNO D9 çıkışı buzzer SIG girişine bağlıdır. Bu fiziksel bağlantı düzeni ses algılama, sayısal giriş, karar mantığı ve çıkış sürme katmanlarını ayırt etmeyi öğretir. Ancak şema üzerinde bir Arduino programının gerçekten yüklendiği, alkış eşiğinin tanımlandığı, DO olayının D9 çıkışını değiştirdiği, buzzerın çalıştığı veya gerçek desibel ölçümü yapıldığı bu çalışma paketinde doğrulanmamıştır. Program yürütme kanıtı olmadan OFF→ON→OFF ya da otomatik alkışla çalışma PASS değildir; yalnız 5 V sanal ders modelidir.';
+ l.learningGoal='PS1→ses sensörü VCC/GND, DO→UNO D2, UNO D9→buzzer SIG bağlantılarını ayırmak ve otomatik alkış tepkisi için doğrulanmış program gereksinimini açıklamak.';
+ l.beginnerSteps=[
+  'PS1 kaynağının sanal 5 V ve ortak 0 V hatlarını incele.',
+  'Ses sensörü VCC/GND ve dijital DO uçlarını tanı.',
+  'DO→UNO D2 bağlantısının yalnız giriş sinyali taşıdığını doğrula.',
+  'UNO D9→buzzer SIG bağlantısını çıkış sinyal yolundan ayır.',
+  'Çalışan Arduino programı olmadan alkışın buzzerı otomatik tetiklediğini iddia etme.',
+  'Gerçek ses seviyesi, algılama eşiği ve buzzer akımı için ölçüm kanıtının eksik olduğunu belirt.'
+ ];
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  mq07ClapCircuit:{components:4,wires:8,programExecutionVerified:false,
+   automaticClapResponseVerified:false,actualDbCalibrationVerified:false,
+   fullNodeSuiteExecuted:false,windowsVisualAcceptance:false},
+  physicalAcceptance:false,independentPedagogicalAcceptance:false,
+  windowsVisualAcceptance:false};
+ l.safety='Yalnız sanal 5 V bağlantı eğitimi; gerçek alkış algılama, Arduino programı ve buzzer sürme güvenliği doğrulanmamıştır.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
