@@ -15,7 +15,7 @@ test('SC20 target real component pins, wired load and no physical acceptance',()
  assert.equal(lesson.project.wires.length,19);
  assert.equal(lesson.steps.length,19);
  assert.equal(part(lesson.project,'q1').typeId,'irf540n-mosfet');
- assert.deepEqual(defs['irf540n-mosfet'].pins.map(p=>p.id),['G','D','S']);
+ assert.deepEqual(Array.from(defs['irf540n-mosfet'].pins.map(p=>p.id)),['G','D','S']);
  for(const k of ['physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'])
   assert.equal(lesson.pedagogyReview[k],false);
 });
