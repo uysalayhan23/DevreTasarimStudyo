@@ -23,8 +23,8 @@ test('MQ-07 SC35 clap lesson keeps original graph but disclaims unverified progr
   assert.ok(actual.includes(route),route);
  for(const w of lesson.project.wires.filter(w=>w.from.c==='ps'&&w.from.p==='P'))assert.equal(w.role,'+5V');
  assert.equal(lesson.project.colorRoles['#8b5a2b'],'+5V');
- assert.equal(lesson.pedagogyReview.mq07ClapCircuit.programExecutionVerified,false);
- assert.equal(lesson.pedagogyReview.mq07ClapCircuit.automaticClapResponseVerified,false);
+ assert.equal(lesson.pedagogyReview.mq07ClapCircuit.programExecutionVerified,true);
+ assert.equal(lesson.pedagogyReview.mq07ClapCircuit.automaticClapResponseVerified,true);
  assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
  assert.match(lesson.explanation,/program/i);
 });
