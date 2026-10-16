@@ -1092,6 +1092,7 @@ function explicitTitleProject(l){
  const t=l.title.toLocaleLowerCase('tr-TR'),id=l.id,title=l.title;
  if(id==='sensor-analog-apps-src-13')return {p:industrialSensorLoadProject(id,title,'proximity','Endüktif PNP sensör'),kind:'wiring'};
  if(id==='sensor-analog-apps-src-14')return {p:industrialSensorLoadProject(id,title,'sensor-through-beam','Optik PNP algılama sensörü'),kind:'wiring'};
+ if(id==='sensor-analog-apps-src-15')return topicBoard(id,title,[['tutorial-solar-cell','Fotovoltaik güneş hücresi'],['unit-ut33d-plus','DC gerilim ölçme aracı'],['resistor','Temsili direnç yükü']]);
  // MQ-07 targeted correction: an NTC lesson must actually contain an NTC, not RV1.
  if(id==='opamp-apps-src-08')return {p:resistiveSensorComparatorProject(id,title,'sensor-ntc','NTC sıcaklık sensörü'),kind:'wiring'};
  if(id==='opamp-apps-src-07')return {p:resistiveSensorComparatorProject(id,title,'ldr-gl5528','LDR foto direnç'),kind:'wiring'};
