@@ -2422,6 +2422,29 @@ for(const [suffix,issue,wired,concept,limits] of mq07PlcFollowup201to203){
   plcAdvancedLogicAcceptance:false};
 }
 
+
+/* MQ07_SC204_SC213_VFD_SERVO: no-wire source truth, protect quizzes and remove unrelated DOL steps. */
+const mq07DriveScope204to213=[["01","NO_VFD_ARCHITECTURE_PARAMETER_EVIDENCE",["sinamics-v20-1p","motor-3p"],"VFD çıkış frekansı ve gerilimiyle motor davranışını düzenleme ilkesi.","Sürücü kablosu, parametre değerleri veya ölçülmüş motor çalışması yoktur."],["02","NO_VFD_START_STOP_WIRING",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"VFD START/STOP işlevi kontrol kaynağı ve sürücünün duruş tanımına bağlıdır.","Butonlar V20'ye bağlı değildir, start/stop çalışma kanıtı yoktur."],["03","NO_VFD_REVERSE_CONTROL_WIRING",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"VFD yön komutu uygun sürücü mantığıyla değerlendirilir, doğrudan motor faz değiştirmesi değildir.","Kablolu yön seçimi, parametreler ve ölçülmüş ileri/geri hareket yoktur."],["04","NO_VFD_POT_ANALOG_REFERENCE",["sinamics-v20-1p","motor-3p","potentiometer"],"Potansiyometre referansı doğru analog giriş ve ölçekleme ister.","Potansiyometre-V20 analog bağlantısı veya ölçülen hız sonucu yoktur."],["05","NO_MAINTAINED_DIRECTION_SELECTOR",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"Kalıcı yön seçici ve anlık NO/NC basma düğmeleri aynı davranışta değildir.","Kalıcı seçim cihazı, VFD kablosu veya işleyen yön komutu yoktur."],["06","NO_VFD_COMBINED_IO_CONTROL",["sinamics-v20-1p","motor-3p","potentiometer","push-no","push-nc"],"START/STOP, yön ve analog hız ayrı sürücü komutlarıdır.","Buton/pot kontrol hatları, VFD parametreleri veya birlikte çalışan komut dizisi yoktur."],["07","NO_PLC_VFD_COMMAND_CHANNEL",["plc-hw-6es7211-1ae40-0xb0","sinamics-v20-1p","motor-3p"],"PLC–VFD kontrolü desteklenen komut ve geri bildirim arayüzü ister.","PLC ile V20 arasında kablo, program, haberleşme veya motor kontrolü yoktur."],["08","NO_VFD_NAMEPLATE_PARAMETER_WRITE",["sinamics-v20-1p","motor-3p"],"Etiket verilerinin sürücü ayarına eşlenmesi kaynak ve model kontrolü gerektirir.","Motor etiket veri seti, V20 parametre yazma/okuma kanıtı yoktur."],["09","NO_PLC_SERVO_CONNECTION",["plc-hw-6es7211-1ae40-0xb0","hcfa-sv-x2ea040a-a","hcfa-sv-x2mh040a-n2ln"],"PLC, servo sürücü ve servo motor kumandası ayrı işlevsel katmanlardır.","Kablo, hareket programı, geri bildirim veya doğrulanmış servo hareketi yoktur."],["10","NO_SERVO_PARAMETER_MOTION_VERIFICATION",["plc-hw-6es7211-1ae40-0xb0","hcfa-sv-x2ea040a-a","hcfa-sv-x2mh040a-n2ln"],"Servo ayarı kontrol modu ve motor-geribildirim uyumuna bağlıdır.","Servo parametre kayıtları, ölçüm veya yürütülen hareket yoktur."]];
+for(const [suffix,issue,expected,concept,limitation] of mq07DriveScope204to213){
+ const id='vfd-servo-control-src-'+suffix,lesson=L.byId[id],p=lesson?.project;
+ if(!lesson||!p||lesson.kind!=='quiz'||p.referenceOnly!==true||p.wires.length!==0)
+  throw Error('MQ07 VFD/servo canonical no-wire lesson changed '+id);
+ const types=p.components.map(c=>c.typeId);
+ if(types.length!==expected.length||expected.some((type,i)=>types[i]!==type))
+  throw Error('MQ07 VFD/servo canonical components changed '+id);
+ lesson.summary=concept+' Bu kart kablolu veya çalışan bir sürücü devresi değildir.';
+ lesson.explanation=concept+' '+limitation+' Yalnız kaynak malzemesi incelenir; gerçek ürün veya motor kabulü verilmez.';
+ lesson.learningGoal=concept+' Malzeme referansını kanıtlanmış sanal devre ve fiziksel ölçümden ayırmak.';
+ lesson.beginnerSteps=['Önce bu referans kartında kablo bulunmadığını tespit et.','Kavram: '+concept,limitation,
+  'Sürücü işlevi, parametre veya hareket çalıştırılmadığı için PASS verme.'];
+ lesson.powerExplanation='Bu kartta motor güç devresi veya sürücü kumanda hattı kablolanmamıştır; gerçek elektriksel güvenlik doğrulaması değildir.';
+ lesson.powerSteps=[];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07DriveScope:'SC204_SC213',
+  titleTopologyIssue:issue,titleTopologyStatus:'REVIEW',physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  driveRuntimeAcceptance:false,manufacturerParameterAcceptance:false};
+}
+
 /* MQ07_SC172_SC181_MOTOR_SEQUENCE: preserve canonical DOL; disclose absent multiple motors and control. */
 const mq07SequenceScope172to181=[
  ['01','MISSING_SECOND_MOTOR_SEQUENCING','İki motor sıralı kumandası M1/M2, K1/K2 ve ikinci motoru başlatan koşul gerektirir.','Kaydedilmiş devre tek motorlu START–mühürleme–STOP devresidir; ikinci motor veya sıra yoktur.'],
