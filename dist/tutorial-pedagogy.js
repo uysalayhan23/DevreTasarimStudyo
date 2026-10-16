@@ -5066,6 +5066,36 @@ for(const [suffix,issue,concept,limits] of mq07PanelRows){
   panelEngineeringAcceptance:false,electricalSafetyAcceptance:false};
 }
 
+
+/* MQ07_SC228_SC237_WORKSHOP_SCOPE: accurate reference materials, original quizzes preserved. */
+const mq07WorkshopRows=[["01","NO_WORKSHOP_HAZARD_ASSESSMENT","tutorial-ppe","Atölye güvenliğinde genel risk değerlendirmesi ve gözetimli çalışma gerekir.","Kart yalnız KKD referansı; gerçek risk kontrolü gözlenmedi."],["02","NO_PPE_SUITABILITY_VERIFICATION","tutorial-ppe","KKD seçimi uygunluk ve risk koşullarına göre değerlendirilir.","Görsel KKD, gerçek uygunluk belgesi veya kullanım yeterliği değildir."],["03","NO_DIMENSION_MEASUREMENT_EVIDENCE","tutorial-hand-tools","Uzunluk kontrolü ölçü aracı, tolerans ve birim bilgisi gerektirir.","Kartta kalibre ölçüm cihazı, gerçek mm okuması veya kontrol sonucu yok."],["04","NO_CUTTING_VISE_PROCESS_VERIFICATION","tutorial-hand-tools","Kesme ve mengene farklı ve gözetim gerektiren işlemlerdir.","Yalnız genel el aleti referansı; gerçek işlem sonucu yok."],["05","NO_DRILLING_FASTENER_PROCESS_VERIFICATION","tutorial-hand-tools","Delme ve vidalama ayrı araçlar ve güvenlik değerlendirmeleri gerektirir.","Yalnız genel el aleti görseli; montaj veya işlem kanıtı yok."],["06","NO_SURFACE_BENDING_PROCESS_VERIFICATION","tutorial-hand-tools","Eğeleme, zımparalama ve bükme malzeme yüzey/şekil işlemleridir.","Kart gerçek parça, ölçüm veya işleme kalitesi kanıtı değildir."],["07","NO_SOLDER_JOINT_QUALITY_TEST","tutorial-soldering,tutorial-soldering","Lehim türü ve bağlantı kalitesi ayrı kavramlardır.","İki lehimleme aracı referansı var; lehimli bağlantı/kalite testi yok."],["08","NO_CONDUCTOR_SPLICE_SOLDER_JOINT","tutorial-conductor-cable,tutorial-soldering","İletken eki ve lehimli bağlantı malzeme ve kalite bakımından ayrı değerlendirilir.","İletken ve lehimleme referansı var; gerçek ek, bağlantı veya ölçüm yok."],["09","NO_PERFORATED_BOARD_SOLDER_VERIFICATION","tutorial-pcb,tutorial-soldering","Delikli plaket bileşen taşıyıcı ve bağlantı kavramlarını gösterir.","Gerçek lehimli plaket, bileşen yerleşimi veya devre testi yok."],["10","NO_PCB_PREPARATION_INSPECTION_EVIDENCE","tutorial-pcb,tutorial-soldering","PCB hazırlama ve kontrol farklı tasarım ve kalite kanıtları gerektirir.","Gerçek üretim çıktısı, ölçüm ve PCB test sonucu yok."]];
+for(const [suffix,reason,partSpec,concept,limitation] of mq07WorkshopRows){
+ const id='workshop-safety-mechanics-src-'+suffix,l=L.byId[id],p=l?.project;
+ if(!l||!p||l.kind!=='quiz'||p.referenceOnly!==true||p.wires.length)
+  throw Error('MQ07 workshop canonical scope changed: '+id);
+ if(suffix==='08'){
+  if(p.components.length!==2||p.components[0].typeId!=='tutorial-conductor-cable'||p.components[1].typeId!=='terminal-2')
+   throw Error('MQ07 conductor lesson original reference changed: '+id);
+  const q=board(id,l.title,[['tutorial-conductor-cable','İletken/kablo'],['tutorial-soldering','Lehimleme referansı']]);
+  q.projectId=p.projectId;q.name=p.name;q.tutorialLesson={...p.tutorialLesson,phase:'quiz'};
+  l.project=q;l.materials=materialRows(q);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:q.components.map(c=>c.typeId)};
+ }
+ const expected=partSpec.split(','),actual=l.project.components.map(c=>c.typeId);
+ if(actual.length!==expected.length||expected.some((x,i)=>actual[i]!==x))
+  throw Error('MQ07 workshop parts mismatch '+id);
+ l.summary=concept+' Bu kayıt kablolu gerçek atölye deneyi değildir.';
+ l.explanation=concept+' '+limitation+' Fiziksel işlev/kalite veya güvenlik kabulü verilmemiştir.';
+ l.learningGoal=concept+' Kaynak kartını gerçekten doğrulanmış atölye çalışmasından ayırmak.';
+ l.beginnerSteps=['Karttaki malzemeleri ve kablo olmadığını belirle.','Kavram: '+concept,
+  limitation,'Gerçek işlem veya ölçüm kanıtı olmadan PASS verme.'];
+ l.safety='Yalnız kavramsal referanstır; gerçek kesme, delme, ısı, enerjili cihaz veya atölye işi onaylı değildir. Gerçek uygulama yetkin yetişkin gözetimi gerektirir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07WorkshopScope:'SC228_SC237',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  workshopProcessAcceptance:false,toolSafetyAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
