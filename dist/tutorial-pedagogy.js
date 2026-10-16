@@ -2334,6 +2334,38 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
+const mq07StartSpeedScope144to155=[
+ ['01',null,'Paket şalter konumları 0, YILDIZ ve ÜÇGEN olarak seçilir; kayıtlı altı uçlu motor bu konumlarla sınanabilir.','Paket şalterli yıldız/üçgen seçimi Node modelinde doğrulanabilir; güvenlik, gerçek kalkış akımı ve mekanik performans ölçülmemiştir.'],
+ ['02',null,'START ile ana kontaktör ve yıldız kontaktörü etkinleşir, zaman rölesinin ardından yıldız açılıp üçgen devreye girer.','Zaman geçişi ve karşılıklı kilitleme Node durumlarında görülebilir; fiziksel kontaktör mekanik kilidi veya gerçek şebeke uygunluğu kanıtı değildir.'],
+ ['03',null,'Otomatik yıldız–üçgen devresinde mühürleme, zaman rölesi, karşılıklı NC kilitleme ve iki durum lambası vardır.','Dersin iki kontaktörlü durum değişimi, ortak besleme ve STOP tepkisi Node ile sınanabilir; gerçek kalkış akımı ve fiziksel güvenlik ayrı kabul ister.'],
+ ['04','NO_WIRED_CIRCUIT','Soft starter, kontrollü kalkış gerilimi/akımı için uygun bir güç elektroniği sürücüsüdür.','Bu kartta yalnız ürün referansları bulunur; besleme, motor ve kumanda kablosu ya da rampa/akım simülasyonu yoktur.'],
+ ['05','NO_WIRED_CIRCUIT','Ototransformatör ile yol verme, kalkışta motora azaltılmış gerilim uygulamak için uygun güç ve geçiş yolu gerektirir.','Ototransformatör/motor malzemeleri listelenir; kademeli çıkış, bypass, kumanda veya akım ölçümü kurulu değildir.'],
+ ['06','MISSING_SERIES_START_RESISTORS','Dirençle yol verme, başlangıçta motor besleme yolunda seri güç dirençleri ve daha sonra dirençlerin devreden çıkarıldığı bir anahtarlama yolu gerektirir.','Kaydedilmiş devre seri kalkış direnci içermez; yıldız–üçgen kontaktör/zaman rölesi devresi vardır. Dirençle yol verme başarılı kabul edilemez.'],
+ ['07','NO_WIRED_CIRCUIT','Dahlander motorun düşük devir çalışması sargı bağlantısı ve kutup sayısı değişimine bağlıdır.','Kart kablosuzdur; gösterilen Dahlander motorun gerçek düşük devir uçları, kontaktör ve güç devresi bağlanmamıştır.'],
+ ['08','NO_WIRED_CIRCUIT','Dahlander motorun yüksek devir çalışması uygun farklı sargı/kutup düzeni ve kilitli geçiş gerektirir.','Kart kablosuzdur; yüksek devir kontaktör bağlantısı ve ölçülmüş hız bulunmaz.'],
+ ['09','NO_WIRED_CIRCUIT','Dahlander düşükten yükseğe zaman ayarlı geçişi için ayrı kontaktör yolları, zaman rölesi ve geçiş kilitlemesi gerekir.','Kartta gerçek timer, kontak kablosu ve düşük–yüksek geçiş dizisi bulunmaz.'],
+ ['10','NO_WIRED_CIRCUIT','Dahlander ileri/geri ve iki hız kontrolü, yön kontaktörleri ile hız kontaktörlerinin karşılıklı kilitlenmesini gerektirir.','Bu kart referanstır; yön değiştiren veya hız seçen güç ve kumanda kabloları bulunmaz.'],
+ ['11','MISSING_STARTING_CURRENT_MEASUREMENT','Kalkış akımının şebekeye etkisi değerlendirilirken kalkış anındaki akım, gerilim düşümü ve zamana bağlı motor yükü ölçülmelidir.','Kayıtlı devre ileri/geri motor kontaktörlerini gösterir; akım sensörü, kalkış akımı eğrisi veya şebeke gerilim düşümü modeli bulunmaz.'],
+ ['12','MISSING_STAR_TIMER_SELECTION','Yıldız çalışma süresinin seçilmesi, yıldızdan üçgene geçiş süresi ve motorun hızlanma koşullarının birlikte değerlendirilmesini gerektirir.','Kayıtlı devre ileri/geri kontaktör bağlantılarıdır; yıldız kontaktörü, üçgen kontaktörü veya ayarlanabilir geçiş timerı bulunmaz.']
+];
+for(const [suffix,issue,concept,limitation] of mq07StartSpeedScope144to155){
+ const id='motor-start-speed-src-'+suffix,lesson=L.byId[id];
+ if(!lesson)throw Error('MQ07 SC144–155 missing '+id);
+ const i=Number(suffix),isRef=[4,5,7,8,9,10].includes(i),p=lesson.project;
+ if((lesson.kind==='quiz')!==isRef||(p.wires.length===0)!==isRef)throw Error('MQ07 SC144–155 structure changed '+id);
+ if(i===6&&p.components.some(c=>c.typeId==='resistor'))throw Error('SC149 starting resistance requires new assessment');
+ if(i>=11&&p.components.some(c=>/coil-delay|current-sensor|ammeter/.test(c.typeId)))throw Error('SC154–155 sensor or timer found; reassess');
+ lesson.summary=concept+' Ekrandaki mevcut devrenin sınırlarını kontrol et.';
+ lesson.explanation=concept+' '+limitation+' Gerçek şebeke veya fiziksel motor güvenliği bu derste kabul edilmemiştir.';
+ lesson.learningGoal=concept+' Başlıktaki işlev ile gerçekten çizilmiş bileşenleri ayırabilmek.';
+ lesson.beginnerSteps=['Gösterilen ürünleri ve bağlı terminal sayılarını kontrol et.',concept,limitation,
+  'Eksik donanım veya gerçek ölçüm yerine yalnız açıklamadan elektriksel PASS verme.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC144_SC155',
+  titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 
 /* MQ07_SC126_SC143_MOTOR: no replacement of canonical project wires or products.
  * Distinguish a shared DOL sample from a working lesson-specific function.
