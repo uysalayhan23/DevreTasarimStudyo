@@ -66,7 +66,7 @@ test('motor and PLC review ledger keeps canonical SC order and unresolved title 
  assert.deepEqual(Array.from(report.rows,r=>r.scNumber),Array.from({length:200},(_,i)=>i+1));
  for(const [scene,id,reason] of [
   [194,'plc-hardware-programming-src-13','TWO_STATION_NATIVE_PENDING'],
-  [195,'plc-hardware-programming-src-14','MISSING_REVERSE_MOTOR_CONTACTOR']
+  [195,'plc-hardware-programming-src-14','REVERSING_NATIVE_PENDING']
  ]){
   const row=report.rows[scene-1],candidate=scope.issues.find(r=>r.scNumber===scene);
   assert.ok(candidate,'Unresolved PLC title mismatch missing from live ledger: SC'+scene);
@@ -74,7 +74,7 @@ test('motor and PLC review ledger keeps canonical SC order and unresolved title 
   assert.equal(candidate.id,id);
   assert.equal(candidate.titleIssue,reason);
   assert.equal(candidate.titleStatus,'REVIEW');
-  assert.equal(candidate.wireCount,scene===194?22:18);
+  assert.equal(candidate.wireCount,scene===194?22:scene===195?30:18);
   assert.equal(candidate.physicalAcceptance,false);
   assert.equal(candidate.windowsVisualAcceptance,false);
   assert.equal(candidate.independentPedagogicalAcceptance,false);
