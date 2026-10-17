@@ -2420,7 +2420,7 @@ const mq07PlcScope182to200=[
  ['11','NO_WIRED_CIRCUIT','Ara vaviyen benzeri iki noktadan anahtarlamada girişlerin XOR/kenar veya durum mantığıyla yorumlanması gerekir.','İki anahtar sinyali, gerçek PLC girişleri ve yazılmış program bu kartta yoktur.'],
  ['12',null,'PLC ile motora doğrudan yol vermede X10:7 START ve X10:8 STOP koşulları çıkış X12:3 üzerinden kontaktör bobinini yönetir.','Mevcut sanal start-stop-latch programı, kontaktörün ana kontaklarını ve üç fazlı motorun çalışmasını gösterir; gerçek termik koruma ve şebeke testi değildir.'],
  ['13','TWO_STATION_NATIVE_PENDING','Birden fazla noktadan PLC motor kumandası, iki istasyonun START girişlerini OR, iki bağımsız NC STOP girişini AND mantığıyla ve STOP önceliğiyle değerlendirir.','S1 START X10:7 / S0 STOP X10:8 ile ikinci S2 START X10:9 / S3 STOP X10:10 fiziksel uçları ayrı bağlanmıştır; PLC iki istasyonlu mühürleme programı için sanal dinamik/Windows kabul henüz yapılmamıştır.'],
- ['14','MISSING_REVERSE_MOTOR_CONTACTOR','İleri-geri motor kumandası iki yön kontaktörü, karşılıklı kilitleme ve iki fazın yer değiştirdiği ayrı güç yolları gerektirir.','Mevcut tek kontaktör ve start-stop-latch programı yalnız bir yönde DOL çalıştırır; ikinci kontaktör, yön seçimi ve interlock bulunmaz.'],
+ ['14','REVERSING_NATIVE_PENDING','PLC ileri–geri motor kumandasında K1 ileri ve K2 geri yön kontaktörleri ayrı DO çıkışlarından sürülür, karşılıklı NC kilitleri ve iki fazın takasıyla ters yön güç yolu kurulur.','İleri S1 X10:7 ve geri S2 X10:9 girişleri, NC STOP X10:8, X12:3/K1 ve X12:4/K2 çıkışları fiziksel olarak bağlanmıştır. K1/K2 karşılıklı 21–22 NC yardımcı kontakları seri kilitler; 3 faz güç yolunun yön/çakışma ve yerel Windows çalışması henüz native kabul edilmemiştir.'],
  ['15','NO_WIRED_CIRCUIT','SET/RESET mantığı bir bitin tutulması ve sıfırlanması için iki farklı giriş koşulu tanımlar.','Kartta PLC, START/STOP butonları referans olarak vardır; gerçek SET/RESET programı yürütülmez.'],
  ['16','NO_WIRED_CIRCUIT','Tek butonla çalıştır-durdur için yükselen kenarda saklanan durumu tersleyen toggle mantığı gerekir.','Tek butonlu program ve giriş kenarı simülasyonu bu kartta yoktur.'],
  ['17','NO_WIRED_CIRCUIT','Kenar tetiklemesi, girişin 0→1 ya da 1→0 geçişinde yalnız tek çevrimlik olay üretir.','Çalışan kenar algılama programı veya PLC tarama çevrimi izlemesi bulunmaz.'],
@@ -2457,18 +2457,70 @@ function mq07BuildTwoStationPlc(lesson){
   color:w.color,role:w.role,size:w.size
  })));
 }
+/* MQ07 SC195: actual forward / reverse motor topology, confined to this
+   source lesson. Two power paths swap L1/L3; K1/K2 auxiliary NC contacts
+   interlock coil power electrically as a second gate beside PLC logic. */
+function mq07BuildReversingPlc(lesson){
+ const p=lesson.project,baseline=p?.wires||[];
+ const oldIndex=baseline.findIndex(w=>w.from?.c==='plc'&&w.from.p==='X12:3'&&
+   w.to?.c==='coil'&&w.to.p==='A1');
+ if(baseline.length!==18||oldIndex<0||!Array.isArray(lesson.steps)||
+    p.components.some(c=>['reverse','coilR','mainR','ncF','ncR'].includes(c.id))||
+    !p.components.some(c=>c.id==='coil'&&c.typeId==='coil-contactor'&&c.ref==='K1')||
+    !p.components.some(c=>c.id==='main'&&c.typeId==='main-contact'&&c.ref==='K1'))
+  throw Error('SC195 original PLC DOL baseline changed, refusing reversal rewrite');
+ // The original forward control lead is rerouted through K2's NC contact.
+ // All 17 other DOL wires, the original motor and the PE connection remain.
+ p.wires.splice(oldIndex,1);
+ lesson.steps.splice(oldIndex,1);
+ const reverse=C('reverse','push-no',490,490,'S2','GERİ START · S2',{
+  tutorialPurpose:'Geri yön komutu X10:9 DI a.2; yalnız iki yön kontaktörü bırakılmışken geri yön başlatılır.'});
+ const coilR=C('coilR','coil-contactor',1050,690,'K2','K2 · geri yön bobini',{
+  tutorialPurpose:'PLC X12:4 DQ a.1 ve K1 21–22 NC kilidi izin verirse geri yön ana güç kontaktörünü çeker.'});
+ const mainR=C('mainR','main-contact',1270,530,'K2','K2 · geri güç kontakları',{
+  tutorialPurpose:'L1/L3 faz sırası ters motor güç yolu. K1 ile aynı anda etkinleşmemelidir.'});
+ const ncF=C('ncF','contact-nc',850,660,'K1','K1 · NC 21–22 kilit',{
+  tutorialPurpose:'K1 ileri kontaktörü aktifken K2 geri bobin yolunu fiziksel olarak kesen NC yardımcı kontaktır.'});
+ const ncR=C('ncR','contact-nc',850,510,'K2','K2 · NC 21–22 kilit',{
+  tutorialPurpose:'K2 geri kontaktörü aktifken K1 ileri bobin yolunu fiziksel olarak kesen NC yardımcı kontaktır.'});
+ p.components.push(reverse,coilR,mainR,ncF,ncR);
+ const added=[
+  W('ps','P','reverse','13','+24 V → geri START/13','Geri yön butonunun ayrı giriş beslemesidir.','#8b5a2b','+24V'),
+  W('reverse','14','plc','X10:9','Geri START/14 → X10:9','PLC DI a.2 geri yön girişidir.','#43a047','SIGNAL'),
+  W('plc','X12:3','ncR','21','Q0.0 ileri çıkış → K2 NC','Geri kontaktör aktifken ileri yön bobin beslemesi kesilir.','#43a047','SIGNAL'),
+  W('ncR','22','coil','A1','K2 NC → K1 bobin','İleri bobini yalnız K2 serbestken çekebilir.','#43a047','SIGNAL'),
+  W('plc','X12:4','ncF','21','Q0.1 geri çıkış → K1 NC','İleri kontaktör aktifken geri yön bobin beslemesi kesilir.','#43a047','SIGNAL'),
+  W('ncF','22','coilR','A1','K1 NC → K2 bobin','Geri bobini yalnız K1 serbestken çekebilir.','#43a047','SIGNAL'),
+  W('coilR','A2','ps','M','K2/A2 → 0V','Geri kontaktör bobin dönüşüdür.','#111827','0V'),
+  ...[['L1','1','#e53935'],['L2','3','#f97316'],['L3','5','#f4c430']].map(([phase,pin,color])=>
+    W('ac',phase,'mainR',pin,phase+' → K2/'+pin,'K2 geri güç kontaktörü girişidir.',color,phase,'2.5')),
+  ...[['2','W','L1','#e53935'],['4','V','L2','#f97316'],['6','U','L3','#f4c430']].map(([pin,motor,phase,color])=>
+    W('mainR',pin,'motor',motor,'K2/'+pin+' → M1/'+motor,
+      'K2 geri yolunda L1/L3 motor U/W uçlarında yer değiştirir.',color,phase,'2.5'))
+ ];
+ p.wires.push(...added);
+ p.components.find(c=>c.id==='plc').plcProgram='forward-reverse-interlocked';
+ lesson.materials.push(...materialRows({components:[reverse,coilR,mainR,ncF,ncR]}));
+ lesson.steps.push(...added.map(w=>({
+  from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,
+  color:w.color,role:w.role,size:w.size
+ })));
+}
 for(const [suffix,issue,concept,limits] of mq07PlcScope182to200){
  const id='plc-hardware-programming-src-'+suffix,lesson=L.byId[id],i=Number(suffix);
  const wired=[4,5,6,12,13,14].includes(i),p=lesson?.project;
  if(i===13)mq07BuildTwoStationPlc(lesson);
- if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?(i===13?22:18):0)||
+ if(i===14)mq07BuildReversingPlc(lesson);
+ if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?(i===13?22:i===14?30:18):0)||
     !p.components.some(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0'))
   throw Error('MQ07 SC182–SC200 PLC canonical card changed: '+id);
  if(wired){
   if(p.components.filter(c=>c.typeId==='motor-3p').length!==1||
-     p.components.filter(c=>c.typeId==='coil-contactor').length!==1||
-     p.components.filter(c=>c.typeId==='push-no').length!==(i===13?2:1)||
-     p.components.filter(c=>c.typeId==='push-nc').length!==(i===13?2:1))
+     p.components.filter(c=>c.typeId==='coil-contactor').length!==(i===14?2:1)||
+     p.components.filter(c=>c.typeId==='push-no').length!==(i===13||i===14?2:1)||
+     p.components.filter(c=>c.typeId==='push-nc').length!==(i===13?2:1)||
+     (i===14&&(p.components.filter(c=>c.typeId==='main-contact').length!==2||
+       p.components.filter(c=>c.typeId==='contact-nc').length!==2)))
    throw Error('MQ07 PLC DOL hardware mismatch '+id);
  }
  lesson.summary=concept+' Gösterilen kartın gerçek bağlantı kapsamı sınırlıdır.';
