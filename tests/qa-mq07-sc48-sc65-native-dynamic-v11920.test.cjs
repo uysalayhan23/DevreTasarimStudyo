@@ -97,6 +97,11 @@ test('SC50 original solver: independent DC transfer sweep through 1N4148 feedbac
  assert.ok(rows.every(x=>Number.isFinite(x.v)),'Missing DC transfer samples');
  assert.ok(rows[0].v>rows[4].v+1,'DC rectifier did not distinguish input above/below Vref');
  assert.ok(rows[2].v>rows[4].v+1,'SC50 active and inactive half-wave states indistinguishable');
+ // Native meter-voltmeter measures a nonnegative magnitude. Require the
+ // solver's own A/K conduction state as an independent physical-direction
+ // discriminator; magnitude alone could conceal a reversed output.
+ assert.equal(rows[2].diode,true,'SC50 D1 should conduct for RV1=25% (Vin>Vref)');
+ assert.equal(rows[4].diode,false,'SC50 D1 should block for RV1=75% (Vin<Vref)');
  assert.ok(Math.abs(rows[6].v)<2,'Below Vref, output is not near the reference');
  assert.equal(L.byId['opamp-apps-src-15'].pedagogyReview.acWaveformAcceptance,false);
  // Do not extrapolate these DC potentiometer points into a sinusoidal AC PASS.
