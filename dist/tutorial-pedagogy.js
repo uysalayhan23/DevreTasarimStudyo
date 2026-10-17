@@ -3615,7 +3615,7 @@ const mq07MotorScope126to143=[
  ['08','MISSING_PACKAGE_SWITCH','Paket şalter ile kontrol, şalterin ayrı kontak ve anahtarlama durumlarını gerektirir.','Kartta paket şalter bulunmaz; START/STOP ve kontaktörlü DOL örneği gösterilir.'],
  ['09','MISSING_ON_DELAY_RELAY','Düz zaman rölesinin zamanlama ve kontak davranışı, seçilen gecikme ve bağlantıya göre sınanmalıdır.','Bu devrede zaman rölesi veya gecikmeli kontak yoktur; DOL START/STOP örneği zaman ayarlı durdurma kanıtı değildir.'],
  ['10','MISSING_OFF_DELAY_RELAY','Ters zaman/gecikmeli bırakma için ayrı zamanlayıcı/kontak davranışı ve durdurma dizisi gerekir.','Kartta zaman rölesi ve zaman gecikmeli bırakma yolu yoktur; DOL devresinin anlık STOP sonucu gecikme kanıtı değildir.'],
- ['11','MISSING_SPEED_CONTROL','İki yönlü motor kumandasında çapraz kilitleme ve iki sınır NC kontağı bulunur.','Kart ileri/geri kontaktörlerinin yön ve sınır durdurma mantığını gösterir; farklı motor devir hızı/tek başına otomatik ters dönüş kanıtlanmaz.'],
+ ['11','MISSING_SPEED_CONTROL','Üç fazlı motorun devir hızı besleme frekansı ve kutup sayısına bağlıdır; hız ayarı için uygun VFD, motor etiketi ve hız referansı gerekir.','V20, motor ve potansiyometre kablosuz ürün referansıdır; sürücü çıkış frekansı, mekanik RPM veya dinamik hız kontrolü burada simüle edilmez.'],
  ['12','MISSING_SINGLE_BUTTON_TOGGLE','Tek butonla aç/kapa hafıza veya darbe rölesi gibi durum saklayan mantık gerektirir.','Kartta ayrı START ve STOP butonları bulunur; tek butonlu toggle devresi değildir.'],
  ['13','MISSING_PROTECTION_RELAY','Koruma rölesiyle motor çalıştırmada gerçek koruma algısı ve açtırma kontak yolu doğrulanmalıdır.','Bu kartta ayrı koruma rölesi yer almaz; yalnız kontaktörlü DOL devresi vardır.'],
  ['14',null,'Sağ/sol kontrol iki kontaktör, karşılıklı NC kilitleme ve karşı yönde iki fazın yer değiştirmesiyle temsil edilir.','Sanal devrenin yön geçişini ve iki bobinin aynı anda etkin olmamasını gerçek Node çözümüyle doğrula.'],
@@ -3632,6 +3632,10 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const p=lesson.project;
  const actual=suffix==='01'?'motor etiketi ve altı klemens referansı':
   suffix==='11'?'VFD hız kontrolü ürün referansı':
+  suffix==='08'?'0/Y/Δ paket şalteri ve altı klemensli motor':
+  suffix==='10'?'K0 komutlu KT gecikmeli bırakma ve K1 motor kontaktörü':
+  suffix==='12'?'tek S1 butonlu KP darbe rölesi ve K1 motor kontaktörü':
+  suffix==='16'?'L1/L2/L3/N girişli F1 faz izleme ve K1 başlatma kilidi':
   suffix==='17'?'limitli otomatik geri dönüş':
   p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
   p.components.some(c=>c.typeId==='motor-y-d')?'altı terminalli yıldız–üçgen':
@@ -3678,10 +3682,16 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
   'Gerçek üç kutuplu F1 termik rölesi motor güç yolu ve 95–96 NC kontaktör izniyle bağlandı; yalnız aşırı yük termik koruma örneğidir, bütün koruma röleleri veya üretici güvenliği temsil edilmez.':
   suffix==='09'?
   'Gerçek zaman röleli yıldız/üçgen kumandasında on-delay ve NC kilitleme ile motor kontaktörleri zaman sıralı çalışır; diğer zaman rölesi türleri bu örnekte gösterilmez.':limitation;
- lesson.summary=concept+' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.';
+ lesson.summary=concept+(p.referenceOnly?' Bu sayfa kablosuz '+actual+' kartıdır.':' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.');
  lesson.explanation=concept+' '+note+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
  lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
- lesson.beginnerSteps=['Önce ekrandaki gerçek motor/kontaktör/buton ürünlerini belirle.',
+ lesson.beginnerSteps=p.referenceOnly?[
+  'Bu kartın kablosuz ürün referansı olduğunu ve motor START/STOP devresi kurulmadığını doğrula.',
+  'Katalogdaki ürün rollerini başlıkla karşılaştır: '+actual+'.',
+  note,
+  'Gerçek üretici etiketi veya hız ölçümü olmadan elektriksel PASS verme.'
+ ]:[
+  'Önce ekrandaki gerçek motor/kontaktör/buton ürünlerini belirle.',
   'Sanal bağlantıların hangi işlevi desteklediğini kontrol et: '+actual+'.',
   note,
   'Sadece gerçek Node çıktısıyla çalışmayı yorumla; eksik başlık işlevine veya fiziksel kuruluma PASS verme.'];
