@@ -4187,108 +4187,6 @@ for(const [index,notes] of Object.entries(mq07ReferenceScope72to82)){
 
 
 
-/* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
- * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
- * No golden project or global solver mutation. */
-function mq07WirePassiveRcLesson(lesson,notch){
- const old=lesson?.project,ids=['lm358p-dip8','resistor','capacitor'];
- if(!old||lesson.kind!=='quiz'||old.referenceOnly!==true||old.wires.length||
-    lesson.steps.length||old.components.map(c=>c.typeId).join(',')!==ids.join(',')||
-    lesson.materials.length!==3)
-  throw Error('MQ07 passive RC baseline mismatch '+lesson?.id);
- const p=base(lesson.id,lesson.title),f=notch?'çentik twin-T':'bant geçiren RC';
- function part(id,type,ref,label,value,why,x,y){
-  p.components.push(C(id,type,x,y,ref,label,{...value,tutorialPurpose:why}));
- }
- function path(a,ap,b,bp,hint,why){
-  p.wires.push(W(a,ap,b,bp,hint,why,'#43a047','SIGNAL'));
- }
- part('gen','arduino-signal-generator','FG1','Düşük gerilimli sanal işaret kaynağı',
-  {generatorFrequency:159,generatorAmplitude:2},
-  'FG1 OUT/GND sanal giriş kaynağıdır. Kaynak genliği veya çıkış frekansı gerçek ölçüm değildir.',100,300);
- if(notch){
-  part('r1','resistor','R1','10 kΩ üst T kolu',{resistance:10000},
-   'Twin-T R-R kolunun ilk seri direnci.',350,160);
-  part('r2','resistor','R2','10 kΩ üst T kolu',{resistance:10000},
-   'Twin-T R-R kolunun ikinci seri direnci.',730,160);
-  part('c3','capacitor','C3','200 nF · 2C şönt',{capacitance:200e-9},
-   'R-R orta düğümünü 2C üzerinden ortak GND ye bağlar.',500,430);
-  part('c1','capacitor','C1','100 nF alt T kolu',{capacitance:100e-9},
-   'Twin-T C-C kolunun ilk seri kondansatörüdür.',350,650);
-  part('c2','capacitor','C2','100 nF alt T kolu',{capacitance:100e-9},
-   'Twin-T C-C kolunun ikinci seri kondansatörüdür.',730,650);
-  part('r3','resistor','R3','5 kΩ · R/2 şönt',{resistance:5000},
-   'C-C orta düğümünü R/2 üzerinden ortak GND ye bağlar.',510,870);
-  path('gen','OUT','r1','1','FG1 OUT → R1/1','Dirençli üst T girişi.');
-  path('r1','2','r2','1','R1/2 → R2/1','Üst T orta düğümü.');
-  path('r1','2','c3','1','R1/2 → C3/1','Üst kol 2C şönt bağlantısı.');
-  path('c3','2','gen','GND','C3/2 → FG1 GND','Üst şönt dönüşü.');
-  path('gen','OUT','c1','1','FG1 OUT → C1/1','Kapasitif alt T girişi.');
-  path('c1','2','c2','1','C1/2 → C2/1','Alt T orta düğümü.');
-  path('c1','2','r3','1','C1/2 → R3/1','Alt kol R/2 şönt bağlantısı.');
-  path('r3','2','gen','GND','R3/2 → FG1 GND','Alt şönt dönüşü.');
-  path('r2','2','c2','2','R2/2 → C2/2','Üst/alt T çıkış düğümü.');
- }else{
-  part('c1','capacitor','C1','1 µF giriş seri',{capacitance:1e-6},
-   'İlk yüksek geçiren RC kolunun seri elemanıdır.',330,210);
-  part('r1','resistor','R1','10 kΩ yüksek geçiş şönt',{resistance:10000},
-   'C1 çıkışından GND ye bağlanan ilk RC dönüşüdür.',530,460);
-  part('r2','resistor','R2','10 kΩ alçak geçiş seri',{resistance:10000},
-   'İkinci RC kademesinin seri direncidir; yükleme etkisi ölçülmedi.',750,210);
-  part('c2','capacitor','C2','10 nF alçak geçiş şönt',{capacitance:10e-9},
-   'İkinci RC katının çıkış şönt kondansatörüdür.',980,460);
-  path('gen','OUT','c1','1','FG1 OUT → C1/1','Yüksek geçiş seri kondansatör.');
-  path('c1','2','r1','1','C1/2 → R1/1','İlk RC çıkış düğümü.');
-  path('r1','2','gen','GND','R1/2 → FG1 GND','İlk RC dönüşü.');
-  path('c1','2','r2','1','C1/2 → R2/1','İkinci RC girişi.');
-  path('r2','2','c2','1','R2/2 → C2/1','İkinci RC çıkış düğümü.');
-  path('c2','2','gen','GND','C2/2 → FG1 GND','İkinci RC dönüşü.');
- }
- part('v1','meter-voltmeter','V1','Sanal çıkış voltmetresi · AC kabul değil',{},
-  'Çıkışa paralel voltmetre uçları vardır; kalibre AC RMS, frekans taraması, kazanç ve kesim derinliği doğrulanmamıştır.',1190,370);
- path('v1','1',notch?'c2':'r2','2','V1/1 → RC çıkış','Çıkış referansı; ölçülen AC bant eğrisi iddia edilmez.');
- path('v1','2','gen','GND','V1/2 → FG1 GND','Çıkış ortak dönüşü.');
- p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
- const parts=new Map(p.components.map(c=>[c.id,c]));
- if(parts.size!==p.components.length||new Set(p.wires.map(w=>w.id)).size!==p.wires.length||
-    p.components.length!==(notch?8:6)||p.wires.length!==(notch?11:8)||
-    p.wires.some(w=>!parts.has(w.from?.c)||!parts.has(w.to?.c)))
-  throw Error('MQ07 RC topology graph incomplete '+lesson.id);
- lesson.project=p;lesson.kind='wiring';lesson.workspaceMode=p.workspaceMode;
- lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
-  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
- lesson.materials=materialRows(p);
- const topology=notch
-  ?'Dirençli R1–R2 kolu ve C3=2C şöntü ile kapasitif C1–C2 kolu ve R3=R/2 şöntü giriş/çıkışları birleşen pasif twin-T çentik ağıdır.'
-  :'C1 seri/R1 şönt yüksek geçiş ve R2 seri/C2 şönt alçak geçiş olmak üzere iki pasif RC aşaması ardışık bağlanmıştır.';
- const boundary='Devre pasif RC bağlantı örneğidir; aktif LM358 filtresi değildir. Frekans cevabı, bant genişliği, çentik zayıflatması ve V1 AC RMS göstergesi native/Windows toplu QA olmadan doğrulanmamıştır.';
- lesson.summary=topology+' Kablo kaynak grafiği oluşturuldu; native frekans sonucu bekleniyor.';
- lesson.explanation=topology+' FG1 OUT düşük gerilim giriş, FG1 GND ortak dönüş ve V1 çıkış uçları kablolanmıştır. '+boundary;
- lesson.learningGoal='Gerçek kayıtlı '+f+' terminallerini izlemek, pasif RC davranışının kuramsal amacı ile ölçülmemiş dinamik sonucu ayırmak.';
- lesson.beginnerSteps=[
-  'Sanal FG1 OUT ile GND giriş uçlarını tanı; gerçek şebekeye bağlantı yapma.',
-  'Kılavuzdaki kabloları R/C terminal kimlikleriyle eşleştir.',
-  topology,'V1 çıkış referansını izle; doğrulanmamış AC ölçüm değeri uydurma.',boundary
- ];
- lesson.safety='Yalnız sanal düşük gerilimli RC devresi; fiziksel veya kalibre edilmiş filtre kabulü değildir.';
- lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
-  mq07FilterScope:'SC072_SC073_PASSIVE_RC',
-  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
-  titleTopologyIssue:notch?'TWIN_T_NOTCH_NATIVE_PENDING':'PASSIVE_BANDPASS_NATIVE_PENDING',
-  nativeFilterResponseAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
-  independentPedagogicalAcceptance:false};
-}
-for(const [suffix,notch] of [['20',false],['21',true]]){
- const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
- if(!lesson||!L.mq07Batch200.reviewIds.some(r=>r.id===id&&r.reason==='NO_WIRED_CIRCUIT'))
-  throw Error('MQ07 RC filter review baseline changed '+id);
- mq07WirePassiveRcLesson(lesson,notch);
- L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(r=>r.id!==id);
- L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
-}
-
-
-
 /* BELL_TRANSFORMER_V1: source circuits and learner explanations must agree. */
 for(const id of ['installation-systems-src-05','installation-systems-src-06']){
  const l=L.byId[id];if(!l)continue;
@@ -4869,6 +4767,109 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
+ * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
+ * No golden project or global solver mutation. */
+function mq07WirePassiveRcLesson(lesson,notch){
+ const old=lesson?.project,ids=['lm358p-dip8','resistor','capacitor'];
+ if(!old||lesson.kind!=='quiz'||old.referenceOnly!==true||old.wires.length||
+    lesson.steps.length||old.components.map(c=>c.typeId).join(',')!==ids.join(',')||
+    lesson.materials.length!==3)
+  throw Error('MQ07 passive RC baseline mismatch '+lesson?.id);
+ const p=base(lesson.id,lesson.title),f=notch?'çentik twin-T':'bant geçiren RC';
+ function part(id,type,ref,label,value,why,x,y){
+  p.components.push(C(id,type,x,y,ref,label,{...value,tutorialPurpose:why}));
+ }
+ function path(a,ap,b,bp,hint,why){
+  p.wires.push(W(a,ap,b,bp,hint,why,'#43a047','SIGNAL'));
+ }
+ part('gen','arduino-signal-generator','FG1','Düşük gerilimli sanal işaret kaynağı',
+  {generatorFrequency:159,generatorAmplitude:2},
+  'FG1 OUT/GND sanal giriş kaynağıdır. Kaynak genliği veya çıkış frekansı gerçek ölçüm değildir.',100,300);
+ if(notch){
+  part('r1','resistor','R1','10 kΩ üst T kolu',{resistance:10000},
+   'Twin-T R-R kolunun ilk seri direnci.',350,160);
+  part('r2','resistor','R2','10 kΩ üst T kolu',{resistance:10000},
+   'Twin-T R-R kolunun ikinci seri direnci.',730,160);
+  part('c3','capacitor','C3','200 nF · 2C şönt',{capacitance:200e-9},
+   'R-R orta düğümünü 2C üzerinden ortak GND ye bağlar.',500,430);
+  part('c1','capacitor','C1','100 nF alt T kolu',{capacitance:100e-9},
+   'Twin-T C-C kolunun ilk seri kondansatörüdür.',350,650);
+  part('c2','capacitor','C2','100 nF alt T kolu',{capacitance:100e-9},
+   'Twin-T C-C kolunun ikinci seri kondansatörüdür.',730,650);
+  part('r3','resistor','R3','5 kΩ · R/2 şönt',{resistance:5000},
+   'C-C orta düğümünü R/2 üzerinden ortak GND ye bağlar.',510,870);
+  path('gen','OUT','r1','1','FG1 OUT → R1/1','Dirençli üst T girişi.');
+  path('r1','2','r2','1','R1/2 → R2/1','Üst T orta düğümü.');
+  path('r1','2','c3','1','R1/2 → C3/1','Üst kol 2C şönt bağlantısı.');
+  path('c3','2','gen','GND','C3/2 → FG1 GND','Üst şönt dönüşü.');
+  path('gen','OUT','c1','1','FG1 OUT → C1/1','Kapasitif alt T girişi.');
+  path('c1','2','c2','1','C1/2 → C2/1','Alt T orta düğümü.');
+  path('c1','2','r3','1','C1/2 → R3/1','Alt kol R/2 şönt bağlantısı.');
+  path('r3','2','gen','GND','R3/2 → FG1 GND','Alt şönt dönüşü.');
+  path('r2','2','c2','2','R2/2 → C2/2','Üst/alt T çıkış düğümü.');
+ }else{
+  part('c1','capacitor','C1','1 µF giriş seri',{capacitance:1e-6},
+   'İlk yüksek geçiren RC kolunun seri elemanıdır.',330,210);
+  part('r1','resistor','R1','10 kΩ yüksek geçiş şönt',{resistance:10000},
+   'C1 çıkışından GND ye bağlanan ilk RC dönüşüdür.',530,460);
+  part('r2','resistor','R2','10 kΩ alçak geçiş seri',{resistance:10000},
+   'İkinci RC kademesinin seri direncidir; yükleme etkisi ölçülmedi.',750,210);
+  part('c2','capacitor','C2','10 nF alçak geçiş şönt',{capacitance:10e-9},
+   'İkinci RC katının çıkış şönt kondansatörüdür.',980,460);
+  path('gen','OUT','c1','1','FG1 OUT → C1/1','Yüksek geçiş seri kondansatör.');
+  path('c1','2','r1','1','C1/2 → R1/1','İlk RC çıkış düğümü.');
+  path('r1','2','gen','GND','R1/2 → FG1 GND','İlk RC dönüşü.');
+  path('c1','2','r2','1','C1/2 → R2/1','İkinci RC girişi.');
+  path('r2','2','c2','1','R2/2 → C2/1','İkinci RC çıkış düğümü.');
+  path('c2','2','gen','GND','C2/2 → FG1 GND','İkinci RC dönüşü.');
+ }
+ part('v1','meter-voltmeter','V1','Sanal çıkış voltmetresi · AC kabul değil',{},
+  'Çıkışa paralel voltmetre uçları vardır; kalibre AC RMS, frekans taraması, kazanç ve kesim derinliği doğrulanmamıştır.',1190,370);
+ path('v1','1',notch?'c2':'r2','2','V1/1 → RC çıkış','Çıkış referansı; ölçülen AC bant eğrisi iddia edilmez.');
+ path('v1','2','gen','GND','V1/2 → FG1 GND','Çıkış ortak dönüşü.');
+ p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ const parts=new Map(p.components.map(c=>[c.id,c]));
+ if(parts.size!==p.components.length||new Set(p.wires.map(w=>w.id)).size!==p.wires.length||
+    p.components.length!==(notch?8:6)||p.wires.length!==(notch?11:8)||
+    p.wires.some(w=>!parts.has(w.from?.c)||!parts.has(w.to?.c)))
+  throw Error('MQ07 RC topology graph incomplete '+lesson.id);
+ lesson.project=p;lesson.kind='wiring';lesson.workspaceMode=p.workspaceMode;
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ const topology=notch
+  ?'Dirençli R1–R2 kolu ve C3=2C şöntü ile kapasitif C1–C2 kolu ve R3=R/2 şöntü giriş/çıkışları birleşen pasif twin-T çentik ağıdır.'
+  :'C1 seri/R1 şönt yüksek geçiş ve R2 seri/C2 şönt alçak geçiş olmak üzere iki pasif RC aşaması ardışık bağlanmıştır.';
+ const boundary='Devre pasif RC bağlantı örneğidir; aktif LM358 filtresi değildir. Frekans cevabı, bant genişliği, çentik zayıflatması ve V1 AC RMS göstergesi native/Windows toplu QA olmadan doğrulanmamıştır.';
+ lesson.summary=topology+' Kablo kaynak grafiği oluşturuldu; native frekans sonucu bekleniyor.';
+ lesson.explanation=topology+' FG1 OUT düşük gerilim giriş, FG1 GND ortak dönüş ve V1 çıkış uçları kablolanmıştır. '+boundary;
+ lesson.learningGoal='Gerçek kayıtlı '+f+' terminallerini izlemek, pasif RC davranışının kuramsal amacı ile ölçülmemiş dinamik sonucu ayırmak.';
+ lesson.beginnerSteps=[
+  'Sanal FG1 OUT ile GND giriş uçlarını tanı; gerçek şebekeye bağlantı yapma.',
+  'Kılavuzdaki kabloları R/C terminal kimlikleriyle eşleştir.',
+  topology,'V1 çıkış referansını izle; doğrulanmamış AC ölçüm değeri uydurma.',boundary
+ ];
+ lesson.safety='Yalnız sanal düşük gerilimli RC devresi; fiziksel veya kalibre edilmiş filtre kabulü değildir.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  mq07FilterScope:'SC072_SC073_PASSIVE_RC',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:notch?'TWIN_T_NOTCH_NATIVE_PENDING':'PASSIVE_BANDPASS_NATIVE_PENDING',
+  nativeFilterResponseAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+for(const [suffix,notch] of [['20',false],['21',true]]){
+ const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||!L.mq07Batch200.reviewIds.some(r=>r.id===id&&r.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 RC filter review baseline changed '+id);
+ mq07WirePassiveRcLesson(lesson,notch);
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(r=>r.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
+
+
+
 {
  const id='electronic-switching-src-03',l=L.byId[id];
  if(!l||l.kind!=='quiz'||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
