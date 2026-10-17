@@ -14,6 +14,26 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
  if(!lesson.project||!Array.isArray(p.components)||!Array.isArray(p.wires))
   issues.push({code:'MISSING_PROJECT_GRAPH'});
  if(components.size!==parts.length)issues.push({code:'DUPLICATE_COMPONENT_ID'});
+ // Native wire/junction contacts are ID-based. Duplicate IDs turn an
+ // otherwise catalog-valid virtual probe target into an ambiguous route.
+ const duplicateWireIds=new Set(),wireIds=new Set();
+ for(const wire of wires){
+  if(wire.id==null||wire.id==='')continue;
+  if(wireIds.has(wire.id)){
+   duplicateWireIds.add(wire.id);
+   issues.push({code:'DUPLICATE_WIRE_ID',wireId:wire.id});
+  }
+  wireIds.add(wire.id);
+ }
+ const duplicateJunctionIds=new Set(),junctionIds=new Set();
+ for(const junction of p.junctions||[]){
+  if(junction.id==null||junction.id==='')continue;
+  if(junctionIds.has(junction.id)){
+   duplicateJunctionIds.add(junction.id);
+   issues.push({code:'DUPLICATE_JUNCTION_ID',junctionId:junction.id});
+  }
+  junctionIds.add(junction.id);
+ }
  const seen=new Set();
  for(const m of materials){
   const component=components.get(m.componentId),key=String(m.componentId);
@@ -76,6 +96,10 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
    const part=components.get(target?.c),partDef=definitions[part?.typeId];
    exists=!!partDef?.pins?.some(pin=>pin.id===target?.p);
   }
+  if(target?.w&&duplicateWireIds.has(target.w))
+   issues.push({code:'AMBIGUOUS_PROBE_WIRE_TARGET',componentId:c.id,wireId:target.w});
+  if(target?.j&&duplicateJunctionIds.has(target.j))
+   issues.push({code:'AMBIGUOUS_PROBE_JUNCTION_TARGET',componentId:c.id,junctionId:target.j});
   if(!exists)issues.push({code:'INVALID_PROBE_TARGET',componentId:c.id,target});
  }
  const review=lesson.pedagogyReview||{};
