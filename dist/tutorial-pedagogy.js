@@ -3734,6 +3734,122 @@ const mq07ArduinoScope110to125=[
  ['15','arduino-oled-i2c','I2C çevre birimi örneğinde UNO R3 SDA=A4, SCL=A5 ile OLED modülün SDA/SCL uçları eşleşir.','Çevre biriminin VCC ve GND bağlantısı, adres seçimi ve modüle uygun lojik seviyeler gerekir. Bu referans kartında I2C kabloları ve gerçek veri aktarımı yoktur.'],
  ['16','arduino-lm35','LM35 analog sıcaklık sensörü yaklaşık 10 mV/°C ölçekli analog çıkış üretir.','UNO analog girişi bu gerilimi okur; seçilen ADC referansı ve eşik/histerezis mantığı olmadan tam sıcaklık veya çıkış durumu ölçümü yapılmış sayılmaz.']
 ];
+/* MQ-07 SC110–SC125: one title-specific conceptual check per unwired Arduino card;
+   these questions are knowledge checks, never live firmware or measured output. */
+const mq07ArduinoTopicQuiz110to125={
+ "10": [
+  "Gösterilen I²C OLED ekranın UNO R3 veri/saat pinleri hangileridir?",
+  "SDA=A4 ve SCL=A5",
+  "TRIG=D2 ve ECHO=D3",
+  "M1/U ve M1/V",
+  "OLED için SDA/SCL ile VCC/GND gerekir; LCD1602 veya ölçülmüş ekran çıkışı iddia edilmez."
+ ],
+ "11": [
+  "DHT11 sensörünün temel iletişimi hangisidir?",
+  "Zamanlamalı tek dijital veri hattı",
+  "Doğrudan I²C SDA/SCL",
+  "Üç faz AC beslemesi",
+  "DHT11 normal I²C sensörü değildir; sıcaklık/nem okuması çalıştırılmış değildir."
+ ],
+ "12": [
+  "HX711 tartım uygulamasında doğru iş sırası nedir?",
+  "Yük hücresi köprüsü, HX711 DT/SCK ve kalibrasyon",
+  "Motor kontaktörü ile faz değişimi",
+  "OLED'in I²C adresini seçmek",
+  "HX711 çok küçük köprü işaretini sayısallaştırır; dara ve bilinen kütle kalibrasyonu gerekir."
+ ],
+ "13": [
+  "KY-040 rotary enkoderde yön bilgisi hangi işaretten çıkarılır?",
+  "A/B kanallarının kenar sırası",
+  "Yalnız VCC seviyesi",
+  "PWM LED parlaklığı",
+  "Enkoderin iki kanallı faz/kenar sırası dönüş yönüne yardımcı olur; gerçek sayaç yoktur."
+ ],
+ "14": [
+  "HC-05 ile Arduino seri haberleşmesinde hangi bağlantı ilkesi doğrudur?",
+  "TX ve RX çapraz, GND ortak ve RX seviyesi uygun olmalıdır",
+  "TX ile TX doğrudan, GND kullanılmaz",
+  "HC-05 motor faz sırasını ölçer",
+  "UART hatları ve uygun lojik seviyeler gereklidir; Bluetooth eşleştirmesi simüle edilmez."
+ ],
+ "15": [
+  "UNO R3 ile I²C OLED çevre biriminde hangi sinyal eşleşmesi gerekir?",
+  "UNO A4/SDA→OLED SDA ve A5/SCL→OLED SCL",
+  "UNO GND→OLED SDA ve 5V→OLED SCL",
+  "L1/L2/L3→OLED ekran",
+  "Kartta UNO ve OLED referansları vardır, gerçek I²C kablosu ve veri aktarımı yoktur."
+ ],
+ "16": [
+  "LM35 analog çıkışının sıcaklıkla yaklaşık ölçeği hangisidir?",
+  "10 mV/°C",
+  "10 A/°C",
+  "100 Hz/°C",
+  "LM35 çıkışı tipik 10 mV/°C ile değişir; UNO ADC referansı ve ölçüm sonucu bu kartta doğrulanmamıştır."
+ ],
+ "01": [
+  "Arduino UNO ile dijital LED çıkışında akımı hangi eleman sınırlar?",
+  "LED ile seri 220 Ω direnç",
+  "Yalnız GND kablosu",
+  "I²C saat hattı",
+  "LED akımı seri dirençle sınırlanır; kartta gerçek D13–LED devresi kablolanmamıştır."
+ ],
+ "02": [
+  "UNO INPUT_PULLUP modunda GND'ye basılan buton normalde hangi lojik değeri verir?",
+  "LOW",
+  "HIGH",
+  "PWM 255",
+  "INPUT_PULLUP ile giriş boşta HIGH, GND'ye bağlanınca LOW olur; bu kartta pin okuması çalıştırılmaz."
+ ],
+ "03": [
+  "LDR ile analog ışık ölçümünde hangi düzenek gereklidir?",
+  "LDR ve sabit dirençli gerilim bölücü",
+  "Tek başına GND'ye bağlı LED",
+  "Üç faz kontaktörü",
+  "LDR direnci ışıkla değişir; UNO analog girişine okunabilir gerilim için bölücü gerekir."
+ ],
+ "04": [
+  "HC-SR04 ECHO süresinden mesafe neden ikiye bölünerek hesaplanır?",
+  "Ses hedefe gidip sensöre geri döndüğü için",
+  "TRIG iki kez çalıştığı için",
+  "Sensörün iki GND pini olduğu için",
+  "ECHO ölçümü sesin gidiş-dönüş süresidir; bu referans kartında gerçek zaman/mesafe ölçümü yoktur."
+ ],
+ "05": [
+  "UNO A0 analogRead ile ADC0804 harici entegresi arasındaki doğru fark hangisidir?",
+  "UNO dahili ADC tipik 10-bit, ADC0804 ayrı 8-bit entegredir",
+  "ADC0804 UNO'nun dahili 10-bit birimidir",
+  "Her iki ürün dijital çıkış rölesidir",
+  "Katalogdaki ADC0804 yalnız harici entegre referansıdır; UNO A0 ile kablolu ölçüm kurulmamıştır."
+ ],
+ "06": [
+  "UNO PWM LED kontrolünde analogWrite değeri neyi değiştirir?",
+  "PWM darbe doluluk oranını",
+  "LED'in ölçülen lümen değerini doğrudan",
+  "I²C cihaz adresini",
+  "Uygun PWM pininde darbelerin doluluk oranı ayarlanır; fiziksel parlaklık kalibrasyonu yoktur."
+ ],
+ "07": [
+  "L298N ile PWM DC motor kontrolünde motor akımını hangi kat sağlar?",
+  "Uygun ayrı motor beslemesi ve sürücü güç katı",
+  "UNO dijital pininden doğrudan motor akımı",
+  "Yalnız HC-SR04 ECHO çıkışı",
+  "UNO komut verir; motor akımı ayrı sürücü ve uygun güç kaynağı üzerinden akar."
+ ],
+ "08": [
+  "SG90 servo kartında komut açısı neden gerçek hareket ölçümü sayılamaz?",
+  "Sinyal darbesi hedef bildirir; geri besleme ölçümü bu kartta yoktur",
+  "Servo yalnız LED'dir",
+  "Darbeler doğrudan motor akımını ölçer",
+  "Servo güç/GND/sinyal bağlantıları ve gerçek açı geri bildirimi bu kablosuz kartta çalıştırılmamıştır."
+ ],
+ "09": [
+  "CD4511 sürücüsü 7 segment göstergede neyi dönüştürür?",
+  "BCD giriş kodunu segment kumanda çıkışlarına",
+  "Analog sıcaklığı dijital nem verisine",
+  "Üç faz motor yönünü",
+  "CD4511 BCD-to-7-segment sürücüdür; akım sınırlama ve ortak katot bağlantısı gerektirir."
+ ]
+};
 for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
  const id='microcontroller-apps-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='quiz'||(lesson.project?.wires||[]).length||(suffix!=='15'&&!lesson.project.components.some(c=>c.typeId===chip)))
@@ -3767,6 +3883,14 @@ for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
  lesson.explanation=concept+' '+limitations+' Bu kartta gerçek kablo bağlantısı, çalışan Arduino programı veya ölçülmüş çıktı yoktur.';
  lesson.learningGoal=concept+' '+limitations;
  lesson.beginnerSteps=['Arduino UNO ve gerçek ürünün görevini karşılaştır.','İlgili pin/protokol kavramını oku: '+concept,limitations,'Gerçek kablo, program ve ölçüm kanıtı bulunmadan elektriksel PASS verme.'];
+ if(!mq07ArduinoTopicQuiz110to125[suffix]||!lesson.quiz||!Array.isArray(lesson.quiz.options)||lesson.quiz.options.length!==3)
+  throw Error('MQ07 Arduino quiz baseline changed: '+id);
+ lesson.quiz={
+  question:mq07ArduinoTopicQuiz110to125[suffix][0],
+  options:mq07ArduinoTopicQuiz110to125[suffix].slice(1,4),
+  answer:0,
+  why:mq07ArduinoTopicQuiz110to125[suffix][4]
+ };
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
