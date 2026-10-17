@@ -5413,6 +5413,47 @@ for(const [id,reason,expectedWires,partIds,concept,limits] of mq07OpticalRows){
  lesson.safety='Yalnız çevrimdışı sanal kavram/cihaz ve düşük gerilimli eğitim referansı; gerçek optik, elektriksel veya üretici cihaz güvenliği kabulü değildir.';
 }
 
+
+/* MQ07_SC350_SC363_OPAMP_FEEDBACK: LM358P real pins, virtual-probe output, fail-closed gain/dynamics. */
+const mq07Opamp350Rows=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0,"Negatif geri besleme, çıkış pin 1’den eviren giriş pin 2’ye uygun direnç dönüşüdür.","Malzeme kartında giriş ve geri besleme dirençleri var; gerçek kablo, ölçülen kazanç yok."],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14,"Bu genel başlık 14 telli yalnız eviren LM358P örneğini gösterir.","Diğer op-amp işlevleri ve kazanç dinamiği test edilmedi."],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14,"10 kΩ giriş, 47 kΩ negatif geri besleme pin 2’ye; pin 3 referansa gider.","Gerilim kazancı ve besleme sınırı farklı girişlerde ölçülmedi."],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13,"AC jeneratör pin 2’yi giriş direnci üzerinden sürer, çıkış pin 1 geri beslemeye bağlıdır.","Frekans cevabı, kırpılma ve genlik doğrulaması yok."],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14,"DC potansiyometre giriş direnciyle pin 2’ye, Rf çıkış pin 1’den pin 2’ye bağlıdır.","DC transfer eğrisi ve gerçek çıkış sınırları test edilmedi."],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",11,"Evirmeyen giriş pin 3’tedir; pin 2 dirençli negatif geri besleme düğümüdür.","Gerçek sayısal kazanç ve yük davranışı native olarak doğrulanmadı."],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10,"AC jeneratör pin 3’e bağlı, Rf çıkış pin 1’den pin 2’ye bağlıdır.","AC kazanç ve doyum sınırı native olarak ölçülmedi."],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",11,"DC potansiyometre pin 3’ü; çıkış geri beslemesi pin 2’yi besler.","Çoklu DC giriş/çıkış testi yok."],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8,"Gerilim izleyicide çıkış pin 1 doğrudan eviren giriş pin 2’ye döner.","Birim kazanç, çıkış akım ve farklı giriş gerilimleri native ölçülmedi."],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8,"Gerilim izleyici temrininde pin 1→pin 2 doğrudan geri beslemedir.","Girişe karşı gerçek sanal çıkış izleme ölçümü yapılmadı."],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11,"Karşılaştırıcıda ölçülen giriş pin 3, dirençli referans pin 2 ve çıkış pin 1’dir.","Çıkış sanal multimetre probuyla okunur; Schmitt histerezisi ve yeni ders için eşik taraması kanıtlanmadı."],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11,"Karşılaştırıcı temrini giriş pin 3, referans pin 2 ve çıkış pin 1 topolojisini gösterir.","Ölçüm probu modeli kabloyla aynı şey değildir; native eşik taraması yapılmadı."],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12,"GL5528 ve dirençli bölücü pin 3 girişini, referans bölücü pin 2’yi besler.","SC42 golden 12 tel grafiğiyle eşleşir; yeni outline lux→çıkış dinamik ölçümü yapılmadı."],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12,"NTC bölücüsü pin 3 girişini, referans bölücü pin 2’yi besler.","SC43 golden 12 tel grafiğiyle eşleşir; yeni outline °C→çıkış ölçümü yapılmadı."]];
+for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
+ const l=L.byId[id],before=l?.project;
+ if(!l||!before||before.wires.length!==expectedWires||
+    l.kind!==(expectedWires?'wiring':'quiz'))throw Error('MQ07 source topology changed '+id);
+ if(id==='opamp-apps-outline-021'){
+  const original=before.components.map(c=>c.typeId);
+  if(original.join(',')!=='lm358p-dip8,resistor,capacitor')
+   throw Error('SC350 source concept material changed');
+  const p=board(id,l.title,[['lm358p-dip8','LM358P DIP-8'],['resistor','Giriş direnci'],
+    ['resistor','Negatif geri besleme direnci']]);
+  p.projectId=before.projectId;p.name=before.name;
+  p.tutorialLesson={...before.tutorialLesson,phase:'quiz'};
+  l.project=p;l.materials=materialRows(p);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ const p=l.project,u=p.components.find(c=>c.typeId==='lm358p-dip8');
+ if(!u||p.wires.length!==expectedWires)throw Error('MQ07 LM358P scope changed '+id);
+ if(expectedWires){
+  const endpoint=(pin)=>p.wires.some(w=>(w.from.c===u.id&&w.from.p===pin)||
+   (w.to.c===u.id&&w.to.p===pin))||
+   p.components.some(c=>c.probeTarget?.c===u.id&&c.probeTarget?.p===pin);
+  for(const pin of ['1','2','3','4','8'])
+   if(!endpoint(pin))throw Error('MQ07 LM358P virtual terminal missing '+id+'/'+pin);
+  if(!p.components.some(c=>c.typeId==='unit-ut33d-plus'))
+   throw Error('MQ07 virtual voltmeter missing '+id);
+ }
+ l.summary=concept+' Kaynak ve işlev kabul sınırları ayrıca belirtilmiştir.';
+ l.explanation=concept+' '+limit+' Ekrandaki terminal ve probeTarget varlığı tek başına native, Windows veya fiziksel kabul değildir.';
+ l.learningGoal=concept+' Kaynak terminal ve geri besleme şemasını gerçek ölçüm kanıtından ayırt etmek.';
+ l.beginnerSteps=['LM358P 1/2/3/4/8 pinlerini ve varsa sanal prob hedeflerini incele.',
+  'Kavram: '+concept,limit,'Native dinamik veya fiziksel ölçüm olmadan PASS verme.'];
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07OpampScope:'SC350_SC363',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,nativeDynamicAcceptance:false,
+  feedbackGainAcceptance:false,manufacturerLimitsAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ l.safety='Yalnız sanal elektronik dersi; gerçek donanım, üretici sınırları ve elektrik güvenliği kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
