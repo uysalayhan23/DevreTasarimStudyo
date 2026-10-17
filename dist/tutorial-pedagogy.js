@@ -2851,6 +2851,66 @@ function mq07SeqTimedMotors(lesson,mode){
    to avoid mutating locked motor-forward-reverse-1. Each NC limit is placed
    AFTER both START and holding paths: no bypass around the limit switch.
    Reverse direction is still a separate manual request, not automatic. */
+/* SC178: START latches independent KM run relay. KT1 starts immediately:
+   K1 forward runs for 3 seconds. KT1 NC opens K1 at 3 s; a second KT2
+   delay adds a 1-second neutral interval before K2 reverse is allowed.
+   Original contactor cross-NC locks and opposite phase power paths stay. */
+function mq07SeqTimedReverse(lesson){
+ const reference=L.byId['motor-forward-reverse-1']?.project;
+ if(!reference?.wires?.length)throw Error('Missing locked forward/reverse reference');
+ const p=clone(reference);
+ const route=(from,fp,to,tp)=>{
+  const hits=p.wires.filter(w=>w.from?.c===from&&w.from?.p===fp&&
+    w.to?.c===to&&w.to?.p===tp);
+  if(hits.length!==1)throw Error('SC178 source route changed '+from+'/'+fp+' → '+to+'/'+tp);
+  return hits[0];
+ };
+ for(const id of ['startF','holdF','coilF','lockF','lockR','startR','holdR','coilR']){
+  if(!p.components.some(c=>c.id===id))throw Error('SC178 missing original '+id);
+ }
+ const master=C('master','coil-relay',1160,970,'KM','KM · zamanlı çevrim mühürleme');
+ const enable=C('enable','contact-no',1370,890,'KM','KM NO · timer beslemesi');
+ const ktForward=C('ktForward','coil-delay-on',1510,770,'KT1','KT1 · ileri 3 saniye',
+  {delayValue:3,delayUnit:'s',tutorialPurpose:'START sonrası 3 s ileri sürüş, ardından K1 bırakır.'});
+ const ktFStop=C('ktFStop','contact-nc',1650,610,'KT1','KT1 NC · ileri bitiş');
+ const ktReverseStart=C('ktReverseStart','contact-no',1710,850,'KT1','KT1 NO · geçiş başlatma');
+ const ktNeutral=C('ktNeutral','coil-delay-on',1820,1000,'KT2','KT2 · 1 s boşluk',
+  {delayValue:1,delayUnit:'s',tutorialPurpose:'İleri kontaktör bıraktıktan sonra geri yöne geçiş öncesi 1 saniye ölü zaman.'});
+ const ktRRun=C('ktRRun','contact-no',1950,850,'KT2','KT2 NO · geri başlatma');
+ const added=[master,enable,ktForward,ktFStop,ktReverseStart,ktNeutral,ktRRun];
+ for(const id of ['startF','holdF'])route(id,'14','coilF','A1').to={c:'master',p:'A1'};
+ for(const id of ['startF','holdF'])route('lockR','22',id,'13').from={c:'stop',p:'22'};
+ p.components.find(c=>c.id==='holdF').ref='KM';
+ // Original reverse manual START / holding path is replaced with a
+ // single delayed interlocked K2 command: avoid hidden duplicate requests.
+ p.wires=p.wires.filter(w=>!['startR','holdR'].includes(w.from?.c)&&
+   !['startR','holdR'].includes(w.to?.c));
+ p.components=p.components.filter(c=>!['startR','holdR'].includes(c.id));
+ const add=[
+  W('master','A2','g1','N','KM/A2 → N','Ana program rölesinin dönüşüdür.','#1e88e5','N'),
+  W('g1','L1','enable','13','L1 → KM NO/13','Zamanlayıcı beslemesi ancak KM mühürlenince mümkündür.','#e53935','L1'),
+  W('enable','14','ktForward','A1','KM NO → KT1/A1','İleri sürüş 3 saniyelik geri sayım başlar.','#e53935','L1'),
+  W('ktForward','A2','g1','N','KT1/A2 → N','KT1 bobin dönüşüdür.','#1e88e5','N'),
+  W('lockR','22','ktFStop','21','K2 NC → KT1 NC','KT1 süresi bitene dek ileri kontaktöre izin verir.','#e53935','L1'),
+  W('ktFStop','22','coilF','A1','KT1 NC → K1/A1','3 s sonunda ileri bobin bırakır.','#e53935','L1'),
+  W('enable','14','ktReverseStart','13','KM izni → KT1 NO','İleri dönem sonrasında geri geçiş hazırlığıdır.','#e53935','L1'),
+  W('ktReverseStart','14','ktNeutral','A1','KT1 NO → KT2/A1','İleri yön bıraktıktan sonra 1 s gecikme başlar.','#e53935','L1'),
+  W('ktNeutral','A2','g1','N','KT2/A2 → N','Boşluk gecikmesi bobin dönüşüdür.','#1e88e5','N'),
+  W('lockF','22','ktRRun','13','K1 NC → KT2 NO','K1 çalışırken geri kontaktöre fiziksel izin yoktur.','#e53935','L1'),
+  W('ktRRun','14','coilR','A1','KT2 NO → K2/A1','Nötr gecikmesi sonrası K2 ters fazlı motoru sürer.','#e53935','L1')
+ ];
+ p.components.push(...added);p.wires.push(...add);
+ p.projectId='tutorial-session-source-'+lesson.id;
+ p.name='Öğretici · '+lesson.title;
+ p.tutorialLesson={id:lesson.id,topicId:lesson.topicId,phase:'demo',step:0,level:lesson.variant};
+ lesson.project=p;lesson.kind='wiring';lesson.materials=materialRows(p);
+ mq07SeqRebuildGuide(lesson);
+ if(p.wires.length!==reference.wires.length-4+11||
+    p.components.filter(c=>c.typeId==='motor-3p').length!==1||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==2||
+    p.components.filter(c=>c.typeId==='coil-delay-on').length!==2)
+  throw Error('SC178 timed reverse wiring differs from source reference');
+}
 /* SC176 fully wired single-motor limit reversal: NC limit switches
    energize monitoring relays during normal travel. Relay NO enables the
    active direction and relay NC becomes the opposite-direction auto-start
@@ -2917,12 +2977,13 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  const dependent=suffix==='01',independent=suffix==='09';
  const mode=({'02':'periodic','04':'thermal','10':'conveyor'})[suffix]||null;
  const timed=({'03':'alternating','06':'delayed-reverse-m2'})[suffix]||null;
- const limit=suffix==='05';
+ const timedReverse=suffix==='07',limit=suffix==='05';
  if(dependent||independent)mq07RealTwoMotorSequence(lesson,dependent?'dependent':'independent');
  if(mode)mq07SeqWire(lesson,mode);
  if(timed)mq07SeqTimedMotors(lesson,timed);
+ if(timedReverse)mq07SeqTimedReverse(lesson);
  if(limit)mq07SeqLimit(lesson);
- const real=dependent||independent||!!mode||!!timed||limit;
+ const real=dependent||independent||!!mode||!!timed||timedReverse||limit;
  const actual=dependent?
   'M1 START/STOP ile K1 çekince K1 NO/13–14 kolu K2 ve M2 motorunu sırayla enerjilendirir. M1 STOP ile iki motor da bırakır.':
   independent?'M1 ve M2 ayrı START, STOP ve K1/K2 mühürleme koluna sahiptir. Her motor bağımsız başlatılır veya durdurulur.':
@@ -2931,6 +2992,7 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
   mode==='conveyor'?'K1 izin kontağı ayrı 24 VDC kaynaktan PNP yakınlık sensörünü besler; BK çıkışı algılama olduğunda K2 ve konveyör M2 devreye girer.':
   timed==='alternating'?'K0 START/STOP ve mühürleme ana kumandası; KT flaşörün birbirini tamamlayan NO/NC kontakları K1/M1 ve K2/M2 motorlarını 2 saniyelik fazlarda sırayla çalıştıracak gerçek elektriksel yolları oluşturur.':
   timed==='delayed-reverse-m2'?'K1/M1 ileri güç yolu önce çalışır, K1 NO ile beslenen KT üç saniye sonra K2/M2 geri güç yoluna izin verir; K2 motorunda L1 ve L3 yer değiştirir.':
+  timedReverse?'KM ana çalışma rölesi START ile mühürlenir; KT1 gecikmeli çıkışı ilk 3 saniyede K1 ileri kontaktörüne izin verir. KT1 tamamlanınca K1 bırakır, KT2 ayrı 1 saniyelik nötr geçişten sonra K2 geri kontaktörünü kilitli güç yolundan sürer. STOP tüm çevrimi sıfırlar; ters motorun mekanik durma süresi modellenmez.':
   limit?'İleri uç LS1 ve geri uç LS2 normalde kapalı sınırları KR1/KR2 algılama bobinlerini besler; sınır açıldığında karşı yönün NC röle tetik kontağı karşı kontaktörü kilitli güç yolundan otomatik başlatır. Gerçek motorun mekanik konumu simülasyonda otomatik ilerlemez; sınır tetiklemesi sanal kullanıcı girişidir.':null;
  lesson.summary=concept+(limit?' Tek motorlu ileri/geri güç yolu iki NC sınır anahtarıyla kesilebilir.':
   real?' İki ayrı motorun güç ve kumanda bağlantıları şimdi çizilmiştir.':
@@ -2954,6 +3016,7 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
     mode==='conveyor'?'TWO_MOTOR_CONVEYOR_SENSOR_NATIVE_PENDING':
     timed==='alternating'?'TWO_MOTOR_ALTERNATING_TIMER_NATIVE_PENDING':
     timed==='delayed-reverse-m2'?'TWO_MOTOR_DELAYED_REVERSE_NATIVE_PENDING':
+    timedReverse?'TIMED_FORWARD_REVERSE_NATIVE_PENDING':
     limit?'LIMIT_AUTO_REVERSE_SOURCE_NATIVE_PENDING':issue,
   multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
