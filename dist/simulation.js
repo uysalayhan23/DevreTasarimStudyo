@@ -211,8 +211,9 @@
       }
       for(const c of project.components){
         const d=definition(byId,c);if(!d?.isPLC||!PLC)continue;
-        const lessonId=String(project.tutorialLesson?.id||''),program=lessonId==='plc-hardware-programming-src-21'?'timed-stop':undefined;
-        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,{program});
+        // Respect the PLC's own configured program. SC202 has no verified
+        // delayed-stop/TON/TOF model: do not silently force timed-stop here.
+        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now);
       }
       for(const c of project.components){const d=definition(byId,c);if(d?.doldSafety)DoldSafety.seedControl(c,d,{at,dcVoltage,voltage},seed)}
       for(const c of instruments)for(const [i,v] of (c._instrument?.voltage||[]).entries()){seed(c,v.a,'instrument:'+c.id+':'+i,'+','dc',v.value);seed(c,v.b,'instrument:'+c.id+':'+i,'0','dc',v.value)}
