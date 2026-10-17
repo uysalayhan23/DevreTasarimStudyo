@@ -94,12 +94,24 @@ test('SC164–171 reference vs asynchronous three-phase material never claims sp
   motorRole(sc,id,'motor-3p',/üç fazlı asenkron ileri\/geri/);
  }
 });
-test('SC172–181 single-M1 DOL material rejects second motor, sequencing and timing claims',()=>{
+test('SC172–181 motor materials reflect source-repaired SC172/180 vs eight single-M1 demos',()=>{
  for(const {sc,id} of ids('motor-sequence',172,181)){
-  const {l,m}=motorRole(sc,id,'motor-3p',/tek motorlu DOL/);
+  const l=topologyAndMaterials(sc,id),real=sc===172||sc===180;
   assert.equal(l.pedagogyReview.multiMotorAcceptance,false);
-  assert.equal(l.project.components.filter(c=>c.typeId==='motor-3p').length,1);
-  assert.match(m.why,/tek motorlu DOL/);
+  assert.equal(l.project.components.filter(c=>c.typeId==='motor-3p').length,real?2:1);
+  assert.equal(l.project.components.filter(c=>c.typeId==='coil-contactor').length,real?2:1);
+  if(real){
+   const second=l.project.components.find(c=>c.id==='motor2');
+   assert.ok(second&&second.ref==='M2');
+   const material=l.materials.find(m=>m.componentId===second.id);
+   assert.ok(material&&material.typeId==='motor-3p');
+   assert.equal(material.label,second.label);
+   assert.equal(l.pedagogyReview.titleTopologyIssue,
+    sc===172?'TWO_MOTOR_SEQUENTIAL_NATIVE_PENDING':'TWO_MOTOR_INDEPENDENT_NATIVE_PENDING');
+  }else{
+   const {m}=motorRole(sc,id,'motor-3p',/tek motorlu DOL/);
+   assert.match(m.why,/tek motorlu DOL/);
+  }
  }
 });
 test('negative fixture: stale motor label and invented motor scope acceptance remain detectable',()=>{
