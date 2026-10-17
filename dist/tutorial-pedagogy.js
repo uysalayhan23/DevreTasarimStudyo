@@ -2838,10 +2838,11 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
   mode==='thermal'?'M1 ve M2 ayrı üç kutuplu FR1/FR2 termik ana güç yollarından geçer; iki 95–96 NC yardımcı kontak seri kumanda zincirinde ortak duruş sağlar.':
   mode==='conveyor'?'K1 izin kontağı ayrı 24 VDC kaynaktan PNP yakınlık sensörünü besler; BK çıkışı algılama olduğunda K2 ve konveyör M2 devreye girer.':
   limit?'İleri ve geri kontaktör bobinlerinin önünde iki ayrı NC sınır anahtarı vardır; ilgili uçta duruş sağlanır, karşı yöne otomatik başlatma henüz modellenmemiştir.':null;
- lesson.summary=concept+(real?' İki ayrı motorun güç ve kumanda devreleri şimdi çizilmiştir.':
+ lesson.summary=concept+(limit?' Tek motorlu ileri/geri güç yolu iki NC sınır anahtarıyla kesilebilir.':
+  real?' İki ayrı motorun güç ve kumanda bağlantıları şimdi çizilmiştir.':
   ' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.');
  lesson.explanation=concept+' '+(actual||limitation)+
-  (real?' Gerçek iki motorun dinamik Node ve Windows sonucu henüz doğrulanmamıştır; fiziksel/üretici kabulü verilmez.':
+  (real?' Değiştirilen devrenin dinamik Node ve Windows sonucu henüz doğrulanmamıştır; fiziksel/üretici kabulü verilmez.':
   ' Node ile tek motorun START/hold/STOP davranışı sınanır; çok motorlu veya fiziksel çalışma kabul edilmemiştir.');
  lesson.learningGoal=concept+' Başlıktaki şartları çizilmiş motor, kontaktör ve kumanda kablolarıyla karşılaştırmak.';
  lesson.beginnerSteps=[
