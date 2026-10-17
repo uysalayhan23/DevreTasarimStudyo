@@ -2825,7 +2825,7 @@ function mq07SeqTimedMotors(lesson,mode){
  }else if(mode==='delayed-reverse-m2'){
   const timer=C('delayedKT','coil-delay-on',1460,790,'KT','KT · gecikmeli geri M2',
    {delayValue:3,delayUnit:'s',tutorialPurpose:'K1 çekmesinden 3 s sonra KT/13–14 geri M2 yoluna izin verir.'});
-  const contact=C('delayedNO','delay-on-no',1590,920,'KT','KT gecikmeli NO 13–14');
+  const contact=C('delayedNO','contact-no',1590,920,'KT','KT gecikme sonrası NO 13–14');
   added.push(timer,contact);
   // M2 power swaps L1/L3 on two phases while M1 K1 keeps forward U/V/W.
   for(const [pin,newTerminal] of [['2','W'],['6','U']]){
