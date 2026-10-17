@@ -61,11 +61,15 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
   if(target?.w){
    const wire=wires.find(x=>x.id===target.w);
    const from=wire?.from,to=wire?.to;
-   const isProbeLead=x=>[from,to].some(e=>{
-    const other=components.get(e?.c),otherDef=definitions[other?.typeId];
-    return !!otherDef?.probeColor||otherDef?.kind==='multimeter';
+   // Equivalent to probe-leads.js info(): only a probe PLUG or a
+   // multimeter/clamp jack makes this a floating measurement lead.
+   const isProbeLead=[from,to].some(e=>{
+    const other=components.get(e?.c),d=definitions[other?.typeId];
+    return (!!d?.probeColor&&e?.p==='PLUG')||
+     (d?.kind==='multimeter'&&['COM','V','10A'].includes(e?.p))||
+     (d?.kind==='clamp-meter'&&['COM','V'].includes(e?.p));
    });
-   exists=!!wire&&!isProbeLead(wire);
+   exists=!!wire&&!isProbeLead;
   }else if(target?.j){
    exists=(p.junctions||[]).some(j=>j.id===target.j);
   }else{
