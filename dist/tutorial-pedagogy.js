@@ -4767,6 +4767,105 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC017/SC030 — narrow, SOURCE-ONLY material/title corrections.
+ * Both were in the protected 51-card NO_WIRED_CIRCUIT historic set;
+ * reference-only is preserved. These are not mains wiring instructions,
+ * a Schmitt hardware simulation or electrical acceptance. */
+{
+ const id='installation-systems-src-07',l=L.byId[id],p=l?.project;
+ const baseline=['supply-1p','mcb-1p','ceiling-light','socket-power'];
+ if(!l||!p||l.kind!=='quiz'||p.referenceOnly!==true||
+    p.wires.length!==0||l.steps.length!==0||l.materials?.length!==4||
+    p.components.map(c=>c.typeId).join('|')!==baseline.join('|')||
+    !L.mq07Batch200.noWireTriage.conceptPreservedIds.includes(id)||
+    !L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
+   throw Error('MQ07 SC017 protected lighting/socket source changed');
+ const protect=p.components.find(c=>c.typeId==='mcb-1p');
+ protect.ref='Q1';protect.label='Q1 · aydınlatma kolu koruma cihazı';
+ protect.tutorialPurpose='Bu Q1 cihazı aydınlatma kolu için yalnız REFERANS korumadır; bu kartta faz, nötr veya PE hattı kablolanmış değildir.';
+ const second=C('q2','mcb-1p',770,420,'Q2','Q2 · priz kolu ayrı koruma cihazı',{
+  tutorialPurpose:'Priz yük kolunun aydınlatmadan ayrı koruma/hat seçimi gerektiğini ayırt eden ikinci katalog MCB referansı; kablo, koruma seçiciliği ve açma süresi doğrulanmamıştır.'
+ });
+ if(p.components.some(c=>c.id==='q2'))throw Error('MQ07 SC017 duplicate protection component');
+ p.components.push(second);
+ for(const c of p.components){
+  if(c.typeId==='ceiling-light')c.tutorialPurpose='H1 sanal aydınlatma armatürü Q1 referans kolunun farklı yük türünü temsil eder; beslenmiş veya çalışır görünmez.';
+  if(c.typeId==='socket-power')c.tutorialPurpose='X1 topraklı priz Q2 referans kolunun farklı kullanım yükünü temsil eder; PE sürekliliği ve polarite bu sayfada ölçülmemiştir.';
+  if(c.typeId==='supply-1p')c.tutorialPurpose='G1 yalnız katalogdaki sanal bir faz besleme referansıdır; bu kartta gerçek enerji yolu bulunmaz.';
+ }
+ l.materials=materialRows(p);
+ l.summary='Aydınlatma ve priz yük türlerini Q1 ve Q2 ayrı koruma cihazlarıyla yalnız malzeme düzeyinde karşılaştıran, kablosuz referans kartıdır.';
+ l.explanation='Aydınlatma H1 ile topraklı priz X1 aynı yük değildir. Q1 aydınlatma kolu koruma referansı, Q2 priz kolu ayrı koruma referansıdır. Sanal G1 kaynak yalnız katalog simgesidir: Q1/Q2 giriş-çıkışı, yük dönüşleri ve PE yolu arasında HİÇ kablo yoktur. Bu nedenle çalışan iki ayrı devre, doğru fiziksel tesisat, koruma eğrisi/seçiciliği, priz PE sürekliliği ya da hata akımı ölçülmüş sayılmaz.';
+ l.learningGoal='Kablo bulunmayan kaynak malzeme kartında armatür, priz ve iki ayrı koruma elemanının farklı işlevlerini ayırt etmek.';
+ l.beginnerSteps=['G1 sanal kaynak, H1 armatür ve X1 priz referanslarını ayırt et.',
+  'Q1 aydınlatma ve Q2 priz kolu için ayrı katalog cihazlarını bul.',
+  'Sıfır bağlantı olduğunu, priz koruma iletkeninin ve koruma koordinasyonunun gösterilmediğini açıkla.',
+  'Gerçek enerji, test ve elektriksel güvenlik kabulü olmadan PASS yazma.'];
+ l.quiz={question:'Bu kablosuz tesisat kartında Q1 ve Q2 neden ayrı gösteriliyor?',
+  options:['Aydınlatma ve priz kollarının koruma/amaçlarının ayrı değerlendirilmesi için',
+   'İki farklı priz çalışıyormuş gibi göstermek için','PE sürekliliği otomatik doğrulansın diye'],
+  answer:0,why:'Q1 ve Q2 yalnız bağımsız yük kollarını temsil eder; kartta gerçek bağlantı, koruma ölçümü veya PE doğrulaması yoktur.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+  mq07MaterialRepair:'SC017_SEPARATE_LIGHT_SOCKET_PROTECTION_REFERENCES',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_WIRED_CIRCUIT',
+  terminalGrounded:false,electricalFunctionAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(p.components.length!==5||l.materials.length!==5||l.materials.some((row,i)=>row.typeId!==p.components[i].typeId||row.componentId!==p.components[i].id))
+  throw Error('MQ07 SC017 material identity mismatch');
+}
+{
+ const id='electronic-switching-src-08',l=L.byId[id],old=l?.project;
+ const expected=['lm358p-dip8','resistor','capacitor'];
+ if(!l||!old||l.kind!=='quiz'||old.referenceOnly!==true||
+    old.wires.length!==0||l.steps.length!==0||l.materials?.length!==3||
+    old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    !L.mq07Batch200.noWireTriage.conceptPreservedIds.includes(id)||
+    !L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 SC030 protected transistor Schmitt source changed');
+ const p=board(id,l.title,[
+  ['bd139-npn','Q1 · ST BD139 NPN (B/C/E)'],
+  ['bd139-npn','Q2 · ST BD139 NPN (B/C/E)'],
+  ['resistor','R1 · giriş kutuplama direnç referansı'],
+  ['resistor','R2 · kollektör yükü A referansı'],
+  ['resistor','R3 · kollektör yükü B referansı'],
+  ['resistor','R4 · ortak emiter direnç referansı'],
+  ['resistor','R5 · geri besleme/bias referansı']
+ ]);
+ p.workspaceMode=old.workspaceMode;p.projectId=old.projectId;p.name=old.name;
+ p.tutorialLesson={...old.tutorialLesson,phase:'quiz'};
+ p.components.forEach((c,i)=>{
+  c.ref=['Q1','Q2','R1','R2','R3','R4','R5'][i];
+  c.tutorialPurpose=i<2
+   ?'ST BD139 SOT-32/TO-126 gerçek NPN B/C/E uçlarıyla iki transistörlü kavram eşlemesidir; hiçbir terminal kablolu değildir.'
+   :['','','Giriş kutuplama direnci; gerçek eşik ölçülmedi.',
+      'Q1 kollektör yükünün rolü; direnç değeri henüz tasarlanmadı.',
+      'Q2 kollektör yükünün rolü; histerezis değeri ölçülmedi.',
+      'Ortak emiter kolu için direnç rolü; kablo ve fiziksel değer açık.',
+      'Geri besleme / eşik kutuplama görevi; topoloji henüz kurulmadı.'][i];
+ });
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='quiz';l.steps=[];l.materials=materialRows(p);
+ l.summary='Transistörlü Schmitt Trigger dersi artık yanlış LM358P yerine iki gerçek katalog BD139 NPN transistörü ve ilgili direnç referanslarını gösterir; henüz kablolu eşik devresi değildir.';
+ l.explanation='Schmitt tetikleyici, giriş yükselirken ve düşerken iki farklı geçiş eşiği oluşturan pozitif geri beslemeli anahtarlama ilkesidir. Bu kart yalnız iki ST BD139 NPN transistörün B/C/E uç kimliği, giriş/kollektör/ortak emiter/bias direnç görevlerini gösterir. Gerçek transistörler arasında hiçbir terminal bağlantısı kurulmamıştır; histerezis, eşik gerilimleri, yük akımı ve Windows davranışı kabul edilmez. Bir LM358P op-amp kavram kartını transistörlü devre gibi göstermekten kaçınılır.';
+ l.learningGoal='İki gerçek NPN transistörün B/C/E uçları ile Schmitt eşiği ve geri besleme gerekliliğini ayırt etmek, bağlantı bulunmadığını göstermek.';
+ l.beginnerSteps=['Katalogdaki BD139 Q1 ve Q2 B/C/E uçlarını bul.',
+  'R1 giriş, R2/R3 kollektör, R4 ortak emiter ve R5 geri besleme görevlerini karşılaştır.',
+  'Kablo olmadığını ve gerçek çift eşik/histerezis ölçülmediğini açıkla.',
+  'Transistörlü Schmitt davranışını yalnız onaylanmış bir devre ve native dinamik kanıttan sonra kabul et.'];
+ l.quiz={question:'İki BD139 transistörlü Schmitt kartında hangi özellik için gerçek geri besleme devresi gerekir?',
+  options:['Yükselen ve düşen giriş için farklı anahtarlama eşikleri',
+    'Üç fazlı motorun yön değiştirmesi','LM358P pin 8 in otomatik ölçüm yapması'],
+  answer:0,why:'İki ayrı eşik için gerçekten bağlanmış pozitif geri besleme gerekir; bu malzeme kartında devre ve histerezis henüz yoktur.'};
+ l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+  mq07MaterialRepair:'SC030_TRUE_TWO_BD139_TRANSISTOR_REFERENCES',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_TRANSISTOR_SCHMITT_WIRING',
+  terminalGrounded:false,nativeHysteresisAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(p.components.length!==7||l.materials.length!==7||
+    l.materials.some((row,i)=>row.typeId!==p.components[i].typeId||row.componentId!==p.components[i].id)||
+    p.components.some(c=>c.typeId==='lm358p-dip8'))
+  throw Error('MQ07 SC030 transistor material identity mismatch');
+}
+
 /* MQ-07 SC053–SC060 and SC067: repair missing PHYSICAL REFERENCES,
  * not substitute plausible untested self-oscillating circuits. The existing
  * catalog has no proven Colpitts/Hartley/Wien/2-BJT native oscillator solver;
