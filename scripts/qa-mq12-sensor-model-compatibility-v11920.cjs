@@ -19,8 +19,9 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver}={}){
  for(const [id,names] of Object.entries(ID_CANDIDATES)){
   const lesson=L.lessons.find(x=>x.id===id);
   if(!lesson)throw Error('Missing canonical lesson '+id);
-  const placed=lesson.project.components.find(c=>c.typeId==='proximity');
-  if(!placed)throw Error('Unexpected physical model for '+id);
+  const placed=lesson.project.components.find(c=>c.typeId==='proximity')||lesson.project.components.find(c=>names.includes(c.typeId));
+  if(!placed)throw Error('Unknown sensor model for '+id);
+  const sourceModelAligned=placed.typeId!=='proximity';
   const connectedPins=[...new Set(lesson.project.wires.flatMap(w=>[w.from,w.to]).filter(x=>x.c===placed.id).map(x=>x.p))].sort();
   const proposed=names.map(typeId=>{
    const def=defs[typeId];if(!def)throw Error('Missing real catalog candidate '+typeId);
@@ -32,7 +33,7 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver}={}){
   const loadKinds=lesson.project.components.map(x=>defs[x.typeId]?.kind).filter(Boolean);
   rows.push({id,title:lesson.title,placedTypeId:placed.typeId,placedPrinciple:defs[placed.typeId]?.sensorPrinciple,
    connectedPins,loadKinds,mentionsBuzzer:/buzzer/i.test(lesson.title||''),containsBuzzer:loadKinds.includes('buzzer'),candidates:proposed,
-   accepted:false,reviewReasons:['LESSON_SENSOR_PRINCIPLE_MISMATCH',...(proposed.every(x=>!x.exactPinSet)?['NON_DROP_IN_TERMINAL_MAPPING']:[]),...(/buzzer/i.test(lesson.title||'')&&!loadKinds.includes('buzzer')?['TITLE_LOAD_KIND_MISMATCH']:[])]});
+   sourceModelAligned,accepted:false,reviewReasons:[sourceModelAligned?'VIRTUAL_SOURCE_MODEL_PRESENT_PHYSICAL_ACCEPTANCE_PENDING':'LESSON_SENSOR_PRINCIPLE_MISMATCH',...(proposed.every(x=>!x.exactPinSet)?['NON_DROP_IN_TERMINAL_MAPPING']:[]),...(/buzzer/i.test(lesson.title||'')&&!loadKinds.includes('buzzer')?['TITLE_LOAD_KIND_MISMATCH']:[])]});
  }
  const ultrasound=L.lessons.find(l=>l.id==='sensor-analog-apps-outline-089');
  const fixture=[];
@@ -48,7 +49,9 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Solver}={}){
   fixture.push({typeId,scenario:'NONCANONICAL_SYNTHETIC_TARGET',phases,accepted:false});
  }
  return {scope:'READ_ONLY_EIGHT_MODEL_COMPATIBILITY',sourceLessons:L.lessons.length,wiredLessons:L.lessons.filter(x=>x.project?.wires?.length).length,
-  candidatesFromCatalogOnly:true,rows,topicMismatchCount:rows.length,physicalAccepted:0,ultrasonicFixture:fixture,fullAcceptance:'REVIEW'};
+  candidatesFromCatalogOnly:true,rows,topicMismatchCount:rows.filter(x=>!x.sourceModelAligned).length,
+  virtualSourceAlignedCount:rows.filter(x=>x.sourceModelAligned).length,
+  physicalAccepted:0,ultrasonicFixture:fixture,fullAcceptance:'REVIEW'};
 }
 if(require.main===module)console.log(JSON.stringify(run(),null,2));
 module.exports={run,ID_CANDIDATES};
