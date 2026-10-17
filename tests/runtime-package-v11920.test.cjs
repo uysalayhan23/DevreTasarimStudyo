@@ -3,8 +3,20 @@ const assert=require('node:assert/strict');
 const cp=require('node:child_process');
 
 function manifest(){
-  const text=cp.execFileSync('python3',['scripts/package.py','--list'],{encoding:'utf8',maxBuffer:8*1024*1024});
-  return JSON.parse(text);
+  // Windows Python Launcher (py -3) is preferred over the python3 Store alias.
+  const candidates=process.platform==='win32'
+    ? [['py',['-3']],['python',[]],['python3',[]]]
+    : [['python3',[]],['python',[]]];
+  for(const [executable,prefix] of candidates){
+    try{
+      const text=cp.execFileSync(executable,[...prefix,'scripts/package.py','--list'],{encoding:'utf8',maxBuffer:8*1024*1024});
+      return JSON.parse(text);
+    }catch(error){
+      if(error.code==='ENOENT'||/Python bulunamad|Python was not found/i.test(String(error.stderr||error.message)))continue;
+      throw error;
+    }
+  }
+  throw Error('Python 3 bulunamadı. Windows için py -3 veya python; diğer sistemlerde python3 gereklidir.');
 }
 
 test('WP-019 Windows runtime package uses an explicit end-user allowlist',()=>{
