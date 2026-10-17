@@ -11,6 +11,15 @@ Bu depo Ayhan Uysal'ın oğlu Yakub için geliştirdiği Türkçe, çevrimdış�
 - Normal ChatGPT + GitHub çalışma yöntemi geçerlidir; Codex/Work Mode kullanılmaz. Rutin okuma, inceleme, küçük güvenli değişiklik, test, commit ve push için tekrar onay istenmez; doğrulanmamış PASS/DONE kaydı verilmez.
 - Force-push ve gereksiz geçici `ci/*`, `debug/*`, `agent/*`, `tmp/*` dalları açılmaz. GitHub sunucu koruma ayarı uygulanmamışsa yalnız dosya içi 'lock' ile korunduğu iddia edilmez.
 
+## Zorunlu durum bildirimi ve devam kontrolü (2026-10-17)
+
+- Kullanıcıya belirsiz ve ucu açık bir “devam ediyorum / yapacağım” mesajı bırakmak yasaktır. Her çalışma yanıtında **(1) ŞU AN yapılan somut iş, (2) tamamlanan kanıt/commit, (3) kullanıcıdan istenen tek net işlem veya “Şu an senden hiçbir şey istemiyorum”, (4) DURUM: ÇALIŞIYORUM / BEKLEMEDEYİM / TAMAMLANDI / ENGEL VAR** açıkça yazılır. İşin kapsamını (tek düzeltme, 200 derslik paket, tam regresyon) birbirine karıştırmayın.
+- Gerçek GitHub araç çağrısı veya test yürütülmüyorsa **arka planda çalışılıyormuş gibi konuşulmaz**: açıkça “BEKLEMEDEYİM — yeni kullanıcı komutu gelene kadar işlem yok” denir. Yanıt bittiğinde sessizce saatlerce sürecek otomatik geliştirme vaadinde bulunulmaz; sohbet dışı arka plan faaliyeti yoksa yok denir.
+- Çok adımlı görevde başlarken ne yapılacağı ve bitiş ölçütü söylenir; işlem sürerken gerçekten yapılan somut işler hakkında kısa güncellemeler verilir. “Bir sonraki adım” ile “şu an yapıyorum” birbirinden ayrılır. Başarılı commit + kaynak kontrolü tamamlanmış ama Windows native test koşulmamışsa **KOD KAYDEDİLDİ / WINDOWS TESTİ BEKLENİYOR** diye belirtilir; PASS söylenmez.
+- Her çalışma **turunun sonunda**, kullanıcıya **kısa ve tek başına kullanılabilir devam prompt'u** verilir ve sohbet arayüzü destekliyorsa gerçekten çalışan **“Devam et”** butonu yerleştirilir. Buton bir sonraki mesaj olarak prompt'u gönderir; kendiliğinden arka plan görevi başlatmaz. İş tümüyle bittiyse sıradaki görevi açıklar; kullanıcı kararı olmadan otomatik başlatmaz.
+- Son satırda yanlış anlaşılmayacak şekilde **“Şu anda beklemedeyim; Devam et dediğinde [somut sıradaki iş] ile devam edeceğim.”** veya araç çağrısı gerçekten sürüyorsa **“Şu anda [somut iş] üzerinde çalışıyorum; senden [istek/yok]”** bildirilir.
+- 200'er derslik geliştirmede kullanıcıdan her küçük commit için Windows CMD çıktısı istenmez. Yalnızca paket bitiminde tek toplu komut ve gerektiğinde kısa görsel kontrol sorulur; kritik engel bunun istisnasıdır. **İş gerçekten yürütülmüyorsa “200 dersi düzeltiyorum” diye sürekli çalışma izlenimi verilmez.** Teknik kilitler, `main`, `[skip ci]`, Actions yasağı ve kanıtsız kabul etmeme politikası aynen korunur.
+
 ## Yeni oturumda
 
 1. `git status` ile mevcut kullanıcı değişikliklerini görün; silmeyin veya üzerine yazmayın.
