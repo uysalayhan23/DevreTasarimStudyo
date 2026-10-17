@@ -112,3 +112,10 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - İkinci test: 90 tarihsel golden başlangıç devresi ile en az 250 kaynak kontrol durumunun gerçek `Simulation.solve` kararlılığı native Node testinde PASS.
 - **MQ-12 hedefli test PASS; MQ-13 kaynak sürekliliği kontrolü:** golden fixture dosyası, `dist/`, cihaz terminal kimliği, `BASLAT.bat` değişmedi. **MQ-00 kapsam kararı:** güncel öğreticilerin hepsinin dinamik işlevselliği, Windows/Edge görsel QA, gerçek elektrik/fiziksel üretici kabulü ve 1792 testlik tam regresyon **OPEN / NOT_ACCEPTED**.
 - Tam regresyon son ölçümü, eski `98771a1` üzerinde **1680 PASS / 112 FAIL**; güncel HEAD için yeni toplam hesaplanmadı.
+
+## Sanal PWM/AC cihazının yanlış fiziksel paket beklentisi — 2026-10-17
+
+- Eski Windows 1792-test TAP, `tests/electronics-real-ics-v11920.test.cjs` içindeki `real shared electronics packages exist and are orthographic` denetiminde `virtual-pwm-generator-v1` için `realPackage.orthographic` bekledi ve `undefined !== true` nedeniyle FAIL verdi.
+- `dist/electronics-ics-v11920.js` içindeki beş sanal kaynak/tetikleyici `virtualInstrument=true`, `realPackage=null`, `manufacturerGeometryAccepted=false` olarak açıkça tanımlanmıştır: PWM, yalıtılmış AC kaynağı, SCR tetikleyici, triyak tetikleyici, opto flaşör. Bunlar gerçek üretici fiziksel paketi değildir; fiziksel onay ya da görsel ürün ölçüsü atanamaz.
+- `3a055ac` yalnız eski native Node testini ayrıştırır: sanal 5 ID'nin `realPackage=null` ve üretici geometrisi kabul edilmemiş olması; diğer tüm fiziksel elektronik paketlerin `topView/orthographic/transparentBackground=true` koşullarını eksiksiz koruma; her malzemede benzersiz gerçek terminal ID kontrolü. Testi sessizce skip/xfail yapmaz.
+- Güncellenmiş testin gerçek Windows/Node koşumu **NOT_RUN**; geçmişteki `112 FAIL` toplamından otomatik düşüm yapılmaz. `dist/`, kullanıcı örnekleri, elektronik simülasyon, golden referans ve Windows başlatıcı değiştirilmedi. `[skip ci]`, Actions yok.
