@@ -23,11 +23,18 @@ git rev-parse HEAD
 if not exist build mkdir build
 git rev-parse HEAD > build\qa-mq07-first200-head.txt
 node scripts/check.cjs
+set "MQ07_CHECK_RC=%ERRORLEVEL%"
 node scripts/qa-mq07-first200-live-inventory-v11920.cjs --summary > build\qa-mq07-first200-inventory-summary.json
+set "MQ07_INVENTORY_RC=%ERRORLEVEL%"
 node scripts/run-tests.cjs
+set "MQ07_TESTS_RC=%ERRORLEVEL%"
+echo SOURCE_CHECK=%MQ07_CHECK_RC% INVENTORY=%MQ07_INVENTORY_RC% ALL_TESTS=%MQ07_TESTS_RC%
+if not "%MQ07_CHECK_RC%"=="0" echo MQ07 STATUS: FAIL - kaynak kontrolu
+if not "%MQ07_INVENTORY_RC%"=="0" echo MQ07 STATUS: FAIL - envanter olusturma
+if not "%MQ07_TESTS_RC%"=="0" echo MQ07 STATUS: FAIL - Node regresyonu
 ```
 
-**Yorumlama/kapı:** `scripts/run-tests.cjs` mevcut tüm `tests/*.test.cjs` dosyalarını tek kez çalıştırıp `build/tests.tap` yazar ve gerçek çıkış kodunu korur. Bunun yanında `build/qa-mq07-first200-inventory-summary.json` içindeki `structuralIssuesByLesson`, `motorPlcReview`, `currentTitleReviewLessons` ve `acceptance` birlikte değerlendirilir. Başarılı `scripts/check.cjs`, bir başlangıç solver `PASS` veya hiç yapısal sorun bulunmaması **tek başına** SC001–200'ü onaylamaz.
+**Yorumlama/kapı:** Komutlar yalnız paket sonunda tek CMD oturumunda çalıştırılacak; üç adımın `%ERRORLEVEL%` değerleri **ayrı** saklanır. Eski plan yalnız son `node scripts/run-tests.cjs` çıkışıyla bitiyordu: kaynak kontrolü veya envanter oluşturma başarısız olsa bile son süreç başarılı görünerek **sahte toplu PASS** algısı doğurabilirdi. `SOURCE_CHECK`, `INVENTORY` ve `ALL_TESTS` sonuçlarından herhangi biri sıfır değilse toplu sonuç **FAIL**; hepsi sıfır olsa bile başlık/topoloji ve Windows/Edge/üretici kapıları açık kaldıkça ilk 200 ders PASS değildir. `scripts/run-tests.cjs` mevcut tüm `tests/*.test.cjs` dosyalarını tek kez çalıştırıp `build/tests.tap` yazar ve gerçek çıkış kodunu korur. Bunun yanında `build/qa-mq07-first200-inventory-summary.json` içindeki `structuralIssuesByLesson`, `motorPlcReview`, `currentTitleReviewLessons` ve `acceptance` birlikte değerlendirilir. Başarılı `scripts/check.cjs`, bir başlangıç solver `PASS` veya hiç yapısal sorun bulunmaması **tek başına** SC001–200'ü onaylamaz.
 
 **Güvenilir geçmiş sınırı:** `docs/QA_LOCAL_WINDOWS_20261017.md` içindeki eski tam Windows regresyonu **1792 test / 1680 PASS / 112 FAIL** idi; bu rakamlar farklı bir commitin ölçümüdür. Yeni HEAD üzerinde sonuç **bilinmiyor**. SC48/49 zamanlama, SC50 DC/AC, SC65 Schmitt, SC194/195, motor işlevi ve Windows/Edge görsel/üretici fiziksel kabulü yeni doğru bağımsız kanıt olmadan `OPEN` kalır.
 
