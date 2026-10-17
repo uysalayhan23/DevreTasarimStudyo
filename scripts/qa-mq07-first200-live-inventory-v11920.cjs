@@ -113,6 +113,20 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
   if(unsupported.length)
    issues.push({code:'OPEN_TITLE_WITH_ACCEPTANCE',fields:unsupported,
     reason:review.titleTopologyIssue||'REVIEW'});
+  // Motor/PLC scope flags describe *the missing function itself*. The
+  // generic physical/Windows/independent gate above cannot catch a forged
+  // multi-motor, braking, special-motor or advanced-PLC PASS while all
+  // three generic gates remain false. Only inspect documented scopes.
+  const scoped={
+   SC156_SC163:'brakingAcceptance',
+   SC164_SC171:'specialMotorAcceptance',
+   SC172_SC181:'multiMotorAcceptance'
+  };
+  const field=scoped[review.mq07MotorScope]||
+   (review.mq07PlcScope==='SC182_SC200'?'plcAdvancedLogicAcceptance':null);
+  if(field&&review[field]===true)
+   issues.push({code:'OPEN_TITLE_WITH_UNVERIFIED_FUNCTION',
+    field,reason:review.titleTopologyIssue||'REVIEW'});
  }
  return {
   id:lesson.id,title:lesson.title,topicId:lesson.topicId,kind:lesson.kind,
