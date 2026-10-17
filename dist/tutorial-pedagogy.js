@@ -2334,6 +2334,26 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC36_SC38_AC_METER_REVIEW: the legacy AC examples combine a
+   1 kHz virtual generator with a 24 V DC LM358 supply. UT33D+ ACV can
+   display OL due to its existing mixed-source protection; do not present
+   that as verified AC output or silently weaken the meter/solver guard.
+   Changes below affect ONLY learner-facing explanations, not circuits. */
+for(const id of ['opamp-apps-src-01','opamp-apps-src-03']){
+ const lesson=L.byId[id],p=lesson?.project;
+ const meter=p?.components?.find(c=>c.id==='v1'),signal=p?.components?.find(c=>c.id==='in');
+ const supply=p?.components?.find(c=>c.id==='g1');
+ const row=lesson?.materials?.find(m=>m.componentId==='v1');
+ if(lesson?.kind==='wiring'&&p?.wires?.length>0&&
+    signal?.typeId==='arduino-signal-generator'&&supply?.typeId==='supply-dc-plus'&&
+    meter?.typeId==='unit-ut33d-plus'&&meter?.meterPosition===6&&
+    row?.typeId===meter.typeId&&lesson?.pedagogyReview?.mq07Batch==='001_200'){
+   const limit=' Bu modelde 1 kHz sanal giriş jeneratörü ve 24 V DC op-amp beslemesi birlikte bulunur. UNI-T UT33D+ ACV 600 V konumunda karışık AC/DC kaynak uyarısı ve OL gösterebilir; bu bir ölçülmüş AC kazanç veya çıkış RMS değeri değildir. Op-amp AC transferi ve dalga biçimi dinamik solver kanıtına kadar REVIEW durumundadır.';
+   lesson.explanation+=limit;
+   lesson.beginnerSteps.push('V1 ACV 600 V göstergesi OL veya AC/DC uyumsuzluğu verirse bunu kazanç ölçümü olarak kabul etme; önce kaynak ve besleme koşullarını ayırt et.');
+   lesson.materials=lesson.materials.map(m=>m.componentId==='v1'?{...m,why:'UNI-T UT33D+ çıkış probu ACV 600 V kademesindedir; 24 V DC beslemeli sanal devrede karışık kaynak uyarısı/OL verebilir. Kayıtlı dinamik AC RMS ve kazanç ölçümü olmadığından göstergeyi doğrulanmış sonuç sayma.'}:m);
+ }
+}
 /* MQ07_SC10_RCD_REFERENCE_MATERIAL: residual-current protection must not
    be described as overcurrent/short-circuit protection. This is an unwired
    conceptual lesson, not a verified trip-time or leakage-current experiment. */
