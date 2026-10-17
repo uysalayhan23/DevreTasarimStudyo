@@ -7,6 +7,7 @@
 - `main` üzerinde [skip ci] kaynak commitlerini, `AGENTS.md`, golden/locked projeleri, kaynak motor/PLC devrelerini, offline `BASLAT.bat` ve global solver'ı koru.
 - `scripts/qa-mq07-first200-live-inventory-v11920.cjs`: **yalnız kaynak envanteri**. Gerçek 200 sıra/ID, malzeme ID–tür–etiket–açıklaması, fiziksel tel uçları, katalog terminalleri, junction kimlikleri, geçersiz/çakışan `probeTarget` ve `motorPlcReview` kaynaklarına bakar. Çıktısındaki `acceptance.nativeNode: NOT_RUN` etiketi, koşulsa dahi **gerçek Node solver sonucu sayılmaz**.
 - `tests/qa-mq07-first200-live-inventory-v11920.test.cjs`: 9 envanter/negatif fikstür tanımı, eski 51 referans kaydını kanonik sonuç sanmadan, SC194/195 eksik PLC işlevleriyle, etiketi yanlış ürün ve eksik/çakışan tel/junction/prob kimliklerini ayırır.
+- **Kimlik türü denetimi:** `qa-mq07-first200-live-inventory` artık katalog pinini, junction ID'sini ve malzeme component ID'sini özgün 1655 QA/`probe-leads.js` gibi **tür dönüşümü olmadan** doğrular. Katalogdaki `'1'` pini için kabloda `1` bulunması `INVALID_TERMINAL`; sayısal `1` junction yerine `'1'` bağlanması `UNKNOWN_JUNCTION`; birbirinden farklı sayısal/metin bileşen ID'lerinin malzeme satırında sahte `DUPLICATE_MATERIAL_ROW` yaratması önlenir. Mevcut dokuz test tanımı bu tür-karışımı negatif/pozitif fikstürlerle genişletildi; sonuçlar yine `NATIVE_PENDING`.
 - `tests/qa-mq07-first200-motor-material-scope-v11920.test.cjs`: 5 SC126–181 motor malzemesi/gerçek terminal/yanlış başlık sınırı tanımı. Frenleme, özel motor veya ikinci motor işlevinin gerçek devreyle doğrulanmadığı bilgisini korur.
 - `tests/qa-mq07-sc182-sc200-plc-scope-v11920.test.cjs`: SC182–200 PLC kaynak/program sözleşmesi; SC194 ikinci istasyon ve SC195 ters yön kontaktörü hâlâ `REVIEW`.
 - `tests/qa-mq07-batch-001-200-v11920.test.cjs`: 9 SC10/36/38/114/124 ve ilk-200 içerik kapsamı tanımı. İçindeki eski 101/11/32/56/88 sayıları **ilk MQ-07 overlay aşaması için sabit kaynak sözleşmesi**; son 200 dersteki kabul/onarım sayıları değildir.
@@ -34,6 +35,7 @@ if not "%MQ07_CHECK_RC%"=="0" set "MQ07_SESSION_RC=1"
 if not "%MQ07_INVENTORY_RC%"=="0" set "MQ07_SESSION_RC=1"
 if not "%MQ07_TESTS_RC%"=="0" set "MQ07_SESSION_RC=1"
 echo MQ07_SESSION_RC=%MQ07_SESSION_RC%
+echo SOURCE_CHECK=%MQ07_CHECK_RC% INVENTORY=%MQ07_INVENTORY_RC% ALL_TESTS=%MQ07_TESTS_RC% SESSION=%MQ07_SESSION_RC% > build\qa-mq07-first200-exit-status.txt
 if "%MQ07_SESSION_RC%"=="0" echo MQ07: SOURCE COMMANDS COMPLETED - PEDAGOGICAL AND WINDOWS ACCEPTANCE STILL OPEN
 if not "%MQ07_SESSION_RC%"=="0" echo MQ07: FAILED - INSPECT INDIVIDUAL EXIT CODES
 cmd /c exit /b %MQ07_SESSION_RC%
