@@ -3144,7 +3144,28 @@ function mq07RepairBrakeReference(lesson,suffix){
     ['supply-dc-plus','DC enjeksiyon kaynağı · referans'],['coil-delay-on','Zaman kontrollü frenleme · referans']],
   '02':[['motor-3p','Üç faz motor · kavram'],['tutorial-mechanical-brake','Yaylı balatalı fren · terminal ve tork modeli yok']],
   '05':[['supply-dc-plus','DC gerilim kaynağı · referans'],['resistor','Sargı direnci · yalnız R eşdeğeri'],
-    ['meter-ammeter','DC akım ölçümü · yalnız referans'],['motor-y-d','Altı uçlu motor · gerçek DC enjeksiyon devresi kurulmadı']]
+    ['meter-ammeter','DC akım ölçümü · yalnız referans'],['motor-y-d','Altı uçlu motor · gerçek DC enjeksiyon devresi kurulmadı']],
+  '03':[['motor-y-d','Yıldız bağlantılı altı uçlu motor · referans'],
+    ['supply-dc-plus','DC fren kaynağı · yalnız kavramsal'],
+    ['coil-contactor','Şebekeden ayırma kontaktörü · referans'],
+    ['contact-nc','Ayrı frenleme güvenlik kilidi · referans']],
+  '04':[['motor-y-d','Üçgen bağlantılı altı uçlu motor · referans'],
+    ['supply-dc-plus','DC fren kaynağı · yalnız kavramsal'],
+    ['coil-contactor','Şebeke/fren geçiş kontaktörü · referans'],
+    ['contact-nc','Ayrı frenleme kilidi · referans']],
+  '06':[['motor-y-d','Yıldız–üçgen yol verilen motor · referans'],
+    ['coil-delay-on','Yıldız–üçgen yol verme zaman rölesi · referans'],
+    ['coil-contactor','Ayrı frenleme kontaktörü · yalnız kavramsal'],
+    ['supply-dc-plus','DC enjeksiyon referansı · gerçek fren yolu yok'],
+    ['contact-nc','Şebeke/fren karşılıklı kilidi · referans']],
+  '07':[['motor-3p','Üç faz motor · frenleme için kavram'],
+    ['tutorial-mechanical-brake','Mekanik fren · tork/terminal modeli yok'],
+    ['coil-contactor','Fren komut kontaktörü · referans'],
+    ['coil-delay-on','Otomatik fren zaman koşulu · referans']],
+  '08':[['motor-3p','Üç faz motor · durma konusu'],
+    ['tutorial-mechanical-brake','Fren elemanı · hareket modeli yok'],
+    ['coil-delay-on','Frenleme zamanlayıcısı · referans'],
+    ['contact-nc','Frenleme durumu kilidi · referans']]
  }[suffix];
  if(!parts)throw Error('Unknown brake reference '+suffix);
  const p=board(lesson.id,lesson.title,parts);
@@ -3170,8 +3191,11 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
     !lesson.project.components.some(c=>c.typeId==='coil-delay-on')||
     lesson.project.components.some(c=>c.typeId==='supply-dc-plus'||c.typeId==='tutorial-mechanical-brake'))
    throw Error('MQ07 SC156–163 original braking source changed '+id);
- const conceptual=['01','02','05'].includes(suffix);
- if(conceptual)mq07RepairBrakeReference(lesson,suffix);
+ // All eight brake lesson titles differ from a START/Y-Delta operation.
+ // The native model lacks brake torque and DC injection. A genuine topic
+ // reference, not fictitious live brake wires, is the correct lesson here.
+ const conceptual=true;
+ mq07RepairBrakeReference(lesson,suffix);
  lesson.summary=concept+(conceptual?
   ' İlgili frenleme ürünleri doğru türde kavram kartıdır; kablolu frenleme simülasyonu değildir.':
   ' Ekrandaki canlı yıldız–üçgen devresi başlıktaki frenleme işlemini gerçekleştirmez.');
@@ -3193,10 +3217,35 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
   'Frenleme momenti ve durma süresi ölçülmediği için frenlemeye PASS verme.'
  ];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC156_SC163',
-  titleTopologyStatus:'REVIEW',titleTopologyIssue:conceptual?
-    ('BRAKE_REFERENCE_NATIVE_PENDING_'+suffix):issue,brakingAcceptance:false,
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:
+    ('BRAKE_REFERENCE_NATIVE_PENDING_'+suffix),brakingAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
- if(!conceptual)mq07MotorMaterialLimit(lesson,'motor-y-d',limitation,'yıldız–üçgen yol verme');
+ // Specific conceptual questions replace the generic motor START quiz,
+ // while making no promise that a motor was electrically braked.
+ const question={
+  '03':['Yıldız bağlantılı motorun frenlendiği nasıl kanıtlanır?',
+    'Ayrı frenleme enerjisi ve motorun durma davranışı doğrulanarak',
+    'Sadece yıldız kontaktörü çekince','START lambası yandığında',
+    'Yıldız bağlantısı tek başına dinamik frenleme değildir.'],
+  '04':['Üçgen yol verme devresi neden tek başına dinamik fren değildir?',
+    'Ayrı kontrollü frenleme işlevi ve enerjiyi kesme koşulları olmadığı için',
+    'Üçgen motorlarda fren gerekmediği için','Nötr her zaman takılı olduğu için',
+    'Motoru çalıştırmak ve fren momenti üretmek iki ayrı fiziksel işlemdir.'],
+  '06':['Yıldız–üçgen motoru frenlemeye geçirmek için hangisi ayrıca doğrulanmalıdır?',
+    'Yol verme ile frenleme durumlarının ayrı kontrol edilmesi',
+    'Yalnız yıldız zaman rölesinin çalışması','STOP butonunun renginin değişmesi',
+    'Kalkış zamanlayıcısı frenleme zamanlayıcısının yerini almaz.'],
+  '07':['Otomatik frenleme öğretiminde yalnız STOP komutu yeterli midir?',
+    'Hayır, frenin durumu ve etkisi ayrıca doğrulanmalıdır',
+    'Evet, her STOP fren torku üretir','Evet, START bırakılınca rotor anında durur',
+    'Elektrik beslemesini kesmek frenin etkinliğini tek başına kanıtlamaz.'],
+  '08':['Zaman rölesinin bulunması fren süresini doğrudan kanıtlar mı?',
+    'Hayır, fren hareketi veya etkinliği ayrıca modellenmeli ya da ölçülmelidir',
+    'Evet, motor her zaman ayar süresinde durur','Evet, süre akımdan bağımsızdır',
+    'Zaman koşulu, motorun gerçek yavaşlaması veya durma süresi değildir.']
+ }[suffix];
+ if(question)lesson.quiz={question:question[0],
+  options:[question[1],question[2],question[3]],answer:0,why:question[4]};
 }
 
 /* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
