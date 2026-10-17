@@ -3,11 +3,11 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Solver=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const reasons={13:'TWO_STATION_NATIVE_PENDING',14:'MISSING_REVERSE_MOTOR_CONTACTOR'};
+const reasons={13:'TWO_STATION_NATIVE_PENDING',14:'REVERSING_NATIVE_PENDING'};
 const lesson=n=>L.byId['plc-hardware-programming-src-'+String(n).padStart(2,'0')];
 for(let n=1;n<=19;n++)test('SC'+(181+n)+' actual PLC reference/topology scope matches lesson title',()=>{
  const l=lesson(n);assert.ok(l);const p=l.project,wired=[4,5,6,12,13,14].includes(n);
- assert.equal(l.kind,wired?'wiring':'quiz');assert.equal(p.wires.length,wired?(n===13?22:18):0);
+ assert.equal(l.kind,wired?'wiring':'quiz');assert.equal(p.wires.length,wired?(n===13?22:n===14?30:18):0);
  assert.ok(p.components.some(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0'));
  for(const c of p.components)assert.ok(defs[c.typeId],c.typeId);
  const issue=reasons[n]||(wired?null:'NO_WIRED_CIRCUIT');
@@ -22,8 +22,8 @@ for(let n=1;n<=19;n++)test('SC'+(181+n)+' actual PLC reference/topology scope ma
  }
  if(wired){
   assert.equal(p.components.filter(x=>x.typeId==='motor-3p').length,1);
-  assert.equal(p.components.filter(x=>x.typeId==='coil-contactor').length,1);
-  assert.equal(p.components.filter(x=>x.typeId==='push-no').length,n===13?2:1);
+  assert.equal(p.components.filter(x=>x.typeId==='coil-contactor').length,n===14?2:1);
+  assert.equal(p.components.filter(x=>x.typeId==='push-no').length,n===13||n===14?2:1);
   assert.equal(p.components.filter(x=>x.typeId==='push-nc').length,n===13?2:1);
  }else{assert.match(l.explanation,/yoktur|bulunmaz|kablolanmamıştır|ölçülmez|yapılmamıştır|bağlanmamıştır|simüle edilmez|yürütülmez|oluşturulmamıştır/)}
 });
@@ -37,16 +37,69 @@ for(const n of [4,5,6,12,13,14])test('SC'+(181+n)+' real PLC X10 input, X12 outp
   const io=c.plc._plcRuntime;assert.equal(io.powered,true);
   assert.equal(io.inputs['X10:7'],start);assert.equal(io.inputs['X10:8'],!stop);
   assert.equal(io.outputs['X12:3'],running);
-  assert.equal(io.program,n===13?'two-station-start-stop':'start-stop-latch');
+  assert.equal(io.program,n===13?'two-station-start-stop':n===14?'forward-reverse-interlocked':'start-stop-latch');
   assert.equal(!!c.coil._active,running);assert.equal(!!c.motor._active,running);
  }
  assert.ok(p.wires.some(w=>w.from.c==='ac'&&w.from.p==='PE'&&w.to.c==='motor'&&w.to.p==='PE'));
 });
-test('SC195 reversing title cannot pass with only one contactor and start-stop program',()=>{
- const p=lesson(14).project;
- assert.equal(p.components.filter(c=>c.typeId==='coil-contactor').length,1);
- assert.ok(!p.components.some(c=>c.id==='coilR'));
- assert.equal(lesson(14).pedagogyReview.titleTopologyIssue,'MISSING_REVERSE_MOTOR_CONTACTOR');
+test('SC195 original forward main path and actual reverse K2 phase-swap path are distinct',()=>{
+ const l=lesson(14),p=l.project,c=Object.fromEntries(p.components.map(x=>[x.id,x]));
+ assert.equal(p.wires.length,30);
+ assert.equal(p.components.filter(x=>x.typeId==='coil-contactor').length,2);
+ assert.equal(p.components.filter(x=>x.typeId==='main-contact').length,2);
+ assert.equal(p.components.filter(x=>x.typeId==='contact-nc').length,2);
+ assert.equal(c.plc.plcProgram,'forward-reverse-interlocked');
+ assert.equal(c.coil.ref,'K1');assert.equal(c.main.ref,'K1');
+ assert.equal(c.coilR.ref,'K2');assert.equal(c.mainR.ref,'K2');
+ assert.equal(c.ncF.ref,'K1');assert.equal(c.ncR.ref,'K2');
+ const has=(a,ap,b,bp)=>p.wires.some(w=>
+  w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp);
+ for(const [a,ap,b,bp] of [
+  ['ps','P','reverse','13'],['reverse','14','plc','X10:9'],
+  ['plc','X12:3','ncR','21'],['ncR','22','coil','A1'],
+  ['plc','X12:4','ncF','21'],['ncF','22','coilR','A1'],
+  ['coilR','A2','ps','M'],
+  ['ac','L1','mainR','1'],['ac','L2','mainR','3'],['ac','L3','mainR','5'],
+  ['mainR','2','motor','W'],['mainR','4','motor','V'],['mainR','6','motor','U']
+ ])assert.ok(has(a,ap,b,bp),'Missing real forward/reverse terminal '+a+'/'+ap+'→'+b+'/'+bp);
+ assert.ok(!has('plc','X12:3','coil','A1'),'K1 coil must pass through K2 NC contact');
+ assert.equal(l.pedagogyReview.titleTopologyIssue,'REVERSING_NATIVE_PENDING');
+ assert.equal(l.pedagogyReview.plcAdvancedLogicAcceptance,false);
+});
+test('SC195 native reversing requests interlock both PLC outputs and both contactor coils',()=>{
+ const p=structuredClone(lesson(14).project),c=Object.fromEntries(p.components.map(x=>[x.id,x]));
+ // Intended source behavior. NOT a measured PASS until consolidated Node QA.
+ const trace=[
+  [0,false,false,false,false,false],
+  [100,true,false,false,true,false],
+  [200,false,false,false,true,false],
+  [300,false,false,true,false,false],
+  [400,false,false,false,false,false],
+  [500,false,false,true,false,true],
+  [600,false,false,false,false,true],
+  [700,false,true,false,false,false],
+  [800,false,false,false,false,false],
+  [900,true,false,false,true,false],
+  [1000,true,false,true,false,false]
+ ];
+ for(const [now,forward,stop,reverse,qF,qR] of trace){
+  c.start.state=forward;c.stop.state=stop;c.reverse.state=reverse;
+  const result=Solver.solve(p,defs,{now});
+  assert.equal(result.blocked,false,'Blocked reversed-phase PLC project at '+now);
+  assert.equal(result.shortCircuit,false,'Simultaneous contactor fault at '+now);
+  assert.equal(result.stable,true,'Unstable reversing PLC model at '+now);
+  const io=c.plc._plcRuntime;
+  assert.equal(io.program,'forward-reverse-interlocked');
+  assert.equal(io.inputs['X10:7'],forward);
+  assert.equal(io.inputs['X10:8'],!stop);
+  assert.equal(io.inputs['X10:9'],reverse);
+  assert.equal(io.outputs['X12:3'],qF);
+  assert.equal(io.outputs['X12:4'],qR);
+  assert.equal(!!c.coil._active,qF);
+  assert.equal(!!c.coilR._active,qR);
+  assert.ok(!(c.coil._active&&c.coilR._active),
+   'PLC reversing outputs activated both contactors at the same time');
+ }
 });
 test('SC194 has two physical START/STOP stations with independent X10:7–10 PLC inputs',()=>{
  const p=lesson(13).project,c=Object.fromEntries(p.components.map(x=>[x.id,x]));
