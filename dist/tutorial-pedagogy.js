@@ -2185,8 +2185,8 @@ const mq07Concepts={
 'installation-grounding-src-04':['Dağıtım panosundaki koruma barasının işlevini anlamak','İletken gövdelerin eşpotansiyele bağlanmasıyla dokunma gerilimi riski azaltılır. PE barasının nötr barasıyla aynı görevde olduğu varsayılmaz; düzen, tesisat topraklama sistemine göre değerlendirilir.','Pano modelinde PE, nötr ve fazın nerelerde ayrılması gerektiğini kavramsal olarak açıklamak.'],
 'installation-grounding-src-05':['Motorun iletken gövdesindeki koruma bağlantısının amacını anlamak','Motorun çalışma akımı sargılardan akar; koruma iletkeni arıza akımı yolu ve koruma açması içindir. Koruma iletkeninin varlığı tek başına izolasyon testinin yapıldığı anlamına gelmez.','Motor gövdesi ile besleme uçlarını ayrı sınıflandır; gerçek PE sürekliliği bu sahnede ölçülmüyor.'],
 'installation-grounding-src-06':['Topraklı prizde L, N ve PE işlevlerini ayırt etmek','Faz enerjiyi, nötr normal dönüşü, PE korumayı üstlenir. Sadece renk veya görünüşten süreklilik, kutuplama ve koruma başarısı doğrulanamaz.','Sanal priz görselinde üç farklı işlevi eşleştir; ölçüm kanıtının eksik olduğunu söyle.'],
-'installation-grounding-src-07':['Topraklama direncinin neden ölçüldüğünü anlamak','Elektrodun toprakla teması ölçüm yöntemine, zemin koşullarına ve ölçme geometrisine bağlıdır; tek başına PE sürekliliğinin eş anlamlısı değildir.','Yöntem ve cihaz doğrulanmadığı için ohm sonucu uydurma; gereken ölçüm verisini listele.'],
-'installation-grounding-src-08':['İzolasyon direnci ölçümünün amacını anlamak','Yalıtım direnci, istenmeyen kaçak yollarını değerlendirir; uygun ölçüm cihazı ve enerjisiz güvenli test prosedürü gerekir. Düşük direnç, hasar/nem gibi olasılıkları işaret edebilir.','Simüle edilmeyen izolasyon testine sahte MΩ sonucu atama.'],
+'installation-grounding-src-07':['Topraklama direnci ölçer ile koruma toprağı noktasının farklı görevlerini tanımak','Topraklama direnci ölçer (sanal MET referansı) ve topraklama noktası bu kartta iki ayrı malzemedir. Ölçerin katalogda bağlantı terminalleri ve çalışır toprak direnci ölçüm çözümü yoktur; zemin koşulları, elektrot geometrisi ve PE sürekliliği ölçülmüş sayılmaz.','Topraklama direnci ölçer ile topraklama noktasını isimlendir; kablo ve gerçek ölçüm modeli bulunmadığından Ω değeri üretme.'],
+'installation-grounding-src-08':['Yalıtkanlık direnci ölçer, iletken ve referans gövdeyi kavramsal olarak ayırt etmek','Yalıtkanlık direnci ölçer (sanal megohmmetre referansı), test edilecek iletken/klemens ve referans gövde ayrı materyallerdir. Ölçer görselinde L/E terminal kimlikleri bulunsa da bu kartta bağlantı kabloları, gerçek test gerilimi ve doğrulanmış MΩ ölçüm modeli yoktur.','Yalıtkanlık direnci ölçeri ve diğer iki referans materyali adlandır; enerjili kurulum veya gerçek izolasyon testi yapmadan MΩ sonucu uydurma.'],
 'installation-grounding-src-09':['Yıldırımdan korunma iletkeninin görevini öğrenmek','İniş iletkeni, yıldırım akımı için tasarlanmış koruma sisteminin parçasıdır; bina PE ağından bağımsız bir oyuncak devre değildir. Kesit ve iniş güzergâhı standarda göre tasarlanır.','Sanal materyalde yakalama ucu, iniş iletkeni ve topraklayıcıyı kavramsal sırayla belirt.'],
 'installation-grounding-src-10':['Kaçak akım koruma düzeninin neyi algıladığını açıklamak','Kaçak akım koruma cihazı faz ve dönüş akımlarının farkını değerlendirir; aşırı akım korumasıyla aynı görevde değildir. Gerçek açma süresi ve kaçak akım sonucu ölçülmedikçe doğrulanmış sayılmaz.','Sanal gösterimde akım farkı ve aşırı akım arızası kavramlarını ayır.'],
 'installation-systems-src-01':['Adi anahtarın aydınlatmadaki kumanda görevini açıklamak','Tek kutuplu anahtarın açık konumu yük yolunu keser; kapalı konumu devre yolunu tamamlar. Bu derste henüz kayıtlı kablo olmadığı için lambanın gerçek enerjilenmesi gösterilmiş sayılmaz.','Sanal elemanların görevini ayır ve eksik kablo topolojisini REVIEW olarak tanımla.'],
@@ -2334,6 +2334,35 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_GROUNDING_MEASUREMENT_REFERENCE: SC07/SC08 are deliberately unwired
+   conceptual cards. Give each real displayed product a grounded material role
+   without inventing earth-resistance, insulation or mains test measurements. */
+const mq07GroundingReferenceMaterials=[
+ ['installation-grounding-src-07',[
+  ['tutorial-earth-tester','Topraklama direnci ölçer, topraklama direnci ölçümünün kavramsal cihazıdır; bu sanal referansta ölçüm terminalleri, bağlanan ölçü devresi ve doğrulanmış Ω sonucu yoktur.'],
+  ['ground','Topraklama noktası koruma toprağının sembolik referansıdır; görünen elektrot sembolü ölçülmüş topraklama direnci veya PE sürekliliği değildir.']]],
+ ['installation-grounding-src-08',[
+  ['tutorial-insulation-tester','Yalıtkanlık direnci ölçer (megohmmetre) yalnız kavramsal cihaz modelidir; L/E uçları görsel referanstır, bu kartta kablo, ölçüm gerilimi ve MΩ hesabı simüle edilmez.'],
+  ['terminal-2','Test edilecek iletken/klemens referansı, ölçümün değerlendirildiği öğeyi tanıtır; bu sayfada test devresine bağlanmamıştır.'],
+  ['ground','Referans gövde/toprak sembolü ölçümle ilişkili kavramsal referanstır; gerçek bir test veya yalıtım yeterliliği onayı değildir.']]]
+];
+for(const [id,roles] of mq07GroundingReferenceMaterials){
+ const lesson=L.byId[id],p=lesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||!p||p.wires?.length||p.components?.length!==roles.length||
+    lesson.materials?.length!==roles.length||lesson.pedagogyReview?.mq07Batch!=='001_200')
+  throw Error('MQ07 grounding conceptual material baseline changed: '+id);
+ for(let i=0;i<roles.length;i++){
+  const c=p.components[i],m=lesson.materials[i],[expectedType,why]=roles[i];
+  if(c.typeId!==expectedType||m.componentId!==c.id||m.typeId!==c.typeId)
+   throw Error('MQ07 grounding material identity changed: '+id+' '+i);
+  m.why=why;
+ }
+ if(lesson.pedagogyReview.titleTopologyIssue!=='NO_WIRED_CIRCUIT'||
+    lesson.pedagogyReview.physicalAcceptance!==false||
+    lesson.pedagogyReview.windowsVisualAcceptance!==false||
+    lesson.pedagogyReview.independentPedagogicalAcceptance!==false)
+  throw Error('MQ07 grounding unaccepted scope changed: '+id);
+}
 /* MQ07_SC182_SC200_PLC: accurately distinguish PLC live DOL demo from unwired concept cards. */
 const mq07PlcScope182to200=[
  ['01','NO_WIRED_CIRCUIT','PLC, girişleri okuyup tanımlı lojik programa göre çıkışları süren endüstriyel denetleyicidir.','Bu kartta PLC modeli vardır fakat fiziksel giriş, çıkış, program veya röleli karşılaştırma devresi kablolanmamıştır.'],
