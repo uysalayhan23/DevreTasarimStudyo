@@ -4767,6 +4767,64 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC003 — PE conductor stages are NOT an energized line circuit.
+ * Material-only correction, preserving the original reference-only lesson
+ * and mandatory unverified continuity/equipotential acceptance flags. */
+{
+ const id='installation-grounding-src-03',l=L.byId[id],prior=l?.project;
+ const expected=['supply-1p','terminal-pe','bar-pe','ground'];
+ if(!l||!prior||l.kind!=='quiz'||prior.referenceOnly!==true||
+    prior.wires.length!==0||l.steps.length!==0||l.materials?.length!==4||
+    prior.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    !L.mq07Batch200.noWireTriage.conceptPreservedIds.includes(id)||
+    !L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
+   throw Error('MQ07 SC003 canonical PE stage board drift');
+ const p=board(id,l.title,[
+  ['bar-pe','BPE · ana koruma/eşpotansiyel PE barası'],
+  ['terminal-pe','PE-K · kolon PE referans noktası'],
+  ['terminal-pe','PE-L · linye PE referans noktası'],
+  ['terminal-pe','PE-S · sorti/yük PE referans noktası'],
+  ['ground','ET · topraklama / koruma eşpotansiyel referansı']
+ ]);
+ p.workspaceMode=prior.workspaceMode;p.projectId=prior.projectId;p.name=prior.name;
+ p.tutorialLesson={...prior.tutorialLesson,phase:'quiz'};
+ const purposes=[
+  'BPE ana PE barasını temsil eder; çalışma akımının faz veya nötr beslemesi değildir.',
+  'PE-K kolon bölümünün ayrı kimlikli sembolik koruma iletkeni/klemens noktasıdır; elektriksel süreklilik ölçülmedi.',
+  'PE-L linye bölümünün ayrı kimlikli PE noktasıdır; PE-K ile tel bağı bulunmadığı açıkça görülür.',
+  'PE-S yükün sorti bağlantısına ait ayrı koruma referansıdır; kaynakta motor veya priz gövdesine kablo yoktur.',
+  'ET koruma topraklaması/kavramını temsil eder; zemin direnci, RCD açması veya gerçek kaçak akım kanıtı değildir.'
+ ];
+ for(let i=0;i<p.components.length;i++){
+  p.components[i].ref=['BPE','PE-K','PE-L','PE-S','ET'][i];
+  p.components[i].tutorialPurpose=purposes[i];
+ }
+ l.project=p;l.workspaceMode=p.workspaceMode;l.kind='quiz';l.steps=[];l.materials=materialRows(p);
+ l.summary='Kolon, linye ve sorti için PE-K/PE-L/PE-S ayrı koruma referansları ile BPE barası ve ET toprağı; faz/nötr besleme kaynağı bulunmayan kablosuz PE malzeme kartı.';
+ l.explanation='PE hattı normal çalışma akımının enerji veya nötr dönüş devresi değildir. BPE ana PE barası, PE-K kolon, PE-L linye ve PE-S sorti koruma noktaları ve ET topraklama referansı ayrı tanıtılır. Bu beş malzeme arasında kayıtlı terminal bağlantısı YOKTUR; sanal süreklilik, eşpotansiyel ölçümü, yalıtım güvenliği, topraklama direnci veya fiziksel montaj kabulü verilmez.';
+ l.learningGoal='Kolon–linye–sorti kavramsal PE aşamalarını ayrı malzeme/terminal isimleriyle tanımlamak; enerji devresi ile koruma iletkenini karıştırmamak.';
+ l.beginnerSteps=['BPE, PE-K, PE-L, PE-S ve ET malzemelerinin koruma görevlerini ayır.',
+  'Kolon, linye ve sorti arasında hiçbir gerçek bağlantı kurulmadığını doğrula.',
+  'PE hattını N, L veya normal besleme dönüşü olarak yorumlama.',
+  'Süreklilik ölçümü ve güvenlik doğrulaması yapılmadığı için PASS verme.'];
+ l.quiz={question:'PE-K, PE-L ve PE-S üç ayrı nokta olarak neden gösterilir?',
+  options:['Kolon, linye ve sorti koruma iletkeni aşamalarını karıştırmamak için',
+   'Üç faz besleme kaynağını birbirine kısa devre etmek için',
+   'PE hattının her zaman normal yük akımı taşıdığını göstermek için'],
+  answer:0,why:'Ayrı isimler yalnız kavram referansıdır. Kablo ve süreklilik ölçümü olmadığı için gerçek PE hattı tamamlandı denemez.'};
+ l.safety='Bu ders fiziksel topraklama montajı ve enerjili bina tesisatı talimatı değil, sanal PE kavram malzeme kartıdır.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  componentIds:p.components.map(c=>c.typeId),
+  mq07MaterialRepair:'SC003_PE_COLON_LINE_SORTI_SEPARATE_REFERENCE_POINTS',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_WIRED_PE_CONTINUITY',
+  terminalGrounded:false,peContinuityAcceptance:false,earthResistanceAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(p.components.length!==5||l.materials.length!==5||
+    l.materials.some((m,i)=>m.componentId!==p.components[i].id||m.typeId!==p.components[i].typeId)||
+    p.components.some(c=>c.typeId==='supply-1p'))
+  throw Error('MQ07 SC003 PE source material closure incomplete');
+}
+
 /* MQ-07 SC017/SC030 — narrow, SOURCE-ONLY material/title corrections.
  * Both were in the protected 51-card NO_WIRED_CIRCUIT historic set;
  * reference-only is preserved. These are not mains wiring instructions,
