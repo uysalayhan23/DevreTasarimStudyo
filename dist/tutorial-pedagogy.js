@@ -2780,6 +2780,73 @@ function mq07SeqWire(lesson,mode){
     p.components.filter(c=>c.typeId==='coil-contactor').length!==2)
   throw Error('Unexpected two-motor '+mode+' source graph');
 }
+
+/* SC174/177 actual two-motor timer circuits; all additions are confined to
+   explicitly selected lessons. Both use the existing two-motor K1/K2 power
+   graph; their control contacts are physically connected to native timers. */
+function mq07SeqTimedMotors(lesson,mode){
+ mq07RealTwoMotorSequence(lesson,'dependent');
+ const p=lesson.project,added=[],wires=[];
+ const find=(a,ap,b,bp)=>{
+  const matches=p.wires.filter(w=>w.from?.c===a&&w.from?.p===ap&&
+   w.to?.c===b&&w.to?.p===bp);
+  if(matches.length!==1)throw Error('MQ07 '+mode+' circuit route changed '+a+'/'+ap+' → '+b+'/'+bp);
+  return matches[0];
+ };
+ const term=(a,ap,b,bp,msg)=>W(a,ap,b,bp,msg,
+  'Zamanlı motor güç/kumanda yolu, gerçek katalog uçlarını kullanır.',
+  '#e53935','L1');
+ if(mode==='alternating'){
+  // Master K0 holds the original START/STOP circuit. KT flasher toggles
+  // complementary K1/K2 coils; neither contact is fed after master STOP.
+  const master=C('master','coil-contactor',1070,840,'K0','K0 · ana çalışma bobini');
+  const flash=C('cycleKT','coil-flasher',1410,850,'KT','KT · iki motor 2 s / 2 s',
+   {flashOn:2,flashOff:2,tutorialPurpose:'K0 izni varken KT periyodik faz değiştirir.'});
+  const enable=C('masterNO','contact-no',1200,790,'K0','K0 NO · zaman izni');
+  const ktNO=C('cycleNO','contact-no',1700,790,'KT','KT NO · M1 fazı');
+  const ktNC=C('cycleNC','contact-nc',1700,920,'KT','KT NC · M2 fazı');
+  added.push(master,flash,enable,ktNO,ktNC);
+  for(const id of ['start','hold'])find(id,'14','coil','A1').to={c:'master',p:'A1'};
+  p.components.find(c=>c.id==='hold').ref='K0';
+  p.components.find(c=>c.id==='k1Permit').ref='K0';
+  find('k1Permit','14','coil2','A1').to={c:'cycleKT',p:'A1'};
+  wires.push(
+   term('master','A2','g1','N','K0/A2 → N'),
+   term('cycleKT','A2','g1','N','KT/A2 → N'),
+   term('k1Permit','14','cycleNO','13','K0 izin → KT NO/13'),
+   term('cycleNO','14','coil','A1','KT NO → K1 M1'),
+   term('k1Permit','14','cycleNC','21','K0 izin → KT NC/21'),
+   term('cycleNC','22','coil2','A1','KT NC → K2 M2')
+  );
+  // Existing K1 coil return and M2 K2 coil return remain wired.
+  // K0 auxiliary contact is the already wired k1Permit; do not add an
+  // unused duplicate device to the scene.
+  added.splice(added.indexOf(enable),1);
+ }else if(mode==='delayed-reverse-m2'){
+  const timer=C('delayedKT','coil-delay-on',1460,790,'KT','KT · gecikmeli geri M2',
+   {delayValue:3,delayUnit:'s',tutorialPurpose:'K1 çekmesinden 3 s sonra KT/13–14 geri M2 yoluna izin verir.'});
+  const contact=C('delayedNO','delay-on-no',1590,920,'KT','KT gecikmeli NO 13–14');
+  added.push(timer,contact);
+  // M2 power swaps L1/L3 on two phases while M1 K1 keeps forward U/V/W.
+  for(const [pin,newTerminal] of [['2','W'],['6','U']]){
+   const old=pin==='2'?'U':'W';
+   find('main2',pin,'motor2',old).to={c:'motor2',p:newTerminal};
+  }
+  find('k1Permit','14','coil2','A1').to={c:'delayedKT',p:'A1'};
+  wires.push(
+   term('delayedKT','A2','g1','N','KT/A2 → N'),
+   term('k1Permit','14','delayedNO','13','K1 izin → KT TON/13'),
+   term('delayedNO','14','coil2','A1','KT TON/14 → K2/A1')
+  );
+ }else throw Error('Unexpected motor timer mode '+mode);
+ p.components.push(...added);p.wires.push(...wires);
+ lesson.materials.push(...materialRows({components:added}));
+ mq07SeqRebuildGuide(lesson);
+ const count=mode==='alternating'?29:26;
+ if(p.wires.length!==count||p.components.filter(c=>c.typeId==='motor-3p').length!==2||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==(mode==='alternating'?3:2))
+  throw Error('Incomplete timed motor source graph '+mode);
+}
 /* SC176: use the already-existing proven 3P forward/reverse example, clone
    to avoid mutating locked motor-forward-reverse-1. Each NC limit is placed
    AFTER both START and holding paths: no bypass around the limit switch.
@@ -2826,17 +2893,21 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
   throw Error('MQ07 SC172–181 original topology changed: '+id);
  const dependent=suffix==='01',independent=suffix==='09';
  const mode=({'02':'periodic','04':'thermal','10':'conveyor'})[suffix]||null;
+ const timed=({'03':'alternating','06':'delayed-reverse-m2'})[suffix]||null;
  const limit=suffix==='05';
  if(dependent||independent)mq07RealTwoMotorSequence(lesson,dependent?'dependent':'independent');
  if(mode)mq07SeqWire(lesson,mode);
+ if(timed)mq07SeqTimedMotors(lesson,timed);
  if(limit)mq07SeqLimit(lesson);
- const real=dependent||independent||!!mode||limit;
+ const real=dependent||independent||!!mode||!!timed||limit;
  const actual=dependent?
   'M1 START/STOP ile K1 çekince K1 NO/13–14 kolu K2 ve M2 motorunu sırayla enerjilendirir. M1 STOP ile iki motor da bırakır.':
   independent?'M1 ve M2 ayrı START, STOP ve K1/K2 mühürleme koluna sahiptir. Her motor bağımsız başlatılır veya durdurulur.':
   mode==='periodic'?'M1 kontaktörü KT flaşörünü besler; KT NO kontağı 2 s AÇIK/2 s KAPALI iken K2 üzerinden M2 dönemsel çalışır. M1 sürekli çalışır, iki motorun karşılıklı dönüşümü henüz modellenmemiştir.':
   mode==='thermal'?'M1 ve M2 ayrı üç kutuplu FR1/FR2 termik ana güç yollarından geçer; iki 95–96 NC yardımcı kontak seri kumanda zincirinde ortak duruş sağlar.':
   mode==='conveyor'?'K1 izin kontağı ayrı 24 VDC kaynaktan PNP yakınlık sensörünü besler; BK çıkışı algılama olduğunda K2 ve konveyör M2 devreye girer.':
+  timed==='alternating'?'K0 START/STOP ve mühürleme ana kumandası; KT flaşörün birbirini tamamlayan NO/NC kontakları K1/M1 ve K2/M2 motorlarını 2 saniyelik fazlarda sırayla çalıştıracak gerçek elektriksel yolları oluşturur.':
+  timed==='delayed-reverse-m2'?'K1/M1 ileri güç yolu önce çalışır, K1 NO ile beslenen KT üç saniye sonra K2/M2 geri güç yoluna izin verir; K2 motorunda L1 ve L3 yer değiştirir.':
   limit?'İleri ve geri kontaktör bobinlerinin önünde iki ayrı NC sınır anahtarı vardır; ilgili uçta duruş sağlanır, karşı yöne otomatik başlatma henüz modellenmemiştir.':null;
  lesson.summary=concept+(limit?' Tek motorlu ileri/geri güç yolu iki NC sınır anahtarıyla kesilebilir.':
   real?' İki ayrı motorun güç ve kumanda bağlantıları şimdi çizilmiştir.':
@@ -2858,6 +2929,8 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
     mode==='periodic'?'TWO_MOTOR_PERIODIC_M2_NATIVE_PENDING':
     mode==='thermal'?'TWO_MOTOR_DUAL_THERMAL_NATIVE_PENDING':
     mode==='conveyor'?'TWO_MOTOR_CONVEYOR_SENSOR_NATIVE_PENDING':
+    timed==='alternating'?'TWO_MOTOR_ALTERNATING_TIMER_NATIVE_PENDING':
+    timed==='delayed-reverse-m2'?'TWO_MOTOR_DELAYED_REVERSE_NATIVE_PENDING':
     limit?'LIMIT_STOP_AUTO_REVERSE_NOT_MODELED':issue,
   multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
