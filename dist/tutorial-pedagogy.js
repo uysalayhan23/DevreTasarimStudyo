@@ -3465,7 +3465,7 @@ for(const [suffix,issue,concept,limitation] of mq07StartSpeedScope144to155){
  lesson.summary=concept+' '+(suffix==='12'?'Gerçek zaman röleli bağlantı çizilmiştir.':'Kaynak kapsamı ayrıca belirtilir.');
  lesson.explanation=concept+' '+actual+' Gerçek şebeke veya fiziksel motor güvenliği bu derste kabul edilmemiştir.';
  lesson.learningGoal=concept+' Gösterilen gerçek terminalleri, hesaplanamayan fiziksel büyüklüklerden ayırabilmek.';
- lesson.beginnerSteps=['Gösterilen ürünleri ve bağlı terminal sayılarını kontrol et.',concept,limitation,
+ lesson.beginnerSteps=['Gösterilen ürünleri ve bağlı terminal sayılarını kontrol et.',concept,actual,
   'Eksik donanım veya gerçek ölçüm yerine yalnız açıklamadan elektriksel PASS verme.'];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC144_SC155',
   titleTopologyStatus:pending?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:pending,
@@ -3473,9 +3473,9 @@ for(const [suffix,issue,concept,limitation] of mq07StartSpeedScope144to155){
 }
 
 
-/* MQ07_SC126_SC143_MOTOR: no replacement of canonical project wires or products.
- * Distinguish a shared DOL sample from a working lesson-specific function.
- * A stable numerical result does not prove physical safety or title coverage. */
+/* MQ07_SC126_SC143_MOTOR: canonical golden templates remain unmodified;
+ * SC127/128/131/132/140 are dedicated lesson-content repairs, not golden edits.
+ * A source wiring contract alone never certifies physical motor safety. */
 const mq07MotorScope126to143=[
  ['01','DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','Motor etiketi için anma gerilimi, güç, frekans, yıldız/üçgen tanımı ve altı uçlu klemens kutusu gerekir.','Ekrandaki gerçek devre STOP/START/kontaktör ve U/V/W uçlu üç faz motoruyla doğrudan yol verme örneğidir; motor etiketi veya altı uçlu klemens şeması değildir.'],
  ['02','MISSING_SIX_TERMINAL_STAR_DELTA','Yıldız bağlantıda U2/V2/W2 ortak, üçgende sargı uçları çapraz köprülenir; etiket gerilimi bağlantıyı belirler.','Bu kartta yalnız U/V/W uçlu motor ve DOL kontaktör vardır; U1/V1/W1/U2/V2/W2 klemensleri ve köprüleri bulunmaz.'],
@@ -3527,7 +3527,7 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
  lesson.beginnerSteps=['Önce ekrandaki gerçek motor/kontaktör/buton ürünlerini belirle.',
   'Sanal bağlantıların hangi işlevi desteklediğini kontrol et: '+actual+'.',
-  limitation,
+  note,
   'Sadece gerçek Node çıktısıyla çalışmayı yorumla; eksik başlık işlevine veya fiziksel kuruluma PASS verme.'];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC126_SC143',
   titleTopologyStatus:pending?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:pending,
