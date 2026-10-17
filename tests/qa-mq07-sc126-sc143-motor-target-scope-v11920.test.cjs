@@ -5,11 +5,11 @@ const Solver=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
 const exceptions={
  '01':'DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','02':'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING',
- '03':'PHASE_REVERSAL_NATIVE_PENDING','06':'MISSING_JOG_RUN_SELECTOR',
+ '03':'PHASE_REVERSAL_NATIVE_PENDING','06':'JOG_RUN_SELECTOR_NATIVE_PENDING',
  '07':'TWO_STATION_NATIVE_PENDING','08':'MISSING_PACKAGE_SWITCH',
  '09':'MISSING_ON_DELAY_RELAY','10':'MISSING_OFF_DELAY_RELAY',
  '11':'MISSING_SPEED_CONTROL','12':'MISSING_SINGLE_BUTTON_TOGGLE',
- '13':'MISSING_PROTECTION_RELAY','15':'MISSING_OVERLOAD_RELAY',
+ '13':'MISSING_PROTECTION_RELAY','15':'THERMAL_OVERLOAD_NATIVE_PENDING',
  '16':'MISSING_PHASE_MONITOR','17':'MISSING_AUTOMATIC_RETURN',
  '18':'PLC_PROGRAM_NOT_VALIDATED'
 };
@@ -102,4 +102,54 @@ test('SC132 two real NC STOPs are series and two NO STARTs share one K1 seal',()
  ])assert.ok(has(a,ap,b,bp),'Missing second station cable '+a+'→'+b);
  assert.ok(!has('stop','22','hold','13'),'Old bypass defeats second STOP');
  assert.equal(lesson(7).pedagogyReview.titleTopologyIssue,'TWO_STATION_NATIVE_PENDING');
+});
+
+test('SC131 JOG RUN switch really gates K1 self-hold branch',()=>{
+ const p=clone(6),parts=Object.fromEntries(p.components.map(c=>[c.id,c]));
+ assert.equal(p.wires.length,14);
+ assert.equal(parts.runMode.typeId,'selector-no');
+ const has=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&
+   w.to.c===b&&w.to.p===bp);
+ assert.ok(has('hold','14','runMode','13'));
+ assert.ok(has('runMode','14','coil','A1'));
+ assert.ok(!has('hold','14','coil','A1'));
+ const trace=[
+  [0,false,false,false,false],
+  [100,true,false,false,true],
+  [200,false,false,false,false],
+  [300,true,false,true,true],
+  [400,false,false,true,true],
+  [500,false,true,true,false]
+ ];
+ for(const[now,start,stop,run,motor]of trace){
+  parts.start.state=start;parts.stop.state=stop;parts.runMode.state=run;
+  check(Solver.solve(p,defs,{now}),'SC131 JOG RUN '+now);
+  assert.equal(!!parts.motor._active,motor);
+ }
+});
+test('SC140 F1 overload has 3 series poles and NC 95–96 in K1 trip control',()=>{
+ const p=clone(15),c=Object.fromEntries(p.components.map(x=>[x.id,x]));
+ assert.equal(p.wires.length,17);
+ assert.equal(c.fr.typeId,'overload');
+ const has=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&
+  w.to.c===b&&w.to.p===bp);
+ for(const [from,pin,to,terminal] of [
+  ['g1','L1','fr','95'],['fr','96','stop','21'],
+  ['main','2','fr','1'],['fr','2','motor','U'],
+  ['main','4','fr','3'],['fr','4','motor','V'],
+  ['main','6','fr','5'],['fr','6','motor','W']
+ ])assert.ok(has(from,pin,to,terminal),'Termik terminal eksik '+from+'/'+pin);
+ assert.ok(!has('g1','L1','stop','21'),'F1 95–96 bypass must be absent');
+ const steps=[
+  [0,false,false,false,false],
+  [100,true,false,false,true],
+  [200,false,false,false,true],
+  [300,false,false,true,false],
+  [400,false,false,false,false]
+ ];
+ for(const [now,start,stop,tripped,active]of steps){
+  c.start.state=start;c.stop.state=stop;c.fr.state=tripped;
+  check(Solver.solve(p,defs,{now}),'SC140 F1 '+now);
+  assert.equal(!!c.motor._active,active);
+ }
 });
