@@ -2702,6 +2702,122 @@ function mq07RealTwoMotorSequence(lesson,variant){
     p.components.filter(c=>c.typeId==='main-contact').length!==2)
   throw Error('Two-motor source topology did not match expected canonical pins');
 }
+/* SC173/175/181 real motor circuits, explicitly opt-in, all golden intact.
+   The existing SC172 dependent K1→K2 source is a safe starting graph. */
+function mq07SeqRebuildGuide(lesson){
+ const p=lesson.project;
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint||'Gerçek uçları bağla.',why:w.tutorialWhy||'Elektriksel bağlantı yolu.',
+  color:w.color,role:w.role,size:w.size}));
+}
+function mq07SeqWire(lesson,mode){
+ mq07RealTwoMotorSequence(lesson,'dependent');
+ const p=lesson.project;
+ const exact=(from,fp,to,tp)=>{
+  const matches=p.wires.filter(w=>w.from?.c===from&&w.from?.p===fp&&
+    w.to?.c===to&&w.to?.p===tp);
+  if(matches.length!==1)throw Error('Motor '+mode+' expected source route missing '+from+'/'+fp+' > '+to+'/'+tp);
+  return matches[0];
+ };
+ const wires=[],added=[];
+ if(mode==='periodic'){
+  const flasher=C('ktPulse','coil-flasher',1710,730,'KT','KT · periyodik zamanlayıcı',
+   {flashOn:2,flashOff:2,tutorialPurpose:'K1 etkin olduğu sürece 2 s AÇIK/2 s KAPALI sürelerle M2 besleme kontaktörünü sürer.'});
+  const pulse=C('ktContact','contact-no',1290,790,'KT','KT NO · M2 periyodik kontak',
+   {tutorialPurpose:'KT flaşör çıkışı ON durumunda K2/M2 güç kolunu çalıştırır.'});
+  added.push(flasher,pulse);
+  exact('k1Permit','14','coil2','A1').to={c:'ktPulse',p:'A1'};
+  wires.push(
+   W('ktPulse','A2','g1','N','KT/A2 → N','Zamanlayıcı bobini N dönüşüdür.','#1e88e5','N'),
+   W('g1','L1','ktContact','13','L1 → KT NO/13','K2 bobinine periyodik enerji izni.','#e53935','L1'),
+   W('ktContact','14','coil2','A1','KT NO/14 → K2/A1','K2 yalnız KT aktifken çeker.','#e53935','L1')
+  );
+ }else if(mode==='thermal'){
+  const ol1=C('ol1','overload',1010,420,'FR1','M1 termik · FR1',
+   {tutorialPurpose:'M1 üç fazını 1–2/3–4/5–6 üzerinden korur; 95–96 NC tripte ortak bobin zincirini açar.'});
+  const ol2=C('ol2','overload',1650,420,'FR2','M2 termik · FR2',
+   {tutorialPurpose:'M2 üç fazının ayrı termiğidir; tripte 95–96 NC ortak STOP zincirini açar.'});
+  added.push(ol1,ol2);
+  for(const [src,motor,thermal] of [['main','motor','ol1'],['main2','motor2','ol2']]){
+   for(const [out,inPin,outPin,motorPin,color,role] of [
+    ['2','1','2','U','#e53935','L1'],['4','3','4','V','#f97316','L2'],
+    ['6','5','6','W','#f4c430','L3']]){
+    exact(src,out,motor,motorPin).to={c:thermal,p:inPin};
+    wires.push(W(thermal,outPin,motor,motorPin,thermal+'/'+outPin+' → '+motor+'/'+motorPin,
+      'Termik ana güç yolu faz motor sargısına seri girer.',color,role,'2.5'));
+   }
+  }
+  for(const id of ['start','hold']){
+   exact(id,'14','coil','A1').to={c:'ol1',p:'95'};
+  }
+  wires.push(
+   W('ol1','96','ol2','95','FR1/96 → FR2/95',
+    'İki termiğin 95–96 NC kontakları seri: biri trip yaparsa her iki motor STOP.','#e53935','L1'),
+   W('ol2','96','coil','A1','FR2/96 → K1/A1',
+    'Ortak termik güvenlik zincirinden sonra K1 beslenir.','#e53935','L1')
+  );
+ }else if(mode==='conveyor'){
+  const supply=C('psSensor','supply-dc-plus',1110,950,'G3','K1 izinli 24 VDC sensör/kontaktör kaynağı');
+  const sensor=C('convSensor','proximity',1650,690,'B1','Konveyör · PNP endüktif algılayıcı',
+   {tutorialPurpose:'Hedef algılandığında BK PNP çıkışı K2 bobinini besler; BN +24V, BU 0V. M1 izin kontağı seri.'});
+  added.push(supply,sensor);
+  exact('g1','L1','k1Permit','13').from={c:'psSensor',p:'P'};
+  exact('k1Permit','14','coil2','A1').to={c:'convSensor',p:'BN'};
+  exact('coil2','A2','g1','N').to={c:'psSensor',p:'M'};
+  wires.push(
+   W('convSensor','BU','psSensor','M','BN/BU sensör 0V dönüş',
+    'Sensör elektronik beslemesi yalnız ayrı 24 VDC kaynaktan tamamlanır.','#111827','0V'),
+   W('convSensor','BK','coil2','A1','PNP BK → K2/A1',
+    'Hedef algısı ve K1 izin kontağı birlikte M2 kontaktörünü açar.','#43a047','SIGNAL')
+  );
+ }else throw Error('Unrecognized motor content mode '+mode);
+ p.components.push(...added);
+ p.wires.push(...wires);
+ lesson.materials.push(...materialRows({components:added}));
+ mq07SeqRebuildGuide(lesson);
+ const count={periodic:26,thermal:31,conveyor:25}[mode];
+ if(p.wires.length!==count||p.components.filter(c=>c.typeId==='motor-3p').length!==2||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==2)
+  throw Error('Unexpected two-motor '+mode+' source graph');
+}
+/* SC176: use the already-existing proven 3P forward/reverse example, clone
+   to avoid mutating locked motor-forward-reverse-1. Each NC limit is placed
+   AFTER both START and holding paths: no bypass around the limit switch.
+   Reverse direction is still a separate manual request, not automatic. */
+function mq07SeqLimit(lesson){
+ const sample=L.byId['motor-forward-reverse-1']?.project;
+ if(!sample?.wires?.length)throw Error('Missing canonical forward/reverse motor');
+ const p=clone(sample),ids=new Set(p.components.map(c=>c.id));
+ if(!['startF','holdF','coilF','startR','holdR','coilR'].every(id=>ids.has(id))||
+    ids.has('ls1')||ids.has('ls2'))
+  throw Error('Forward/reverse example pins changed; refusing SC176 limit');
+ const ls1=C('ls1','limit-nc',1300,770,'LS1','İleri uç NC sınır anahtarı');
+ const ls2=C('ls2','limit-nc',1550,770,'LS2','Geri uç NC sınır anahtarı');
+ p.components.push(ls1,ls2);
+ let left=0,right=0;
+ for(const w of p.wires){
+  if(w.to?.c==='coilF'&&w.to?.p==='A1'&&['startF','holdF'].includes(w.from?.c)){
+   w.to={c:'ls1',p:'21'};left++;
+  }
+  if(w.to?.c==='coilR'&&w.to?.p==='A1'&&['startR','holdR'].includes(w.from?.c)){
+   w.to={c:'ls2',p:'21'};right++;
+  }
+ }
+ if(!left||!right)throw Error('SC176 limit must gate both direction bobins');
+ p.wires.push(
+  W('ls1','22','coilF','A1','LS1 NC/22 → K1/A1','İleri uç konumda bobin bırakır.','#e53935','L1'),
+  W('ls2','22','coilR','A1','LS2 NC/22 → K2/A1','Geri uç konumda bobin bırakır.','#e53935','L1')
+ );
+ p.projectId='tutorial-session-source-'+lesson.id;
+ p.name='Öğretici · '+lesson.title;
+ p.tutorialLesson={id:lesson.id,topicId:lesson.topicId,phase:'demo',step:0,level:lesson.variant};
+ lesson.project=p;lesson.kind='wiring';
+ lesson.materials=materialRows(p);
+ mq07SeqRebuildGuide(lesson);
+ if(p.components.filter(c=>c.typeId==='limit-nc').length!==2||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==2)
+  throw Error('SC176 both direction limits not preserved');
+}
 for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  const id='motor-sequence-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||lesson.project?.wires?.length!==13||
@@ -2709,12 +2825,19 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
     lesson.project.components.filter(c=>c.typeId==='coil-contactor').length!==1)
   throw Error('MQ07 SC172–181 original topology changed: '+id);
  const dependent=suffix==='01',independent=suffix==='09';
+ const mode=({'02':'periodic','04':'thermal','10':'conveyor'})[suffix]||null;
+ const limit=suffix==='05';
  if(dependent||independent)mq07RealTwoMotorSequence(lesson,dependent?'dependent':'independent');
- const real=dependent||independent;
+ if(mode)mq07SeqWire(lesson,mode);
+ if(limit)mq07SeqLimit(lesson);
+ const real=dependent||independent||!!mode||limit;
  const actual=dependent?
   'M1 START/STOP ile K1 çekince K1 NO/13–14 kolu K2 ve M2 motorunu sırayla enerjilendirir. M1 STOP ile iki motor da bırakır.':
-  independent?
-  'M1 ve M2 ayrı START, STOP ve K1/K2 mühürleme koluna sahiptir. Her motor bağımsız başlatılır veya durdurulur.':null;
+  independent?'M1 ve M2 ayrı START, STOP ve K1/K2 mühürleme koluna sahiptir. Her motor bağımsız başlatılır veya durdurulur.':
+  mode==='periodic'?'M1 kontaktörü KT flaşörünü besler; KT NO kontağı 2 s AÇIK/2 s KAPALI iken K2 üzerinden M2 dönemsel çalışır. M1 sürekli çalışır, iki motorun karşılıklı dönüşümü henüz modellenmemiştir.':
+  mode==='thermal'?'M1 ve M2 ayrı üç kutuplu FR1/FR2 termik ana güç yollarından geçer; iki 95–96 NC yardımcı kontak seri kumanda zincirinde ortak duruş sağlar.':
+  mode==='conveyor'?'K1 izin kontağı ayrı 24 VDC kaynaktan PNP yakınlık sensörünü besler; BK çıkışı algılama olduğunda K2 ve konveyör M2 devreye girer.':
+  limit?'İleri ve geri kontaktör bobinlerinin önünde iki ayrı NC sınır anahtarı vardır; ilgili uçta duruş sağlanır, karşı yöne otomatik başlatma henüz modellenmemiştir.':null;
  lesson.summary=concept+(real?' İki ayrı motorun güç ve kumanda devreleri şimdi çizilmiştir.':
   ' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.');
  lesson.explanation=concept+' '+(actual||limitation)+
@@ -2730,7 +2853,11 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC172_SC181',
   titleTopologyStatus:'REVIEW',
   titleTopologyIssue:dependent?'TWO_MOTOR_SEQUENTIAL_NATIVE_PENDING':
-    independent?'TWO_MOTOR_INDEPENDENT_NATIVE_PENDING':issue,
+    independent?'TWO_MOTOR_INDEPENDENT_NATIVE_PENDING':
+    mode==='periodic'?'TWO_MOTOR_PERIODIC_M2_NATIVE_PENDING':
+    mode==='thermal'?'TWO_MOTOR_DUAL_THERMAL_NATIVE_PENDING':
+    mode==='conveyor'?'TWO_MOTOR_CONVEYOR_SENSOR_NATIVE_PENDING':
+    limit?'LIMIT_STOP_AUTO_REVERSE_NOT_MODELED':issue,
   multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
  if(!real)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
