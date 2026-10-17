@@ -2516,3 +2516,8 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 ### MQ-12 PLC SC201–SC203 Windows 4/4 PASS — SC202 STOP native mühürleme
 - `334c2f2` kullanıcı Windows Node 22.14.0 kanıtı: `node --test tests/qa-mq07-sc201-sc203-plc-followup-v11920.test.cjs` = **4 PASS / 0 FAIL**, `2222.126ms`; SC201–203 kaynağı, SC202 `start-stop-latch` programı ve STOP'un anlık bobin/motor düşürmesi native solver üzerinde kanıtlandı. `2ae880f` özel geçersiz timed-stop zorlamasının kaldırılması için MQ-12 hedefli PASS.
 - MQ-13 repo/lock sürekliliği: `main`, `[skip ci]`, Actions yok, 90 golden/başlatıcı korunmuş. MQ-00: hedefli 4-test **PASS**; gelişmiş PLC zamanlı durdurma, gerçek PLC donanımı, Windows görsel QA, 1792 tam regresyon ve ayrı sensör `not ok 1294` **OPEN**. Ayrıntı `docs/QA_LOCAL_WINDOWS_20261017.md`.
+
+### MQ-12 SC201–SC203 native 4/4 PASS; sensor-control integration still OPEN
+- Windows/Node.js 22.14.0 on `334c2f2`: `tests/qa-mq07-sc201-sc203-plc-followup-v11920.test.cjs` **4 PASS / 0 FAIL**, 2222.126 ms. Scoped control-program regression verified; other acceptance gates remain OPEN.
+- Separate source-integration native failure at historical case 1294 (`sensor-analog-apps-src-13 coil 1 false !== true`) is not fixed. The old 733 wired-course expectation at case 1295 contradicts current inventory 730.
+- `7daa7a0` added read-only failure diagnostics to the source-integration test and aligned the inventory expectation to 730, preserving the behavioral assertions. New Windows execution **NOT_RUN**, no PASS claimed. QA details in `docs/QA_LOCAL_WINDOWS_20261017.md`. No Actions, all commits `[skip ci]`.
