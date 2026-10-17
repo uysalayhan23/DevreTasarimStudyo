@@ -2470,3 +2470,8 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 ### MQ-12 Windows LDR + sensör model native 8/8 kanıtı — 2026-10-17
 - Kullanıcının gerçek Windows/Node.js 22.14.0 terminal çıktısı: `node --test tests/qa-mq07-ldr-linear-dimmer-v11920.test.cjs tests/qa-mq12-sensor-model-compatibility-v11920.test.cjs`, **8 PASS / 0 FAIL**, `2708.2741 ms`. LDR güç–akım–gerilim bağının aynı lux örneğiyle ölçümü, kopuk hat fail-closed, sensör kaynak kökeni ve fiziksel onay sınırları hedefli olarak doğrulandı.
 - Çıktıdaki `git rev-parse --short HEAD` satırı `e42f2bc` ancak yeni kaynak test isimleri/sonuçları `f4c67b2d` ile uyumlu; test *anındaki* commit doğrudan kanıtlanmadı. Tam 1792 regresyon henüz tekrar çalıştırılmadı; son ölçülen 112 FAIL açık. Kaynak: `docs/QA_LOCAL_WINDOWS_20261017.md`.
+
+### MQ-12 iki eski sensör şablon kapısı düzeltildi — native kabul bekliyor
+- `b215222`+`1e01766`: sekiz sensörün tamamında zorunlu 24 V proximity şablonu bekleyen elektrik sözleşmesi salt-okunur QA'sı, gerçekte bulunan sensörü/beslemeyi raporlayacak şekilde düzeltildi. Eksik 24 V iddiası fail-closed, `dropInApproved=false` / `physicalAccepted=0` / `fullAcceptance=REVIEW` sabit.
+- `4128dfe`+`ca6a6eb`: üretici/arayüz QA'sında sanal piezo kaynak modelini ve `canonicalVoltage=null` pasif kaynak sınırını koruyan güncelleme. `physicallyApproved=false`, `overallAcceptance=REVIEW`; statik kaynak incelemesi yapıldı, **yeni native Node testleri NOT_RUN**.
+- MQ-12/MQ-13 kapanış için iki dosyanın hedefli Windows test sonuçları, tüm gerçek elektriksel/termokupl kabul kanıtları ve 1792 tam regresyon gereklidir. Ayrıntı `docs/QA_LOCAL_WINDOWS_20261017.md`.
