@@ -4,9 +4,9 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Solver=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
 const exceptions={
- '01':'DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','02':'MISSING_SIX_TERMINAL_STAR_DELTA',
- '03':'MISSING_PHASE_SEQUENCE_CHANGE','06':'MISSING_JOG_RUN_SELECTOR',
- '07':'MISSING_SECOND_CONTROL_STATION','08':'MISSING_PACKAGE_SWITCH',
+ '01':'DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','02':'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING',
+ '03':'PHASE_REVERSAL_NATIVE_PENDING','06':'MISSING_JOG_RUN_SELECTOR',
+ '07':'TWO_STATION_NATIVE_PENDING','08':'MISSING_PACKAGE_SWITCH',
  '09':'MISSING_ON_DELAY_RELAY','10':'MISSING_OFF_DELAY_RELAY',
  '11':'MISSING_SPEED_CONTROL','12':'MISSING_SINGLE_BUTTON_TOGGLE',
  '13':'MISSING_PROTECTION_RELAY','15':'MISSING_OVERLOAD_RELAY',
@@ -18,7 +18,7 @@ const clone=n=>structuredClone(lesson(n).project);
 function check(s,context){assert.equal(s.stable,true,context+' stable');assert.equal(!!s.blocked,false,context+' unblocked');assert.equal(!!s.shortCircuit,false,context+' no short');assert.equal(!!s.oscillating,false,context+' nonoscillating')}
 for(let n=1;n<=18;n++)test('SC'+(125+n)+' motor title/physical circuit claims remain grounded',()=>{
  const l=lesson(n);assert.ok(l,'missing motor lesson');assert.equal(l.kind,'wiring');
- assert.ok(l.project.components.some(c=>c.typeId==='motor-3p'));
+ assert.ok(l.project.components.some(c=>c.typeId=== (n===2?'motor-y-d':'motor-3p')));
  assert.ok(l.project.wires.length>=11);
  for(const c of l.project.components)assert.ok(defs[c.typeId],c.typeId);
  const s=Solver.solve(clone(n),defs,{now:0});check(s,l.id);
@@ -68,4 +68,38 @@ test('SC142 limit NC trips corresponding coil; it does not auto-return',()=>{
  c.startF.state=false;check(Solver.solve(p,defs,{now:100}),'limit hold');assert.ok(c.coilF._active);
  c.ls1.state=true;check(Solver.solve(p,defs,{now:200}),'limit trip');assert.equal(!!c.coilF._active,false);assert.equal(!!c.coilR._active,false);assert.equal(!!c.motor._active,false);
  c.ls1.state=false;check(Solver.solve(p,defs,{now:300}),'limit released');assert.equal(!!c.motor._active,false);
+});
+
+test('SC127 uses six real U1/V1/W1/U2/V2/W2 winding pins via 0-star-delta package',()=>{
+ const p=lesson(2).project;
+ assert.ok(p.components.some(c=>c.typeId==='motor-y-d'));
+ assert.ok(p.components.some(c=>c.id==='sw'));
+ const wires=p.wires;
+ for(const pin of ['U1','V1','W1','U2','V2','W2'])
+  assert.ok(wires.some(w=>w.from.c==='sw'&&w.from.p===pin&&
+   w.to.c==='motor'&&w.to.p===pin),'Missing winding terminal '+pin);
+ assert.equal(lesson(2).pedagogyReview.titleTopologyIssue,'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING');
+});
+test('SC128 real reversing K1/K2 topology swaps phase order and interlocks contactors',()=>{
+ const p=lesson(3).project;
+ assert.equal(p.components.filter(c=>c.typeId==='coil-contactor').length,2);
+ assert.equal(p.components.filter(c=>c.typeId==='main-contact').length,2);
+ assert.ok(p.components.some(c=>c.id==='coilF'));
+ assert.ok(p.components.some(c=>c.id==='coilR'));
+ assert.equal(lesson(3).pedagogyReview.titleTopologyIssue,'PHASE_REVERSAL_NATIVE_PENDING');
+});
+test('SC132 two real NC STOPs are series and two NO STARTs share one K1 seal',()=>{
+ const p=lesson(7).project;
+ assert.equal(p.wires.length,16);
+ assert.equal(p.components.filter(c=>c.typeId==='push-no').length,2);
+ assert.equal(p.components.filter(c=>c.typeId==='push-nc').length,2);
+ const has=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&
+  w.to.c===b&&w.to.p===bp);
+ for(const [a,ap,b,bp] of [
+  ['stop','22','stop2','21'],['stop2','22','start','13'],
+  ['stop2','22','start2','13'],['stop2','22','hold','13'],
+  ['start2','14','coil','A1']
+ ])assert.ok(has(a,ap,b,bp),'Missing second station cable '+a+'→'+b);
+ assert.ok(!has('stop','22','hold','13'),'Old bypass defeats second STOP');
+ assert.equal(lesson(7).pedagogyReview.titleTopologyIssue,'TWO_STATION_NATIVE_PENDING');
 });
