@@ -63,7 +63,7 @@ test('unconfigured sensor stimuli remain individually traceable and seven reacti
  assert.equal(r.unconfiguredSensorLessons,30);
  assert.equal(r.unconfiguredSensorLessonIds.length,r.unconfiguredSensorLessons);
  assert.equal(new Set(r.unconfiguredSensorLessonIds).size,r.unconfiguredSensorLessons);
- assert.deepEqual(r.unconfiguredSensorLessonIds,[...r.unconfiguredSensorLessonIds].sort());
+ assert.deepEqual(Array.from(r.unconfiguredSensorLessonIds),[...r.unconfiguredSensorLessonIds].sort());
  for(const id of r.unconfiguredSensorLessonIds){
   const lesson=L.byId[id];assert.ok(lesson?.project?.wires?.length,id);
   assert.ok(lesson.project.components.some(c=>
