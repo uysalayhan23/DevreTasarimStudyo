@@ -3,9 +3,20 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const {run,MFG}=require('../scripts/qa-mq12-sensor-electrical-contract-v11920.cjs');
 const L=QA.curriculum(),defs=QA.catalog(),before=JSON.stringify(L.lessons),report=run({L,defs});
-test('all eight canonical topic examples explicitly configure their 24V bench supply',()=>{
- assert.equal(report.total,8);assert.equal(report.mismatched24VSupplies,0);
- assert.ok(report.rows.every(x=>x.claims24V&&x.sourceVoltage===24&&!x.blockers.includes('TUTORIAL_24V_EFFECTIVE_SUPPLY_MISMATCH')));
+test('all eight sensor lessons distinguish passive piezo from a claimed 24V source',()=>{
+ assert.equal(report.total,8);assert.equal(report.sourceTotal,1655);
+ assert.ok(report.rows.every(x=>!x.accepted&&x.blockers.includes('SENSOR_PHYSICAL_PRINCIPLE_UNPROVEN')));
+ const piezo=report.rows.find(x=>x.id==='sensor-analog-apps-src-08');
+ assert.equal(piezo.canonicalSensorType,'tutorial-piezo');
+ assert.equal(piezo.sourceVoltage,null);
+ assert.equal(piezo.sourceModelAligned,true);
+ assert.equal(piezo.accepted,false);
+ for(const row of report.rows){
+  if(row.claims24V&&row.sourceVoltage!==24)
+   assert.ok(row.blockers.includes('TUTORIAL_24V_EFFECTIVE_SUPPLY_MISMATCH'),row.id);
+  if(row.claims24V&&row.sourceVoltage===null)
+   assert.ok(row.blockers.includes('CLAIMED_24V_SOURCE_MISSING'),row.id);
+ }
 });
 test('U1KT003 accepts canonical 24V but its switching load and buzzer ratings stay unverified',()=>{
  assert.equal(MFG.U1KT003.voltageMin,18);assert.equal(MFG.U1KT003.voltageMax,30);
@@ -29,7 +40,7 @@ test('loadcell bridge and MQ2 5V interface cannot be silently substituted for 24
  assert.ok(weight.candidates.every(x=>!x.dropInApproved));assert.ok(chem.candidates.every(x=>!x.dropInApproved));
 });
 test('report never mutates locked canonical lessons or grants physical PASS',()=>{
- assert.equal(report.sourceTotal,1655);assert.equal(report.wiredTotal,722);
+ assert.equal(report.sourceTotal,1655);assert.equal(report.wiredTotal,730);
  assert.equal(report.canonicalChanges,0);assert.equal(report.physicalAccepted,0);
  assert.ok(report.rows.every(x=>!x.accepted));assert.equal(report.fullAcceptance,'REVIEW');
  assert.equal(JSON.stringify(L.lessons),before);
