@@ -21,11 +21,17 @@ function measure(p,now){
  assert.equal(result.shortCircuit,false,'Unexpected short at '+now);
  assert.equal(result.stable,true,'Native solver unstable at '+now);
  assert.equal(result.oscillating,false,'Native solver oscillating at '+now);
- const meter=part(p,'v1')._meter,opamp=part(p,'u1');
- assert.ok(meter,'V1 has no native meter result at '+now);
- assert.equal(meter.warning||'','', 'V1 warning at '+now+': '+meter.warning);
- assert.ok(Number.isFinite(meter.value),'V1 lacks numeric native reading at '+now);
- return {now,v:meter.value,opamp:opamp._opampChannels?.['1']?.output??null,
+ const v1=part(p,'v1'),opamp=part(p,'u1');
+ // SC48/49, SC50 and SC65 are built AFTER normalizeMeters() and retain
+ // the native meter-voltmeter product, not UNI-T UT33D+. The original
+ // current-model writes meter-v output to _voltageValue, while UT33D+
+ // writes _meter.value. Reading _meter unconditionally produced a
+ // guaranteed false FAIL before any RC/diode/hysteresis assertion ran.
+ assert.equal(v1.typeId,'meter-voltmeter','Unexpected late-lesson meter migration');
+ const v=v1._voltageValue;
+ assert.ok(Number.isFinite(v),'Native meter-v has no _voltageValue at '+now);
+ assert.ok(v>=0,'Native meter-v reports magnitude, not a signed DC voltage');
+ return {now,v,opamp:opamp._opampChannels?.['1']?.output??null,
   cap:p.components.find(c=>c.id==='c1')?._capacitorVoltage??null,
   diode:p.components.find(c=>c.id==='d1')?._diodeForward??null};
 }
