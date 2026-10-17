@@ -143,3 +143,9 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - Kök neden `dist/simulation.js` içinde her SC202 çözücüsünde programı koşulsuz olarak `{program:'timed-stop'}` seçen `lessonId==='plc-hardware-programming-src-21'` özel durumudur; böylece dersin var olmayan gelişmiş zamanlı durdurma davranışı simülasyona gizlice ekleniyordu.
 - `2ae880f`: yalnız bu tek zorunlu program override kaldırıldı; tüm PLC örneklerinde `PLC.evaluate` mevcut kendi `plcProgram` ayarını / varsayılan `start-stop-latch` programını izler. `dist/plc-runtime.js` içindeki açıkça yapılandırılabilen `timed-stop` işlevi ve terminal/ölçek/PLC mekanizması değiştirilmedi. Önceki test STOP'un çıkışı hemen kapatmasını, motor/bobinin durumunu ve 18 kablonun uçlarını koşumda sınar.
 - Yeni gerçek Windows native `tests/qa-mq07-sc201-sc203-plc-followup-v11920.test.cjs` testi **NOT_RUN / OPEN**. `sensor-analog-apps-src-13` röle/lamba `not ok 1294` başka gerçek kontrol arızasıdır; çözülmüş sayılmaz. Tam 1792-test güncel sonuç bilinmiyor. Fiziksel PLC/donanım kabulü **REVIEW**.
+
+## SC201–SC203 gerçek Windows 4/4 PLC STOP native PASS
+
+- Kullanıcı CMD'de `git rev-parse --short HEAD && node --test tests/qa-mq07-sc201-sc203-plc-followup-v11920.test.cjs` çalıştırdı. Doğrudan `334c2f2` doğrulandı; **4 PASS / 0 FAIL / 0 skipped**, `2222.126ms`, Windows Node.js 22.14.0.
+- SC201/SC202/SC203 üç dersin kaynak topolojisi/uygunsuz fiziksel kabul sınırı testi başarılı. SC202 için kaynakta 18 kablo ve START/STOP mühürlemesiyle `start-stop-latch` programında STOP komutu çıkışı anında kesiyor; röle bobini ve motor durumları OFF olana kadar doğrulandı. Yanlış zorunlu `timed-stop` modunu kaldıran `2ae880f` için hedefli native kanıt **PASS**.
+- Bu sonuç gecikmeli durdurma TON/TOF için veya gerçek PLC elektriksel güvenliği için PASS değildir. Tam 1792 regresyon son bilinen eski `98771a1` üzerinde 1680 PASS/112 FAIL; güncel tam sayım yok. Sensör–röle–lamba `not ok 1294` ayrıca OPEN.
