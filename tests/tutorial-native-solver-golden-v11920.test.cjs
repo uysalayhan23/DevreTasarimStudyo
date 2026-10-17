@@ -18,7 +18,7 @@ function normalizeGeneratedWireIds(project,id){
 
 // Explicit, narrowly scoped overlays only. Never regenerate or overwrite
 // the immutable golden JSON from the current curriculum.
-function verifyProtectedGolden(entry,current){
+function verifyProtectedGolden(entry,current,lesson){
  const id=entry.id,baseline=clone(entry.project),actual=clone(current);
  if(id==='sensor-analog-apps-src-03'){
   const ids=actual.components.map(c=>c.id);
@@ -46,6 +46,28 @@ function verifyProtectedGolden(entry,current){
   delete ctl.instrumentSettings;
   actual.components=actual.components.slice(0,3);
   actual.wires=actual.wires.slice(0,4);
+ }else if(id==='electronic-component-basics-outline-025'){
+  // SC308-321 (2026-10-16) intentionally replaced a generic resistor
+  // and unplugged meter-probe picture with a PT100 *concept-only* card.
+  // The protected historical fixture remains immutable and executable.
+  assert.deepEqual(baseline.components.map(c=>c.typeId),
+   ['resistor','unit-ut33d-plus','test-probe-red','test-probe-black']);
+  assert.equal(baseline.wires.length,2);
+  assert.equal(baseline.referenceOnly,true);
+  assert.equal(lesson.kind,'quiz');
+  assert.equal(lesson.pedagogyReview?.mq07TemperatureScope,'SC308_SC321');
+  assert.equal(lesson.pedagogyReview?.titleTopologyIssue,'NO_PT100_RTD_MEASUREMENT_CONNECTION');
+  for(const gate of ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','sensorCalibrationAcceptance'])
+   assert.equal(lesson.pedagogyReview[gate],false,'Unsafe PT100 acceptance: '+gate);
+  const expected=clone(baseline);
+  expected.components=[
+   {...baseline.components[0],typeId:'sensor-pt100',label:'PT100 3 telli RTD'},
+   {...baseline.components[1],label:'UNI-T ölçüm referansı'}
+  ];
+  expected.wires=[];
+  assert.equal(JSON.stringify(actual),JSON.stringify(expected),
+   'PT100 concept card differs from source-scoped replacement');
+  return;
  }else if(id==='sensor-analog-apps-src-04'){
   assert.deepEqual(actual.components.map(c=>c.id),['pt','ctl','g1']);
   assert.equal(actual.wires.length,5,'Unexpected PT100 wires');
@@ -76,19 +98,23 @@ function verifyProtectedGolden(entry,current){
  assert.equal(JSON.stringify(actual),JSON.stringify(baseline),
   'Golden topology/geometry/source changed: '+id);
 }
-test('90 golden projects preserve original graphs with audited TC/PT100 overlays',()=>{
+test('90 golden projects retain locked fixtures and explicitly reviewed source differences',()=>{
  const L=QA.curriculum();
  assert.equal(L.lessons.length,1655);
  assert.equal(fixture.records.length,90);
- const seen=new Set();
+ const seen=new Set(),drift=[];
  for(const entry of fixture.records){
   assert.ok(!seen.has(entry.id),'Duplicate fixture '+entry.id);seen.add(entry.id);
-  const original=L.byId[entry.id];
-  assert.ok(original,'Missing canonical lesson '+entry.id);
-  verifyProtectedGolden(entry,original.project);
-  assert.ok(entry.project.wires.length>0,'Golden must have a physical virtual circuit '+entry.id);
+  const lesson=L.byId[entry.id];
+  assert.ok(lesson,'Missing canonical lesson '+entry.id);
+  // Evaluate every fixture, not merely the first divergent record. The full
+  // list distinguishes intentional curriculum edits from real golden regressions.
+  try{verifyProtectedGolden(entry,lesson.project,lesson);}
+  catch(error){drift.push({id:entry.id,reason:String(error.message).split('\n')[0].slice(0,170)});}
+  assert.ok(entry.project.wires.length>0,'Historical golden must have wires '+entry.id);
  }
  assert.ok(new Set(fixture.records.map(x=>x.topicId)).size>=14,'Insufficient topic diversity');
+ assert.deepEqual(drift,[],'Unexpected golden source differences (investigate each ID; no auto-accept)');
 });
 test('native simulation is stable across 90 baseline and at least 250 source control states',()=>{
  const catalog=QA.catalog();
