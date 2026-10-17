@@ -38,3 +38,12 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - Test beklentileri yalnız yeşil sonuç üretmek için düşürülmeyecek; kaynakta gerçek devre kaybı olasılığı dışlanmadan sabit sayılar yenilenmeyecek.
 - Bir sonraki çalışma: yüksek riskli native sensör/golden/UI sorunlarını kök neden açısından ayrıştır; ortam farkını ve Python'u hedefli test et; MQ-00 → lider/çapraz → MQ-12 → MQ-13 → MQ-00 kanıt zinciri olmadan DONE verme.
 - Tek repo `uysalayhan23/DevreTasarimStudyo`, tek `main`; `[skip ci]`, Actions yok, force-push yok. `BASLAT.bat` doğrudan `file:///.../dist/index.html` başlangıcı, golden ölçüler, terminal kimlikleri ve dört kartlı dashboard korunur.
+
+## Hedefli Windows tekrar testi — 2026-10-17
+
+- Kullanıcının paylaştığı gerçek Windows CMD ekran görüntüsü: `node --test tests/qa-full-windows-v11920.test.cjs tests/qa-mq05-pwm-generator-output-v11920.test.cjs tests/runtime-package-v11920.test.cjs`.
+- **10 tests / 10 pass / 0 fail / 0 skipped**, `duration_ms 1746.5656`, Node.js v22.14.0. Üç kapsam: Windows full-QA *statik sözleşme* kontrolleri (4), PWM1 bağlantılı yük için gerçek Node/solver testleri (3), Python çalıştırıcılı runtime paket *manifest listeleme* testleri (3).
+- Windows'ta Python başlatıcısı veya yedek komutlardan en az biriyle `package.py --list` başarıyla çalıştı; bu tam ZIP üretimi, Windows browser QA veya donanım kabulü değildir.
+- Bu sonuçlar `a28c5ee` Windows QA alan adı, `e3e7d5f` Python çağırma uyumu ve `62287df` içindeki PWM1 karşılaştırması için hedefli tekrar kanıtıdır. `62287df` içinde değiştirilmiş diğer test dosyaları ayrıca ölçülmedi.
+- Daha eski `98771a1` tabanlı **1792 / 1680 PASS / 112 FAIL** tam regresyon hâlâ son ölçülmüş *tam* sonuçtur; yeni HEAD üzerinde tam regresyon sayısı bilinmiyor. Yanlışlıkla 112 sorunun kapandığı iddia edilmez.
+- Sonraki hedef: sensör/golden/öğretici kaynak farklılıklarını düşük maliyetli hedefli gerçek Node testleriyle ayrıştırmak; yeni commitlerde `[skip ci]`, Actions yok.
