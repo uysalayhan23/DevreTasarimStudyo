@@ -127,3 +127,11 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - `761ca13`: yalnız MOC3021 `realPackage.topView:true` bilgi alanı eklendi. `manufacturerGeometryAccepted=false`, `virtualOpticalCoupling=true`, gerçek izolasyon/elektriksel üretici kabulü **false** durumunda; fiziksel ölçü, terminal geometrisi veya simülasyon algoritması değişmedi.
 - `b10ea64`: `tests/electronics-real-ics-v11920.test.cjs` dosyasına bağımsız MOC3021 regresyonu ekler: PDIP-6 kimliği/üst görünüş/ortografik şeffaflık, 1/2/4/6 aktif pin ID ve fiziksel sıra, sanal optik işlev ve kabul edilmemiş üretici geometri sınırı. Test süiti artık **14 test** içerir; yeni gerçek Windows `node --test` sonucu **NOT_RUN**.
 - `[skip ci]`, GitHub Actions yok. Tam 1792 native regresyon için güncel PASS/FAIL sayısı bilinmiyor; eski `1680 PASS / 112 FAIL` sonucu yeni onarılmış HEAD'e taşınmaz.
+
+## MOC3021 elektronik gerçek/sanal ayrımı: Windows 14/14 PASS
+
+- Kullanıcının terminal çıktısı: `git rev-parse --short HEAD && node --test tests/electronics-real-ics-v11920.test.cjs` → **HEAD `dfb3555`**, **14 test / 14 PASS / 0 FAIL / 0 skipped**, `1987.2023 ms`, Windows / Node.js 22.14.0.
+- Test edilen alanlar: MOC3021 PDIP-6 üstten görünüm/1-2-4-6 terminal kimliği/üretici geometrisi henüz kabul edilmemiş olması; beş sanal eğitim cihazının gerçek ürün taklidi yapmaması; fiziksel ortografik/şeffaf paket standardı; Arduino ortak IC katalog erişimi; SN74HC00 NAND, SN74HC74 D flip-flop, SN74HC595 shift/latch, ADC0804 ve DAC0808 sayısal davranışı; LM358 tam PDIP-8 miras geçişi ve model pinleri; öğreticide sahte fiziksel blokların olmaması; harici ürün fotoğrafı bağımlılığı bulunmaması.
+- `761ca13` + `b10ea64` değişiklikleri için **yalnız bu hedefli native Node test grubu PASS**. `manufacturerGeometryAccepted=false` korundu, bu testten gerçek ürün/izolasyon/üretici sertifikası, Windows görsel kabulü veya tüm uygulama kabulü çıkarılmaz.
+- MQ-12 kanıtı gerçek Windows TAP; MQ-13 repo/fixture sürekliliği: `main`, `[skip ci]`, GitHub Actions kullanılmadı, golden örnekler/Windows offline başlatıcı korunur. MQ-00 sonucu hedefli elektronik 14-test kapısı **PASS**, 1792-test tam regresyon ve gerçek ürün/geometri doğrulaması **OPEN**.
+- Tarihsel tam regresyon (eski `98771a1`) `1680 PASS / 112 FAIL` kalır; yeni HEAD için tam koşum sonucu bilinmiyor.
