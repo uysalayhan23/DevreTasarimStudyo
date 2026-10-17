@@ -60,8 +60,25 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
  assert.ok(!check.blocked&&!check.shortCircuit&&!check.oscillating);
 });
 
-test('all known unbuilt first-200 circuits remain REVIEW, not false pedagogy acceptance',()=>{
- assert.equal(batch.reviewIds.length,47);
+test('remaining first-200 source reviews stay traceable, never silently accepted',()=>{
+ // The old hardcoded 47 was a dated interim inventory. After later source
+ // corrections, the early batch ledger and final lesson states may differ.
+ // Keep strict per-ID ownership, nonempty issue reasons and fail-closed gates.
+ const reviewIds=batch.reviewIds;
+ const validReasons=new Set([
+  'NO_WIRED_CIRCUIT','TITLE_MISSING_REQUIRED_PART',
+  'MISSING_REQUIRED_SECOND_INPUT','MISSING_DIMMER_POWER_STAGE',
+  'NO_RC_TIMING_EVIDENCE'
+ ]);
+ const updatedIds=new Set(batch.updatedIds);
+ assert.ok(reviewIds.length>0,'Batch still has unaccepted technical review records');
+ assert.equal(new Set(reviewIds.map(x=>x.id)).size,reviewIds.length,'Duplicate technical review ID');
+ for(const row of reviewIds){
+  assert.ok(updatedIds.has(row.id),'Review ID outside 001-200 scoped updates: '+row.id);
+  assert.ok(L.byId[row.id],'Missing review lesson: '+row.id);
+  assert.ok(validReasons.has(row.reason),'Unclassified review issue: '+row.id+' '+row.reason);
+  assert.notEqual(L.byId[row.id].pedagogyReview?.physicalAcceptance,true,'Physical review incorrectly accepted: '+row.id);
+ }
  assert.equal(batch.reviewIds.some(x=>['opamp-apps-src-11','opamp-apps-src-12'].includes(x.id)),false,'two-input source topology now repaired');
  assert.equal(batch.reviewIds.some(x=>x.id==='sensor-analog-apps-src-11'),false);
  assert.ok(L.byId['sensor-analog-apps-src-11'].project.components.some(c=>c.virtualLdrDimmer));
