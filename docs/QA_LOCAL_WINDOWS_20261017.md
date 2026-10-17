@@ -149,3 +149,10 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - Kullanıcı CMD'de `git rev-parse --short HEAD && node --test tests/qa-mq07-sc201-sc203-plc-followup-v11920.test.cjs` çalıştırdı. Doğrudan `334c2f2` doğrulandı; **4 PASS / 0 FAIL / 0 skipped**, `2222.126ms`, Windows Node.js 22.14.0.
 - SC201/SC202/SC203 üç dersin kaynak topolojisi/uygunsuz fiziksel kabul sınırı testi başarılı. SC202 için kaynakta 18 kablo ve START/STOP mühürlemesiyle `start-stop-latch` programında STOP komutu çıkışı anında kesiyor; röle bobini ve motor durumları OFF olana kadar doğrulandı. Yanlış zorunlu `timed-stop` modunu kaldıran `2ae880f` için hedefli native kanıt **PASS**.
 - Bu sonuç gecikmeli durdurma TON/TOF için veya gerçek PLC elektriksel güvenliği için PASS değildir. Tam 1792 regresyon son bilinen eski `98771a1` üzerinde 1680 PASS/112 FAIL; güncel tam sayım yok. Sensör–röle–lamba `not ok 1294` ayrıca OPEN.
+
+## Sensor control integration: diagnostic rerun pending
+
+- Historical Windows full-suite case 1294 failed in `tests/qa-mq07-sensor-control-source-v11920.test.cjs`: `sensor-analog-apps-src-13 coil 1 false !== true`. Root cause remains OPEN.
+- Historical case 1295 in the same file expected 733 wired lessons, while the last native audit observed 730.
+- Commit `7daa7a0` adds runtime diagnostic context to the failing assertions without modifying acceptance expectations. It updates the read-only inventory assertion to 730; other checks remain active. No tutorial or simulation source files were modified by this commit.
+- Real Windows Node execution of this updated integration test is **NOT_RUN**. Do not claim PASS or reduce the historical 112 full-suite failures without new evidence.
