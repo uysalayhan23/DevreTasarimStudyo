@@ -2652,7 +2652,15 @@ for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
  }
  if(suffix==='15'){
    if(lesson.project.components.length!==1||lesson.project.components[0].typeId!=='arduino-uno')throw Error('SC124 I2C board baseline changed');
-   lesson.project.components.push({id:'pg1',typeId:'arduino-oled-i2c',x:350,y:170,rotation:0,ref:'X2',label:'I2C OLED çevre birimi',state:false,address:'',note:''});
+   const uno=lesson.project.components[0],oldMaterials=lesson.materials||[];
+   if(oldMaterials.length!==1||oldMaterials[0].componentId!==uno.id||oldMaterials[0].typeId!==uno.typeId)
+    throw Error('SC124 UNO material baseline changed');
+   const oled={id:'pg1',typeId:'arduino-oled-i2c',x:350,y:170,rotation:0,ref:'X2',label:'I2C OLED çevre birimi',state:false,address:'',note:''};
+   lesson.project.components.push(oled);
+   // This is a genuine second reference component. Preserve the UNO explanation,
+   // and give OLED its own truthful material description (no invented I2C wiring).
+   lesson.materials.push({componentId:oled.id,typeId:oled.typeId,label:oled.label,
+    why:'I2C OLED çevre birimi, Arduino UNO ile SDA/SCL veri ve saat hatları üzerinden haberleşen ekranın referans modelidir; bu kartta hatlar, besleme ve çalışan veri aktarımı bağlı değildir.'});
    lesson.pedagogyReview.componentIds=['arduino-uno','arduino-oled-i2c'];
  }
  lesson.summary=concept+' Bu ders kablosuz kavram ve ürün referansıdır.';
