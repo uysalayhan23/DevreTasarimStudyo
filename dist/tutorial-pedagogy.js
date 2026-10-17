@@ -5030,6 +5030,140 @@ for(const spec of [
   L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+/* MQ-07 SC051: two physical LM358P dual packages, three native-model
+ * op-amp channels in a genuine 3-op-amp instrumentation amplifier network.
+ * First U1 channels 1/7 share an RG bridge between negative inputs 2/6.
+ * Second U2 channel 1 is a matched difference stage; spare U2 channel 7
+ * is closed as VREF follower, not left with floating high-gain inputs.
+ * This is a 12 V DC virtual educational graph. CMRR/dynamic/Windows NOT_RUN.
+ * Keep SC030 and original protected 51-card historical ledger unchanged. */
+{
+ const id='opamp-apps-src-16',l=L.byId[id],old=l?.project;
+ const baseline=['lm358p-dip8','resistor'];
+ if(!l||!old||l.kind!=='quiz'||old.referenceOnly!==true||
+    old.wires.length||l.steps.length||l.materials?.length!==baseline.length||
+    old.components.map(c=>c.typeId).join('|')!==baseline.join('|')||
+    l.designStandard==='rich-reference-v1'||
+    !L.mq07Batch200?.reviewIds?.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200?.noWireTriage?.conceptPreservedIds?.includes(id))
+  throw Error('MQ07 SC051 instrumentation reference baseline changed');
+ const p=base(id,l.title);
+ const part=(id,type,x,y,ref,label,properties,why)=>{
+  p.components.push(C(id,type,x,y,ref,label,
+   {...properties,tutorialPurpose:why}));
+ };
+ const line=(a,ap,b,bp,why,color='#43a047')=>
+  p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ part('g1','arduino-bench-supply',70,115,'G1','Sanal 12 VDC düşük gerilim kaynağı',
+  {dcVoltage:12,currentLimit:1},'İki LM358P DIP-8 paketi ve 10 kΩ VREF orta düğümünün ortak sanal beslemesidir.');
+ part('u1','lm358p-dip8',690,200,'U1','LM358P DIP-8 · A/B giriş çift op-amp',{},
+  'Fiziksel A: 1=OUT 2=IN− 3=IN+; B: 7=OUT 6=IN− 5=IN+; 8=+V 4=0 V.');
+ part('u2','lm358p-dip8',1250,490,'U2','LM358P DIP-8 · A fark katı, B boş kanal bağlanmış',{},
+  'A fark katı: 1=OUT, 2=IN−, 3=IN+; B kullanılmaz fakat 7→6 negatif geribesleme ve 5→VREF ile sonlandırılır.');
+ part('rv1','potentiometer',175,350,'RV1','10 kΩ sanal diferansiyel giriş A',
+  {potMax:10000,potentiometer:49},'Giriş A: 1 üst 12 V, 3 alt 0 V, 2 gerçek ayar sürgüsüdür.');
+ part('rv2','potentiometer',175,740,'RV2','10 kΩ sanal diferansiyel giriş B',
+  {potMax:10000,potentiometer:51},'Giriş B bağımsız potansiyometredir; A/B farkı küçük tutulur.');
+ part('rf1','resistor',775,100,'RF1','10 kΩ U1-A geri besleme',{resistance:10000},
+  'U1/1 çıkışından U1/2 negatif girişine 10 kΩ geribesleme.');
+ part('rf2','resistor',775,745,'RF2','10 kΩ U1-B geri besleme',{resistance:10000},
+  'U1/7 çıkışından U1/6 negatif girişine 10 kΩ geribesleme.');
+ part('rg','resistor',900,425,'RG','100 kΩ ortak giriş kazanç köprüsü',{resistance:100000},
+  'U1/2 ile U1/6 negatif girişlerini birbirine bağlar; teorik birinci kat diferansiyel kazancı 1+2×10k/100k=1,2.');
+ part('r3','resistor',970,265,'R3','20 kΩ fark katı eviren giriş',{resistance:20000},
+  'U1/1 çıkışını U2/2 IN− girişine bağlar.');
+ part('r4','resistor',1420,210,'R4','20 kΩ fark katı negatif geri besleme',{resistance:20000},
+  'U2/1 çıkışından U2/2 IN− girişine negatif geri besleme.');
+ part('r5','resistor',970,790,'R5','20 kΩ fark katı evirmeyen giriş',{resistance:20000},
+  'U1/7 çıkışını U2/3 IN+ girişine bağlar.');
+ part('r6','resistor',1120,900,'R6','20 kΩ fark katı VREF ağı',{resistance:20000},
+  'U2/3 IN+ girişinin 6 V VREF referansına karşı tamamlayıcı kolu.');
+ part('rh','resistor',340,95,'RREF1','10 kΩ 6 V referans üstü',{resistance:10000},
+  '12 V kaynağın üst referans direncidir.');
+ part('rl','resistor',530,95,'RREF2','10 kΩ 6 V referans altı',{resistance:10000},
+  'Orta besleme 6 V VREF referansını 0 V hattına bağlar.');
+ part('v1','meter-voltmeter',1560,550,'V1','Vout−VREF sanal voltmetre',{},
+  'Diferansiyel çıkışın yaklaşık fark gerilimini işaretler; native kazanç/CMRR/RMS sonucu ölçülmüş değildir.');
+ // Both physical packages share low-voltage P/M supply.
+ line('g1','P','u1','8','U1 fiziksel DIP-8 pin8 pozitif beslemedir.','#8b5a2b');
+ line('g1','M','u1','4','U1 fiziksel DIP-8 pin4 sanal 0 V tur.','#111827');
+ line('g1','P','u2','8','U2 pin8 de aynı 12 V sanal raya bağlanır.','#8b5a2b');
+ line('g1','M','u2','4','U2 pin4 de ortak 0 V sanal raya bağlanır.','#111827');
+ // Two separate, user-adjustable input potentials.
+ line('g1','P','rv1','1','RV1 üst 12 V düğümü.','#8b5a2b');
+ line('rv1','3','g1','M','RV1 alt 0 V dönüşü.','#111827');
+ line('g1','P','rv2','1','RV2 üst 12 V düğümü.','#8b5a2b');
+ line('rv2','3','g1','M','RV2 alt 0 V dönüşü.','#111827');
+ line('rv1','2','u1','3','Giriş A gerçek U1 IN+ pin 3 e bağlanır.');
+ line('rv2','2','u1','5','Giriş B gerçek U1 ikinci kanal IN+ pin 5 e bağlanır.');
+ // First stage: two amplifiers with bridged inverting inputs.
+ line('u1','1','rf1','1','A kanalının OUT pin1 geri besleme direnç başlangıcıdır.');
+ line('rf1','2','u1','2','A IN− pin2 negatif geribesleme kapanışı.');
+ line('u1','7','rf2','1','B kanalının OUT pin7 geri besleme başlangıcıdır.');
+ line('rf2','2','u1','6','B IN− pin6 negatif geribesleme kapanışı.');
+ line('u1','2','rg','1','A IN− pin2 RG ortak kazanç köprüsüne girer.');
+ line('rg','2','u1','6','RG köprüsü B IN− pin6 ya ulaşır.');
+ // Second stage, 20k:20k ratio matched for ideally subtractive gain 1.
+ line('u1','1','r3','1','A birinci kat çıkışı fark devresinin eviren giriş direncine gider.');
+ line('r3','2','u2','2','R3 çıkışı U2-A IN− pin2 düğümüdür.');
+ line('u2','1','r4','1','Fark katı OUT pin1 R4 geribesleme başlangıcı.');
+ line('r4','2','u2','2','R4 çıkışı U2-A IN− pin2 ye döner.');
+ line('u1','7','r5','1','B birinci kat çıkışı fark devresi evirmeyen giriş koludur.');
+ line('r5','2','u2','3','R5 çıkışı U2-A IN+ pin3 düğümüdür.');
+ line('u2','3','r6','1','IN+ pin3 için R6 VREF referans koludur.');
+ // Stable middle reference, shared by R6, V1 and unused U2-B input.
+ line('g1','P','rh','1','VREF üst 10 kΩ direnç girişi.','#8b5a2b');
+ line('rh','2','rl','1','RREF1/RREF2 birleşimi yaklaşık 6 V VREF düğümüdür.');
+ line('rl','2','g1','M','VREF alt 10 kΩ direnç dönüşü.','#111827');
+ line('r6','2','rh','2','R6 IN+ dönüşü VREF orta düğümündedir.');
+ line('u2','1','v1','1','V1 pozitif ölçüm terminali U2-A OUT pin1 e gider.');
+ line('v1','2','rh','2','V1 negatif referansı VREF orta düğümüdür.');
+ line('u2','5','rh','2','U2 boş B kanalı IN+ pin5 VREF te bağlanır.');
+ line('u2','7','u2','6','U2 boş B kanalı OUT pin7 ile IN− pin6 kapalı tampon döngüdür.');
+ const ids=new Set(p.components.map(c=>c.id)),wids=new Set(p.wires.map(w=>w.id));
+ if(p.components.length!==15||p.wires.length!==31||
+    ids.size!==15||wids.size!==31||
+    p.components.filter(c=>c.typeId==='lm358p-dip8').length!==2||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c))||
+    !p.wires.some(w=>w.from.c==='rg'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='6'))
+  throw Error('MQ07 SC051 3-opamp instrumentation graph invalid');
+ p.projectId=old.projectId;p.name=old.name;
+ p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ const purpose='U1 içindeki iki LM358P kanalı girişlerin ayrı tampon/kazanç katlarını, 100 kΩ RG aralarındaki fark kazancını; U2-A ise eşlenmiş dört adet 20 kΩ dirençle VREF merkezli farkı temsil eder.';
+ const limit='Gerçek katalog DIP-8 terminalleri kaynakta bağlıdır. Native iki kanallı op-amp çözümünün SC051 özelindeki 3-kanal sonuçları, ortak-mod bastırma oranı (CMRR), direnç eşleşme toleransı, dinamik kazanç, test probları, Windows/Edge görünümü ve fiziksel ürün kabulü henüz NOT_RUN. Elektriksel PASS verilmez.';
+ l.summary='Üç gerçek op-amp kanalı ve iki fiziksel LM358P DIP-8 paketi içeren kaynak bağlantılı enstrümantasyon yükselteci. '+limit;
+ l.explanation=purpose+' RV1/RV2 12 VDC sanal giriş sürgüleridir; U1-A pin3/2/1 ve U1-B pin5/6/7, U2-A pin3/2/1 üzerinden üç kademe oluşur. U1 ve U2 pin8/4 düşük gerilim sanal 12 V/0 V beslemesidir. V1 U2/1 çıkış gerilimini VREF 6 V referansına göre izler. '+limit;
+ l.learningGoal='Üç op-amp kanalını, giriş kaynaklarını, RG kazanç köprüsünü, dört eş dirençli fark katını ve VREF dönüşünü gerçek DIP-8 terminal kimlikleriyle ayırt etmek; CMRR ölçümü yapılmadığını belirtmek.';
+ l.beginnerSteps=[
+  'G1 sanal 12 V besleme ve U1/U2 fiziksel pin 8/4 girişlerini tanı.',
+  'RV1/2 → U1/3 ile RV2/2 → U1/5 iki ayrı diferansiyel giriş yolunu izle.',
+  'U1/1 → RF1 → U1/2 ve U1/7 → RF2 → U1/6 negatif geribesleme halkalarını ve iki IN− arasında RG yi izle.',
+  'U1/1 → R3 → U2/2, U2/1 → R4 → U2/2, U1/7 → R5 → U2/3 ve U2/3 → R6 → VREF bağlantılarını izle.',
+  'V1/1 U2-A çıkışına, V1/2 orta VREF düğümüne bağlı mı kontrol et; U2-B kullanılmayan kanalın 7→6 ve 5→VREF düzenini tanı.',
+  limit
+ ];
+ l.quiz={question:'SC051 üç op-amp enstrümantasyon kaynağında RG hangi fiziksel pinler arasındadır?',
+  options:['U1-A IN− pin 2 ile U1-B IN− pin 6 arasında','U1/8 ile U2/8 beslemelerini kısa devre eder','U2/1 çıkışını doğrudan fiziksel şebekeye bağlar'],
+  answer:0,why:'RG giriş katındaki iki eviren uç arasındaki kazanç köprüsüdür; ikinci LM358 fark katı eşlenmiş 20 kΩ giriş/geribesleme ağı kullanır. CMRR native ölçülmedi.'};
+ l.safety='Yalnız sanal düşük gerilim DC op-amp deneyi; fiziksel ölçüm, tıbbi amplifikatör, şebeke veya üretici güvenlik/CMRR kabulü değildir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07InstrumentationScope:'SC051_THREE_OPAMP_LM358P_TWO_PACKAGES',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'INSTRUMENTATION_GAIN_CMRR_NATIVE_PENDING',
+  nativeInstrumentGainAcceptance:false,cmrrAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ // Historical pre-repair protected/concept list is a snapshot, not a live
+ // refusal to upgrade this lesson after actual physical catalog evidence.
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(e=>e.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+}
+
 /* MQ-07 SC053–SC060 and SC067: repair missing PHYSICAL REFERENCES,
  * not substitute plausible untested self-oscillating circuits. The existing
  * catalog has no proven Colpitts/Hartley/Wien/2-BJT native oscillator solver;
