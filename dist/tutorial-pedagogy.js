@@ -4924,6 +4924,112 @@ for(const spec of [
   throw Error('MQ07 SC030 transistor material identity mismatch');
 }
 
+/* MQ-07 SC030: replace the *already corrected* two-BD139 reference with
+ * a DC feedback topology grounded in ST BD139 B/C/E catalog and the
+ * existing native bjt-npn threshold/contact model. No waveform or
+ * two-threshold dynamic acceptance is implied until the final batch QA. */
+{
+ const id='electronic-switching-src-08',l=L.byId[id],prior=l?.project;
+ const reference=['bd139-npn','bd139-npn','resistor','resistor','resistor','resistor','resistor'];
+ if(!l||!prior||l.kind!=='quiz'||prior.referenceOnly!==true||
+    prior.wires.length!==0||l.steps.length!==0||
+    prior.components.map(c=>c.typeId).join('|')!==reference.join('|')||
+    l.materials.length!==reference.length||
+    l.pedagogyReview?.mq07MaterialRepair!=='SC030_TWO_REAL_BD139_REFERENCES'||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
+    !L.mq07Batch200.noWireTriage.conceptPreservedIds.includes(id))
+  throw Error('MQ07 SC030 corrected physical reference baseline changed');
+ const p=base(id,l.title);
+ const part=(id,type,x,y,ref,label,extra,why)=>
+  p.components.push(C(id,type,x,y,ref,label,{...extra,tutorialPurpose:why}));
+ const link=(from,fp,to,tp,why,color='#43a047')=>
+  p.wires.push(W(from,fp,to,tp,from+'/'+fp+' → '+to+'/'+tp,why,color,'SIGNAL'));
+ part('g1','supply-dc-plus',70,170,'G1','12 VDC yalnız sanal eğitim kaynağı',
+  {dcVoltage:12},'İdealize düşük gerilim DC kaynak; fiziksel devre montaj veya üretici kabulü değildir.');
+ part('rv1','potentiometer',260,225,'RV1','10 kΩ sanal giriş eşiği ayarı',
+  {potMax:10000,potentiometer:50},'RV1/1 ve RV1/3 kaynak uçları; RV1/2 sürgü giriş seviyesi ayarıdır.');
+ part('rin','resistor',500,180,'RIN','10 kΩ Q1 baz giriş direnci',
+  {resistance:10000},'RV1 sürgüsünden Q1/B ucuna akımı sınırlayarak girişi aktarır.');
+ part('rpd','resistor',525,415,'RPD','100 kΩ Q1 baz dönüş direnci',
+  {resistance:100000},'Q1/B düğümünü 0 V a döndürerek giriş yolunu açıkta bırakmaz.');
+ part('q1','bd139-npn',745,345,'Q1','ST BD139 NPN · giriş B/C/E',{},
+  'ST BD139 SOT-32/TO-126 gerçek B, C ve E terminalleri; sanal eşik çözümü üretici SPICE değildir.');
+ part('q2','bd139-npn',1130,365,'Q2','ST BD139 NPN · çıkış B/C/E',{},
+  'Q2/B, Q1 kolektöründen dirençle beslenir; ortak emiter bağlantısıyla iki transistor birbirini etkiler.');
+ part('rc1','resistor',755,110,'RC1','2,2 kΩ Q1 kolektör yükü',
+  {resistance:2200},'Q1/C kolektörünü sanal +12 V a bağlayan direnç.');
+ part('rc2','resistor',1145,115,'RC2','2,2 kΩ Q2 kolektör yükü',
+  {resistance:2200},'Q2/C sanal çıkış kolektörünün yük direnci.');
+ part('re','resistor',925,660,'RE','680 Ω ortak emiter direnci',
+  {resistance:680},'Q1/E ve Q2/E aynı RE üst düğümünde birleşir; iki transistör için emiter geri besleme sağlar.');
+ part('rfb','resistor',990,235,'RFB','10 kΩ Q1 kolektörden Q2 baza',
+  {resistance:10000},'Q1/C değişimi RFB üzerinden Q2/B kutuplamasını etkiler; tek başına histerezis ölçümü sayılmaz.');
+ part('rb2','resistor',1010,540,'RB2','22 kΩ Q2 baz dönüşü',
+  {resistance:22000},'Q2/B için GND ye doğru bias dönüş yoludur.');
+ part('v1','meter-voltmeter',1320,240,'V1','Q2 kolektör sanal DC çıkış göstergesi',{},
+  'V1 Q2/C ve G1/M referans uçlarında. Gerçek eşik/histerezis eğrisi ya da anlık dinamik test sonucu değildir.');
+ link('g1','P','rv1','1','Sanal RV1 giriş ayarının üst beslemesi.','#8b5a2b');
+ link('rv1','3','g1','M','RV1 alt ucu 0 V dönüşü.','#111827');
+ link('rv1','2','rin','1','RV1 sürgü Q1 baz akım sınırlamasına ulaşır.');
+ link('rin','2','q1','B','ST BD139 Q1 gerçek B baz terminali.');
+ link('rin','2','rpd','1','Giriş B düğümünde ayrı GND pull-down başlar.');
+ link('rpd','2','g1','M','Q1 baz geri dönüşü 0 V.','#111827');
+ link('g1','P','rc1','1','Q1 kolektör yükünün üst rayı.','#8b5a2b');
+ link('rc1','2','q1','C','ST BD139 Q1 gerçek C kolektör terminali.');
+ link('rc1','2','rfb','1','Q1 kolektör değişimi Q2 bias yoluna aktarılır.');
+ link('rfb','2','q2','B','Q2 gerçek B baz terminaline direnç üzerinden bağlanır.');
+ link('rfb','2','rb2','1','Q2 bazının bias dönüş yolu.');
+ link('rb2','2','g1','M','Q2 baz dönüşü 0 V.','#111827');
+ link('g1','P','rc2','1','Q2 kolektör yükünün üst rayı.','#8b5a2b');
+ link('rc2','2','q2','C','ST BD139 Q2 gerçek C kolektör terminali.');
+ link('q1','E','re','1','Q1 gerçek E ortak emiter düğümüne ulaşır.');
+ link('q2','E','re','1','Q2 gerçek E aynı emiter düğümündedir.');
+ link('re','2','g1','M','İki transistörün ortak emiter direnci GND ye döner.','#111827');
+ link('rc2','2','v1','1','Çıkış voltmetresinin pozitif ucu Q2/C düğümündedir.');
+ link('v1','2','g1','M','V1 negatif referansı 0 V a döner.','#111827');
+ const ids=new Set(p.components.map(c=>c.id)),ws=new Set(p.wires.map(w=>w.id));
+ if(p.components.length!==12||p.wires.length!==19||ids.size!==12||ws.size!==19||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c))||
+    p.components.filter(c=>c.typeId==='bd139-npn').length!==2)
+  throw Error('SC030 two-BJT topology/endpoint inventory mismatch');
+ p.projectId=prior.projectId;p.name=prior.name;
+ p.tutorialLesson={...prior.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ const scope='İki gerçek ST BD139 NPN Q1/Q2 B-C-E uçları, ayrı 2,2 kΩ kolektör dirençleri, ortak 680 Ω emiter direnci, Q1/C→10 kΩ→Q2/B kuplajı ve RV1 giriş ayarı kaynakta terminal bağlantılıdır.';
+ const boundary='Mevcut native BJT modeli yaklaşık eşik/iletim ve sanal C-E anahtarlaması kullanır; histerezisin iki farklı geçiş eşiği, solver kararlılığı, transistör yük çizgisi, sayısal DC voltaj, üretici gerçek modeli ve Windows görüntüsü henüz test edilmedi. Bu kaynak grafiği elektriksel Schmitt PASS veya çalışan donanım kabulü değildir.';
+ l.summary='Transistörlü Schmitt Trigger: '+scope+' Dinamik çift-eşik davranışı bekliyor.';
+ l.explanation='AMAÇ: İki NPN arasındaki ortak emiter ve kolektör-baz kuplajının duruma bağlı etkileşimini göstermek. '+scope+' G1 yalnız 12 V sanal kaynak, V1 Q2 kolektörünü izleyen voltmetredir. '+boundary;
+ l.learningGoal='Gerçek BD139 B/C/E, RV1/2 giriş, Q1/C→RFB→Q2/B, ortak Q1/E+Q2/E→RE ve Q2/C→V1 terminallerini şemadan ayırt etmek.';
+ l.beginnerSteps=[
+  'G1 sanal 12 V besleme ve RV1/1–2–3 giriş ayarını tanı.',
+  'RV1/2 → RIN → Q1/B ve RPD→0 V bağlantılarını incele.',
+  'Q1/C → RC1 ve RFB → Q2/B → RB2/0 V kontrol kuplajını izle.',
+  'Q1/E ve Q2/E aynı RE üst düğümüne, RE alt ucu 0 V a bağlı mı kontrol et.',
+  'Q2/C → RC2 ve V1/1, V1/2 → 0 V çıkış uçlarını izle.',
+  boundary
+ ];
+ l.quiz={question:'İki BD139 lu Schmitt kaynak devresinde Q1/C ile Q2/B arasında hangi eleman vardır?',
+  options:['10 kΩ RFB kuplaj direnci','Hoparlör güç trafosu','LM358P çıkış pini'],answer:0,
+  why:'Q1/C değişimi RFB üzerinden Q2/B girişine gelir; ortak emiter direnci de iki durumu etkileyebilir. Gerçek iki eşik ölçümü bekliyor.'};
+ l.safety='Yalnız düşük gerilimli yazılım modeli. Fiziksel transistor montajı veya şebeke deneyi değildir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07BjtScope:'SC030_BD139_COUPLED_EMITTER',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'BJT_SCHMITT_HYSTERESIS_NATIVE_PENDING',
+  nativeHysteresisAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ // Historical 51-item snapshot and 'conceptPreservedIds' reflect *prior*
+ // classification. Only the current review/candidate list is updated.
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(e=>e.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=
+  L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC053–SC060 and SC067: repair missing PHYSICAL REFERENCES,
  * not substitute plausible untested self-oscillating circuits. The existing
  * catalog has no proven Colpitts/Hartley/Wien/2-BJT native oscillator solver;
