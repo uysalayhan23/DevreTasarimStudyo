@@ -85,6 +85,17 @@ test('SC48/49 negative control: open S1 never charges comparator timing node',t=
   assert.ok(sample.v<10,'Unpressed button produced false delayed-ON output');
  }
 });
+test('SC48/49 negative control: discarding RC state each frame cannot imitate elapsed charge',t=>{
+ for(const [id,label] of [['opamp-apps-src-09','SC48'],['opamp-apps-src-10','SC49']]){
+  const actual=delaySequence(id).charge.at(-1);
+  const fresh=acceptedFalse(id,'dynamicTimingAccepted');
+  part(fresh,'s1').state=true;
+  const cold=measure(fresh,16000);
+  diagnostic(t,label+' persisted-vs-restarted',{actual,cold});
+  assert.ok(actual.cap>cold.cap+2,
+   label+' falsely reproduces 16-second RC charge from one cold solver step');
+ }
+});
 function rectifierAt(pct){
  const p=acceptedFalse('opamp-apps-src-15','dcTransferAccepted');
  part(p,'rv1').potentiometer=pct;
@@ -105,6 +116,26 @@ test('SC50 original solver: independent DC transfer sweep through 1N4148 feedbac
  assert.ok(Math.abs(rows[6].v)<2,'Below Vref, output is not near the reference');
  assert.equal(L.byId['opamp-apps-src-15'].pedagogyReview.acWaveformAcceptance,false);
  // Do not extrapolate these DC potentiometer points into a sinusoidal AC PASS.
+});
+test('SC50 negative control: reversing the same physical D1 cannot preserve positive DC transfer',t=>{
+ const p=acceptedFalse('opamp-apps-src-15','dcTransferAccepted');
+ part(p,'rv1').potentiometer=25; // 24 V at RV1/1, 0 V at /3: +18 V input
+ const original=measure(p,0);
+ const reversed=acceptedFalse('opamp-apps-src-15','dcTransferAccepted');
+ part(reversed,'rv1').potentiometer=25;
+ let swapped=0;
+ for(const wire of reversed.wires)for(const end of [wire.from,wire.to]){
+  if(end?.c!=='d1')continue;
+  assert.ok(['A','K'].includes(end.p),'D1 has invalid pin before negative fixture');
+  end.p=end.p==='A'?'K':'A';swapped++;
+ }
+ assert.ok(swapped>=3,'Did not reverse all source D1 terminal connections');
+ const opposite=measure(reversed,0);
+ diagnostic(t,'SC50 A/K forward-versus-reversed',{original,opposite,swapped});
+ assert.equal(original.diode,true,'Positive-input original D1 should be forward biased');
+ assert.ok(Math.abs(original.v-opposite.v)>1 ||
+   original.diode!==opposite.diode,
+   'Native solver does not distinguish a physically reversed 1N4148');
 });
 const seq=(lo,hi,step)=>{const a=[];for(let p=lo;step<0?p>=hi:p<=hi;p+=step)a.push(p);return a};
 function sweepSchmitt(withFeedback=true){
