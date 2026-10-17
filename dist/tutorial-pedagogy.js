@@ -3023,6 +3023,68 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  if(!real)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
 }
 
+/* MQ07 actual motor-type authoring SC164–171. Catalog-valid U/N/PE
+   single-phase supply circuits demonstrate real contactor command paths.
+   The global motor model does NOT expose a separately wired Z1/Z2 auxiliary
+   winding, so neither the starting capacitor nor rotation is accepted.
+   Unsupported synchronous/reverse cases become accurate product references,
+   not the previously unrelated three-phase forward/reverse running demo. */
+function mq07CorrectSpecialMotorLesson(lesson,suffix){
+ const previous=lesson.project;
+ if(!previous||previous.wires.length!==30||
+    previous.components.filter(c=>c.typeId==='motor-3p').length!==1||
+    !previous.components.some(c=>c.id==='coilF')||
+    !previous.components.some(c=>c.id==='coilR'))
+  throw Error('SC164–171 three-phase surrogate changed; cannot replace');
+ let p;
+ if(suffix==='01'||suffix==='02'){
+  const retained=suffix==='02';
+  p=base(lesson.id,lesson.title,'control');
+  p.components.push(
+   C('g1','supply-1p',90,170,'G1','Tek faz AC kaynağı'),
+   C('stop','push-nc',290,570,'S0','Motor STOP'),
+   C('start','push-no',510,500,'S1','Motor START'),
+   C('coil','coil-contactor',900,590,'K1','K1 kontaktör bobini'),
+   C('main','main-contact',940,250,'K1','K1 güç kontağı'),
+   C('motor','motor-1p',1280,300,'M1','Tek fazlı motor · U/N/PE')
+  );
+  if(retained)p.components.push(C('hold','contact-no',680,710,'K1','K1 NO mühürleme'));
+  const lines=[
+   W('g1','L','stop','21','L → NC STOP/21','Kumanda devresinin kesme noktası.','#e53935','L1'),
+   W('stop','22','start','13','STOP/22 → START/13','Motor kontaktörünü yalnız START kapatır.','#e53935','L1'),
+   W('start','14','coil','A1','START/14 → K1/A1','K1 bobin başlangıç kumandasıdır.','#e53935','L1'),
+   W('coil','A2','g1','N','K1/A2 → N','Kumanda bobini AC dönüşüdür.','#1e88e5','N'),
+   W('g1','L','main','1','L → K1/1','Motorun tek faz güç kolu.','#e53935','L1','2.5'),
+   W('main','2','motor','U','K1/2 → motor/U','Motorun mevcut katalog U güç terminali.','#e53935','L1','2.5'),
+   W('g1','N','motor','N','N → motor/N','Motor katalog nötr terminali.','#1e88e5','N','2.5'),
+   W('g1','PE','motor','PE','PE → motor/PE','Motor koruma toprağı.','#16a34a','PE','2.5')
+  ];
+  if(retained)lines.push(
+   W('stop','22','hold','13','STOP/22 → K1 NO/13','K1 mühürleme yolu NC STOP arkasından beslenir.','#e53935','L1'),
+   W('hold','14','coil','A1','K1 NO/14 → K1/A1','START bırakılınca K1 kontaktörü tutulur.','#e53935','L1')
+  );
+  p.wires.push(...lines);
+  if(p.wires.length!==(retained?10:8))throw Error('SC164/165 live contactor wire mismatch');
+ }else{
+  const refParts={
+   '03':[['supply-1p','Tek faz AC kaynak'],['motor-1p','Yön değiştirme için yardımcı sargısı ayrı gösterilemeyen tek faz motor'],['capacitor','Yardımcı sargı kondansatörü · referans']],
+   '04':[['supply-3p','Üç faz besleme · kavramsal'],['tutorial-synchronous-motor','Senkron motor eğitim sembolü']],
+   '05':[['tutorial-synchronous-motor','Senkron motor sembolü'],['motor-3p','Yardımcı asenkron başlatma motoru · referans']],
+   '06':[['supply-3p','Üç faz besleme · kavramsal'],['tutorial-synchronous-motor','Senkron motor sembolü']],
+   '08':[['hcfa-sv-x2ea040a-a','Servo sürücü · tip kontrolü gerekli'],['hcfa-sv-x2mh040a-n2ln','Servo motor · mıknatıslı rotor kabulü henüz yok']]
+  }[suffix];
+  if(!refParts)throw Error('Unsupported special motor source '+suffix);
+  p=board(lesson.id,lesson.title,refParts);
+ }
+ p.projectId=previous.projectId;p.name=previous.name;
+ p.tutorialLesson=clone(previous.tutorialLesson);
+ lesson.project=p;lesson.kind=p.wires.length?'wiring':'quiz';
+ lesson.steps=p.wires.map(w=>({
+  from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
+  why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+ }));
+ lesson.materials=materialRows(p);
+}
 /* MQ07_SC164_SC171_SPECIAL_MOTOR: documented mismatch only; canonical physical graph remains unchanged. */
 const mq07SpecialMotorScope164to171=[
  ['01','MISSING_SINGLE_PHASE_AUX_WINDING','Tek faz yardımcı sargılı asenkron motorda ana ve yardımcı sargılar ayrı uçlara bağlanır; yol verme yöntemi kapasitör/anahtar türüne bağlıdır.','Görünen devre 3 Faz + N + PE beslemeli, U/V/W uçlu motor-3p ileri/geri kontaktör devresidir; ana/yardımcı sargı uçları veya kapasitör/kalkış anahtarı gösterilmez.'],
@@ -3037,28 +3099,33 @@ const mq07SpecialMotorScope164to171=[
 for(const [suffix,issue,concept,limitation] of mq07SpecialMotorScope164to171){
  const id='motor-special-src-'+suffix,lesson=L.byId[id],ref=suffix==='07';
  if(!lesson||lesson.kind!==(ref?'quiz':'wiring')||!!lesson.project.wires.length===ref)
-  throw Error('MQ07 SC164–171 structural mismatch: '+id);
- const p=lesson.project;
- if(ref){
-  if(p.components.length!==2||!p.components.some(c=>c.typeId==='vfd')||!p.components.some(c=>c.typeId==='tutorial-synchronous-motor'))
-   throw Error('MQ07 SC170 VFD reference changed');
- }else if(p.wires.length!==30||!p.components.some(c=>c.typeId==='supply-3p')||
-   !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.id==='coilF')||!p.components.some(c=>c.id==='coilR'))
-  throw Error('MQ07 SC164–171 protected 3-phase motor graph changed: '+id);
- lesson.summary=concept+' Bu dersin ekrandaki ürünleri başlıktaki motoru tam olarak temsil etmez.';
- lesson.explanation=concept+' '+limitation+' Gerçek Node sonucu yalnız çizilen devrenin davranışına aittir; tek faz/senkron motor veya fiziksel şebeke çalışması doğrulanmamıştır.';
- lesson.learningGoal=concept+' Gösterilen devreyle motorun gerçek sargı/rotor yapısını ayırt edebilmek.';
+  throw Error('MQ07 SC164–171 source lesson structure changed: '+id);
+ if(!ref)mq07CorrectSpecialMotorLesson(lesson,suffix);
+ const p=lesson.project,onePhase=suffix==='01'||suffix==='02';
+ if(ref&&(p.components.length!==2||!p.components.some(c=>c.typeId==='vfd')||
+    !p.components.some(c=>c.typeId==='tutorial-synchronous-motor')))
+  throw Error('MQ07 SC170 canonical VFD reference changed');
+ if(onePhase&&(p.components.filter(c=>c.typeId==='motor-1p').length!==1||
+    p.components.some(c=>c.typeId==='motor-3p')||
+    p.wires.length!==(suffix==='01'?8:10)))throw Error('Single-phase source mismatch '+id);
+ lesson.summary=concept+(onePhase?' Tek faz U/N/PE ve K1 kumanda devresi kuruludur; ayrı yardımcı sargı yoktur.':
+   ' Başlığa uygun ürünler kavramsal referanstır; çalışma şeması değildir.');
+ lesson.explanation=concept+' '+(onePhase?
+  'Gerçek tek faz L/N/PE, K1 bobin/güç ve START/STOP devresi çizilmiştir. Motor kataloğu Z1/Z2 yardımcı sargı terminallerini sunmadığı için yardımcı sargı/kalkış ve gerçek dönme kabul edilmez. ':
+  'Ekranda kaynak katalogda bulunan doğru sınıf ürünler gösterilir; bağımsız besleme, sürücü veya mekanik senkronizasyon devresi kurulmamıştır. ')+limitation+
+  ' Node ve Windows gerçek motor işlevi henüz doğrulanmamıştır.';
+ lesson.learningGoal=concept+' Gerçek terminal/kumanda grafiğini ve desteklenmeyen sargı ya da rotor işlevini ayırt etmek.';
  lesson.beginnerSteps=[
-  'Ekrandaki besleme ve motor ürün etiketlerini incele.',
-  'Motorun ana/yardımcı sargı veya senkron rotor uçlarını gerçek şemadan ayır.',
+  'Ekrandaki ürün sınıfı ve motorun katalogdaki terminallerini incele.',
+  onePhase?'K1 güç yolu ve ayrı STOP/START kumandasını incele.':'Bu kartın fiziksel kablosuz ürün referansı olduğunu doğrula.',
   limitation,
-  'Eksik motor/sürücü modeli veya gerçek fiziksel ölçüm olmadan başlıktaki motor işlevine PASS verme.'
+  'Yardımcı sargı, senkron rotor veya fiziksel motor sonucu doğrulanmadığı sürece PASS verme.'
  ];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC164_SC171',
-  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:onePhase?'SINGLE_PHASE_AUX_WINDING_NATIVE_PENDING':issue,
   specialMotorAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
   independentPedagogicalAcceptance:false};
- if(!ref)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'üç fazlı asenkron ileri/geri');
 }
 
 /* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
