@@ -109,9 +109,28 @@ test('negative fixture: stale motor label and invented motor scope acceptance re
  const bad=Inventory.inspectLesson(l,defs);
  assert.ok(bad.issues.some(i=>i.code==='MATERIAL_LABEL_MISMATCH'&&i.componentId===motor.id));
  assert.equal(l.pedagogyReview.multiMotorAcceptance,false);
- l.pedagogyReview.multiMotorAcceptance=true;
- assert.notEqual(l.pedagogyReview.multiMotorAcceptance,
-  lesson('motor-sequence-src-01').pedagogyReview.multiMotorAcceptance);
- // Do not convert a positive source-graph test into an acceptance verdict.
+ // The former fixture only checked that true != false; that tautology
+ // never asked Inventory to reject forged function acceptance.
+ for(const [id,field] of [
+  ['motor-braking-src-01','brakingAcceptance'],
+  ['motor-special-src-01','specialMotorAcceptance'],
+  ['motor-sequence-src-01','multiMotorAcceptance'],
+  ['plc-hardware-programming-src-13','plcAdvancedLogicAcceptance'],
+  ['plc-hardware-programming-src-14','plcAdvancedLogicAcceptance']
+ ]){
+  const original=lesson(id);
+  assert.ok(original.pedagogyReview.titleTopologyIssue,id+' must remain REVIEW');
+  assert.equal(original.pedagogyReview[field],false,id+' function already accepted');
+  const forged=structuredClone(original);
+  forged.pedagogyReview[field]=true;
+  const issues=Inventory.inspectLesson(forged,defs).issues;
+  assert.ok(issues.some(issue=>
+   issue.code==='OPEN_TITLE_WITH_UNVERIFIED_FUNCTION'&&issue.field===field),
+   id+' forged '+field+' escaped source review');
+  assert.ok(!Inventory.inspectLesson(original,defs).issues.some(issue=>
+   issue.code==='OPEN_TITLE_WITH_UNVERIFIED_FUNCTION'),
+   id+' review falsely rejects an unaccepted function');
+ }
+ // Original circuit content stays untouched and remains partial review.
  assert.equal(Inventory.audit({L,defs}).acceptance.first200,'REVIEW');
 });
