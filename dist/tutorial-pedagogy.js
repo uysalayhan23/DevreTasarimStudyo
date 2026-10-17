@@ -3128,6 +3128,30 @@ for(const [suffix,issue,concept,limitation] of mq07SpecialMotorScope164to171){
   independentPedagogicalAcceptance:false};
 }
 
+/* MQ07 real brake TOPIC repair: the current simulator has no brake
+   torque or DC-injection model and tutorial-mechanical-brake has no pins.
+   Therefore SC156 overview, SC157 mechanical brake and SC160 DC-injection
+   calculation must show honest manufacturer-type catalog references rather
+   than the unrelated live star/delta START demo. No fake brake wires. */
+function mq07RepairBrakeReference(lesson,suffix){
+ const old=lesson.project;
+ if(!old||old.wires.length!==38||
+    !old.components.some(c=>c.typeId==='motor-y-d')||
+    !old.components.some(c=>c.typeId==='coil-delay-on'))
+  throw Error('SC156/157/160 original star/delta graph changed');
+ const parts={
+  '01':[['motor-3p','Üç faz motor · kavram'],['tutorial-mechanical-brake','Mekanik balatalı fren sembolü'],
+    ['supply-dc-plus','DC enjeksiyon kaynağı · referans'],['coil-delay-on','Zaman kontrollü frenleme · referans']],
+  '02':[['motor-3p','Üç faz motor · kavram'],['tutorial-mechanical-brake','Yaylı balatalı fren · terminal ve tork modeli yok']],
+  '05':[['supply-dc-plus','DC gerilim kaynağı · referans'],['resistor','Sargı direnci · yalnız R eşdeğeri'],
+    ['meter-ammeter','DC akım ölçümü · yalnız referans'],['motor-y-d','Altı uçlu motor · gerçek DC enjeksiyon devresi kurulmadı']]
+ }[suffix];
+ if(!parts)throw Error('Unknown brake reference '+suffix);
+ const p=board(lesson.id,lesson.title,parts);
+ p.projectId=old.projectId;p.name=old.name;
+ p.tutorialLesson=clone(old.tutorialLesson);
+ lesson.project=p;lesson.kind='quiz';lesson.steps=[];lesson.materials=materialRows(p);
+}
 /* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
 const mq07BrakingScope156to163=[
  ['01','BRAKE_OVERVIEW_YDELTA_SUBSTITUTE','Frenleme sistemleri motorun enerjisinin kesilmesinden farklı olarak mekanik veya elektriksel yavaşlama/enerji kontrolünü hedefler.','Bu örnek yıldız–üçgen yol verme, zamanlı geçiş ve STOP ile beslemeyi kesme devresidir; mekanik fren, dinamik fren veya DC enjeksiyon devresi değildir.'],
@@ -3145,20 +3169,34 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
     !lesson.project.components.some(c=>c.typeId==='motor-y-d')||
     !lesson.project.components.some(c=>c.typeId==='coil-delay-on')||
     lesson.project.components.some(c=>c.typeId==='supply-dc-plus'||c.typeId==='tutorial-mechanical-brake'))
-   throw Error('MQ07 SC156–163 braking project changed; re-audit '+id);
- lesson.summary=concept+' Ekrandaki devre bir yıldız–üçgen yol verme örneğidir, başlıktaki fren devresi değildir.';
- lesson.explanation=concept+' '+limitation+' Node çözümü yalnız yol verme, yıldız–üçgen geçişi ve STOP ile enerji kesilmesini gösterir; frenleme süreci doğrulanmamıştır. Fiziksel motor, şebeke ve fren güvenliği kabul edilmemiştir.';
- lesson.learningGoal=concept+' Devrede çalışan START/STOP yol verme ile gerçek frenleme mekanizması arasındaki farkı ayırt etmek.';
- lesson.beginnerSteps=[
-  'Ekranda üç faz besleme, zaman rölesi, yıldız ve üçgen kontaktörlerini ayırt et.',
-  'Sanal START, geçiş zamanı ve STOP durumlarını elektriksel kaynak üzerinde incele.',
+   throw Error('MQ07 SC156–163 original braking source changed '+id);
+ const conceptual=['01','02','05'].includes(suffix);
+ if(conceptual)mq07RepairBrakeReference(lesson,suffix);
+ lesson.summary=concept+(conceptual?
+  ' İlgili frenleme ürünleri doğru türde kavram kartıdır; kablolu frenleme simülasyonu değildir.':
+  ' Ekrandaki canlı yıldız–üçgen devresi başlıktaki frenleme işlemini gerçekleştirmez.');
+ lesson.explanation=concept+' '+(conceptual?
+  'Gösterilen fren, motor ve ölçüm malzemeleri başlığa uygun referanslardır; gerçek fren torku, fren bobini veya DC enjeksiyon kablosu yoktur. ':
+  'Yıldız–üçgen START, geçiş ve STOP devresi fren sistemi değildir. ')+
+  (conceptual?'Katalogdaki elemanların işlev sınırı önemlidir. ':limitation+' ')+
+  'Frenleme süreci ve fiziksel şebeke güvenliği doğrulanmamıştır.';
+ lesson.learningGoal=concept+' Gösterilen ürünün gerçek terminali ile desteklenmeyen frenleme işlemini ayırt etmek.';
+ lesson.beginnerSteps=conceptual?[
+  'Frenleme, motor ve ölçüm/kumanda ürünlerinin gerçek katalog türlerini karşılaştır.',
+  'Bu kartın kablosuz kavramsal referans olduğunu, fren hareketinin simüle edilmediğini doğrula.',
   limitation,
-  'Frenleme momenti, durma süresi veya DC enjeksiyon sonucu gösterilmediği için frenlemeye PASS verme.'
+  'Fren momenti, kalkış/duruş güvenliği veya DC enjeksiyon sonucu olmadan PASS verme.'
+ ]:[
+  'Üç faz besleme, yıldız ve üçgen kontaktörlerini ayırt et.',
+  'Sanal START, geçiş zamanı ve STOP tepkilerini yalnız yol verme grafiği üzerinde incele.',
+  limitation,
+  'Frenleme momenti ve durma süresi ölçülmediği için frenlemeye PASS verme.'
  ];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC156_SC163',
-  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,brakingAcceptance:false,
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:conceptual?
+    ('BRAKE_REFERENCE_NATIVE_PENDING_'+suffix):issue,brakingAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
- mq07MotorMaterialLimit(lesson,'motor-y-d',limitation,'yıldız–üçgen yol verme');
+ if(!conceptual)mq07MotorMaterialLimit(lesson,'motor-y-d',limitation,'yıldız–üçgen yol verme');
 }
 
 /* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
