@@ -233,6 +233,31 @@ test('inventory catches missing material, stale type, unknown terminal and inven
  corrected.project.wires[0].to.j=1;
  assert.deepEqual(Inventory.inspectLesson(corrected,typedDefs).issues,[],
   'Real source/catalog pin and junction identities must remain valid');
+ // Material componentId also belongs to the native, type-sensitive ID
+ // namespace. Numeric 1 and string '1' are DIFFERENT actual components:
+ // String(componentId) formerly produced a fake duplicate material row.
+ const mixed={
+  id:'fixture-two-distinct-id-types',title:'Type-sensitive material IDs',
+  topicId:'fixture',kind:'quiz',
+  project:{components:[
+   {id:1,typeId:'fixture-part',label:'N1'},
+   {id:'1',typeId:'fixture-part',label:'T1'}
+  ],wires:[]},
+  materials:[
+   {componentId:1,typeId:'fixture-part',label:'N1',why:'Numeric-ID component with its own role'},
+   {componentId:'1',typeId:'fixture-part',label:'T1',why:'String-ID component with its own role'}
+  ]
+ };
+ const materialDefs={'fixture-part':{pins:[{id:'A'}]}};
+ assert.deepEqual(Inventory.inspectLesson(mixed,materialDefs).issues,[],
+  'Different real component ID types must not look like duplicate materials');
+ const duplicate=structuredClone(mixed);
+ duplicate.materials[1].componentId=1;
+ const badMaterials=Inventory.inspectLesson(duplicate,materialDefs).issues;
+ assert.ok(badMaterials.some(i=>i.code==='DUPLICATE_MATERIAL_ROW'),
+  'Repeated true material ID must still be rejected');
+ assert.ok(badMaterials.some(i=>i.code==='MISSING_MATERIAL_ROW'&&i.componentId==='1'),
+  'Unmatched string-ID component must still be reported');
  // This test formerly mentioned "invented acceptance" but never injected
  // a false acceptance claim. A review-tagged title must fail closed even
  // if its original circuit product and terminal identities stay unchanged.
