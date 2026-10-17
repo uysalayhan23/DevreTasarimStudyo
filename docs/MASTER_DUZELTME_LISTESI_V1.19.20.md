@@ -2466,3 +2466,7 @@ Yeni 2S2P projede 6 gerçek işlevsel kablo, 2 önceden bağlı ve serbest harek
 ### MQ-12 LDR/piezo model denetimi düzeltmesi — native test bekliyor
 - `c92174c` hedefli LDR güç bağıntısı testi örneğin kendi `voltage` değerini saklar; artık 100 lux değerini son 1000 lux ölçümüyle karıştırmaz. `8df4105`/`b40bb58` salt okunur sensör uyumluluğunda kaynakta onarılmış piezo elemanı ile eski proximity yer tutucularını ayırır; `physicalAccepted=0`, `fullAcceptance=REVIEW` sabittir. Uygulama `dist` ve golden kaynak değişikliği yapılmadı.
 - Yeni Head üzerinde gerçek Windows `node --test` sonucu **NOT_RUN**. Eski iki sensör elektrik/arayüz scriptinde `proximity`+24 V template varsayımı hâlâ açık; golden termokupl farkı, native simülasyon ve 112 tam regresyon başarısızlığı **OPEN**. Kanıt ayrıntısı: `docs/QA_LOCAL_WINDOWS_20261017.md`.
+
+### MQ-12 Windows LDR + sensör model native 8/8 kanıtı — 2026-10-17
+- Kullanıcının gerçek Windows/Node.js 22.14.0 terminal çıktısı: `node --test tests/qa-mq07-ldr-linear-dimmer-v11920.test.cjs tests/qa-mq12-sensor-model-compatibility-v11920.test.cjs`, **8 PASS / 0 FAIL**, `2708.2741 ms`. LDR güç–akım–gerilim bağının aynı lux örneğiyle ölçümü, kopuk hat fail-closed, sensör kaynak kökeni ve fiziksel onay sınırları hedefli olarak doğrulandı.
+- Çıktıdaki `git rev-parse --short HEAD` satırı `e42f2bc` ancak yeni kaynak test isimleri/sonuçları `f4c67b2d` ile uyumlu; test *anındaki* commit doğrudan kanıtlanmadı. Tam 1792 regresyon henüz tekrar çalıştırılmadı; son ölçülen 112 FAIL açık. Kaynak: `docs/QA_LOCAL_WINDOWS_20261017.md`.
