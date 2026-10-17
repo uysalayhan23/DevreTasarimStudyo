@@ -60,6 +60,29 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
  assert.ok(!check.blocked&&!check.shortCircuit&&!check.oscillating);
 });
 
+test('SC124 I2C reference material list includes UNO and actual OLED without invented wiring',()=>{
+ const lesson=L.byId['microcontroller-apps-src-15'];
+ assert.ok(lesson,'Missing SC124 curriculum record');
+ assert.equal(lesson.kind,'quiz');
+ assert.equal(lesson.project.wires.length,0,'SC124 must not invent active I2C wiring');
+ assert.equal(lesson.project.components.length,2,'SC124 board must retain UNO and OLED');
+ assert.equal(lesson.materials.length,lesson.project.components.length,'SC124 materials must follow parts');
+ const expected=['arduino-uno','arduino-oled-i2c'];
+ assert.equal(lesson.project.components.map(c=>c.typeId).join(','),expected.join(','));
+ for(let i=0;i<expected.length;i++){
+  const c=lesson.project.components[i],material=lesson.materials[i];
+  assert.equal(material.componentId,c.id,'SC124 material must identify its real component');
+  assert.equal(material.typeId,c.typeId,'SC124 material type must match source');
+  assert.ok(material.label&&material.why?.length>40,'SC124 material explanation missing');
+ }
+ assert.match(lesson.materials[1].why,/I2C/);
+ assert.match(lesson.materials[1].why,/SDA\/SCL/);
+ assert.match(lesson.materials[1].why,/bağlı değildir/);
+ assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
+ assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
+ assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+});
+
 test('remaining first-200 source reviews stay traceable, never silently accepted',()=>{
  // The old hardcoded 47 was a dated interim inventory. After later source
  // corrections, the early batch ledger and final lesson states may differ.
