@@ -13,7 +13,7 @@ function step(p,lux){
  assert.ok(r.stable&&!r.shortCircuit&&!r.blocked&&!r.oscillating,'solver at '+lux+' lux');
  const lamp=comp(p,'h1'),q=comp(p,'q1'),ldr=comp(p,'s1');
  return {lux,gate:q._dimmerGateV,brightness:lamp._dimmerBrightnessPct,
-  power:lamp._dimmerPowerW,current:lamp._dimmerCurrentA,ldrOhm:ldr._ldrResistance};
+  power:lamp._dimmerPowerW,current:lamp._dimmerCurrentA,voltage:lamp._voltageValue,ldrOhm:ldr._ldrResistance};
 }
 test('MQ-07 12V LDR dimmer has an independent electrically wired MOSFET power path',()=>{
  assert.equal(lesson.title,'LDR kontrollü dimmer');
@@ -54,7 +54,7 @@ test('MQ-12 original numeric solver computes monotonic lux to actual load power 
  assert.ok(data[4].brightness>95&&data[4].brightness<100,'1000 lux near full');
  assert.ok(data[2].power<data[3].power&&data[3].power<data[4].power,'lamp power truly changes');
  assert.ok(data[2].gate>2&&data[3].gate>data[2].gate&&data[4].gate>data[3].gate);
- assert.ok(Math.abs(data[3].power-data[3].current*comp(p,'h1')._voltageValue)<1e-5);
+ assert.ok(Math.abs(data[3].power-data[3].current*data[3].voltage)<1e-5);
 });
 test('disconnecting real control/gate or power wire fails electrically closed',()=>{
  let p=fresh();p.wires=p.wires.filter(w=>!(w.from.c==='s1'&&w.to.c==='q1'));
