@@ -3383,17 +3383,29 @@ const mq07StartSpeedScope144to155=[
 for(const [suffix,issue,concept,limitation] of mq07StartSpeedScope144to155){
  const id='motor-start-speed-src-'+suffix,lesson=L.byId[id];
  if(!lesson)throw Error('MQ07 SC144–155 missing '+id);
- const i=Number(suffix),isRef=[4,5,7,8,9,10].includes(i),p=lesson.project;
- if((lesson.kind==='quiz')!==isRef||(p.wires.length===0)!==isRef)throw Error('MQ07 SC144–155 structure changed '+id);
- if(i===6&&p.components.some(c=>c.typeId==='resistor'))throw Error('SC149 starting resistance requires new assessment');
- if(i>=11&&p.components.some(c=>/coil-delay|current-sensor|ammeter/.test(c.typeId)))throw Error('SC154–155 sensor or timer found; reassess');
- lesson.summary=concept+' Ekrandaki mevcut devrenin sınırlarını kontrol et.';
- lesson.explanation=concept+' '+limitation+' Gerçek şebeke veya fiziksel motor güvenliği bu derste kabul edilmemiştir.';
- lesson.learningGoal=concept+' Başlıktaki işlev ile gerçekten çizilmiş bileşenleri ayırabilmek.';
+ const i=Number(suffix),oldRef=[4,5,7,8,9,10].includes(i);
+ if((lesson.kind==='quiz')!==oldRef||(lesson.project.wires.length===0)!==oldRef)
+  throw Error('MQ07 SC144–155 original lesson scope drifted '+id);
+ if(['06','11','12'].includes(suffix))mq07StartMotorContent(lesson,suffix);
+ const isRef=[4,5,6,7,8,9,10,11].includes(i),p=lesson.project;
+ if((lesson.kind==='quiz')!==isRef||(p.wires.length===0)!==isRef)
+  throw Error('MQ07 SC144–155 content repair result drifted '+id);
+ const pending=suffix==='12'?'STAR_DELTA_TIME_SELECTION_NATIVE_PENDING':
+  suffix==='06'?'RESISTOR_START_MODEL_NOT_AVAILABLE':
+  suffix==='11'?'STARTING_CURRENT_MODEL_NOT_AVAILABLE':issue;
+ const actual=suffix==='12'?
+  'Altı terminalli motor, NC kilitli yıldız ve üçgen kontaktörleri ve seçilebilir gecikmesi olan zaman rölesi bağlanmıştır. Uygun zamanın yükte seçimi veya gerçek akım doğrulanmamıştır.':
+  suffix==='06'?
+  'Üç faz kalkış direnci ve bypass kontaktörü yalnız katalog referansıdır; üç faz başlangıç akımı ve direncin anahtarlama hesabı çözümlenmez.':
+  suffix==='11'?
+  'Motor, ampermetre, termik ve şebeke gerçek ürün kartlarıdır; motor kalkış akımı/gerilim çökmesi eğrisi simüle edilmemektedir.':limitation;
+ lesson.summary=concept+' '+(suffix==='12'?'Gerçek zaman röleli bağlantı çizilmiştir.':'Kaynak kapsamı ayrıca belirtilir.');
+ lesson.explanation=concept+' '+actual+' Gerçek şebeke veya fiziksel motor güvenliği bu derste kabul edilmemiştir.';
+ lesson.learningGoal=concept+' Gösterilen gerçek terminalleri, hesaplanamayan fiziksel büyüklüklerden ayırabilmek.';
  lesson.beginnerSteps=['Gösterilen ürünleri ve bağlı terminal sayılarını kontrol et.',concept,limitation,
   'Eksik donanım veya gerçek ölçüm yerine yalnız açıklamadan elektriksel PASS verme.'];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC144_SC155',
-  titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
+  titleTopologyStatus:pending?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:pending,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
