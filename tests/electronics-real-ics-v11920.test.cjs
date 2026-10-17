@@ -28,6 +28,20 @@ test('real electronics remain orthographic while five virtual instruments never 
   }
  }
 });
+test('MOC3021 PDIP-6 top-view pins remain identifiable without physical safety acceptance',()=>{
+ const d=byId['moc3021-opto-triac'];
+ assert.ok(d,'MOC3021 catalog entry missing');
+ assert.equal(d.realPackage?.type,'PDIP-6');
+ assert.equal(d.realPackage?.pins,6);
+ assert.equal(d.realPackage?.topView,true);
+ assert.equal(d.realPackage?.orthographic,true);
+ assert.equal(d.realPackage?.transparentBackground,true);
+ assert.deepEqual(Array.from(d.pins,p=>String(p.id)),['1','2','4','6']);
+ assert.deepEqual(Array.from(d.pins,p=>p.physicalPin),[1,2,4,6]);
+ assert.equal(d.virtualOpticalCoupling,true);
+ assert.equal(d.manufacturerGeometryAccepted,false);
+ assert.notEqual(d.virtualInstrument,true);
+});
 test('Arduino workspace and catalog accept shared electronics',()=>{const W=require('../dist/workspaces.js'),C=require('../dist/catalog.js');for(const d of lib){assert.equal(W.includes(d,'arduino'),true,d.id);assert.equal(C.matches(d,{category:'arduino'}),true,d.id)}})
 test('SN74HC00 NAND truth table',()=>{const d=byId.sn74hc00n,c={};for(const [a,b,y] of [[0,0,1],[0,1,1],[1,0,1],[1,1,0]]){Digital.clear(c);const s=Digital.evaluate(c,d,net(powered(d,{'1':a?5:0,'2':b?5:0})),0);assert.equal(s.outputs['3'].logic,y)}})
 test('SN74HC74 captures D on rising edge',()=>{const d=byId.sn74hc74n,c={},v=powered(d,{'1':5,'4':5,'13':5,'10':5,'3':0,'2':5,'11':0,'12':0});Digital.evaluate(c,d,net(v),0);v['3']=5;const s=Digital.evaluate(c,d,net(v),1);assert.equal(s.outputs['5'].logic,1)})
