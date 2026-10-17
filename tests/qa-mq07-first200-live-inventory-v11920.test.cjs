@@ -20,6 +20,27 @@ test('SC001-SC200 inventory names all canonical lessons without implying accepta
  assert.ok(report.rows.every(x=>typeof x.id==='string'&&Array.isArray(x.issues)));
 });
 
+test('all 51 historical first-200 no-wire entries are traceable without auto-acceptance',()=>{
+ const r=Inventory.audit({L,defs:definitions}),history=r.historicalNoWireTriage;
+ assert.equal(history.originalCount,51);
+ assert.equal(history.matchedLiveLessons,51);
+ assert.equal(history.oldConceptPreserve,14);
+ assert.equal(history.oldApplicationCandidates,37);
+ assert.equal(history.applicationsWithWiresNow+history.applicationsWithoutWiresNow,37);
+ const related=r.rows.filter(row=>row.historicalNoWire);
+ assert.equal(new Set(related.map(row=>row.id)).size,51);
+ for(const row of related){
+  assert.equal(row.historicalNoWire.scope,'HISTORICAL_REFERENCE_ONLY');
+  assert.equal(row.historicalNoWire.wireCountNow,row.wireCount);
+  assert.equal(row.physicalAcceptance,false,'No old reference accepted as physical: '+row.id);
+  assert.equal(row.independentPedagogicalAcceptance,false,'No independent review assumed: '+row.id);
+ }
+ // Repaired applications can acquire wires; that is evidence of a graph,
+ // NOT proof of functional behavior or physical product acceptance.
+ assert.equal(r.acceptance.first200,'REVIEW');
+ assert.equal(r.acceptance.windowsVisual,'NOT_RUN');
+});
+
 test('SC124 actual UNO and OLED materials match the two unconnected source components',()=>{
  const report=Inventory.audit({L,defs:definitions});
  const row=report.rows.find(x=>x.id==='microcontroller-apps-src-15');
