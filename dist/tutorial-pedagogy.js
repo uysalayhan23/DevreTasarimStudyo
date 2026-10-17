@@ -3896,6 +3896,81 @@ for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
 
 
 /* MQ07_SC98_SC109_SEQUENTIAL: exact IC behavior; these are not wired simulations. */
+/* SC098–SC109 topic-specific knowledge checks; not a clock/ADC/DAC runtime. */
+const mq07SequentialQuiz98to109={
+ "10": [
+  "74HC595'te çıkış kayıtçısı ne zaman güncellenir?",
+  "STCP/RCLK latch kenarında",
+  "Yalnız SER hattı LOW iken",
+  "Besleme kablosu değişince"
+ ],
+ "11": [
+  "ADC0804LCN'nin dönüştürme sonucu hangi çözünürlüktedir?",
+  "8-bit dijital kod",
+  "10-bit UNO dahili ADC sonucu",
+  "Sürekli analog akım çıkışı"
+ ],
+ "12": [
+  "DAC0808LCN'nin doğrudan analog çıkış türü nedir?",
+  "Referansa bağlı analog akım",
+  "Doğrudan kalibre analog gerilim",
+  "Dijital PWM clock"
+ ],
+ "01": [
+  "NAND ile kurulan aktif-düşük RS mandalında /S=/R=0 için ne söylenir?",
+  "Yasak veya belirsiz durumdur",
+  "Her zaman güvenilir Q=1",
+  "Her zaman kararlı toggle"
+ ],
+ "02": [
+  "JK flip-flop etkin saat olayında J=K=1 olursa ne yapar?",
+  "Q durumunu tersler (toggle)",
+  "Daima Q=0 yapar",
+  "Daima Q korunur"
+ ],
+ "03": [
+  "Pozitif kenar tetiklemeli D flip-flopta Q ne zaman D'yi alır?",
+  "Pozitif CLK kenarında",
+  "Saatten bağımsız her an",
+  "Yalnız besleme kesilince"
+ ],
+ "04": [
+  "JK entegresinden T davranışı nasıl elde edilir?",
+  "J ve K uçları birlikte T'ye bağlanarak",
+  "Sadece /CLR ucu bağlanarak",
+  "VCC ucu kaldırılarak"
+ ],
+ "05": [
+  "CD4017 neden asenkron ikili ripple sayaç örneğinin doğrudan karşılığı değildir?",
+  "Johnson/ondan bire çözümlü sayaçtır",
+  "Üç faz kontaktörüdür",
+  "Yalnız analog DAC'tır"
+ ],
+ "06": [
+  "Üç bit senkron ikili sayaçta flip-flop saatleri nasıl düzenlenir?",
+  "Ortak saat kenarını paylaşırlar",
+  "Her zaman bir önceki çıkışla ayrı dalgalanırlar",
+  "Hiçbir saat kullanılmaz"
+ ],
+ "07": [
+  "Johnson sayacının karakteristik geri beslemesi hangisidir?",
+  "Son kademe bitinin tersinin ilk kademeye verilmesi",
+  "Her kademe bağımsız analog voltmetre olması",
+  "Yalnız motor fazlarının değiştirilmesi"
+ ],
+ "08": [
+  "CD4017'nin Q0–Q9 çıkışlarının işlevi nedir?",
+  "Saat olaylarıyla sıralı seçili çıkışı göstermesi",
+  "Dört bit BCD kodunu aynen kopyalaması",
+  "24 V termik koruma sağlaması"
+ ],
+ "09": [
+  "Halka sayıcı ile Johnson sayacının temel farkı nedir?",
+  "Johnson son bitin tersini geri besler; halkada etkin bit dolaşır",
+  "İkisi de üç faz motor starteridir",
+  "Her ikisi de analog ADC'dir"
+ ]
+};
 const mq07SequentialReference98to109=[
  ['01','sn74hc00n','RS mandalı iki NAND kapısının çapraz geri beslemesiyle kurulur; karttaki SN74HC00N tek başına hazır bir flip-flop değildir.','Aktif-düşük /S,/R için 11→önceki Q korunur, 01→Q=1 (SET), 10→Q=0 (RESET), 00→yasak/belirsiz; besleme ve bağlantı kurulmamıştır.'],
  ['02','cd4027be','CD4027BE JK flip-flop saat kontrollü durum saklar.','Etkin saat olayında JK=00→koru, 01→RESET, 10→SET, 11→TOGGLE; doğrudan SET/RESET uçları ayrıca değerlendirilmelidir.'],
@@ -3924,6 +3999,10 @@ for(const [suffix,chip,concept,table] of mq07SequentialReference98to109){
   'Gösterilen çipin devre başlığıyla hangi açılardan farklı olduğunu belirle.',
   'Gerçek bağlantı ve saat testi bulunmadığı için elektriksel PASS verme.'
  ];
+ const quizRow=mq07SequentialQuiz98to109[suffix];
+ if(!quizRow||quizRow.length!==4||!lesson.quiz||!Array.isArray(lesson.quiz.options)||lesson.quiz.options.length!==3)
+  throw Error('MQ07 seq quiz baseline mismatch: '+id);
+ lesson.quiz={question:quizRow[0],options:quizRow.slice(1,4),answer:0,why:concept+' '+table};
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
   semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
   titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
@@ -3934,6 +4013,99 @@ for(const [suffix,chip,concept,table] of mq07SequentialReference98to109){
 
 
 /* MQ07_SC83_SC97_LOGIC: truthful digital truth-table reference lessons; no fabricated wires. */
+/* SC083–SC097 topic-specific knowledge checks; not virtual truth-table execution. */
+const mq07LogicQuiz83to97={
+ "10": [
+  "SN74HC138 seçili Y çıkışı normal etkinleştirmede hangi seviyededir?",
+  "LOW (aktif düşük)",
+  "HIGH (aktif yüksek)",
+  "AC 230 V"
+ ],
+ "11": [
+  "CD4511 entegresi hangi giriş bilgisini segmentlere dönüştürür?",
+  "BCD dört bitlik rakam kodu",
+  "Üç faz frekansı",
+  "UART veri paketi"
+ ],
+ "12": [
+  "SN74HC151 çoklayıcının seçim uçları ne işe yarar?",
+  "Sekiz veri girişinden birini seçer",
+  "Sekiz çıkışın hepsini aynı anda besler",
+  "ADC referansını ölçer"
+ ],
+ "13": [
+  "SN74HC138 neden tek başına tam bir 1→8 veri yönlendirici sayılmaz?",
+  "Kod çözücüdür; veri/izin kapılaması ayrıca gereklidir",
+  "Sekiz analog çıkış sürer",
+  "Yalnız tek bit hafıza tutar"
+ ],
+ "14": [
+  "74HC283'te Cin girişi hangi işleve katılır?",
+  "Dört bit toplamanın giriş taşımasına",
+  "Yalnız şebeke faz sırasına",
+  "7 segment ortak anoduna"
+ ],
+ "15": [
+  "74HC85 hangi büyüklükleri karşılaştırır?",
+  "İki dört-bit ikili sayının >, =, < ilişkisini",
+  "İki AC motorun mekanik devrini",
+  "İki dirençteki sıcaklığı"
+ ],
+ "01": [
+  "AND kapısında Y çıkışı ne zaman 1 olur?",
+  "A=1 ve B=1 iken",
+  "Girişlerden yalnız biri 1 iken",
+  "Her iki giriş 0 iken"
+ ],
+ "02": [
+  "OR kapısında Y çıkışı ne zaman 1 olur?",
+  "En az bir giriş 1 olduğunda",
+  "Yalnız A=B=0 iken",
+  "Sadece girişler farklıyken"
+ ],
+ "03": [
+  "NOT kapısı A=0 girişini hangi çıkışa dönüştürür?",
+  "1",
+  "0",
+  "Yüksek empedans Z"
+ ],
+ "04": [
+  "Üç durumlu BUFFER için /OE=1 iken çıkışın durumu nedir?",
+  "Yüksek empedans Z",
+  "Zorunlu 0",
+  "Zorunlu 1"
+ ],
+ "05": [
+  "NAND kapısının çıkışı hangi girişte 0 olur?",
+  "A=1 ve B=1",
+  "A=0 ve B=0",
+  "A=1 ve B=0"
+ ],
+ "06": [
+  "NOR kapısının çıkışı hangi girişte 1 olur?",
+  "A=0 ve B=0",
+  "A=1 ve B=0",
+  "A=1 ve B=1"
+ ],
+ "07": [
+  "XOR kapısında Y hangi koşulda 1 olur?",
+  "A ile B farklıysa",
+  "A ile B eşitse",
+  "Her ikisi 0 ise"
+ ],
+ "08": [
+  "XNOR kapısında Y hangi koşulda 1 olur?",
+  "A ile B aynıysa",
+  "A ile B farklıysa",
+  "Yalnız A=1, B=0 iken"
+ ],
+ "09": [
+  "SN74HC148 öncelikli kodlayıcıdaki etkin girişlerin kutuplaması nasıldır?",
+  "Aktif düşüktür ve öncelik gözetilir",
+  "Her giriş yalnız aktif yüksektir",
+  "Girişler analog akım ölçer"
+ ]
+};
 const mq07LogicCases83to97=[
  ['01','sn74hc08n','İki girişli VE kapısı; Y=A∧B.','A B → Y: 00→0, 01→0, 10→0, 11→1.','Yalnız iki giriş de 1 ise çıkış 1 olur.'],
  ['02','sn74hc32n','İki girişli VEYA kapısı; Y=A∨B.','A B → Y: 00→0, 01→1, 10→1, 11→1.','Girişlerden en az biri 1 ise çıkış 1 olur.'],
@@ -3965,6 +4137,10 @@ for(const [suffix,chip,definition,table,point] of mq07LogicCases83to97){
   point,
   'Bu kartta gerçek kablo ve besleme yok; giriş değişimi veya donanım çalışması için PASS verme.'
  ];
+ const quizRow=mq07LogicQuiz83to97[suffix];
+ if(!quizRow||quizRow.length!==4||!lesson.quiz||!Array.isArray(lesson.quiz.options)||lesson.quiz.options.length!==3)
+  throw Error('MQ07 logic quiz baseline mismatch: '+id);
+ lesson.quiz={question:quizRow[0],options:quizRow.slice(1,4),answer:0,why:definition+' '+point};
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
   semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
   titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
