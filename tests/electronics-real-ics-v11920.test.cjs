@@ -5,7 +5,29 @@ function physicalLibrary(){const ctx={window:{COMPONENT_LIBRARY:[]}};vm.runInNew
 const lib=physicalLibrary(),byId=Object.fromEntries(lib.map(d=>[d.id,d])),Digital=require('../dist/digital-ic-runtime-v11920.js');
 function net(values={}){return {dcVoltage(c,a,b){const av=values[String(a)],bv=values[String(b)];return Number.isFinite(av)&&Number.isFinite(bv)?av-bv:null}}}
 function powered(d,extra={}){const v={...extra};if(d.supplyPins){v[String(d.supplyPins.negative)]=0;v[String(d.supplyPins.positive)]=5}return v}
-test('real shared electronics packages exist and are orthographic',()=>{assert.ok(lib.length>=33,lib.length);for(const d of lib){assert.equal(d.arduinoShared,true,d.id);assert.equal(d.realPackage?.topView,true,d.id);assert.equal(d.realPackage?.orthographic,true,d.id);assert.equal(d.realPackage?.transparentBackground,true,d.id);assert.ok(d.pins?.length>=2,d.id)}})
+test('real electronics remain orthographic while five virtual instruments never claim physical packaging',()=>{
+ const virtualIds=new Set([
+  'virtual-pwm-generator-v1','virtual-isolated-ac-12v','virtual-ac-scr-trigger-v1',
+  'virtual-ac-triac-trigger-v1','virtual-opto-flasher-timer-v1'
+ ]);
+ assert.ok(lib.length>=33,lib.length);
+ assert.equal(lib.filter(d=>d.virtualInstrument).length,virtualIds.size);
+ for(const d of lib){
+  assert.equal(d.arduinoShared,true,d.id);
+  assert.ok(d.pins?.length>=2,d.id);
+  assert.equal(new Set(d.pins.map(p=>p.id)).size,d.pins.length,d.id+' duplicate terminals');
+  if(virtualIds.has(d.id)){
+   assert.equal(d.virtualInstrument,true,d.id);
+   assert.equal(d.realPackage,null,d.id+' must not impersonate a manufacturer package');
+   assert.equal(d.manufacturerGeometryAccepted,false,d.id);
+  }else{
+   assert.notEqual(d.virtualInstrument,true,d.id+' undeclared virtual instrument');
+   assert.equal(d.realPackage?.topView,true,d.id);
+   assert.equal(d.realPackage?.orthographic,true,d.id);
+   assert.equal(d.realPackage?.transparentBackground,true,d.id);
+  }
+ }
+});
 test('Arduino workspace and catalog accept shared electronics',()=>{const W=require('../dist/workspaces.js'),C=require('../dist/catalog.js');for(const d of lib){assert.equal(W.includes(d,'arduino'),true,d.id);assert.equal(C.matches(d,{category:'arduino'}),true,d.id)}})
 test('SN74HC00 NAND truth table',()=>{const d=byId.sn74hc00n,c={};for(const [a,b,y] of [[0,0,1],[0,1,1],[1,0,1],[1,1,0]]){Digital.clear(c);const s=Digital.evaluate(c,d,net(powered(d,{'1':a?5:0,'2':b?5:0})),0);assert.equal(s.outputs['3'].logic,y)}})
 test('SN74HC74 captures D on rising edge',()=>{const d=byId.sn74hc74n,c={},v=powered(d,{'1':5,'4':5,'13':5,'10':5,'3':0,'2':5,'11':0,'12':0});Digital.evaluate(c,d,net(v),0);v['3']=5;const s=Digital.evaluate(c,d,net(v),1);assert.equal(s.outputs['5'].logic,1)})
