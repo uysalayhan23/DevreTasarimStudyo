@@ -3121,6 +3121,57 @@ for(const [suffix,issue,concept,limitation] of mq07SpecialMotorScope164to171){
   limitation,
   'Yardımcı sargı, senkron rotor veya fiziksel motor sonucu doğrulanmadığı sürece PASS verme.'
  ];
+ // Exact-topic content for catalog-backed special-motor references.
+ // Native simulation has no separate Z1/Z2 winding, synchronous rotor or
+ // verified servo commutation. These are real educational comparisons, not
+ // a disguised three-phase running circuit or a fabricated motor PASS.
+ const specialStudy={
+  '03':{
+   question:'Tek fazlı yardımcı sargılı motor yön değiştirmede hangi bilgi gereklidir?',
+   options:['Ana/yardımcı sargının göreli bağlantı yönü','Sadece besleme sigortasının rengi','Üç faz şebekede rastgele iki faz değişimi'],
+   why:'Yardımcı sargı ayrı katalog uçlarıyla sunulmuyorsa bu motorda gerçek ileri/geri işlevi simüle edilemez.',
+   roles:{'motor-1p':'U/N/PE terminali olan bir faz motor; ayrı yardımcı sargı uçları bu modelde yok.',
+    capacitor:'Yardımcı sargının kapasitörle çalışma ilkesini temsil eder, kablolu dinamik model değildir.'}},
+  '04':{
+   question:'Senkron motoru üç fazlı asenkron motordan ayıran temel hız özelliği nedir?',
+   options:['Rotorun döner manyetik alanla senkron hızda kilitlenmesi',
+    'Rotor hızının besleme frekansından bağımsız olması','Her durumda doğrudan sabit 1000 d/d dönmesi'],
+   why:'Senkron hareket için rotor alanı, kutup/frekans ve senkronizasyon koşulları gerekir; bu kartta sayısal rotor modeli yoktur.',
+   roles:{'tutorial-synchronous-motor':'Senkron motorun kavramsal sembolüdür; dinamik hız/uyartım modeli değildir.'}},
+  '05':{
+   question:'Yardımcı motorla senkron motor başlatma kartında hangi işlev modellenmemiştir?',
+   options:['Mekanik kuplaj ve senkrona bağlama geçişi','İki ayrı motor türünün adları',
+    'Senkron motorun konu başlığı'],
+   why:'İki motorun yalnız katalogda görünmesi, mekanik birlikte çalışmayı ya da senkrona geçişi kanıtlamaz.',
+   roles:{'tutorial-synchronous-motor':'Uyartımı ve eşzamanlı kilitlenmesi simüle edilmeyen senkron motor sembolü.',
+    'motor-3p':'Yardımcı tahrik motorunu temsil eder; mekanik kuplaj kurulu değildir.'}},
+  '06':{
+   question:'Senkron motorun asenkron gibi kalkışını yalnız bu ürün kartıyla neden doğrulayamayız?',
+   options:['Damper sargı ve senkrona geçiş dinamiği modellenmediği için',
+    'Yalnız motor adı İngilizce olduğu için','Motorun hiç kutbu bulunmadığı için'],
+   why:'Asenkron ilk kalkıştan senkron kilitlenmeye geçiş bağımsız motor fiziği gerektirir.',
+   roles:{'tutorial-synchronous-motor':'Damper/uyartım sargısı ve rotor dinamiği bulunmayan senkron motor referansı.'}},
+  '07':{
+   question:'Senkron motora invertörle yol vermede sadece sürücü ve motor kartlarının görünmesi neyi kanıtlar?',
+   options:['Yalnız doğru eleman türlerinin seçildiğini',
+    'Sürücü frekans rampasının ölçüldüğünü','Senkron rotorun tam yükle çalıştığını'],
+   why:'Sürücü parametreleri, motor uygunluğu ve çıkış/yük ölçümleri yoktur.',
+   roles:{'vfd':'İnvertörün kavramsal ürünüdür; motorla elektriksel bağlantı veya frekans rampası yok.',
+    'tutorial-synchronous-motor':'Uyumlu sürüşü ve rotor açısı doğrulanmamış motor referansı.'}},
+  '08':{
+   question:'Servo sürücü ve motor ürün kartlarından hangisi tek başına kesinleşmez?',
+   options:['Kalıcı mıknatıslı rotor tipi ve geri besleme/komütasyon davranışı',
+    'Kartta bir sürücü ve motor bulunduğu','İki cihazın aynı ders başlığında gösterildiği'],
+   why:'Ürün sınıfı tek başına gerçek rotor tasarımını veya dinamik servo uyumluluğunu kanıtlamaz.',
+   roles:{'hcfa-sv-x2ea040a-a':'Gerçek servo sürücü sınıfı; motor uyumu ve komütasyon kabulü henüz yok.',
+    'hcfa-sv-x2mh040a-n2ln':'Gerçek servo motor sınıfı; PM rotor ve hareket davranışı doğrulanmadı.'}}
+ }[suffix];
+ if(specialStudy){
+  lesson.quiz={question:specialStudy.question,options:specialStudy.options,
+   answer:0,why:specialStudy.why};
+  lesson.materials=lesson.materials.map(m=>specialStudy.roles[m.typeId]?
+   {...m,why:specialStudy.roles[m.typeId]}:m);
+ }
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC164_SC171',
   titleTopologyStatus:'REVIEW',
   titleTopologyIssue:onePhase?'SINGLE_PHASE_AUX_WINDING_NATIVE_PENDING':issue,
