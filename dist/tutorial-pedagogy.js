@@ -3400,6 +3400,95 @@ function mq07RealOverloadDOL(lesson){
  if(p.wires.length!==17||p.components.filter(c=>c.typeId==='overload').length!==1)
   throw Error('SC140 physical overload circuit mismatch');
 }
+/* SC135 off-delay command is distinct from an emergency STOP:
+   releasing K0 leaves a TOF output for a bounded 3s virtual observation.
+   Do not describe this as a safe emergency stop or physical brake. */
+function mq07RealOffDelayMotor(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||!p.components.some(c=>c.id==='hold'&&c.typeId==='contact-no')||
+    !p.components.some(c=>c.id==='coil'&&c.ref==='K1')||
+    !p.components.some(c=>c.id==='main'&&c.ref==='K1'))
+  throw Error('SC135 original DOL baseline changed');
+ p.components.find(c=>c.id==='coil').ref='K0';
+ p.components.find(c=>c.id==='hold').ref='K0';
+ const timer=C('offKT','coil-delay-off',1150,740,'KT','KT · üç saniye gecikmeli bırakma',
+  {delayValue:3,delayUnit:'s',tutorialPurpose:'K0 kumandası bırakıldığında üç saniye daha çıkış verir; güvenlik STOP devresi değildir.'});
+ const timedContact=C('offNO','contact-no',1300,710,'KT','KT · zamanlı NO 13–14',
+  {tutorialPurpose:'TOF çıkışı etkinken K1 motor bobinine izin verir, süre dolunca açılır.'});
+ const motorCoil=C('coilM','coil-contactor',1470,620,'K1','K1 · motor kontaktörü bobini');
+ const added=[timer,timedContact,motorCoil];
+ const wires=[
+  W('coil','A1','offKT','A1','K0/A1 → KT/A1','KT K0 komutuyla enerjilenir.','#e53935','L1'),
+  W('offKT','A2','g1','N','KT/A2 → N','Gecikmeli bırakma bobini dönüşüdür.','#1e88e5','N'),
+  W('g1','L1','offNO','13','L1 → KT NO/13','Motor güç kontaktörü için zamanlı kumanda beslemesidir.','#e53935','L1'),
+  W('offNO','14','coilM','A1','KT NO/14 → K1/A1','Gecikme süresince K1 beslemesi korunur.','#e53935','L1'),
+  W('coilM','A2','g1','N','K1/A2 → N','Motor kontaktörü bobini nötr dönüşüdür.','#1e88e5','N')
+ ];
+ p.components.push(...added);p.wires.push(...wires);
+ lesson.materials.push(...materialRows({components:added}));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==18)throw Error('SC135 TOF motor physical connection mismatch');
+}
+/* SC137 one momentary S1 drives a catalog impulse relay.
+   KP toggles its NO contact on rising edge and feeds the K1 coil.
+   No synthetic mechanical safety stop or custom global solver. */
+function mq07RealSingleButtonMotor(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||!p.components.some(c=>c.id==='start'&&c.typeId==='push-no')||
+    !p.components.some(c=>c.id==='hold'&&c.ref==='K1'))
+  throw Error('SC137 original motor seal circuit baseline changed');
+ const unused=new Set(['stop','hold']);
+ p.components=p.components.filter(c=>!unused.has(c.id));
+ p.wires=p.wires.filter(w=>!['stop','start','hold','coil'].includes(w.from?.c)&&
+   !['stop','start','hold','coil'].includes(w.to?.c));
+ if(p.wires.length!==7)throw Error('SC137 exact original power/PE routes changed');
+ const pulse=C('impulse','coil-pulse',470,810,'KP','KP · darbe hafızalı röle',
+  {tutorialPurpose:'Her ayrı basışın yükselen kenarında KP çıkışı terslenir; buton bırakılınca durum hatırlanır.'});
+ const contact=C('impulseNO','contact-no',660,790,'KP','KP NO · motor AÇ/KAPA',
+  {tutorialPurpose:'Tek S1 basışıyla KP aktifleştirilir, sonraki basış motor kontaktörünü bırakır.'});
+ const newWires=[
+  W('g1','L1','start','13','L1 → S1/13','Bir tek NO buton darbe rölesini tetikler.','#e53935','L1'),
+  W('start','14','impulse','A1','S1/14 → KP/A1','KP yükselen kenarı algılar.','#e53935','L1'),
+  W('impulse','A2','g1','N','KP/A2 → N','Darbe rölesi kontrol bobini dönüşüdür.','#1e88e5','N'),
+  W('g1','L1','impulseNO','13','L1 → KP NO/13','K1 bobini yalnız KP durumu açıkken beslenir.','#e53935','L1'),
+  W('impulseNO','14','coil','A1','KP NO/14 → K1/A1','Tek tuş hafızalı NO motor kontaktörünü sürer.','#e53935','L1'),
+  W('coil','A2','g1','N','K1/A2 → N','K1 motor bobini dönüşüdür.','#1e88e5','N')
+ ];
+ p.components.push(pulse,contact);p.wires.push(...newWires);
+ lesson.materials=materialRows(p);
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==13||p.components.filter(c=>c.typeId==='push-no').length!==1)
+  throw Error('SC137 single push pulse relay missing');
+}
+/* SC141 actual Tense FS-R phase monitoring inputs and 11→14 NO
+   gating K1. The virtual monitor responds to bad phase order/absence,
+   not to manufacturer calibration or a real three-phase installation. */
+function mq07RealPhaseMonitorMotor(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||p.components.some(c=>c.id==='phaseMonitor'))throw Error('SC141 DOL baseline changed');
+ const idx=p.wires.findIndex(w=>w.from?.c==='g1'&&w.from.p==='L1'&&
+   w.to?.c==='stop'&&w.to.p==='21');
+ if(idx<0)throw Error('SC141 unsafe bypass: K1 original supply wire missing');
+ p.wires.splice(idx,1);
+ const monitor=C('phaseMonitor','phase-sequence-relay',1020,740,'F1','F1 · Tense FS-R faz sırası rölesi',{
+  tutorialPurpose:'L1/L2/L3 ve N kaynakları geçerliyse 11–14 NO kontağı K1 STOP zincirine izin verir; ters sıra/eksik fazda açar.'});
+ const added=[
+  ...[['L1','L1','#e53935'],['L2','L2','#f97316'],['L3','L3','#f4c430'],['N','N','#1e88e5']].map(([from,to,color])=>
+   W('g1',from,'phaseMonitor',to,from+' → F1/'+to,
+    'Gerçek Tense faz izleme rölesinin '+to+' terminal beslemesidir.',color,from)),
+  W('g1','L1','phaseMonitor','11','L1 → F1 COM/11',
+   'Faz izleme uygun değilse K1 kontrol beslemesi kesilir.','#e53935','L1'),
+  W('phaseMonitor','14','stop','21','F1 NO/14 → STOP/21',
+   'Geçerli faz dizisinde motor başlatma zinciri etkinleşebilir.','#e53935','L1')
+ ];
+ p.components.push(monitor);p.wires.push(...added);
+ lesson.materials.push(...materialRows({components:[monitor]}));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==18)throw Error('SC141 phase monitor 3L/N + NO contact mismatch');
+}
 function mq07DirectMotorContent(lesson,suffix){
  if(suffix==='01'||suffix==='11'){
   const nameplate=suffix==='01';
@@ -3423,6 +3512,9 @@ function mq07DirectMotorContent(lesson,suffix){
   };
   return;
  }
+ if(suffix==='10'){mq07RealOffDelayMotor(lesson);return;}
+ if(suffix==='12'){mq07RealSingleButtonMotor(lesson);return;}
+ if(suffix==='16'){mq07RealPhaseMonitorMotor(lesson);return;}
  if(suffix==='08'){
   const p=L.byId['motor-star-delta-1']?.project;
   if(!p?.wires?.length||!p.components.some(c=>c.id==='sw'))
@@ -3536,7 +3628,7 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
   throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
- if(['01','02','03','06','07','08','09','11','13','15','17'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
+ if(['01','02','03','06','07','08','09','10','11','12','13','15','16','17'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
  const p=lesson.project;
  const actual=suffix==='01'?'motor etiketi ve altı klemens referansı':
   suffix==='11'?'VFD hız kontrolü ürün referansı':
@@ -3548,6 +3640,9 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const fixed=suffix==='02'||suffix==='03'||suffix==='07';
  const pending=suffix==='01'?'MOTOR_NAMEPLATE_REFERENCE_ONLY':
   suffix==='08'?'PACKAGE_SWITCH_NATIVE_PENDING':
+  suffix==='10'?'OFF_DELAY_MOTOR_NATIVE_PENDING':
+  suffix==='12'?'SINGLE_BUTTON_PULSE_NATIVE_PENDING':
+  suffix==='16'?'PHASE_MONITOR_NATIVE_PENDING':
   suffix==='11'?'VFD_SPEED_REFERENCE_ONLY':
   suffix==='17'?'LIMIT_AUTO_RETURN_NATIVE_PENDING':
   suffix==='02'?'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING':
@@ -3559,6 +3654,12 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
   suffix==='15'?'THERMAL_OVERLOAD_NATIVE_PENDING':issue;
  const note=suffix==='01'?
   'Gerçek altı motor klemensi gösterilir; bilinmeyen üretici etiket değerleri veya çalışan DOL işlevi uydurulmaz.':
+  suffix==='10'?
+  'TOF bobini ve KP değil KT zamanlı NO üzerinden K1 motor kontaktörü beslenir; komut bırakılınca örnek üç saniye daha çalışabilir, bu bir emniyet STOP değildir.':
+  suffix==='12'?
+  'Tek NO S1 basışının yükselen kenarı darbe rölesi KP durumunu değiştirir; KP/13–14 kontağı K1 motoru aç/kapa kumanda eder.':
+  suffix==='16'?
+  'Tense FS-R faz sırası rölesi üç faz, N ve 11/14 NO kumanda çıkışından bağlıdır; kaynak faz sırası doğru değilse K1 izni verilmez.':
   suffix==='08'?
   '0/Y/Δ paket şalterinin gerçek altı motor klemensine giden katalog bağlantıları çizilmiştir; native/Windows kabulü bekler.':
   suffix==='11'?
