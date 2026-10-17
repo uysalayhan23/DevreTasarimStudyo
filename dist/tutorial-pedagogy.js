@@ -3367,7 +3367,7 @@ function mq07RealOverloadDOL(lesson){
  const p=lesson.project;
  if(p.wires.length!==13||!p.components.some(c=>c.id==='main'&&c.typeId==='main-contact')||
     !p.components.some(c=>c.id==='motor'&&c.typeId==='motor-3p'))
-  throw Error('SC140 original DOL graph changed');
+  throw Error('SC138/SC140 original DOL graph changed');
  const exclude=[['g1','L1','stop','21'],
    ['main','2','motor','U'],['main','4','motor','V'],['main','6','motor','W']];
  for(const [a,ap,b,bp] of exclude){
@@ -3402,14 +3402,15 @@ function mq07RealOverloadDOL(lesson){
 }
 function mq07DirectMotorContent(lesson,suffix){
  const sourceId=suffix==='02'?'motor-star-delta-1':
-  suffix==='03'?'motor-forward-reverse-1':null;
+  suffix==='03'?'motor-forward-reverse-1':
+  suffix==='09'?'motor-star-delta-2':null;
  if(sourceId){
   const source=L.byId[sourceId]?.project;
   if(!source?.wires?.length)throw Error('Missing source motor graph '+sourceId);
   mq07ReplaceMotorLesson(lesson,source,'wiring');
  }else if(suffix==='07')mq07SecondStationDOL(lesson);
  else if(suffix==='06')mq07JogRunMode(lesson);
- else if(suffix==='15')mq07RealOverloadDOL(lesson);
+ else if(suffix==='13'||suffix==='15')mq07RealOverloadDOL(lesson);
 }
 function mq07StartMotorContent(lesson,suffix){
  if(suffix==='12'){
@@ -3500,7 +3501,7 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
   throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
- if(['02','03','06','07','15'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
+ if(['02','03','06','07','09','13','15'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
  const p=lesson.project;
  const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
   p.components.some(c=>c.typeId==='motor-y-d')?'altı terminalli yıldız–üçgen':
@@ -3511,6 +3512,8 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
   suffix==='03'?'PHASE_REVERSAL_NATIVE_PENDING':
   suffix==='06'?'JOG_RUN_SELECTOR_NATIVE_PENDING':
   suffix==='07'?'TWO_STATION_NATIVE_PENDING':
+  suffix==='09'?'ON_DELAY_MOTOR_CONTROL_NATIVE_PENDING':
+  suffix==='13'?'THERMAL_PROTECTION_REPRESENTATIVE_NATIVE_PENDING':
   suffix==='15'?'THERMAL_OVERLOAD_NATIVE_PENDING':issue;
  const note=suffix==='02'?
   'Gerçek altı terminalli motor, yıldız ve üçgen konumları olan paket şalteriyle katalog uçlarından bağlanmıştır.':
@@ -3520,8 +3523,10 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
   'İkinci NC STOP seri, ikinci NO START paralel eklenerek K1 mühürleme her iki kumanda merkezinden denetlenir.':
   suffix==='06'?
   'Gerçek seçici S2 RUN konumunda K1 mühürleme kolunu kapatır; JOG konumunda START bırakılınca K1 bobini bırakır.':
-  suffix==='15'?
-  'F1 termik rölenin üç güç kutbu motor yolundadır ve F1 NC 95–96 kontağı K1 bobin beslemesine seri girer; sanal trip kontrolü kaynak davranışıdır, gerçek koruma güvenliği değildir.':limitation;
+  suffix==='15'||suffix==='13'?
+  'Gerçek üç kutuplu F1 termik rölesi motor güç yolu ve 95–96 NC kontaktör izniyle bağlandı; yalnız aşırı yük termik koruma örneğidir, bütün koruma röleleri veya üretici güvenliği temsil edilmez.':
+  suffix==='09'?
+  'Gerçek zaman röleli yıldız/üçgen kumandasında on-delay ve NC kilitleme ile motor kontaktörleri zaman sıralı çalışır; diğer zaman rölesi türleri bu örnekte gösterilmez.':limitation;
  lesson.summary=concept+' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.';
  lesson.explanation=concept+' '+note+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
  lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
