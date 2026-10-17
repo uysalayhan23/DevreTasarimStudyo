@@ -2648,7 +2648,14 @@ for(const [suffix,chip,concept,limitations] of mq07ArduinoScope110to125){
  if(suffix==='05'){
    const external=lesson.project.components.find(c=>c.typeId==='adc0804lcn');
    if(!external||external.label!=='UNO içindeki ADC işlevi')throw Error('SC114 unexpected ADC label');
+   const material=(lesson.materials||[]).find(m=>m.componentId===external.id);
+   if(!material||material.typeId!==external.typeId||material.label!==external.label)
+    throw Error('SC114 external ADC material baseline changed');
+   // Both the physical component caption and its learner-facing material row
+   // must identify ADC0804 as an EXTERNAL 8-bit IC, not the UNO's internal ADC.
    external.label='ADC0804 — harici ADC (UNO dahili ADC değildir)';
+   material.label=external.label;
+   material.why='ADC0804 bağımsız harici 8-bit analog-sayısal dönüştürücü entegredir; UNO analogRead işlevi ise mikrodenetleyicinin dahili 10-bit ADC birimini kullanır. Karttaki ADC0804 için besleme, referans ve bağlantılar kurulmadığından gerçek bir dönüşüm ölçülmemiştir.';
  }
  if(suffix==='15'){
    if(lesson.project.components.length!==1||lesson.project.components[0].typeId!=='arduino-uno')throw Error('SC124 I2C board baseline changed');
