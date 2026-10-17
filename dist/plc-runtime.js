@@ -51,7 +51,26 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
    else if(eitherStart)c._plcLatch=true;
    q0=!!c._plcLatch&&bothStopsHealthy;
  }
- else if(mode==='timed-stop'){
+ else if(mode==='forward-reverse-interlocked'){
+   // SC195 only: output Q0.0 forward and Q0.1 reverse.
+   // Stop is mandatory, simultaneous commands fail closed; changing
+   // direction always drops the old contactor and requires releasing
+   // both commands before a new latch can be established.
+   const forward=!!values[0],healthyStop=!!values[1],reverse=!!values[2];
+   if(!healthyStop||forward&&reverse){
+     c._plcDirection=null;c._plcRearm=true;
+   }else if(c._plcRearm){
+     c._plcDirection=null;
+     if(!forward&&!reverse)c._plcRearm=false;
+   }else if(c._plcDirection==='F'&&reverse||
+            c._plcDirection==='R'&&forward){
+     c._plcDirection=null;c._plcRearm=true;
+   }else if(!c._plcDirection){
+     if(forward)c._plcDirection='F';
+     else if(reverse)c._plcDirection='R';
+   }
+   q0=healthyStop&&c._plcDirection==='F';
+ } else if(mode==='timed-stop'){
    const duration=Math.max(100,num(c.plcTimerMs,3000));
    if(!stop){delete c._plcTimerStart;c._plcLatch=false}
    if(start&&stop&&c._plcTimerStart===undefined){c._plcTimerStart=now;c._plcLatch=true}
@@ -65,6 +84,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  outputPins.forEach((p,i)=>{
    if(explicit&&Object.prototype.hasOwnProperty.call(explicit,p.id))out[p.id]=!!explicit[p.id];
    else if(explicit&&Object.prototype.hasOwnProperty.call(explicit,i))out[p.id]=!!explicit[i];
+   else if(mode==='forward-reverse-interlocked')
+     out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else out[p.id]=i===0?q0:false;
  });
  return {mode,outputs:out};
@@ -87,7 +108,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcDirection;delete c._plcRearm}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
