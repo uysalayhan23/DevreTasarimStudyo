@@ -74,20 +74,22 @@ function motorRole(sc,id,typeId,expectedDescription){
  assert.match(m.why,/PASS değildir/i);
  return {l,m};
 }
-test('SC156–163 actual brake catalog cards vs retained Y-Delta examples are correctly described',()=>{
+test('SC156–163 all eight brake topics use honest unwired catalog references',()=>{
  for(const {sc,id} of ids('motor-braking',156,163)){
-  const l=topologyAndMaterials(sc,id);
+  const l=topologyAndMaterials(sc,id),types=l.project.components.map(c=>c.typeId);
   assert.equal(l.pedagogyReview.brakingAcceptance,false);
-  if([156,157,160].includes(sc)){
-   assert.equal(l.kind,'quiz');
-   assert.equal(l.project.wires.length,0);
-   assert.equal(l.project.referenceOnly,true);
-   if(sc!==160)assert.ok(l.project.components.some(c=>c.typeId==='tutorial-mechanical-brake'));
-   else assert.ok(l.project.components.some(c=>c.typeId==='supply-dc-plus'));
-   assert.match(l.explanation,/gerçek fren torku/i);
-  }else{
-   const {m}=motorRole(sc,id,'motor-y-d',/yıldız–üçgen yol verme/);
-   assert.match(m.why,/fren|balata|enjeksiyon|yıldız|üçgen/i);
+  assert.equal(l.kind,'quiz');
+  assert.equal(l.project.wires.length,0);
+  assert.equal(l.project.referenceOnly,true);
+  assert.equal(l.steps.length,0);
+  if([156,157,162,163].includes(sc))assert.ok(types.includes('tutorial-mechanical-brake'));
+  if([158,159,160,161].includes(sc))assert.ok(types.includes('supply-dc-plus'));
+  assert.match(l.explanation,/frenleme süreci/i);
+  assert.equal(l.pedagogyReview.titleTopologyIssue,
+   'BRAKE_REFERENCE_NATIVE_PENDING_'+String(sc-155).padStart(2,'0'));
+  if([158,159,161,162,163].includes(sc)){
+   assert.equal(l.quiz.options.length,3);
+   assert.ok(l.quiz.why.length>20);
   }
  }
 });
