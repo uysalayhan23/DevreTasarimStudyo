@@ -23,14 +23,15 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
  const rows=[];
  for(const [id,models] of Object.entries(TOPICS)){
   const l=L.lessons.find(x=>x.id===id);if(!l)throw Error('Missing lesson '+id);
-  const placed=l.project.components.find(x=>x.typeId==='proximity');
-  const supply=l.project.components.find(x=>x.typeId==='arduino-bench-supply');
-  if(!placed||!supply)throw Error('Unexpected canonical layout '+id);
+  // A repaired passive piezo / measured bridge need not contain a 24 V PNP source.
+  const placed=l.project.components.find(x=>x.typeId==='proximity')||
+    l.project.components.find(x=>models.includes(x.typeId))||null;
+  const supply=l.project.components.find(x=>x.typeId==='arduino-bench-supply')||null;
   const candidates=models.map(typeId=>{
    const d=defs[typeId];if(!d)throw Error('Unknown catalog candidate '+typeId);
    const status= typeId==='load-cell'?'MEASURED_BRIDGE_MV_MODEL_PRESENT':
     ['sensor-ntc','sensor-pt100','sensor-ptc'].includes(typeId)?'THERMAL_RESISTANCE_MODEL_PRESENT':
-    typeId==='tutorial-piezo'?'DRAWING_ONLY_NO_PIEZO_VIBRATION_MODEL':
+    typeId==='tutorial-piezo'?'VIRTUAL_PIEZO_TRANSIENT_UNCALIBRATED':
     typeId==='arduino-mq2'?'ARDUINO_ANALOG_STUB_NO_GAS_CONCENTRATION_MODEL':
     typeId==='arduino-lm35'?'ARDUINO_TEMPERATURE_INPUT_REQUIRES_ADC_GATE':
     typeId==='buzzer'?'VIRTUAL_BUZZER_NO_VERIFIED_PRODUCT_TERMINALS':
@@ -38,7 +39,11 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
     'INSTRUMENT_OR_PHYSICAL_INTERFACE_GATE_PENDING';
    return {typeId,pins:d.pins.map(p=>p.id),kind:d.kind,modelStatus:status,physicallyApproved:false};
   });
-  rows.push({id,title:l.title,canonicalVoltage:supply.dcVoltage,placedSensor:placed.typeId,hasPhysicalTarget:!!placed.sensing?.target,candidates,physicallyApproved:false});
+  rows.push({id,title:l.title,canonicalVoltage:supply?.dcVoltage??null,
+   placedSensor:placed?.typeId||null,sourceModelAligned:!!placed&&placed.typeId!=='proximity',
+   hasPhysicalTarget:!!placed?.sensing?.target,candidates,physicallyApproved:false,
+   reviewReasons:[...(!placed?['CANONICAL_SOURCE_SENSOR_UNRESOLVED']:[]),
+    ...(!supply?['NO_24V_BENCH_SUPPLY_IN_SOURCE']:[]),'PHYSICAL_INTERFACE_UNVERIFIED']});
  }
  const loadCellFullScale=Device.output({_loadExcitation:10,loadWeight:1000,loadCapacity:1000},defs['load-cell']);
  const loadCellHalfScale=Device.output({_loadExcitation:10,loadWeight:500,loadCapacity:1000},defs['load-cell']);
