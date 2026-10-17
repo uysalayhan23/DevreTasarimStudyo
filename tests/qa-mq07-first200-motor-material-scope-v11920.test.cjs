@@ -95,12 +95,15 @@ test('SC164–171 reference vs asynchronous three-phase material never claims sp
  }
 });
 test('SC172–181 material rows agree with six wired motor topologies and remaining DOL reviews',()=>{
- const two=new Set([172,173,175,180,181]);
+ const two=new Set([172,173,174,175,177,180,181]);
  const scope={
   172:'TWO_MOTOR_SEQUENTIAL_NATIVE_PENDING',
   173:'TWO_MOTOR_PERIODIC_M2_NATIVE_PENDING',
+  174:'TWO_MOTOR_ALTERNATING_TIMER_NATIVE_PENDING',
   175:'TWO_MOTOR_DUAL_THERMAL_NATIVE_PENDING',
-  176:'LIMIT_STOP_AUTO_REVERSE_NOT_MODELED',
+  176:'LIMIT_AUTO_REVERSE_SOURCE_NATIVE_PENDING',
+  177:'TWO_MOTOR_DELAYED_REVERSE_NATIVE_PENDING',
+  178:'TIMED_FORWARD_REVERSE_NATIVE_PENDING',
   180:'TWO_MOTOR_INDEPENDENT_NATIVE_PENDING',
   181:'TWO_MOTOR_CONVEYOR_SENSOR_NATIVE_PENDING'
  };
@@ -109,7 +112,7 @@ test('SC172–181 material rows agree with six wired motor topologies and remain
   assert.equal(l.pedagogyReview.multiMotorAcceptance,false);
   assert.equal(l.project.components.filter(c=>c.typeId==='motor-3p').length,real?2:1);
   assert.equal(l.project.components.filter(c=>c.typeId==='coil-contactor').length,
-   real||sc===176?2:1);
+   sc===174?3:real||sc===176||sc===178?2:1);
   if(real){
    const second=l.project.components.find(c=>c.id==='motor2');
    assert.ok(second&&second.ref==='M2');
@@ -118,8 +121,14 @@ test('SC172–181 material rows agree with six wired motor topologies and remain
    assert.equal(material.label,second.label);
   }else if(sc===176){
    assert.equal(l.project.components.filter(c=>c.typeId==='limit-nc').length,2);
+   assert.equal(l.project.components.filter(c=>c.typeId==='coil-relay').length,2);
    assert.ok(l.materials.some(x=>x.componentId==='ls1'));
    assert.ok(l.materials.some(x=>x.componentId==='ls2'));
+  }else if(sc===178){
+   assert.equal(l.project.components.filter(c=>c.typeId==='motor-3p').length,1);
+   assert.equal(l.project.components.filter(c=>c.typeId==='coil-delay-on').length,2);
+   assert.ok(l.materials.some(m=>m.componentId==='ktForward'));
+   assert.ok(l.materials.some(m=>m.componentId==='ktNeutral'));
   }else{
    const {m}=motorRole(sc,id,'motor-3p',/tek motorlu DOL/);
    assert.match(m.why,/tek motorlu DOL/);
