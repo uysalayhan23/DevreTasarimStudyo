@@ -3077,7 +3077,7 @@ function mq07CorrectSpecialMotorLesson(lesson,suffix){
   p=board(lesson.id,lesson.title,refParts);
  }
  p.projectId=previous.projectId;p.name=previous.name;
- p.tutorialLesson=clone(previous.tutorialLesson);
+ p.tutorialLesson={...clone(previous.tutorialLesson),phase:p.wires.length?'demo':'quiz'};
  lesson.project=p;lesson.kind=p.wires.length?'wiring':'quiz';
  lesson.steps=p.wires.map(w=>({
   from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
@@ -3149,7 +3149,7 @@ function mq07RepairBrakeReference(lesson,suffix){
  if(!parts)throw Error('Unknown brake reference '+suffix);
  const p=board(lesson.id,lesson.title,parts);
  p.projectId=old.projectId;p.name=old.name;
- p.tutorialLesson=clone(old.tutorialLesson);
+ p.tutorialLesson={...clone(old.tutorialLesson),phase:'quiz'};
  lesson.project=p;lesson.kind='quiz';lesson.steps=[];lesson.materials=materialRows(p);
 }
 /* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
