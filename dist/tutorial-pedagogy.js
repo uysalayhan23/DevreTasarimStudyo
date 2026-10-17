@@ -4911,6 +4911,103 @@ for(const [suffix,isMixer] of [['24',false],['25',true]]){
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
+/* MQ-07 SC078: two real passive RC tone paths and two physical level pots.
+ * This is NOT a Baxandall active EQ and does not claim boosted bass/treble,
+ * calibrated audio response, or an operating loudspeaker power stage. */
+{
+ const id='oscillator-filter-apps-src-26',l=L.byId[id],prior=l?.project;
+ const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ if(!l||l.kind!=='quiz'||!prior||prior.referenceOnly!==true||
+    prior.wires.length!==0||l.steps.length!==0||
+    prior.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    l.materials.length!==expected.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 SC078 original tone-card source mismatch');
+ const p=base(id,l.title),g=part=>{
+  if(p.components.some(c=>c.id===part.id))throw Error('SC078 duplicate component');
+  p.components.push(part);
+ };
+ const add=(id,type,x,y,ref,label,extra,purpose)=>g(C(id,type,x,y,ref,label,
+  {...extra,tutorialPurpose:purpose}));
+ const wire=(a,ap,b,bp,reason,color='#43a047')=>
+  p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,reason,color,'SIGNAL'));
+ add('fg','arduino-signal-generator',65,320,'FG1',
+  'Sanal düşük gerilimli sinüs kaynağı',
+  {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:600,generatorAmplitude:0.3,generatorOffset:0},
+  'Pasif ton ağı giriş işareti. Kaydedilmiş transfer taraması veya akustik ses değildir.');
+ add('rl','resistor',320,135,'RL','10 kΩ bas kolu seri',{resistance:10000},
+  'Bas ağı düşük geçiren RC kolunun seri direncidir.');
+ add('cl','capacitor',570,260,'CL','100 nF bas kolu şönt',{capacitance:100e-9},
+  'Bas kolundaki yüksek frekansları 0 V referansına bağlayan şönt kapasitedir.');
+ add('rh','resistor',560,600,'RH','10 kΩ tiz kolu şönt',{resistance:10000},
+  'Tiz kolunda girişteki seri CH ardından ortak referans direncidir.');
+ add('ch','capacitor',320,475,'CH','10 nF tiz kolu seri',{capacitance:10e-9},
+  'Tiz kolundaki düşük frekansları zayıflatan seri kuplaj kapasitesidir.');
+ add('rvL','potentiometer',780,220,'RV1','10 kΩ bas seviye ayarı',{potMax:10000,potentiometer:50},
+  'Bas kolu gerilim bölücü potansiyometresi: 3 sinyal, 1 ortak dönüş, 2 sürgü.');
+ add('rvH','potentiometer',780,610,'RV2','10 kΩ tiz seviye ayarı',{potMax:10000,potentiometer:50},
+  'Tiz kolu bağımsız gerilim bölücü potansiyometresi: 3 sinyal, 1 ortak dönüş, 2 sürgü.');
+ add('rmL','resistor',1040,210,'RM1','22 kΩ bas çıkış izolasyon',{resistance:22000},
+  'Bas sürgüsünü diğer kolun çıkışından ayırarak pasif birleştirme sağlar.');
+ add('rmH','resistor',1040,600,'RM2','22 kΩ tiz çıkış izolasyon',{resistance:22000},
+  'Tiz sürgüsünü diğer kolun çıkışından ayırarak pasif birleştirme sağlar.');
+ add('v1','meter-voltmeter',1260,385,'V1','Pasif birleşik çıkış voltmetresi',{},
+  'Çıkışın kaydedilmiş ölçü ucu. AC RMS, bas/tiz kazancı, dB eğrisi ve dinamik kalibrasyon doğrulanmaz.');
+ // Low-pass branch: FG -> RL -> {CL to GND, RV1 upper}.
+ wire('fg','OUT','rl','1','Bas RC girişinin seri direnci.');
+ wire('rl','2','cl','1','Bas yüksek frekans şöntünün giriş düğümü.');
+ wire('cl','2','fg','GND','Şönt CL 0 V dönüşü.','#111827');
+ wire('rl','2','rvL','3','Bas potansiyometresi üst sinyal ucu.');
+ wire('rvL','1','fg','GND','Bas seviye potu alt dönüşü.','#111827');
+ wire('rvL','2','rmL','1','Bas sürgü çıkışı kendi 22 kΩ karıştırma direncine gider.');
+ wire('rmL','2','v1','1','Bas çıkışı pasif ortak ölçüm düğümüne bağlanır.');
+ // High-pass branch: FG -> CH -> {RH to GND, RV2 upper}.
+ wire('fg','OUT','ch','1','Tiz RC girişinin seri kondansatörü.');
+ wire('ch','2','rh','1','Tiz yüksek geçiş şönt direncinin giriş düğümü.');
+ wire('rh','2','fg','GND','Tiz RH dönüşü.','#111827');
+ wire('ch','2','rvH','3','Tiz potansiyometresi üst sinyal ucu.');
+ wire('rvH','1','fg','GND','Tiz seviye potu alt dönüşü.','#111827');
+ wire('rvH','2','rmH','1','Tiz sürgü çıkışı kendi 22 kΩ birleştirme direncine gider.');
+ wire('rmH','2','v1','1','Tiz çıkışı aynı pasif ölçüm düğümüne karışır.');
+ wire('v1','2','fg','GND','Birleşik çıkışın ortak sinyal dönüşüdür.','#111827');
+ const compIDs=new Set(p.components.map(c=>c.id)),wireIDs=new Set(p.wires.map(w=>w.id));
+ if(compIDs.size!==10||wireIDs.size!==15||p.wires.length!==15||
+    p.wires.some(w=>!compIDs.has(w.from?.c)||!compIDs.has(w.to?.c))||
+    p.components.filter(c=>c.typeId==='potentiometer').length!==2)
+  throw Error('MQ07 SC078 two-band tone graph incomplete');
+ p.projectId=prior.projectId;p.name=prior.name;
+ p.tutorialLesson={...prior.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ const boundary='Pasif frekansa bağlı iki kol yalnız birleştirilir; bu bir aktif Baxandall yükseltme/kesme eşdeğeri değildir. Simülatör kaynak taraması, gerçek AC ölçüm, hoparlör sesi, ton kazancı, watt ve fiziksel cihaz uyumu native/Windows QA olmadan kabul edilemez.';
+ l.summary='FG1 den ikiye ayrılan alçak geçiren RL/CL bas ve yüksek geçiren CH/RH tiz kolları, RV1/RV2 bağımsız seviye sürgüleri ile 22 kΩ pasif çıkış dirençlerinde birleştirilmiştir.';
+ l.explanation=l.summary+' '+boundary;
+ l.learningGoal='Bas ve tiz kolu RC elemanları, RV1/RV2 sürgüleri ve iki 22 kΩ ortak çıkış direncini gerçek kablolu şemada ayırmak.';
+ l.beginnerSteps=[
+  'FG1 OUT/GND sinyal girişinin iki RC kolunda ayrı ilerlediğini izle.',
+  'Bas: FG1 OUT → RL → CL şönt ve RV1/3; RV1/2 üzerinden RM1 i bul.',
+  'Tiz: FG1 OUT → CH seri → RH şönt ve RV2/3; RV2/2 üzerinden RM2 yi bul.',
+  'RM1/RM2 nin V1/1 ortak çıkışına gittiğini, V1/2 dönüşünü kontrol et.',
+  boundary
+ ];
+ l.quiz={question:'Pasif iki bantlı ton kartında bas ve tiz sinyal kolları nasıl ayrılır?',
+  options:['Bas kolu alçak geçiren, tiz kolu yüksek geçiren RC ağından geçer','İki kol doğrudan üç faz kontaktörüne bağlanır','Ses gücü sadece V1 gerilim etiketinden doğrulanır'],
+  answer:0,why:'RL/CL alçak geçiren, CH/RH yüksek geçiren koldur; RV1/RV2 çıkış seviyelerini ayrı etkiler. Dinamik frekans cevabı kabul edilmemiştir.'};
+ l.safety='Yalnız yazılımsal düşük gerilimli pasif RC ton birleştirme laboratuvarı; gerçek ses gücü veya AC kalibrasyonu değildir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07AudioScope:'SC078_PASSIVE_TWO_BAND_TONE',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'PASSIVE_TONE_RUNTIME_AND_ACTIVE_EQ_PENDING',
+  nativeAudioAcceptance:false,activeToneControlAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
  * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
  * No golden project or global solver mutation. */
