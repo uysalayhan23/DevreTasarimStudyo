@@ -27,14 +27,19 @@ function verifyProtectedGolden(entry,current){
   const [tc,ctl,,meter,red,black]=actual.components;
   assert.deepEqual([tc.temperature,tc.coldJunction,tc.thermocoupleType],[100,25,'K']);
   assert.deepEqual(ctl.instrumentSettings,{input:'K',supply:'UV',displayOnly:'on',set:150,filter:1});
-  assert.deepEqual([meter.typeId,meter.ref,meter.meterPosition],['unit-ut33d-plus','V1',1]);
-  assert.deepEqual([red.typeId,red.probeTarget,red.mq07ThermocoupleMeterProbe],
-   ['test-probe-red',{c:'tc',p:'+'},true]);
-  assert.deepEqual([black.typeId,black.probeTarget,black.mq07ThermocoupleMeterProbe],
-   ['test-probe-black',{c:'tc',p:'−'},true]);
-  assert.deepEqual(actual.wires.slice(4).map(w=>({from:w.from,to:w.to,role:w.role})),[
-   {from:{c:'v1',p:'V'},to:{c:'v1-red',p:'PLUG'},role:'MEASURE'},
-   {from:{c:'v1',p:'COM'},to:{c:'v1-black',p:'PLUG'},role:'MEASURE'}
+  assert.deepEqual([meter.typeId,meter.ref,meter.x,meter.y,meter.meterPosition],['unit-ut33d-plus','V1',1000,155,1]);
+  assert.deepEqual([red.typeId,red.x,red.y,red.probeTarget,red.mq07ThermocoupleMeterProbe],
+   ['test-probe-red',920,380,{c:'tc',p:'+'},true]);
+  assert.deepEqual([black.typeId,black.x,black.y,black.probeTarget,black.mq07ThermocoupleMeterProbe],
+   ['test-probe-black',1180,380,{c:'tc',p:'−'},true]);
+  assert.deepEqual(actual.wires.slice(4).map(w=>({
+   from:w.from,to:w.to,role:w.role,color:w.color,size:w.size,
+   hint:w.tutorialHint,why:w.tutorialWhy
+  })),[
+   {from:{c:'v1',p:'V'},to:{c:'v1-red',p:'PLUG'},role:'MEASURE',color:'#e53935',size:'1.5',
+    hint:'V1/VΩmA → kırmızı sanal prob',why:'DCV 200 mV gerilim ölçümü için VΩmA giriş kablosu.'},
+   {from:{c:'v1',p:'COM'},to:{c:'v1-black',p:'PLUG'},role:'MEASURE',color:'#111827',size:'1.5',
+    hint:'V1/COM → siyah sanal prob',why:'Termokupl soğuk ucu karşılaştırma COM giriş kablosu.'}
   ]);
   // The historical TC graph must remain unchanged beneath its virtual meter.
   delete tc.temperature;delete tc.coldJunction;delete tc.thermocoupleType;
