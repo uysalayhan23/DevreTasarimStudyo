@@ -60,9 +60,17 @@ function evaluateDelay(t,id,mode){
  assert.ok(lastRelease.cap<lastCharge.cap-1,'RC failed to discharge after button release');
  assert.ok(lastCharge.v>first.v+5,'LM358 output did not switch ON after charging');
  if(mode==='OFF'){
+  // 100 kΩ × 100 µF nominal bleed: a drop measured only at 16 s could
+  // conceal an immediate OFF response and give a false timing PASS.
+  assert.ok(q.release[7].cap>12,'SC49 RC released too early before 2 s');
+  assert.ok(q.release[7].v>first.v+5,'SC49 comparator turned OFF before RC delay');
   assert.ok(lastRelease.cap<12,'SC49 RC did not fall back below threshold');
   assert.ok(lastRelease.v<lastCharge.v-5,'SC49 LM358 output did not switch OFF');
  }else{
+  // 100 kΩ × 100 µF charge with a 1 MΩ bleed cannot cross 12 V
+  // immediately. Check the early 2-second observation as well as 16 s.
+  assert.ok(q.charge[7].cap<12,'SC48 timing node charged above threshold too soon');
+  assert.ok(q.charge[7].v<first.v+5,'SC48 turned ON too early, not delayed');
   assert.ok(lastRelease.cap>12,'SC48 slow bleed should retain charge in first 16 s');
   assert.ok(lastRelease.v>first.v+5,'SC48 must not immediately lose output');
  }
@@ -130,12 +138,23 @@ test('SC50 negative control: reversing the same physical D1 cannot preserve posi
   end.p=end.p==='A'?'K':'A';swapped++;
  }
  assert.ok(swapped>=3,'Did not reverse all source D1 terminal connections');
- const opposite=measure(reversed,0);
- diagnostic(t,'SC50 A/K forward-versus-reversed',{original,opposite,swapped});
+ // The deliberately reversed feedback network is not required to be a
+ // stable accepted lesson. A native blocked/non-convergent solution can be
+ // a valid negative response; requiring measure() to assert stable first
+ // would fail the QA harness before comparing the two physical circuits.
+ const negativeSolve=Simulation.solve(reversed,defs,{now:0});
  assert.equal(original.diode,true,'Positive-input original D1 should be forward biased');
- assert.ok(Math.abs(original.v-opposite.v)>1 ||
-   original.diode!==opposite.diode,
-   'Native solver does not distinguish a physically reversed 1N4148');
+ const rejected=negativeSolve.blocked===true||negativeSolve.shortCircuit===true||
+  negativeSolve.stable===false||negativeSolve.oscillating===true;
+ const badMeter=part(reversed,'v1');
+ const opposite={rejected,blocked:negativeSolve.blocked,stable:negativeSolve.stable,
+  oscillating:negativeSolve.oscillating,shortCircuit:negativeSolve.shortCircuit,
+  v:badMeter._voltageValue,diode:part(reversed,'d1')._diodeForward};
+ diagnostic(t,'SC50 A/K forward-versus-reversed',{original,opposite,swapped});
+ assert.ok(rejected||
+  (Number.isFinite(opposite.v)&&
+   (Math.abs(original.v-opposite.v)>1||original.diode!==opposite.diode)),
+  'Native solver accepted reversed 1N4148 as indistinguishable positive rectifier');
 });
 const seq=(lo,hi,step)=>{const a=[];for(let p=lo;step<0?p>=hi:p<=hi;p+=step)a.push(p);return a};
 function sweepSchmitt(withFeedback=true){
