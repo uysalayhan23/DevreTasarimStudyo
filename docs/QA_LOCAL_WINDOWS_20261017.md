@@ -75,3 +75,16 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - GitHub geçmişinde `35` test beklentisi 2026-10-13'te eklendi (`5c6f70eb`); güncel kaynak sonucu `30` (2026-10-17). Bu yalnız **envanter sayısı farkı**, beş sensörün gerçekten onarıldığına ilişkin kanıt değildir. Herhangi bir kanonik devre veya sensör ölçümü bu adımda değiştirilmedi.
 - `86a7042` salt-okunur QA raporu `unconfiguredSensorLessonIds` adlı sıralı kimlik listesini de verir. `b266ba4` testinde güncel **30 açık** ID'nin benzersiz, sıralı ve gerçekten kablolu/uyaranı eksik `proximity` ya da `autonics-pr12-npn` kaynakları olduğu denetlenir; **7 reaktif kapı**, `overallAcceptance=REVIEW`, sekiz fiziksel onay `false` olarak kontrol edilmeye devam edilir. Değişen envanterin kabul kriterini gizlemesi engellenir.
 - `86a7042`/`b266ba4` için yeni gerçek native koşum **NOT_RUN**; tam regresyonun son ölçülen değeri hâlâ eski HEAD'deki **1680 PASS / 112 FAIL**. Golden/üretici/Windows browser QA **OPEN**.
+
+## Windows 104b863 sensör envanteri hedefli tekrar — 8/8 PASS
+
+- Kullanıcının tek CMD çağrısıyla doğruladığı commit `git rev-parse --short HEAD` = `104b863`; `node --test tests/qa-mq12-interface-model-gaps-v11920.test.cjs` sonucu **8/8 PASS, 0 FAIL, 0 skipped**, `2670.2193 ms` (Windows / Node.js v22.14.0).
+- Güncel 30 yapılandırılmamış sensör dersinin kimlikleri tek tek izlenebilir; 7 reaktif QA kapısı açık kalır. Ultrasonik 35 V olumsuz fikstürü gerilim sınırı dışında bulunur ve kanonik ders değiştirilmez. Üretici/fiziksel kabul **REVIEW / NOT_ACCEPTED**.
+- Bu hedefli koşum yalnız `104b863` sürümünün ilgili 8 testini doğrular; eski `98771a1` tam regresyonun **1680 PASS / 112 FAIL** sonucunu güncel sürümde yeniden ölçmüş saymayız.
+- MQ-12/MQ-13 kanıtı: kullanıcı konsolundaki native Node TAP. MQ-00 kararı: sensör envanter QA'nın bu dar kapsamı **PASS**, 30 dersin fiziksel/reaktif kabulü ve bütün 1792 testlik kapı **OPEN**.
+
+## Golden fixture kaynak incelemesi — termokupl / PT100, kabul bekliyor
+
+- `tests/fixtures/tutorial_native_solver_golden_v11920.json` içindeki 90 golden proje hâlâ salt okunur/korumalı tutuluyor. `sensor-analog-apps-src-03` tarihsel termokupl grafiği 3 bileşen/4 kablo; `dist/tutorial-pedagogy.js` bunun üzerine yeni sanal UT33D+, iki prob, iki ölçüm bağlantısı, soğuk referans ve K tipi ayarları eklemiş. Güncel grafikte eski 3 ana bileşen ve 4 ana bağlantının kimlikleri sabit değil: `W()` sıra sayacı `pgw...` kimliklerini yeniden üretir; orijinal TAP örneği `pgw43436–43439` yerine `pgw43476–43479` göstermiştir.
+- PT100 `sensor-analog-apps-src-04` dersinde üretici/uygulama öğretimine özgü üç terminal yeniden eşlemesi (A→10, B1→8, B2→9) açık kaynakta belgelenmiş; golden anlık görüntüsü eski A→8, B1→9, B2→10 değerlerini saklıyor. **Bu farkı sessizce kabul etmek ya da referansı üzerine yazmak yasak.** Kaynak değişiminin doğrulaması ve diğer 88 kayıt için kapsamlı golden regresyon hâlâ gerekir.
+- Salt kablo sayaç kimlikleriyle sabit terminal referansları birbirinden ayrılmalı; sensör sanal kabul sınırı fiziksel ürün kalibrasyonunu kapsamaz. Golden ve gerçek solver 90 proje testi hâlâ **OPEN / NOT_ACCEPTED**.
