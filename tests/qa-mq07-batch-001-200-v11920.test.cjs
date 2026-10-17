@@ -220,3 +220,33 @@ test('remaining first-200 source reviews stay traceable, never silently accepted
  assert.equal(semanticAudit({L}).fullPedagogicalAcceptance,false);
  assert.equal(semanticAudit({L}).fullWindowsVisualAcceptance,false);
 });
+
+
+test('SC083–SC125 source quiz questions follow 43 distinct device topics, without native PASS',()=>{
+ const groups=[['digital-logic-apps',15],['digital-sequential-apps',12],['microcontroller-apps',16]];
+ const questions=new Set();
+ for(const [topic,count] of groups)for(let i=1;i<=count;i++){
+  const id=topic+'-src-'+String(i).padStart(2,'0'),lesson=L.byId[id];
+  assert.ok(lesson,'Missing topic-specific quiz '+id);
+  assert.equal(lesson.kind,'quiz',id+' must remain reference-only');
+  assert.equal(lesson.project?.wires?.length,0,id+' cannot invent terminal wiring');
+  assert.equal(lesson.project?.referenceOnly,true,id+' cannot silently become working circuit');
+  const q=lesson.quiz;
+  assert.ok(q&&typeof q.question==='string'&&q.question.length>26,id+' generic quiz question');
+  assert.equal(q.answer,0,id+' source evidence answer index');
+  assert.ok(Array.isArray(q.options)&&q.options.length===3,id+' choice count');
+  assert.ok(q.options.every(x=>typeof x==='string'&&x.length>2),id+' empty choice');
+  assert.ok(typeof q.why==='string'&&q.why.length>45,id+' unexplained answer');
+  assert.ok(!questions.has(q.question),id+' duplicate quiz question');
+  assert.doesNotMatch(q.question,/Bu derste ekrandaki malzemeler neden özellikle seçildi|Bu derste incelenen eleman türü hangisidir/i,id+' generic topic check');
+  questions.add(q.question);
+  assert.equal(lesson.pedagogyReview?.physicalAcceptance,false,id+' false physical PASS');
+  assert.equal(lesson.pedagogyReview?.windowsVisualAcceptance,false,id+' false Windows PASS');
+  assert.equal(lesson.pedagogyReview?.independentPedagogicalAcceptance,false,id+' false independent PASS');
+ }
+ assert.equal(questions.size,43);
+ assert.match(L.byId['digital-logic-apps-src-04'].quiz.question,/BUFFER|OE/);
+ assert.match(L.byId['digital-sequential-apps-src-11'].quiz.question,/ADC0804/);
+ assert.match(L.byId['microcontroller-apps-src-05'].quiz.question,/ADC0804/);
+ assert.match(L.byId['microcontroller-apps-src-15'].quiz.question,/I²C/);
+});
