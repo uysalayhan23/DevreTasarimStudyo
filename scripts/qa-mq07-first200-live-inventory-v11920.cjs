@@ -8,7 +8,7 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
  const p=lesson.project||{},parts=Array.isArray(p.components)?p.components:[],
   wires=Array.isArray(p.wires)?p.wires:[],
   materials=Array.isArray(lesson.materials)?lesson.materials:[],
-  junctions=new Set((p.junctions||[]).map(x=>String(x.id))),
+  junctions=new Set((p.junctions||[]).map(x=>x.id)),
   components=new Map(parts.map(x=>[x.id,x])),
   issues=[];
  if(!lesson.project||!Array.isArray(p.components)||!Array.isArray(p.wires))
@@ -58,10 +58,10 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
  for(const [i,w] of wires.entries())for(const side of ['from','to']){
   const end=w[side];
   if(end?.j!==undefined){
-   if(!junctions.has(String(end.j)))issues.push({code:'UNKNOWN_JUNCTION',wire:i,side});
+   if(!junctions.has(end.j))issues.push({code:'UNKNOWN_JUNCTION',wire:i,side});
   }else{
    const component=components.get(end?.c),def=definitions[component?.typeId];
-   if(!component||!def?.pins?.some(pin=>String(pin.id)===String(end?.p)))
+   if(!component||!def?.pins?.some(pin=>pin.id===end?.p))
     issues.push({code:'INVALID_TERMINAL',wire:i,side,componentId:end?.c,pin:end?.p});
   }
  }
