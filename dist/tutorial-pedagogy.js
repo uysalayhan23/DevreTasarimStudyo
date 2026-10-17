@@ -3437,17 +3437,31 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
   throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
+ if(['02','03','07'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
  const p=lesson.project;
- const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':p.components.some(c=>c.id==='plc')?'PLC kontaktör güç':'tek kontaktörlü DOL';
+ const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
+  p.components.some(c=>c.typeId==='motor-y-d')?'altı terminalli yıldız–üçgen':
+  p.components.some(c=>c.id==='start2')?'iki merkezli seri STOP/paralel START':
+  p.components.some(c=>c.id==='plc')?'PLC kontaktör güç':'tek kontaktörlü DOL';
+ const fixed=suffix==='02'||suffix==='03'||suffix==='07';
+ const pending=suffix==='02'?'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING':
+  suffix==='03'?'PHASE_REVERSAL_NATIVE_PENDING':
+  suffix==='07'?'TWO_STATION_NATIVE_PENDING':issue;
+ const note=suffix==='02'?
+  'Gerçek altı terminalli motor, yıldız ve üçgen konumları olan paket şalteriyle katalog uçlarından bağlanmıştır.':
+  suffix==='03'?
+  'Gerçek iki kontaktörlü karşılıklı kilitli ileri–geri güç yolunda iki faz yer değiştirir.':
+  suffix==='07'?
+  'İkinci NC STOP seri, ikinci NO START paralel eklenerek K1 mühürleme her iki kumanda merkezinden denetlenir.':limitation;
  lesson.summary=concept+' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.';
- lesson.explanation=concept+' '+limitation+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
+ lesson.explanation=concept+' '+note+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
  lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
  lesson.beginnerSteps=['Önce ekrandaki gerçek motor/kontaktör/buton ürünlerini belirle.',
   'Sanal bağlantıların hangi işlevi desteklediğini kontrol et: '+actual+'.',
   limitation,
   'Sadece gerçek Node çıktısıyla çalışmayı yorumla; eksik başlık işlevine veya fiziksel kuruluma PASS verme.'];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC126_SC143',
-  titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
+  titleTopologyStatus:pending?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:pending,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
