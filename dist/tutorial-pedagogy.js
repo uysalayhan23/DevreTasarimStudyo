@@ -3401,6 +3401,41 @@ function mq07RealOverloadDOL(lesson){
   throw Error('SC140 physical overload circuit mismatch');
 }
 function mq07DirectMotorContent(lesson,suffix){
+ if(suffix==='01'||suffix==='11'){
+  const nameplate=suffix==='01';
+  const rows=nameplate?[
+   ['motor-y-d','Altı gerçek U1/V1/W1/U2/V2/W2 klemens ucu'],
+   ['motor-3p','Üç fazlı asenkron motor gövde örneği']
+  ]:[
+   ['sinamics-v20-1p','SINAMICS V20 hız kontrol sürücüsü (referans)'],
+   ['motor-3p','Üç fazlı motor (referans)'],
+   ['potentiometer','Analog hız referansı (referans)']
+  ];
+  mq07ReplaceMotorLesson(lesson,topicBoard(lesson.id,lesson.title,rows),'quiz');
+  lesson.quiz=nameplate?{
+   question:'Bir motorun gerçek etiketinden neler birlikte doğrulanmalıdır?',
+   options:['Anma gücü, gerilimi, akımı, frekansı ve Y/Δ koşulları','Yalnız buton rengi','Sadece şalterin geometrisi'],
+   answer:0,why:'Gerçek sayısal etiket üreticinin motorundan okunur; bu kartta bilinmeyen güç/akım değerleri uydurulmaz.'
+  }:{
+   question:'Üç fazlı motorun hızını gerçek anlamda ayarlamak için hangisi gerekir?',
+   options:['Uyumlu sürücü, çıkış frekansı ve motor parametreleri','Yalnız kontaktör rengi','Sadece faz sırası değişimi'],
+   answer:0,why:'Faz sırası yönü değiştirir; ölçülen devir veya gerçek VFD frekansı bu kartta simüle edilmez.'
+  };
+  return;
+ }
+ if(suffix==='08'){
+  const p=L.byId['motor-star-delta-1']?.project;
+  if(!p?.wires?.length||!p.components.some(c=>c.id==='sw'))
+   throw Error('SC133 real 0/Y/Delta package switch reference missing');
+  mq07ReplaceMotorLesson(lesson,p,'wiring');return;
+ }
+ if(suffix==='17'){
+  const p=L.byId['motor-sequence-src-05']?.project;
+  if(!p?.wires?.length||!p.components.some(c=>c.id==='autoR'&&c.typeId==='contact-nc')||
+    !p.components.some(c=>c.id==='autoF'&&c.typeId==='contact-nc'))
+   throw Error('SC142 limit return source from SC176 missing');
+  mq07ReplaceMotorLesson(lesson,p,'wiring');return;
+ }
  const sourceId=suffix==='02'?'motor-star-delta-1':
   suffix==='03'?'motor-forward-reverse-1':
   suffix==='09'?'motor-star-delta-2':null;
@@ -3501,21 +3536,36 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
   throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
- if(['02','03','06','07','09','13','15'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
+ if(['01','02','03','06','07','08','09','11','13','15','17'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
  const p=lesson.project;
- const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
+ const actual=suffix==='01'?'motor etiketi ve altı klemens referansı':
+  suffix==='11'?'VFD hız kontrolü ürün referansı':
+  suffix==='17'?'limitli otomatik geri dönüş':
+  p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
   p.components.some(c=>c.typeId==='motor-y-d')?'altı terminalli yıldız–üçgen':
   p.components.some(c=>c.id==='start2')?'iki merkezli seri STOP/paralel START':
   p.components.some(c=>c.id==='plc')?'PLC kontaktör güç':'tek kontaktörlü DOL';
  const fixed=suffix==='02'||suffix==='03'||suffix==='07';
- const pending=suffix==='02'?'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING':
+ const pending=suffix==='01'?'MOTOR_NAMEPLATE_REFERENCE_ONLY':
+  suffix==='08'?'PACKAGE_SWITCH_NATIVE_PENDING':
+  suffix==='11'?'VFD_SPEED_REFERENCE_ONLY':
+  suffix==='17'?'LIMIT_AUTO_RETURN_NATIVE_PENDING':
+  suffix==='02'?'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING':
   suffix==='03'?'PHASE_REVERSAL_NATIVE_PENDING':
   suffix==='06'?'JOG_RUN_SELECTOR_NATIVE_PENDING':
   suffix==='07'?'TWO_STATION_NATIVE_PENDING':
   suffix==='09'?'ON_DELAY_MOTOR_CONTROL_NATIVE_PENDING':
   suffix==='13'?'THERMAL_PROTECTION_REPRESENTATIVE_NATIVE_PENDING':
   suffix==='15'?'THERMAL_OVERLOAD_NATIVE_PENDING':issue;
- const note=suffix==='02'?
+ const note=suffix==='01'?
+  'Gerçek altı motor klemensi gösterilir; bilinmeyen üretici etiket değerleri veya çalışan DOL işlevi uydurulmaz.':
+  suffix==='08'?
+  '0/Y/Δ paket şalterinin gerçek altı motor klemensine giden katalog bağlantıları çizilmiştir; native/Windows kabulü bekler.':
+  suffix==='11'?
+  'Gerçek VFD, motor ve hız potansiyometresi yalnız referanstır; kablolu sürücü ve ölçülen RPM simülasyonu değildir.':
+  suffix==='17'?
+  'SC176 üzerindeki iki limit NC, KR1/KR2 algı rölesi ve otomatik tersleme kontakları gerçek kaynak grafiğinde gösterilir; mekanik konum otomatik hareket etmez.':
+  suffix==='02'?
   'Gerçek altı terminalli motor, yıldız ve üçgen konumları olan paket şalteriyle katalog uçlarından bağlanmıştır.':
   suffix==='03'?
   'Gerçek iki kontaktörlü karşılıklı kilitli ileri–geri güç yolunda iki faz yer değiştirir.':
