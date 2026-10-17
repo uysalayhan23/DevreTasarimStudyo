@@ -148,6 +148,49 @@ test('existing SC36/SC38 virtual measurement probes refer only to real catalog p
  }
 });
 
+test('first-200 graph inventory flags duplicate source wire and junction IDs as ambiguous probe targets',()=>{
+ const original={
+  id:'fixture-duplicate-contact-ids',title:'Synthetic ID collision',topicId:'measurement-workshop',
+  kind:'wiring',pedagogyReview:{physicalAcceptance:false},
+  project:{
+   components:[{id:'pr',typeId:'probe',label:'PR'},{id:'r1',typeId:'resistor',label:'R1'}],
+   junctions:[{id:'j1'},{id:'j1'}],
+   wires:[
+    {id:'w1',from:{c:'r1',p:'1'},to:{j:'j1'}},
+    {id:'w1',from:{c:'r1',p:'2'},to:{j:'j1'}}
+   ]
+  },
+  materials:[
+   {componentId:'pr',typeId:'probe',label:'PR',why:'Sanal kırmızı ölçüm probunun temas noktasıdır.'},
+   {componentId:'r1',typeId:'resistor',label:'R1',why:'İki fiziksel terminale sahip direnç örneğidir.'}
+  ]
+ };
+ const defs={
+  probe:{probeColor:'red',pins:[{id:'PLUG'},{id:'TIP'}]},
+  resistor:{pins:[{id:'1'},{id:'2'}]}
+ };
+ const issues=p=>Inventory.inspectLesson(p,defs).issues;
+ const wire=structuredClone(original);
+ wire.project.components[0].probeTarget={w:'w1'};
+ let findings=issues(wire);
+ assert.ok(findings.some(x=>x.code==='DUPLICATE_WIRE_ID'&&x.wireId==='w1'));
+ assert.ok(findings.some(x=>x.code==='AMBIGUOUS_PROBE_WIRE_TARGET'&&x.componentId==='pr'));
+ assert.ok(!findings.some(x=>x.code==='INVALID_PROBE_TARGET'),
+  'Both colliding wires have physically valid endpoints; ambiguity is distinct');
+ const junction=structuredClone(original);
+ junction.project.components[0].probeTarget={j:'j1'};
+ findings=issues(junction);
+ assert.ok(findings.some(x=>x.code==='DUPLICATE_JUNCTION_ID'&&x.junctionId==='j1'));
+ assert.ok(findings.some(x=>x.code==='AMBIGUOUS_PROBE_JUNCTION_TARGET'&&x.componentId==='pr'));
+ const unique=structuredClone(original);
+ unique.project.junctions[1].id='j2';
+ unique.project.wires[1].id='w2';
+ unique.project.wires[1].to.j='j2';
+ unique.project.components[0].probeTarget={w:'w2'};
+ assert.deepEqual(issues(unique),[],
+  'Distinct junction/wire IDs and catalog-valid endpoints must not be rejected');
+});
+
 test('inventory catches missing material, stale type, unknown terminal and invented acceptance',()=>{
  const lesson={id:'fixture-review',title:'Synthetic read-only fixture',topicId:'fixture',
   kind:'quiz',pedagogyReview:{physicalAcceptance:false},project:{
