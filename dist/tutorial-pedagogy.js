@@ -4767,6 +4767,146 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC066 / SC068 / SC069: physical NE555P DIP-8 TERMINAL GRAPHS.
+ * Arduino catalog has GND/TRIG/OUT/RESET/CTRL/THRES/DISCH/VCC pins.
+ * The existing Arduino runtime's time models are board-hosted; standalone
+ * source pin wiring is NOT a verified dynamic waveform or native PASS.
+ * SC067 variable PWM cannot be claimed until pot-dependent duty is modeled. */
+function mq07Wire555Source(lesson,mode){
+ const p0=lesson?.project,expected=['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'];
+ if(!p0||lesson.kind!=='quiz'||p0.referenceOnly!==true||p0.wires.length||
+    lesson.steps.length||lesson.materials.length!==3||
+    p0.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    lesson.designStandard==='rich-reference-v1')
+  throw Error('MQ07 source NE555 concept board changed: '+lesson?.id);
+ const astable=mode==='astable',oneShot=mode==='monostable',latch=mode==='logic';
+ const p=base(lesson.id,lesson.title,'arduino'), add=(id,type,x,y,ref,label,extra,why)=>
+  p.components.push(C(id,type,x,y,ref,label,{...extra,tutorialPurpose:why}));
+ const wire=(a,ap,b,bp,why,color='#43a047')=>
+  p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ add('g1','arduino-bench-supply',80,120,'G1','Sanal 5 VDC besleme',
+  {dcVoltage:5,currentLimit:1},'Yalnızca düşük gerilimli yazılım kaynağı; fiziksel NE555 güvenlik onayı değildir.');
+ add('u1','arduino-ne555',690,285,'U1','NE555P DIP-8 · gerçek adlandırılmış 1–8 uçlar',
+  {ne555Mode:mode,ne555RaK:1,ne555RbK:10,ne555Cuf:100},
+  'GND=1 TRIG=2 OUT=3 RESET=4 CTRL=5 THRES=6 DISCH=7 VCC=8. Runtime modeli Arduino board ortamına bağımlıdır.');
+ add('rl','resistor',940,305,'RL','330 Ω LED akım sınırlama',
+  {resistance:330},'OUT–LED arası seri gösterge direncidir; ses veya motor sürücü gücü değildir.');
+ add('h1','arduino-led',1110,310,'H1','Düşük gerilimli LED gösterge',{},
+  'NE555/OUT pin 3 durumunun görsel göstergesi için LED; native zaman dalgası henüz ölçülmedi.');
+ add('cc','capacitor',880,585,'CC','10 nF CTRL parazit filtresi',
+  {capacitance:10e-9},'NE555 CTRL pin 5 ile 0 V arasında referans kondansatörüdür.');
+ wire('g1','P','u1','VCC','NE555 fiziksel pin 8 +5 V sanal besleme.','#8b5a2b');
+ wire('g1','M','u1','GND','NE555 fiziksel pin 1 dönüş referansı.','#111827');
+ wire('u1','OUT','rl','1','NE555 fiziksel pin 3 çıkıştan RL seri direncine.');
+ wire('rl','2','h1','A','Dirençli gösterge akımı LED anotuna ulaşır.');
+ wire('h1','K','g1','M','LED katodu ortak 0 V hattına döner.','#111827');
+ wire('u1','CTRL','cc','1','NE555 pin 5 kontrol voltajı filtre kondansatörüne.');
+ wire('cc','2','g1','M','CTRL kondansatörünün GND dönüşü.','#111827');
+ if(astable){
+  add('ra','resistor',260,180,'RA','1 kΩ astable şarj direnci',
+   {resistance:1000},'RA kaynaktan NE555 DISCH pin 7 düğümüne bağlıdır.');
+  add('rb','resistor',460,210,'RB','10 kΩ astable şarj/deşarj direnci',
+   {resistance:10000},'RB, pin 7 ile ortak TRIG/THRES kapasitör düğümü arasındadır.');
+  add('c1','arduino-capacitor-100u',500,500,'C1','100 µF polarize astable zamanlama',
+   {capacitance:100e-6},'C1+ TRIG/THRES düğümüne, C1- GND ye; fiziksel polarite adları korunur.');
+  wire('g1','P','u1','RESET','NE555 pin 4 yüksek tutulur.','#8b5a2b');
+  wire('g1','P','ra','1','RA 1 kΩ astable üst besleme.','#8b5a2b');
+  wire('ra','2','u1','DISCH','RA→pin7 deşarj düğümü.');
+  wire('u1','DISCH','rb','1','Pin7→RB 10 kΩ ikinci zamanlama kolu.');
+  wire('rb','2','u1','THRES','RB→pin6 eşik girişinin RC düğümü.');
+  wire('rb','2','u1','TRIG','Pin2 ve pin6 ortak zamanlama düğümünü izler.');
+  wire('rb','2','c1','+','Zamanlama kondansatörünün pozitif ucu ortak RC düğümündedir.');
+  wire('c1','-','g1','M','Polarize C1 negatif uç sanal 0 V dönüşü.','#111827');
+ }else if(oneShot){
+  add('rt','resistor',300,200,'RT','10 kΩ monostable R',
+   {resistance:10000},'Tek kararlı zaman aralığını C1 ile yaklaşık 1,1RC teorik formülde belirler.');
+  add('c1','arduino-capacitor-100u',560,530,'C1','100 µF polarize monostable C',
+   {capacitance:100e-6},'C1+ pin6/7 düğümünde, C1- GND hattındadır.');
+  add('rp','resistor',350,590,'RP','10 kΩ TRIG pull-up',
+   {resistance:10000},'TRIG pin 2 normalde +5 V referansına çekilir.');
+  add('s1','push-no',350,750,'S1','Sanal tetik butonu · NO 13/14',{},
+   'S1 kapandığında TRIG pin 2 sanal GND ye çekilmeyi amaçlar; tetik runtime sonucu doğrulanmadı.');
+  wire('g1','P','u1','RESET','NE555 pin 4 reset izni yüksek tutulur.','#8b5a2b');
+  wire('g1','P','rt','1','Monostable R zamanlama beslemesi.','#8b5a2b');
+  wire('rt','2','u1','THRES','Zamanlama ara düğümü pin 6 eşik girişindedir.');
+  wire('rt','2','u1','DISCH','Aynı RC düğümüne deşarj pin 7 bağlıdır.');
+  wire('rt','2','c1','+','C1 pozitif elektrodu RC düğümündedir.');
+  wire('c1','-','g1','M','C1 negatif elektrodu GND ye döner.','#111827');
+  wire('g1','P','rp','1','TRIG pull-up üst bağlantısı.','#8b5a2b');
+  wire('rp','2','u1','TRIG','TRIG pin 2 normalde direnç üzerinden +5 V seviyesinde tutulur.');
+  wire('rp','2','s1','13','Butonun giriş ucu pull-up ve TRIG düğümündedir.');
+  wire('s1','14','g1','M','Butona basıldığında sanal 0 V tetik yolu amaçlanır.','#111827');
+ }else if(latch){
+  add('rset','resistor',310,190,'RS','10 kΩ TRIG pull-up',
+   {resistance:10000},'SET komutu yokken pin 2 yi +5 V da tutar.');
+  add('sset','push-no',330,370,'S1','SET butonu · NO 13/14',{},
+   'SET tuşu normalde açık; pin 2 negatif tetiklemeye yöneliktir.');
+  add('rrst','resistor',320,630,'RR','10 kΩ RESET pull-up',
+   {resistance:10000},'RESET komutu yokken pin 4 yüksek tutulur.');
+  add('srst','push-no',365,830,'S2','RESET butonu · NO 13/14',{},
+   'S2, NE555 pin 4 seviyesini düşürmek için ayrı tetik butonudur.');
+  wire('u1','THRES','g1','M','Pin 6 düşük referansla tutulur; threshold çıkışı resetlemez.','#111827');
+  wire('g1','P','rset','1','SET pull-up sanal +5 V.','#8b5a2b');
+  wire('rset','2','u1','TRIG','NE555 pin 2 SET düğümüdür.');
+  wire('rset','2','sset','13','SET butonu direnç çıkış düğümüne bağlanır.');
+  wire('sset','14','g1','M','SET komutu ortak sanal GND ye döner.','#111827');
+  wire('g1','P','rrst','1','RESET pull-up sanal +5 V.','#8b5a2b');
+  wire('rrst','2','u1','RESET','NE555 pin 4 ayrı reset düğümüdür.');
+  wire('rrst','2','srst','13','RESET butonu direnç çıkış düğümüne bağlanır.');
+  wire('srst','14','g1','M','RESET komutu ortak GND ye döner.','#111827');
+ }else throw Error('Unknown NE555 tutorial source mode '+mode);
+ const expectedParts=astable?8:oneShot?9:9,expectedWires=astable?15:oneShot?17:16;
+ const ids=new Set(p.components.map(c=>c.id)),wids=new Set(p.wires.map(w=>w.id));
+ if(p.components.length!==expectedParts||p.wires.length!==expectedWires||
+    ids.size!==p.components.length||wids.size!==p.wires.length||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c)))
+   throw Error('NE555 topology endpoints/inventory mismatch '+lesson.id);
+ p.projectId=p0.projectId;p.name=p0.name;p.tutorialLesson={...p0.tutorialLesson,phase:'demo',step:0};
+ lesson.project=p;lesson.workspaceMode=p.workspaceMode;lesson.kind='wiring';
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ const summary=astable?'NE555 pin 7–6/2 ve RA/RB/C1 ile sanal astable osilatör bağlantıları kuruldu.':
+  oneShot?'NE555 TRIG pin 2, S1 tetik butonu ve RT/C1 tek kararlı zaman ağı kablolandı.':
+  'NE555 SET pin 2 ile RESET pin 4 iki ayrı buton ve pull-up dirençleriyle çift kararlı kaynak grafiğinde ayrıldı.';
+ const limit='Bu, gerçek katalog uçlarına sahip kaynak bağlantı şemasıdır; mevcut 555 zaman modeli Arduino board-hosted olduğundan bu bağımsız derste LED yanıp sönmesi, SET/RESET saklama veya gerçek süre/Hz/duty native olarak doğrulanmadı. Fiziksel/Windows kabulü de yapılmadı.';
+ lesson.summary=summary+' Runtime ve görsel QA bekliyor.';
+ lesson.explanation=summary+' G1 sanal 5 VDC besleme, NE555P DIP-8 ve sınırlı akımlı LED çıkışı modelidir. '+limit;
+ lesson.learningGoal='NE555P gerçek GND/TRIG/OUT/RESET/CTRL/THRES/DISCH/VCC uçlarını RC/komut bağlantılarında ayırt etmek; kanıtlanmamış zaman davranışına PASS vermemek.';
+ lesson.beginnerSteps=[
+  'G1 sanal 5 V besleme, NE555 U1 fiziksel DIP-8 uçlarını tanı.',
+  astable?'RA→pin7, RB→pin6/2 ve C1+/− zamanlama halkasını izle.':
+   oneShot?'S1 NO 13/14, TRIG pin2, RT→pin6/7 ve C1+/− uçlarını izle.':
+   'S1 SET→pin2 ve S2 RESET→pin4 bağımsız düğümlerini, THRES→GND ucunu izle.',
+  'U1/OUT→RL 330 Ω→H1/A ve H1/K→0 V yolunu, CTRL 10 nF dönüşünü ayırt et.',
+  limit
+ ];
+ lesson.quiz={
+  question:astable?'555 astable RC ağı içinde TRIG ve THRES uçları hangi düğümü birlikte izler?':
+   oneShot?'555 monostable devresinde S1 hangi fiziksel girişi tetiklemek içindir?':
+   '555 bistable bağlantıda SET ve RESET için hangi pinler ayrı tutulur?',
+  options:astable?['RB ve C1+ ortak zamanlama düğümü','Yalnız VCC pin 8','Sadece çıkış LED katodu']:
+   oneShot?['TRIG pin 2','Yalnız CTRL pin 5','Yalnız OUT pin 3']:
+   ['SET: TRIG pin 2, RESET: RESET pin 4','SET: VCC pin 8, RESET: OUT pin 3','Her iki buton doğrudan LED anotuna'],
+  answer:0,why:summary+' '+limit};
+ lesson.safety='Sadece yazılımsal 5 V sanal şemadır; fiziksel çalışma veya şebeke bağlantısı talimatı değildir.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07TimerScope:'SC066_SC068_SC069_NE555_DIP8',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'NE555_STANDALONE_RUNTIME_PENDING',
+  ne555StandaloneNativeAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+for(const [suffix,mode] of [['14','astable'],['16','monostable'],['17','logic']]){
+ const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||!L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 NE555 original first-200 REVIEW changed '+id);
+ mq07Wire555Source(lesson,mode);
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(e=>e.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC062: real DC-blocking and diode-clamped RC source example.
  * Physical 1N4148 A/K + capacitor + return resistor and low-voltage
  * virtual signal generator. Dynamic clamp waveform acceptance stays open. */
