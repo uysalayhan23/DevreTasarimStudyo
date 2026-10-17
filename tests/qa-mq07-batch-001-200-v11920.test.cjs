@@ -60,6 +60,28 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
  assert.ok(!check.blocked&&!check.shortCircuit&&!check.oscillating);
 });
 
+test('SC114 external ADC0804 physical label and learner material must agree',()=>{
+ const lesson=L.byId['microcontroller-apps-src-05'];
+ assert.ok(lesson,'Missing SC114 source lesson');
+ assert.equal(lesson.kind,'quiz');
+ assert.equal(lesson.project.wires.length,0,'SC114 is an unwired reference, not a measured ADC');
+ const external=lesson.project.components.find(c=>c.typeId==='adc0804lcn');
+ assert.ok(external,'SC114 external ADC0804 missing');
+ assert.match(external.label,/ADC0804/);
+ assert.match(external.label,/harici ADC/);
+ assert.doesNotMatch(external.label,/^UNO içindeki ADC işlevi$/);
+ const material=lesson.materials.find(m=>m.componentId===external.id);
+ assert.ok(material,'SC114 external ADC learner material missing');
+ assert.equal(material.typeId,external.typeId);
+ assert.equal(material.label,external.label,'SC114 physical and material labels diverged');
+ assert.match(material.why,/harici 8-bit/);
+ assert.match(material.why,/dahili 10-bit/);
+ assert.match(material.why,/kurulmadığından/);
+ assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
+ assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
+ assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+});
+
 test('SC124 I2C reference material list includes UNO and actual OLED without invented wiring',()=>{
  const lesson=L.byId['microcontroller-apps-src-15'];
  assert.ok(lesson,'Missing SC124 curriculum record');
