@@ -118,6 +118,37 @@ test('SC10 RCD material roles match unwired reference and never claim overcurren
  assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
 });
 
+test('SC36 and SC38 ACV probe descriptions cannot certify mixed-source AC gain',()=>{
+ const defs=QA.catalog();
+ const Meter=require('../dist/multimeter.js');
+ for(const id of ['opamp-apps-src-01','opamp-apps-src-03']){
+  const lesson=L.byId[id],p=lesson?.project;
+  assert.ok(lesson&&p,id+' source lesson missing');
+  assert.equal(lesson.kind,'wiring');
+  assert.ok(p.wires.length>0,id+' original graph missing');
+  assert.ok(p.components.some(c=>c.id==='in'&&c.typeId==='arduino-signal-generator'),id+' AC signal source missing');
+  assert.ok(p.components.some(c=>c.id==='g1'&&c.typeId==='supply-dc-plus'),id+' DC op-amp supply missing');
+  const m=p.components.find(c=>c.id==='v1');
+  assert.ok(m&&m.typeId==='unit-ut33d-plus',id+' actual UT33D+ meter missing');
+  assert.deepEqual(Array.from(Meter.setting(m,defs[m.typeId])),['ACV',600]);
+  const red=p.components.find(c=>c.id==='v1-red'),black=p.components.find(c=>c.id==='v1-black');
+  assert.equal(red?.probeTarget?.c,'u1',id+' output probe target');
+  assert.ok(['OUT','1'].includes(red.probeTarget.p),id+' output pin identifier');
+  assert.equal(black?.probeTarget?.c,'g1',id+' common reference target');
+  assert.equal(black.probeTarget.p,'M');
+  const material=lesson.materials.find(row=>row.componentId===m.id);
+  assert.ok(material&&material.typeId===m.typeId,id+' meter material identity mismatch');
+  assert.match(material.why,/ACV 600 V/);
+  assert.match(material.why,/OL/);
+  assert.match(lesson.explanation,/karışık AC\/DC kaynak uyarısı ve OL gösterebilir/);
+  assert.match(lesson.explanation,/dinamik solver kanıtına kadar REVIEW/);
+  assert.ok(lesson.beginnerSteps.some(s=>s.includes('OL')&&s.includes('kazanç ölçümü')));
+  assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
+  assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
+  assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+ }
+});
+
 test('SC114 external ADC0804 physical label and learner material must agree',()=>{
  const lesson=L.byId['microcontroller-apps-src-05'];
  assert.ok(lesson,'Missing SC114 source lesson');
