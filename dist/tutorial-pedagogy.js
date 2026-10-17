@@ -2523,15 +2523,29 @@ for(const [suffix,issue,concept,limits] of mq07PlcScope182to200){
        p.components.filter(c=>c.typeId==='contact-nc').length!==2)))
    throw Error('MQ07 PLC DOL hardware mismatch '+id);
  }
- lesson.summary=concept+' Gösterilen kartın gerçek bağlantı kapsamı sınırlıdır.';
- lesson.explanation=concept+' '+limits+' Yalnız kaydedilmiş sanal bağlantı ve Node durumu incelenmiştir; fiziksel PLC veya şebeke uygunluğu doğrulanmamıştır.';
+ const sourceBoundary=wired
+  ?'Kaydedilmiş PLC giriş/çıkış ve motor-kontaktör terminal bağlantıları vardır; bu ders için Node, Windows/Edge, program çevrimi veya gerçek donanım çalışma kabulü kaydedilmemiştir.'
+  :'Bu kartta PLC ve varsa diğer ürünler yalnız kablosuz malzeme referansıdır; çalışan PLC programı, fiziksel bağlantı veya Node sonucu gösterilmez.';
+ lesson.summary=concept+(wired?' Devre yalnız kaydedilmiş sanal bağlantı örneğidir; çalışma kabulü bekler.':' Kablolu PLC deneyi değil, ürün/kavram referansıdır.');
+ lesson.explanation=concept+' '+limits+' '+sourceBoundary+' Fiziksel PLC ve şebeke uygunluğu doğrulanmamıştır.';
  lesson.learningGoal=concept+' Kablolu örnek ile eksik PLC programı veya ürün referansını ayırt etmek.';
  lesson.beginnerSteps=[
-  'PLC modelini ve mevcut fiziksel terminal etiketlerini kontrol et.',
+  wired?'Kayıtlı PLC ve motor bağlantı uçlarını şemada kontrol et.':'PLC ürününü tanı ve bu kartta kablo veya yürütülen program olmadığını ayırt et.',
   'İşlev: '+concept,
   limits,
-  'Kablo, program veya çalışma zamanı ölçümü yoksa elektriksel PASS verme.'
+  'Gerçek Native Node/Windows testi ve üretici kabulü olmadan elektriksel PASS verme.'
  ];
+ // PLC ürün kartı, programın gerçek donanımda çalıştığını ya da native testin
+ // yürütüldüğünü kanıtlamaz. Malzeme kimlikleri ve fiziksel terminaller korunur.
+ const plcPart=p.components.find(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0');
+ if(!Array.isArray(lesson.materials)||!plcPart||
+    !lesson.materials.some(m=>m.componentId===plcPart.id&&m.typeId===plcPart.typeId))
+  throw Error('MQ07 PLC material/source mismatch: '+id);
+ lesson.materials=lesson.materials.map(m=>m.componentId===plcPart.id?{
+  ...m,why:wired
+   ?'S7-1211C DC/DC/DC PLC, bu kaynak grafikte X10 girişleri ve X12 çıkışları üzerinden sanal kumanda örneğine katılır. Kaydedilmiş program ve terminal atamaları gerçek PLC/Node/Windows kabulü değildir.'
+   :'S7-1211C DC/DC/DC PLC yalnız ürün/kavram referansıdır; bu kartta giriş-çıkış telleri, çalıştırılan program veya doğrulanmış sanal ölçüm bulunmaz.'
+ }:m);
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',mq07PlcScope:'SC182_SC200',
   titleTopologyStatus:issue?'REVIEW':'SOURCE_ALIGNED',titleTopologyIssue:issue,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
