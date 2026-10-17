@@ -12,15 +12,16 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
  for(const [id,ids] of Object.entries(ID_CANDIDATES)){
   const lesson=L.lessons.find(x=>x.id===id);if(!lesson)throw Error('Missing lesson '+id);
   const supply=lesson.project.components.find(x=>x.typeId==='arduino-bench-supply');
-  const sensor=lesson.project.components.find(x=>x.typeId==='proximity');
-  if(!supply||!sensor)throw Error('Unexpected canonical template '+id);
-  const actualVolts=Number(supply.dcVoltage??defs[supply.typeId]?.defaultVoltage);
+  // Repaired piezo/load-cell lessons no longer impersonate 24 V proximity switches.
+  const sensor=lesson.project.components.find(x=>x.typeId==='proximity')||
+    lesson.project.components.find(x=>ids.includes(x.typeId))||null;
+  const actualVolts=supply?Number(supply.dcVoltage??defs[supply.typeId]?.defaultVoltage):null;
   const tutorial24V=lesson.project.wires.some(w=>/\+24\s*V|\+24V/i.test((w.tutorialHint||'')+' '+(w.tutorialWhy||'')+' '+(w.role||'')));
-  const terms=[...new Set(lesson.project.wires.flatMap(w=>[w.from,w.to]).filter(t=>t.c===sensor.id).map(t=>t.p))].sort();
+  const terms=sensor?[...new Set(lesson.project.wires.flatMap(w=>[w.from,w.to]).filter(t=>t.c===sensor.id).map(t=>t.p))].sort():[];
   const candidates=ids.map(typeId=>{
    const def=defs[typeId];if(!def)throw Error('Candidate not in catalog '+typeId);
    const pins=(def.pins||[]).map(x=>x.id);
-   const directPinCompatible=terms.every(p=>pins.includes(p));
+   const directPinCompatible=!!sensor&&terms.length>0&&terms.every(p=>pins.includes(p));
    const isWenglor=typeId==='ultrasonic-switch';
    return {typeId,pins,directPinCompatible,dropInApproved:false,
     manufacturerEvidence:isWenglor?'U1KT003':typeId==='load-cell'?'SB2':typeId==='arduino-mq2'?'MQ2':null,
@@ -29,6 +30,9 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
     requiresOutputOrSignalInterface:!directPinCompatible||typeId==='sensor-ultrasonic-nc'};
   });
   const blocks=['SENSOR_PHYSICAL_PRINCIPLE_UNPROVEN','CANONICAL_STIMULUS_UNDEFINED'];
+  if(!sensor)blocks.push('CANONICAL_SOURCE_SENSOR_UNRESOLVED');
+  if(!supply&&tutorial24V)blocks.push('CLAIMED_24V_SOURCE_MISSING');
+  // Passive piezo lessons need no 24 V bench rail; this does not prove physical suitability.
   if(tutorial24V&&actualVolts!==24)blocks.push('TUTORIAL_24V_EFFECTIVE_SUPPLY_MISMATCH');
   if(id==='sensor-analog-apps-outline-089'){
    if(actualVolts<MFG.U1KT003.voltageMin||actualVolts>MFG.U1KT003.voltageMax)blocks.push('U1KT003_SUPPLY_OUT_OF_SPEC');
@@ -38,7 +42,9 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
   }
   if(id==='sensor-analog-apps-outline-048')blocks.push('LOAD_CELL_BRIDGE_AMPLIFIER_REQUIRED');
   if(id==='sensor-analog-apps-outline-138')blocks.push('MQ2_ANALOG_INTERFACE_AND_5V_REQUIRED');
-  rows.push({id,sourceVoltage:actualVolts,claims24V:tutorial24V,connectedSensorPins:terms,candidates,blockers:blocks,accepted:false});
+  rows.push({id,sourceVoltage:actualVolts,claims24V:tutorial24V,
+   canonicalSensorType:sensor?.typeId||null,sourceModelAligned:!!sensor&&sensor.typeId!=='proximity',
+   connectedSensorPins:terms,candidates,blockers:blocks,accepted:false});
  }
  return {scope:'READ_ONLY_REAL_ELECTRICAL_INTERFACE',manufacturerEvidence:MFG,total:rows.length,sourceTotal:L.lessons.length,wiredTotal:L.lessons.filter(l=>l.project?.wires?.length).length,rows,
   mismatched24VSupplies:rows.filter(x=>x.blockers.includes('TUTORIAL_24V_EFFECTIVE_SUPPLY_MISMATCH')).length,
