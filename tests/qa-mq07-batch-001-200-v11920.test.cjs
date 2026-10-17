@@ -94,6 +94,30 @@ test('SC07-SC08 grounding and insulation measurement references never masquerade
  assert.deepEqual(Array.from(defs['tutorial-insulation-tester'].pins,p=>p.id),['L','E']);
 });
 
+test('SC10 RCD material roles match unwired reference and never claim overcurrent or measured trip',()=>{
+ const lesson=L.byId['installation-grounding-src-10'];
+ assert.ok(lesson,'SC10 lesson missing');
+ const p=lesson.project;
+ const expected=['supply-1p','rcd-2p','socket-power','ground'];
+ assert.equal(lesson.kind,'quiz');
+ assert.equal(p.referenceOnly,true);
+ assert.equal(p.wires.length,0,'SC10 cannot invent an energized RCD circuit');
+ assert.deepEqual(Array.from(p.components,c=>c.typeId),expected);
+ assert.equal(lesson.materials.length,expected.length);
+ for(let i=0;i<expected.length;i++){
+  assert.equal(lesson.materials[i].componentId,p.components[i].id);
+  assert.equal(lesson.materials[i].typeId,expected[i]);
+ }
+ assert.match(lesson.materials[1].why,/faz ile nötrden geçen akımların farkını/);
+ assert.match(lesson.materials[1].why,/aşırı akım veya kısa devre koruma cihazı değildir/);
+ assert.match(lesson.materials[1].why,/açma eşiği, süresi veya gerçek akım farkı simüle edilmez/);
+ assert.match(lesson.materials[2].why,/kablolanmış değildir/);
+ assert.match(lesson.materials[3].why,/PE sürekliliği ölçülmez/);
+ assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
+ assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
+ assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+});
+
 test('SC114 external ADC0804 physical label and learner material must agree',()=>{
  const lesson=L.byId['microcontroller-apps-src-05'];
  assert.ok(lesson,'Missing SC114 source lesson');
