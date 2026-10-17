@@ -207,4 +207,28 @@ test('inventory catches missing material, stale type, unknown terminal and inven
  const absent=Inventory.inspectLesson(missing,{'fixture-part':{pins:[{id:'A'}]}});
  assert.ok(absent.issues.some(i=>i.code==='MISSING_MATERIAL_ROW'));
  assert.equal(absent.contentClass,'QUIZ_OR_REFERENCE');
+ // This test formerly mentioned "invented acceptance" but never injected
+ // a false acceptance claim. A review-tagged title must fail closed even
+ // if its original circuit product and terminal identities stay unchanged.
+ const forged={...lesson,pedagogyReview:{
+  titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:'MISSING_REQUIRED_SECOND_MOTOR',
+  physicalAcceptance:true,
+  windowsVisualAcceptance:true,
+  independentPedagogicalAcceptance:true
+ }};
+ const open=Inventory.inspectLesson(forged,{'fixture-part':{pins:[{id:'A'}]}});
+ const contradiction=open.issues.find(i=>i.code==='OPEN_TITLE_WITH_ACCEPTANCE');
+ assert.ok(contradiction,'Invented acceptance for a known title mismatch escaped QA');
+ assert.deepEqual(Array.from(contradiction.fields),[
+  'physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'
+ ]);
+ const unchanged={...forged,pedagogyReview:{
+  ...forged.pedagogyReview,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false
+ }};
+ assert.ok(!Inventory.inspectLesson(unchanged,{'fixture-part':{pins:[{id:'A'}]}})
+  .issues.some(i=>i.code==='OPEN_TITLE_WITH_ACCEPTANCE'),
+  'Explicitly unaccepted title review must not produce a false positive');
 });
