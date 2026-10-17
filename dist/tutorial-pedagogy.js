@@ -5490,6 +5490,42 @@ for(const [suffix,issue,wireCount,concept,limits,parts] of mq07SpecialOpampRows)
  lesson.safety='Bu sanal referans gerçek op-amp, ölçüm, ısı, besleme ve donanım güvenliği kabulü değildir.';
 }
 
+
+/* MQ07_SC378_SC391_OSCILLATOR_SCOPE: honest oscillator/multivibrator references; protect original questions and existing native gates. */
+const mq07OscillatorRows=[["oscillator-filter-apps-outline-031","LC_TANK_NO_OSCILLATION_RUNTIME",["arduino-bd139","reactor","capacitor"],"LC osilatör kavramı bobin ve kondansatör rezonansı ile uygun aktif geri besleme yolunu gerektirir.","LC malzeme referansı var; rezonans çevrimi, gerçek bobin L değeri, geri besleme ve osilasyon dalga biçimi yoktur."],["oscillator-filter-apps-outline-032","CRYSTAL_DRIVE_LOAD_CAPACITOR_NOT_VERIFIED",null,"Kristal osilatör bir kuvars rezonatör, uygun sürücü ve yük koşullarına dayanır.","HC49 kristal, NPN ve kapasitörün malzeme olarak görünmesi gerçek frekans, yükleme veya osilasyon kabulü değildir."],["oscillator-filter-apps-outline-033","RC_OSCILLATION_FEEDBACK_NOT_WIRED",null,"RC osilatör geri besleme faz ve kazanç koşullarına dayanır.","Transistör, direnç ve kondansatör kablosuzdur; RC ağ, frekans veya sürdürülen osilasyon ölçülmemiştir."],["oscillator-filter-apps-outline-034","MULTIVIBRATOR_MODES_NOT_DISTINGUISHED",null,"Tek, çift ve kararsız multivibratörler durum sayısı ve tetikleme açısından ayrılır.","İki transistörlü malzeme kartında çapraz bağlantı, geçiş, tetik veya periyot ölçümü yoktur."],["oscillator-filter-apps-outline-035","COLPITTS_CAPACITIVE_DIVIDER_NOT_WIRED",["arduino-bd139","reactor","capacitor","capacitor"],"Colpitts osilatörün LC geri beslemesinde iki kapasitörlü kapasitif bölücü kullanılır.","İki kondansatör ve bobin yalnız ayrı referanslardır; bağlı bölücü, tank frekansı veya osilasyon yoktur."],["oscillator-filter-apps-outline-036","HARTLEY_TAPPED_INDUCTOR_NOT_VERIFIED",["arduino-bd139","reactor","reactor","capacitor"],"Hartley osilatör geri beslemesi sarım oranı veya kuplajlı/tapli endüktansla ilgilidir.","İki ayrı bobin sembolü tapli gerçek bobin modeli, kuplaj veya bağlanmış Hartley devresi yerine geçmez."],["oscillator-filter-apps-outline-037","CRYSTAL_OSCILLATION_NOT_WIRED",null,"Kristal osilatör deneyi gerçek sürme yolu ve yük kapasitansı ile değerlendirilebilir.","Kristal transistör ve kondansatör kartında çalışma frekansı, pinler arası devre veya çıkış ölçümü yoktur."],["oscillator-filter-apps-outline-038","RC_PHASE_SHIFT_THREE_STAGES_NOT_WIRED",["lm358p-dip8","resistor","capacitor","resistor","capacitor","resistor","capacitor"],"RC faz kaymalı osilatör geleneksel üç RC kademesi ve yeterli aktif kazanç gerektirir.","Üç RC kademe ayrı malzeme simgeleridir; faz kayması, LM358 gerçek geri beslemesi ve dalga biçimi doğrulanmamıştır."],["oscillator-filter-apps-outline-039","WIEN_BRIDGE_GAIN_CONTROL_NOT_WIRED",["lm358p-dip8","resistor","capacitor","resistor","capacitor"],"Wien köprüsünde seri ve paralel RC kolları ile amplifikatör kazancı/denge şartı birlikte incelenir.","İki R ve iki C sadece referanstır; frekans seçici köprü, kazanç sabitleme ve gerçek osilasyon ölçülmemiştir."],["oscillator-filter-apps-outline-040","MONOSTABLE_TRIGGER_PULSE_RUNTIME_ABSENT",["bd139-npn","bd139-npn","resistor","capacitor"],"Tek kararlı multivibratörde bir kararlı durum ve tetikle ortaya çıkan geçici süre söz konusudur.","Önceki tek BD139'lu anlık anahtar monostable değildi; iki NPN, R/C yalnız kavram kartıdır; tetik/darbe süresi yoktur."],["oscillator-filter-apps-outline-041","BISTABLE_CROSS_COUPLED_STATES_ABSENT",["bd139-npn","bd139-npn","resistor","resistor"],"Çift kararlı multivibratör iki kararlı durum ve uygun karşılıklı geri besleme içerir.","Önceki tek BD139'lu devre iki kararlı durum üretmez; iki NPN ve iki direnç yalnız kavramsal referanstır."],["oscillator-filter-apps-outline-042","ASTABLE_CROSS_COUPLED_RC_RUNTIME_ABSENT",["bd139-npn","bd139-npn","resistor","resistor","capacitor","capacitor"],"Kararsız multivibratör iki transistörlü çapraz RC ve kendiliğinden periyodik geçişle ilişkilidir.","Eski sekiz kablolu tek anahtar salınım üretmez; iki NPN/iki R/iki C referanstır, gerçek çıkış periyodu veya dalga biçimi yoktur."],["electronic-component-basics-outline-038","PULSE_CIRCUITS_CONCEPT_ONLY",null,"Pals devreleri kırpma, kenetleme ve darbe üretimi gibi ayrı işlevleri kapsar.","Tek kavram simgesi vardır; herhangi bir pals kaynağı veya ölçülmüş çıkış bulunmaz."],["electronic-component-basics-outline-039","CLIPPER_DIODE_PATH_NOT_WIRED",null,"Diyotlu kırpıcıda eşik ve sinyal yönü eleman polaritesi ile bağlantı yoluna bağlıdır.","Diyot, direnç ve jeneratör yalnız referanstır; gerçek kırpılmış sinyal ya da ölçüm yoktur."]];
+for(const [id,issue,newParts,concept,limits] of mq07OscillatorRows){
+ const l=L.byId[id],old=l?.project;
+ if(!l||!old||l.kind!==(id.endsWith('-040')||id.endsWith('-041')||id.endsWith('-042')?'wiring':'quiz'))
+   throw Error('MQ07 oscillator baseline mismatch '+id);
+ if(id.startsWith('oscillator-filter-apps-outline-04')&&['040','041','042'].some(x=>id.endsWith('-'+x))){
+  if(old.wires.length!==8||old.components.filter(c=>c.typeId==='bd139-npn').length!==1)
+   throw Error('MQ07 multivibrator baseline changed '+id);
+ }else if(old.wires.length!==0||!old.referenceOnly){
+   throw Error('MQ07 oscillator reference baseline changed '+id);
+ }
+ if(newParts){
+  const parts=newParts.map((type,i)=>[type,concept.slice(0,52)+' · malzeme '+(i+1)]);
+  const p=board(id,l.title,parts);
+  p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'quiz'};
+  l.project=p;l.kind='quiz';l.steps=[];l.materials=materialRows(p);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ const p=l.project;
+ if(l.kind!=='quiz'||p.wires.length||p.referenceOnly!==true)
+  throw Error('MQ07 oscillator reference must not claim runtime '+id);
+ l.summary=concept+' Bu kaynak yalnız kavramsal malzeme referansıdır.';
+ l.explanation=concept+' '+limits+' Sinyal üretimi, gerçek frekans ve donanım kabulü verilmedi.';
+ l.learningGoal=concept+' Gösterilen parçaları gerçek geri besleme ve osilasyon devresinden ayırt etmek.';
+ l.beginnerSteps=['Önce bileşenleri ve kartta kablo olmadığını kontrol et.',
+  'Kavramsal bilgi: '+concept,limits,
+  'Periyot, durum geçişi veya çıkış sinyali ölçülmeden PASS verme.'];
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07OscillatorScope:'SC378_SC391',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,oscillationAcceptance:false,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ l.safety='Bu ekran yalnız sanal, kablosuz malzeme referansıdır; gerçek osilatör, laboratuvar frekans testi veya enerjili donanım güvenliği kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
