@@ -1,11 +1,18 @@
 'use strict';
-const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const fs=require('node:fs'),path=require('node:path'),{spawn}=require('node:child_process');
 const root=path.resolve(__dirname,'..');
 const tests=fs.readdirSync(path.join(root,'tests')).filter(f=>f.endsWith('.test.cjs')).sort().map(f=>'tests/'+f);
 if(!tests.length)throw Error('Test dosyası bulunamadı.');
-const result=spawnSync(process.execPath,['--test','--test-reporter=tap',...tests],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});
 fs.mkdirSync(path.join(root,'build'),{recursive:true});
-fs.writeFileSync(path.join(root,'build','tests.tap'),result.stdout||'');
-process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
-if(result.error)console.error(result.error);
-process.exitCode=typeof result.status==='number'?result.status:1;
+const report=fs.createWriteStream(path.join(root,'build','tests.tap'));
+const child=spawn(process.execPath,['--test','--test-reporter=tap',...tests],{cwd:root,stdio:['ignore','pipe','inherit']});
+let ioFailed=false;
+report.on('error',error=>{ioFailed=true;console.error('TAP raporu yazılamadı:',error);child.kill();});
+child.stdout.on('data',chunk=>{process.stdout.write(chunk);if(!ioFailed)report.write(chunk);});
+child.on('error',error=>{ioFailed=true;console.error('Testler başlatılamadı:',error);});
+child.on('close',(code,signal)=>{
+ report.end(()=>{
+  if(signal)console.error('Test süreci sinyalle sonlandı:',signal);
+  process.exitCode=ioFailed||signal||typeof code!=='number'?1:code;
+ });
+});
