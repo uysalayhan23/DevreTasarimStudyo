@@ -45,6 +45,35 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
     issues.push({code:'INVALID_TERMINAL',wire:i,side,componentId:end?.c,pin:end?.p});
   }
  }
+ // Unlike physical wires, a movable probe contact is not listed in
+ // project.wires. Leads.resolve() silently rejects invalid contacts and
+ // Leads.prepare() removes them; inspect the source BEFORE that happens.
+ // Mirror native Leads.resolve's strict IDs and pin equality, including
+ // wire-ID and junction contacts (not just direct component terminals).
+ for(const c of parts){
+  if(c.probeTarget==null)continue;
+  const def=definitions[c.typeId],target=c.probeTarget;
+  if(!def?.probeColor){
+   issues.push({code:'PROBE_TARGET_ON_NON_PROBE',componentId:c.id});
+   continue;
+  }
+  let exists=false;
+  if(target?.w){
+   const wire=wires.find(x=>x.id===target.w);
+   const from=wire?.from,to=wire?.to;
+   const isProbeLead=x=>[from,to].some(e=>{
+    const other=components.get(e?.c),otherDef=definitions[other?.typeId];
+    return !!otherDef?.probeColor||otherDef?.kind==='multimeter';
+   });
+   exists=!!wire&&!isProbeLead(wire);
+  }else if(target?.j){
+   exists=(p.junctions||[]).some(j=>j.id===target.j);
+  }else{
+   const part=components.get(target?.c),partDef=definitions[part?.typeId];
+   exists=!!partDef?.pins?.some(pin=>pin.id===target?.p);
+  }
+  if(!exists)issues.push({code:'INVALID_PROBE_TARGET',componentId:c.id,target});
+ }
  const review=lesson.pedagogyReview||{};
  return {
   id:lesson.id,title:lesson.title,topicId:lesson.topicId,kind:lesson.kind,
