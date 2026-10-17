@@ -4767,6 +4767,79 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC062: real DC-blocking and diode-clamped RC source example.
+ * Physical 1N4148 A/K + capacitor + return resistor and low-voltage
+ * virtual signal generator. Dynamic clamp waveform acceptance stays open. */
+{
+ const id='oscillator-filter-apps-src-10',l=L.byId[id],prior=l?.project;
+ const oldTypes=['arduino-diode-1n4148','capacitor','resistor'];
+ if(!l||!prior||l.kind!=='quiz'||prior.referenceOnly!==true||
+    prior.wires.length!==0||l.steps.length!==0||l.designStandard==='rich-reference-v1'||
+    prior.components.map(c=>c.typeId).join('|')!==oldTypes.join('|')||
+    l.materials.length!==oldTypes.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 SC062 original clamper reference mismatch');
+ const p=base(id,l.title,'arduino');
+ p.components=[
+  C('fg1','arduino-signal-generator',90,230,'FG1','Sanal düşük gerilim sinüs kaynağı',
+   {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:50,generatorAmplitude:4,generatorOffset:0,
+    tutorialPurpose:'FG1 OUT/GND, 0–4 V unipolar sanal giriş. Gerçek ses/spektrum ve çıkış DC kayması henüz ölçülmedi.'}),
+  C('c1','capacitor',400,230,'C1','1 µF seri kuplaj kondansatörü',
+   {capacitance:1e-6,tutorialPurpose:'Giriş sinyalinin değişen bileşenini taşıyan, DC bileşeni tutan seri C1 elemanı.'}),
+  C('d1','1n4148-do35',660,480,'D1','1N4148 DO-35 · A/K diyot',
+   {tutorialPurpose:'D1/K çıkış sinyal düğümüne, D1/A FG1/GND dönüşüne bağlanır; teorik negatif tepe kenetleme yönü.'}),
+  C('r1','resistor',870,430,'R1','100 kΩ çıkış dönüş direnci',
+   {resistance:100000,tutorialPurpose:'C1 sonrasındaki çıkış düğümünü GND ye bağlayan DC dönüş ve 0,1 s teorik RC zaman sabiti.'}),
+  C('v1','meter-voltmeter',1090,300,'V1','Çıkış gerilim ölçüm terminalleri',
+   {tutorialPurpose:'V1/1 sanal çıkışta, V1/2 FG1/GND de; gerçek dinamik ofset/kaydırma ölçümü native kabulü bekler.'})
+ ];
+ const wire=(a,ap,b,bp,why,color='#43a047')=>
+  p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ wire('fg1','OUT','c1','1','FG1 sanal sinyal C1 seri kuplaj girişine ulaşır.');
+ wire('c1','2','d1','K','C1/2 çıkış düğümü D1 katoduna bağlanır.');
+ wire('d1','A','fg1','GND','D1 anot GND de; negatif salınıma yönelik diyot kenetlemesi.','#111827');
+ wire('c1','2','r1','1','C1/2 çıkış düğümü R1 çıkış yüküne gider.');
+ wire('r1','2','fg1','GND','R1 üzerinden çıkışın DC dönüşü GND ye ulaşır.','#111827');
+ wire('c1','2','v1','1','V1 artı ucu C1/2 sonrası çıkış düğümüne bağlıdır.');
+ wire('v1','2','fg1','GND','V1 eksi ucu sinyal kaynağı GND de.','#111827');
+ const ids=new Set(p.components.map(c=>c.id)),wids=new Set(p.wires.map(w=>w.id));
+ if(ids.size!==5||wids.size!==7||p.wires.length!==7||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c))||
+    !p.components.some(c=>c.typeId==='1n4148-do35'))
+  throw Error('MQ07 SC062 RC/diode source incomplete');
+ p.projectId=prior.projectId;p.name=prior.name;
+ p.tutorialLesson={...prior.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ const boundary='Burada yalnız gerçek A/K diyot ve C1/R1 kablolu kaynak grafiği vardır. C1 başlangıç yükü, diyot ileri karakteristiği, geçici rejim, sanal V1 ölçümü, DC düzey kayması ve sinüs dalgasının kenetlenmesi henüz dinamik/Windows testinden geçmemiştir.';
+ l.summary='Düşük gerilimli sanal FG1 girişinden C1 seri kuplaj, D1 katodu çıkışta/anodu GND de ve R1 paralel dönüş yoluyla kenetleyici RC devresi kurulur.';
+ l.explanation='Sinyal yolu FG1/OUT → C1/1–2; çıkış C1/2 → D1/K, R1/1 ve V1/1 ortak düğümdür. D1/A, R1/2 ve V1/2 sanal FG1/GND ye döner. Bu yönde diyot negatif çıkış salınımını sınırlamaya yöneliktir; R1=100 kΩ ve C1=1 µF için teorik R×C=0,1 s yalnız zaman sabitidir. '+boundary;
+ l.learningGoal='Kenetleme devresinde kondansatörün seri, diyotun çıkıştan ortak GND ye ve dönüş direncinin paralel bağlanma nedenlerini sanal şema üzerinden açıklamak.';
+ l.beginnerSteps=[
+  'FG1/OUT ve GND uçlarını ve 50 Hz düşük gerilim sanal kaynak etiketini ayırt et.',
+  'FG1/OUT → C1/1–2 seri kuplaj yolunu izle.',
+  'C1/2 çıkış düğümünden D1/K ve R1/1 e ayrılan hatları, D1/A ve R1/2 GND dönüşlerini takip et.',
+  'V1/1 ile V1/2 uçlarını çıkış ve GND olarak ayırt et; gerçek ölçüm çıktısı yokken kaydırma voltajı uydurma.',
+  boundary
+ ];
+ l.quiz={question:'Kenetleyici RC devresinde 1N4148 diyotu hangi iki noktaya bağlanmıştır?',
+  options:['Katot çıkış düğümünde, anot sanal GND de','İki ucu da doğrudan jeneratör OUT ucunda','Anot LM358 besleme pininde, katot şebekede'],
+  answer:0,why:'D1/K, C1/2 sonrası çıkış düğümündedir; D1/A FG1/GND dönüşündedir. Dinamik kenetleme miktarı henüz doğrulanmadı.'};
+ l.safety='Sadece düşük gerilimli yazılım devresidir; gerçek şebeke veya fiziksel DIY elektrik bağlantısı değildir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07OscillatorScope:'SC062_RC_DIODE_CLAMPER',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'CLAMPER_TRANSIENT_NATIVE_PENDING',
+  nativeClamperResponseAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC070/071: first-order ACTIVE RC filters, unity-gain buffered
  * by the existing physical LM358P DIP-8 (1 OUT, 2 IN-, 3 IN+, 4 V-, 8 V+).
  * A source topology is not an AC gain sweep, dB response or native PASS. */
