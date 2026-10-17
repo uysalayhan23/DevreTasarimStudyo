@@ -175,3 +175,30 @@ test('SC65 negative control: removing feedback eliminates distinct hysteresis',t
  assert.ok(Math.abs(sweep.down-sweep.up)<=5,
   'Removing positive feedback still claims substantial hysteresis');
 });
+
+// History-based Schmitt acceptance must compare identical Vin after DIFFERENT
+// previous outputs; a scan alone can hide state resetting between frames.
+function schmittAtMidpoint(preconditionPercent,withFeedback=true){
+ const p=acceptedFalse('oscillator-filter-apps-src-13','dynamicHysteresisAccepted');
+ if(!withFeedback){
+  const w=p.wires.findIndex(w=>(w.from?.c==='r2'&&w.from.p==='2'&&w.to?.c==='u1'&&w.to.p==='3')||
+   (w.to?.c==='r2'&&w.to.p==='2'&&w.from?.c==='u1'&&w.from.p==='3'));
+  assert.ok(w>=0,'Missing physical positive-feedback link');
+  p.wires.splice(w,1);
+ }
+ const input=part(p,'in');
+ input.potentiometer=preconditionPercent;
+ const previous=measure(p,0);
+ input.potentiometer=50; // same ~12 V for both histories, mid-band
+ const midpoint=measure(p,250);
+ return {previous,midpoint};
+}
+test('SC65 history negative control: same 12 V input must retain distinct prior Schmitt states',t=>{
+ const fromLow=schmittAtMidpoint(100),fromHigh=schmittAtMidpoint(0);
+ const noFeedbackLow=schmittAtMidpoint(100,false),noFeedbackHigh=schmittAtMidpoint(0,false);
+ diagnostic(t,'SC65 fixed-input path dependence',{fromLow,fromHigh,noFeedbackLow,noFeedbackHigh});
+ assert.ok(fromHigh.midpoint.v>fromLow.midpoint.v+5,
+  'Native solver discarded Schmitt state at the same input after opposite histories');
+ assert.ok(Math.abs(noFeedbackHigh.midpoint.v-noFeedbackLow.midpoint.v)<2,
+  'Comparator without positive feedback incorrectly retains hysteresis');
+});
