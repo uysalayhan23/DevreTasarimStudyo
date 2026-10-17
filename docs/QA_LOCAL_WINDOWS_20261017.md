@@ -194,3 +194,12 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - **User involvement:** one planned Windows CMD/log and, only when strictly necessary, one visual check per completed 200 block. No frequent single-test demands; if local native test capability remains unavailable here, be transparent that the batch acceptance waits for the user's scheduled evidence. No GitHub Actions, no force pushes, no extra branches, offline `BASLAT.bat` kept.
 
 - First-200 review-list QA was repaired in `f6fd01d`: historical `47` was a dated interim count rather than an immutable acceptance target. The test now requires every remaining issue to have a unique updated lesson ID, an allowed reason and `physicalAcceptance!==true`, and retains the existing 200/1655, protected-rich, LDR and semantic checks. It has **NOT_RUN** under native Node/Windows; no broad first-200 closure is asserted.
+
+## 2026-10-17 SC124 UNO/OLED material alignment and first-200 audit — NATIVE NOT_RUN
+
+- Source failure correlation: older Windows full native TAP `tests/tutorial-pedagogy-v119.test.cjs` first material mismatch at `microcontroller-apps-src-15`: one material description for two source components. Current `dist/tutorial-pedagogy.js` SC124 appends `arduino-oled-i2c` to a 1-component `arduino-uno` quiz without matching second material row.
+- `366d4ab` appends the OLED row matched by component ID/type, preserves UNO's original explanation, states SDA/SCL reference purpose without implying wired/functional I2C, and leaves source `quiz`, 0 physical wires and all acceptance flags unchanged.
+- `4c60e12` adds SC124 negative/fail-closed assertions to `tests/qa-mq07-batch-001-200-v11920.test.cjs`.
+- `0b40a98` adds read-only ordered 200-lesson live-curriculum inventory with exact per-ID structural issues; `f00c462` adds native `node:test` for 200 IDs, SC124 two-item mapping and synthetic broken material/terminal cases. It is designed for **one later batch-level** Windows Node run, not CI.
+- This source edit and tests are present on GitHub; actual Windows/native `node --test`, live inventory result and independent Windows/visual acceptance are **NOT_RUN**. No source-only check is represented as Node PASS. Do not reduce historical global 112 failures without a current full suite.
+- Next autonomous source inspection target: first200 inventory findings and the already-recorded outstanding application mismatches (SC36/38, SC48/49, SC50, SC65, motor/PLC). Keep SC001–SC200 `PARTIAL_REVIEW` until genuine batch gates.
