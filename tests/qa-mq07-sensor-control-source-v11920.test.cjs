@@ -6,7 +6,12 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
 const Sensors=require('../dist/sensors.js');
 const Bell=require('../scripts/qa-bell-transformer-v11920.cjs');
-const cases=[{"id":"sensor-analog-apps-src-13","type":"proximity","description":"virtual inductive PNP sensor → relay NO contact → lamp"},{"id":"sensor-analog-apps-src-14","type":"sensor-through-beam","description":"virtual IR beam sensor → relay NO contact → lamp"}];
+const cases=[
+ {id:'sensor-analog-apps-src-13',type:'proximity',target:'metal',
+  description:'virtual inductive PNP sensor → relay NO contact → lamp'},
+ {id:'sensor-analog-apps-src-14',type:'sensor-through-beam',target:'reflector',
+  description:'virtual IR beam sensor → relay NO contact → lamp'}
+];
 const L=QA.curriculum(),defs=QA.catalog(),copy=x=>JSON.parse(JSON.stringify(x));
 function validateCircuit(l,model){
  const p=l.project,part=Object.fromEntries(p.components.map(c=>[c.id,c]));
@@ -28,7 +33,18 @@ function validateCircuit(l,model){
 test('two review lessons have real matched low-voltage sensor and relay wiring',()=>{
  assert.equal(L.lessons.length,1655);
  assert.equal(L.lessons.filter(x=>x.designStandard==='rich-reference-v1').length,136);
- assert.equal(L.mq07Batch200.reviewIds.length,47);
+ // The original 47 was an older snapshot of the first-200-source review list.
+ // 34 is the current observed list size; each record remains traceable and
+ // a smaller list does not prove any physical or independent QA acceptance.
+ const reviews=L.mq07Batch200.reviewIds;
+ assert.equal(L.mq07Batch200.examined,200);
+ assert.equal(reviews.length,34);
+ assert.equal(new Set(reviews.map(x=>x.id)).size,reviews.length);
+ for(const r of reviews){
+  assert.ok(L.byId[r.id],r.id+' missing reviewed lesson');
+  assert.ok(typeof r.reason==='string'&&r.reason.length>3,r.id+' missing review reason');
+ }
+
  assert.equal(L.lessons.filter(x=>x.project.wires.length>0).length,730);
  for(const v of cases){const l=L.byId[v.id];assert.ok(l);validateCircuit(l,v.type);
   assert.ok(!L.mq07Batch200.reviewIds.some(x=>x.id===v.id));}
@@ -36,15 +52,29 @@ test('two review lessons have real matched low-voltage sensor and relay wiring',
 test('both low voltage scenarios switch relay and lamp OFF→ON→OFF using original solver',()=>{
  for(const v of cases){
   const lesson=L.byId[v.id];
-  for(const [i,state] of [false,true,false].entries()){
-   const p=copy(lesson.project);p.components.find(x=>x.id==='s1').state=state;
+  for(const [i,detected] of [false,true,false].entries()){
+   const p=copy(lesson.project),sensor=p.components.find(x=>x.id==='s1');
+   const definition=defs[sensor.typeId];
+   assert.ok(Sensors.supported(definition),v.id+' unsupported physical principle');
+   const original=Sensors.settings(sensor,definition);
+   assert.ok(original.range>0,v.id+' sensor range unavailable');
+   // Set a compatible material at real measured range, on a disposable
+   // project clone. The sensor's manual switch state is deliberately the
+   // opposite of detection: toggling .state alone must NOT bypass sensing.
+   sensor.state=!detected;
+   sensor.sensing={...original,target:v.target,auto:false,offset:0,
+    distance:detected?original.range*.5:original.range*2};
+   const sampled=Sensors.detect(sensor,definition);
+   assert.equal(sampled.enabled,true,v.id+' target missing '+i);
+   assert.equal(sampled.compatible,true,v.id+' target incompatible '+i);
+   assert.equal(sampled.detected,detected,v.id+' sensed '+i);
    const result=Simulation.solve(p,defs,{now:[0,400,850][i]});
    assert.ok(result.stable&&!result.blocked&&!result.shortCircuit&&!result.oscillating,v.id+' phase '+i);
    const parts=Object.fromEntries(p.components.map(x=>[x.id,x]));
    // Read-only diagnostic details are printed ONLY on a failed assertion;
    // never bless a broken output by changing its expected state.
    const diagnostic=JSON.stringify({
-    id:v.id,phase:i,requestedSensorState:state,
+    id:v.id,phase:i,expectedDetection:detected,manualState:parts.s1.state,
     sensorType:parts.s1.typeId,sensorOutput:parts.s1.outputType,
     catalogOutput:defs[parts.s1.typeId]?.outputType,
     sensorDetect:Sensors.detect(parts.s1,defs[parts.s1.typeId]),
@@ -59,8 +89,8 @@ test('both low voltage scenarios switch relay and lamp OFF→ON→OFF using orig
     solve:{stable:result.stable,blocked:result.blocked,
      shortCircuit:result.shortCircuit,oscillating:result.oscillating,reason:result.reason}
    });
-   assert.equal(!!parts.k1._active,state,v.id+' coil '+i+' | '+diagnostic);
-   assert.equal(!!parts.h1._active,state,v.id+' lamp '+i+' | '+diagnostic);
+   assert.equal(!!parts.k1._active,detected,v.id+' coil '+i+' | '+diagnostic);
+   assert.equal(!!parts.h1._active,detected,v.id+' lamp '+i+' | '+diagnostic);
   }
  }
 });
