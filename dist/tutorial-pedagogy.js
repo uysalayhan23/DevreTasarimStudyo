@@ -2334,6 +2334,28 @@ for(const lesson of L.lessons.slice(0,200)){
  if(active)mq07Batch200.enrichedWired++;else mq07Batch200.enrichedReference++;
 }
 L.mq07Batch200=mq07Batch200;
+/* MQ07_SC10_RCD_REFERENCE_MATERIAL: residual-current protection must not
+   be described as overcurrent/short-circuit protection. This is an unwired
+   conceptual lesson, not a verified trip-time or leakage-current experiment. */
+{
+ const lesson=L.byId['installation-grounding-src-10'];
+ const p=lesson?.project;
+ const types=['supply-1p','rcd-2p','socket-power','ground'];
+ if(lesson&&p&&lesson.kind==='quiz'&&p.referenceOnly===true&&
+    p.wires.length===0&&p.components.length===types.length&&
+    lesson.materials?.length===types.length&&
+    p.components.every((c,i)=>c.typeId===types[i]&&
+      lesson.materials[i].componentId===c.id&&
+      lesson.materials[i].typeId===c.typeId)){
+   const roles=[
+    'Tek faz besleme kaynağı faz ve nötrün kavramsal başlangıç noktasıdır; bu kartta RCD üzerinden akım dolaşan gerçek bir bağlantı yoktur.',
+    'Kaçak akım koruma düzeni (RCD), faz ile nötrden geçen akımların farkını izleme ilkesini temsil eder; tek başına aşırı akım veya kısa devre koruma cihazı değildir. Burada açma eşiği, süresi veya gerçek akım farkı simüle edilmez.',
+    'Topraklı priz yükün bağlanabileceği tesisat noktasını temsil eder; bu kartta beslenmiş veya RCD çıkışına kablolanmış değildir.',
+    'Koruma toprağı (PE) sembolik güvenlik referansıdır; RCD içinden normal çalışma akımının dönüş yolu olarak gösterilmez, PE sürekliliği ölçülmez.'
+   ];
+   lesson.materials=lesson.materials.map((m,i)=>({...m,why:roles[i]}));
+ }
+}
 /* MQ07_GROUNDING_MEASUREMENT_REFERENCE: SC07/SC08 are deliberately unwired
    conceptual cards. Give each real displayed product a grounded material role
    without inventing earth-resistance, insulation or mains test measurements. */
