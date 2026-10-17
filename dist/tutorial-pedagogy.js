@@ -3339,6 +3339,67 @@ function mq07SecondStationDOL(lesson){
     p.components.filter(c=>c.typeId==='push-nc').length!==2)
   throw Error('SC132 two-center terminal graph mismatch');
 }
+
+/* SC131: one real, maintained JOG/RUN selector gates K1 self-hold.
+   SC140: one catalog overload with all 3 poles and its 95-96 NC trip
+   linked to the K1 control line. No new motor solver behavior claimed. */
+function mq07JogRunMode(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||!p.components.some(c=>c.id==='hold'&&c.typeId==='contact-no'))
+  throw Error('SC131 original DOL seal source changed');
+ const n=p.wires.findIndex(w=>w.from?.c==='hold'&&w.from.p==='14'&&
+   w.to?.c==='coil'&&w.to.p==='A1');
+ if(n<0)throw Error('SC131 original K1 seal wire missing');
+ p.wires.splice(n,1);
+ const mode=C('runMode','selector-no',470,825,'S2','Kesik / sürekli seçim',{
+  tutorialPurpose:'Seçici açıkken JOG, kapalıyken K1 mühürleme NO kolu üzerinden sürekli çalıştırma verir.'});
+ const added=[
+  W('hold','14','runMode','13','K1/14 → S2/13','K1 NO mühürleme kolu yalnız sürekli kipte etkin olur.','#e53935','L1'),
+  W('runMode','14','coil','A1','S2/14 → K1/A1','S2 RUN konumunda START bırakılınca K1 mühürlenir.','#e53935','L1')
+ ];
+ p.components.push(mode);p.wires.push(...added);
+ lesson.materials.push(...materialRows({components:[mode]}));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==14)throw Error('SC131 selector branch has wrong wire count');
+}
+function mq07RealOverloadDOL(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||!p.components.some(c=>c.id==='main'&&c.typeId==='main-contact')||
+    !p.components.some(c=>c.id==='motor'&&c.typeId==='motor-3p'))
+  throw Error('SC140 original DOL graph changed');
+ const exclude=[['g1','L1','stop','21'],
+   ['main','2','motor','U'],['main','4','motor','V'],['main','6','motor','W']];
+ for(const [a,ap,b,bp] of exclude){
+  const i=p.wires.findIndex(w=>w.from?.c===a&&w.from.p===ap&&
+   w.to?.c===b&&w.to.p===bp);
+  if(i<0)throw Error('SC140 mandatory former wire missing '+a+'/'+ap);
+  p.wires.splice(i,1);
+ }
+ const fr=C('fr','overload',945,390,'F1','F1 · üç faz termik motor koruması',{
+  tutorialPurpose:'Üç güç kutbu M1 motor yolunda, NC 95–96 K1 bobin komutuna seri. Sanal F1 state=true aşırı yük tetik durumudur.'});
+ p.components.push(fr);
+ const added=[
+  W('g1','L1','fr','95','L1 → F1/95','Termik rölenin NC 95–96 kontrol izni.','#e53935','L1'),
+  W('fr','96','stop','21','F1/96 → STOP/21','F1 termiği açarsa K1 mühürleme ve motor bırakır.','#e53935','L1')
+ ];
+ for(const [from,to,motor,phase,color] of [
+  ['2','1','U','L1','#e53935'],['4','3','V','L2','#f97316'],
+  ['6','5','W','L3','#f4c430']
+ ]){
+  const output=String(Number(to)+1);
+  added.push(W('main',from,'fr',to,'K1/'+from+' → F1/'+to,
+   'Kontaktörden gelen faz termik güç kutbuna girer.',color,phase,'2.5'));
+  added.push(W('fr',output,'motor',motor,'F1/'+output+' → M1/'+motor,
+   'Termik güç kutbu çıkışı ilgili motor fazına gider.',color,phase,'2.5'));
+ }
+ p.wires.push(...added);
+ lesson.materials.push(...materialRows({components:[fr]}));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==17||p.components.filter(c=>c.typeId==='overload').length!==1)
+  throw Error('SC140 physical overload circuit mismatch');
+}
 function mq07DirectMotorContent(lesson,suffix){
  const sourceId=suffix==='02'?'motor-star-delta-1':
   suffix==='03'?'motor-forward-reverse-1':null;
@@ -3347,6 +3408,8 @@ function mq07DirectMotorContent(lesson,suffix){
   if(!source?.wires?.length)throw Error('Missing source motor graph '+sourceId);
   mq07ReplaceMotorLesson(lesson,source,'wiring');
  }else if(suffix==='07')mq07SecondStationDOL(lesson);
+ else if(suffix==='06')mq07JogRunMode(lesson);
+ else if(suffix==='15')mq07RealOverloadDOL(lesson);
 }
 function mq07StartMotorContent(lesson,suffix){
  if(suffix==='12'){
@@ -3437,7 +3500,7 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const id='motor-direct-power-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||!lesson.project?.wires?.length||!lesson.project.components.some(c=>c.typeId==='motor-3p'))
   throw Error('MQ07 SC126–143 motor graph unexpectedly changed: '+id);
- if(['02','03','07'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
+ if(['02','03','06','07','15'].includes(suffix))mq07DirectMotorContent(lesson,suffix);
  const p=lesson.project;
  const actual=p.components.some(c=>c.id==='mainF')?'iki kontaktörlü ileri/geri':
   p.components.some(c=>c.typeId==='motor-y-d')?'altı terminalli yıldız–üçgen':
@@ -3446,13 +3509,19 @@ for(const [suffix,issue,concept,limitation] of mq07MotorScope126to143){
  const fixed=suffix==='02'||suffix==='03'||suffix==='07';
  const pending=suffix==='02'?'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING':
   suffix==='03'?'PHASE_REVERSAL_NATIVE_PENDING':
-  suffix==='07'?'TWO_STATION_NATIVE_PENDING':issue;
+  suffix==='06'?'JOG_RUN_SELECTOR_NATIVE_PENDING':
+  suffix==='07'?'TWO_STATION_NATIVE_PENDING':
+  suffix==='15'?'THERMAL_OVERLOAD_NATIVE_PENDING':issue;
  const note=suffix==='02'?
   'Gerçek altı terminalli motor, yıldız ve üçgen konumları olan paket şalteriyle katalog uçlarından bağlanmıştır.':
   suffix==='03'?
   'Gerçek iki kontaktörlü karşılıklı kilitli ileri–geri güç yolunda iki faz yer değiştirir.':
   suffix==='07'?
-  'İkinci NC STOP seri, ikinci NO START paralel eklenerek K1 mühürleme her iki kumanda merkezinden denetlenir.':limitation;
+  'İkinci NC STOP seri, ikinci NO START paralel eklenerek K1 mühürleme her iki kumanda merkezinden denetlenir.':
+  suffix==='06'?
+  'Gerçek seçici S2 RUN konumunda K1 mühürleme kolunu kapatır; JOG konumunda START bırakılınca K1 bobini bırakır.':
+  suffix==='15'?
+  'F1 termik rölenin üç güç kutbu motor yolundadır ve F1 NC 95–96 kontağı K1 bobin beslemesine seri girer; sanal trip kontrolü kaynak davranışıdır, gerçek koruma güvenliği değildir.':limitation;
  lesson.summary=concept+' Bu sayfadaki kayıtlı devre '+actual+' örneğidir.';
  lesson.explanation=concept+' '+note+' Fiziksel motor, gerçek şebeke veya güvenlik uygunluğu bu dersle doğrulanmış değildir.';
  lesson.learningGoal=concept+' Gösterilen devrenin desteklediği işlev ile başlıktaki ek işlevleri doğru ayırabilmek.';
