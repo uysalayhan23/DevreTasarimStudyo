@@ -40,6 +40,17 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  let q0=false;
  if(mode==='mirror')q0=start;
  else if(mode==='direct')q0=start&&stop;
+ else if(mode==='two-station-start-stop'){
+   // SC194 only: X10:7 / X10:9 are independent START commands (OR).
+   // X10:8 / X10:10 are independently wired NC STOP inputs (AND).
+   // Any pressed STOP wins over either START, including simultaneous press.
+   // The original start-stop-latch program remains unchanged for other lessons.
+   const eitherStart=!!(values[0]||values[2]),
+     bothStopsHealthy=!!(values[1]&&values[3]);
+   if(!bothStopsHealthy)c._plcLatch=false;
+   else if(eitherStart)c._plcLatch=true;
+   q0=!!c._plcLatch&&bothStopsHealthy;
+ }
  else if(mode==='timed-stop'){
    const duration=Math.max(100,num(c.plcTimerMs,3000));
    if(!stop){delete c._plcTimerStart;c._plcLatch=false}
