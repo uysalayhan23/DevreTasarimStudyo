@@ -2419,7 +2419,7 @@ const mq07PlcScope182to200=[
  ['10','NO_WIRED_CIRCUIT','PLC mantık fonksiyonlarında AND, OR, NOT davranışı giriş bitleri ve tanımlı programla doğrulanır.','Kablolu lojik test veya PLC programındaki doğruluk tablosu simüle edilmez.'],
  ['11','NO_WIRED_CIRCUIT','Ara vaviyen benzeri iki noktadan anahtarlamada girişlerin XOR/kenar veya durum mantığıyla yorumlanması gerekir.','İki anahtar sinyali, gerçek PLC girişleri ve yazılmış program bu kartta yoktur.'],
  ['12',null,'PLC ile motora doğrudan yol vermede X10:7 START ve X10:8 STOP koşulları çıkış X12:3 üzerinden kontaktör bobinini yönetir.','Mevcut sanal start-stop-latch programı, kontaktörün ana kontaklarını ve üç fazlı motorun çalışmasını gösterir; gerçek termik koruma ve şebeke testi değildir.'],
- ['13','MISSING_SECOND_START_STOP_STATION','Birden fazla noktadan PLC motor kumandası, ayrı kumanda istasyonlarının girişlerini ve STOP önceliğini programda birleştirir.','Mevcut devre yalnız tek START X10:7 ve tek STOP X10:8 girişine sahiptir; ikinci istasyon veya çok merkezli program yoktur.'],
+ ['13','TWO_STATION_NATIVE_PENDING','Birden fazla noktadan PLC motor kumandası, iki istasyonun START girişlerini OR, iki bağımsız NC STOP girişini AND mantığıyla ve STOP önceliğiyle değerlendirir.','S1 START X10:7 / S0 STOP X10:8 ile ikinci S2 START X10:9 / S3 STOP X10:10 fiziksel uçları ayrı bağlanmıştır; PLC iki istasyonlu mühürleme programı için sanal dinamik/Windows kabul henüz yapılmamıştır.'],
  ['14','MISSING_REVERSE_MOTOR_CONTACTOR','İleri-geri motor kumandası iki yön kontaktörü, karşılıklı kilitleme ve iki fazın yer değiştirdiği ayrı güç yolları gerektirir.','Mevcut tek kontaktör ve start-stop-latch programı yalnız bir yönde DOL çalıştırır; ikinci kontaktör, yön seçimi ve interlock bulunmaz.'],
  ['15','NO_WIRED_CIRCUIT','SET/RESET mantığı bir bitin tutulması ve sıfırlanması için iki farklı giriş koşulu tanımlar.','Kartta PLC, START/STOP butonları referans olarak vardır; gerçek SET/RESET programı yürütülmez.'],
  ['16','NO_WIRED_CIRCUIT','Tek butonla çalıştır-durdur için yükselen kenarda saklanan durumu tersleyen toggle mantığı gerekir.','Tek butonlu program ve giriş kenarı simülasyonu bu kartta yoktur.'],
@@ -2427,17 +2427,48 @@ const mq07PlcScope182to200=[
  ['18','NO_WIRED_CIRCUIT','PLC zamanlayıcılarında TON, TOF veya TP çıkışı zaman ve tetik şartına göre farklı değişir.','PLC ve lamba ürünleri yalnız referanstır; zamanlayıcı bloğu, ayarlı süre, kablo veya zaman eğrisi bulunmaz.'],
  ['19','NO_WIRED_CIRCUIT','PLC sayıcılarında CTU/CTD sayma girişinin uygun kenarlarıyla değeri değişir; reset ve preset ayrı ele alınır.','Enkoder ve PLC malzeme kartları kablosuzdur; gerçek pals, sayım değeri veya çalışan program yoktur.']
 ];
+/* MQ07 SC194 completion: add the real second command station.
+   Four catalog-valid wires preserve every prior 18-wire DOL connection.
+   No other PLC lesson, source golden or global electrical model is modified. */
+function mq07BuildTwoStationPlc(lesson){
+ const p=lesson.project;
+ if(!p||p.wires?.length!==18||!Array.isArray(lesson.steps)||
+    !p.components.some(c=>c.id==='start'&&c.typeId==='push-no')||
+    !p.components.some(c=>c.id==='stop'&&c.typeId==='push-nc')||
+    !p.components.some(c=>c.id==='plc'&&c.typeId==='plc-hw-6es7211-1ae40-0xb0')||
+    p.components.some(c=>['start2','stop2'].includes(c.id)))
+  throw Error('SC194 source baseline changed; refusing second-station rewrite');
+ const start2=C('start2','push-no',500,500,'S2','İstasyon 2 · START',{
+  tutorialPurpose:'İkinci kumanda merkezinin bağımsız NO başlatma butonu. 24 V kaynağı PLC X10:9 DI a.2 girişine bağlar.'});
+ const stop2=C('stop2','push-nc',500,690,'S3','İstasyon 2 · STOP',{
+  tutorialPurpose:'İkinci kumanda merkezinin bağımsız NC durdurma butonu. PLC X10:10 DI a.3=LOW olduğunda iki START girişinden de gelen komutlar durdurulur.'});
+ p.components.push(start2,stop2);
+ const added=[
+  W('ps','P','start2','13','+24 V → istasyon 2 START/13','Ayrı ikinci START kontak giriş beslemesidir.','#8b5a2b','+24V'),
+  W('start2','14','plc','X10:9','İstasyon 2 START/14 → X10:9','DI a.2 bağımsız ikinci START bilgisidir.','#43a047','SIGNAL'),
+  W('ps','P','stop2','21','+24 V → istasyon 2 STOP/21','Ayrı ikinci NC STOP giriş beslemesidir.','#8b5a2b','+24V'),
+  W('stop2','22','plc','X10:10','İstasyon 2 STOP/22 → X10:10','DI a.3 herhangi bir STOP basıldığında LOW olur.','#43a047','SIGNAL')
+ ];
+ p.wires.push(...added);
+ p.components.find(c=>c.id==='plc').plcProgram='two-station-start-stop';
+ lesson.materials.push(...materialRows({components:[start2,stop2]}));
+ lesson.steps.push(...added.map(w=>({
+  from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,
+  color:w.color,role:w.role,size:w.size
+ })));
+}
 for(const [suffix,issue,concept,limits] of mq07PlcScope182to200){
  const id='plc-hardware-programming-src-'+suffix,lesson=L.byId[id],i=Number(suffix);
  const wired=[4,5,6,12,13,14].includes(i),p=lesson?.project;
- if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?18:0)||
+ if(i===13)mq07BuildTwoStationPlc(lesson);
+ if(!lesson||!p||lesson.kind!==(wired?'wiring':'quiz')||p.wires.length!==(wired?(i===13?22:18):0)||
     !p.components.some(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0'))
   throw Error('MQ07 SC182–SC200 PLC canonical card changed: '+id);
  if(wired){
   if(p.components.filter(c=>c.typeId==='motor-3p').length!==1||
      p.components.filter(c=>c.typeId==='coil-contactor').length!==1||
-     p.components.filter(c=>c.typeId==='push-no').length!==1||
-     p.components.filter(c=>c.typeId==='push-nc').length!==1)
+     p.components.filter(c=>c.typeId==='push-no').length!==(i===13?2:1)||
+     p.components.filter(c=>c.typeId==='push-nc').length!==(i===13?2:1))
    throw Error('MQ07 PLC DOL hardware mismatch '+id);
  }
  lesson.summary=concept+' Gösterilen kartın gerçek bağlantı kapsamı sınırlıdır.';
