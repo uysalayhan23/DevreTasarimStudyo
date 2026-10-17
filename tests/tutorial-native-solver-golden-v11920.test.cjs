@@ -5,7 +5,73 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const fixture=JSON.parse(fs.readFileSync(path.resolve(__dirname,'fixtures/tutorial_native_solver_golden_v11920.json'),'utf8'));
 const kinds=new Set(['switch-no','switch-nc','switch-both','switch-multi','sensor','detector']);
 const clone=v=>JSON.parse(JSON.stringify(v));
-test('90 golden projects correspond to canonical 1655 lessons, without project drift',()=>{
+
+// The W() factory in tutorial-pedagogy.js allocates pgw IDs from a mutable
+// sequence counter. These are not terminal identities. Preserve all wire
+// endpoints, metadata, component geometry and stable (non-pgw) IDs exactly.
+function normalizeGeneratedWireIds(project,id){
+ const ids=project.wires.map(w=>w.id);
+ assert.ok(ids.every(x=>typeof x==='string'&&x.length>0),'Missing wire ID: '+id);
+ assert.equal(new Set(ids).size,ids.length,'Duplicate wire ID: '+id);
+ for(const wire of project.wires)if(/^pgw[0-9]+$/.test(wire.id))wire.id='pgw:generated';
+}
+
+// Explicit, narrowly scoped overlays only. Never regenerate or overwrite
+// the immutable golden JSON from the current curriculum.
+function verifyProtectedGolden(entry,current){
+ const id=entry.id,baseline=clone(entry.project),actual=clone(current);
+ if(id==='sensor-analog-apps-src-03'){
+  const ids=actual.components.map(c=>c.id);
+  assert.deepEqual(ids,['tc','ctl','g1','v1','v1-red','v1-black'],'Unexpected thermocouple components');
+  assert.equal(actual.wires.length,6,'Unexpected thermocouple wires');
+  const [tc,ctl,,meter,red,black]=actual.components;
+  assert.deepEqual([tc.temperature,tc.coldJunction,tc.thermocoupleType],[100,25,'K']);
+  assert.deepEqual(ctl.instrumentSettings,{input:'K',supply:'UV',displayOnly:'on',set:150,filter:1});
+  assert.deepEqual([meter.typeId,meter.ref,meter.meterPosition],['unit-ut33d-plus','V1',1]);
+  assert.deepEqual([red.typeId,red.probeTarget,red.mq07ThermocoupleMeterProbe],
+   ['test-probe-red',{c:'tc',p:'+'},true]);
+  assert.deepEqual([black.typeId,black.probeTarget,black.mq07ThermocoupleMeterProbe],
+   ['test-probe-black',{c:'tc',p:'−'},true]);
+  assert.deepEqual(actual.wires.slice(4).map(w=>({from:w.from,to:w.to,role:w.role})),[
+   {from:{c:'v1',p:'V'},to:{c:'v1-red',p:'PLUG'},role:'MEASURE'},
+   {from:{c:'v1',p:'COM'},to:{c:'v1-black',p:'PLUG'},role:'MEASURE'}
+  ]);
+  // The historical TC graph must remain unchanged beneath its virtual meter.
+  delete tc.temperature;delete tc.coldJunction;delete tc.thermocoupleType;
+  delete ctl.instrumentSettings;
+  actual.components=actual.components.slice(0,3);
+  actual.wires=actual.wires.slice(0,4);
+ }else if(id==='sensor-analog-apps-src-04'){
+  assert.deepEqual(actual.components.map(c=>c.id),['pt','ctl','g1']);
+  assert.equal(actual.wires.length,5,'Unexpected PT100 wires');
+  const [pt,ctl]=actual.components;
+  assert.equal(pt.temperature,25);
+  assert.equal(ctl.mq07Pt100ThreeWireInput,true);
+  assert.deepEqual(ctl.instrumentSettings,{input:'PT100',supply:'UV',displayOnly:'on',set:150,filter:1});
+  const corrected=[
+   ['A','10','PT100 tek uç → sanal TIC1/10','Üç telli sanal RTD ölçümündeki tek taraf ucudur.'],
+   ['B1','8','PT100 B1 → sanal TIC1/8','Ortak tarafın ilk ayrı sanal ölçüm telidir.'],
+   ['B2','9','PT100 B2 → sanal TIC1/9','Ortak tarafın ikinci ayrı sanal ölçüm telidir.']
+  ];
+  for(let i=0;i<3;i++){
+   const w=actual.wires[i],[pin,target,hint,why]=corrected[i];
+   assert.equal(w.from.c,'pt');assert.equal(w.from.p,pin);
+   assert.equal(w.to.c,'ctl');assert.equal(w.to.p,target);
+   assert.equal(w.tutorialHint,hint);assert.equal(w.tutorialWhy,why);
+   // Restore *only* the explicitly audited PT100 overlay fields for the
+   // strict historical topology/geometry comparison below.
+   w.to.p=baseline.wires[i].to.p;
+   w.tutorialHint=baseline.wires[i].tutorialHint;
+   w.tutorialWhy=baseline.wires[i].tutorialWhy;
+  }
+  delete pt.temperature;delete ctl.mq07Pt100ThreeWireInput;delete ctl.instrumentSettings;
+ }
+ normalizeGeneratedWireIds(actual,id);
+ normalizeGeneratedWireIds(baseline,id);
+ assert.equal(JSON.stringify(actual),JSON.stringify(baseline),
+  'Golden topology/geometry/source changed: '+id);
+}
+test('90 golden projects preserve original graphs with audited TC/PT100 overlays',()=>{
  const L=QA.curriculum();
  assert.equal(L.lessons.length,1655);
  assert.equal(fixture.records.length,90);
@@ -14,7 +80,7 @@ test('90 golden projects correspond to canonical 1655 lessons, without project d
   assert.ok(!seen.has(entry.id),'Duplicate fixture '+entry.id);seen.add(entry.id);
   const original=L.byId[entry.id];
   assert.ok(original,'Missing canonical lesson '+entry.id);
-  assert.equal(JSON.stringify(original.project),JSON.stringify(entry.project),'Golden source changed: '+entry.id);
+  verifyProtectedGolden(entry,original.project);
   assert.ok(entry.project.wires.length>0,'Golden must have a physical virtual circuit '+entry.id);
  }
  assert.ok(new Set(fixture.records.map(x=>x.topicId)).size>=14,'Insufficient topic diversity');
