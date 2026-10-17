@@ -4853,6 +4853,7 @@ function mq07WirePassiveRcLesson(lesson,notch){
  lesson.safety='Yalnız sanal düşük gerilimli RC devresi; fiziksel veya kalibre edilmiş filtre kabulü değildir.';
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
   mq07FilterScope:'SC072_SC073_PASSIVE_RC',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
   titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
   titleTopologyIssue:notch?'TWIN_T_NOTCH_NATIVE_PENDING':'PASSIVE_BANDPASS_NATIVE_PENDING',
   nativeFilterResponseAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
