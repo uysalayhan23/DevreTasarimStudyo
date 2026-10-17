@@ -2851,40 +2851,63 @@ function mq07SeqTimedMotors(lesson,mode){
    to avoid mutating locked motor-forward-reverse-1. Each NC limit is placed
    AFTER both START and holding paths: no bypass around the limit switch.
    Reverse direction is still a separate manual request, not automatic. */
+/* SC176 fully wired single-motor limit reversal: NC limit switches
+   energize monitoring relays during normal travel. Relay NO enables the
+   active direction and relay NC becomes the opposite-direction auto-start
+   when its limit opens. The original opposing NC K1/K2 interlocks remain. */
 function mq07SeqLimit(lesson){
  const sample=L.byId['motor-forward-reverse-1']?.project;
- if(!sample?.wires?.length)throw Error('Missing canonical forward/reverse motor');
- const p=clone(sample),ids=new Set(p.components.map(c=>c.id));
- if(!['startF','holdF','coilF','startR','holdR','coilR'].every(id=>ids.has(id))||
-    ids.has('ls1')||ids.has('ls2'))
-  throw Error('Forward/reverse example pins changed; refusing SC176 limit');
- const ls1=C('ls1','limit-nc',1300,770,'LS1','İleri uç NC sınır anahtarı');
- const ls2=C('ls2','limit-nc',1550,770,'LS2','Geri uç NC sınır anahtarı');
- p.components.push(ls1,ls2);
- let left=0,right=0;
- for(const w of p.wires){
-  if(w.to?.c==='coilF'&&w.to?.p==='A1'&&['startF','holdF'].includes(w.from?.c)){
-   w.to={c:'ls1',p:'21'};left++;
-  }
-  if(w.to?.c==='coilR'&&w.to?.p==='A1'&&['startR','holdR'].includes(w.from?.c)){
-   w.to={c:'ls2',p:'21'};right++;
-  }
- }
- if(!left||!right)throw Error('SC176 limit must gate both direction bobins');
- p.wires.push(
-  W('ls1','22','coilF','A1','LS1 NC/22 → K1/A1','İleri uç konumda bobin bırakır.','#e53935','L1'),
-  W('ls2','22','coilR','A1','LS2 NC/22 → K2/A1','Geri uç konumda bobin bırakır.','#e53935','L1')
- );
+ if(!sample?.wires?.length)throw Error('Missing locked forward/reverse reference');
+ const p=clone(sample);
+ const must=(a,ap,b,bp)=>{
+  const set=p.wires.filter(w=>w.from?.c===a&&w.from?.p===ap&&
+    w.to?.c===b&&w.to?.p===bp);
+  if(set.length!==1)throw Error('SC176 source route changed '+a+'/'+ap+' → '+b+'/'+bp);
+  return set[0];
+ };
+ const original=['startF','holdF','coilF','lockF','startR','holdR','coilR','lockR'];
+ if(!original.every(id=>p.components.some(c=>c.id===id))||
+    p.components.some(c=>['ls1','ls2','senseF','senseR'].includes(c.id)))
+   throw Error('Original motor reversing graph no longer matches SC176');
+ const ls1=C('ls1','limit-nc',1300,760,'LS1','İleri uç sınırı · NC');
+ const ls2=C('ls2','limit-nc',1550,760,'LS2','Geri uç sınırı · NC');
+ const senseF=C('senseF','coil-relay',1450,920,'KR1','LS1 sağlam rölesi');
+ const senseR=C('senseR','coil-relay',1700,920,'KR2','LS2 sağlam rölesi');
+ const passF=C('passF','contact-no',1070,540,'KR1','KR1 NO · ileri izin');
+ const passR=C('passR','contact-no',1070,840,'KR2','KR2 NO · geri izin');
+ const autoR=C('autoR','contact-nc',1270,840,'KR1','KR1 NC · otomatik geri START');
+ const autoF=C('autoF','contact-nc',1270,540,'KR2','KR2 NC · otomatik ileri START');
+ const added=[ls1,ls2,senseF,senseR,passF,passR,autoR,autoF];
+ p.components.push(...added);
+ for(const id of ['startF','holdF'])must(id,'14','coilF','A1').to={c:'passF',p:'13'};
+ for(const id of ['startR','holdR'])must(id,'14','coilR','A1').to={c:'passR',p:'13'};
+ const add=[
+  W('g1','L1','ls1','21','L1 → LS1/21','LS1 normalde kapalı sınır beslemesidir.','#e53935','L1'),
+  W('ls1','22','senseF','A1','LS1/22 → KR1/A1','İleri uç tetiklenince KR1 bırakır.','#e53935','L1'),
+  W('senseF','A2','g1','N','KR1/A2 → N','LS1 algılama rölesi nötr dönüşüdür.','#1e88e5','N'),
+  W('g1','L1','ls2','21','L1 → LS2/21','LS2 normalde kapalı sınır beslemesidir.','#e53935','L1'),
+  W('ls2','22','senseR','A1','LS2/22 → KR2/A1','Geri uç tetiklenince KR2 bırakır.','#e53935','L1'),
+  W('senseR','A2','g1','N','KR2/A2 → N','LS2 algılama rölesi nötr dönüşüdür.','#1e88e5','N'),
+  W('passF','14','coilF','A1','KR1 NO → K1/A1','KR1 aktif değilken ileri motor bıraktırılır.','#e53935','L1'),
+  W('passR','14','coilR','A1','KR2 NO → K2/A1','KR2 aktif değilken geri motor bıraktırılır.','#e53935','L1'),
+  W('lockF','22','autoR','21','K1 NC → KR1 NC','İleri kontaktör serbest bırakınca LS1 sınırı geri yön isteği üretir.','#e53935','L1'),
+  W('autoR','22','passR','13','KR1 NC → geri izin','LS1 açık kaldığında geri kontaktör başlatma yolu hazırdır.','#e53935','L1'),
+  W('lockR','22','autoF','21','K2 NC → KR2 NC','Geri kontaktör serbest bırakınca LS2 sınırı ileri yön isteği üretir.','#e53935','L1'),
+  W('autoF','22','passF','13','KR2 NC → ileri izin','LS2 açık kaldığında ileri kontaktör başlatma yolu hazırdır.','#e53935','L1')
+ ];
+ p.wires.push(...add);
  p.projectId='tutorial-session-source-'+lesson.id;
  p.name='Öğretici · '+lesson.title;
  p.tutorialLesson={id:lesson.id,topicId:lesson.topicId,phase:'demo',step:0,level:lesson.variant};
- lesson.project=p;lesson.kind='wiring';
- lesson.materials=materialRows(p);
+ lesson.project=p;lesson.kind='wiring';lesson.materials=materialRows(p);
  mq07SeqRebuildGuide(lesson);
  if(p.components.filter(c=>c.typeId==='limit-nc').length!==2||
-    p.components.filter(c=>c.typeId==='coil-contactor').length!==2)
-  throw Error('SC176 both direction limits not preserved');
+   p.components.filter(c=>c.typeId==='coil-relay').length!==2||
+   p.components.filter(c=>c.typeId==='coil-contactor').length!==2||
+   p.wires.length!==sample.wires.length+12)
+  throw Error('SC176 automatic limit reversing paths inconsistent');
 }
+
 for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  const id='motor-sequence-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||lesson.project?.wires?.length!==13||
@@ -2908,7 +2931,7 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
   mode==='conveyor'?'K1 izin kontağı ayrı 24 VDC kaynaktan PNP yakınlık sensörünü besler; BK çıkışı algılama olduğunda K2 ve konveyör M2 devreye girer.':
   timed==='alternating'?'K0 START/STOP ve mühürleme ana kumandası; KT flaşörün birbirini tamamlayan NO/NC kontakları K1/M1 ve K2/M2 motorlarını 2 saniyelik fazlarda sırayla çalıştıracak gerçek elektriksel yolları oluşturur.':
   timed==='delayed-reverse-m2'?'K1/M1 ileri güç yolu önce çalışır, K1 NO ile beslenen KT üç saniye sonra K2/M2 geri güç yoluna izin verir; K2 motorunda L1 ve L3 yer değiştirir.':
-  limit?'İleri ve geri kontaktör bobinlerinin önünde iki ayrı NC sınır anahtarı vardır; ilgili uçta duruş sağlanır, karşı yöne otomatik başlatma henüz modellenmemiştir.':null;
+  limit?'İleri uç LS1 ve geri uç LS2 normalde kapalı sınırları KR1/KR2 algılama bobinlerini besler; sınır açıldığında karşı yönün NC röle tetik kontağı karşı kontaktörü kilitli güç yolundan otomatik başlatır. Gerçek motorun mekanik konumu simülasyonda otomatik ilerlemez; sınır tetiklemesi sanal kullanıcı girişidir.':null;
  lesson.summary=concept+(limit?' Tek motorlu ileri/geri güç yolu iki NC sınır anahtarıyla kesilebilir.':
   real?' İki ayrı motorun güç ve kumanda bağlantıları şimdi çizilmiştir.':
   ' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.');
@@ -2931,7 +2954,7 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
     mode==='conveyor'?'TWO_MOTOR_CONVEYOR_SENSOR_NATIVE_PENDING':
     timed==='alternating'?'TWO_MOTOR_ALTERNATING_TIMER_NATIVE_PENDING':
     timed==='delayed-reverse-m2'?'TWO_MOTOR_DELAYED_REVERSE_NATIVE_PENDING':
-    limit?'LIMIT_STOP_AUTO_REVERSE_NOT_MODELED':issue,
+    limit?'LIMIT_AUTO_REVERSE_SOURCE_NATIVE_PENDING':issue,
   multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
  if(!real)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
