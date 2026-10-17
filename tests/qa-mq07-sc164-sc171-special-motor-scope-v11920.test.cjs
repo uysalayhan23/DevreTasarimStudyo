@@ -1,29 +1,87 @@
 'use strict';
+// Source parity for SC164–171 after correcting seven misleading 3-phase
+// surrogate demos. Native operation is deferred to first-200 batch QA.
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const S=require('../dist/simulation.js');
-const L=QA.curriculum(),catalog=QA.catalog();
-const issues=['MISSING_SINGLE_PHASE_AUX_WINDING','MISSING_SINGLE_PHASE_START_RUN','MISSING_SINGLE_PHASE_AUX_REVERSAL','MISSING_SYNCHRONOUS_MOTOR_MODEL','MISSING_AUX_STARTER_MOTOR','MISSING_INDUCTION_START_OF_SYNCHRONOUS','NO_WIRED_CIRCUIT','MISSING_PERMANENT_MAGNET_SYNCHRONOUS'];
+const L=QA.curriculum(),defs=QA.catalog();
+const issues=[
+ 'SINGLE_PHASE_AUX_WINDING_NATIVE_PENDING',
+ 'SINGLE_PHASE_AUX_WINDING_NATIVE_PENDING',
+ 'MISSING_SINGLE_PHASE_AUX_REVERSAL',
+ 'MISSING_SYNCHRONOUS_MOTOR_MODEL',
+ 'MISSING_AUX_STARTER_MOTOR',
+ 'MISSING_INDUCTION_START_OF_SYNCHRONOUS',
+ 'NO_WIRED_CIRCUIT',
+ 'MISSING_PERMANENT_MAGNET_SYNCHRONOUS'
+];
 const lesson=n=>L.byId['motor-special-src-'+String(n).padStart(2,'0')];
-function solve(project,now){const r=S.solve(project,catalog,{now});assert.equal(r.stable,true,'stable at '+now);assert.equal(!!r.blocked,false);assert.equal(!!r.shortCircuit,false);assert.equal(!!r.oscillating,false);return r}
-for(let n=1;n<=8;n++)test('SC'+(163+n)+' special motor mismatch stays REVIEW and canonical pins stay valid',()=>{
- const l=lesson(n);assert.ok(l,'lesson '+n);const p=l.project,ref=n===7;
- assert.equal(l.kind,ref?'quiz':'wiring');assert.equal(p.wires.length,ref?0:30);
- assert.equal(l.pedagogyReview.titleTopologyStatus,'REVIEW');assert.equal(l.pedagogyReview.titleTopologyIssue,issues[n-1]);
- assert.equal(l.pedagogyReview.specialMotorAcceptance,false);assert.equal(l.pedagogyReview.physicalAcceptance,false);
- assert.equal(l.pedagogyReview.windowsVisualAcceptance,false);assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false);
- assert.match(l.explanation,/doğrulanmamıştır/);assert.ok(l.beginnerSteps.some(x=>x.includes('PASS verme')));
- for(const c of p.components)assert.ok(catalog[c.typeId],c.typeId);
- if(ref){assert.equal(p.components.length,2);assert.ok(p.components.some(c=>c.typeId==='vfd'));assert.ok(p.components.some(c=>c.typeId==='tutorial-synchronous-motor'));assert.equal(p.referenceOnly,true);}
- else{assert.ok(p.components.some(c=>c.typeId==='motor-3p'));assert.ok(!p.components.some(c=>c.typeId==='tutorial-synchronous-motor'));assert.ok(p.components.some(c=>c.typeId==='supply-3p'));assert.ok(!p.components.some(c=>/motor-1p|capacitor-start|auxiliary-motor/.test(c.typeId)));}
- const parts=new Map(p.components.map(c=>[c.id,c]));for(const w of p.wires)for(const terminal of [w.from,w.to]){const c=parts.get(terminal.c),def=catalog[c?.typeId];assert.ok(def?.pins?.some(pin=>pin.id===terminal.p),'real catalog pin '+terminal.c+'/'+terminal.p)}
+const actualTypes={
+ 3:['supply-1p','motor-1p','capacitor'],
+ 4:['supply-3p','tutorial-synchronous-motor'],
+ 5:['tutorial-synchronous-motor','motor-3p'],
+ 6:['supply-3p','tutorial-synchronous-motor'],
+ 7:['vfd','tutorial-synchronous-motor'],
+ 8:['hcfa-sv-x2ea040a-a','hcfa-sv-x2mh040a-n2ln']
+};
+for(let n=1;n<=8;n++)test('SC'+(163+n)+' actual motor products and honest supported-source scope',()=>{
+ const item=lesson(n);assert.ok(item,'lesson '+n);
+ const p=item.project,live=n===1||n===2;
+ assert.equal(item.kind,live?'wiring':'quiz');
+ assert.equal(p.wires.length,live?(n===1?8:10):0);
+ assert.equal(item.pedagogyReview.titleTopologyStatus,'REVIEW');
+ assert.equal(item.pedagogyReview.titleTopologyIssue,issues[n-1]);
+ for(const name of ['specialMotorAcceptance','physicalAcceptance',
+  'windowsVisualAcceptance','independentPedagogicalAcceptance'])
+  assert.equal(item.pedagogyReview[name],false);
+ assert.ok(item.beginnerSteps.some(x=>x.includes('PASS verme')));
+ const types=p.components.map(x=>x.typeId);
+ if(live){
+  assert.ok(types.includes('supply-1p'));
+  assert.ok(types.includes('motor-1p'));
+  assert.ok(!types.includes('motor-3p'));
+  assert.equal(types.filter(x=>x==='coil-contactor').length,1);
+  assert.equal(types.includes('contact-no'),n===2);
+  const motor=p.components.find(x=>x.typeId==='motor-1p');
+  for(const terminal of ['U','N','PE'])assert.ok(p.wires.some(w=>
+   (w.from.c===motor.id&&w.from.p===terminal)||
+   (w.to.c===motor.id&&w.to.p===terminal)));
+  assert.match(item.explanation,/Z1\/Z2|yardımcı sargı/);
+ }else{
+  assert.deepEqual(types,actualTypes[n]);
+  assert.equal(p.referenceOnly,true);
+ }
+ for(const c of p.components)assert.ok(defs[c.typeId],'Unknown motor catalog '+c.typeId);
+ const by=new Map(p.components.map(c=>[c.id,c]));
+ for(const w of p.wires)for(const terminal of [w.from,w.to]){
+  const part=by.get(terminal.c);
+  assert.ok(part,'Orphan terminal component '+terminal.c);
+  assert.ok(defs[part.typeId].pins.some(pin=>pin.id===terminal.p),
+   'Not a catalog terminal '+terminal.c+'/'+terminal.p);
+ }
 });
-for(const n of [1,2,3,4,5,6,8])test('SC'+(163+n)+' actual 3-phase forward/reverse contactor response is not mislabeled as special motor',()=>{
- const p=structuredClone(lesson(n).project),c=Object.fromEntries(p.components.map(x=>[x.id,x]));
- const seq=[[0,false,false,false,false,false,0],[100,true,false,false,true,false,1],[200,false,false,false,true,false,1],[300,false,false,true,false,false,0],[400,false,true,false,false,true,-1],[500,false,false,false,false,true,-1],[600,true,true,false,false,true,-1],[700,false,false,true,false,false,0]];
- for(const [now,forward,reverse,stop,F,R,spin] of seq){c.startF.state=forward;c.startR.state=reverse;c.stop.state=stop;solve(p,now);assert.equal(!!c.coilF._active,F,'forward coil '+now);assert.equal(!!c.coilR._active,R,'reverse coil '+now);assert.equal(Math.sign(c.motor._spin),spin,'three-phase motor spin '+now);assert.equal(!!c.coilF._active&&!!c.coilR._active,false,'mutual interlock '+now);assert.equal(!!c.motor._active,spin!==0,'motor active '+now);}
- assert.equal(c.motor.typeId,'motor-3p');
+for(const n of [1,2])test('SC'+(163+n)+' single phase K1 command path is catalog-wired, without auxiliary winding acceptance',()=>{
+ const item=lesson(n),p=structuredClone(item.project),c=Object.fromEntries(p.components.map(x=>[x.id,x]));
+ assert.equal(c.motor.typeId,'motor-1p');
+ assert.equal(c.main.ref,'K1');
+ assert.equal(c.coil.ref,'K1');
+ assert.equal(item.pedagogyReview.specialMotorAcceptance,false);
+ // The operating conditions below are intended candidate checks. This
+ // suite has NOT been run on native Node/Windows in the current commit.
+ const seq=[[0,false,false,false],[100,true,false,true],
+  [200,false,false,n===2],[300,false,true,false]];
+ for(const [now,start,stop,coil] of seq){
+  c.start.state=start;c.stop.state=stop;
+  const out=S.solve(p,defs,{now});
+  assert.equal(out.stable,true,'One-phase contactor nonconvergent '+now);
+  assert.equal(!!out.blocked,false);
+  assert.equal(!!out.shortCircuit,false);
+  assert.equal(!!c.coil._active,coil,'K1 command/hold '+now);
+ }
 });
-test('SC170 VFD/synchronous reference cannot be counted as a simulated drive',()=>{
- const p=structuredClone(lesson(7).project);assert.equal(p.wires.length,0);assert.equal(p.components.some(c=>c.typeId==='motor-3p'),false);solve(p,0);assert.equal(lesson(7).pedagogyReview.specialMotorAcceptance,false);
+test('SC170 synchronous/VFD card remains only an unenergized reference',()=>{
+ const item=lesson(7);
+ assert.equal(item.project.wires.length,0);
+ assert.ok(item.project.components.some(c=>c.typeId==='tutorial-synchronous-motor'));
+ assert.equal(item.pedagogyReview.specialMotorAcceptance,false);
 });
