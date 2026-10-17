@@ -12,7 +12,7 @@ test('MQ-00 one-click full QA runs all Node, H-L browser and UT200A browser stag
  assert.match(bat,/qa-full-windows-v11920\.ps1/);
  assert.match(bat,/exit \/b %CODE%/);
  for(const part of ['scripts/run-tests.cjs','qa-hl64-windows-v11920.ps1','qa-mq05-ut200a-windows-v11920.ps1',
-  'full_node','hl64_zip','ut200a_zip','Get-FileHash','SHA256','run-summary.json','Compress-Archive','FreshZip',
+  'node_full','hl64_zip','ut200a_zip','Get-FileHash','SHA256','run-summary.json','Compress-Archive','FreshZip',
   'QA_TAM_PROJE_SONUC_'])
   assert.ok(ps.includes(part),'Missing full QA gate '+part);
  assert.match(ps,/\$Report\.node_full -eq 0 -and \$Report\.hl64 -eq 0 -and \$Report\.ut200a -eq 0/);
