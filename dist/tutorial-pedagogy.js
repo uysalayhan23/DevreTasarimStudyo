@@ -5359,6 +5359,60 @@ for(const [suffix,issue,wireCount,types,concept,limits] of mq07PressureCases){
  lesson.safety='Sanal ders ve referans kartıdır; basınçlı sistem, gerçek ağırlık kaldırma, enerjili devre veya laboratuvar güvenlik kabulü değildir.';
 }
 
+
+/* MQ07_SC336_SC349_OPTICAL_SCOPE: correct source-material graphs, keep source-specific quizzes, fail-close dynamic acceptance. */
+const mq07OpticalRows=[["electronic-switching-outline-061","NO_DISCRETE_PHOTOTRANSISTOR_OPTICAL_RUNTIME",0,["arduino-tlp521-1","resistor"],"Fototransistör optik uyarmayla kolektör-emiter iletimini değiştiren fotoalgılayıcıdır.","Eski BD139 ve basmalı düğme ışığa duyarlı değildi. TLP521-1 içindeki fototransistör ve yük direnci yalnız kavramsal referanstır; ayrık fototransistör modeli, optik akı ve akım ölçümü yoktur."],["sensor-analog-apps-outline-051","LDR_DARK_COMPARATOR_NO_LOAD_DYNAMIC",12,["arduino-bench-supply","ldr-gl5528","resistor","lm358p-dip8","resistor","resistor","unit-ut33d-plus","test-probe-red","test-probe-black"],"LDR ışıkla değişen direnç, LM358P ise referansla karşılaştırılan sanal sinyal üretir.","Karanlıkta çalışan yük/aydınlatma çıkışı yoktur. Gerçek lux-eşik taraması, karanlık geçişi ve optik kalibrasyon ayrıca doğrulanmamıştır."],["sensor-analog-apps-outline-052","LDR_DC_DIMMER_OUTLINE_NATIVE_UNVERIFIED",7,["arduino-bench-supply","ldr-gl5528","resistor","mosfet-n","standard-light"],"LDR, 12 V sanal DC MOSFET güç yolunda lambanın aydınlatma kontrollü yükünü kavramsal olarak sürer.","Önceki LM358P karşılaştırıcı kartında lamba ya da dimmer güç yolu yoktu. Kaynak SC11 yedi kablolu 12 VDC LDR/MOSFET topolojisi kopyalandı; AC faz kontrolü, üretici kalibrasyonu ve bu yeni outline kimliğinde native ışık/güç eğrisi henüz doğrulanmadı."],["electronic-component-basics-outline-029","NO_IR_TX_RX_OPTICAL_LINK",0,["tutorial-ir-transmitter","tutorial-ir-receiver"],"IR verici kızılötesi ışık sinyali yayar, alıcı bu ışığı algılayan devrenin girişidir.","Verici ve alıcı malzeme referansları gösterilir; optik mesafe, modülasyon, bağlantı veya sayısal alıcı tepkisi simüle edilmez."],["digital-logic-apps-outline-016","NO_COMMAND_TEST_CONTROL_WIRING",0,["arduino-bench-supply","push-no","push-nc","coil-relay","lamp-green"],"Kumanda testinde START/STOP, röle bobini ve yük yolunun işlevleri ayrı değerlendirilir.","Ürünler kablosuz referanstır; gerçek mühürleme, test tepkisi, NC emniyeti veya kaynak-çıkış devresi bulunmaz."],["electronic-component-basics-outline-030","NO_IR_RECEIVER_LOAD_CONTROL",0,["tutorial-ir-receiver","coil-relay","lamp-green"],"IR alıcıdan röle ve lambaya uzanan kumanda zinciri kavramsal bir sinyal-yük örneğidir.","Gerçek IR alıcı terminali, röle sürme devresi, besleme, optik program ve yük tepkisi bulunmaz."],["sensor-analog-apps-outline-053","SOUND_SENSOR_ARDUINO_RUNTIME_UNVERIFIED",8,["arduino-bench-supply","arduino-sound-sensor","arduino-uno","arduino-buzzer"],"5 V sanal besleme, ses sensörü dijital çıkışı, Arduino UNO D2 girişi ve D9 buzzer işlevlerini temsil eder.","Sekiz terminal bağlantısı vardır; bu outline dersinde ses eşiği değişimi, Arduino program yürütümü ve buzzer aç/kapa zaman izi native ölçülmedi."],["electronic-component-basics-outline-031","NO_MIC_PREAMP_GAIN_WIRING",0,["electret-9767-mic","lm358p-dip8"],"Elektret mikrofonun düşük seviyeli ses sinyali ile ön yükseltecin görevleri ayrıdır.","Mikrofon ve LM358P referansları kablosuzdur; gerçek akustik gerilim, kazanç ve sinyal-gürültü ölçümü yapılmamıştır."],["electronic-component-basics-outline-032","NO_SPEAKER_AMPLIFIER_OUTPUT_WIRING",0,["speaker-8ohm-1w","lm358p-dip8"],"Hoparlör yükünün ve yükselteç çıkışının güç/empedans sınırları vardır.","Hoparlör ve LM358P malzeme kartında gerçek çıkış sürücüsü, ses dalgası, güç ve distorsiyon ölçümü yoktur."],["electronic-component-basics-outline-033","NO_CLAP_TRIGGER_RELAY_RUNTIME",0,["electret-9767-mic","arduino-sound-sensor","coil-relay"],"Alkışla tetiklemede mikrofon, eşik işleme ve röle çıkışı farklı bloklardır.","Gerçek alkış algısı, eşik filtresi, kontrol bağlantısı veya röle tepki döngüsü bulunmaz."],["opamp-apps-outline-018","NO_OPAMP_INPUT_OUTPUT_CHARACTERIZATION",0,["lm358p-dip8","resistor","capacitor"],"İşlemsel yükselteçlerin giriş ve çıkış sınırları gerçek besleme, kazanç ve geri beslemeye bağlıdır.","Yalnız sembol malzemeleri vardır; yükselteç kazancı, giriş ofseti veya frekans yanıtı kablolu değildir."],["electronic-component-basics-outline-034","NO_GENERAL_AMPLIFIER_GAIN_VERIFICATION",0,["lm358p-dip8","resistor","capacitor"],"Yükselteç kavramında giriş işareti, çıkış ve doğrulanmış kazanç ayrılmalıdır.","LM358P, direnç ve kondansatör sadece kavram kartıdır; ölçülen kazanç veya güç modeli yoktur."],["opamp-apps-outline-019","NO_LM358_INTERNAL_STRUCTURE_TEST",0,["lm358p-dip8","resistor","capacitor"],"LM358P PDIP-8, giriş/çıkış ve besleme uçları olan çift op-amp paketidir.","Kart genel referanstır; iç transistor yapısı veya gerçek eşdeğer devre açıklaması ve kalibrasyon yoktur."],["opamp-apps-outline-020","OPAMP_GAIN_OUTLINE_NATIVE_UNVERIFIED",14,["arduino-bench-supply","lm358p-dip8","potentiometer","resistor","resistor","unit-ut33d-plus","resistor","resistor","test-probe-red","test-probe-black"],"LM358P'nin 14 kablolu sanal uygulamasında giriş potansiyometresi, referans bölücü, geri besleme ve ölçüm probu görevleri bulunur.","Kablolu model korunur; bu outline kimliği için giriş/çıkış sayısal kazanç, op-amp doyumu, fiziksel 24 V uygunluk ve native zaman izi ayrıca doğrulanmamıştır."]];
+for(const [id,reason,expectedWires,partIds,concept,limits] of mq07OpticalRows){
+ const lesson=L.byId[id],previous=lesson?.project;
+ if(!lesson||!previous)throw Error('MQ07 SC336-349 lesson absent '+id);
+ if(id==='electronic-switching-outline-061'){
+  if(lesson.kind!=='wiring'||previous.wires.length!==8||
+     previous.components.filter(c=>c.typeId==='bd139-npn').length!==1)
+   throw Error('SC336 old generic BJT project changed');
+  const p=board(id,lesson.title,[['arduino-tlp521-1','TLP521-1 iç fototransistör örneği'],['resistor','Kolektör yükü kavramı']]);
+  p.projectId=previous.projectId;p.name=previous.name;p.tutorialLesson={...previous.tutorialLesson,phase:'quiz'};
+  lesson.project=p;lesson.kind='quiz';lesson.steps=[];lesson.materials=materialRows(p);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }else if(id==='sensor-analog-apps-outline-052'){
+  const g=L.byId['sensor-analog-apps-src-11'];
+  if(lesson.kind!=='wiring'||previous.wires.length!==12||
+     !previous.components.some(c=>c.typeId==='lm358p-dip8')||g?.project.wires.length!==7||
+     !g.project.components.some(c=>c.typeId==='mosfet-n')||
+     g.project.components.find(c=>c.id==='g1')?.dcVoltage!==12)
+   throw Error('SC338/golden LDR dimmer topology changed');
+  const p=clone(g.project);
+  p.projectId=previous.projectId;p.name=previous.name;p.tutorialLesson={...previous.tutorialLesson,phase:'demo'};
+  lesson.project=p;lesson.kind='wiring';lesson.steps=clone(g.steps);lesson.materials=materialRows(p);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+   sourceTopologyReusedFrom:'sensor-analog-apps-src-11',virtualDcOnly:true,acPhaseAcceptance:false};
+ }else if(id==='electronic-component-basics-outline-029'||id==='electronic-component-basics-outline-030'){
+  if(lesson.kind!=='quiz'||previous.wires.length!==0||previous.components.length!==1||
+     previous.components[0].typeId!=='tutorial-concept')throw Error('IR baseline changed '+id);
+  const parts=id.endsWith('-029')
+   ?[['tutorial-ir-transmitter','IR verici'],['tutorial-ir-receiver','IR alıcı']]
+   :[['tutorial-ir-receiver','IR alıcı'],['coil-relay','Röle bobini'],['lamp-green','Sanal gösterge lambası']];
+  const p=board(id,lesson.title,parts);
+  p.projectId=previous.projectId;p.name=previous.name;p.tutorialLesson={...previous.tutorialLesson,phase:'quiz'};
+  lesson.project=p;lesson.materials=materialRows(p);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ const project=lesson.project,types=project.components.map(c=>c.typeId);
+ if(project.wires.length!==expectedWires||types.length!==partIds.length||partIds.some((x,i)=>types[i]!==x)||
+   Boolean(project.referenceOnly)!==(expectedWires===0))
+  throw Error('MQ07 optical source graph mismatch '+id);
+ lesson.summary=concept+' Bu dersin sanal kapsam sınırı ayrıca belirtilmiştir.';
+ lesson.explanation=concept+' '+limits+' Gerçek cihaz veya fiziksel güvenlik kabulü değildir.';
+ lesson.learningGoal=concept+' Başlık, sanal malzeme/terminal ve kanıtlanan davranışı ayırt etmek.';
+ lesson.beginnerSteps=['Kaynak başlığını ve görünen malzemelerin gerçek uç/kablo sayısını karşılaştır.',
+  'Kavramsal hedef: '+concept,limits,'Dinamik optik/elektriksel ölçüm yapılmadan PASS verme.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07OpticalScope:'SC336_SC349',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+  opticalCalibrationAcceptance:false,acPhaseAcceptance:false};
+ lesson.safety='Yalnız çevrimdışı sanal kavram/cihaz ve düşük gerilimli eğitim referansı; gerçek optik, elektriksel veya üretici cihaz güvenliği kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
