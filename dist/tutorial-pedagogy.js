@@ -3299,6 +3299,72 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
   options:[question[1],question[2],question[3]],answer:0,why:question[4]};
 }
 
+
+/* MQ07 real motor lesson content: use existing golden-derived circuit
+   templates only for scoped lesson clones, never mutate source exemplars. */
+function mq07ReplaceMotorLesson(lesson,source,kind){
+ const p=clone(source);
+ if(kind==='wiring'&&!p.wires.length||kind==='quiz'&&(p.wires.length||!p.referenceOnly))
+  throw Error('MQ07 replacement has wrong source type');
+ setLesson(lesson,p,{kind,quiz:lesson.quiz});
+}
+function mq07SecondStationDOL(lesson){
+ const p=lesson.project;
+ if(p.wires.length!==13||!p.components.some(c=>c.id==='start'&&c.typeId==='push-no')||
+    !p.components.some(c=>c.id==='stop'&&c.typeId==='push-nc')||
+    !p.components.some(c=>c.id==='hold'&&c.typeId==='contact-no'))
+  throw Error('SC132 DOL baseline changed');
+ for(const target of ['start','hold']){
+  const i=p.wires.findIndex(w=>w.from?.c==='stop'&&w.from.p==='22'&&
+   w.to?.c===target&&w.to.p==='13');
+  if(i<0)throw Error('SC132 original STOP branch missing '+target);
+  p.wires.splice(i,1);
+ }
+ const stop2=C('stop2','push-nc',260,760,'S2','İkinci merkez STOP',{
+  tutorialPurpose:'İki NC STOP seri bağlıdır; herhangi bir STOP iki merkezden K1 enerjisini keser.'});
+ const start2=C('start2','push-no',490,760,'S3','İkinci merkez START',{
+  tutorialPurpose:'S1 ile paralel START; ikinci merkez K1 bobinini başlatabilir.'});
+ const added=[
+  W('stop','22','stop2','21','S0/22 → S2/21','İkinci NC STOP seri kontrol zinciridir.','#e53935','L1'),
+  W('stop2','22','start','13','S2/22 → S1/13','Birinci START iki STOP sonrasında beslenir.','#e53935','L1'),
+  W('stop2','22','hold','13','S2/22 → K1/13','Mühürleme iki STOP üzerinden beslenir.','#e53935','L1'),
+  W('stop2','22','start2','13','S2/22 → S3/13','İkinci START paralel kontrol koludur.','#e53935','L1'),
+  W('start2','14','coil','A1','S3/14 → K1/A1','İkinci START K1 bobinine bağlanır.','#e53935','L1')
+ ];
+ p.components.push(stop2,start2);p.wires.push(...added);
+ lesson.materials.push(...materialRows({components:[stop2,start2]}));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ if(p.wires.length!==16||p.components.filter(c=>c.typeId==='push-no').length!==2||
+    p.components.filter(c=>c.typeId==='push-nc').length!==2)
+  throw Error('SC132 two-center terminal graph mismatch');
+}
+function mq07DirectMotorContent(lesson,suffix){
+ const sourceId=suffix==='02'?'motor-star-delta-1':
+  suffix==='03'?'motor-forward-reverse-1':null;
+ if(sourceId){
+  const source=L.byId[sourceId]?.project;
+  if(!source?.wires?.length)throw Error('Missing source motor graph '+sourceId);
+  mq07ReplaceMotorLesson(lesson,source,'wiring');
+ }else if(suffix==='07')mq07SecondStationDOL(lesson);
+}
+function mq07StartMotorContent(lesson,suffix){
+ if(suffix==='12'){
+  const source=L.byId['motor-star-delta-2']?.project;
+  if(!source?.wires?.length||!source.components.some(c=>c.typeId==='coil-delay-on'))
+   throw Error('Missing proven star/delta timer circuit');
+  mq07ReplaceMotorLesson(lesson,source,'wiring');
+ }
+ if(suffix==='06')mq07ReplaceMotorLesson(lesson,topicBoard(lesson.id,lesson.title,[
+  ['supply-3p','Üç faz besleme'],['resistor','L1 kalkış direnci'],
+  ['resistor','L2 kalkış direnci'],['resistor','L3 kalkış direnci'],
+  ['main-contact','K1 direnç bypass kontaktörü'],['motor-3p','M1 üç faz motor']
+ ]),'quiz');
+ if(suffix==='11')mq07ReplaceMotorLesson(lesson,topicBoard(lesson.id,lesson.title,[
+  ['supply-3p','Üç faz şebeke'],['meter-ammeter','Kalkış akımı ölçüm cihazı'],
+  ['motor-3p','M1 üç faz motor'],['overload','F1 termik koruma']
+ ]),'quiz');
+}
 /* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
 const mq07StartSpeedScope144to155=[
  ['01',null,'Paket şalter konumları 0, YILDIZ ve ÜÇGEN olarak seçilir; kayıtlı altı uçlu motor bu konumlarla sınanabilir.','Paket şalterli yıldız/üçgen seçimi Node modelinde doğrulanabilir; güvenlik, gerçek kalkış akımı ve mekanik performans ölçülmemiştir.'],
