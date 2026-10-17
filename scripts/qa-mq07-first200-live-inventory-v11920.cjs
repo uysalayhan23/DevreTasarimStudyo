@@ -20,7 +20,14 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
   if(seen.has(key))issues.push({code:'DUPLICATE_MATERIAL_ROW',componentId:m.componentId});
   seen.add(key);
   if(!component)issues.push({code:'ORPHAN_MATERIAL_ROW',componentId:m.componentId});
-  else if(m.typeId!==component.typeId)issues.push({code:'MATERIAL_TYPE_MISMATCH',componentId:component.id});
+  else{
+   if(m.typeId!==component.typeId)issues.push({code:'MATERIAL_TYPE_MISMATCH',componentId:component.id});
+   // A stale learner-facing label can misidentify a correct physical product.
+   // This is exactly the SC114 ADC0804 mismatch that type-only QA missed.
+   const displayed=String(component.label||component.ref||'').trim();
+   if(displayed&&String(m.label||'').trim()!==displayed)
+    issues.push({code:'MATERIAL_LABEL_MISMATCH',componentId:component.id,componentLabel:displayed,materialLabel:String(m.label||'').trim()});
+  }
   if(!m.label||typeof m.why!=='string'||m.why.trim().length<16)
    issues.push({code:'MISSING_MATERIAL_EXPLANATION',componentId:m.componentId});
  }
@@ -41,6 +48,7 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
  const review=lesson.pedagogyReview||{};
  return {
   id:lesson.id,title:lesson.title,topicId:lesson.topicId,kind:lesson.kind,
+  currentTitleStatus:review.titleTopologyStatus||null,
   designStandard:lesson.designStandard||null,
   componentCount:parts.length,wireCount:wires.length,materialCount:materials.length,
   earlyReviewReason:earlyReviewReason||null,
@@ -69,11 +77,36 @@ function audit({L,defs}={}){
  const earlyById=new Map(early.map(x=>[x.id,x.reason]));
  const historical=HistoricNoWire.entries||[];
  const historyById=new Map(historical.map(e=>[e.id,e]));
- const rows=first200.map(l=>inspectLesson(l,definitions,earlyById.get(l.id),historyById.get(l.id)));
+ const rows=first200.map((l,i)=>({
+  ...inspectLesson(l,definitions,earlyById.get(l.id),historyById.get(l.id)),
+  scNumber:i+1
+ }));
  const byClass={};
  for(const row of rows)byClass[row.contentClass]=(byClass[row.contentClass]||0)+1;
  const ids=rows.map(r=>r.id),unique=new Set(ids);
  const related=rows.filter(r=>r.historicalNoWire);
+ // Live per-ID, not historical fixed-count, classification. Motor/PLC title
+ // scope must remain visible even when all terminals and wires are valid.
+ const motorPlc=rows.filter(r=>/^motor-/.test(r.topicId||'')||r.topicId==='plc-hardware-programming');
+ const motorPlcTitleIssues=motorPlc.filter(r=>r.currentTitleIssue);
+ const motorPlcStructuralIssues=motorPlc.filter(r=>r.issues.length);
+ const motorPlcReview={
+  inspected:motorPlc.length,
+  withWires:motorPlc.filter(r=>r.wireCount>0).length,
+  unwiredReference:motorPlc.filter(r=>!r.wireCount).length,
+  titleIssueCount:motorPlcTitleIssues.length,
+  structuralIssueCount:motorPlcStructuralIssues.length,
+  issues:motorPlc.filter(r=>r.currentTitleIssue||r.issues.length).map(r=>({
+   scNumber:r.scNumber,id:r.id,title:r.title,topicId:r.topicId,
+   kind:r.kind,wireCount:r.wireCount,
+   titleIssue:r.currentTitleIssue,titleStatus:r.currentTitleStatus,
+   structuralIssues:r.issues,
+   physicalAcceptance:r.physicalAcceptance,
+   windowsVisualAcceptance:r.windowsVisualAcceptance,
+   independentPedagogicalAcceptance:r.independentPedagogicalAcceptance
+  })),
+  acceptance:'REVIEW_NATIVE_AND_WINDOWS_PENDING'
+ };
  const historicalConcept=related.filter(r=>r.historicalNoWire.class==='CONCEPT_PRESERVE');
  const historicalApplication=related.filter(r=>r.historicalNoWire.class==='APPLICATION_REPAIR_QUEUE');
  return {
@@ -88,6 +121,7 @@ function audit({L,defs}={}){
    preservedConceptsStillUnwired:historicalConcept.filter(r=>r.wireCount===0&&r.kind==='quiz').length,
    note:'Historical 51-list is a triage set, not a live fix-count or acceptance decision'
   },
+  motorPlcReview,
   summary:{byClass,structuralIssueLessons:rows.filter(r=>r.issues.length).length,
    structuralIssues:rows.reduce((n,r)=>n+r.issues.length,0),
    currentTitleReviewLessons:rows.filter(r=>r.currentTitleIssue).length,
