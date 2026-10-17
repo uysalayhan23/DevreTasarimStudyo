@@ -25,10 +25,11 @@ function validateCircuit(l,model){
  for(const pin of ['P','M'])assert.ok(defs[part.g1.typeId].pins.some(x=>x.id===pin));
  for(const pin of ['BN','BU','BK'])assert.ok(defs[part.s1.typeId].pins.some(x=>x.id===pin));
  assert.match(l.explanation,/24 VDC/);
- // Source wording uses 'K1 A1 ve K1 A2', not the old 'A1/A2' shorthand.
- // Require BOTH actual coil terminals individually, not just a slash format.
- assert.match(l.explanation,/\bK1\s+A1\b/,l.id+' relay coil A1 description');
- assert.match(l.explanation,/\bK1\s+A2\b/,l.id+' relay coil A2 description');
+ // SC13 spells the actual terminals 'K1 A1' / 'K1 A2'; SC14 says
+ // 'K1/A1' / 'K1/A2'. Both describe the SAME two physical terminal IDs.
+ // Require BOTH terminals on K1. No shorthand-only or mismatched K2 accepted.
+ assert.match(l.explanation,/\bK1(?:\s*\/\s*|\s+)A1\b/,l.id+' relay coil A1 description');
+ assert.match(l.explanation,/\bK1(?:\s*\/\s*|\s+)A2\b/,l.id+' relay coil A2 description');
  assert.match(l.explanation,/13.?14/);
  assert.ok(l.beginnerSteps.length>=5);assert.ok(l.summary.length>100);
  assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false);
