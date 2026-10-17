@@ -2516,6 +2516,22 @@ for(const [suffix,issue,expected,concept,limitation] of mq07DriveScope204to213){
   driveRuntimeAcceptance:false,manufacturerParameterAcceptance:false};
 }
 
+/* MQ07_MOTOR_UNACCEPTED_MATERIAL: keep the actual motor product/pins,
+   but tell students why this existing product does not prove the title.
+   Material IDs, labels and electrical graphs remain immutable here. */
+function mq07MotorMaterialLimit(lesson,typeId,limit,actual){
+ const p=lesson.project,matches=p?.components?.filter(c=>c.typeId===typeId)||[];
+ if(matches.length!==1||!Array.isArray(lesson.materials)||!lesson.pedagogyReview?.titleTopologyIssue)
+  return;
+ const component=matches[0],row=lesson.materials.find(m=>m.componentId===component.id);
+ if(!row||row.typeId!==component.typeId||
+    row.label!==String(component.label||component.ref||''))
+  return; // fail closed; inventory reports any pre-existing stale label
+ const why='Bu malzeme '+(component.label||component.ref)+' gerçek '+actual+
+  ' örneğindeki motordur. '+limit+
+  ' Başlıkta geçen ek işlev bu motor/kablo grafiğinde doğrulanmadığı için fiziksel veya sanal işlev PASS değildir.';
+ lesson.materials=lesson.materials.map(m=>m.componentId===component.id?{...m,why}:m);
+}
 /* MQ07_SC172_SC181_MOTOR_SEQUENCE: preserve canonical DOL; disclose absent multiple motors and control. */
 const mq07SequenceScope172to181=[
  ['01','MISSING_SECOND_MOTOR_SEQUENCING','İki motor sıralı kumandası M1/M2, K1/K2 ve ikinci motoru başlatan koşul gerektirir.','Kaydedilmiş devre tek motorlu START–mühürleme–STOP devresidir; ikinci motor veya sıra yoktur.'],
@@ -2547,6 +2563,7 @@ for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC172_SC181',
   titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
 }
 
 /* MQ07_SC164_SC171_SPECIAL_MOTOR: documented mismatch only; canonical physical graph remains unchanged. */
@@ -2584,6 +2601,7 @@ for(const [suffix,issue,concept,limitation] of mq07SpecialMotorScope164to171){
   titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
   specialMotorAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
   independentPedagogicalAcceptance:false};
+ if(!ref)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'üç fazlı asenkron ileri/geri');
 }
 
 /* MQ07_SC156_SC163_BRAKING: preserve existing Y-Delta sample and disclose missing braking mechanisms. */
@@ -2616,6 +2634,7 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC156_SC163',
   titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,brakingAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ mq07MotorMaterialLimit(lesson,'motor-y-d',limitation,'yıldız–üçgen yol verme');
 }
 
 /* MQ07_SC144_SC155_START_SPEED: truthful reference/solver scope without modifying canonical wires. */
