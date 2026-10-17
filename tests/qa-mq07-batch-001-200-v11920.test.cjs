@@ -71,7 +71,7 @@ test('SC07-SC08 grounding and insulation measurement references never masquerade
   assert.ok(lesson,id+' lesson missing');
   assert.equal(lesson.kind,'quiz',id+' cannot be promoted to working wiring');
   assert.equal(lesson.project.wires.length,0,id+' cannot invent measurements');
-  assert.deepEqual(lesson.project.components.map(c=>c.typeId),expectedTypes,id+' real references changed');
+  assert.deepEqual(Array.from(lesson.project.components,c=>c.typeId),expectedTypes,id+' real references changed');
   assert.equal(lesson.materials.length,expectedTypes.length,id+' material count');
   for(let i=0;i<expectedTypes.length;i++){
    const c=lesson.project.components[i],m=lesson.materials[i];
@@ -91,7 +91,7 @@ test('SC07-SC08 grounding and insulation measurement references never masquerade
   assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
  }
  assert.equal(defs['tutorial-earth-tester'].pins.length,0,'SC07 display-only earth tester gained unverified terminals');
- assert.deepEqual(defs['tutorial-insulation-tester'].pins.map(p=>p.id),['L','E']);
+ assert.deepEqual(Array.from(defs['tutorial-insulation-tester'].pins,p=>p.id),['L','E']);
 });
 
 test('SC114 external ADC0804 physical label and learner material must agree',()=>{
