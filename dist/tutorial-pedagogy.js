@@ -4767,6 +4767,84 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC053–SC060 and SC067: repair missing PHYSICAL REFERENCES,
+ * not substitute plausible untested self-oscillating circuits. The existing
+ * catalog has no proven Colpitts/Hartley/Wien/2-BJT native oscillator solver;
+ * SC067 programmable PWM duty is not linked to the pot in Arduino runtime.
+ * These remain unwired cards with explicit NO_WIRED_CIRCUIT review flags. */
+const mq07OscillatorReferenceRepairs={
+ '01':{original:['arduino-bd139','reactor','capacitor'],parts:[
+  ['c2','capacitor','C2','İkinci Colpitts bölücü kondansatörü',{capacitance:10e-9},
+   'Colpitts resonans geri beslemesi için tek bir C yeterli değildir; C1 ve C2 bölücü uçları gerçek devrede bağlanmalıdır.']]},
+ '02':{original:['arduino-bd139','reactor','capacitor'],parts:[
+  ['l2','reactor','L2','İkinci Hartley endüktans/tap bölümü',{inductance:0.001},
+   'Hartley geri beslemesi bir bobin tapı veya iki seri bölüm gerektirir; bu iki ayrı bobin referansının karşılıklı kuplajı modellenmemiştir.']]},
+ '03':{original:['hc49-4mhz-crystal','arduino-bd139','arduino-capacitor-100n'],parts:[
+  ['c2','capacitor','C2','Temsili 22 pF ikinci kristal yük kapasitesi',{capacitance:22e-12},
+   'Kuvars osilatörünün ikinci yük kapasitesidir; 22 pF yalnız eğitsel örnek, üretici yük kapasitesi kabulü değildir.']]},
+ '04':{original:['lm358p-dip8','resistor','capacitor'],parts:[
+  ['r2','resistor','R2','İkinci RC faz kaydırma direnci',{resistance:10000},
+   'Üç aşamalı RC faz-kaydırma geri beslemesinin ikinci direnç referansıdır.'],
+  ['c2','capacitor','C2','İkinci RC faz kaydırma kondansatörü',{capacitance:10e-9},
+   'İkinci RC bölümüdür; frekans ve faz henüz ölçülmedi.'],
+  ['r3','resistor','R3','Üçüncü RC faz kaydırma direnci',{resistance:10000},
+   'Üçüncü RC bölümünün direnç referansıdır.'],
+  ['c3','capacitor','C3','Üçüncü RC faz kaydırma kondansatörü',{capacitance:10e-9},
+   'Üçüncü RC bölümüdür; üç aşama hâlâ kablosuzdur.']]},
+ '05':{original:['lm358p-dip8','resistor','capacitor'],parts:[
+  ['r2','resistor','R2','Wien köprü ikinci direnç referansı',{resistance:10000},
+   'Wien pozitif geri beslemesindeki seri/şönt iki dirençten ikincisidir.'],
+  ['c2','capacitor','C2','Wien köprü ikinci kondansatör',{capacitance:10e-9},
+   'Wien seçici seri/şönt iki RC kolundan ikinci kondansatördür.']]},
+ '06':{original:['arduino-bd139','arduino-bd139','arduino-resistor-1k','arduino-capacitor-100u'],parts:[
+  ['r2','resistor','R2','İkinci transistor kutuplama direnci',{resistance:10000},
+   'Tek kararlı multivibratörde her iki BJT nin bias/geri besleme yolu ayrıca tanımlanmalıdır.']]},
+ '07':{original:['arduino-bd139','arduino-bd139','arduino-resistor-1k','arduino-capacitor-100u'],parts:[
+  ['r2','resistor','R2','İkinci BJT bias/geri besleme direnci',{resistance:10000},
+   'Çift kararlı iki transistörlü saklama için iki taraflı bias/geri besleme gerekir; C1 referansı kendiliğinden latch değildir.'],
+  ['r3','resistor','R3','Çapraz geri besleme direnç referansı',{resistance:10000},
+   'İkinci çapraz dirençli geri besleme referansıdır; gerçek SET/RESET/çıkış durumu devrede kurulmamıştır.']]},
+ '08':{original:['arduino-bd139','arduino-bd139','arduino-resistor-1k','arduino-capacitor-100u'],parts:[
+  ['r2','resistor','R2','İkinci astable zamanlama direnci',{resistance:10000},
+   'İki transistörlü astable topolojinin ikinci karşılıklı RC koludur.'],
+  ['c2','capacitor','C2','İkinci astable zamanlama kondansatörü',{capacitance:100e-6},
+   'Çapraz kuplaj için ikinci kondansatör gerekir; gerçek salınım hâlâ kurulmamıştır.']]},
+ '15':{original:['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'],parts:[
+  ['rv','potentiometer','RV1','NE555 PWM duty ayar potansiyometresi',{potMax:10000,potentiometer:50},
+   'PWM görev oranı için ayrı şarj/deşarj yolu gerekir; bu sürgünün NE555 runtime duty değerine bağlı olduğu iddia edilmez.'],
+  ['d1','1n4148-do35','D1','Şarj yönü gerçek 1N4148 A/K',{},
+   'Gerçek diyot kutuplu bir şarj yolu referansıdır; henüz kablo yok.'],
+  ['d2','1n4148-do35','D2','Deşarj yönü gerçek 1N4148 A/K',{},
+   'Ters yönde ikinci diyot, görev oranı ayarlı şarj/deşarj kolu için gereklidir; henüz kablo yok.'],
+  ['rb','resistor','RB','İkinci 555 zamanlama direnci',{resistance:10000},
+   '555 astable/PWM zamanlama kolunun ayrı direnç referansıdır.']]}
+};
+for(const [suffix,plan] of Object.entries(mq07OscillatorReferenceRepairs)){
+ const id='oscillator-filter-apps-src-'+suffix,l=L.byId[id],p=l?.project;
+ if(!l||l.kind!=='quiz'||p?.referenceOnly!==true||p.wires.length||
+    (l.steps||[]).length||!L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT')||
+    p.components.map(c=>c.typeId).join('|')!==plan.original.join('|')||
+    (l.materials||[]).length!==plan.original.length)
+  throw Error('MQ07 oscillator concept material original changed '+id);
+ if(suffix==='03'){
+  const oldCap=p.components[2];
+  oldCap.typeId='capacitor';oldCap.label='C1 · temsili 22 pF kristal yük kapasitesi';
+  oldCap.capacitance=22e-12;
+  oldCap.tutorialPurpose='4 MHz HC49 kuvars yük kapasitansı referansıdır: genel amaçlı 100 nF yerine küçük kapasitans gösterilir; kristal datasheet yükü doğrulanmadı.';
+ }
+ for(const [part,type,ref,label,extra,why] of plan.parts){
+  if(p.components.some(c=>c.id===part))throw Error('Oscillator part collision '+id+'/'+part);
+  p.components.push(C(part,type,200+p.components.length*170,470,ref,label,{...extra,tutorialPurpose:why}));
+ }
+ l.materials=materialRows(p);
+ l.explanation+=' Bu dersin osilatör/PWM başlığı için eksik katalog malzemeleri eklenmiştir. Tüm elemanlar halen kablosuz malzeme referansıdır; fiziksel uçları birleştiren çalışma grafiği ve zaman/frekans/geri besleme doğrulaması yoktur.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+  mq07OscillatorMaterials:'TITLE_REQUIRED_PARTS_ADDED_UNWIRED',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:'NO_WIRED_CIRCUIT',
+  terminalGrounded:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 /* MQ-07 SC066 / SC068 / SC069: physical NE555P DIP-8 TERMINAL GRAPHS.
  * Arduino catalog has GND/TRIG/OUT/RESET/CTRL/THRES/DISCH/VCC pins.
  * The existing Arduino runtime's time models are board-hosted; standalone
