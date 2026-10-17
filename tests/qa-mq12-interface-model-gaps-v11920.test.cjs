@@ -57,9 +57,22 @@ test('MQ-2 and piezo generic 5 V fallback cannot masquerade as physical signal m
  assert.equal(r.overallAcceptance,'REVIEW');
 });
 
-test('35 unconfigured sensor stimuli and seven reactive gates remain unresolved',()=>{
- assert.equal(r.unconfiguredSensorLessons,35);assert.equal(r.reactiveRestorationCases,7);
+test('unconfigured sensor stimuli remain individually traceable and seven reactive gates stay open',()=>{
+ // 35 was the 2026-10-13 historical baseline; the current native Windows
+ // source scan found 30 on 2026-10-17. This is NOT five verified repairs.
+ assert.equal(r.unconfiguredSensorLessons,30);
+ assert.equal(r.unconfiguredSensorLessonIds.length,r.unconfiguredSensorLessons);
+ assert.equal(new Set(r.unconfiguredSensorLessonIds).size,r.unconfiguredSensorLessons);
+ assert.deepEqual(r.unconfiguredSensorLessonIds,[...r.unconfiguredSensorLessonIds].sort());
+ for(const id of r.unconfiguredSensorLessonIds){
+  const lesson=L.byId[id];assert.ok(lesson?.project?.wires?.length,id);
+  assert.ok(lesson.project.components.some(c=>
+   ['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target),id);
+ }
+ assert.equal(r.reactiveRestorationCases,7);
  assert.equal(r.overallAcceptance,'REVIEW');
+ assert.ok(r.rows.every(x=>x.physicallyApproved===false));
+ assert.equal(r.findings.allEightPhysicalApproved,false);
 });
 test('ultrasonic 35 V injected fixture fails upper manufacturer voltage limit without canonical edit',()=>{
  const altered=structuredClone(L);
