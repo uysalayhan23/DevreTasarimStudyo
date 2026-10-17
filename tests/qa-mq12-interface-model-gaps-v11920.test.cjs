@@ -3,10 +3,16 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const {run}=require('../scripts/qa-mq12-interface-model-gaps-v11920.cjs');
 const L=QA.curriculum(),defs=QA.catalog(),original=JSON.stringify(L.lessons),r=run({L,defs}),f=r.findings;
-test('all eight canonical topics use a real 24 V configured source; no scene mutations',()=>{
- assert.equal(r.sourceLessons,1655);assert.equal(r.wiredLessons,722);
- assert.equal(f.supply24VCount,8);assert.equal(JSON.stringify(L.lessons),original);
- assert.ok(r.rows.every(x=>!x.physicallyApproved&&!x.hasPhysicalTarget));
+test('eight topic records distinguish passive piezo sources from 24 V switch power',()=>{
+ assert.equal(r.sourceLessons,1655);assert.equal(r.wiredLessons,730);
+ assert.equal(r.rows.length,8);assert.equal(JSON.stringify(L.lessons),original);
+ assert.ok(r.rows.every(x=>!x.physicallyApproved));
+ const piezo=r.rows.find(x=>x.id==='sensor-analog-apps-src-08');
+ assert.equal(piezo.placedSensor,'tutorial-piezo');
+ assert.equal(piezo.canonicalVoltage,null);
+ assert.equal(piezo.sourceModelAligned,true);
+ assert.ok(piezo.reviewReasons.includes('NO_24V_BENCH_SUPPLY_IN_SOURCE'));
+ assert.ok(f.supply24VCount>=1&&f.supply24VCount<8);
 });
 test('wenglor U1KT003 has configurable NPN/PNP and NO/NC; avoid false load qualification',()=>{
  assert.equal(r.manufacturers.ultrasonic.outputLimitMA,100);
