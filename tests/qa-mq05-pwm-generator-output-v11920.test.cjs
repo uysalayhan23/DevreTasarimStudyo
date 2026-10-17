@@ -29,7 +29,7 @@ function sample(p,now){
 test('PWM1 has only electrical V+, GND, OUT pins, not a mechanical SHAFT',()=>{
  const d=defs['virtual-pwm-generator-v1'];
  assert.equal(d.kind,'pwm-generator');
- assert.deepEqual(d.pins.map(p=>p.id).sort(),['GND','OUT','V+']);
+ assert.deepEqual(Array.from(d.pins,p=>p.id).sort(),['GND','OUT','V+']);
  assert.ok(d.pins.every(p=>!p.mechanical&&p.signalType!=='MECH'));
 });
 test('native PWM1 OUT drives a connected load at 0, 50 and 100 percent duty',()=>{

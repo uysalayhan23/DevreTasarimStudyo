@@ -25,8 +25,8 @@ test('MQ-07 12V LDR dimmer has an independent electrically wired MOSFET power pa
  assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
  assert.equal(lesson.project.components.length,5);
  assert.equal(lesson.project.wires.length,7);
- assert.deepEqual(lesson.project.wires.map(w=>w.role),['DC+','SIGNAL','0V','SIGNAL','DC+','CONTROL','0V']);
- assert.deepEqual(lesson.pedagogyReview.componentIds,lesson.project.components.map(c=>c.typeId));
+ assert.deepEqual(Array.from(lesson.project.wires,w=>w.role),['DC+','SIGNAL','0V','SIGNAL','DC+','CONTROL','0V']);
+ assert.deepEqual(Array.from(lesson.pedagogyReview.componentIds),Array.from(lesson.project.components,c=>c.typeId));
  assert.equal(lesson.pedagogyReview.ldrVirtualDimmer.domain,'DC_12V_ONLY');
  const g=comp(lesson.project,'g1'),q=comp(lesson.project,'q1'),lamp=comp(lesson.project,'h1');
  assert.equal(g.dcVoltage,12);
@@ -39,8 +39,8 @@ test('MQ-07 12V LDR dimmer has an independent electrically wired MOSFET power pa
  for(const x of [['g1','P','s1','1'],['s1','2','r1','1'],['r1','2','g1','M'],
   ['s1','2','q1','G'],['g1','P','h1','X1'],['h1','X2','q1','D'],['q1','S','g1','M']])
   assert.ok(has(...x),x.join('/'));
- assert.deepEqual(defs['mosfet-n'].pins.map(p=>p.id),['G','D','S']);
- assert.deepEqual(defs['standard-light'].pins.map(p=>p.id),['X1','X2']);
+ assert.deepEqual(Array.from(defs['mosfet-n'].pins,p=>p.id),['G','D','S']);
+ assert.deepEqual(Array.from(defs['standard-light'].pins,p=>p.id),['X1','X2']);
 });
 test('MQ-12 original numeric solver computes monotonic lux to actual load power (not binary ON/OFF)',()=>{
  const p=fresh(),data=[.1,1,10,100,1000].map(lux=>step(p,lux));

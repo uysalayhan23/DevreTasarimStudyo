@@ -4,11 +4,11 @@ const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
 const {audit:bellAudit}=require('../scripts/qa-bell-transformer-v11920.cjs');
 const clone=o=>JSON.parse(JSON.stringify(o));
-const projection=p=>p.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p);
+const projection=p=>Array.from(p.wires,w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p);
 test('MQ07 001-200: third-point lighting is a real canonical 7-wire 3-control circuit',()=>{
  const L=QA.curriculum(),d=L.byId['installation-systems-src-04'],original=L.byId['intermediate-1'];
  assert.deepEqual(projection(d.project),projection(original.project));
- assert.deepEqual(d.project.components.map(c=>c.typeId),original.project.components.map(c=>c.typeId));
+ assert.deepEqual(Array.from(d.project.components,c=>c.typeId),Array.from(original.project.components,c=>c.typeId));
  assert.equal(d.project.components.filter(c=>c.typeId==='wall-vavien').length,2);
  assert.equal(d.project.components.filter(c=>c.typeId==='wall-intermediate').length,1);
  assert.ok(!d.explanation.includes('ara vaviyen henüz bulunmadığından'));

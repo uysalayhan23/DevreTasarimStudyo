@@ -9,8 +9,8 @@ const l=L.byId['installation-systems-src-01'];
 const copied=p=>JSON.parse(JSON.stringify(p));
 test('MQ07 single light is a real four-wire, correctly named virtual circuit',()=>{
  assert.ok(l&&l.kind==='wiring'&&!l.project.referenceOnly);
- assert.deepEqual(l.project.components.map(c=>c.typeId),['supply-1p','mcb-1p','wall-switch','ceiling-light']);
- assert.deepEqual(l.project.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p),
+ assert.deepEqual(Array.from(l.project.components,c=>c.typeId),['supply-1p','mcb-1p','wall-switch','ceiling-light']);
+ assert.deepEqual(Array.from(l.project.wires,w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p),
   ['pg0/L>pg1/1','pg1/2>pg2/13','pg2/14>pg3/X1','pg3/X2>pg0/N']);
  assert.equal(l.pedagogyReview.titleTopologyIssue,null);
  assert.equal(l.pedagogyReview.independentPedagogicalAcceptance,false);

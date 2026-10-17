@@ -15,7 +15,7 @@ test('MQ-07 ten actual wired lessons have causal technical narratives, not templ
   const l=L.byId[id];
   assert.ok(l,'Missing '+id);
   assert.equal(l.designStandard==='rich-reference-v1',false,id+' existing accepted content must stay untouched');
-  assert.deepEqual(l.project.wires.map(wire),wires,id+' canonical wiring must not change');
+  assert.deepEqual(Array.from(l.project.wires,wire),wires,id+' canonical wiring must not change');
   assert.equal(l.pedagogyReview?.semanticPilot,'MQ07_WIRED_FIRST10_20261014',id);
   assert.ok(l.summary.length>100&&l.explanation.length>450,id+' needs concrete explanation');
   assert.ok(l.learningGoal.length>65&&l.beginnerSteps.length>=5,id+' needs student tasks');

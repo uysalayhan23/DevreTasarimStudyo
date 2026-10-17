@@ -12,7 +12,7 @@ test('MQ-07 51-reference triage has exactly 14 preserved quizzes and 34 pending 
  assert.equal(t.originalTotal,51);
  assert.equal(t.conceptPreservedIds.length,14);
  assert.equal(t.applicationRepairIds.length,34);
- assert.deepEqual(t.repairedVirtualIds,[id,'electronic-switching-src-09','electronic-switching-src-10','electronic-switching-src-11']);
+ assert.deepEqual(Array.from(t.repairedVirtualIds),[id,'electronic-switching-src-09','electronic-switching-src-10','electronic-switching-src-11']);
  assert.equal(L.mq07Batch200.reviewIds.length,47);
  assert.equal(L.mq07Batch200.reviewIds.every(x=>x.reason==='NO_WIRED_CIRCUIT'),true);
  const protectedSet=new Set(t.conceptPreservedIds);
@@ -42,8 +42,8 @@ test('repaired motor lesson uses common K1 coil and physically separate two chan
  assert.equal(get(lesson.project,'ka').ref,'K1');
  assert.equal(get(lesson.project,'kb').ref,'K1');
  assert.equal(get(lesson.project,'k1').ref,'K1');
- assert.deepEqual(defs['contact-both'].pins.map(p=>p.id),['11','13','21']);
- assert.deepEqual(defs['motor-dc'].pins.slice(0,2).map(p=>p.id),['+','−']);
+ assert.deepEqual(Array.from(defs['contact-both'].pins,p=>p.id),['11','13','21']);
+ assert.deepEqual(Array.from(defs['motor-dc'].pins.slice(0,2),p=>p.id),['+','−']);
  const has=(a,ap,b,bp)=>lesson.project.wires.some(w=>w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp);
  const links=[
  ['g1','P','sw','13'],['sw','14','k1','A1'],['k1','A2','g1','M'],

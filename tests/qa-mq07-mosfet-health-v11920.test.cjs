@@ -19,7 +19,7 @@ test('real catalog G/D/S and 12 wired terminals, two real virtual UT33D+ probe p
  assert.deepEqual(Array.from(defs['irf540n-mosfet'].pins,x=>x.id),['G','D','S']);
  const wires=lesson.project.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p);
  for(const p of ['rg/2>q1/G','rp/1>q1/G','q1/S>g1/M','h1/X2>q1/D','vg/V>vg-red/PLUG','vg/COM>vg-black/PLUG','vl/V>vl-red/PLUG','vl/COM>vl-black/PLUG'])assert.ok(wires.includes(p),p);
- for(const [probe,id,terminal] of [['vg-red','q1','G'],['vg-black','q1','S'],['vl-red','h1','X1'],['vl-black','h1','X2']])assert.deepEqual(part(lesson.project,probe).probeTarget,{c:id,p:terminal});
+ for(const [probe,id,terminal] of [['vg-red','q1','G'],['vg-black','q1','S'],['vl-red','h1','X1'],['vl-black','h1','X2']])assert.deepEqual({...part(lesson.project,probe).probeTarget},{c:id,p:terminal});
  for(const id of ['vg','vl'])assert.equal(part(lesson.project,id).meterPosition,3);
 });
 test('original native MOSFET solver: off/on/off with gate and load measured, not fake animation',()=>{
