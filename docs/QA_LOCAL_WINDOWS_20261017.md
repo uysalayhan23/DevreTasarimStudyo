@@ -104,3 +104,11 @@ Aşağıdaki gruplama TAP hata metinlerine dayalı **ön tanıdır**, farklı k�
 - `a082168`: golden testinde bu **tek kaynak belgeli ders** için eski fixture'ın 4 parçalı/2 prob-fiși kablolu durumunu ve yenisinin tam **2 parçalı/0 kablolu RTD kavramsal kartını** ayrı ayrı doğrulayan dar kapsamlı istisna eklenmiştir. Koruma statüsü ya da fiziksel onay yükseltilmez; fixture değiştirilmez.
 - Test artık 90 kaydın hepsini dolaşıp kalan kaynak farklarını **ID + kısa hata nedeniyle topluca** bildirir, ilk hatada kesmez. `tests/fixtures/tutorial_native_solver_golden_v11920.json`, `dist/`, simülasyon ve `BASLAT.bat` değişmedi. Yeni Windows hedefli test **NOT_RUN**; başka driftler varsa **FAIL** olarak kalır.
 - MQ-12/MQ-13/MQ-00: tarihsel simülasyon kararlılığı dar kapsamda PASS; 90 güncel ders golden kaynağı, gerçek üretici/donanım ve tam 1792 regresyon kapıları **OPEN / NOT_ACCEPTED**.
+
+## Golden Windows native 2/2 PASS — 2026-10-17
+
+- Kullanıcı laptopu: `git rev-parse --short HEAD && node --test tests/tutorial-native-solver-golden-v11920.test.cjs` → **HEAD `a6e0a5c`**, **2/2 PASS, 0 FAIL, 0 skipped**, `2560.1704 ms` (Windows / Node.js 22.14.0).
+- İlk test: 90 tarihsel golden grafiğiyle karşılaştırma; yalnız kaynak geçmişinden kanıtlanan SC22 termokupl ölçüm katmanı, SC23 PT100 terminal düzenlemesi ve `electronic-component-basics-outline-025` PT100 kavramsal kart istisnaları açıkça doğrulanır; kalan kaynak farklılıkları sıfırdır. `pgw` geçici sayaç farkları sadece benzersizlik doğrulandıktan sonra normalleştirilir. Golden JSON değiştirilmez.
+- İkinci test: 90 tarihsel golden başlangıç devresi ile en az 250 kaynak kontrol durumunun gerçek `Simulation.solve` kararlılığı native Node testinde PASS.
+- **MQ-12 hedefli test PASS; MQ-13 kaynak sürekliliği kontrolü:** golden fixture dosyası, `dist/`, cihaz terminal kimliği, `BASLAT.bat` değişmedi. **MQ-00 kapsam kararı:** güncel öğreticilerin hepsinin dinamik işlevselliği, Windows/Edge görsel QA, gerçek elektrik/fiziksel üretici kabulü ve 1792 testlik tam regresyon **OPEN / NOT_ACCEPTED**.
+- Tam regresyon son ölçümü, eski `98771a1` üzerinde **1680 PASS / 112 FAIL**; güncel HEAD için yeni toplam hesaplanmadı.
