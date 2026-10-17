@@ -5008,6 +5008,34 @@ for(const [suffix,isMixer] of [['24',false],['25',true]]){
  L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+/* MQ-07 SC079–SC082 material identity honesty: a catalog LM358P is
+ * a small-signal op-amp, NOT an echo line, calibrated VU meter or
+ * 14 W / 100 W loudspeaker power amplifier. Do not fabricate power stages. */
+const mq07AudioMissingScope79to82={
+ '27':'LM358P yalnız küçük işaret analog işlem elemanıdır. Eko için gerekli gecikme/bellek, tekrar ve geri besleme ses zinciri bu kablosuz referans kartında kurulmadı.',
+ '28':'LM358P yalnız küçük işaret analog işlem elemanıdır. VU için gereken doğrultma, süre ağırlıklı gösterge ve seviye kalibrasyonu bu kartta kurulmadı.',
+ '29':'LM358P 14 W hoparlör güç sürücüsü değildir. Çıkış güç katı, uygun hoparlör/yük, termal koruma, üretici anma gücü ve ölçüm yoktur.',
+ '30':'LM358P 100 W hoparlör güç sürücüsü değildir. Çıkış güç katı, uygun hoparlör/yük, termal koruma, üretici anma gücü ve ölçüm yoktur.'
+};
+for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
+ const id='oscillator-filter-apps-src-'+suffix,l=L.byId[id],p=l?.project;
+ const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ if(!l||l.kind!=='quiz'||!p||p.referenceOnly!==true||p.wires.length!==0||
+    p.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    l.materials.length!==expected.length)
+  throw Error('MQ07 SC079–082 material baseline changed '+id);
+ const op=p.components.find(c=>c.typeId==='lm358p-dip8');
+ const row=l.materials.find(m=>m.componentId===op?.id&&m.typeId===op.typeId);
+ if(!row||row.label!==op.label)throw Error('MQ07 missing LM358 learner role '+id);
+ op.label='LM358P · küçük sinyal op-amp (güç katı değil)';
+ row.label=op.label;row.why=role;
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  componentIds:p.components.map(c=>c.typeId),
+  audioMaterialIdentity:'LM358P_SMALL_SIGNAL_ONLY',
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
  * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
  * No golden project or global solver mutation. */
