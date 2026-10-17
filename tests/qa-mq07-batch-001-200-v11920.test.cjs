@@ -60,6 +60,40 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
  assert.ok(!check.blocked&&!check.shortCircuit&&!check.oscillating);
 });
 
+test('SC07-SC08 grounding and insulation measurement references never masquerade as working meters',()=>{
+ const defs=QA.catalog();
+ const scenarios=[
+  ['installation-grounding-src-07',['tutorial-earth-tester','ground'],/Topraklama direnci ölçer/i,/Ω/],
+  ['installation-grounding-src-08',['tutorial-insulation-tester','terminal-2','ground'],/Yalıtkanlık direnci ölçer/i,/MΩ/]
+ ];
+ for(const [id,expectedTypes,deviceName,unit] of scenarios){
+  const lesson=L.byId[id];
+  assert.ok(lesson,id+' lesson missing');
+  assert.equal(lesson.kind,'quiz',id+' cannot be promoted to working wiring');
+  assert.equal(lesson.project.wires.length,0,id+' cannot invent measurements');
+  assert.deepEqual(lesson.project.components.map(c=>c.typeId),expectedTypes,id+' real references changed');
+  assert.equal(lesson.materials.length,expectedTypes.length,id+' material count');
+  for(let i=0;i<expectedTypes.length;i++){
+   const c=lesson.project.components[i],m=lesson.materials[i];
+   assert.equal(m.componentId,c.id,id+' material component');
+   assert.equal(m.typeId,c.typeId,id+' material type');
+   assert.ok(m.label&&m.why?.length>45,id+' component role missing '+i);
+   assert.ok(defs[c.typeId],id+' unknown component '+c.typeId);
+  }
+  assert.match(lesson.summary,deviceName,id+' summary detached from device');
+  assert.match(lesson.explanation,deviceName,id+' explanation detached from device');
+  assert.match(lesson.learningGoal,deviceName,id+' learning goal detached from device');
+  assert.match(lesson.explanation,unit,id+' missing explicit measurement limitation');
+  assert.match(lesson.materials[0].why,unit,id+' meter role invents measurement');
+  assert.equal(lesson.pedagogyReview.titleTopologyIssue,'NO_WIRED_CIRCUIT');
+  assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
+  assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
+  assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+ }
+ assert.equal(defs['tutorial-earth-tester'].pins.length,0,'SC07 display-only earth tester gained unverified terminals');
+ assert.deepEqual(defs['tutorial-insulation-tester'].pins.map(p=>p.id),['L','E']);
+});
+
 test('SC114 external ADC0804 physical label and learner material must agree',()=>{
  const lesson=L.byId['microcontroller-apps-src-05'];
  assert.ok(lesson,'Missing SC114 source lesson');
