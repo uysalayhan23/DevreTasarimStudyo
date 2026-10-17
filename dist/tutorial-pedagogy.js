@@ -2628,25 +2628,112 @@ const mq07SequenceScope172to181=[
  ['09','MISSING_INDEPENDENT_TWO_MOTOR_CONTROL','İki motorun isteğe bağlı kumandasında ayrı motor, kontaktör ve seçim kontrolü gerekir.','Kaydedilmiş devrede tek motor, tek kontaktör ve tek START vardır; ikinci motor seçimi yoktur.'],
  ['10','MISSING_CONVEYOR_CONDITIONAL_SEQUENCE','Konveyörde koşullu motor sırası iki motor ve algılayıcıdan kontrol edilen başlatma şartı gerektirir.','Tek motorlu DOL devresinde ikinci konveyör motoru, koşul sensörü ve sıralama lojik yolu yoktur.']
 ];
+/* MQ07 sequence lesson CONTENT (not a generic QA overlay).
+   SC172: real two-motor automatic dependent sequence. M1 starts by
+   existing START/STOP K1; its K1/13–14 contact enables K2 and M2.
+   SC180: K1 and K2 independently held by distinct START/STOP stations.
+   Use only existing IEC three-phase motor, contactor and button pins. */
+function mq07RealTwoMotorSequence(lesson,variant){
+ const p=lesson.project;
+ if(!p||p.wires.length!==13||!Array.isArray(lesson.materials)||
+    !Array.isArray(lesson.steps)||
+    p.components.filter(c=>c.typeId==='motor-3p').length!==1||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==1||
+    !p.components.some(c=>c.id==='g1'&&c.typeId==='supply-3p')||
+    !p.components.some(c=>c.id==='motor'&&c.ref==='M1')||
+    !p.components.some(c=>c.id==='coil'&&c.ref==='K1')||
+    !p.components.some(c=>c.id==='main'&&c.ref==='K1'))
+  throw Error('MQ07 SC172/SC180 original 13-wire DOL graph changed');
+ const motor2=C('motor2','motor-3p',1800,260,'M2','M2 · ikinci üç fazlı asenkron motor');
+ const main2=C('main2','main-contact',1470,210,'K2','K2 · ikinci motor güç kontakları');
+ const coil2=C('coil2','coil-contactor',1460,600,'K2','K2 · ikinci motor kontaktör bobini');
+ const added=[motor2,main2,coil2];
+ const wires=[
+  ...[['L1','1','2','U','#e53935'],['L2','3','4','V','#f97316'],
+      ['L3','5','6','W','#f4c430']].flatMap(([phase,input,output,terminal,color])=>[
+   W('g1',phase,'main2',input,phase+' → K2/'+input,
+    'K2 ikinci motor için bağımsız üç faz güç girişidir.',color,phase,'2.5'),
+   W('main2',output,'motor2',terminal,'K2/'+output+' → M2/'+terminal,
+    'K2 çektiğinde M2 sargısı '+terminal+' enerjilenir.',color,phase,'2.5')
+  ]),
+  W('g1','PE','motor2','PE','PE → M2/PE',
+    'M2 gövdesi kaynak PE koruma hattına bağlıdır.','#16a34a','PE','2.5')
+ ];
+ if(variant==='dependent'){
+  const allow=C('k1Permit','contact-no',1220,620,'K1','K1 NO · M2 sıralama izni');
+  added.push(allow);
+  wires.push(
+   W('g1','L1','k1Permit','13','L1 → K1 yardımcı NO/13',
+    'M2 beslemesi K1 birinci motor kontaktörü çekmeden açılmaz.','#e53935','L1'),
+   W('k1Permit','14','coil2','A1','K1 NO/14 → K2/A1',
+    'M1 kontaktörü etkinleştiğinde ikinci kontaktör ve M2 sıralı açılır.','#e53935','L1'),
+   W('coil2','A2','g1','N','K2/A2 → N',
+    'M2 kontaktör bobinini nötre döndürür.','#1e88e5','N')
+  );
+ }else if(variant==='independent'){
+  const stop2=C('stop2','push-nc',1140,780,'S2','M2 · bağımsız STOP');
+  const start2=C('start2','push-no',1210,520,'S3','M2 · bağımsız START');
+  const hold2=C('hold2','contact-no',1230,710,'K2','K2 NO · M2 mühürleme');
+  added.push(stop2,start2,hold2);
+  wires.push(
+   W('g1','L1','stop2','21','L1 → M2 STOP/21',
+    'İkinci motorun ayrı NC durdurma butonu kendi kontrol kolunu keser.','#e53935','L1'),
+   W('stop2','22','start2','13','M2 STOP/22 → START/13',
+    'S3 yalnız M2 bobinini tetikler.','#e53935','L1'),
+   W('start2','14','coil2','A1','M2 START/14 → K2/A1',
+    'M2 bağımsız START, K2 kontaktörünü çeker.','#e53935','L1'),
+   W('coil2','A2','g1','N','K2/A2 → N',
+    'M2 bobin dönüş yoludur.','#1e88e5','N'),
+   W('stop2','22','hold2','13','M2 STOP/22 → K2 NO/13',
+    'M2 mühürlemesi yalnız ikinci durdurma devresinde kalır.','#e53935','L1'),
+   W('hold2','14','coil2','A1','K2 NO/14 → K2/A1',
+    'S3 bırakıldığında K2, M2 için ayrı mühürleme sağlar.','#e53935','L1')
+  );
+ }else throw Error('Unsupported two-motor lesson variant '+variant);
+ p.components.push(...added);p.wires.push(...wires);
+ lesson.materials.push(...materialRows({components:added}));
+ lesson.steps.push(...wires.map(w=>({
+  from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
+  why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+ })));
+ if(p.wires.length!==(variant==='dependent'?23:26)||
+    p.components.filter(c=>c.typeId==='motor-3p').length!==2||
+    p.components.filter(c=>c.typeId==='coil-contactor').length!==2||
+    p.components.filter(c=>c.typeId==='main-contact').length!==2)
+  throw Error('Two-motor source topology did not match expected canonical pins');
+}
 for(const [suffix,issue,concept,limitation] of mq07SequenceScope172to181){
  const id='motor-sequence-src-'+suffix,lesson=L.byId[id];
  if(!lesson||lesson.kind!=='wiring'||lesson.project?.wires?.length!==13||
     lesson.project.components.filter(c=>c.typeId==='motor-3p').length!==1||
     lesson.project.components.filter(c=>c.typeId==='coil-contactor').length!==1)
   throw Error('MQ07 SC172–181 original topology changed: '+id);
- lesson.summary=concept+' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.';
- lesson.explanation=concept+' '+limitation+' Node ile tek motorun START/hold/STOP davranışı sınanır; çok motorlu veya fiziksel çalışma kabul edilmemiştir.';
+ const dependent=suffix==='01',independent=suffix==='09';
+ if(dependent||independent)mq07RealTwoMotorSequence(lesson,dependent?'dependent':'independent');
+ const real=dependent||independent;
+ const actual=dependent?
+  'M1 START/STOP ile K1 çekince K1 NO/13–14 kolu K2 ve M2 motorunu sırayla enerjilendirir. M1 STOP ile iki motor da bırakır.':
+  independent?
+  'M1 ve M2 ayrı START, STOP ve K1/K2 mühürleme koluna sahiptir. Her motor bağımsız başlatılır veya durdurulur.':null;
+ lesson.summary=concept+(real?' İki ayrı motorun güç ve kumanda devreleri şimdi çizilmiştir.':
+  ' Bu sayfada yalnız tek motorlu doğrudan yol verme (DOL) devresi vardır.');
+ lesson.explanation=concept+' '+(actual||limitation)+
+  (real?' Gerçek iki motorun dinamik Node ve Windows sonucu henüz doğrulanmamıştır; fiziksel/üretici kabulü verilmez.':
+  ' Node ile tek motorun START/hold/STOP davranışı sınanır; çok motorlu veya fiziksel çalışma kabul edilmemiştir.');
  lesson.learningGoal=concept+' Başlıktaki şartları çizilmiş motor, kontaktör ve kumanda kablolarıyla karşılaştırmak.';
  lesson.beginnerSteps=[
   'Ekrandaki motorları ve ayrı kontaktörleri say.',
   'START, mühürleme ve STOP tepkilerini sanal Node çözümünde karşılaştır.',
-  limitation,
-  'Eksik ikinci motor, timer, limit ya da termik röle işlevlerine elektriksel PASS verme.'
+  actual||limitation,
+  'Yalnız gerçek çalışan motor koşullarını doğrula; eksik timer, limit ya da termik işlevine PASS verme.'
  ];
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07MotorScope:'SC172_SC181',
-  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,multiMotorAcceptance:false,
+  titleTopologyStatus:'REVIEW',
+  titleTopologyIssue:dependent?'TWO_MOTOR_SEQUENTIAL_NATIVE_PENDING':
+    independent?'TWO_MOTOR_INDEPENDENT_NATIVE_PENDING':issue,
+  multiMotorAcceptance:false,
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
- mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
+ if(!real)mq07MotorMaterialLimit(lesson,'motor-3p',limitation,'tek motorlu DOL');
 }
 
 /* MQ07_SC164_SC171_SPECIAL_MOTOR: documented mismatch only; canonical physical graph remains unchanged. */
