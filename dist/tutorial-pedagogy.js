@@ -5526,6 +5526,49 @@ for(const [id,issue,newParts,concept,limits] of mq07OscillatorRows){
  l.safety='Bu ekran yalnız sanal, kablosuz malzeme referansıdır; gerçek osilatör, laboratuvar frekans testi veya enerjili donanım güvenliği kabulü değildir.';
 }
 
+
+/* MQ07_SC392_SC405_PULSE_555_FILTER: source-grounded no-wire lessons with explicit negative dynamic gates. */
+const mq07PulseScope=[["electronic-component-basics-outline-040","CLAMPER_DIODE_CAP_BIAS_NOT_WIRED",null,"Kenetleme, diyot ve kondansatörle giriş işaretinin DC referansının kaydırılması kavramıdır.","Kartta diyot, C ve R bulunur; gerçek polarite, şarj/deşarj ve kaydırılmış sinyal çıkışı ölçülmemiştir."],["electronic-component-basics-outline-041","PULSE_GENERATOR_OSCILLATION_NOT_WIRED",null,"Pals üretimi zamanla değişen anahtarlama ve bir çıkış işareti gerektirir.","NPN, R ve C yalnız kavram kartıdır; osilasyon, frekans, darbe genişliği veya çıkış kablosu yoktur."],["electronic-component-basics-outline-042","CLIPPER_DIODE_SIGNAL_NOT_WIRED",null,"Diyotlu kırpma belirlenen referansın üstünde/altında işaret sınırlama ile açıklanır.","Diyot, direnç ve sinyal üreteci kablosuzdur; iletim eşikleri ve kırpılmış dalga ölçülmemiştir."],["electronic-component-basics-outline-043","CLAMPER_EXERCISE_NO_SHIFTED_WAVE",null,"Kenetleyici uygulaması, diyot yönü, RC zaman sabiti ve giriş-çıkış karşılaştırması ister.","Kartta diyot, R ve C vardır; bağlanmış kenetleme yolu veya doğrulanmış gerilim kayması yoktur."],["electronic-component-basics-outline-044","MILLER_CAP_FEEDBACK_NOT_WIRED",null,"Miller etkisi etkin kapasite ve geri besleme kazancı bağlamında ele alınır.","LM358, R, C referansları bir Miller geri besleme devresi veya ölçülmüş frekans yanıtı değildir."],["electronic-component-basics-outline-045","BOOTSTRAP_CAP_REFERENCE_NOT_WIRED",null,"Bootstrap uygulamaları kapasitif bağlaşım ve uygun sürme/topoloji koşullarına dayanır.","LM358, R, C kablosuz malzemelerdir; yüzer referans, yükselen gerilim veya çalışma güvenliği doğrulanmamıştır."],["electronic-component-basics-outline-046","SCHMITT_UPPER_LOWER_THRESHOLDS_UNWIRED",["lm358p-dip8","resistor","resistor","capacitor"],"Schmitt devresinde pozitif geri besleme ile üst/alt geçiş eşikleri kavramsal olarak ayrılır.","İkinci direnç geri besleme kavramını temsil eder; gerçek LM358 pin bağlantıları, üst/alt eşik ve histerezis ölçümü yoktur."],["oscillator-filter-apps-outline-043","NE555_ASTABLE_FREQUENCY_UNWIRED",["arduino-ne555","resistor","resistor","capacitor"],"555 astable osilatörde iki zamanlama direnç kolu ve bir kondansatör periyot/duty kavramını açıklar.","İkinci R, astable zamanlama kollarının ayrımını gösterir; 555 pinleri, gerçek salınım veya ölçülmüş periyot yoktur."],["oscillator-filter-apps-outline-044","NE555_PWM_DUTY_ADJUSTMENT_UNWIRED",["arduino-ne555","resistor","potentiometer","capacitor"],"555 PWM kavramı duty oranı ayarının sabit frekans hedefinden ayrı izlenmesini gerektirir.","Eklenen potansiyometre yalnız ayar elemanı referansıdır; diyotlu ayrı şarj/deşarj yolu, gerçek PWM çıkışı veya duty ölçümü yoktur."],["oscillator-filter-apps-outline-045","NE555_MONOSTABLE_TRIGGER_UNWIRED",["arduino-ne555","resistor","capacitor","push-no"],"555 tek kararlı davranışında ayrı tetikleme girişi ve bir RC zamanlama aralığı gerekir.","Buton tetik kaynağı referansı olarak eklendi; trigger/reset eşikleri ve çıkış darbesi kablolanmadı, ölçülmedi."],["oscillator-filter-apps-outline-046","NE555_BISTABLE_SET_RESET_UNWIRED",["arduino-ne555","push-no","push-no","resistor"],"555 çift kararlı durumda SET/RESET işlevleri ve korunan çıkış durumu birbirinden ayrılır.","İki komut butonu yalnız SET/RESET kavramıdır; latch hafızası, iç pin durumu ve çıkış davranışı simüle edilmez."],["oscillator-filter-apps-outline-047","FILTER_TOPOLOGY_RESPONSE_UNWIRED",null,"Filtreleme pasif ve aktif devrelerde farklı transfer işlevlerine dayanır.","LM358, R ve C referansları tek başına bir filtre frekans cevabı veya kazanç değeri oluşturmaz."],["oscillator-filter-apps-outline-048","PASSIVE_FILTER_MUST_NOT_HAVE_OPAMP",["resistor","capacitor","reactor"],"Pasif filtre yalnız direnç, kondansatör ve endüktans gibi pasif devre elemanlarına dayanabilir.","Yanlış LM358 op-amp karttan çıkarıldı; R, C ve L kablosuz sembolleri gerçek alçak/yüksek geçiren topoloji ya da frekans yanıtı değildir."],["oscillator-filter-apps-outline-049","ACTIVE_FILTER_OPAMP_TRANSFER_UNWIRED",null,"Aktif filtrelerde op-amp beslemesi, geri besleme ve RC frekans seçici yollar gerekir.","LM358, R ve C malzeme referansları var; besleme ve geri besleme terminali kablolu olmadığından kesim frekansı veya kazanç simüle edilmez."]];
+for(const [id,issue,corrected,concept,limits] of mq07PulseScope){
+ const l=L.byId[id],source=l?.project;
+ if(!l||!source||l.kind!=='quiz'||!source.referenceOnly||source.wires.length!==0||l.steps.length!==0)
+  throw Error('MQ07 SC392–405 original no-wire scope changed '+id);
+ if(corrected){
+  const originals={
+   'electronic-component-basics-outline-046':['lm358p-dip8','resistor','capacitor'],
+   'oscillator-filter-apps-outline-043':['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'],
+   'oscillator-filter-apps-outline-044':['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'],
+   'oscillator-filter-apps-outline-045':['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'],
+   'oscillator-filter-apps-outline-046':['arduino-ne555','arduino-resistor-1k','arduino-capacitor-100u'],
+   'oscillator-filter-apps-outline-048':['lm358p-dip8','resistor','capacitor']
+  };
+  const oldParts=source.components.map(c=>c.typeId),expected=originals[id];
+  if(!expected||JSON.stringify(oldParts)!==JSON.stringify(expected))
+   throw Error('MQ07 SC392–405 canonical parts changed '+id);
+  const p=board(id,l.title,corrected.map((type,i)=>[type,({
+   'arduino-ne555':'NE555 zamanlama entegresi','lm358p-dip8':'LM358P referansı',
+   'potentiometer':'PWM ayar elemanı','push-no':i===1?'SET/tetik komutu':'RESET/tetik komutu',
+   'reactor':'Bobin / endüktans','capacitor':'Zaman/frekans kondansatörü',
+   'resistor':'Direnç / geri besleme öğesi'})[type]||type]));
+  p.projectId=source.projectId;p.name=source.name;
+  p.tutorialLesson={...source.tutorialLesson,phase:'quiz'};
+  l.project=p;l.materials=materialRows(p);
+  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ l.summary=concept+' Bu kart kablolu ve çalışan bir elektronik deney değildir.';
+ l.explanation=concept+' '+limits+' Gerçek dijital/analog dalga izi, üretici verisi veya elektriksel güvenlik kabulü yoktur.';
+ l.learningGoal=concept+' Gerçek çizili terminal/devre kanıtıyla kaynak başlığının kapsam farkını tespit etmek.';
+ l.beginnerSteps=['Dersin gerçek malzeme kimliklerini ve sıfır kablo durumunu tespit et.',
+  'Kavramsal kazanım: '+concept,limits,
+  'Osilasyon, PWM, eşik, frekans yanıtı veya fiziksel ölçüm kanıtı olmadan PASS verme.'];
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07PulseScope:'SC392_SC405',
+  titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  nativeDynamicAcceptance:false,frequencyResponseAcceptance:false,
+  waveformAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ l.safety='Bu sayfa yalnız çevrimdışı kablosuz kavram/malzeme referansıdır; gerçek çalışma, cihaz besleme veya elektriksel güvenlik onayı değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
