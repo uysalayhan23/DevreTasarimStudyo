@@ -22,7 +22,7 @@ for(const [id,issue,expectedParts] of rows)test('SC378–391 '+id+' source/revie
 });
 test('SC388–390 do not expose unchanged 8-wire instantaneous switch as multivibrator dynamics',()=>{
  for(const n of [40,41,42]){
-  const id='oscillator-filter-apps-outline-'+n,l=L.byId[id];
+  const id='oscillator-filter-apps-outline-'+String(n).padStart(3,'0'),l=L.byId[id];
   assert.equal(l.project.wires.length,0);
   assert.equal(l.kind,'quiz');assert.equal(l.project.referenceOnly,true);
   assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
