@@ -100,6 +100,54 @@ test('first-200 inventory catches stale learner-facing material labels on correc
  assert.ok(!Inventory.inspectLesson(fixed,catalog).issues.some(x=>x.code==='MATERIAL_LABEL_MISMATCH'));
 });
 
+test('probeTarget virtual terminal and junction inventory catches contacts that native prepare would silently delete',()=>{
+ const target={
+  id:'fixture-probe',topicId:'measurement-workshop',title:'Synthetic probe scope',
+  kind:'wiring',pedagogyReview:{physicalAcceptance:false},
+  project:{
+   components:[
+    {id:'pr',typeId:'probe-red',label:'PR'},
+    {id:'r1',typeId:'resistor',label:'R1'}
+   ],
+   junctions:[{id:'j1'}],
+   wires:[{id:'w1',from:{c:'r1',p:'1'},to:{j:'j1'}}]
+  },
+  materials:[
+   {componentId:'pr',typeId:'probe-red',label:'PR',why:'Native virtual contact to existing signal terminal'},
+   {componentId:'r1',typeId:'resistor',label:'R1',why:'A physically real catalog resistor with two pins'}
+  ]
+ };
+ const defs={
+  'probe-red':{probeColor:'red',pins:[{id:'PLUG'},{id:'TIP'}]},
+  resistor:{pins:[{id:'1'},{id:'2'}]}
+ };
+ const broken=x=>Inventory.inspectLesson(x,defs).issues.filter(i=>i.code==='INVALID_PROBE_TARGET');
+ const make=contact=>{const p=structuredClone(target);p.project.components[0].probeTarget=contact;return p;};
+ for(const good of [{c:'r1',p:'1'},{j:'j1'},{w:'w1'}])
+  assert.deepEqual(broken(make(good)),[],'Valid native contact '+JSON.stringify(good));
+ for(const bad of [{c:'r1',p:'99'},{c:'missing',p:'1'},{j:'missing'},{w:'missing'}])
+  assert.equal(broken(make(bad)).length,1,'Invalid native contact not detected '+JSON.stringify(bad));
+ const lead=make({w:'w2'});
+ lead.project.components.push({id:'meter',typeId:'meter-multimeter',label:'M'});
+ lead.materials.push({componentId:'meter',typeId:'meter-multimeter',label:'M',why:'Native multimeter probe connection'});
+ defs['meter-multimeter']={kind:'multimeter',pins:[{id:'V'}]};
+ lead.project.wires.push({id:'w2',from:{c:'meter',p:'V'},to:{c:'pr',p:'PLUG'}});
+ assert.equal(broken(lead).length,1,'Floating measurement cable is not a valid probe contact');
+ const nonProbe=make({c:'r1',p:'1'});
+ nonProbe.project.components[1].probeTarget={c:'r1',p:'1'};
+ assert.ok(Inventory.inspectLesson(nonProbe,defs).issues.some(i=>
+  i.code==='PROBE_TARGET_ON_NON_PROBE'&&i.componentId==='r1'));
+});
+
+test('existing SC36/SC38 virtual measurement probes refer only to real catalog pins',()=>{
+ for(const id of ['opamp-apps-src-01','opamp-apps-src-03']){
+  const row=Inventory.inspectLesson(L.byId[id],definitions);
+  assert.ok(!row.issues.some(issue=>
+   issue.code==='INVALID_PROBE_TARGET'||issue.code==='PROBE_TARGET_ON_NON_PROBE'),
+   'Source output probe contact not catalog-valid: '+id);
+ }
+});
+
 test('inventory catches missing material, stale type, unknown terminal and invented acceptance',()=>{
  const lesson={id:'fixture-review',title:'Synthetic read-only fixture',topicId:'fixture',
   kind:'quiz',pedagogyReview:{physicalAcceptance:false},project:{
