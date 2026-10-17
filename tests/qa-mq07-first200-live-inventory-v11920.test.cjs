@@ -207,6 +207,32 @@ test('inventory catches missing material, stale type, unknown terminal and inven
  const absent=Inventory.inspectLesson(missing,{'fixture-part':{pins:[{id:'A'}]}});
  assert.ok(absent.issues.some(i=>i.code==='MISSING_MATERIAL_ROW'));
  assert.equal(absent.contentClass,'QUIZ_OR_REFERENCE');
+
+ // Both identity mismatches used to pass the first-200 inventory because it
+ // stringified pin and junction IDs. The real 1655 QA and Leads.resolve use
+ // strict source/catalog identity, so a numeric 1 is not the pin text '1'.
+ const typed={
+  id:'fixture-strict-identities',title:'Strict terminal/junction fixture',
+  topicId:'fixture',kind:'wiring',
+  project:{
+   components:[{id:'r',typeId:'strict-resistor',label:'R1'}],
+   junctions:[{id:1}],
+   wires:[{id:'w1',from:{c:'r',p:1},to:{j:'1'}}]
+  },
+  materials:[{componentId:'r',typeId:'strict-resistor',label:'R1',
+   why:'One physical resistor and a junction for strict-ID regression'}]
+ };
+ const typedDefs={'strict-resistor':{pins:[{id:'1'},{id:'2'}]}};
+ const before=Inventory.inspectLesson(typed,typedDefs).issues;
+ assert.ok(before.some(i=>i.code==='INVALID_TERMINAL'&&i.pin===1),
+  'Numeric terminal incorrectly aliases the real string pin ID');
+ assert.ok(before.some(i=>i.code==='UNKNOWN_JUNCTION'),
+  'String junction incorrectly aliases a numeric project junction ID');
+ const corrected=structuredClone(typed);
+ corrected.project.wires[0].from.p='1';
+ corrected.project.wires[0].to.j=1;
+ assert.deepEqual(Inventory.inspectLesson(corrected,typedDefs).issues,[],
+  'Real source/catalog pin and junction identities must remain valid');
  // This test formerly mentioned "invented acceptance" but never injected
  // a false acceptance claim. A review-tagged title must fail closed even
  // if its original circuit product and terminal identities stay unchanged.
