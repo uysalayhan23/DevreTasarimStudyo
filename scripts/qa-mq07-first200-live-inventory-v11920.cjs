@@ -36,7 +36,7 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
  }
  const seen=new Set();
  for(const m of materials){
-  const component=components.get(m.componentId),key=String(m.componentId);
+  const component=components.get(m.componentId),key=m.componentId;
   if(seen.has(key))issues.push({code:'DUPLICATE_MATERIAL_ROW',componentId:m.componentId});
   seen.add(key);
   if(!component)issues.push({code:'ORPHAN_MATERIAL_ROW',componentId:m.componentId});
@@ -52,7 +52,7 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
    issues.push({code:'MISSING_MATERIAL_EXPLANATION',componentId:m.componentId});
  }
  for(const c of parts){
-  if(!seen.has(String(c.id)))issues.push({code:'MISSING_MATERIAL_ROW',componentId:c.id});
+  if(!seen.has(c.id))issues.push({code:'MISSING_MATERIAL_ROW',componentId:c.id});
   if(!definitions[c.typeId])issues.push({code:'UNKNOWN_COMPONENT_TYPE',componentId:c.id,typeId:c.typeId});
  }
  for(const [i,w] of wires.entries())for(const side of ['from','to']){
