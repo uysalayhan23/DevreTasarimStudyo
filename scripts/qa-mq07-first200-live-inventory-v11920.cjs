@@ -103,6 +103,17 @@ function inspectLesson(lesson,definitions={},earlyReviewReason=null,historicalTr
   if(!exists)issues.push({code:'INVALID_PROBE_TARGET',componentId:c.id,target});
  }
  const review=lesson.pedagogyReview||{};
+ // A known title/topology mismatch is not a physical, Windows, or
+ // independent-pedagogy acceptance, even if a later overlay accidentally
+ // flips a boolean. Protect actual reviewed lessons only, not locked golden
+ // samples that have no outstanding title defect.
+ if(review.titleTopologyIssue||review.titleTopologyStatus==='REVIEW'){
+  const unsupported=['physicalAcceptance','windowsVisualAcceptance',
+   'independentPedagogicalAcceptance'].filter(k=>review[k]===true);
+  if(unsupported.length)
+   issues.push({code:'OPEN_TITLE_WITH_ACCEPTANCE',fields:unsupported,
+    reason:review.titleTopologyIssue||'REVIEW'});
+ }
  return {
   id:lesson.id,title:lesson.title,topicId:lesson.topicId,kind:lesson.kind,
   currentTitleStatus:review.titleTopologyStatus||null,
