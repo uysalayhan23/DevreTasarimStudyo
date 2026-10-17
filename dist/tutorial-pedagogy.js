@@ -4767,6 +4767,114 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC070/071: first-order ACTIVE RC filters, unity-gain buffered
+ * by the existing physical LM358P DIP-8 (1 OUT, 2 IN-, 3 IN+, 4 V-, 8 V+).
+ * A source topology is not an AC gain sweep, dB response or native PASS. */
+function mq07FirstOrderActiveFilter(lesson,highPass){
+ const old=lesson?.project,expected=['lm358p-dip8','resistor','capacitor'];
+ if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||
+    old.wires.length!==0||lesson.steps.length!==0||lesson.designStandard==='rich-reference-v1'||
+    old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    lesson.materials.length!==expected.length)
+  throw Error('MQ07 active RC filter initial card drift '+lesson?.id);
+ const p=base(lesson.id,lesson.title),scenario=highPass?'yüksek geçiren':'alçak geçiren';
+ const add=(id,type,x,y,ref,label,settings,why)=>
+  p.components.push(C(id,type,x,y,ref,label,{...settings,tutorialPurpose:why}));
+ const wire=(a,ap,b,bp,why,color='#43a047')=>
+  p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ add('g1','arduino-bench-supply',70,130,'G1','Yalnız sanal 12 V DC op-amp beslemesi',
+  {dcVoltage:12,currentLimit:1},'LM358P beslemesini sağlar; gerçek şebeke veya filtre kazancı ölçümü değildir.');
+ add('u1','lm358p-dip8',820,270,'U1','LM358P PDIP-8 · A kanalı',
+  {},'Gerçek katalog pinleri: U1/8 V+, U1/4 V-, U1/3 IN+, U1/2 IN-, U1/1 OUT.');
+ add('fg1','arduino-signal-generator',70,450,'FG1','Sanal sinüs işaret kaynağı',
+  {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:160,
+   generatorAmplitude:0.4,generatorOffset:1,generatorDuty:50},
+  'Yalnız yazılımsal 1–1,4 V aralıklı sinüs işareti; osiloskop ve üretici kalibrasyonu yok.');
+ add('r1','resistor',450,410,'R1','10 kΩ RC direnç',
+  {resistance:10000},
+  highPass?'C1 seri girişten sonra U1/3 düğümünü 6 V VREF orta gerilimine kutuplar.':
+   'FG1 girişinden U1/3 düğümüne seri alçak geçiş direncidir.');
+ add('c1','capacitor',620,565,'C1','100 nF RC kondansatör',
+  {capacitance:100e-9},
+  highPass?'FG1/OUT ile U1/3 arasında seri, DC yi ayıran yüksek geçiş kondansatörüdür.':
+   'R1 sonrası U1/3 düğümünü sanal GND referansına şöntleyen alçak geçiş kondansatörüdür.');
+ add('v1','meter-voltmeter',1120,320,'V1','Çıkış düğümü sanal voltmetresi',
+  {},'OUT ve GND arasındaki kayıtlı gerilim ölçme uçlarıdır; frekans kazancı, AC RMS, dB veya Windows çıktısı henüz doğrulanmadı.');
+ wire('g1','P','u1','8','U1/8 pozitif sanal 12 V besleme ucudur.','#8b5a2b');
+ wire('g1','M','u1','4','U1/4 negatif besleme ucudur; tek kaynağın 0 V referansıdır.','#111827');
+ wire('fg1','GND','g1','M','FG1 ve U1 ortak sanal 0 V referansındadır.','#111827');
+ if(highPass){
+  add('rvh','resistor',270,130,'RREF1','10 kΩ VREF üst direnç',
+   {resistance:10000},'12 V kaynaktan yaklaşık 6 V DC referansın üst koludur.');
+  add('rvl','resistor',450,230,'RREF2','10 kΩ VREF alt direnç',
+   {resistance:10000},'6 V referans düğümünün 0 V dönüş koludur.');
+  wire('fg1','OUT','c1','1','FG1/OUT seri kondansatöre girer.');
+  wire('c1','2','u1','3','Yüksek geçiş ara düğümü fiziksel LM358P pin 3 e gider.');
+  wire('c1','2','r1','1','IN+ düğümü R1 üzerinden VREF düğümüne kutuplanır.');
+  wire('r1','2','rvh','2','R1 DC dönüşü 6 V VREF düğümündedir.');
+  wire('g1','P','rvh','1','Referans bölücüsünün pozitif rayı.','#8b5a2b');
+  wire('rvh','2','rvl','1','10 kΩ/10 kΩ orta besleme referans düğümü.');
+  wire('rvl','2','g1','M','RREF2 nin sanal 0 V dönüşüdür.','#111827');
+ }else{
+  wire('fg1','OUT','r1','1','FG1/OUT alçak geçiş seri direncine gelir.');
+  wire('r1','2','u1','3','RC ara düğümü fiziksel LM358P pin 3 e girer.');
+  wire('r1','2','c1','1','RC giriş düğümü şönt 100 nF kondansatöre bağlanır.');
+  wire('c1','2','g1','M','Şönt C1 in 0 V dönüş ucudur.','#111827');
+ }
+ wire('u1','1','u1','2','OUT pin 1 doğrudan IN- pin 2 ye negatif geri beslenir: unity buffer.');
+ wire('u1','1','v1','1','V1 artı ucu LM358P OUT pin 1 de ölçüm referansıdır.');
+ wire('v1','2','g1','M','V1 eksi ucu FG1 ile ortak 0 V a döner.','#111827');
+ const ids=new Set(p.components.map(c=>c.id)),wids=new Set(p.wires.map(w=>w.id));
+ if(ids.size!==p.components.length||wids.size!==p.wires.length||
+    p.components.length!==(highPass?8:6)||p.wires.length!==(highPass?13:10)||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c))||
+    p.components.filter(c=>c.typeId==='lm358p-dip8').length!==1)
+  throw Error('MQ07 active RC pin graph incomplete '+lesson.id);
+ p.projectId=old.projectId;p.name=old.name;
+ p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ lesson.project=p;lesson.kind='wiring';lesson.workspaceMode=p.workspaceMode;
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ const desc=highPass?
+  'FG1/OUT → C1 seri → U1/3 ve R1 üzerinden 6 V VREF; U1/1 → U1/2 negatif geri besleme yolu olan etkin RC yüksek geçiren birinci dereceden filtre şemasıdır.':
+  'FG1/OUT → R1 seri → U1/3, C1 şönt → 0 V ve U1/1 → U1/2 negatif geri besleme yolu olan etkin RC alçak geçiren birinci dereceden filtre şemasıdır.';
+ const boundary='Katalogdaki gerçek LM358P DIP-8 kullanılır; bu bir kaynak devre topolojisi onarımıdır. U1 iç kazancı, filtre dB/frekans eğrisi, voltmetrenin AC okuması, faz kayması, kesim doğruluğu, fiziksel ve Windows kabulü henüz doğrulanmadı.';
+ lesson.summary=desc+' Dinamik simülasyon ve görsel QA bekliyor.';
+ lesson.explanation=desc+' G1/12 V sanal düşük gerilim DC beslemesi ve FG1 jeneratörü GND referansı ile gösterilir. '+boundary;
+ lesson.learningGoal=scenario+' RC giriş kolu ve LM358P unity buffer uçlarını kaydedilmiş şemada eşlemek; kaynak grafiğini ölçülmüş frekans davranışından ayırt etmek.';
+ lesson.beginnerSteps=[
+  'Sanal FG1/OUT–GND sinyal kaynağını ve G1/12 V op-amp beslemesini ayırt et.',
+  highPass?'C1 seri giriş ve R1 → RREF1/RREF2 VREF yolunu takip et.':'R1 seri giriş ile C1 → GND şönt kolunu takip et.',
+  'LM358P/8 ve /4 besleme uçlarını, /3 girişini ve /1 → /2 unity geri beslemesini izle.',
+  'V1/1 → LM358P/1 ve V1/2 → GND ölçüm terminallerini bul.',
+  boundary
+ ];
+ lesson.safety='Sadece sanal düşük gerilim filtre çalışması; fiziksel cihaz, gerçek şebeke veya üretici kabulü değildir.';
+ lesson.quiz={question:highPass?
+  'Aktif yüksek geçiren RC filtresinde C1 girişte hangi görevle bağlanır?':
+  'Aktif alçak geçiren RC filtresinde C1 hangi yoldadır?',
+  options:highPass?['Girişte seri bağlanır ve R1 VREF e döner.','Op-amp besleme ucunu kısa devre eder.','Yalnız çıkış hoparlörünü sürer.']:
+   ['R1 sonrası giriş düğümünden ortak GND ye şönt bağlanır.','LM358P V+ ucunu şebekeye bağlar.','Yalnız PWM motor çıkışını değiştirir.'],
+  answer:0,why:desc+' Frekans cevabı ve hesaplanan dB sonucu ölçülmüş sayılmaz.'};
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07FilterScope:highPass?'SC071_ACTIVE_RC_HP':'SC070_ACTIVE_RC_LP',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:highPass?'ACTIVE_HP_FREQ_RESPONSE_PENDING':'ACTIVE_LP_FREQ_RESPONSE_PENDING',
+  nativeFilterResponseAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+for(const [suffix,hp] of [['18',false],['19',true]]){
+ const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||!L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 active filter initial REVIEW missing '+id);
+ mq07FirstOrderActiveFilter(lesson,hp);
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC076/077: actual LM358P-DIP8 source-terminal learning circuits.
  * They follow the 51-card historical snapshot; no native AC mixing, audio
  * quality, measured gain, acoustic power or SPICE acceptance is implied.
