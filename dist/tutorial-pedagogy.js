@@ -4767,6 +4767,150 @@ for(const spec of [
   rule:'Kavramsal quizler sırf kablo yok diye değiştirilmez. Uygulama adayları canlı topoloji, solver ve MQ-00 onayı olmadan DONE değildir.'
  };
 }
+/* MQ-07 SC076/077: actual LM358P-DIP8 source-terminal learning circuits.
+ * They follow the 51-card historical snapshot; no native AC mixing, audio
+ * quality, measured gain, acoustic power or SPICE acceptance is implied.
+ * Only these TWO source projects are changed, with no golden/solver edits. */
+function mq07MakeAudioLesson(lesson,mix){
+ const id=lesson?.id,previous=lesson?.project;
+ const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ if(!previous||lesson.kind!=='quiz'||previous.referenceOnly!==true||
+    previous.wires.length!==0||lesson.steps.length!==0||
+    previous.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    lesson.materials.length!==expected.length||lesson.designStandard==='rich-reference-v1')
+  throw Error('MQ07 SC076/077 existing audio card differs from source: '+id);
+ const p=base(id,lesson.title),needs=[];
+ const part=(cid,type,x,y,ref,label,properties,purpose)=>{
+  p.components.push(C(cid,type,x,y,ref,label,{...properties,tutorialPurpose:purpose}));
+ };
+ const link=(a,ap,b,bp,why,color='#43a047')=>{
+  const hint=a+'/'+ap+' → '+b+'/'+bp;
+  p.wires.push(W(a,ap,b,bp,hint,why,color,'SIGNAL'));
+ };
+ part('g1','arduino-bench-supply',75,95,'G1','Sanal 12 V DC op-amp beslemesi',
+  {dcVoltage:12,currentLimit:1},'Yalnız sanal LM358P düşük gerilim beslemesidir; ses gücü veya gerçek AC şebeke kaynağı değildir.');
+ part('u1','lm358p-dip8',850,300,'U1','LM358P PDIP-8 · A kanalı pin 1/2/3/4/8',{},
+  'Gerçek LM358P DIP-8: OUT=1, IN−=2, IN+=3, V−=4, V+=8. Karttaki işlev güç amplifikatörü değil küçük işaret işlemidir.');
+ part('v1','meter-voltmeter',1150,300,'V1','Çıkış referans voltmetresi',{},
+  'V1 çıkış ve 0 V arasında bağlıdır; AC kazanç, frekans cevabı, RMS ses seviyesi, çıkış sesi veya gerçek üretici ölçümü doğrulanmaz.');
+ part('refHi','resistor',490,95,'RREF1','10 kΩ VREF üst',{resistance:10000},
+  '12 V referans bölücüsünün üst direncidir.');
+ part('refLo','resistor',490,220,'RREF2','10 kΩ VREF alt',{resistance:10000},
+  '12 V tek beslemede yaklaşık orta-besleme referansı oluşturan alt dirençtir.');
+ link('g1','P','u1','8','LM358P gerçek pin 8 pozitif beslemedir.','#8b5a2b');
+ link('g1','M','u1','4','LM358P gerçek pin 4 negatif besleme/0 V referansıdır.','#111827');
+ link('g1','P','refHi','1','Referans direnç zincirinin 12 V üst ucudur.','#8b5a2b');
+ link('refHi','2','refLo','1','VREF orta düğümüdür.');
+ link('refLo','2','g1','M','Referansın 0 V dönüşüdür.','#111827');
+ const genProps=(freq)=>({generatorEnabled:true,generatorWaveform:'sine',
+  generatorFrequency:freq,generatorAmplitude:0.15,generatorOffset:0});
+ if(!mix){
+  part('fg1','arduino-signal-generator',80,430,'FG1','Düşük gerilimli sanal küçük sinyal',genProps(1000),
+   'FG1 OUT/GND girişidir. Bu ekranda osiloskop, ölçülen sinüs transferi veya mikrofon ses kaydı yoktur.');
+  part('c1','capacitor',320,450,'C1','1 µF AC kuplaj',{capacitance:1e-6},
+   'FG1 DC ofsetini tek beslemeli op-amp giriş kutuplamasından ayıran seri kuplaj kondansatörüdür.');
+  part('rb','resistor',630,480,'RB','100 kΩ giriş bias',{resistance:100000},
+   'IN+ sinyal düğümünü VREF orta noktasına göre DC kutuplar.');
+  part('rf','resistor',1000,520,'RF','47 kΩ negatif geri besleme',{resistance:47000},
+   'LM358P OUT pin 1 ile IN− pin 2 arasındaki 47 kΩ geri besleme direncidir.');
+  part('rg','resistor',760,570,'RG','10 kΩ kazanç referansı',{resistance:10000},
+   'LM358P IN− pin 2 ile VREF arasındaki 10 kΩ dirençtir; teorik küçük işaret kazancı 1+47k/10k=5,7 olabilir, ölçülmedi.');
+  link('refHi','2','rb','1','Giriş bias direnci VREF düğümünden beslenir.');
+  link('rb','2','u1','3','IN+ pin 3, DC bias ile giriş işaretini aynı düğümde alır.');
+  link('fg1','OUT','c1','1','FG1 düşük gerilim sinyali kuplaj kondansatörüne ulaşır.');
+  link('c1','2','u1','3','Kuplaj sonrası giriş LM358P pin 3 üzerindedir.');
+  link('fg1','GND','g1','M','Sanal jeneratör ve op-amp ortak 0 V referansını paylaşır.','#111827');
+  link('u1','1','rf','1','OUT pin 1 geri beslemeye giriş yapar.');
+  link('rf','2','u1','2','Negatif geri besleme IN− pin 2 üzerinde kapanır.');
+  link('u1','2','rg','1','IN− pin 2 referans kolunun başlangıcıdır.');
+  link('rg','2','refHi','2','RG dönüşü orta VREF düğümüdür.');
+ }else{
+  part('fg1','arduino-signal-generator',60,485,'FG1','Sanal sinyal kanalı A',genProps(500),
+   'A kanalı ayrı düşük gerilimli kaynak olarak kullanılır; gerçek ses üretilmez.');
+  part('fg2','arduino-signal-generator',60,840,'FG2','Sanal sinyal kanalı B',genProps(1000),
+   'B kanalı A dan ayrı sinyal kaynağıdır; gerçek çok kanallı ses/senkron çalışma kanıtı yoktur.');
+  part('c1','capacitor',280,485,'C1','A giriş 1 µF kuplaj',{capacitance:1e-6},
+   'A sinyalini op-amp tek besleme DC biasından ayıran kuplaj elemanıdır.');
+  part('c2','capacitor',280,840,'C2','B giriş 1 µF kuplaj',{capacitance:1e-6},
+   'B sinyalini op-amp tek besleme DC biasından ayıran kuplaj elemanıdır.');
+  part('rv1','potentiometer',490,520,'RV1','A kanalı 10 kΩ seviye',{potMax:10000,potentiometer:50},
+   'A girişinin 1/3 uçları ve 2 sürgüsüyle ses kanalı seviyesi kavramsal olarak ayarlanır.');
+  part('rv2','potentiometer',490,845,'RV2','B kanalı 10 kΩ seviye',{potMax:10000,potentiometer:50},
+   'B girişinin 1/3 uçları ve 2 sürgüsü A kanalından bağımsızdır.');
+  part('ri1','resistor',720,490,'RA','22 kΩ A giriş',{resistance:22000},
+   'A sürgüsünden LM358P IN− pin 2 toplama düğümüne giden giriş direncidir.');
+  part('ri2','resistor',720,845,'RB','22 kΩ B giriş',{resistance:22000},
+   'B sürgüsünden aynı IN− pin 2 toplama düğümüne giden bağımsız giriş direncidir.');
+  part('rf','resistor',1070,590,'RF','47 kΩ geri besleme',{resistance:47000},
+   'OUT pin 1 den IN− pin 2 ye negatif geri besleme sağlar; ses watt çıkışı değildir.');
+  link('refHi','2','u1','3','LM358P pin 3 VREF tek-besleme biasına bağlanır.');
+  for(const [fg,c,rv,ri] of [['fg1','c1','rv1','ri1'],['fg2','c2','rv2','ri2']]){
+   link(fg,'GND','g1','M','Sinyal kanalı dönüşü G1/M ile ortaktır.','#111827');
+   link(fg,'OUT',c,'1','Bağımsız sinyal RC kuplaja girer.');
+   link(c,'2',rv,'3','Kuplaj çıkışı kendi seviye potansiyometresine bağlanır.');
+   link(rv,'1','g1','M','Potansiyometrenin alt ucu 0 V referansına döner.','#111827');
+   link(rv,'2',ri,'1','Sürgü gerilimi ayrı giriş direncine aktarılır.');
+   link(ri,'2','u1','2','A/B kanalları IN− pin 2 de direnç üzerinden toplanır.');
+  }
+  link('u1','1','rf','1','Toplama yükselteci OUT pin 1 geri besleme koludur.');
+  link('rf','2','u1','2','RF çıkışı IN− pin 2 ye geri döner.');
+ }
+ link('u1','1','v1','1','Çıkış voltmetresi LM358P pin 1 i izler; AC rms onayı yok.');
+ link('v1','2','g1','M','V1 eksi ucu ortak sanal 0 V referansıdır.','#111827');
+ const expectedParts=mix?14:10,expectedWires=mix?22:16;
+ const compIDs=new Set(p.components.map(c=>c.id)),wireIDs=new Set(p.wires.map(w=>w.id));
+ if(compIDs.size!==p.components.length||wireIDs.size!==p.wires.length||
+    p.components.length!==expectedParts||p.wires.length!==expectedWires||
+    p.wires.some(w=>!compIDs.has(w.from?.c)||!compIDs.has(w.to?.c))||
+    p.components.filter(c=>c.typeId==='lm358p-dip8').length!==1)
+  throw Error('MQ07 SC076/077 terminal graph incomplete '+id);
+ p.projectId=previous.projectId;p.name=previous.name;
+ p.tutorialLesson={...previous.tutorialLesson,phase:'demo',step:0};
+ lesson.project=p;lesson.kind='wiring';lesson.workspaceMode=p.workspaceMode;
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ const concept=mix?'İki bağımsız FG1/FG2 girişini RV1/RV2 ve 22 kΩ giriş dirençleri üzerinden LM358P IN− pin 2 toplama düğümüne veren kablolu tersleyen küçük işaret mikseridir.':
+  'Tek kanallı AC kuplaj, VREF DC bias, LM358P pin 3 girişi ve 47 kΩ/10 kΩ negatif geri beslemesi olan küçük işaret ön yükseltecidir.';
+ const limits='Bu devre 12 V DC beslemeli sanal küçük işaret şemasıdır. Gerçek ses miksajı, çıkış genliği, bant genişliği, harmonik bozulma, mikrofon kazancı veya dinamik AC/DC kaynak karışımı native Node/Windows ile doğrulanmadı. Hoparlör/ses watt gücü ve fiziksel cihaz kabulü yoktur.';
+ lesson.summary=concept+' Gerçek katalog terminal grafiği kaydedildi; native ses/AC kabulü bekliyor.';
+ lesson.explanation=concept+' LM358P fiziksel DIP-8 pinleri 8(+), 4(0 V), 3(IN+), 2(IN−), 1(OUT); 10 kΩ/10 kΩ VREF bölücüsü ve çıkış V1 referansı devrededir. '+limits;
+ lesson.learningGoal='Ön yükseltme ile iki girişin dirençli toplanmasını ayırmak, fiziksel LM358P uçlarını ve ayrı kaynakların 0 V referansını şemadan takip etmek.';
+ lesson.beginnerSteps=[
+  'G1 12 V sanal besleme ve LM358P fiziksel 8/4 besleme uçlarını bul.',
+  'RREF1/RREF2 orta VREF düğümünü ve girişin 3/2 pinlerini ayırt et.',
+  mix?'FG1/FG2 kuplaj kondansatörlerini, RV1/RV2 seviye sürgülerini ve RA/RB toplama dirençlerini ayrı izle.':'FG1/OUT → C1 → IN+ pin 3 yolunu, RB giriş kutuplamasını ve RF/RG negatif geri beslemesini izle.',
+  'OUT pin 1 → V1/1 ve V1/2 → G1/M yolunu takip et; ölçülmemiş RMS ve dB kazancı yazma.',
+  limits
+ ];
+ lesson.quiz=mix?{
+  question:'İki kanallı tersleyen LM358P mikserde A/B işaretleri hangi düğüme ayrı dirençlerden gelir?',
+  options:['IN− pin 2 ortak toplama düğümüne','Besleme pin 8 e doğrudan','OUT pin 1 den ayrı kaynaklara'],answer:0,
+  why:'RV1/RV2 sürgüleri RA/RB üzerinden IN− pin 2 de toplanır; OUT–RF negatif geri beslemesi ayrı bağlanır.'
+ }:{
+  question:'Tek beslemeli LM358P ön yükselteçte giriş neden kuplaj kondansatörü ve VREF bias kullanır?',
+  options:['AC giriş bileşenini orta-besleme DC çalışma noktasına oturtmak için','Hoparlörden 100 W elde etmek için','Gerçek RMS değerini otomatik kalibre etmek için'],answer:0,
+  why:'C1 giriş DC kaynağıyla biası ayırır, RREF1/RREF2 ve RB IN+ pin 3 girişini yaklaşık orta beslemeye kutuplar.'
+ };
+ lesson.safety='Yalnız düşük gerilimli sanal op-amp şeması; ses kaydı, şebeke, fiziksel amplifikatör veya hoparlör watt deneyi değildir.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07AudioScope:mix?'SC077_TWO_CHANNEL_SUMMER':'SC076_BIASED_PREAMP',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:mix?'MIXED_AUDIO_AC_RUNTIME_PENDING':'PREAMP_AC_RUNTIME_PENDING',
+  nativeAudioAcceptance:false,audioAcGainAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+for(const [suffix,isMixer] of [['24',false],['25',true]]){
+ const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
+ if(!lesson||!L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 SC076/077 old source review missing '+id);
+ mq07MakeAudioLesson(lesson,isMixer);
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
  * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
  * No golden project or global solver mutation. */
