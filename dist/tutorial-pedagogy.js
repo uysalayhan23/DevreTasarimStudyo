@@ -4935,7 +4935,7 @@ for(const spec of [
     prior.wires.length!==0||l.steps.length!==0||
     prior.components.map(c=>c.typeId).join('|')!==reference.join('|')||
     l.materials.length!==reference.length||
-    l.pedagogyReview?.mq07MaterialRepair!=='SC030_TWO_REAL_BD139_REFERENCES'||
+    l.pedagogyReview?.mq07MaterialRepair!=='SC030_TRUE_TWO_BD139_TRANSISTOR_REFERENCES'||
     !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT')||
     !L.mq07Batch200.noWireTriage.conceptPreservedIds.includes(id))
   throw Error('MQ07 SC030 corrected physical reference baseline changed');
