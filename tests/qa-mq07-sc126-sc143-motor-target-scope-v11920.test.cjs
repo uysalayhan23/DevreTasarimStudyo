@@ -7,9 +7,9 @@ const exceptions={
  '01':'DOL_SAMPLE_NOT_MOTOR_NAMEPLATE','02':'SIX_TERMINAL_STAR_DELTA_NATIVE_PENDING',
  '03':'PHASE_REVERSAL_NATIVE_PENDING','06':'JOG_RUN_SELECTOR_NATIVE_PENDING',
  '07':'TWO_STATION_NATIVE_PENDING','08':'MISSING_PACKAGE_SWITCH',
- '09':'MISSING_ON_DELAY_RELAY','10':'MISSING_OFF_DELAY_RELAY',
+ '09':'ON_DELAY_MOTOR_CONTROL_NATIVE_PENDING','10':'MISSING_OFF_DELAY_RELAY',
  '11':'MISSING_SPEED_CONTROL','12':'MISSING_SINGLE_BUTTON_TOGGLE',
- '13':'MISSING_PROTECTION_RELAY','15':'THERMAL_OVERLOAD_NATIVE_PENDING',
+ '13':'THERMAL_PROTECTION_REPRESENTATIVE_NATIVE_PENDING','15':'THERMAL_OVERLOAD_NATIVE_PENDING',
  '16':'MISSING_PHASE_MONITOR','17':'MISSING_AUTOMATIC_RETURN',
  '18':'PLC_PROGRAM_NOT_VALIDATED'
 };
@@ -18,7 +18,7 @@ const clone=n=>structuredClone(lesson(n).project);
 function check(s,context){assert.equal(s.stable,true,context+' stable');assert.equal(!!s.blocked,false,context+' unblocked');assert.equal(!!s.shortCircuit,false,context+' no short');assert.equal(!!s.oscillating,false,context+' nonoscillating')}
 for(let n=1;n<=18;n++)test('SC'+(125+n)+' motor title/physical circuit claims remain grounded',()=>{
  const l=lesson(n);assert.ok(l,'missing motor lesson');assert.equal(l.kind,'wiring');
- assert.ok(l.project.components.some(c=>c.typeId=== (n===2?'motor-y-d':'motor-3p')));
+ assert.ok(l.project.components.some(c=>c.typeId=== ([2,9].includes(n)?'motor-y-d':'motor-3p')));
  assert.ok(l.project.wires.length>=11);
  for(const c of l.project.components)assert.ok(defs[c.typeId],c.typeId);
  const s=Solver.solve(clone(n),defs,{now:0});check(s,l.id);
@@ -152,4 +152,29 @@ test('SC140 F1 overload has 3 series poles and NC 95–96 in K1 trip control',()
   check(Solver.solve(p,defs,{now}),'SC140 F1 '+now);
   assert.equal(!!c.motor._active,active);
  }
+});
+
+test('SC134 on-delay lesson has actual timer-driven star/delta winding and NC interlock',()=>{
+ const p=lesson(9).project;
+ assert.ok(p.wires.length>20);
+ assert.ok(p.components.some(c=>c.typeId==='coil-delay-on'));
+ assert.ok(p.components.some(c=>c.typeId==='motor-y-d'));
+ for(const id of ['timer','coilStar','coilDelta','timerNO','timerNC'])
+  assert.ok(p.components.some(c=>c.id===id),'Missing native timed control '+id);
+ assert.equal(lesson(9).pedagogyReview.titleTopologyIssue,'ON_DELAY_MOTOR_CONTROL_NATIVE_PENDING');
+});
+test('SC138 scoped F1 thermal protection is real 3-pole plus K1 NC 95–96',()=>{
+ const p=lesson(13).project;
+ assert.equal(p.wires.length,17);
+ assert.ok(p.components.some(c=>c.id==='fr'&&c.typeId==='overload'));
+ const has=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&
+  w.to.c===b&&w.to.p===bp);
+ for(const [a,ap,b,bp] of [
+  ['g1','L1','fr','95'],['fr','96','stop','21'],
+  ['main','2','fr','1'],['fr','2','motor','U'],
+  ['main','4','fr','3'],['fr','4','motor','V'],
+  ['main','6','fr','5'],['fr','6','motor','W']
+ ])assert.ok(has(a,ap,b,bp),'Missing protected motor terminal '+a+'/'+ap);
+ assert.equal(lesson(13).pedagogyReview.titleTopologyIssue,
+  'THERMAL_PROTECTION_REPRESENTATIVE_NATIVE_PENDING');
 });
