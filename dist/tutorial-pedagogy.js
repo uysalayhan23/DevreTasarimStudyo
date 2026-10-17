@@ -5454,6 +5454,42 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
  l.safety='Yalnız sanal elektronik dersi; gerçek donanım, üretici sınırları ve elektrik güvenliği kabulü değildir.';
 }
 
+
+/* MQ07_SC364_SC377_OPAMP_SPECIAL: preserve verified LM358 pins, refuse invented special functionality. */
+const mq07SpecialOpampRows=[["033","NO_OPAMP_ON_DELAY_STORAGE",14,"ON-delay işlevi ancak giriş tepkisinden sonra eşik/RC gecikmesiyle tanımlanabilir.","Önceki 14 kablolu eviren yükselteçte zamanlama kondansatörü ve gecikmeli çıkış yoktu.",["lm358p-dip8","resistor","capacitor"]],["034","NO_OPAMP_OFF_DELAY_STORAGE",14,"OFF-delay işlevinde tetik kalktıktan sonra kontrollü bırakma davranışı gerekir.","Önceki eviren yükselteçte enerji depolama/deşarj ağı veya gecikmeli bırakma yoktu.",["lm358p-dip8","resistor","capacitor"]],["035","NO_SUBTRACTOR_TWO_INDEPENDENT_INPUTS",14,"Fark yükselteci iki bağımsız girişi tanımlanmış direnç oranlarıyla karşılaştırır.","Önceki 14 kablolu eviren yükselteçte bağımsız ikinci çıkarma girişi yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["036","NO_SUBTRACTOR_PRACTICE_TWO_INPUTS",14,"Çıkarıcı devre temrini iki bağımsız girişin çıkışta fark oluşturduğunu göstermelidir.","Önceki devrede yalnız bir ayar potansiyometresi vardı; çıkarma ölçümü yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["037","NO_SUMMER_INDEPENDENT_INPUT_BRANCHES",14,"Toplayıcı yükselteç ayrı giriş dirençleri ve işaret toplamı ile değerlendirilir.","Önceki eviren örnekte ikinci giriş dalı ve gerçek toplam çıkışı yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["038","NO_SUMMER_PRACTICE_INPUT_BRANCHES",14,"Toplayıcı uygulama her girişin ayrı dirençli toplama düğümüne ulaşmasını gerektirir.","Tek kaynaklı önceki devre iki giriş toplamı değildi.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["039","DIFFERENTIATOR_NATIVE_AC_RESPONSE_PENDING",14,"Türev alıcıda seri giriş kondansatörü ve çıkıştan eviren girişe dirençli geri besleme bulunur.","100 nF C1, 47 kΩ Rf ve fiziksel LM358P pinleri vardır; AC darbe tepkisi native olarak ölçülmedi.",null],["040","DIFFERENTIATOR_PRACTICE_NATIVE_PENDING",14,"Türev alıcı temrini giriş değişim hızının çıkışla ilişkisini ölçmeyi gerektirir.","Giriş kondansatörü ve dirençli geri besleme çizilidir; zaman/frekans cevabı native kabul edilmedi.",null],["041","INTEGRATOR_NATIVE_RAMP_PENDING",14,"İntegral alıcıda giriş direnci ve çıkıştan eviren girişe kondansatör geri beslemesi bulunur.","10 kΩ R1, 1 µF C1 vardır; sanal ramp/saturasyon ve sıfırlama zaman davranışı ölçülmedi.",null],["042","INTEGRATOR_PRACTICE_NATIVE_PENDING",14,"İntegral uygulama çıkışın girişin zamansal toplamını izlediğini göstermelidir.","Fiziksel LM358P pinleri ve kapasitif geri besleme çizilidir; gerçek dinamik kabul yoktur.",null],["component-035","RECTIFIER_BRIDGE_REFERENCE_ONLY",0,"Doğrultmaç, akım yönlendiren diyot elemanları ve isteğe bağlı filtrelemeden oluşur.","Köprü ve filtre kondansatörü malzeme referansıdır; giriş-çıkış dalga biçimi veya kablo yoktur.",null],["043","NO_PRECISION_HALF_WAVE_DIODE_PATH",14,"Op-amp destekli yarım dalga doğrultmada diyot yönü ve giriş/çıkış geri besleme yolunun tanımlanması gerekir.","Önceki 14 kablolu eviren yükselteçte doğrultucu diyot yoktu, yarım dalga davranışı iddia edilemez.",["lm358p-dip8","1n4007-do41","resistor"]],["component-036","NO_INSTRUMENTATION_AMPLIFIER_TOPOLOGY",0,"Enstrümantasyon yükselteci çok kademeli diferansiyel giriş ve eşleştirilmiş direnç oranları gerektirir.","Mevcut LM358P, direnç ve kondansatör yalnız semboliktir; üç yükselteçli devre ve CMRR ölçümü yoktur.",null],["044","SCHMITT_HYSTERESIS_SWEEP_NATIVE_PENDING",14,"Schmitt devresinde LM358P çıkış pin 1 pozitif geri besleme ile pin 3 girişini etkiler; pin 2 referanstır.","47 kΩ pozitif geri besleme ve 10 kΩ eşik ağı çizilidir; yukarı/aşağı giriş taraması ve eşik-histerezis farkı native ölçülmedi.",null]];
+
+for(const [suffix,issue,wireCount,concept,limits,parts] of mq07SpecialOpampRows){
+ const id=suffix.startsWith('component-')?'electronic-component-basics-outline-'+suffix.slice(10):'opamp-apps-outline-'+suffix;
+ const lesson=L.byId[id],old=lesson?.project;
+ if(!lesson||!old||old.wires.length!==wireCount||lesson.kind!==(wireCount?'wiring':'quiz'))
+  throw Error('MQ07 SC364–377 canonical scope changed '+id);
+ if(parts){
+  if(old.components.filter(x=>x.typeId==='lm358p-dip8').length!==1||
+     old.components.some(x=>x.typeId==='1n4007-do41'))
+   throw Error('MQ07 prior generic amplifier template changed '+id);
+  const p=board(id,lesson.title,parts.map((t,i)=>[t,
+   t==='lm358p-dip8'?'LM358P · kavram':t==='1n4007-do41'?'Diyot · doğrultmaç kavramı':
+   t==='potentiometer'?'Bağımsız giriş referansı '+(i+1):
+   t==='capacitor'?'RC/zamanlama kavramı':'Direnç · bağlantısız referans']));
+  p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'quiz'};
+  lesson.project=p;lesson.kind='quiz';lesson.steps=[];lesson.workspaceMode=p.workspaceMode;
+  lesson.materials=materialRows(p);
+  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId)};
+ }
+ if(Boolean(lesson.project.referenceOnly)!==(lesson.project.wires.length===0))
+  throw Error('MQ07 SC364–377 reference flag mismatch '+id);
+ lesson.summary=concept+' Bu dersin gerçek topoloji ve kabul sınırları ayrıca belirtilmiştir.';
+ lesson.explanation=concept+' '+limits+' Çizim gerçek cihaz/üretici fiziksel kabulü veya kesin sayısal dinamik kanıtı değildir.';
+ lesson.learningGoal=concept+' Beklenen özel analog işlev ile mevcut şemadaki doğrulanabilir parçaları ve terminalleri karşılaştırmak.';
+ lesson.beginnerSteps=['Önce fiziksel LM358P ve malzeme/bağlantı kimliklerini kontrol et.',
+  'Kavramsal işlev: '+concept,limits,'Dinamik ölçüm, kaynak devresi veya gerçek donanım kanıtı olmadan PASS verme.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+  mq07SpecialOpampScope:'SC364_SC377',titleTopologyStatus:'REVIEW',titleTopologyIssue:issue,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Bu sanal referans gerçek op-amp, ölçüm, ısı, besleme ve donanım güvenliği kabulü değildir.';
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
