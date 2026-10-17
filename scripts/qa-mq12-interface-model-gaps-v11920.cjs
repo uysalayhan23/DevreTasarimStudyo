@@ -53,8 +53,13 @@ function run({L=QA.curriculum(),defs=QA.catalog()}={}){
  const pt100_35=Device.output({temperature:35},defs['sensor-pt100']);
  const piezoFallback=Device.output({},defs['tutorial-piezo']);
  const mq2Fallback=Device.output({},defs['arduino-mq2']);
+ // Keep an auditable list; a changing count does NOT establish that any lesson was repaired.
+ const unconfiguredSensorLessonIds=L.lessons.filter(l=>l.project?.wires?.length&&
+  l.project.components.some(c=>['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target))
+  .map(l=>l.id).sort();
  return {scope:'READ_ONLY_NONCANONICAL_MANUFACTURER_MODEL_GATES',sourceLessons:L.lessons.length,wiredLessons:L.lessons.filter(l=>l.project?.wires?.length).length,
-  unconfiguredSensorLessons:L.lessons.filter(l=>l.project?.wires?.length&&l.project.components.some(c=>['proximity','autonics-pr12-npn'].includes(c.typeId)&&!c.sensing?.target)).length,reactiveRestorationCases:REACTIVE_IDS.filter(id=>L.lessons.some(l=>l.id===id&&l.project?.wires?.length)).length,
+  unconfiguredSensorLessons:unconfiguredSensorLessonIds.length,unconfiguredSensorLessonIds,
+  reactiveRestorationCases:REACTIVE_IDS.filter(id=>L.lessons.some(l=>l.id===id&&l.project?.wires?.length)).length,
   manufacturers:MANUFACTURERS,rows,findings:{
     supply24VCount:rows.filter(x=>x.canonicalVoltage===24).length,
     ultrasonicSupplyCompatible:rows.find(x=>x.id==='sensor-analog-apps-outline-089').canonicalVoltage>=MANUFACTURERS.ultrasonic.voltageMin&&rows.find(x=>x.id==='sensor-analog-apps-outline-089').canonicalVoltage<=MANUFACTURERS.ultrasonic.voltageMax,
