@@ -74,24 +74,41 @@ function motorRole(sc,id,typeId,expectedDescription){
  assert.match(m.why,/PASS değildir/i);
  return {l,m};
 }
-test('SC156–163 braking material says actual Y-Delta starter is not an unverified brake',()=>{
+test('SC156–163 actual brake catalog cards vs retained Y-Delta examples are correctly described',()=>{
  for(const {sc,id} of ids('motor-braking',156,163)){
-  const {l,m}=motorRole(sc,id,'motor-y-d',/yıldız–üçgen yol verme/);
+  const l=topologyAndMaterials(sc,id);
   assert.equal(l.pedagogyReview.brakingAcceptance,false);
-  assert.match(m.why,/fren|balata|enjeksiyon|yıldız|üçgen/i);
+  if([156,157,160].includes(sc)){
+   assert.equal(l.kind,'quiz');
+   assert.equal(l.project.wires.length,0);
+   assert.equal(l.project.referenceOnly,true);
+   if(sc!==160)assert.ok(l.project.components.some(c=>c.typeId==='tutorial-mechanical-brake'));
+   else assert.ok(l.project.components.some(c=>c.typeId==='supply-dc-plus'));
+   assert.match(l.explanation,/gerçek fren torku/i);
+  }else{
+   const {m}=motorRole(sc,id,'motor-y-d',/yıldız–üçgen yol verme/);
+   assert.match(m.why,/fren|balata|enjeksiyon|yıldız|üçgen/i);
+  }
  }
 });
-test('SC164–171 reference vs asynchronous three-phase material never claims special motor functionality',()=>{
+test('SC164–171 correct one-phase wired motor and synchronous product references replace 3-phase surrogates',()=>{
  for(const {sc,id} of ids('motor-special',164,171)){
   const l=topologyAndMaterials(sc,id);
   assert.equal(l.pedagogyReview.specialMotorAcceptance,false);
-  if(sc===170){
+  assert.equal(l.pedagogyReview.titleTopologyStatus,'REVIEW');
+  if(sc===164||sc===165){
+   assert.equal(l.kind,'wiring');
+   assert.equal(l.project.wires.length,sc===164?8:10);
+   assert.equal(l.project.components.filter(c=>c.typeId==='motor-1p').length,1);
+   assert.ok(l.project.components.some(c=>c.typeId==='supply-1p'));
+   assert.ok(!l.project.components.some(c=>c.typeId==='motor-3p'));
+  }else{
    assert.equal(l.kind,'quiz');
    assert.equal(l.project.wires.length,0);
-   assert.ok(l.project.components.some(x=>x.typeId==='tutorial-synchronous-motor'));
-   continue;
+   assert.equal(l.project.referenceOnly,true);
+   assert.ok(l.project.components.some(c=>
+    ['motor-1p','tutorial-synchronous-motor','hcfa-sv-x2mh040a-n2ln'].includes(c.typeId)));
   }
-  motorRole(sc,id,'motor-3p',/üç fazlı asenkron ileri\/geri/);
  }
 });
 test('SC172–181 material rows agree with six wired motor topologies and remaining DOL reviews',()=>{
