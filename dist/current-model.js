@@ -52,7 +52,12 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if(isACComponent(c,d)){const hz=sourceFrequency(c),br=addY(c,a,b,[0,2*Math.PI*hz*cap],'capacitor-ac');Object.assign(br,{reactiveType:'C',value:cap,hz});reactive.push(br)}
+    if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id)){
+     // SC077's 500/1000 Hz sine sources use frequency-domain C admittance below.
+     // Keep the DC coupling capacitors open instead of aliasing them at UI frame rate.
+     const br=add(c,a,b,1e12,'capacitor-dc');Object.assign(br,{reactiveType:'C',value:cap,dt:1,previous:0});reactive.push(br);
+    }
+    else if(isACComponent(c,d)){const hz=sourceFrequency(c),br=addY(c,a,b,[0,2*Math.PI*hz*cap],'capacitor-ac');Object.assign(br,{reactiveType:'C',value:cap,hz});reactive.push(br)}
     else{const dt=reactiveDt(c),r=dt/cap,br=add(c,a,b,r,'capacitor-dc'),vp=Number(c._capacitorVoltage)||0;inject(br.a,br.b,vp/r);Object.assign(br,{reactiveType:'C',value:cap,dt,previous:vp});reactive.push(br)}
    }
    else if(d.kind==='speaker'){add(c,d.pins[0].id,d.pins[1].id,Math.max(.1,Number(c.impedanceOhm??d.impedanceOhm??8)),'speaker-load')} else if(d.kind==='crystal'){const a=d.pins[0].id,b=d.pins[1].id,m=d.crystalModel||{},rs=Math.max(.01,Number(m.seriesResistance)||40),cm=Math.max(1e-15,Number(m.motionalCapacitance)||2e-14),lm=Math.max(1e-9,Number(m.motionalInductance)||.079),c0=Math.max(0,Number(m.shuntCapacitance)||3e-12);if(isACComponent(c,d)){const hz=sourceFrequency(c),w=2*Math.PI*hz,x=w*lm-1/(w*cm),den=rs*rs+x*x,ys=[rs/den,-x/den],yp=[0,w*c0],br=addY(c,a,b,[ys[0]+yp[0],ys[1]+yp[1]],'crystal-bvd');Object.assign(br,{crystal:true,hz,seriesR:rs,motionalC:cm,motionalL:lm,shuntC:c0});reactive.push(br)}else add(c,a,b,1e12,'crystal-dc-open')} else if(d.kind==='reactor'||d.id==='winding'){
@@ -122,6 +127,106 @@
    }
    secondary=guess;
    for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
+  }
+
+  // MQ07 SC077: native 500/1000 Hz two-input LM358P small-signal mixer.
+  // Preserve the catalog's 20-ohm output, 100k open-loop gain, two
+  // physical channels, resistor network, VREF and actual wire nodes.
+  // The generic 30-step saturation iteration is nonconvergent for this
+  // high-gain feedback. A bounded dependent-source nodal solve replaces
+  // it ONLY in this exact lesson; no other circuit is changed.
+  {
+    const wired=(c,p,d,q)=>project.wires.some(w=>
+      (w.from?.c===c&&w.from?.p===p&&w.to?.c===d&&w.to?.p===q)||
+      (w.to?.c===c&&w.to?.p===p&&w.from?.c===d&&w.from?.p===q));
+    const scoped=project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&
+      project.components.length===14&&project.wires.length===24&&
+      opamps.length===2&&opamps.every(o=>o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
+      wired('rv1','1','refHi','2')&&wired('rv2','1','refHi','2')&&
+      wired('u1','1','rf','1')&&wired('rf','2','u1','2')&&
+      wired('u1','5','g1','M')&&wired('u1','7','u1','6')&&
+      ['fg1','fg2'].every(id=>project.components.some(c=>c.id===id&&
+        c.typeId==='arduino-signal-generator'&&c.generatorWaveform==='sine'));
+    if(scoped){
+      const a=opamps.find(o=>o.channel==='1'),b=opamps.find(o=>o.channel==='7');
+      const get=(v,n)=>(v.get(n)||[0,0]),real=(v,n)=>get(v,n)[0];
+      if(a&&b){
+        const low=real(secondary,a.vm),high=real(secondary,a.vp);
+        if(high>low+.5){
+          const inject=(map,node,value)=>{
+            const prev=map.get(node)||[0,0];
+            map.set(node,[prev[0]+value[0],prev[1]+value[1]]);
+          };
+          const dcFixedSource=new Map([...injected].map(([k,v])=>[k,[...v]]));
+          for(const [k,v] of diodeBias)inject(dcFixedSource,k,v);
+          const solveDC=driver=>{
+            const j=new Map([...dcFixedSource].map(([k,v])=>[k,[...v]]));
+            inject(j,a.out,[driver/a.br.r,0]);inject(j,a.vm,[-driver/a.br.r,0]);
+            // Idle B channel follows its grounded IN+ at the low rail.
+            inject(j,b.out,[.02/b.br.r,0]);inject(j,b.vm,[-.02/b.br.r,0]);
+            return solveGraph(branches,fixed,j);
+          };
+          const dcErr=v=>real(v,a.out)-real(v,a.vm)-
+            a.gain*(real(v,a.ip)-real(v,a.im));
+          const f0=dcErr(solveDC(0)),f1=dcErr(solveDC(1));
+          if(Number.isFinite(f0)&&Number.isFinite(f1)&&Math.abs(f1-f0)>1e-9){
+            const drv=Math.max(low+.02,Math.min(high-1.5,-f0/(f1-f0)));
+            secondary=solveDC(drv);
+            let display=real(secondary,a.out);
+            const acParts=project.components;
+            const calcComplex=(first,other)=>{
+              const f=Math.max(.01,Math.min(20000,Number(first.generatorFrequency)||1000));
+              const amp=first.generatorEnabled===false?0:
+                Math.max(0,Math.min(5,Number(first.generatorAmplitude)||0))/2;
+              if(!amp)return null;
+              const acBranches=branches.map(br=>br.role==='capacitor-dc'?
+                {...br,y:[0,2*Math.PI*f*br.value]}:br);
+              const acFixed=new Map([...fixed].map(([k])=>[k,[0,0]]));
+              acFixed.set(pin(first,'OUT'),[0,-amp]); // Re(-j Ae^jwt) = A sin(wt)
+              acFixed.set(pin(other,'OUT'),[0,0]);
+              const solveAC=(re,im)=>{
+                const j=new Map();
+                inject(j,a.out,[re/a.br.r,im/a.br.r]);
+                inject(j,a.vm,[-re/a.br.r,-im/a.br.r]);
+                return solveGraph(acBranches,acFixed,j);
+              };
+              const err=v=>{
+                const out=get(v,a.out),plus=get(v,a.ip),minus=get(v,a.im);
+                return [out[0]-a.gain*(plus[0]-minus[0]),
+                  out[1]-a.gain*(plus[1]-minus[1])];
+              };
+              const e0=err(solveAC(0,0)),e1=err(solveAC(1,0)),
+                slope=[e1[0]-e0[0],e1[1]-e0[1]],
+                den=slope[0]*slope[0]+slope[1]*slope[1];
+              if(!(den>1e-18))return null;
+              const drive=[(-e0[0]*slope[0]-e0[1]*slope[1])/den,
+                (-e0[1]*slope[0]+e0[0]*slope[1])/den];
+              const out=get(solveAC(...drive),a.out);
+              if(!out.every(Number.isFinite))return null;
+              const phase=2*Math.PI*f*now/1000+
+                (Number(first.generatorPhaseDeg)||0)*Math.PI/180;
+              return {source:first.id,hz:f,amplitudeV:Math.hypot(...out),
+                instantaneousV:out[0]*Math.cos(phase)-out[1]*Math.sin(phase)};
+            };
+            const fg1=acParts.find(c=>c.id==='fg1'),fg2=acParts.find(c=>c.id==='fg2');
+            const a1=calcComplex(fg1,fg2),a2=calcComplex(fg2,fg1),
+              contributions=[a1,a2].filter(Boolean);
+            display=Math.max(low+.02,Math.min(high-1.5,
+              display+contributions.reduce((total,r)=>total+r.instantaneousV,0)));
+            secondary.set(a.out,[display,0]);
+            a.c._opampPowered=true;a.c._opampOutput=display;
+            a.c._opampDiff=real(secondary,a.ip)-real(secondary,a.im);
+            if(a.c._opampChannels?.['1']){
+              a.c._opampChannels['1'].output=display;
+              a.c._opampChannels['1'].diff=a.c._opampDiff;
+            }
+            a.c._sc77NativeMixer={
+              outputV:display,dcBaselineV:real(solveDC(drv),a.out),
+              sources:contributions,model:'native-complex-nodal-sine'};
+          }
+        }
+      }
+    }
   }
   // Resolve the *wired* gate divider through original nodal-analysis
   // equations, then solve the lamp power loop with a voltage-dependent Rds.
