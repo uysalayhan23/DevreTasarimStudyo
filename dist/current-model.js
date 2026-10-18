@@ -27,6 +27,25 @@
   const Analyzer=typeof module==='object'&&module.exports?require('./energy-analyzer.js'):root.DTSEnergyAnalyzer;
   const branches=[],fixed=new Map(),acNodes=new Set(),dcNodes=new Set(),cts=[],meters=[],reactive=[],diodes=[],opamps=[],dimmerStages=[],injected=new Map(),pin=(c,p)=>net.find(key(c.id,p)),add=(c,a,b,r,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,r:Math.max(1e-6,r),c,role};branches.push(branch);return branch},addY=(c,a,b,y,role)=>{const branch={a:pin(c,a),b:pin(c,b),ap:a,bp:b,y,c,role};branches.push(branch);return branch};
   const now=Number(options.now??Date.now()),defaultDt=.05,inject=(a,b,value)=>{if(!Number.isFinite(value)||Math.abs(value)<1e-15)return;injected.set(a,[(injected.get(a)?.[0]||0)+value,(injected.get(a)?.[1]||0)]);injected.set(b,[(injected.get(b)?.[0]||0)-value,(injected.get(b)?.[1]||0)])};
+  const sc78Tone=project?.tutorialLesson?.id==='oscillator-filter-apps-src-26'&&
+    project.components.length===10&&project.wires.length===15&&
+    (()=>{
+      const wired=(a,ap,b,bp)=>project.wires.some(w=>
+        (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+        (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+      const parts=[['fg','arduino-signal-generator'],['rl','resistor'],
+        ['cl','capacitor'],['rh','resistor'],['ch','capacitor'],
+        ['rvL','potentiometer'],['rvH','potentiometer'],
+        ['rmL','resistor'],['rmH','resistor'],['v1','meter-voltmeter']];
+      return parts.every(([id,type])=>project.components.some(c=>c.id===id&&c.typeId===type))&&
+        [['fg','OUT','rl','1'],['rl','2','cl','1'],['cl','2','fg','GND'],
+         ['rl','2','rvL','3'],['rvL','1','fg','GND'],['rvL','2','rmL','1'],
+         ['rmL','2','v1','1'],['fg','OUT','ch','1'],['ch','2','rh','1'],
+         ['rh','2','fg','GND'],['ch','2','rvH','3'],['rvH','1','fg','GND'],
+         ['rvH','2','rmH','1'],['rmH','2','v1','1'],['v1','2','fg','GND']]
+         .every(([a,p,b,q])=>wired(a,p,b,q))&&
+        project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
+    })();
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
   const isACComponent=(c,d)=>d.pins.some(p=>(net.at(c,p.id)||[]).some(v=>v?.type==='ac'));
@@ -52,7 +71,8 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if((project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
+    if((sc78Tone&&['cl','ch'].includes(c.id))||
+       (project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-24'&&c.id==='c1')){
      // SC076/SC077: native 1 kHz/500 Hz sine sources use frequency-domain
      // capacitor admittance, never a UI frame-rate approximation.
@@ -244,6 +264,49 @@
         }
       }
     }
+  }
+
+  // SC078: the actual passive RC branches use their generator-frequency
+  // admittance in the original complex nodal solver (not the UI time step).
+  // This models passive attenuation only: not an active Baxandall EQ, acoustic
+  // output, speaker power or a calibrated RMS measurement.
+  if(sc78Tone){
+    const fg=project.components.find(c=>c.id==='fg'),
+      voltmeter=project.components.find(c=>c.id==='v1'),
+      frequency=Math.max(.01,Math.min(20000,
+        Number(fg.generatorFrequency??byId[fg.typeId]?.generatorFrequency??1000)));
+    const offset=Math.max(0,Math.min(5,Number(fg.generatorOffset??0))),
+      amplitude=Math.max(0,Math.min(5,Number(fg.generatorAmplitude??0))),
+      peak=fg.generatorEnabled===false?0:
+        (Math.max(offset,Math.min(5,offset+amplitude))-offset)/2,
+      center=fg.generatorEnabled===false?0:offset+peak,
+      dcFixed=new Map(fixed);
+    dcFixed.set(pin(fg,'OUT'),[center,0]);
+    dcFixed.set(pin(fg,'GND'),[0,0]);
+    const dc=solveGraph(branches,dcFixed,finalInjection),
+      ground=pin(fg,'GND'),output=pin(voltmeter,'1'),
+      vdc=(dc.get(output)?.[0]||0)-(dc.get(ground)?.[0]||0);
+    let real=0,imag=0;
+    if(peak>0){
+      const harmonic=branches.map(br=>br.role==='capacitor-dc'&&
+        (br.c?.id==='cl'||br.c?.id==='ch')?
+        {...br,y:[0,2*Math.PI*frequency*br.value]}:br);
+      const harmonicFixed=new Map([...fixed].map(([n])=>[n,[0,0]]));
+      harmonicFixed.set(pin(fg,'OUT'),[0,-peak]);
+      harmonicFixed.set(ground,[0,0]);
+      const ac=solveGraph(harmonic,harmonicFixed),
+        acOutput=ac.get(output)||[0,0],acGround=ac.get(ground)||[0,0];
+      real=acOutput[0]-acGround[0];imag=acOutput[1]-acGround[1];
+    }
+    const phase=2*Math.PI*frequency*now/1000+
+      (Number(fg.generatorPhaseDeg)||0)*Math.PI/180,
+      instant=vdc+real*Math.cos(phase)-imag*Math.sin(phase);
+    secondary.set(output,[instant,0]);
+    voltmeter._sc78NativeTone={
+      frequencyHz:frequency,inputVpp:2*peak,
+      outputVpp:2*Math.hypot(real,imag),
+      dcBaselineV:vdc,instantaneousV:instant,
+      model:'native-passive-RC-complex-nodal'};
   }
   // Resolve the *wired* gate divider through original nodal-analysis
   // equations, then solve the lamp power loop with a voltage-dependent Rds.
