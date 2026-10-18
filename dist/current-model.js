@@ -52,8 +52,10 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id)){
-     // SC077's 500/1000 Hz sine sources use frequency-domain C admittance below.
+    if((project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
+       (project?.tutorialLesson?.id==='oscillator-filter-apps-src-24'&&c.id==='c1')){
+     // SC076/SC077: native 1 kHz/500 Hz sine sources use frequency-domain
+     // capacitor admittance, never a UI frame-rate approximation.
      // Keep the DC coupling capacitors open instead of aliasing them at UI frame rate.
      const br=add(c,a,b,1e12,'capacitor-dc');Object.assign(br,{reactiveType:'C',value:cap,dt:1,previous:0});reactive.push(br);
     }
@@ -129,13 +131,14 @@
    for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
   }
 
-  // SC077 only: LM358P B channel now buffers VREF. Both native
+  // SC076/SC077: solve the actual LM358P dual channels for either the
+  // non-inverting preamp or the buffered-VREF mixer. Both native
   // dependent source outputs are solved together in the real nodal graph.
   {
     const wired=(c,p,d,q)=>project.wires.some(w=>
       (w.from?.c===c&&w.from?.p===p&&w.to?.c===d&&w.to?.p===q)||
       (w.to?.c===c&&w.to?.p===p&&w.from?.c===d&&w.from?.p===q));
-    const scoped=project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&
+    const sc77=project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&
       project.components.length===14&&project.wires.length===24&&
       opamps.length===2&&opamps.every(o=>o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
       wired('rv1','1','u1','7')&&wired('rv2','1','u1','7')&&
@@ -144,6 +147,17 @@
       wired('rf','2','u1','2')&&
       ['fg1','fg2'].every(id=>project.components.some(c=>c.id===id&&
         c.typeId==='arduino-signal-generator'&&c.generatorWaveform==='sine'));
+    const sc76=project?.tutorialLesson?.id==='oscillator-filter-apps-src-24'&&
+      project.components.length===10&&project.wires.length===18&&
+      opamps.length===2&&opamps.every(o=>o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
+      wired('fg1','OUT','c1','1')&&wired('c1','2','u1','3')&&
+      wired('refHi','2','rb','1')&&wired('rb','2','u1','3')&&
+      wired('u1','1','rf','1')&&wired('rf','2','u1','2')&&
+      wired('u1','2','rg','1')&&wired('rg','2','refHi','2')&&
+      wired('u1','5','g1','M')&&wired('u1','7','u1','6')&&
+      project.components.some(c=>c.id==='fg1'&&
+        c.typeId==='arduino-signal-generator'&&c.generatorWaveform==='sine');
+    const scoped=sc77||sc76;
     if(scoped){
       const a=opamps.find(o=>o.channel==='1'),b=opamps.find(o=>o.channel==='7');
       const get=(v,n)=>v.get(n)||[0,0],addC=(x,y)=>[x[0]+y[0],x[1]+y[1]],
@@ -198,7 +212,7 @@
                 {...br,y:[0,2*Math.PI*f*br.value]}:br);
               const harmonicFixed=new Map([...fixed].map(([node])=>[node,[0,0]]));
               harmonicFixed.set(pin(first,'OUT'),[0,-amplitude]);
-              harmonicFixed.set(pin(other,'OUT'),[0,0]);
+              if(other)harmonicFixed.set(pin(other,'OUT'),[0,0]);
               const harmonicDrivers=solveDrivers(harmonicBranches,harmonicFixed,new Map());
               if(!harmonicDrivers)return null;
               const harmonic=solvePair(harmonicBranches,harmonicFixed,new Map(),harmonicDrivers),
@@ -211,7 +225,7 @@
             };
             const fg1=project.components.find(c=>c.id==='fg1'),
               fg2=project.components.find(c=>c.id==='fg2');
-            for(const result of [calc(fg1,fg2),calc(fg2,fg1)])if(result)contributions.push(result);
+            for(const result of [calc(fg1,fg2),fg2?calc(fg2,fg1):null])if(result)contributions.push(result);
             const output=Math.max(lo+.02,Math.min(hi-1.5,
               baseline+contributions.reduce((sum,x)=>sum+x.instantaneousV,0)));
             secondary.set(a.out,[output,0]);
@@ -223,8 +237,9 @@
                 channel.diff=get(secondary,op.ip)[0]-get(secondary,op.im)[0];
                 channel.powered=true;}
             }
-            a.c._sc77NativeMixer={outputV:output,dcBaselineV:baseline,
-              sources:contributions,model:'native-dual-dependent-source-AC'};
+            a.c[sc76?'_sc76NativePreamp':'_sc77NativeMixer']={
+              outputV:output,dcBaselineV:baseline,sources:contributions,
+              model:'native-dual-dependent-source-AC'};
           }
         }
       }
