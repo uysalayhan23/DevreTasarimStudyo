@@ -44,7 +44,7 @@
   function panelMeterMarkup(c,d,mode){
     const r=panelMeterValue(c,d);if(!r||!Number.isFinite(r.value))return '';
     const plain=r.value.toFixed(r.digits)+' '+r.unit,
-      tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope,power=c._sc81NativePower;
+      tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope,power=c._sc81NativePower||c._sc82NativePower;
     const extra=power&&Number.isFinite(power.outputPowerW)?
       'Yük '+power.outputRmsV.toFixed(2)+' Vrms · '+power.outputPowerW.toFixed(2)+' W · '+power.frequencyHz.toFixed(0)+' Hz'+
       (power.thermalShutdown?' · ISIL SINIR':power.datasheetTypicalLimitActive?' · TİPİK SINIR':''):
@@ -65,6 +65,13 @@
   }
   function markup(c,d,mode){
     if(d.kind==='meter-v'||d.kind==='meter-a')return panelMeterMarkup(c,d,mode);
+    if(c._sc82NativePower){const p=c._sc82NativePower;
+      const label='Sanal 8Ω '+p.outputPowerW.toFixed(2)+' W lineer RMS · '+
+        (p.powered?'AÇIK':!p.railValid?'BESLEME YOK':!p.standbyReleased?'STBY':'MUTE')+
+        (p.limitedByIdealRail?' · RAY SINIRI':'')+' · THD/ISIL YOK';
+      return '<text data-sc82-rms="1" x="'+d.w/2+'" y="'+(d.h+54)+
+        '" text-anchor="middle" font-size="11" fill="#064e68">'+esc(label)+'</text>';
+    }
     if(d.kind==='audio-power-amplifier'&&c._sc81NativePower){
       const p=c._sc81NativePower,label=p.powered?
         ('RL '+p.loadOhm+' Ω · '+p.outputPowerW.toFixed(2)+' W hesap · Tj≈'+p.estimatedJunctionC.toFixed(0)+'°C'+(p.thermalShutdown?' · ISIL SINIR':p.datasheetTypicalLimitActive?' · TİPİK SINIR':'')):

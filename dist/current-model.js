@@ -96,6 +96,16 @@
           .every(([a,p,b,q])=>wired(a,p,b,q))&&
         Number(project.components.find(c=>c.id==='spk')?.impedanceOhm??4)===4;
     })();
+  // SC082 specific circuit guard.
+  const sc82Linear=project?.tutorialLesson?.id==='oscillator-filter-apps-src-30'&&
+    project.components.length===21&&project.wires.length===40&&(()=>{
+      const types=[["ps","virtual-bipolar-audio-rail"],["fg","arduino-signal-generator"],["u1","tda7293-multiwatt15v"],["rl","virtual-audio-load-8ohm-150w"],["v1","meter-voltmeter"],["r1","resistor"],["c1","capacitor"],["r2","resistor"],["c2","capacitor"],["r3","resistor"],["c5","capacitor"],["c7","capacitor"],["c6","capacitor"],["c9","capacitor"],["c8","capacitor"],["stby","arduino-bench-supply"],["mute","arduino-bench-supply"],["r4","resistor"],["c4","capacitor"],["r5","resistor"],["c3","capacitor"]];
+      const edges=["ps.VP>u1.7","ps.VP>u1.13","ps.VN>u1.8","ps.VN>u1.15","ps.G>u1.4","ps.G>u1.1","fg.OUT>c1.1","c1.2>u1.3","fg.GND>ps.G","u1.3>r1.1","r1.2>ps.G","u1.14>r3.1","r3.2>u1.2","u1.2>r2.1","r2.2>c2.1","c2.2>ps.G","u1.6>c5.1","c5.2>u1.14","u1.14>rl.+","rl.->ps.G","u1.14>v1.1","v1.2>ps.G","ps.VP>c7.1","c7.2>ps.G","ps.VP>c6.1","c6.2>ps.G","ps.VN>c9.1","c9.2>ps.G","ps.VN>c8.1","c8.2>ps.G","stby.P>r4.1","r4.2>u1.9","u1.9>c4.1","c4.2>ps.G","stby.M>ps.G","mute.P>r5.1","r5.2>u1.10","u1.10>c3.1","c3.2>ps.G","mute.M>ps.G"];
+      if(!types.every(([id,t])=>project.components.some(c=>c.id===id&&c.typeId===t)))return false;
+      const actual=project.wires.map(w=>w.from.c+'.'+w.from.p+'>'+w.to.c+'.'+w.to.p);
+      return edges.every(s=>actual.includes(s)||actual.includes(s.split('>').reverse().join('>')))&&
+        project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
+    })();
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
   const isACComponent=(c,d)=>d.pins.some(p=>(net.at(c,p.id)||[]).some(v=>v?.type==='ac'));
@@ -121,7 +131,7 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if(sc81Power||
+    if(sc81Power||(sc82Linear&&!['c3','c4'].includes(c.id))||
        (sc80Envelope&&c.id==='c1')||
        (sc78Tone&&['cl','ch'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
@@ -142,6 +152,7 @@
    else if(d.kind==='opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),br=add(c,'OUT','V-',ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,'IN+'),im:pin(c,'IN-'),vp:pin(c,'V+'),vm:pin(c,'V-'),out:pin(c,'OUT'),gain:Math.max(10,Number(d.openLoopGain)||100000)});} else if(d.kind==='dual-opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),vp=String(d.supplyPins?.positive||'8'),vm=String(d.supplyPins?.negative||'4');for(const ch of d.opampChannels||[]){const br=add(c,String(ch.out),vm,ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,String(ch.plus)),im:pin(c,String(ch.minus)),vp:pin(c,vp),vm:pin(c,vm),out:pin(c,String(ch.out)),gain:Math.max(10,Number(d.openLoopGain)||100000),channel:String(ch.out)})}}
    else if(d.kind==='audio-power-amplifier'){
     if(sc81Power)add(c,'4','3',Math.max(.05,Number(d.outputResistance)||.15),'audio-power-output');
+    if(sc82Linear&&c.id==='u1')add(c,'14','4',.2,'audio-power-output');
    }
    else if(d.kind==='potentiometer'){const r=Math.max(1,Number(c.potMax)||10000),p=Math.max(0,Math.min(100,c.potentiometer??50))/100;add(c,'1','2',r*p,'load');add(c,'2','3',r*(1-p),'load')}
    else if(d.ptWires)add(c,'A','B1',Devices.output(c,d).value,'load');
@@ -541,6 +552,76 @@
         reason:'besleme aralığı 12–36 V dışında'};
     }
   }
+  // SC082 only: true wired RC nodes, one complex dependent-source driver.
+  // Harmonic distortion, internal bootstrap amplifier and thermal SOA absent.
+  if(sc82Linear){
+    const pick=id=>project.components.find(c=>c.id===id),u=pick('u1'),fg=pick('fg'),
+      load=pick('rl'),meter=pick('v1'),ps=pick('ps'),hz=Math.max(.01,Math.min(20000,
+      Number(fg.generatorFrequency)||1000)),out=pin(u,'14'),ground=pin(u,'4'),
+      loadPos=pin(load,'+'),loadNeg=pin(load,'-'),ro=.2,gain=10000,
+      at=(v,n)=>v.get(n)||[0,0],sub=(x,y)=>[x[0]-y[0],x[1]-y[1]],
+      times=(x,m)=>[x[0]*m,x[1]*m],div=(x,y)=>{
+        const d=y[0]*y[0]+y[1]*y[1];
+        return d>1e-20?[(x[0]*y[0]+x[1]*y[1])/d,(x[1]*y[0]-x[0]*y[1])/d]:null;
+      },
+      stamp=(branches,known,driver)=>solveGraph(branches,known,new Map([
+        [out,times(driver,1/ro)],[ground,times(driver,-1/ro)]])),
+      error=(bs,fx,d)=>{const v=stamp(bs,fx,d);
+        return sub(sub(at(v,out),at(v,ground)),times(sub(at(v,pin(u,'3')),at(v,pin(u,'2'))),gain));
+      },
+      driver=(bs,fx)=>{const zero=error(bs,fx,[0,0]),one=error(bs,fx,[1,0]);
+        return div(times(zero,-1),sub(one,zero));
+      },
+      plus=at(secondary,pin(ps,'VP'))[0],baseV=at(secondary,ground)[0],
+      neg=at(secondary,pin(ps,'VN'))[0],nodeS=pin(u,'9'),nodeM=pin(u,'10'),
+      stbyV=at(secondary,nodeS)[0]-baseV,muteV=at(secondary,nodeM)[0]-baseV,
+      previous=u._sc82Control||{standby:false,mute:false},
+      threshold=(v,old)=>v>=3.5?true:v<=1.5?false:old,
+      standby=threshold(stbyV,previous.standby),
+      mute=threshold(muteV,previous.mute),
+      valid=plus-baseV>=12&&plus-baseV<=50&&baseV-neg>=12&&baseV-neg<=50,
+      on=valid&&standby&&mute,R=Math.max(.1,Number(load.impedanceOhm??8));
+    if(!options.sampleOnly)u._sc82Control={standby,mute};
+    let phasor=[0,0],power=0,vRms=0,limited=false;
+    if(on){
+      const dcFixed=new Map(fixed);dcFixed.set(pin(fg,'OUT'),[0,0]);dcFixed.set(pin(fg,'GND'),[0,0]);
+      const d0=driver(branches,dcFixed);
+      if(d0){
+        const dc=stamp(branches,dcFixed,d0),
+          center=at(dc,out)[0],room=Math.max(0,Math.min(plus-center,center-neg)-3),
+          input=fg.generatorEnabled===false?0:Math.max(0,Math.min(5,Number(fg.generatorAmplitude??0)))/2;
+        secondary=dc;secondary.set(nodeS,[stbyV+baseV,0]);secondary.set(nodeM,[muteV+baseV,0]);
+        let outAc=[0,0];
+        if(input>0&&room>0){
+          const harmonic=branches.map(b=>b.role==='capacitor-dc'?
+            {...b,y:[0,2*Math.PI*hz*b.value]}:b);
+          const acFixed=new Map([...fixed].map(([n])=>[n,[0,0]]));
+          acFixed.set(pin(fg,'OUT'),[0,-input]);acFixed.set(pin(fg,'GND'),[0,0]);
+          const da=driver(harmonic,acFixed);
+          if(da){
+            const v=stamp(harmonic,acFixed,da);
+            outAc=sub(at(v,out),at(v,ground));
+            phasor=sub(at(v,loadPos),at(v,loadNeg));
+            const pk=Math.hypot(...outAc),k=pk>1e-9?Math.min(1,room/pk,6.5*R/pk):1;
+            limited=k<.999999;outAc=times(outAc,k);phasor=times(phasor,k);
+          }
+        }
+        const angle=2*Math.PI*hz*now/1000+Number(fg.generatorPhaseDeg??0)*Math.PI/180,
+          inst=x=>x[0]*Math.cos(angle)-x[1]*Math.sin(angle);
+        secondary.set(out,[center+inst(outAc),0]);secondary.set(loadPos,[inst(phasor),0]);
+      }
+    }else{secondary.set(out,[0,0]);secondary.set(loadPos,[0,0]);}
+    vRms=Math.hypot(...phasor)/Math.SQRT2;power=vRms*vRms/R;
+    const state={model:'native-TDA7293-linear-RC-RMS',
+      powered:on,railValid:valid,standbyReleased:standby,muteReleased:mute,
+      standbyVoltageV:stbyV,muteVoltageV:muteV,frequencyHz:hz,
+      loadOhm:R,outputRmsV:vRms,outputPowerW:power,outputCurrentRmsA:vRms/R,
+      limitedByIdealRail:limited,bootstrapExternalWired:true,
+      bootstrapInternalModeled:false,distortionModeled:false,
+      thermalModeled:false,manufacturer100WAccepted:false,physicalHardware:false};
+    u._sc82NativePower=state;load._sc82NativePower=state;
+    meter._sc82NativePower=state;load._speakerPowerW=power;
+  }
   // Resolve the *wired* gate divider through original nodal-analysis
   // equations, then solve the lamp power loop with a voltage-dependent Rds.
   // This is a 12 V linear-pass teaching equivalent, not verified IRF540N SPICE.
@@ -567,10 +648,10 @@
   }
   for(const {c} of diodes){const a=secondary.get(pin(c,'A'))||[0,0],k=secondary.get(pin(c,'K'))||[0,0],b=branches.find(x=>x.c===c&&x.role==='diode');c._voltageValue=Math.abs(a[0]-k[0]);c._currentValue=b?current(b,secondary):0}
   for(const b of branches.filter(b=>b.role==='load'&&['resistor','lamp'].includes(byId[b.c.typeId]?.kind))){const a=secondary.get(b.a),z=secondary.get(b.b);b.c._currentValue=current(b,secondary);b.c._voltageValue=a&&z?Math.hypot(a[0]-z[0],a[1]-z[1]):0}
-  for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){const nativeRms=b.c._sc81NativePower;
-    b.c._speakerPowerW=nativeRms?.model==='native-TDA2030-complex-feedback-RMS'?
+  for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){const nativeRms=b.c._sc81NativePower||b.c._sc82NativePower;
+    b.c._speakerPowerW=(nativeRms?.model==='native-TDA2030-complex-feedback-RMS'||nativeRms?.model==='native-TDA7293-linear-RC-RMS')?
       nativeRms.outputPowerW:amps*amps*b.r;
-    if(nativeRms?.model==='native-TDA2030-complex-feedback-RMS'){
+    if(nativeRms?.model==='native-TDA2030-complex-feedback-RMS'||nativeRms?.model==='native-TDA7293-linear-RC-RMS'){
       b.c._voltageValue=nativeRms.outputRmsV;
       b.c._currentValue=nativeRms.outputCurrentRmsA;
     }
@@ -589,7 +670,8 @@
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='energy-analyzer')Analyzer.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId,now});
   for(const c of project.components){const d=byId[c.typeId];if(d?.kind==='meter-v'){
     const a=secondary.get(pin(c,d.pins[0].id)),b=secondary.get(pin(c,d.pins[1].id));
-    c._voltageValue=c._sc81NativePower?.model==='native-TDA2030-complex-feedback-RMS'?
+    c._voltageValue=c._sc82NativePower?.model==='native-TDA7293-linear-RC-RMS'?
+      c._sc82NativePower.outputRmsV:c._sc81NativePower?.model==='native-TDA2030-complex-feedback-RMS'?
       c._sc81NativePower.outputRmsV:(a&&b?Math.hypot(a[0]-b[0],a[1]-b[1]):0);
   }}
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}

@@ -274,7 +274,7 @@
         g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireOverlayOnly:wireOverDeviceBody(d)});
         if(motion)g.querySelector('.motion-indicator')?.replaceWith(motion);
         // Native RC, audio RMS and power readouts survive this live-material SVG redraw.
-        if(c._sc81NativePower||c._sc78NativeTone||c._sc80NativeEnvelope){
+        if(c._sc81NativePower||c._sc82NativePower||c._sc78NativeTone||c._sc80NativeEnvelope){
           const readout=window.DTSDeviceBehavior.markup(c,d,appearance);
           if(readout)g.insertAdjacentHTML('beforeend',readout);
         }

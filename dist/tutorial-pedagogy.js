@@ -6103,6 +6103,49 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
    L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+/* SC082: software-only TDA7293 pin-accurate external topology;
+ THD, actual 100 W and internal bootstrap driver are NOT modeled. */
+{
+const id='oscillator-filter-apps-src-30',l=L.byId[id],prior=l?.project;
+const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+if(!l||l.kind!=='quiz'||!prior||prior.referenceOnly!==true||prior.wires.length||
+ l.steps.length||prior.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+ l.materials.length!==4||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+ throw Error('SC082 reference source changed');
+const p=base(id,l.title),comp=[["ps","virtual-bipolar-audio-rail",60,80,{"railMagnitudeV":40}],["fg","arduino-signal-generator",60,430,{"generatorEnabled":true,"generatorWaveform":"sine","generatorFrequency":1000,"generatorAmplitude":0.6,"generatorOffset":0}],["u1","tda7293-multiwatt15v",870,280,{}],["rl","virtual-audio-load-8ohm-150w",1520,340,{}],["v1","meter-voltmeter",1520,550,{}],["r1","resistor",480,460,{"resistance":22000}],["c1","capacitor",280,400,{"capacitance":4.7e-7}],["r2","resistor",660,680,{"resistance":680}],["c2","capacitor",450,780,{"capacitance":0.000022}],["r3","resistor",1150,560,{"resistance":22000}],["c5","capacitor",1140,220,{"capacitance":0.000022}],["c7","capacitor",430,120,{"capacitance":1e-7}],["c6","capacitor",640,95,{"capacitance":0.001}],["c9","capacitor",440,260,{"capacitance":1e-7}],["c8","capacitor",640,250,{"capacitance":0.001}],["stby","arduino-bench-supply",60,930,{"dcVoltage":5}],["mute","arduino-bench-supply",60,1110,{"dcVoltage":5}],["r4","resistor",350,940,{"resistance":22000}],["c4","capacitor",580,1000,{"capacitance":0.00001}],["r5","resistor",350,1130,{"resistance":10000}],["c3","capacitor",580,1220,{"capacitance":0.00001}]],edges=["ps.VP>u1.7","ps.VP>u1.13","ps.VN>u1.8","ps.VN>u1.15","ps.G>u1.4","ps.G>u1.1","fg.OUT>c1.1","c1.2>u1.3","fg.GND>ps.G","u1.3>r1.1","r1.2>ps.G","u1.14>r3.1","r3.2>u1.2","u1.2>r2.1","r2.2>c2.1","c2.2>ps.G","u1.6>c5.1","c5.2>u1.14","u1.14>rl.+","rl.->ps.G","u1.14>v1.1","v1.2>ps.G","ps.VP>c7.1","c7.2>ps.G","ps.VP>c6.1","c6.2>ps.G","ps.VN>c9.1","c9.2>ps.G","ps.VN>c8.1","c8.2>ps.G","stby.P>r4.1","r4.2>u1.9","u1.9>c4.1","c4.2>ps.G","stby.M>ps.G","mute.P>r5.1","r5.2>u1.10","u1.10>c3.1","c3.2>ps.G","mute.M>ps.G"];
+for(const [cid,type,x,y,props] of comp)p.components.push(C(cid,type,x,y,cid.toUpperCase(),type,{...props,
+ tutorialPurpose:'Yalnız yazılımsal sanal dış devre; gerçek güç veya THD/ısıl test değildir.'}));
+const parse=s=>{const i=s.indexOf('.');return {c:s.slice(0,i),p:s.slice(i+1)}};
+for(const e of edges){const [a,b]=e.split('>'),u=parse(a),v=parse(b);
+ p.wires.push(W(u.c,u.p,v.c,v.p,e,'Sanal dış devre bağlantısı','#43a047','SIGNAL'))}
+if(p.components.length!==21||p.wires.length!==40||
+ new Set(p.components.map(c=>c.id)).size!==21||new Set(p.wires.map(w=>w.id)).size!==40)
+ throw Error('SC082 graph incomplete');
+p.projectId=prior.projectId;p.name=prior.name;p.tutorialLesson={...prior.tutorialLesson,phase:'demo',step:0};
+l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
+ why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+l.materials=materialRows(p);
+l.summary='Sanal TDA7293 15 pinli dış devre: çift ray, giriş/çıkış, 8 Ω direnç, 22 kΩ/680 Ω AC geri besleme ve RC MUTE/STBY.';
+l.explanation=l.summary+' Yazılım yalnız lineer frekans alanı V_RMS ve P=Vrms²/R çözer. C5 bootstrap dış bağlantısı gereklidir ancak iç yükselteç bootstrap sürücü modeli yoktur. Gerçek THD, termal SOA, 100 W üretici kabulü ve fiziksel donanım modellenmez.';
+l.learningGoal='TDA7293 dış pinlerini, negatif geri besleme, RMS yük hesabı ve gecikmeli MUTE/STBY RC durumlarını ayırt etmek.';
+l.beginnerSteps=['Sanal ± kaynak düğümlerini incele.','Giriş ve negatif geri besleme yollarını ayırt et.',
+ 'Harici bootstrap bağlantısı ile doğrulanmayan iç model farkını gör.',
+ 'Sanal 5 V STBY ve MUTE komutlarının RC gecikmesini izle.',
+ '8 Ω ideal direnç RMS hesabını üreticinin 100 W / %10 THD koşulundan ayır.'];
+l.quiz={question:'Sanal 8 Ω direnç yükünde sinüs bileşeni gücü nasıl hesaplanır?',
+ options:['Vrms²/8 Ω','Sabit 100 W','THD otomatik doğrulanır'],answer:0,why:'Yalnız ideal dirençli lineer frekans çözümüdür.'};
+l.safety='Yalnız bilgisayar içinde sanal devre; gerçek güç kaynağı veya fiziksel yüksek gerilim kurulmaz.';
+l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+ mq07AudioScope:'SC082_VIRTUAL_LINEAR',titleTopologyStatus:'VIRTUAL_RC_POWER_NATIVE',
+ titleTopologyIssue:'BOOTSTRAP_INTERNAL_THERMAL_SOA_THD_UNSUPPORTED',
+ native100WAcceptance:false,manufacturerAcceptance:false,thermalAcceptance:false,
+ physicalAcceptance:false,windowsVisualAcceptance:false};
+L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+L.mq07Batch200.noWireTriage.applicationRepairIds=L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
  * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
  * No golden project or global solver mutation. */
