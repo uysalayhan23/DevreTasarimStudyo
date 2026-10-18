@@ -5030,6 +5030,65 @@ for(const spec of [
   L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+/* MQ-07 SC040/SC041: migrate only the existing follower/comparator
+ * tutorials from the hidden legacy A-unit to the actual LM358P PDIP-8.
+ * Keep functional source graphs; ground-reference the spare B non-inverting
+ * input and close its 7->6 feedback, avoiding a floating physical channel.
+ * No other SC001–SC200, golden or global solver changes. */
+for(const spec of [
+ {id:'opamp-apps-src-05',originalWires:8,originalParts:4,
+  role:'LM358P fiziksel pinli gerilim izleyici · A kanalı',
+  concept:'RV1/2 → U1/3, U1/1 → U1/2 doğrudan negatif geri besleme ile A kanalı gerilim izleyicidir.'},
+ {id:'opamp-apps-src-06',originalWires:12,originalParts:6,
+  role:'LM358P fiziksel pinli karşılaştırıcı · A kanalı',
+  concept:'RV1/2 → U1/3; R3/R4 referans düğümü → U1/2. A kanalı açık döngü karşılaştırma için bağlanmıştır.'}
+]){
+ const l=L.byId[spec.id],p=l?.project,u=p?.components.find(c=>c.id==='u1');
+ const previousPins=new Set(['IN+','IN-','OUT','V+','V-']);
+ if(!l||l.kind!=='wiring'||l.designStandard==='rich-reference-v1'||!p||
+    p.referenceOnly===true||p.wires.length!==spec.originalWires||
+    p.components.length!==spec.originalParts||
+    !u||u.typeId!=='lm358p-opamp-a'||
+    !l.materials.some(m=>m.componentId==='u1'&&m.typeId===u.typeId)||
+    !p.wires.some(w=>w.from?.c==='u1'&&w.to?.c==='u1'&&w.from?.p==='OUT'&&w.to?.p==='IN-')=== (spec.id==='opamp-apps-src-05'))
+  throw Error('MQ07 physical LM358P source lesson baseline changed '+spec.id);
+ const actualPins={OUT:'1','IN-':'2','IN+':'3','V-':'4','V+':'8'};
+ const sourceEdges=p.wires.filter(w=>w.from?.c==='u1'||w.to?.c==='u1');
+ if(sourceEdges.length===0||sourceEdges.some(w=>[w.from,w.to].some(ep=>ep.c==='u1'&&!previousPins.has(ep.p))))
+  throw Error('MQ07 physical LM358P legacy A terminal drift '+spec.id);
+ u.typeId='lm358p-dip8';u.ref='U1';
+ u.label=spec.role;
+ u.tutorialPurpose='Gerçek LM358P DIP-8: kanal A OUT pin 1, IN− pin 2, IN+ pin 3; negatif besleme 4, pozitif besleme 8. Kullanılmayan kanal B IN+ pin 5 ortak 0 V; OUT pin 7 IN− pin 6 geri besleme ile sonlandırılmıştır.';
+ for(const w of p.wires)for(const side of ['from','to']){
+  const ep=w[side];if(ep?.c==='u1')ep.p=actualPins[ep.p]||ep.p;
+ }
+ p.wires.push(
+  W('u1','5','g1','M','U1/5 (B IN+) → G1/M','Kullanılmayan fiziksel B kanalının girişi referansa sabitlenir; açıkta bırakılmaz.','#111827','0V'),
+  W('u1','7','u1','6','U1/7 (B OUT) → U1/6 (B IN−)','Kullanılmayan B kanalının negatif geri beslemesi kapanır; A kanalına karışmaz.','#43a047','SIGNAL')
+ );
+ const pinSet=new Set(['1','2','3','4','5','6','7','8']);
+ if(p.wires.length!==spec.originalWires+2||
+    p.wires.some(w=>[w.from,w.to].some(ep=>ep.c==='u1'&&!pinSet.has(ep.p)))||
+    !p.wires.some(w=>w.from?.c==='u1'&&w.from?.p==='7'&&w.to?.c==='u1'&&w.to?.p==='6')||
+    !p.wires.some(w=>w.from?.c==='u1'&&w.from?.p==='5'&&w.to?.c==='g1'&&w.to?.p==='M'))
+  throw Error('MQ07 LM358P physical B/A pin migration incomplete '+spec.id);
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.explanation+=' Fiziksel ürün onarımı: '+spec.concept+
+  ' U1/8 ve U1/4 sanal 24 V/0 V raylarıdır. Gerçek DIP-8 içindeki kullanılmayan B kanalı U1/5 → 0 V ve U1/7 → U1/6 negatif geri besleme ile bırakılmamıştır. Bu kaynak terminal düzeltmesidir; gerçek çıkış doyumu, dinamik karşılaştırıcı davranışı, üretici kalibrasyonu ve Windows görünümü ayrıca doğrulanmadı.';
+ l.beginnerSteps=[
+  ...l.beginnerSteps,
+  'Gizli A kanal sembolü yerine fiziksel LM358P DIP-8 pinlerini bul: 1=OUT, 2=IN−, 3=IN+, 4=0 V, 8=+24 V.',
+  'Kullanılmayan ikinci kanalda U1/5 → G1/M ile U1/7 → U1/6 yollarını bul; A kanalının çalışmasıyla karıştırma.'
+ ];
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07PhysicalPartRepair:'LM358P_DIP8_A_AND_UNUSED_B_TERMINATION',
+  titleTopologyStatus:'PHYSICAL_PACKAGE_SOURCE_REPAIRED_NATIVE_PENDING',
+  nativeOpampAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
 /* MQ-07 SC051: two physical LM358P dual packages, three native-model
  * op-amp channels in a genuine 3-op-amp instrumentation amplifier network.
  * First U1 channels 1/7 share an RG bridge between negative inputs 2/6.
