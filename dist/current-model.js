@@ -364,7 +364,7 @@
       voltage=chargeTarget>previous?
         previous+(chargeTarget-previous)*(1-Math.exp(-dt/tauCharge)):
         previous*Math.exp(-dt/tauRelease),
-      output=Math.max(0,Math.min(peakSource,voltage));
+      output=Math.max(0,Math.min(5,voltage));
     secondary.set(pin(cap,'1'),[output,0]);
     secondary.set(gnd,[0,0]);
     const priorDisplay=Number(meter._sc80DisplayValue),
