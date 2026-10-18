@@ -42,9 +42,23 @@
     return null;
   }
   function panelMeterMarkup(c,d,mode){
-    const r=panelMeterValue(c,d);if(!r||!Number.isFinite(r.value)||mode==='material')return '';
-    const value=r.value.toFixed(r.digits),plain=value+' '+r.unit;
-    return '<g class="analog-device"><text data-panel-meter-readout="1" x="'+d.w/2+'" y="'+(d.h+55)+'" text-anchor="middle" font-size="12" fill="#064e68">'+plain+'</text></g>';
+    const r=panelMeterValue(c,d);if(!r||!Number.isFinite(r.value))return '';
+    const plain=r.value.toFixed(r.digits)+' '+r.unit,
+      tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope;
+    const extra=tone&&Number.isFinite(tone.outputVpp)?
+      'AC '+tone.outputVpp.toFixed(3)+' Vpp · '+tone.frequencyHz.toFixed(0)+' Hz':
+      vu&&Number.isFinite(vu.detectorVoltageV)?
+      'RC '+vu.detectorVoltageV.toFixed(2)+' V · bağıl '+
+      (vu.relativeDbTo1VPeak===null?'—':vu.relativeDbTo1VPeak.toFixed(1)+' dB re 1 Vpk'):'';
+    const y=d.h+55,primary=mode==='material'?'':('<text data-panel-meter-readout="1" x="'+d.w/2+'" y="'+y+
+      '" text-anchor="middle" font-size="12" fill="#064e68">'+plain+'</text>');
+    const extraText=extra?'<text data-native-audio-level="1" x="'+d.w/2+
+      '" y="'+(mode==='material'?d.h+58:d.h+75)+
+      '" text-anchor="middle" font-size="12" fill="#064e68">'+extra+'</text>':'';
+    const bar=vu?Array.from({length:10},(_,i)=>'<rect x="'+(d.w/2-72+i*15)+
+      '" y="'+(mode==='material'?d.h+72:d.h+88)+'" width="12" height="7" rx="2" fill="'+
+      (i<vu.segments?(i>=8?'#cf6c24':'#168a55'):'#cbd5e1')+'"/>').join(''):'';
+    return primary||extraText||bar?'<g class="analog-device">'+primary+extraText+bar+'</g>':'';
   }
   function markup(c,d,mode){
     if(d.kind==='meter-v'||d.kind==='meter-a')return panelMeterMarkup(c,d,mode);

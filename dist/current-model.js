@@ -46,6 +46,24 @@
          .every(([a,p,b,q])=>wired(a,p,b,q))&&
         project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
     })();
+  // SC080: only the actual authored diode + series resistance + RC path.
+  const sc80Envelope=project?.tutorialLesson?.id==='oscillator-filter-apps-src-28'&&
+    project.components.length===7&&project.wires.length===10&&
+    (()=>{
+      const wired=(a,p,b,q)=>project.wires.some(w=>
+        (w.from?.c===a&&w.from?.p===p&&w.to?.c===b&&w.to?.p===q)||
+        (w.to?.c===a&&w.to?.p===p&&w.from?.c===b&&w.from?.p===q));
+      const parts=[['fg','arduino-signal-generator'],['rv','potentiometer'],
+        ['rin','resistor'],['d1','1n4148-do35'],['c1','capacitor'],
+        ['r1','resistor'],['v1','meter-voltmeter']];
+      return parts.every(([id,type])=>project.components.some(c=>c.id===id&&c.typeId===type))&&
+        [['fg','OUT','rv','3'],['rv','1','fg','GND'],
+         ['rv','2','rin','1'],['rin','2','d1','A'],
+         ['d1','K','c1','1'],['c1','2','fg','GND'],['d1','K','r1','1'],
+         ['r1','2','fg','GND'],['d1','K','v1','1'],['v1','2','fg','GND']]
+        .every(([a,p,b,q])=>wired(a,p,b,q))&&
+        project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
+    })();
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
   const isACComponent=(c,d)=>d.pins.some(p=>(net.at(c,p.id)||[]).some(v=>v?.type==='ac'));
@@ -71,7 +89,8 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if((sc78Tone&&['cl','ch'].includes(c.id))||
+    if((sc80Envelope&&c.id==='c1')||
+       (sc78Tone&&['cl','ch'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-24'&&c.id==='c1')){
      // SC076/SC077: native 1 kHz/500 Hz sine sources use frequency-domain
@@ -307,6 +326,60 @@
       outputVpp:2*Math.hypot(real,imag),
       dcBaselineV:vdc,instantaneousV:instant,
       model:'native-passive-RC-complex-nodal'};
+  }
+
+  // SC080: use the native nodal network to find the potentiometer's
+  // positive source peak, then solve the real RIN+RV Thevenin / D1-drop /
+  // C1-R1 charge-decay equivalent without aliasing 600 Hz at 50ms frames.
+  // A 1N4148 envelope indicator is NOT a calibrated IEC VU or RMS meter.
+  if(sc80Envelope){
+    const part=id=>project.components.find(c=>c.id===id),
+      fg=part('fg'),rv=part('rv'),rin=part('rin'),d1=part('d1'),
+      cap=part('c1'),resistor=part('r1'),meter=part('v1'),
+      gnd=pin(fg,'GND'),
+      peakSource=fg.generatorEnabled===false?0:
+        Math.max(0,Math.min(5,Number(fg.generatorOffset??0)+
+          Math.max(0,Number(fg.generatorAmplitude??0)))),
+      peakFixed=new Map(fixed);
+    peakFixed.set(pin(fg,'OUT'),[peakSource,0]);
+    peakFixed.set(gnd,[0,0]);
+    const potNetwork=branches.filter(br=>br.role!=='diode'),
+      peakNodes=solveGraph(potNetwork,peakFixed),
+      peakWiper=Math.max(0,(peakNodes.get(pin(rv,'2'))?.[0]||0)-
+        (peakNodes.get(gnd)?.[0]||0)),
+      vDiode=0.7,capacitance=Math.max(1e-9,Number(cap.capacitance)||4.7e-6),
+      loadResistance=Math.max(1,Number(resistor.resistance)||100000),
+      load=1/(1/loadResistance+1/1e7),
+      percent=Math.max(0,Math.min(1,Number(rv.potentiometer??50)/100)),
+      rPot=Math.max(1,Number(rv.potMax)||10000),
+      rThevenin=Math.max(0.1,rPot*percent*(1-percent)),
+      sourceR=Math.max(1,Number(rin.resistance)||1000)+rThevenin,
+      fullLevel=Math.max(0,peakWiper-vDiode),
+      chargeTarget=fullLevel*load/(load+sourceR),
+      last=Number(cap._sc80EnvelopeNow),
+      deltaMs=Number.isFinite(last)&&now>=last?Math.min(10000,now-last):20,
+      dt=deltaMs/1000,previous=Math.max(0,Number(cap._capacitorVoltage)||0),
+      tauCharge=Math.max(0.001,sourceR*capacitance*3),
+      tauRelease=load*capacitance,
+      voltage=chargeTarget>previous?
+        previous+(chargeTarget-previous)*(1-Math.exp(-dt/tauCharge)):
+        previous*Math.exp(-dt/tauRelease),
+      output=Math.max(0,Math.min(peakSource,voltage));
+    secondary.set(pin(cap,'1'),[output,0]);
+    secondary.set(gnd,[0,0]);
+    const priorDisplay=Number(meter._sc80DisplayValue),
+      alpha=1-Math.exp(-dt/.3),
+      display=Math.max(0,Number.isFinite(priorDisplay)?
+        priorDisplay+(output-priorDisplay)*alpha:output*alpha);
+    if(!options.sampleOnly){cap._sc80EnvelopeNow=now;meter._sc80DisplayValue=display}
+    meter._sc80NativeEnvelope={
+      detectorVoltageV:output,displayVoltageV:display,
+      relativeDbTo1VPeak:display>1e-7?20*Math.log10(display):null,
+      segments:Math.max(0,Math.min(10,Math.round(10*display/2.3))),
+      tauReleaseMs:1000*tauRelease,diodeDropV:vDiode,
+      sourcePeakV:peakSource,frequencyHz:Number(fg.generatorFrequency)||600,
+      model:'native-wired-diode-RC-envelope-educational'};
+    d1._diodeForward=peakWiper>output+vDiode;
   }
   // Resolve the *wired* gate divider through original nodal-analysis
   // equations, then solve the lamp power loop with a voltage-dependent Rds.

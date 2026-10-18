@@ -5840,7 +5840,7 @@ for(const [suffix,isMixer] of [['24',false],['25',true]]){
  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
  l.materials=materialRows(p);
- const boundary='Pasif frekansa bağlı iki kol yalnız birleştirilir; bu bir aktif Baxandall yükseltme/kesme eşdeğeri değildir. Simülatör kaynak taraması, gerçek AC ölçüm, hoparlör sesi, ton kazancı, watt ve fiziksel cihaz uyumu native/Windows QA olmadan kabul edilemez.';
+ const boundary='Pasif frekansa bağlı iki kol yalnız birleştirilir; bu bir aktif Baxandall yükseltme/kesme eşdeğeri değildir. Native kompleks düğüm çözümü iki RC kolunun frekansa bağlı gerilim tepkisini hesaplar. Bu ölçüm kalibre RMS, akustik ses, aktif Baxandall yükseltme, hoparlör gücü veya Windows/üretici onayı değildir.';
  l.summary='FG1 den ikiye ayrılan alçak geçiren RL/CL bas ve yüksek geçiren CH/RH tiz kolları, RV1/RV2 bağımsız seviye sürgüleri ile 22 kΩ pasif çıkış dirençlerinde birleştirilmiştir.';
  l.explanation=l.summary+' '+boundary;
  l.learningGoal='Bas ve tiz kolu RC elemanları, RV1/RV2 sürgüleri ve iki 22 kΩ ortak çıkış direncini gerçek kablolu şemada ayırmak.';
@@ -5893,6 +5893,80 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
   audioMaterialIdentity:'LM358P_SMALL_SIGNAL_ONLY',
   physicalAcceptance:false,windowsVisualAcceptance:false,
   independentPedagogicalAcceptance:false};
+}
+
+
+/* SC080: actual low-voltage 1N4148 diode, RIN, C1/R1 envelope and voltmeter.
+ * Not an IEC VU-calibrated electromechanical meter or sound power circuit. */
+{
+ const id='oscillator-filter-apps-src-28',l=L.byId[id],old=l?.project,
+   expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ if(!l||l.kind!=='quiz'||!old||old.referenceOnly!==true||old.wires.length||
+    l.steps.length||old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    l.materials.length!==expected.length||
+    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+   throw Error('SC080 source reference changed');
+ const p=base(id,l.title);
+ const part=(cid,type,x,y,ref,label,extra,why)=>p.components.push(
+   C(cid,type,x,y,ref,label,{...extra,tutorialPurpose:why}));
+ const wire=(a,ap,b,bp,why,color='#43a047')=>p.wires.push(
+   W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ part('fg','arduino-signal-generator',50,320,'FG1','Sanal 600 Hz sinüs kaynağı',
+   {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:600,generatorAmplitude:3,generatorOffset:0},
+   'Düşük gerilimli 0–3 V sanal dalga; akustik ses kaydı veya kalibre RMS kaynağı değil.');
+ part('rv','potentiometer',285,310,'RV1','10 kΩ giriş seviyesi',
+   {potMax:10000,potentiometer:70},'Pin 1/2/3 ile gerçek bölücü.');
+ part('rin','resistor',495,295,'RIN','1 kΩ diyot akım sınırı',
+   {resistance:1000},'D1 akımını fiziksel olarak sınırlar ve C1 şarj akımına direnç ekler.');
+ part('d1','1n4148-do35',700,295,'D1','1N4148 tepe doğrultucu',{},
+   'Anot A→katot K yaklaşık 0,7 V eşikli iletim.');
+ part('c1','capacitor',935,355,'C1','4,7 µF tepe saklama',
+   {capacitance:4.7e-6},'Doğrultulmuş gerilimi depolar.');
+ part('r1','resistor',915,600,'R1','100 kΩ zarf boşaltma',
+   {resistance:100000},'C1 paralel kaçak direnci R1×C1≈0,47 s.');
+ part('v1','meter-voltmeter',1190,375,'V1','RC seviye voltmetresi',{},
+   'C1 üzerindeki doğrultulmuş DC seviye, bağıl çubuk ve dB re 1 V tepe.');
+ wire('fg','OUT','rv','3','Kaynak sinyali pot 3 ucuna girer.');
+ wire('rv','1','fg','GND','Pot düşük ucu ortak sıfırdır.','#111827');
+ wire('rv','2','rin','1','Sürgü RIN ucunu sürer.');
+ wire('rin','2','d1','A','Diyot anotuna seri akım sınırlama.');
+ wire('d1','K','c1','1','Diyot katodu saklama kondansatörüne.');
+ wire('c1','2','fg','GND','C1 ortak sıfıra döner.','#111827');
+ wire('d1','K','r1','1','R1 kondansatörle paralel.');
+ wire('r1','2','fg','GND','R1 boşalma dönüşü.','#111827');
+ wire('d1','K','v1','1','V1 artı C1 çıkışında.');
+ wire('v1','2','fg','GND','V1 eksi sıfırda.','#111827');
+ if(p.components.length!==7||p.wires.length!==10||
+   new Set(p.components.map(c=>c.id)).size!==7||new Set(p.wires.map(w=>w.id)).size!==10||
+   p.wires.some(w=>!p.components.some(c=>c.id===w.from?.c)||!p.components.some(c=>c.id===w.to?.c)))
+   throw Error('SC080 1N4148 RC terminal graph incomplete');
+ p.projectId=old.projectId;p.name=old.name;p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='FG1 → RV1 → RIN 1 kΩ → 1N4148 → C1 4,7 µF/R1 100 kΩ → V1 voltmetre; kablolu sanal tepe-seviye algılama devresi.';
+ l.explanation=l.summary+' Mevcut katalog diyodunun yaklaşık 0,7 V iletim eşiği ile C1 ve R1 şarj/boşalma zamanı hesaplanır. V1 üzerinde gerçek RC zarf voltajı ve 1 V tepeye göre bağıl seviye görünür; IEC VU standardına kalibre ölçüm, ses dalgasının gerçek RMS değeri veya fiziksel ürün kabulü değildir.';
+ l.learningGoal='D1 doğrultması, RIN akım sınırı, C1 enerji depolama, R1 boşalma ve V1 seviye geriliminin gerçek bağlantılarını ve dinamik tepkisini incele.';
+ l.beginnerSteps=[
+  'FG1 OUT/GND ve RV1 3/1 uçlarını bul, sürgü 2 → RIN/1 yolunu izle.',
+  'RIN/2 → D1/A → D1/K → C1/1 ve V1/1 tepe tutma yolunu izle.',
+  'C1/2, R1/2 ve V1/2 ortak GND dönüşüdür.',
+  'Simülasyonda RV1 seviyesini azalt/artır veya FG1 i kapat; seviye geriliminin şarj ve R1×C1 ölçeğinde boşalmasını izle.',
+  'Bağıl dB re 1 V tepe göstergesi IEC VU kalibrasyonu değildir.'
+ ];
+ l.quiz={question:'SC080 zarf devresinde FG1 kapatıldığında V1 neden zamanla azalır?',
+   options:['C1 sakladığı yükü R1 üzerinden boşaltır','LM358P kendiliğinden enerji üretir','IEC VU standardı devreyi besler'],answer:0,
+   why:'D1 tek yönlü iletim ve C1/R1 ≈ 0,47 s zaman sabitiyle seviye davranışı üretir.'};
+ l.safety='Yalnız düşük gerilimli sanal diyot-RC ölçüm laboratuvarı; gerçek hoparlör gücü, üretici kalibrasyonu, IEC VU kabulü yoktur.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
+   mq07AudioScope:'SC080_RECTIFIED_RC_ENVELOPE',titleTopologyStatus:'NATIVE_RECTIFIER_ENVELOPE_TARGETED',
+   titleTopologyIssue:'IEC_VU_AND_WINDOWS_PHYSICAL_QA_PENDING',
+   terminalGrounded:true,calibratedVuAcceptance:false,
+   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=
+   L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
