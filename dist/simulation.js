@@ -20,7 +20,7 @@
   const followers=new Set(['contact-no','contact-nc','contact-both','delay-on-no','delay-on-nc','delay-off-no','delay-off-nc','contactor3']);
   const breakers=new Set(['breaker','breaker2','breaker3','rcd2','rcd4','fuse-switch','overload','thermal-magnetic']);
   const loads=new Set(['lamp','led','buzzer','siren','flasher','meter-v','meter-ohm','resistor','capacitor','diode','potentiometer','reactor']);
-  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery','bell-transformer','ac-virtual-source']);
+  const sources=new Set(['supply','supply3','supply-dc-plus','supply-dc-minus','battery','bell-transformer','ac-virtual-source','virtual-bipolar-study-source']);
   const phaseMotors=new Set(['motor3','motor-yd','motor-dahlender','motor-rotor','motor-2speed','generator','servo-motor']);
   const normalizeRef=s=>String(s||'').trim().normalize('NFKC').toLocaleUpperCase('tr-TR');
   const pinKey=(c,p)=>JSON.stringify([c,p]);
@@ -137,7 +137,16 @@
     for(let pass=0;pass<Math.max(12,(derived.length+instruments.length)*3+4);pass++){
       potentials=new Map();faultDomains=new Set();faultRoots=new Set();
       for(const c of project.components){const d=definition(byId,c);if(!d||!sources.has(d.kind))continue;
-        if(d.kind==='ac-virtual-source'){
+        if(d.kind==='virtual-bipolar-study-source'){
+          if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-30'&&
+             c.id==='ps'&&c.softwareOnly!==false){
+            const magnitude=Math.max(0,Math.min(50,Number(c.railMagnitudeV??40))),
+              domain='virtual-bipolar:'+c.id;
+            seed(c,'VP',domain,'+','dc',magnitude);
+            seed(c,'G',domain,'0','dc',0);
+            seed(c,'VN',domain,'-','dc',-magnitude);
+          }
+        }else if(d.kind==='ac-virtual-source'){
           if(c.sourceEnabled!==false){const rms=Number(c.rmsVoltage??d.defaultRmsVoltage??12);
             if(Number.isFinite(rms)&&rms>=1&&rms<=24){seed(c,'AC','isolated-ac:'+c.id,'L1','ac',rms);seed(c,'RET','isolated-ac:'+c.id,'N','ac',rms)}}
         }else if(d.kind==='bell-transformer'){
