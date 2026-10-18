@@ -5703,7 +5703,7 @@ function mq07MakeAudioLesson(lesson,mix){
    link(fg,'GND','g1','M','Sinyal kanalı dönüşü G1/M ile ortaktır.','#111827');
    link(fg,'OUT',c,'1','Bağımsız sinyal RC kuplaja girer.');
    link(c,'2',rv,'3','Kuplaj çıkışı kendi seviye potansiyometresine bağlanır.');
-   link(rv,'1','g1','M','Potansiyometrenin alt ucu 0 V referansına döner.','#111827');
+   link(rv,'1','refHi','2','Potansiyometrenin alt ucu 6 V VREF düğümüne döner; mikser girişleri DC çalışma noktasında tutulur.','#43a047');
    link(rv,'2',ri,'1','Sürgü gerilimi ayrı giriş direncine aktarılır.');
    link(ri,'2','u1','2','A/B kanalları IN− pin 2 de direnç üzerinden toplanır.');
   }
@@ -5712,7 +5712,9 @@ function mq07MakeAudioLesson(lesson,mix){
  }
  link('u1','1','v1','1','Çıkış voltmetresi LM358P pin 1 i izler; AC rms onayı yok.');
  link('v1','2','g1','M','V1 eksi ucu ortak sanal 0 V referansıdır.','#111827');
- const expectedParts=mix?14:10,expectedWires=mix?22:16;
+ link('u1','5','g1','M','Boş LM358P B kanalının IN+ pini 5, ortak 0 V referansına sabitlenir.','#111827');
+ link('u1','7','u1','6','Boş LM358P B kanalında OUT pin 7 kendi IN− pin 6 girişine kapalı geri beslenir.');
+ const expectedParts=mix?14:10,expectedWires=mix?24:18;
  const compIDs=new Set(p.components.map(c=>c.id)),wireIDs=new Set(p.wires.map(w=>w.id));
  if(compIDs.size!==p.components.length||wireIDs.size!==p.wires.length||
     p.components.length!==expectedParts||p.wires.length!==expectedWires||
@@ -5729,13 +5731,13 @@ function mq07MakeAudioLesson(lesson,mix){
   'Tek kanallı AC kuplaj, VREF DC bias, LM358P pin 3 girişi ve 47 kΩ/10 kΩ negatif geri beslemesi olan küçük işaret ön yükseltecidir.';
  const limits='Bu devre 12 V DC beslemeli sanal küçük işaret şemasıdır. Gerçek ses miksajı, çıkış genliği, bant genişliği, harmonik bozulma, mikrofon kazancı veya dinamik AC/DC kaynak karışımı native Node/Windows ile doğrulanmadı. Hoparlör/ses watt gücü ve fiziksel cihaz kabulü yoktur.';
  lesson.summary=concept+' Gerçek katalog terminal grafiği kaydedildi; native ses/AC kabulü bekliyor.';
- lesson.explanation=concept+' LM358P fiziksel DIP-8 pinleri 8(+), 4(0 V), 3(IN+), 2(IN−), 1(OUT); 10 kΩ/10 kΩ VREF bölücüsü ve çıkış V1 referansı devrededir. '+limits;
+ lesson.explanation=concept+' LM358P fiziksel DIP-8 pinleri 8(+), 4(0 V), 3(IN+), 2(IN−), 1(OUT); 10 kΩ/10 kΩ VREF bölücüsü ve çıkış V1 referansı devrededir. Boş B kanalında U1/5→G1/M ve U1/7→U1/6 bağlıdır. '+(mix?'İki giriş seviye potunun 1 uçları 0 V yerine 6 V VREF noktasına bağlanır: giriş yokken tersleyen toplam düğümü VREF seviyesindedir, çıkış besleme rayında doyuma sürülmez. ':'')+limits;
  lesson.learningGoal='Ön yükseltme ile iki girişin dirençli toplanmasını ayırmak, fiziksel LM358P uçlarını ve ayrı kaynakların 0 V referansını şemadan takip etmek.';
  lesson.beginnerSteps=[
   'G1 12 V sanal besleme ve LM358P fiziksel 8/4 besleme uçlarını bul.',
   'RREF1/RREF2 orta VREF düğümünü ve girişin 3/2 pinlerini ayırt et.',
-  mix?'FG1/FG2 kuplaj kondansatörlerini, RV1/RV2 seviye sürgülerini ve RA/RB toplama dirençlerini ayrı izle.':'FG1/OUT → C1 → IN+ pin 3 yolunu, RB giriş kutuplamasını ve RF/RG negatif geri beslemesini izle.',
-  'OUT pin 1 → V1/1 ve V1/2 → G1/M yolunu takip et; ölçülmemiş RMS ve dB kazancı yazma.',
+  mix?'FG1/FG2 kuplaj kondansatörlerini, 6 V VREF e bağlı RV1/RV2 pin 1 uçlarını, 2 sürgülerini ve RA/RB toplama dirençlerini ayrı izle.':'FG1/OUT → C1 → IN+ pin 3 yolunu, RB giriş kutuplamasını ve RF/RG negatif geri beslemesini izle.',
+  'OUT pin 1 → V1/1 ve V1/2 → G1/M yolunu, kullanılmayan B kanalının U1/5→G1/M ve U1/7→U1/6 uçlarını takip et; ölçülmemiş RMS ve dB kazancı yazma.',
   limits
  ];
  lesson.quiz=mix?{
@@ -5751,6 +5753,8 @@ function mq07MakeAudioLesson(lesson,mix){
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
   componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
   mq07AudioScope:mix?'SC077_TWO_CHANNEL_SUMMER':'SC076_BIASED_PREAMP',
+  mq07SpareLm358B:'PIN5_TO_0V_PIN7_TO_PIN6_SOURCE_WIRED',
+  ...(mix?{mq07MixerDcBias:'RV1_RV2_PIN1_TO_6V_VREF'}:{}),
   titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
   titleTopologyIssue:mix?'MIXED_AUDIO_AC_RUNTIME_PENDING':'PREAMP_AC_RUNTIME_PENDING',
   nativeAudioAcceptance:false,audioAcGainAcceptance:false,
