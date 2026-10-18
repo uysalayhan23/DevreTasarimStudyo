@@ -8379,6 +8379,56 @@ for(const id of [
   L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+
+/* MQ-07 SC044/045/050: real LM358P physical DIP-8 spare B channel repair.
+ * A channel + RC/comparator/diode networks stay byte-for-byte untouched.
+ * Catalog pin 5 = B IN+, pin 6 = B IN-, pin 7 = B OUT.
+ * This is a terminal/source repair, NOT native waveform/calibration PASS. */
+for(const id of ['opamp-apps-src-09','opamp-apps-src-10','opamp-apps-src-15']){
+ const l=L.byId[id],p=l?.project;
+ const u=p?.components?.find(c=>c.id==='u1'),g=p?.components?.find(c=>c.id==='g1');
+ if(!l||l.kind!=='wiring'||l.designStandard==='rich-reference-v1'||
+    !p||p.referenceOnly===true||!u||u.typeId!=='lm358p-dip8'||
+    !g||g.typeId!=='supply-dc-plus'||!Array.isArray(p.wires)||
+    !p.wires.length||!l.materials?.some(m=>m.componentId==='u1'&&m.typeId==='lm358p-dip8'))
+  throw Error('MQ07 remaining LM358P B channel baseline drift '+id);
+ const components=new Set(p.components.map(c=>c.id));
+ const terminals=p.wires.flatMap(w=>[w.from,w.to]).filter(ep=>ep?.c==='u1');
+ const has=(a,ap,b,bp)=>p.wires.some(w=>
+  (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+  (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+ if(components.size!==p.components.length||
+    p.wires.some(w=>!components.has(w.from?.c)||!components.has(w.to?.c))||
+    terminals.some(ep=>!['1','2','3','4','8'].includes(ep.p))||
+    !['1','2','3'].every(pin=>terminals.some(ep=>ep.p===pin))||
+    !has('g1','P','u1','8')||!has('g1','M','u1','4')||
+    has('u1','5','g1','M')||has('u1','7','u1','6'))
+  throw Error('MQ07 LM358P A/PSU pin preconditions changed '+id);
+ const originalWires=p.wires.length;
+ p.wires.push(
+  W('u1','5','g1','M','U1/5 B IN+ → G1/M',
+   'Kullanılmayan fiziksel LM358P B kanalı pin 5, 0 V ortak referansında tutulur.','#111827','0V'),
+  W('u1','7','u1','6','U1/7 B OUT → U1/6 B IN−',
+   'Kullanılmayan B op-amp kanalı kendi kapalı negatif geri beslemesinde tutulur; A devresinden ayrıdır.','#43a047','SIGNAL')
+ );
+ if(p.wires.length!==originalWires+2||
+    !has('u1','5','g1','M')||!has('u1','7','u1','6')||
+    new Set(p.wires.map(w=>w.id)).size!==p.wires.length)
+  throw Error('MQ07 LM358P B physical pin correction incomplete '+id);
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ u.tutorialPurpose='LM358P fiziksel PDIP-8: çalışan A kanalı 1/2/3 ve 8/4 beslemesini korur. Kullanılmayan B kanalının IN+ pini 5 → sanal 0 V; OUT pini 7 → kendi IN− pini 6 bağlanmıştır. Bu uç onarımı gerçek ölçüm/kalibrasyon PASS değildir.';
+ l.materials=materialRows(p);
+ l.explanation+=' DIP-8 kullanılmayan B kanalının fiziksel pinleri: U1/5 → G1/M, U1/7 → U1/6. Bu yalnız kaynak terminal onarımıdır; A kanalı transferi ve Windows sonucu henüz test edilmedi.';
+ l.beginnerSteps=[...(l.beginnerSteps||[]),
+  'LM358P B kanalının U1/5 → G1/M ve U1/7 → U1/6 bağlantılarını tanı; U1 A kanalının çalışma devresine karıştırma.'];
+ l.pedagogyReview={...(l.pedagogyReview||{}),
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07SpareLm358B:'PIN5_TO_0V_PIN7_TO_PIN6_SOURCE_WIRED',
+  nativeSpareChannelAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
