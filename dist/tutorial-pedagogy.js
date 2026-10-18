@@ -8298,6 +8298,87 @@ for(const id of [
   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+
+/* MQ-07 SC027: replace the 3-part floating potentiometer/BJT quiz card
+ * with a true, low-voltage native BD139 B/C/E switch and load loop.
+ * Transistor conduction is modelled by the existing bd139-npn solver.
+ * The light/meter behaviour is NOT yet native/Windows tested. */
+{
+ const id='electronic-switching-src-05',l=L.byId[id],original=l?.project;
+ const expected=['arduino-bd139','arduino-pot','arduino-resistor-1k'];
+ if(!l||l.kind!=='quiz'||l.designStandard==='rich-reference-v1'||
+    !original||original.referenceOnly!==true||original.wires.length!==0||
+    l.steps.length!==0||l.materials.length!==3||
+    original.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+    !L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('MQ07 SC027 pot-controlled BJT baseline changed');
+ const p=base(id,l.title);
+ p.components=[
+  C('g1','arduino-bench-supply',75,180,'G1','Sanal 12 V DC kaynak',
+   {dcVoltage:12,currentLimit:0.5,tutorialPurpose:'Yalnız yazılımsal düşük gerilimli 12 V enerji kaynağıdır; şebeke deneyi değildir.'}),
+  C('rv','potentiometer',310,180,'RV1','10 kΩ beyz kontrol potansiyometresi',
+   {potMax:10000,potentiometer:50,tutorialPurpose:'1 ve 3 besleme/dönüş uçlarıdır. 2 sürgü, RB üzerinden BD139 B ucuna ayarlanabilir kutuplama uygular.'}),
+  C('rb','resistor',565,290,'RB','4,7 kΩ beyz akım sınırlama',
+   {resistance:4700,tutorialPurpose:'RV1/2 sürgü ile Q1/B arasında, beyz akımını sınırlar; doğrudan besleme kısa devresi değildir.'}),
+  C('q1','bd139-npn',810,365,'Q1','BD139 NPN · B/C/E',
+   {tutorialPurpose:'BD139 katalog B, C ve E gerçek terminalleri. Pot sürgüsü B ucunu sürer; C/E üzerinde yalnız lamba yük akımı dolaşır.'}),
+  C('h1','standard-light',1030,190,'H1','12 V sanal yük · 120 Ω',
+   {resistance:120,tutorialPurpose:'H1 yükü +12 V ve BD139 kolektör ucu arasında bulunur; ideal direnci 120 Ω dır, gerçek lamba wattı doğrulanmış değildir.'}),
+  C('v1','meter-voltmeter',1140,430,'V1','Kolektör gerilimi referansı',
+   {tutorialPurpose:'V1/1 Q1/C, V1/2 G1/M arasına bağlanır. BD139 açıldığında kolektörün düşmesi beklenir; çıkış dalga formu ölçülmedi.'})
+ ];
+ p.wires.push(
+  W('g1','P','rv','1','G1/P → RV1/1','Potansiyometrenin 12 V üst ucudur.','#8b5a2b','+24V'),
+  W('rv','3','g1','M','RV1/3 → G1/M','Potansiyometrenin 0 V alt ucudur.','#111827','0V'),
+  W('rv','2','rb','1','RV1/2 → RB/1','Sürgü ayarı beyz sürme yolunu kontrol eder.','#43a047','SIGNAL'),
+  W('rb','2','q1','B','RB/2 → Q1/B','BD139 fiziksel B girişi, 4,7 kΩ üzerinden sürülür.','#43a047','SIGNAL'),
+  W('q1','E','g1','M','Q1/E → G1/M','BD139 E ucu sanal 0 V a döner.','#111827','0V'),
+  W('g1','P','h1','X1','G1/P → H1/X1','Lamba yükünün ayrı 12 V besleme yoludur.','#8b5a2b','+24V'),
+  W('h1','X2','q1','C','H1/X2 → Q1/C','Lamba akımı kolektörden emitere anahtarlanır.','#43a047','SIGNAL'),
+  W('v1','1','q1','C','V1/1 → Q1/C','Kolektör gerilimini izlemek için artı ölçüm ucu.','#43a047','SIGNAL'),
+  W('v1','2','g1','M','V1/2 → G1/M','Voltmetrenin ortak 0 V dönüşüdür.','#111827','0V')
+ );
+ const ids=new Set(p.components.map(c=>c.id)),wids=new Set(p.wires.map(w=>w.id));
+ const q=p.components.find(c=>c.id==='q1');
+ if(p.components.length!==6||p.wires.length!==9||
+    ids.size!==6||wids.size!==9||q.typeId!=='bd139-npn'||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c))||
+    !['B','C','E'].every(pin=>p.wires.some(w=>[w.from,w.to].some(ep=>ep.c==='q1'&&ep.p===pin))))
+  throw Error('MQ07 SC027 BD139 real terminal graph incomplete');
+ p.projectId=original.projectId;p.name=original.name;
+ p.tutorialLesson={...original.tutorialLesson,phase:'demo',step:0};
+ l.project=p;l.kind='wiring';l.workspaceMode=p.workspaceMode;
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ const boundary='Kaynak devresi gerçek BD139 B/C/E, RV1 1/2/3 ve H1 X1/X2 pinleriyle tanımlanmıştır. Pot sürgüsü ile lamba ON/OFF eşiği, transistör kazancı, V1 okuması, Windows görünümü ve fiziksel anma gücü henüz native toplu QA ile doğrulanmadı.';
+ l.summary='RV1 10 kΩ sürgüsünden 4,7 kΩ RB üzerinden BD139 bazına giden 12 V sanal anahtarlama devresi; ayrı kolektör-yük halkası ve V1 kolektör referansı kabloludur.';
+ l.explanation='Sanal düşük gerilim devresi: G1/P→RV1/1; RV1/3→G1/M; RV1/2→RB/1–2→Q1/B. Yük halkası G1/P→H1/X1–X2→Q1/C→Q1/E→G1/M dir. Q1 BD139 NPN; B beyz kontrol, C kolektör yük, E 0 V dönüş terminalidir. RV1 ayarı beyz kutuplamasını değiştirir; kolektör gerilimi Q1/C ile 0 V arasında V1 üzerinden izlenebilir. '+boundary;
+ l.learningGoal='Potansiyometrenin gerçek 1/2/3 terminallerini, 4,7 kΩ beyz direncini, BD139 B/C/E bağlantısını ve ayrı yük halkasını ayırt etmek.';
+ l.beginnerSteps=[
+  'Yalnız sanal 12 V devrede G1/P ve G1/M uçlarını ve RV1/1/2/3 terminallerini bul.',
+  'RV1/2 sürgü → RB 4,7 kΩ → Q1/B beyz yolunu şemada izle.',
+  'G1/P → H1/X1 → H1/X2 → Q1/C → Q1/E → G1/M yük yolunu ayrı izle.',
+  'V1/1 Q1/C ve V1/2 G1/M ölçüm uçlarını ayırt et; henüz ölçülmemiş gerilimi varsayma.',
+  boundary
+ ];
+ l.quiz={question:'BD139 NPN ile pot kontrollü sanal lambada hangi yol doğru kurulmuştur?',
+  options:['RV1 sürgüsü RB üzerinden B ye, yük C–E üzerinden GND ye bağlanır.','RV1 doğrudan 230 V şebekeyi yükten geçirir.','Lamba yalnız beyz pininden enerji alır.'],
+  answer:0,why:'Beyz sürgüyle ayarlanır; lamba enerjisi ayrı G1/P → H1 → Q1/C–E → G1/M halkasında dolaşır.'};
+ l.safety='Yalnız sanal düşük gerilimli BD139 anahtarlama eğitimi; gerçek cihaz, güç, fiziksel breadboard ya da şebeke bağlantı talimatı değildir.';
+ l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
+  componentIds:p.components.map(c=>c.typeId),terminalGrounded:true,
+  mq07BjtScope:'SC027_REAL_BD139_POT_AND_LOAD',
+  titleTopologyStatus:'SOURCE_TOPOLOGY_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'BD139_POT_SWITCH_NATIVE_PENDING',
+  nativeSwitchAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=
+  L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
