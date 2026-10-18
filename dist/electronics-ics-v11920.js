@@ -52,5 +52,38 @@ add({id:'hc49-4mhz-crystal',name:'4.000 MHz Kuvars Kristal',model:'HC-49/U · 4.
 add({id:'electret-9767-mic',name:'9.7 mm Elektret Mikrofon Kapsülü',model:'Electret condenser · 9.7 mm',brand:'Generic Electret',category:'Sensörler',catalogGroup:'electronics-semiconductors',kind:'electret-mic',liveMaterial:true,materialSymbol:false,arduinoShared:true,refPrefix:'MIC',w:126,h:110,pins:[P('+','+ OUT',45,110,'bottom',{physicalPin:1}),P('-','− GND',81,110,'bottom',{physicalPin:2})],realPackage:{type:'ELECTRET-9.7',pins:2,marking:'MIC',topView:true,orthographic:true,transparentBackground:true},sensitivityDbvPa:-44,defaultSoundDb:60,biasVoltage:[2,10]});
 add({id:'speaker-8ohm-1w',name:'8 Ω / 1 W Mini Hoparlör',model:'40 mm · 8 Ω · 1 W',brand:'Generic Speaker',category:'Ses',catalogGroup:'electronics-semiconductors',kind:'speaker',liveMaterial:true,materialSymbol:false,arduinoShared:true,refPrefix:'SPK',w:150,h:130,pins:[P('+','+',48,130,'bottom',{physicalPin:1}),P('-','−',102,130,'bottom',{physicalPin:2})],realPackage:{type:'SPEAKER-40',pins:2,marking:'8Ω 1W',topView:true,orthographic:true,transparentBackground:true},impedanceOhm:8,ratedPowerW:1});
 add({id:'bpw34-photodiode',name:'BPW34 PIN Foto Diyot',model:'BPW34 · PIN photodiode',brand:'Vishay',category:'Sensörler',catalogGroup:'electronics-semiconductors',kind:'photodiode',liveMaterial:true,materialSymbol:false,arduinoShared:true,refPrefix:'PD',w:120,h:120,pins:[P('A','1 · A',40,120,'bottom',{physicalPin:1}),P('K','2 · K',80,120,'bottom',{physicalPin:2})],realPackage:{type:'BPW34',pins:2,marking:'BPW34',topView:true,orthographic:true,transparentBackground:true},darkCurrentA:2e-9,responsivityAperW:0.62,defaultIlluminationLux:100});
+
+// ST TDA2030, Pentawatt H, top-view pins and metal tab on V- (pin 3).
+// Manufacturer geometry is an uncalibrated pin-outline proxy, NOT verified CAD.
+add({id:'tda2030-pentawatt5',name:'TDA2030 · 14 W tipik güç amplifikatörü · Pentawatt H',
+ model:'TDA2030H',brand:'STMicroelectronics',category:'Ses Güç Katları',
+ catalogGroup:'electronics-ics',kind:'audio-power-amplifier',liveMaterial:true,
+ materialSymbol:false,arduinoShared:true,refPrefix:'U',w:178,h:192,
+ pins:[P('1','1 · IN+',178,154,'right',{physicalPin:1}),
+       P('2','2 · IN−',178,124,'right',{physicalPin:2}),
+       P('3','3 · −Vs / TAB',178,94,'right',{physicalPin:3}),
+       P('4','4 · OUT',178,64,'right',{physicalPin:4}),
+       P('5','5 · +Vs',178,34,'right',{physicalPin:5})],
+ realPackage:{type:'PENTAWATT-H',pins:5,marking:'TDA2030',topView:true,
+   orthographic:true,tabConnectedToPin:'3'},
+ manufacturerGeometryAccepted:false,packageOutlineProxy:true,
+ datasheetUrl:'https://www.st.com/resource/en/datasheet/tda2030.pdf',
+ datasheetCondition:'28 V single supply, 4 ohm load, 12 W guaranteed / 14 W typical at 0.5% distortion, 25 C',
+ maxSupplySpanV:36,minSupplySpanV:12,peakOutputCurrentA:3.5,
+ typical4OhmPowerW:14,guaranteed4OhmPowerW:12,
+ junctionCaseThermalResistanceCPerW:3,thermalShutdownC:145,
+ idleSupplyCurrentA:0.04,outputResistance:0.15,openLoopGain:31622,
+ description:'Obsolete ST sınıf-AB güç entegresi. Tek beslemede giriş/çıkış DC kuplajı, gerçek dirençli geri besleme, 4 Ω yük ve soğutucu gerekir. Watt yalnız bağlı yükteki hesaplanan RMS değeridir; fiziksel THD/ısıl doğrulama değildir.'});
+// Equivalent passive 4 ohm / 25 W test load, NOT a manufactured speaker
+// with invented dimensions or acoustic/temperature performance.
+add({id:'virtual-audio-load-4ohm-25w',name:'4 Ω / 25 W ses test yükü · sanal direnç',
+ model:'4 Ω passive load / 25 W nominal teaching rating',brand:'DTS Virtual Instruments',
+ category:'Elektronik Ölçüm ve Sinyal',catalogGroup:'electronics-ics',
+ kind:'speaker',liveMaterial:true,materialSymbol:false,arduinoShared:true,
+ virtualInstrument:true,manufacturerGeometryAccepted:false,realPackage:null,
+ refPrefix:'RL',w:164,h:116,
+ pins:[P('+','+ · Yük giriş',36,116,'bottom'),P('-','− · Yük dönüş',128,116,'bottom')],
+ impedanceOhm:4,ratedPowerW:25,resistiveEquivalent:true,
+ description:'Sanal 4 Ω saf dirençli 25 W anma değerli test yükü. Gerçek hoparlör empedansı, akustik gücü, fiziksel ısınma veya ürün geometrisi değildir.'});
 root.DTSElectronicsICsV11920={ids:lib.filter(x=>x.realPackage&&x.arduinoShared).map(x=>x.id)};
 })(typeof window==='undefined'?globalThis:window);

@@ -64,6 +64,38 @@
         .every(([a,p,b,q])=>wired(a,p,b,q))&&
         project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
     })();
+  // SC081: ST TDA2030 single-rail 28 V source and 4 ohm equivalent RL.
+  // Native power stage only for the exact manufacturer-grounded tutorial.
+  const sc81Power=project?.tutorialLesson?.id==='oscillator-filter-apps-src-29'&&
+    project.components.length===19&&project.wires.length===31&&
+    (()=>{
+      const wired=(a,p,b,q)=>project.wires.some(w=>
+        (w.from?.c===a&&w.from?.p===p&&w.to?.c===b&&w.to?.p===q)||
+        (w.from?.c===b&&w.from?.p===q&&w.to?.c===a&&w.to?.p===p));
+      const parts=[['g1','arduino-bench-supply'],['fg','arduino-signal-generator'],
+        ['u1','tda2030-pentawatt5'],['ra','resistor'],['rb','resistor'],
+        ['c1','capacitor'],['r3','resistor'],['rf','resistor'],['rg','resistor'],
+        ['c2','capacitor'],['cout','capacitor'],
+        ['spk','virtual-audio-load-4ohm-25w'],['v1','meter-voltmeter'],
+        ['rz','resistor'],['cz','capacitor'],['cp','capacitor'],['cb','capacitor'],
+        ['d1','1n4007-do41'],['d2','1n4007-do41']];
+      return parts.every(([id,t])=>project.components.some(c=>c.id===id&&c.typeId===t))&&
+        [['g1','P','u1','5'],['g1','M','u1','3'],
+         ['g1','P','ra','1'],['ra','2','rb','1'],['rb','2','g1','M'],
+         ['ra','2','r3','1'],['r3','2','u1','1'],
+         ['fg','OUT','c1','1'],['c1','2','u1','1'],['fg','GND','g1','M'],
+         ['u1','4','rf','1'],['rf','2','u1','2'],['u1','2','rg','1'],
+         ['rg','2','c2','1'],['c2','2','g1','M'],
+         ['u1','4','cout','1'],['cout','2','spk','+'],['spk','-','g1','M'],
+         ['cout','2','v1','1'],['v1','2','g1','M'],
+         ['u1','4','rz','1'],['rz','2','cz','1'],['cz','2','g1','M'],
+         ['g1','P','cp','1'],['cp','2','g1','M'],
+         ['g1','P','cb','1'],['cb','2','g1','M'],
+         ['u1','4','d1','A'],['d1','K','g1','P'],
+         ['g1','M','d2','A'],['d2','K','u1','4']]
+          .every(([a,p,b,q])=>wired(a,p,b,q))&&
+        Number(project.components.find(c=>c.id==='spk')?.impedanceOhm??4)===4;
+    })();
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
   const isACComponent=(c,d)=>d.pins.some(p=>(net.at(c,p.id)||[]).some(v=>v?.type==='ac'));
@@ -89,7 +121,8 @@
    }
    else if(d.kind==='capacitor'){
     const cap=Math.max(1e-12,Number(c.capacitance??d.capacitance??100e-6)),a=d.pins[0].id,b=d.pins[1].id;
-    if((sc80Envelope&&c.id==='c1')||
+    if(sc81Power||
+       (sc80Envelope&&c.id==='c1')||
        (sc78Tone&&['cl','ch'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&['c1','c2'].includes(c.id))||
        (project?.tutorialLesson?.id==='oscillator-filter-apps-src-24'&&c.id==='c1')){
@@ -107,6 +140,9 @@
     else{const dt=reactiveDt(c),r=ind/dt,br=add(c,a,b,r,'inductor-dc'),ip=Number(c._inductorCurrent)||0;inject(br.a,br.b,-ip);Object.assign(br,{reactiveType:'L',value:ind,dt,previous:ip});reactive.push(br)}
    }
    else if(d.kind==='opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),br=add(c,'OUT','V-',ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,'IN+'),im:pin(c,'IN-'),vp:pin(c,'V+'),vm:pin(c,'V-'),out:pin(c,'OUT'),gain:Math.max(10,Number(d.openLoopGain)||100000)});} else if(d.kind==='dual-opamp'){const ro=Math.max(.1,Number(d.outputResistance)||20),vp=String(d.supplyPins?.positive||'8'),vm=String(d.supplyPins?.negative||'4');for(const ch of d.opampChannels||[]){const br=add(c,String(ch.out),vm,ro,'opamp-output');opamps.push({c,d,br,ip:pin(c,String(ch.plus)),im:pin(c,String(ch.minus)),vp:pin(c,vp),vm:pin(c,vm),out:pin(c,String(ch.out)),gain:Math.max(10,Number(d.openLoopGain)||100000),channel:String(ch.out)})}}
+   else if(d.kind==='audio-power-amplifier'){
+    if(sc81Power)add(c,'4','3',Math.max(.05,Number(d.outputResistance)||.15),'audio-power-output');
+   }
    else if(d.kind==='potentiometer'){const r=Math.max(1,Number(c.potMax)||10000),p=Math.max(0,Math.min(100,c.potentiometer??50))/100;add(c,'1','2',r*p,'load');add(c,'2','3',r*(1-p),'load')}
    else if(d.ptWires)add(c,'A','B1',Devices.output(c,d).value,'load');
    else if(['sensor-ntc','sensor-ptc'].includes(d.id))add(c,d.pins[0].id,d.pins[1].id,Devices.output(c,d).value,'load');
@@ -380,6 +416,130 @@
       sourcePeakV:peakSource,frequencyHz:Number(fg.generatorFrequency)||600,
       model:'native-wired-diode-RC-envelope-educational'};
     d1._diodeForward=peakWiper>output+vDiode;
+  }
+
+  // SC081 only: true AC phasor of the actual TDA2030 feedback, output
+  // coupling, 4 ohm load, high-frequency damping and bias network.
+  // Solve an open-loop dependent Norton voltage driver through the same
+  // native complex nodal equations used for other linear RC components.
+  // Datasheet power is a bound, not an output injected as a fixed 14 W.
+  if(sc81Power){
+    const comp=id=>project.components.find(c=>c.id===id),
+      u=comp('u1'),fg=comp('fg'),spk=comp('spk'),meter=comp('v1'),
+      supply=Number(comp('g1').dcVoltage??28),
+      frequency=Math.max(.01,Math.min(20000,Number(fg.generatorFrequency)||1000)),
+      loadR=Math.max(.1,Number(spk.impedanceOhm??byId[spk.typeId]?.impedanceOhm??4)),
+      ro=Math.max(.05,Number(byId[u.typeId]?.outputResistance)||.15),
+      gainOpen=Math.max(1000,Number(byId[u.typeId]?.openLoopGain)||31622),
+      out=pin(u,'4'),neg=pin(u,'3'),
+      loadOut=pin(spk,'+'),loadReturn=pin(spk,'-'),
+      get=(vs,k)=>vs.get(k)||[0,0],
+      sub=(x,y)=>[x[0]-y[0],x[1]-y[1]],
+      times=(x,f)=>[x[0]*f,x[1]*f],
+      div=(x,y)=>{const d=y[0]*y[0]+y[1]*y[1];
+        return d>1e-20?[(x[0]*y[0]+x[1]*y[1])/d,
+                           (x[1]*y[0]-x[0]*y[1])/d]:null;},
+      stamp=(bs,fx,driver)=>{
+        const I=new Map(),amount=[driver[0]/ro,driver[1]/ro];
+        I.set(out,amount);I.set(neg,times(amount,-1));
+        return solveGraph(bs,fx,I);
+      },
+      evaluate=(bs,fx,driver)=>{
+        const v=stamp(bs,fx,driver),lhs=sub(get(v,out),get(v,neg)),
+          diff=sub(get(v,pin(u,'1')),get(v,pin(u,'2')));
+        return sub(lhs,times(diff,gainOpen));
+      },
+      drivers=(bs,fx)=>{
+        const base=evaluate(bs,fx,[0,0]),unit=evaluate(bs,fx,[1,0]),
+          scale=sub(unit,base);
+        return div(times(base,-1),scale);
+      },
+      positive=pin(comp('g1'),'P'),ground=pin(comp('g1'),'M'),
+      supplyPositive=get(secondary,positive)[0],
+      supplyNegative=get(secondary,ground)[0],
+      actualSupply=supplyPositive-supplyNegative,
+      powered=actualSupply>=12&&actualSupply<=36,
+      outputData={model:'native-TDA2030-complex-feedback-RMS',
+        manufacturer:'STMicroelectronics',
+        datasheet:'https://www.st.com/resource/en/datasheet/tda2030.pdf',
+        topology:'single-supply-28V-Pentawatt-5',frequencyHz:frequency,
+        loadOhm:loadR,supplyV:actualSupply,
+        guaranteed4OhmPowerW:12,typical4OhmPowerW:14,
+        thermalModel:'estimated-class-AB-not-measured',
+        calibration:'not-SPICE-not-THD-not-acoustic'};
+    if(powered){
+      const dcFx=new Map(fixed);
+      dcFx.set(pin(fg,'OUT'),[0,0]);
+      dcFx.set(pin(fg,'GND'),[supplyNegative,0]);
+      const dcDrive=drivers(branches,dcFx);
+      if(dcDrive){
+        const dc=stamp(branches,dcFx,dcDrive),
+          baseline=get(dc,out)[0],lo=supplyNegative,hi=supplyPositive,
+          peakCap=Math.max(0,Math.min(baseline-lo-1.5,hi-baseline-1.5)),
+          amplitude=fg.generatorEnabled===false?0:
+            Math.max(0,Math.min(5,Number(fg.generatorAmplitude??0)))/2;
+        secondary=dc;
+        let harmonicV=[0,0],harmonicLoad=[0,0],scaled=1,clip=false;
+        if(amplitude>0&&peakCap>0){
+          const bs=branches.map(br=>br.role==='capacitor-dc'?
+            {...br,y:[0,2*Math.PI*frequency*br.value]}:br);
+          const fx=new Map([...fixed].map(([k])=>[k,[0,0]]));
+          fx.set(pin(fg,'OUT'),[0,-amplitude]);
+          fx.set(pin(fg,'GND'),[0,0]);
+          const acDrive=drivers(bs,fx);
+          if(acDrive){
+            const ac=stamp(bs,fx,acDrive),
+              driveOut=sub(get(ac,out),get(ac,neg)),
+              load=sub(get(ac,loadOut),get(ac,loadReturn)),
+              peakOut=Math.hypot(...driveOut),
+              peakLoad=Math.hypot(...load),
+              datasheetPowerCeiling=loadR===4?14:loadR===8?9:
+                Math.min(14,56/loadR),
+              peakPowerLimit=Math.sqrt(2*datasheetPowerCeiling*loadR),
+              currentLimit=3.5*loadR,
+              peakAllowed=Math.min(peakCap,peakPowerLimit,currentLimit);
+            scaled=peakOut>1e-9?Math.min(1,peakAllowed/peakOut):1;
+            harmonicV=times(driveOut,scaled);
+            harmonicLoad=times(load,scaled);
+            clip=scaled<.999999;
+          }
+        }
+        let vRms=Math.hypot(...harmonicLoad)/Math.SQRT2,
+          powerW=vRms*vRms/loadR,
+          iPeak=Math.hypot(...harmonicLoad)/loadR,
+          idleW=.04*actualSupply,
+          internalDissipationW=Math.max(idleW,
+            (actualSupply/Math.PI)*iPeak-powerW+idleW),
+          heatsinkR=Math.max(.5,Math.min(50,
+            Number(u.heatsinkThermalResistanceCPerW??4.2))),
+          ambientC=Math.max(-20,Math.min(125,
+            Number(u.ambientTemperatureC??25))),
+          junctionC=ambientC+internalDissipationW*(3+heatsinkR),
+          thermalShutdown=junctionC>=145;
+        if(thermalShutdown){
+          harmonicV=[0,0];harmonicLoad=[0,0];vRms=0;powerW=0;iPeak=0;
+        }
+        const phase=2*Math.PI*frequency*now/1000+
+          (Number(fg.generatorPhaseDeg)||0)*Math.PI/180,
+          instant=x=>x[0]*Math.cos(phase)-x[1]*Math.sin(phase);
+        secondary.set(out,[baseline+instant(harmonicV),0]);
+        secondary.set(loadOut,[instant(harmonicLoad),0]);
+        const power={...outputData,powered:true,dcBiasV:baseline,
+          outputRmsV:vRms,outputVpp:2*Math.hypot(...harmonicLoad),
+          outputPowerW:powerW,outputCurrentRmsA:vRms/loadR,
+          peakCurrentA:iPeak,datasheetTypicalLimitActive:clip,
+          heatsinkRthCPerW:heatsinkR,junctionCaseRthCPerW:3,
+          ambientC,estimatedJunctionC:junctionC,
+          estimatedDissipationW:internalDissipationW,thermalShutdown,
+          typicalOutputOnly:true,realHeatsinkVerified:false};
+        u._sc81NativePower=power;spk._sc81NativePower=power;
+        meter._sc81NativePower=power;
+        spk._speakerPowerW=powerW;spk._active=powerW>1e-5;
+      }
+    }else{
+      u._sc81NativePower={...outputData,powered:false,outputPowerW:0,
+        reason:'besleme aralığı 12–36 V dışında'};
+    }
   }
   // Resolve the *wired* gate divider through original nodal-analysis
   // equations, then solve the lamp power loop with a voltage-dependent Rds.

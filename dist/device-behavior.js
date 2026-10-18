@@ -44,8 +44,10 @@
   function panelMeterMarkup(c,d,mode){
     const r=panelMeterValue(c,d);if(!r||!Number.isFinite(r.value))return '';
     const plain=r.value.toFixed(r.digits)+' '+r.unit,
-      tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope;
-    const extra=tone&&Number.isFinite(tone.outputVpp)?
+      tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope,power=c._sc81NativePower;
+    const extra=power&&Number.isFinite(power.outputPowerW)?
+      'Yük '+power.outputRmsV.toFixed(2)+' Vrms · '+power.outputPowerW.toFixed(2)+' W · '+power.frequencyHz.toFixed(0)+' Hz':
+      tone&&Number.isFinite(tone.outputVpp)?
       'AC '+tone.outputVpp.toFixed(3)+' Vpp · '+tone.frequencyHz.toFixed(0)+' Hz':
       vu&&Number.isFinite(vu.detectorVoltageV)?
       'RC '+vu.detectorVoltageV.toFixed(2)+' V · bağıl '+
@@ -62,6 +64,16 @@
   }
   function markup(c,d,mode){
     if(d.kind==='meter-v'||d.kind==='meter-a')return panelMeterMarkup(c,d,mode);
+    if(d.kind==='audio-power-amplifier'&&c._sc81NativePower){
+      const p=c._sc81NativePower,label=p.powered?
+        ('RL '+p.loadOhm+' Ω · '+p.outputPowerW.toFixed(2)+' W hesap · Tj≈'+p.estimatedJunctionC.toFixed(0)+'°C'+(p.thermalShutdown?' · ISIL SINIR':'')):
+        'TDA2030: '+(p.reason||'besleme yok');
+      return '<text data-sc81-native-power="1" x="'+d.w/2+'" y="'+(d.h+58)+'" text-anchor="middle" font-size="12" fill="#064e68">'+esc(label)+'</text>';
+    }
+    if(d.id==='virtual-audio-load-4ohm-25w'&&c._sc81NativePower){
+      const p=c._sc81NativePower;
+      return '<text data-sc81-load-power="1" x="'+d.w/2+'" y="'+(d.h+50)+'" text-anchor="middle" font-size="12" fill="#064e68">'+p.outputPowerW.toFixed(2)+' W RMS hesap · 4 Ω</text>';
+    }
     if(d.excitationSource)return '<text x="'+d.w/2+'" y="'+(d.h+55)+'" text-anchor="middle" font-size="12" fill="#064e68">'+(c.dcVoltage??10)+' VDC</text>';
     if(d.kind==='current-transformer')return '<text x="'+d.w/2+'" y="'+(d.h+55)+'" text-anchor="middle" font-size="11" fill="#064e68">'+(c.ctPrimary||100)+'/'+(c.ctSecondary||5)+' A · '+(c._primaryCurrent??0).toFixed(3)+' → '+(c._secondaryCurrent??0).toFixed(3)+' A'+(c._secondaryOpen?' · Sekonder açık':'')+'</text>';
     if(!analog(d))return '';

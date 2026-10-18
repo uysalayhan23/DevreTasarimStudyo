@@ -5969,6 +5969,140 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
    L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
 }
 
+
+/* SC081: ST TDA2030 Pentawatt H / 28 V single-supply teaching circuit.
+ * NOT a fictitious LM358 14 W amplifier: power requires an explicit
+ * Pentawatt chip, RL=4 ohm equivalent load, feedback, DC bias, coupling,
+ * high-frequency output damping and real supply/output protection paths.
+ * Data: https://www.st.com/resource/en/datasheet/tda2030.pdf
+ */
+{
+ const id='oscillator-filter-apps-src-29',lesson=L.byId[id],old=lesson?.project;
+ const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||
+   old.wires.length||lesson.steps.length||
+   old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
+   lesson.materials.length!==expected.length||
+   !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+  throw Error('SC081 source baseline changed before physical power-stage repair');
+ const p=base(id,lesson.title);
+ const part=(cid,t,x,y,ref,label,props,why)=>p.components.push(
+   C(cid,t,x,y,ref,label,{...props,tutorialPurpose:why}));
+ const wire=(a,ap,b,bp,why,color='#43a047')=>p.wires.push(
+   W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,why,color,'SIGNAL'));
+ part('g1','arduino-bench-supply',55,75,'G1','28 V düşük gerilimli sanal DC kaynak',
+   {dcVoltage:28,currentLimit:3},'TDA2030 tek besleme 28 V; fiziksel şebeke veya güç kaynağı değil.');
+ part('fg','arduino-signal-generator',55,415,'FG1','1 kHz sanal ses test sinüsü',
+   {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:1000,
+    generatorAmplitude:0.5,generatorOffset:0},
+   'Sanal küçük sinyal; 0,5 Vpp ile devrenin kayıpları/gain hesaba katılır.');
+ part('u1','tda2030-pentawatt5',945,290,'U1','TDA2030H · Pentawatt 5 pin',
+   {heatsinkThermalResistanceCPerW:4.2,ambientTemperatureC:25},
+   'Pin 1 IN+, 2 IN−, 3 −Vs/tab, 4 OUT, 5 +Vs; nominal 3 °C/W junction-case.');
+ part('ra','resistor',370,90,'RA','100 kΩ VREF üst',{resistance:100000},
+   '28 V beslemeden 14 V orta nokta bölücüsü.');
+ part('rb','resistor',400,195,'RB','100 kΩ VREF alt',{resistance:100000},
+   'Orta noktadan 0 V dönüşü.');
+ part('c1','capacitor',355,485,'C1','1 µF giriş AC kuplaj',{capacitance:1e-6},
+   'DC offsetini TDA2030 giriş biasından ayırır.');
+ part('r3','resistor',610,260,'R3','100 kΩ giriş bias',{resistance:100000},
+   'IN+ 14 V orta referansa polarize edilir.');
+ part('rf','resistor',1180,325,'R1','150 kΩ geri besleme',{resistance:150000},
+   'OUT pin 4 → IN− pin 2 negatif geri besleme.');
+ part('rg','resistor',685,650,'R2','4,7 kΩ kazanç alt',{resistance:4700},
+   'IN− geri besleme ile 22 µF giriş decoupling kolu.');
+ part('c2','capacitor',480,705,'C2','22 µF geri besleme DC ayırma',{capacitance:22e-6},
+   'DC kazancı birim, 1 kHz için yaklaşık 32,9 kazanç.');
+ part('cout','capacitor',1180,505,'COUT','2200 µF yük AC kuplaj',{capacitance:2200e-6},
+   '14 V OUT DC kutuplamasını 4 Ω yükten ayırır.');
+ part('spk','virtual-audio-load-4ohm-25w',1565,600,'RL','4 Ω / 25 W sanal dirençli yük',{},
+   'Gerçek 4 Ω bağıntısı ile RMS gerilimden hesaplanan W; fiziksel hoparlör değildir.');
+ part('v1','meter-voltmeter',1535,330,'V1','4 Ω yük voltmetresi',{},
+   'Anlık volt ile native harmonik RMS/yük gücü ayrı gösterilir.');
+ part('rz','resistor',1260,770,'R4','1 Ω Zobel direnç',{resistance:1},
+   'Yüksek frekans kararlılığı için seri R4/C7.');
+ part('cz','capacitor',1460,835,'C7','220 nF Zobel',{capacitance:220e-9},
+   'R4 ile çıkış kararlılık kolu.');
+ part('cp','capacitor',690,65,'C3','100 nF besleme dekuplaj',{capacitance:100e-9},
+   'G1 28 V beslemesindeki yüksek frekans bypass.');
+ part('cb','capacitor',710,170,'C5','100 µF besleme dekuplaj',{capacitance:100e-6},
+   'G1 28 V beslemesinde düşük frekans bypass.');
+ part('d1','1n4007-do41',1175,130,'D1','1N4007 pozitif ray diyodu',{},
+   'ST referansı 1N4001; katalog 1N4007 aynı işlevli üst ters gerilim sınıfı, üretici birebir parça değil.');
+ part('d2','1n4007-do41',1250,690,'D2','1N4007 negatif ray diyodu',{},
+   'ST referansı 1N4001; sanal çıkış koruma diyodu, kısa devre SOA onayı değil.');
+ wire('g1','P','u1','5','ST pin 5 +Vs 28 V','#8b5a2b');
+ wire('g1','M','u1','3','ST pin 3 −Vs ve metal tab 0 V','#111827');
+ wire('g1','P','ra','1','28 V VREF üst');
+ wire('ra','2','rb','1','VREF yaklaşık 14 V');
+ wire('rb','2','g1','M','Bölücü alt 0 V','#111827');
+ wire('ra','2','r3','1','IN+ bias yolu');
+ wire('r3','2','u1','1','ST IN+ pin 1 orta noktaya');
+ wire('fg','OUT','c1','1','1 kHz giriş kuplaj');
+ wire('c1','2','u1','1','Giriş AC pin 1');
+ wire('fg','GND','g1','M','FG ortak 0 V','#111827');
+ wire('u1','4','rf','1','Çıkış geri besleme başlangıcı');
+ wire('rf','2','u1','2','ST IN− pin 2');
+ wire('u1','2','rg','1','R2 kazanç alt kolu');
+ wire('rg','2','c2','1','R2/C2 seri geri besleme');
+ wire('c2','2','g1','M','IN− AC referansı 0 V','#111827');
+ wire('u1','4','cout','1','OUT 14 V DC üzeri AC sinyal');
+ wire('cout','2','spk','+','Kuplaj sonrası 4 Ω yük');
+ wire('spk','-','g1','M','Yük 0 V dönüş','#111827');
+ wire('cout','2','v1','1','V1 4 Ω üzerinde');
+ wire('v1','2','g1','M','V1 0 V dönüş','#111827');
+ wire('u1','4','rz','1','R4/C7 frekans kararlılığı');
+ wire('rz','2','cz','1','1 Ω → 220 nF');
+ wire('cz','2','g1','M','Zobel dönüşü','#111827');
+ wire('g1','P','cp','1','HF besleme bypass');
+ wire('cp','2','g1','M','100 nF 0 V','#111827');
+ wire('g1','P','cb','1','LF besleme bypass');
+ wire('cb','2','g1','M','100 µF 0 V','#111827');
+ wire('u1','4','d1','A','Çıkıştan +Vs koruma');
+ wire('d1','K','g1','P','D1 katot pozitif raya');
+ wire('g1','M','d2','A','−Vs çıkış koruma');
+ wire('d2','K','u1','4','D2 katot OUT pini');
+ if(p.components.length!==19||p.wires.length!==31||
+   new Set(p.components.map(c=>c.id)).size!==19||
+   new Set(p.wires.map(w=>w.id)).size!==31||
+   p.wires.some(w=>!p.components.some(c=>c.id===w.from?.c)||
+     !p.components.some(c=>c.id===w.to?.c)))
+  throw Error('SC081 ST TDA2030 physical terminal graph mismatch');
+ p.projectId=old.projectId;p.name=old.name;
+ p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ lesson.project=p;lesson.kind='wiring';lesson.workspaceMode=p.workspaceMode;
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ lesson.summary='TDA2030H Pentawatt 5-pin, 28 V tek besleme, 4 Ω sanal yük, üreticiye dayalı R1/R2/C2 geri besleme, COUT kuplaj, bypass ve diyot koruma bağlantıları.';
+ lesson.explanation=lesson.summary+' ST özgün 2011 datasheet tek besleme uygulaması esas alınmıştır. Pin 3 metal tab ile bağlıdır; gerçek ısı yayıcı/izolasyon fiziksel onay bekler. 12 W 4 Ω garanti, 14 W tipik üretici değeridir; simülatör sabit 14 W vermek yerine fiziksel bağlı yükün AC RMS gerilimini ve P=Vrms²/4 Ω değerini hesaplar. 25 W yük sanal direnç eşdeğeridir; frekans, giriş, besleme ve ısıl tahmin modele bağlıdır. THD/termal SPICE/fiziksel cihaz/Windows kabulü değildir.';
+ lesson.learningGoal='Gerçek TDA2030 uçları ve 28 V tek besleme ile 4 Ω yük üzerindeki RMS gerilim, P=Vrms²/R, kapasitif kuplaj, negatif geri besleme ve soğutucu sınırlarını ayır.';
+ lesson.beginnerSteps=[
+  'TDA2030 pin 5 (+28 V), pin 3 (0 V ve metal tab), pin 1 (IN+), pin 2 (IN−), pin 4 (OUT) bul.',
+  'RA/RB 14 V orta referansı ve FG1 → C1 → IN+ yolunu izle.',
+  'OUT 4 → R1 150 kΩ → IN− 2 → R2 4,7 kΩ → C2 22 µF → 0 V negatif geri beslemeyi izle.',
+  'OUT 4 → COUT 2200 µF → 4 Ω RL → 0 V yolunu, V1 ölçüm uçlarını izle.',
+  'R4/C7, 100 nF/100 µF bypass, 1N4007 koruma diyotları ve sanal Rθ heatsink sınırlarını izle.',
+  'FG1 seviyesini değiştirip RL üzerindeki RMS gerilim ve W hesabını karşılaştır; 14 W tipik veri tablosunu sabit/garantili güç kabul etme.'
+ ];
+ lesson.quiz={question:'SC081 4 Ω yükte hesaplanan AC ses gücü nasıl bulunur?',
+   options:['Yük üzerindeki RMS gerilimin karesi 4 Ω ile bölünür',
+            'TDA2030 ismindeki 2030 sayısı watt değeridir','Sanal devre her girişte garantili 14 W üretir'],
+   answer:0,why:'Watt hesaplanır: P=Vrms²/R. ST 14 W tipik, 12 W garantili değerdir; soğutma ve gerçek cihaz ayrıca doğrulanmalıdır.'};
+ lesson.safety='Yalnız 28 V sanal kaynak ve üretici datasheet modellemesi. Gerçek cihaz veya ısıl güvenlik onayı değildir; fiziksel şebeke, yüksek güç ve hot-tab deneyi yoktur.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+   mq07Batch:'001_200',componentIds:p.components.map(c=>c.typeId),
+   mq07AudioScope:'SC081_TDA2030_SINGLE_SUPPLY_4OHM',
+   terminalGrounded:true,titleTopologyStatus:'ST_DATASHEET_TOPOLOGY_NATIVE_TARGET',
+   titleTopologyIssue:'ACTUAL_THERMAL_THd_WINDOWS_QA_PENDING',
+   manufacturerAcceptance:false,thermalAcceptance:false,physicalAcceptance:false,
+   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
+ L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
+ L.mq07Batch200.noWireTriage.applicationRepairIds=
+   L.mq07Batch200.noWireTriage.applicationRepairIds.filter(x=>x!==id);
+}
+
 /* MQ-07 SC072/073 source circuits: genuine catalog resistor/capacitor connections,
  * not native AC sweep certification. These are PASSIVE RC, not LM358 active filters.
  * No golden project or global solver mutation. */
