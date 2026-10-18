@@ -5039,7 +5039,7 @@ for(const spec of [
  {id:'opamp-apps-src-05',originalWires:8,originalParts:4,
   role:'LM358P fiziksel pinli gerilim izleyici · A kanalı',
   concept:'RV1/2 → U1/3, U1/1 → U1/2 doğrudan negatif geri besleme ile A kanalı gerilim izleyicidir.'},
- {id:'opamp-apps-src-06',originalWires:12,originalParts:6,
+ {id:'opamp-apps-src-06',originalWires:11,originalParts:6,
   role:'LM358P fiziksel pinli karşılaştırıcı · A kanalı',
   concept:'RV1/2 → U1/3; R3/R4 referans düğümü → U1/2. A kanalı açık döngü karşılaştırma için bağlanmıştır.'}
 ]){
@@ -5050,7 +5050,7 @@ for(const spec of [
     p.components.length!==spec.originalParts||
     !u||u.typeId!=='lm358p-opamp-a'||
     !l.materials.some(m=>m.componentId==='u1'&&m.typeId===u.typeId)||
-    !p.wires.some(w=>w.from?.c==='u1'&&w.to?.c==='u1'&&w.from?.p==='OUT'&&w.to?.p==='IN-')=== (spec.id==='opamp-apps-src-05'))
+    p.wires.some(w=>w.from?.c==='u1'&&w.to?.c==='u1'&&w.from?.p==='OUT'&&w.to?.p==='IN-')!==(spec.id==='opamp-apps-src-05'))
   throw Error('MQ07 physical LM358P source lesson baseline changed '+spec.id);
  const actualPins={OUT:'1','IN-':'2','IN+':'3','V-':'4','V+':'8'};
  const sourceEdges=p.wires.filter(w=>w.from?.c==='u1'||w.to?.c==='u1');
