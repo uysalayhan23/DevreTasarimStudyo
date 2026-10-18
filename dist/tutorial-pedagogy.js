@@ -8429,6 +8429,67 @@ for(const id of ['opamp-apps-src-09','opamp-apps-src-10','opamp-apps-src-15']){
   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+
+/* MQ07 SC040/041/046–049/052: complete LM358P's otherwise-floating spare B.
+ * The A-channel circuitry, existing component set, CMRR-critical SC051,
+ * repaired SC030, golden and solver remain untouched. The only electrical
+ * additions per lesson are U1/5 -> G1/M, U1/7 -> U1/6. */
+for(const id of [
+ 'opamp-apps-src-05','opamp-apps-src-06',
+ 'opamp-apps-src-11','opamp-apps-src-12',
+ 'opamp-apps-src-13','opamp-apps-src-14',
+ 'opamp-apps-src-17'
+]){
+ const lesson=L.byId[id],p=lesson?.project;
+ const u=p?.components?.find(c=>c.id==='u1'),g=p?.components?.find(c=>c.id==='g1');
+ const expectedPins=new Set(['1','2','3','4','8']);
+ const componentIds=new Set((p?.components||[]).map(c=>c.id));
+ const endpoints=(p?.wires||[]).flatMap(w=>[w.from,w.to]);
+ const uPins=endpoints.filter(e=>e?.c==='u1').map(e=>e.p);
+ const existing={
+  powerP:endpoints.some(e=>e.c==='u1'&&e.p==='8')&&
+    p?.wires?.some(w=>(w.from.c==='g1'&&w.from.p==='P'&&w.to.c==='u1'&&w.to.p==='8')||
+                       (w.to.c==='g1'&&w.to.p==='P'&&w.from.c==='u1'&&w.from.p==='8')),
+  powerM:p?.wires?.some(w=>(w.from.c==='g1'&&w.from.p==='M'&&w.to.c==='u1'&&w.to.p==='4')||
+                      (w.to.c==='g1'&&w.to.p==='M'&&w.from.c==='u1'&&w.from.p==='4'))
+ };
+ if(!lesson||lesson.kind!=='wiring'||lesson.designStandard==='rich-reference-v1'||
+    p.referenceOnly===true||u?.typeId!=='lm358p-dip8'||
+    g?.typeId!=='supply-dc-plus'||!p.wires?.length||
+    componentIds.size!==p.components.length||!existing.powerP||!existing.powerM||
+    !['1','2','3'].every(pin=>uPins.includes(pin))||
+    uPins.some(pin=>!expectedPins.has(pin))||
+    endpoints.some(e=>!componentIds.has(e.c))||
+    lesson.steps.length!==p.wires.length||
+    !lesson.materials.some(m=>m.componentId==='u1'&&m.typeId==='lm358p-dip8'))
+   throw Error('MQ07 spare B physical baseline mismatch '+id);
+ const oldWireCount=p.wires.length;
+ p.wires.push(
+  W('u1','5','g1','M','U1/5 B IN+ → G1/M',
+   'Kullanılmayan LM358P B evirmeyen girişini tek besleme 0 V referansına sabitler.','#111827','0V'),
+  W('u1','7','u1','6','U1/7 B OUT → U1/6 B IN−',
+   'Kullanılmayan B çıkışı kendi eviren girişine geri beslenir; A kanalıyla birleştirilmez.','#43a047','SIGNAL')
+ );
+ if(p.wires.length!==oldWireCount+2||
+    new Set(p.wires.map(w=>w.id)).size!==p.wires.length||
+    !p.wires.some(w=>w.from.c==='u1'&&w.from.p==='5'&&w.to.c==='g1'&&w.to.p==='M')||
+    !p.wires.some(w=>w.from.c==='u1'&&w.from.p==='7'&&w.to.c==='u1'&&w.to.p==='6'))
+   throw Error('MQ07 spare B physical source links incomplete '+id);
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ u.tutorialPurpose=(u.tutorialPurpose||'LM358P A kanalı gerçek DIP-8: OUT=1, IN−=2, IN+=3, V−=4, V+=8.')+
+  ' Kullanılmayan B kanalının 5 giriş pini sanal GND, 7 çıkışı kendi 6 girişine bağlıdır.';
+ const note=' Fiziksel DIP-8 onarımı: kullanılmayan B kanalında U1/5 → G1/M ve U1/7 → U1/6; çalışan A kanalının bağlantıları aynen korunur. Elektriksel dinamik/Windows kabulü bekliyor.';
+ lesson.explanation+=note;
+ lesson.beginnerSteps=[...(lesson.beginnerSteps||[]),
+  'LM358P pin 5 ortak 0 V referansı ve pin 7→6 yedek B geri besleme bağlantısını çalışan 1/2/3 A kanalından ayrı izle.'];
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+  componentIds:p.components.map(c=>c.typeId),
+  mq07SpareLm358B:'PIN5_TO_0V_PIN7_TO_PIN6_SOURCE_WIRED',
+  nativeSpareChannelAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
