@@ -129,12 +129,8 @@
    for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
   }
 
-  // MQ07 SC077: native 500/1000 Hz two-input LM358P small-signal mixer.
-  // Preserve the catalog's 20-ohm output, 100k open-loop gain, two
-  // physical channels, resistor network, VREF and actual wire nodes.
-  // The generic 30-step saturation iteration is nonconvergent for this
-  // high-gain feedback. A bounded dependent-source nodal solve replaces
-  // it ONLY in this exact lesson; no other circuit is changed.
+  // SC077 only: LM358P B channel now buffers VREF. Both native
+  // dependent source outputs are solved together in the real nodal graph.
   {
     const wired=(c,p,d,q)=>project.wires.some(w=>
       (w.from?.c===c&&w.from?.p===p&&w.to?.c===d&&w.to?.p===q)||
@@ -142,87 +138,93 @@
     const scoped=project?.tutorialLesson?.id==='oscillator-filter-apps-src-25'&&
       project.components.length===14&&project.wires.length===24&&
       opamps.length===2&&opamps.every(o=>o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
-      wired('rv1','1','refHi','2')&&wired('rv2','1','refHi','2')&&
-      wired('u1','1','rf','1')&&wired('rf','2','u1','2')&&
-      wired('u1','5','g1','M')&&wired('u1','7','u1','6')&&
+      wired('rv1','1','u1','7')&&wired('rv2','1','u1','7')&&
+      wired('u1','7','u1','3')&&wired('u1','5','refHi','2')&&
+      wired('u1','7','u1','6')&&wired('u1','1','rf','1')&&
+      wired('rf','2','u1','2')&&
       ['fg1','fg2'].every(id=>project.components.some(c=>c.id===id&&
         c.typeId==='arduino-signal-generator'&&c.generatorWaveform==='sine'));
     if(scoped){
       const a=opamps.find(o=>o.channel==='1'),b=opamps.find(o=>o.channel==='7');
-      const get=(v,n)=>(v.get(n)||[0,0]),real=(v,n)=>get(v,n)[0];
+      const get=(v,n)=>v.get(n)||[0,0],addC=(x,y)=>[x[0]+y[0],x[1]+y[1]],
+        neg=x=>[-x[0],-x[1]],sub=(x,y)=>[x[0]-y[0],x[1]-y[1]],
+        mul=(x,y)=>[x[0]*y[0]-x[1]*y[1],x[0]*y[1]+x[1]*y[0]],
+        div=(x,y)=>{const d=y[0]*y[0]+y[1]*y[1];return d>1e-24?
+          [(x[0]*y[0]+x[1]*y[1])/d,(x[1]*y[0]-x[0]*y[1])/d]:null};
       if(a&&b){
-        const low=real(secondary,a.vm),high=real(secondary,a.vp);
-        if(high>low+.5){
-          const inject=(map,node,value)=>{
-            const prev=map.get(node)||[0,0];
-            map.set(node,[prev[0]+value[0],prev[1]+value[1]]);
+        const lo=get(secondary,a.vm)[0],hi=get(secondary,a.vp)[0];
+        if(hi>lo+.5){
+          const solvePair=(sourceBranches,sourceFixed,external,drivers)=>{
+            const injection=new Map([...external].map(([k,v])=>[k,[...v]]));
+            for(const [op,driver] of [[a,drivers[0]],[b,drivers[1]]]){
+              for(const [node,sign] of [[op.out,1],[op.vm,-1]]){
+                const prior=injection.get(node)||[0,0];
+                injection.set(node,addC(prior,[sign*driver[0]/op.br.r,
+                  sign*driver[1]/op.br.r]));
+              }
+            }
+            return solveGraph(sourceBranches,sourceFixed,injection);
           };
-          const dcFixedSource=new Map([...injected].map(([k,v])=>[k,[...v]]));
-          for(const [k,v] of diodeBias)inject(dcFixedSource,k,v);
-          const solveDC=driver=>{
-            const j=new Map([...dcFixedSource].map(([k,v])=>[k,[...v]]));
-            inject(j,a.out,[driver/a.br.r,0]);inject(j,a.vm,[-driver/a.br.r,0]);
-            // Idle B channel follows its grounded IN+ at the low rail.
-            inject(j,b.out,[.02/b.br.r,0]);inject(j,b.vm,[-.02/b.br.r,0]);
-            return solveGraph(branches,fixed,j);
+          const solveDrivers=(sourceBranches,sourceFixed,external)=>{
+            const evaluate=(da,db)=>{
+              const v=solvePair(sourceBranches,sourceFixed,external,[da,db]);
+              return [a,b].map(op=>sub(
+                sub(get(v,op.out),get(v,op.vm)),
+                mul([op.gain,0],sub(get(v,op.ip),get(v,op.im)))));
+            };
+            const zero=[0,0],unit=[1,0],f0=evaluate(zero,zero),
+              fA=evaluate(unit,zero),fB=evaluate(zero,unit);
+            const m11=sub(fA[0],f0[0]),m12=sub(fB[0],f0[0]),
+              m21=sub(fA[1],f0[1]),m22=sub(fB[1],f0[1]),
+              determinant=sub(mul(m11,m22),mul(m12,m21));
+            const da=div(sub(mul(neg(f0[0]),m22),mul(m12,neg(f0[1]))),determinant),
+              db=div(sub(mul(m11,neg(f0[1])),mul(neg(f0[0]),m21)),determinant);
+            return da&&db&&[...da,...db].every(Number.isFinite)?[da,db]:null;
           };
-          const dcErr=v=>real(v,a.out)-real(v,a.vm)-
-            a.gain*(real(v,a.ip)-real(v,a.im));
-          const f0=dcErr(solveDC(0)),f1=dcErr(solveDC(1));
-          if(Number.isFinite(f0)&&Number.isFinite(f1)&&Math.abs(f1-f0)>1e-9){
-            const drv=Math.max(low+.02,Math.min(high-1.5,-f0/(f1-f0)));
-            secondary=solveDC(drv);
-            let display=real(secondary,a.out);
-            const acParts=project.components;
-            const calcComplex=(first,other)=>{
-              const f=Math.max(.01,Math.min(20000,Number(first.generatorFrequency)||1000));
-              const amp=first.generatorEnabled===false?0:
-                Math.max(0,Math.min(5,Number(first.generatorAmplitude)||0))/2;
-              if(!amp)return null;
-              const acBranches=branches.map(br=>br.role==='capacitor-dc'?
+          const dcInjection=new Map([...injected].map(([k,v])=>[k,[...v]]));
+          for(const [node,current] of diodeBias)
+            dcInjection.set(node,addC(dcInjection.get(node)||[0,0],current));
+          const dcDriver=solveDrivers(branches,fixed,dcInjection);
+          if(dcDriver){
+            const clamped=dcDriver.map(d=>[Math.max(lo+.02,Math.min(hi-1.5,d[0])),0]);
+            secondary=solvePair(branches,fixed,dcInjection,clamped);
+            const baseline=get(secondary,a.out)[0],contributions=[];
+            const calc=(first,other)=>{
+              const f=Math.max(.01,Math.min(20000,Number(first.generatorFrequency)||1000)),
+                amplitude=first.generatorEnabled===false?0:
+                  Math.max(0,Math.min(5,Number(first.generatorAmplitude)||0))/2;
+              if(!amplitude)return null;
+              const harmonicBranches=branches.map(br=>br.role==='capacitor-dc'?
                 {...br,y:[0,2*Math.PI*f*br.value]}:br);
-              const acFixed=new Map([...fixed].map(([k])=>[k,[0,0]]));
-              acFixed.set(pin(first,'OUT'),[0,-amp]); // Re(-j Ae^jwt) = A sin(wt)
-              acFixed.set(pin(other,'OUT'),[0,0]);
-              const solveAC=(re,im)=>{
-                const j=new Map();
-                inject(j,a.out,[re/a.br.r,im/a.br.r]);
-                inject(j,a.vm,[-re/a.br.r,-im/a.br.r]);
-                return solveGraph(acBranches,acFixed,j);
-              };
-              const err=v=>{
-                const out=get(v,a.out),plus=get(v,a.ip),minus=get(v,a.im);
-                return [out[0]-a.gain*(plus[0]-minus[0]),
-                  out[1]-a.gain*(plus[1]-minus[1])];
-              };
-              const e0=err(solveAC(0,0)),e1=err(solveAC(1,0)),
-                slope=[e1[0]-e0[0],e1[1]-e0[1]],
-                den=slope[0]*slope[0]+slope[1]*slope[1];
-              if(!(den>1e-18))return null;
-              const drive=[(-e0[0]*slope[0]-e0[1]*slope[1])/den,
-                (-e0[1]*slope[0]+e0[0]*slope[1])/den];
-              const out=get(solveAC(...drive),a.out);
-              if(!out.every(Number.isFinite))return null;
+              const harmonicFixed=new Map([...fixed].map(([node])=>[node,[0,0]]));
+              harmonicFixed.set(pin(first,'OUT'),[0,-amplitude]);
+              harmonicFixed.set(pin(other,'OUT'),[0,0]);
+              const harmonicDrivers=solveDrivers(harmonicBranches,harmonicFixed,new Map());
+              if(!harmonicDrivers)return null;
+              const harmonic=solvePair(harmonicBranches,harmonicFixed,new Map(),harmonicDrivers),
+                phasor=get(harmonic,a.out);
+              if(!phasor.every(Number.isFinite))return null;
               const phase=2*Math.PI*f*now/1000+
                 (Number(first.generatorPhaseDeg)||0)*Math.PI/180;
-              return {source:first.id,hz:f,amplitudeV:Math.hypot(...out),
-                instantaneousV:out[0]*Math.cos(phase)-out[1]*Math.sin(phase)};
+              return {source:first.id,hz:f,amplitudeV:Math.hypot(...phasor),
+                instantaneousV:phasor[0]*Math.cos(phase)-phasor[1]*Math.sin(phase)};
             };
-            const fg1=acParts.find(c=>c.id==='fg1'),fg2=acParts.find(c=>c.id==='fg2');
-            const a1=calcComplex(fg1,fg2),a2=calcComplex(fg2,fg1),
-              contributions=[a1,a2].filter(Boolean);
-            display=Math.max(low+.02,Math.min(high-1.5,
-              display+contributions.reduce((total,r)=>total+r.instantaneousV,0)));
-            secondary.set(a.out,[display,0]);
-            a.c._opampPowered=true;a.c._opampOutput=display;
-            a.c._opampDiff=real(secondary,a.ip)-real(secondary,a.im);
-            if(a.c._opampChannels?.['1']){
-              a.c._opampChannels['1'].output=display;
-              a.c._opampChannels['1'].diff=a.c._opampDiff;
+            const fg1=project.components.find(c=>c.id==='fg1'),
+              fg2=project.components.find(c=>c.id==='fg2');
+            for(const result of [calc(fg1,fg2),calc(fg2,fg1)])if(result)contributions.push(result);
+            const output=Math.max(lo+.02,Math.min(hi-1.5,
+              baseline+contributions.reduce((sum,x)=>sum+x.instantaneousV,0)));
+            secondary.set(a.out,[output,0]);
+            a.c._opampPowered=true;a.c._opampOutput=output;
+            a.c._opampDiff=get(secondary,a.ip)[0]-get(secondary,a.im)[0];
+            for(const op of [a,b]){
+              const channel=op.c._opampChannels?.[op.channel];
+              if(channel){channel.output=get(secondary,op.out)[0];
+                channel.diff=get(secondary,op.ip)[0]-get(secondary,op.im)[0];
+                channel.powered=true;}
             }
-            a.c._sc77NativeMixer={
-              outputV:display,dcBaselineV:real(solveDC(drv),a.out),
-              sources:contributions,model:'native-complex-nodal-sine'};
+            a.c._sc77NativeMixer={outputV:output,dcBaselineV:baseline,
+              sources:contributions,model:'native-dual-dependent-source-AC'};
           }
         }
       }
