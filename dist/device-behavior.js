@@ -46,7 +46,8 @@
     const plain=r.value.toFixed(r.digits)+' '+r.unit,
       tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope,power=c._sc81NativePower;
     const extra=power&&Number.isFinite(power.outputPowerW)?
-      'Yük '+power.outputRmsV.toFixed(2)+' Vrms · '+power.outputPowerW.toFixed(2)+' W · '+power.frequencyHz.toFixed(0)+' Hz':
+      'Yük '+power.outputRmsV.toFixed(2)+' Vrms · '+power.outputPowerW.toFixed(2)+' W · '+power.frequencyHz.toFixed(0)+' Hz'+
+      (power.thermalShutdown?' · ISIL SINIR':power.datasheetTypicalLimitActive?' · TİPİK SINIR':''):
       tone&&Number.isFinite(tone.outputVpp)?
       'AC '+tone.outputVpp.toFixed(3)+' Vpp · '+tone.frequencyHz.toFixed(0)+' Hz':
       vu&&Number.isFinite(vu.detectorVoltageV)?
@@ -66,7 +67,7 @@
     if(d.kind==='meter-v'||d.kind==='meter-a')return panelMeterMarkup(c,d,mode);
     if(d.kind==='audio-power-amplifier'&&c._sc81NativePower){
       const p=c._sc81NativePower,label=p.powered?
-        ('RL '+p.loadOhm+' Ω · '+p.outputPowerW.toFixed(2)+' W hesap · Tj≈'+p.estimatedJunctionC.toFixed(0)+'°C'+(p.thermalShutdown?' · ISIL SINIR':'')):
+        ('RL '+p.loadOhm+' Ω · '+p.outputPowerW.toFixed(2)+' W hesap · Tj≈'+p.estimatedJunctionC.toFixed(0)+'°C'+(p.thermalShutdown?' · ISIL SINIR':p.datasheetTypicalLimitActive?' · TİPİK SINIR':'')):
         'TDA2030: '+(p.reason||'besleme yok');
       return '<text data-sc81-native-power="1" x="'+d.w/2+'" y="'+(d.h+58)+'" text-anchor="middle" font-size="12" fill="#064e68">'+esc(label)+'</text>';
     }

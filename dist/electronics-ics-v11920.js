@@ -85,5 +85,40 @@ add({id:'virtual-audio-load-4ohm-25w',name:'4 Ω / 25 W ses test yükü · sanal
  pins:[P('+','+ · Yük giriş',36,116,'bottom'),P('-','− · Yük dönüş',128,116,'bottom')],
  impedanceOhm:4,ratedPowerW:25,resistiveEquivalent:true,
  description:'Sanal 4 Ω saf dirençli 25 W anma değerli test yükü. Gerçek hoparlör empedansı, akustik gücü, fiziksel ısınma veya ürün geometrisi değildir.'});
+// ST TDA7293 manufacturer Multiwatt15V pins (top view), TAB to pin 8.
+// Catalog reference only. Native dual-rail/BOOTSTRAP/MUTE/STBY/thermal
+// simulation is NOT implemented; 100 W @ 10% THD is NOT a blanket rating.
+add({id:'tda7293-multiwatt15v',name:'TDA7293 · 100 W (THD %10) · Multiwatt15V',
+ model:'TDA7293V',brand:'STMicroelectronics',category:'Ses Güç Katları',
+ catalogGroup:'electronics-ics',kind:'audio-power-amplifier',liveMaterial:true,
+ materialSymbol:false,arduinoShared:true,refPrefix:'U',w:194,h:444,
+ pins:[
+  P('1','1 · STBY-GND',194,28,'right',{physicalPin:1}),
+  P('2','2 · IN−',194,54,'right',{physicalPin:2}),
+  P('3','3 · IN+',194,80,'right',{physicalPin:3}),
+  P('4','4 · SIGNAL GND',194,106,'right',{physicalPin:4}),
+  P('5','5 · CLIP DET',194,132,'right',{physicalPin:5}),
+  P('6','6 · BOOTSTRAP',194,158,'right',{physicalPin:6}),
+  P('7','7 · +Vs SIGNAL',194,184,'right',{physicalPin:7}),
+  P('8','8 · −Vs SIGNAL / TAB',194,210,'right',{physicalPin:8}),
+  P('9','9 · STANDBY',194,236,'right',{physicalPin:9}),
+  P('10','10 · MUTE',194,262,'right',{physicalPin:10}),
+  P('11','11 · BUFFER DRIVER',194,288,'right',{physicalPin:11}),
+  P('12','12 · BOOT LOADER',194,314,'right',{physicalPin:12}),
+  P('13','13 · +Vs POWER',194,340,'right',{physicalPin:13}),
+  P('14','14 · OUT',194,366,'right',{physicalPin:14}),
+  P('15','15 · −Vs POWER',194,392,'right',{physicalPin:15})],
+ realPackage:{type:'MULTIWATT15V',pins:15,marking:'TDA7293',
+   topView:true,orthographic:true,tabConnectedToPin:'8'},
+ manufacturerGeometryAccepted:false,packageOutlineProxy:true,
+ datasheetUrl:'https://www.st.com/resource/en/datasheet/tda7293.pdf',
+ minimumSupplyPerRailV:12,maxSupplyPerRailV:50,
+ typical8Ohm100WCondition:'±40 V, 8 Ω, THD 10%',
+ continuous4Ohm80WCondition:'±29 V, 4 Ω, THD 1%',
+ standbyPin:'9',mutePin:'10',bootstrapPin:'6',clipPin:'5',
+ junctionCaseThermalResistanceMaxCPerW:1.5,
+ nativePowerSupported:false,manufacturerOutputWVerifiedInApplication:false,
+ searchTerms:'TDA7293 TDA7293V Multiwatt15 ST 100W DMOS ses güç entegresi',
+ description:'Üreticinin 15 pinli paket kimliği ve 100 W / %10 distorsiyon test koşulu tanımlıdır. Yerel çift besleme, STBY/MUTE, bootstrap, termal ve gerçek RMS güç modeli henüz bulunmadığından bu parça için çalışan 100 W simülasyonu veya PASS yoktur.'});
 root.DTSElectronicsICsV11920={ids:lib.filter(x=>x.realPackage&&x.arduinoShared).map(x=>x.id)};
 })(typeof window==='undefined'?globalThis:window);

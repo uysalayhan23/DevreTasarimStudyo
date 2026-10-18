@@ -570,6 +570,10 @@
   for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){const nativeRms=b.c._sc81NativePower;
     b.c._speakerPowerW=nativeRms?.model==='native-TDA2030-complex-feedback-RMS'?
       nativeRms.outputPowerW:amps*amps*b.r;
+    if(nativeRms?.model==='native-TDA2030-complex-feedback-RMS'){
+      b.c._voltageValue=nativeRms.outputRmsV;
+      b.c._currentValue=nativeRms.outputCurrentRmsA;
+    }
     b.c._active=b.c._speakerPowerW>1e-5}else{b.c._crystalFrequencyHz=b.hz||0;b.c._active=amps>1e-9}}
   for(const br of dimmerStages){
    br.c._currentValue=current(br,secondary);
@@ -583,7 +587,11 @@
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='multimeter')UT.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId});
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='clamp-meter')Clamp.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId});
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='energy-analyzer')Analyzer.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId,now});
-  for(const c of project.components){const d=byId[c.typeId];if(d?.kind==='meter-v'){const a=secondary.get(pin(c,d.pins[0].id)),b=secondary.get(pin(c,d.pins[1].id));c._voltageValue=a&&b?Math.hypot(a[0]-b[0],a[1]-b[1]):0}}
+  for(const c of project.components){const d=byId[c.typeId];if(d?.kind==='meter-v'){
+    const a=secondary.get(pin(c,d.pins[0].id)),b=secondary.get(pin(c,d.pins[1].id));
+    c._voltageValue=c._sc81NativePower?.model==='native-TDA2030-complex-feedback-RMS'?
+      c._sc81NativePower.outputRmsV:(a&&b?Math.hypot(a[0]-b[0],a[1]-b[1]):0);
+  }}
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
   for(const b of branches){if(!b.c||!b.ap||!b.bp||b.role==='opamp-output')continue;let i=b._signedFlowCurrent||signedCurrent(b,secondary);if(b.role==='current-source'&&b.source)i=[i[0]-Number(b.source.value||0),i[1]];addTerminal(b.c,b.ap,i);addTerminal(b.c,b.bp,[-i[0],-i[1]])}
