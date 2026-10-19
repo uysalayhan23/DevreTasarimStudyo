@@ -1,0 +1,176 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "name": "SC246 Röle Değiştirici Kontak ve NO NC lambalar",
+  "projectId": "SC246 24V SPDT",
+  "symbolNorm": "IEC",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 100,
+      "y": 80,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "24 V DC",
+      "state": false
+    },
+    {
+      "id": "s",
+      "typeId": "selector-no",
+      "x": 300,
+      "y": 100,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "NO komut",
+      "state": false
+    },
+    {
+      "id": "k",
+      "typeId": "coil-relay",
+      "x": 520,
+      "y": 100,
+      "rotation": 0,
+      "ref": "K1",
+      "label": "K1 bobin",
+      "state": false
+    },
+    {
+      "id": "q",
+      "typeId": "contact-both",
+      "x": 520,
+      "y": 360,
+      "rotation": 0,
+      "ref": "K1",
+      "label": "K1 SPDT kontak",
+      "state": false
+    },
+    {
+      "id": "hno",
+      "typeId": "lamp-green",
+      "x": 810,
+      "y": 320,
+      "rotation": 0,
+      "ref": "H1",
+      "label": "K1 NO lambası",
+      "state": false
+    },
+    {
+      "id": "hnc",
+      "typeId": "lamp-red",
+      "x": 810,
+      "y": 520,
+      "rotation": 0,
+      "ref": "H2",
+      "label": "K1 NC lambası",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "s",
+        "p": "13"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "s",
+        "p": "14"
+      },
+      "to": {
+        "c": "k",
+        "p": "A1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "k",
+        "p": "A2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "q",
+        "p": "11"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "q",
+        "p": "13"
+      },
+      "to": {
+        "c": "hno",
+        "p": "X1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "q",
+        "p": "21"
+      },
+      "to": {
+        "c": "hnc",
+        "p": "X1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "hno",
+        "p": "X2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "hnc",
+        "p": "X2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    }
+  ],
+  "junctions": []
+}
