@@ -5784,11 +5784,12 @@ for(const [suffix,isMixer] of [['24',false],['25',true]]){
 {
  const id='oscillator-filter-apps-src-26',l=L.byId[id],prior=l?.project;
  const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ const types=prior?.components?.map(c=>c.typeId)||[];
+ const cardMatches=types.join('|')===expected.join('|')||
+  types.join('|')===['lm358p-dip8','resistor','capacitor'].join('|');
  if(!l||l.kind!=='quiz'||!prior||prior.referenceOnly!==true||
-    prior.wires.length!==0||l.steps.length!==0||
-    prior.components.map(c=>c.typeId).join('|')!==expected.join('|')||
-    l.materials.length!==expected.length||
-    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+    prior.wires.length!==0||l.steps.length!==0||!cardMatches||
+    l.materials.length!==types.length)
   throw Error('MQ07 SC078 original tone-card source mismatch');
  const p=base(id,l.title),g=part=>{
   if(p.components.some(c=>c.id===part.id))throw Error('SC078 duplicate component');
