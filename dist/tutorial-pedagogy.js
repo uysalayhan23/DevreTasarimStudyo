@@ -8362,6 +8362,44 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
  lesson.safety='Yalnız düşük gerilimli sanal BD139 eğitim modelidir; gerçek transistör akım/ısıl sınırlarının veya saha montajının kabulü değildir.';
 }
 
+/* SC263: real G/D/S wiring for a low-voltage IRF540N switching lesson.
+ * Keep actual simulator switching and physical-model acceptance separate. */
+{
+ const id='electronic-switching-outline-028',lesson=L.byId[id],old=lesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==0||old.components.length!==2||
+    old.components[0].typeId!=='irf540n-mosfet')
+  throw Error('SC263 MOSFET source reference changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',100,220,'G1','24 V DC sanal kaynak'),
+  C('pot','potentiometer',325,345,'RV1','10 kΩ gate ayarı',{potentiometer:0,potMax:10000}),
+  C('q','irf540n-mosfet',680,260,'Q1','IRF540N N-MOSFET'),
+  C('rl','resistor',910,190,'RL','1 kΩ yük',{resistance:1000}),
+  C('v','meter-voltmeter',950,420,'V1','Drain gerilimi')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,'IRF540N G/D/S ve yük akım yollarını ayırt et.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','pot','3');wire('g','M','pot','1','0V');
+ wire('pot','2','q','G');wire('g','P','rl','1');
+ wire('rl','2','q','D');wire('q','S','g','M','0V');
+ wire('v','1','q','D');wire('v','2','g','M','0V');
+ if(p.components.length!==5||p.wires.length!==8||
+    new Set(p.wires.map(w=>w.id)).size!==8)
+  throw Error('SC263 IRF540N GDS wiring incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'IRF540N gate ucu potansiyometre ile sürülür; drain 1 kΩ yük üzerinden +24 V’a, source ise 0 V’a bağlıdır.',
+  explanation:'Gerçek sanal G/D/S terminal grafiği 8 bağlantılıdır. V1 drain gerilimini izlemek içindir. MOSFET modelinin anahtarlama eşiği, yük akımı ve fiziksel ısıl sınırları ayrı dinamik doğrulama gerektirir.',
+  goal:'Gate sürme yolu ile drain–source yük akım yolunu ayırt etmek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,mq07BjtRcScope:'SC252_SC265',
+  titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_DYNAMIC_PENDING',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız 24 V sanal MOSFET devresidir; gerçek güç devresi veya MOSFET üretici sınırı kabulü değildir.';
+}
+
 /* SC257-SC258: source-backed 2-second native delayed relay lamp circuits. */
 for(const [id,kind,mode] of [
  ['electronic-component-basics-outline-013','coil-delay-off','OFF'],
