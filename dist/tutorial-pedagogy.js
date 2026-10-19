@@ -8057,6 +8057,68 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
 }
 
 
+
+/* SC251: source repair using supported, mutually-exclusive selector contacts.
+ * Native Node circuit check: positions 0/1/2/3/0 energize neither/K1/
+ * neither/K2/neither. This does not claim separate NC contactor interlocks. */
+{
+ const id='motor-direct-power-outline-020',lesson=L.byId[id],old=lesson?.project;
+ const original=['supply-3p','push-nc','push-no','coil-contactor',
+  'main-contact','motor-3p','contact-no'];
+ if(!lesson||lesson.kind!=='wiring'||old?.wires.length!==13||
+    old.components.length!==original.length||
+    original.some((type,i)=>old.components[i].typeId!==type))
+   throw Error('SC251 forward/reverse source baseline changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('supply','supply-3p',660,80,'G1','Üç faz sanal kaynak'),
+  C('selector','selector-3',170,290,'S1','0 · İleri · Dur · Geri',{position:0}),
+  C('coil1','coil-contactor',120,560,'K1','İleri kontaktör bobini'),
+  C('coil2','coil-contactor',340,560,'K2','Geri kontaktör bobini'),
+  C('forward','main-contact',570,340,'K1','İleri güç kontakları'),
+  C('reverse','main-contact',880,340,'K2','Geri güç kontakları'),
+  C('motor','motor-3p',730,700,'M1','Üç faz motor')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>
+  p.wires.push(W(a,ap,b,bp,
+   a+'/'+ap+' → '+b+'/'+bp,
+   'Bu kablo, seçici ile münhasır kontaktör kontrolü ve faz sırası yolunun bir bölümüdür.',
+   role==='PE'?'#16a34a':role==='N'?'#1e88e5':
+     role==='L1'?'#e53935':role==='L2'?'#f97316':
+     role==='L3'?'#f4c430':'#808080',role));
+ wire('supply','L1','selector','11','L1');
+ wire('selector','13','coil1','A1');
+ wire('selector','15','coil2','A1');
+ wire('coil1','A2','supply','N','N');
+ wire('coil2','A2','supply','N','N');
+ for(let i=0;i<3;i++){
+  const phase=['L1','L2','L3'][i],input=['1','3','5'][i],
+        output=['2','4','6'][i];
+  wire('supply',phase,'forward',input,phase);
+  wire('supply',phase,'reverse',input,phase);
+  wire('forward',output,'motor',['U','V','W'][i]);
+  wire('reverse',output,'motor',['W','V','U'][i]);
+ }
+ wire('supply','PE','motor','PE','PE');
+ if(p.components.length!==7||p.wires.length!==18||
+    new Set(p.wires.map(w=>w.id)).size!==18)
+  throw Error('SC251 18-link source graph incomplete');
+ setLesson(lesson,p,{
+  kind:'wiring',
+  summary:'Seçicinin ileri veya geri konumunda yalnız ilgili kontaktör bobini çekilir. Güç yolunda iki fazın sırası terslenir; 0/duruş konumunda iki kontaktör de bırakır.',
+  explanation:'SC251 artık tek kontaktörlü START/STOP devresi değildir. 7 elemanlı, 18 doğrudan kablolu sanal ileri/geri seçici devresidir. S1 yalnız bir yön bobinine komut verir; K1 ve K2 güç yolları iki fazı ters sırada motora iletir. Bu eğitim devresi bağımsız çapraz NC elektriksel ve mekanik kontaktör kilitlemesi ya da fiziksel güvenlik kabulü değildir.',
+  goal:'Seçici ile ileri/geri yönün karşılıklı dışlanmasını ve ters faz sırasını sanal kontaktör ve motor üzerinden göstermek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FaultRelayScope:'SC238_SC251',
+  titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_SELECTOR',
+  titleTopologyIssue:'INDEPENDENT_NC_MECHANICAL_INTERLOCK_PENDING',
+  motorReversalAcceptance:true,physicalAcceptance:false,
+  independentElectricalInterlockAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Sanal eğitim modeli: iki yön seçiciyle karşılıklı dışlanır; gerçek motor kumandasında bağımsız mekanik/elektriksel emniyet kilitlemeleri ve uzman denetimi gereklidir.';
+}
+
 /* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
 const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
