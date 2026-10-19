@@ -117,9 +117,11 @@ add({id:'tda7293-multiwatt15v',name:'TDA7293 · 100 W (THD %10) · Multiwatt15V'
  continuous4Ohm80WCondition:'±29 V, 4 Ω, THD 1%',
  standbyPin:'9',mutePin:'10',bootstrapPin:'6',clipPin:'5',
  junctionCaseThermalResistanceMaxCPerW:1.5,
- nativePowerSupported:false,manufacturerOutputWVerifiedInApplication:false,
+ nativePowerSupported:false,nativeLinearRmsTutorialSupported:true,
+ bootstrapInternalModeled:false,thdModeled:false,thermalModeled:false,
+ manufacturerOutputWVerifiedInApplication:false,
  searchTerms:'TDA7293 TDA7293V Multiwatt15 ST 100W DMOS ses güç entegresi',
- description:'Üreticinin 15 pinli paket kimliği ve 100 W / %10 distorsiyon test koşulu tanımlıdır. Yerel çift besleme, STBY/MUTE, bootstrap, termal ve gerçek RMS güç modeli henüz bulunmadığından bu parça için çalışan 100 W simülasyonu veya PASS yoktur.'});
+ description:'Üreticinin 15 pinli paket kimliği ve 100 W / %10 distorsiyon test koşulu tanımlıdır. Yalnız SC082 sanal besleme, bağlı RC MUTE/STBY ve ideal 8 Ω için sınırlı lineer sinüs RMS hesaplanır. İç bootstrap sürücüsü, THD, termal/SOA ve üretici 100 W kabulü yoktur.'});
 // Strictly virtual isolated bipolar rails for SC082 nodal computations:
 // not a mains circuit, output connector, physical device, or safety approval.
 add({id:'virtual-bipolar-audio-rail',name:'Sanal çift kutuplu sayısal besleme (+/0/−)',

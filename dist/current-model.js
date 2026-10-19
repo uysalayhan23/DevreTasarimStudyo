@@ -106,6 +106,14 @@
       return edges.every(s=>actual.includes(s)||actual.includes(s.split('>').reverse().join('>')))&&
         project.components.find(c=>c.id==='fg')?.generatorWaveform==='sine';
     })();
+  // Invalidate SC082 computed power and latch state when any of its fixed
+  // external terminal connections is no longer present.
+  if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-30'&&!sc82Linear){
+    for(const c of project.components){
+      delete c._sc82NativePower;delete c._sc82Control;
+      if(c.id==='rl')delete c._speakerPowerW;
+    }
+  }
   const reactiveDt=c=>{const last=Number(c._reactiveNow);return Math.max(.001,Math.min(.25,Number.isFinite(last)?(now-last)/1000:defaultDt))};
   const sourceFrequency=c=>{for(const p of byId[c.typeId]?.pins||[])for(const v of net.at(c,p.id)||[])if(v?.type==='ac')return Math.max(1,Number(v.frequency)||Number(v.hz)||50);return 50};
   const isACComponent=(c,d)=>d.pins.some(p=>(net.at(c,p.id)||[]).some(v=>v?.type==='ac'));

@@ -45,7 +45,10 @@
     const r=panelMeterValue(c,d);if(!r||!Number.isFinite(r.value))return '';
     const plain=r.value.toFixed(r.digits)+' '+r.unit,
       tone=c._sc78NativeTone,vu=c._sc80NativeEnvelope,power=c._sc81NativePower||c._sc82NativePower;
-    const extra=power&&Number.isFinite(power.outputPowerW)?
+    const extra=c._sc82NativePower&&Number.isFinite(c._sc82NativePower.outputPowerW)?
+      '8 Ω sanal lineer '+c._sc82NativePower.outputRmsV.toFixed(2)+' Vrms · '+
+      c._sc82NativePower.outputPowerW.toFixed(2)+' W · THD ölçülmedi':
+      power&&Number.isFinite(power.outputPowerW)?
       'Yük '+power.outputRmsV.toFixed(2)+' Vrms · '+power.outputPowerW.toFixed(2)+' W · '+power.frequencyHz.toFixed(0)+' Hz'+
       (power.thermalShutdown?' · ISIL SINIR':power.datasheetTypicalLimitActive?' · TİPİK SINIR':''):
       tone&&Number.isFinite(tone.outputVpp)?
@@ -65,12 +68,18 @@
   }
   function markup(c,d,mode){
     if(d.kind==='meter-v'||d.kind==='meter-a')return panelMeterMarkup(c,d,mode);
-    if(c._sc82NativePower){const p=c._sc82NativePower;
-      const label='Sanal 8Ω '+p.outputPowerW.toFixed(2)+' W lineer RMS · '+
-        (p.powered?'AÇIK':!p.railValid?'BESLEME YOK':!p.standbyReleased?'STBY':'MUTE')+
-        (p.limitedByIdealRail?' · RAY SINIRI':'')+' · THD/ISIL YOK';
-      return '<text data-sc82-rms="1" x="'+d.w/2+'" y="'+(d.h+54)+
-        '" text-anchor="middle" font-size="11" fill="#064e68">'+esc(label)+'</text>';
+    if(c._sc82NativePower){const p=c._sc82NativePower,
+      control=(ok,voltage,name,pin)=>name+'('+pin+') '+Number(voltage).toFixed(2)+' V '+(ok?'AÇIK':'KAPALI'),
+      status=!p.railValid?'SANAL RAY DIŞI':p.powered?'AÇIK':!p.standbyReleased?'STBY':'MUTE',
+      rows=['8 Ω SANAL · '+p.outputRmsV.toFixed(2)+' Vrms · '+p.outputPowerW.toFixed(2)+' W LINEER',
+        control(p.standbyReleased,p.standbyVoltageV,'STBY','9')+
+        ' / '+control(p.muteReleased,p.muteVoltageV,'MUTE','10'),
+        status+(p.limitedByIdealRail?' · İDEAL RAY SINIRI':'')+
+          ' · C5 dış bootstrap: İÇ SÜRÜCÜ YOK',
+        '100 W / THD / ISIL / SOA KABULÜ YOK'];
+      return '<g data-sc82-rms="1">'+rows.map((row,i)=>
+        '<text x="'+d.w/2+'" y="'+(d.h+52+i*18)+
+        '" text-anchor="middle" font-size="11" fill="#064e68">'+esc(row)+'</text>').join('')+'</g>';
     }
     if(d.kind==='audio-power-amplifier'&&c._sc81NativePower){
       const p=c._sc81NativePower,label=p.powered?
