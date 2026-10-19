@@ -680,7 +680,10 @@
     const a=secondary.get(pin(c,d.pins[0].id)),b=secondary.get(pin(c,d.pins[1].id));
     c._voltageValue=c._sc82NativePower?.model==='native-TDA7293-linear-RC-RMS'?
       c._sc82NativePower.outputRmsV:c._sc81NativePower?.model==='native-TDA2030-complex-feedback-RMS'?
-      c._sc81NativePower.outputRmsV:(a&&b?Math.hypot(a[0]-b[0],a[1]-b[1]):0);
+      c._sc81NativePower.outputRmsV:(a&&b?(
+        ((dcNodes.has(pin(c,d.pins[0].id))||dcNodes.has(pin(c,d.pins[1].id)))&&
+         !acNodes.has(pin(c,d.pins[0].id))&&!acNodes.has(pin(c,d.pins[1].id)))?
+          a[0]-b[0]:Math.hypot(a[0]-b[0],a[1]-b[1])):0);
   }}
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
