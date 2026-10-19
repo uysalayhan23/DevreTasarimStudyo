@@ -8282,6 +8282,42 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
 }
 
 
+/* SC256: add the missing native RC discharge branch to the charging lesson.
+ * 10k charging resistor, 100uF C and 100k bleed resistor; selector stays
+ * independently operable while the capacitor retains its simulated state. */
+{
+ const id='electronic-component-basics-outline-012',lesson=L.byId[id],original=lesson?.project;
+ const ids=['g1','s1','r1','c1','v1'];
+ if(!lesson||lesson.kind!=='wiring'||original?.wires.length!==6||
+    original.components.length!==ids.length||
+    ids.some(x=>!original.components.some(c=>c.id===x))||
+    original.components.find(c=>c.id==='s1')?.typeId!=='push-no'||
+    original.components.find(c=>c.id==='r1')?.resistance!==10000||
+    Math.abs(original.components.find(c=>c.id==='c1')?.capacitance-100e-6)>1e-12)
+  throw Error('SC256 original RC charge schematic changed');
+ const p=clone(original),selector=p.components.find(c=>c.id==='s1');
+ selector.typeId='selector-no';
+ selector.label='Kalıcı şarj seçicisi';
+ p.components.push(C('rd','resistor',730,465,'R2','100 kΩ deşarj direnci',{resistance:100000}));
+ p.wires.push(
+  W('rd','1','c1','1','R2/1 → C1/1','Deşarj direncinin üst ucu kondansatörün + düğümündedir.','#43a047','SIGNAL'),
+  W('rd','2','c1','2','R2/2 → C1/2','Seçici açılınca kondansatör R2 üzerinden boşalır.','#111827','0V')
+ );
+ if(p.components.length!==6||p.wires.length!==8||
+    new Set(p.wires.map(w=>w.id)).size!==8)
+  throw Error('SC256 RC discharge graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'S1 kapalıyken 10 kΩ üzerinden C1 şarj olur; S1 açılınca 100 kΩ deşarj direnci kondansatör gerilimini azaltır. V1 iki süreci ölçer.',
+  explanation:'Kondansatör 100 µF, şarj direnci 10 kΩ ve kalıcı deşarj direnci 100 kΩ ile gerçek sanal R-C devresine bağlandı. S1 açıkken C1 yalnız R2 üzerinden deşarj olur. R2 şarj sırasında da bağlı olduğundan nihai C1 gerilimi 24 V değil yaklaşık 21,82 V düzeyindedir. Sanal Node denemesinde 6 s şarj sonunda yaklaşık 21,76 V ve ardından 15 s deşarj sonunda yaklaşık 4,80 V hesaplanmıştır. Fiziksel kondansatör toleransı veya gerçek cihaz kabulü değildir.',
+  goal:'Ayrı şarj ve deşarj dirençleriyle kondansatör geriliminin zamanla değişimini sanal voltmetrede gözlemek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07BjtRcScope:'SC252_SC265',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_RC_CHARGE_DISCHARGE',
+  titleTopologyIssue:null,nativeDynamicAcceptance:true,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Sanal 24 V DC R-C deneyidir; fiziksel kondansatör veya enerji güvenlik kabulü değildir.';
+}
+
 /* SC257-SC258: source-backed 2-second native delayed relay lamp circuits. */
 for(const [id,kind,mode] of [
  ['electronic-component-basics-outline-013','coil-delay-off','OFF'],
