@@ -677,6 +677,8 @@
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='clamp-meter')Clamp.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId});
   for(const c of project.components)if(!options.sampleOnly&&byId[c.typeId]?.kind==='energy-analyzer')Analyzer.measure(c,byId[c.typeId],{branches,fixed,voltages:secondary,solveGraph,acNodes,dcNodes,pin,project,byId,now});
   for(const c of project.components){const d=byId[c.typeId];if(d?.kind==='meter-v'){
+    const connected=p=>project.wires.some(w=>w.from?.c===c.id&&w.from?.p===p||w.to?.c===c.id&&w.to?.p===p);
+    if(!d.pins.slice(0,2).every(p=>connected(p.id))){delete c._voltageValue;continue}
     const a=secondary.get(pin(c,d.pins[0].id)),b=secondary.get(pin(c,d.pins[1].id));
     c._voltageValue=c._sc82NativePower?.model==='native-TDA7293-linear-RC-RMS'?
       c._sc82NativePower.outputRmsV:c._sc81NativePower?.model==='native-TDA2030-complex-feedback-RMS'?
