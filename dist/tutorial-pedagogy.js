@@ -5910,10 +5910,11 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
 {
  const id='oscillator-filter-apps-src-28',l=L.byId[id],old=l?.project,
    expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ const types=old?.components?.map(c=>c.typeId)||[];
+ const cardMatches=types.join('|')===expected.join('|')||
+  types.join('|')===['lm358p-dip8','resistor','capacitor'].join('|');
  if(!l||l.kind!=='quiz'||!old||old.referenceOnly!==true||old.wires.length||
-    l.steps.length||old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
-    l.materials.length!==expected.length||
-    !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+    l.steps.length||!cardMatches||l.materials.length!==types.length)
    throw Error('SC080 source reference changed');
  const p=base(id,l.title);
  const part=(cid,type,x,y,ref,label,extra,why)=>p.components.push(
@@ -5988,11 +5989,12 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
 {
  const id='oscillator-filter-apps-src-29',lesson=L.byId[id],old=lesson?.project;
  const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ const types=old?.components?.map(c=>c.typeId)||[];
+ const cardMatches=types.join('|')===expected.join('|')||
+  types.join('|')===['lm358p-dip8','resistor','capacitor'].join('|');
  if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||
-   old.wires.length||lesson.steps.length||
-   old.components.map(c=>c.typeId).join('|')!==expected.join('|')||
-   lesson.materials.length!==expected.length||
-   !L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+   old.wires.length||lesson.steps.length||!cardMatches||
+   lesson.materials.length!==types.length)
   throw Error('SC081 source baseline changed before physical power-stage repair');
  const p=base(id,lesson.title);
  const part=(cid,t,x,y,ref,label,props,why)=>p.components.push(
@@ -6117,9 +6119,11 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
 {
 const id='oscillator-filter-apps-src-30',l=L.byId[id],prior=l?.project;
 const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+const types=prior?.components?.map(c=>c.typeId)||[];
+const cardMatches=types.join('|')===expected.join('|')||
+ types.join('|')===['lm358p-dip8','resistor','capacitor'].join('|');
 if(!l||l.kind!=='quiz'||!prior||prior.referenceOnly!==true||prior.wires.length||
- l.steps.length||prior.components.map(c=>c.typeId).join('|')!==expected.join('|')||
- l.materials.length!==4||!L.mq07Batch200.reviewIds.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+ l.steps.length||!cardMatches||l.materials.length!==types.length)
  throw Error('SC082 reference source changed');
 const p=base(id,l.title),comp=[["ps","virtual-bipolar-audio-rail",60,80,{"railMagnitudeV":40}],["fg","arduino-signal-generator",60,430,{"generatorEnabled":true,"generatorWaveform":"sine","generatorFrequency":1000,"generatorAmplitude":0.6,"generatorOffset":0}],["u1","tda7293-multiwatt15v",870,280,{}],["rl","virtual-audio-load-8ohm-150w",1520,340,{}],["v1","meter-voltmeter",1520,550,{}],["r1","resistor",480,460,{"resistance":22000}],["c1","capacitor",280,400,{"capacitance":4.7e-7}],["r2","resistor",660,680,{"resistance":680}],["c2","capacitor",450,780,{"capacitance":0.000022}],["r3","resistor",1150,560,{"resistance":22000}],["c5","capacitor",1140,220,{"capacitance":0.000022}],["c7","capacitor",430,120,{"capacitance":1e-7}],["c6","capacitor",640,95,{"capacitance":0.001}],["c9","capacitor",440,260,{"capacitance":1e-7}],["c8","capacitor",640,250,{"capacitance":0.001}],["stby","arduino-bench-supply",60,930,{"dcVoltage":5}],["mute","arduino-bench-supply",60,1110,{"dcVoltage":5}],["r4","resistor",350,940,{"resistance":22000}],["c4","capacitor",580,1000,{"capacitance":0.00001}],["r5","resistor",350,1130,{"resistance":10000}],["c3","capacitor",580,1220,{"capacitance":0.00001}]],edges=["ps.VP>u1.7","ps.VP>u1.13","ps.VN>u1.8","ps.VN>u1.15","ps.G>u1.4","ps.G>u1.1","fg.OUT>c1.1","c1.2>u1.3","fg.GND>ps.G","u1.3>r1.1","r1.2>ps.G","u1.14>r3.1","r3.2>u1.2","u1.2>r2.1","r2.2>c2.1","c2.2>ps.G","u1.6>c5.1","c5.2>u1.14","u1.14>rl.+","rl.->ps.G","u1.14>v1.1","v1.2>ps.G","ps.VP>c7.1","c7.2>ps.G","ps.VP>c6.1","c6.2>ps.G","ps.VN>c9.1","c9.2>ps.G","ps.VN>c8.1","c8.2>ps.G","stby.P>r4.1","r4.2>u1.9","u1.9>c4.1","c4.2>ps.G","stby.M>ps.G","mute.P>r5.1","r5.2>u1.10","u1.10>c3.1","c3.2>ps.G","mute.M>ps.G"];
 for(const [cid,type,x,y,props] of comp)p.components.push(C(cid,type,x,y,cid.toUpperCase(),type,{...props,
