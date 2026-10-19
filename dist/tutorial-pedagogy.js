@@ -5046,6 +5046,11 @@ for(const spec of [
 ]){
  const l=L.byId[spec.id],p=l?.project,u=p?.components.find(c=>c.id==='u1');
  const previousPins=new Set(['IN+','IN-','OUT','V+','V-']);
+ // Earlier canonical stages may already install the physical A-channel package.
+ // The spare-B termination is applied by the dedicated pass below.
+ if(u?.typeId==='lm358p-dip8'&&p?.wires?.length===spec.originalWires&&
+    p?.wires?.every(w=>[w.from,w.to].every(ep=>ep.c!=='u1'||['1','2','3','4','8'].includes(ep.p)))&&
+    l?.materials?.some(m=>m.componentId==='u1'&&m.typeId==='lm358p-dip8'))continue;
  if(!l||l.kind!=='wiring'||l.designStandard==='rich-reference-v1'||!p||
     p.referenceOnly===true||p.wires.length!==spec.originalWires||
     p.components.length!==spec.originalParts||
