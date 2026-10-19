@@ -1,0 +1,230 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "name": "SC213 HCFA X2E dahili pozisyon parametreleri ve motor hareketi",
+  "projectId": "SC213 HCFA 400W",
+  "symbolNorm": "IEC",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "ac",
+      "typeId": "supply-1p",
+      "x": 70,
+      "y": 80,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "1~ 230 VAC",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "dc",
+      "typeId": "supply-dc-plus",
+      "x": 70,
+      "y": 360,
+      "rotation": 0,
+      "ref": "G2",
+      "label": "24 VDC kontrol",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "drv",
+      "typeId": "hcfa-sv-x2ea040a-a",
+      "x": 520,
+      "y": 80,
+      "rotation": 0,
+      "ref": "SD1",
+      "label": "SV-X2EA040A-A",
+      "state": false,
+      "address": "",
+      "note": "",
+      "hcfa": {
+        "params": {
+          "P00.01": 0,
+          "P00.05": 2,
+          "P04.01": 1,
+          "P04.02": 25,
+          "P04.11": 1,
+          "P08.00": 2,
+          "P08.04": 0,
+          "P08.06": 10000,
+          "P08.08": 500,
+          "P08.09": 100
+        }
+      }
+    },
+    {
+      "id": "mot",
+      "typeId": "hcfa-sv-x2mh040a-n2ln",
+      "x": 1280,
+      "y": 250,
+      "rotation": 0,
+      "ref": "M1",
+      "label": "SV-X2MH040A-N2LN",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "trig",
+      "typeId": "push-no",
+      "x": 220,
+      "y": 610,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "Dahili pozisyon tetik",
+      "state": false,
+      "address": "",
+      "note": ""
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "ac",
+        "p": "L"
+      },
+      "to": {
+        "c": "drv",
+        "p": "L1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "ac",
+        "p": "N"
+      },
+      "to": {
+        "c": "drv",
+        "p": "L2"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "drv",
+        "p": "U"
+      },
+      "to": {
+        "c": "mot",
+        "p": "U"
+      },
+      "color": "#e53935",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "drv",
+        "p": "V"
+      },
+      "to": {
+        "c": "mot",
+        "p": "V"
+      },
+      "color": "#f9a825",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "drv",
+        "p": "W"
+      },
+      "to": {
+        "c": "mot",
+        "p": "W"
+      },
+      "color": "#43a047",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "drv",
+        "p": "CN2"
+      },
+      "to": {
+        "c": "mot",
+        "p": "ENC"
+      },
+      "color": "#7c3aed",
+      "role": "ENCODER",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "dc",
+        "p": "P"
+      },
+      "to": {
+        "c": "trig",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "role": "CONTROL",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "trig",
+        "p": "14"
+      },
+      "to": {
+        "c": "drv",
+        "p": "CN1:10"
+      },
+      "color": "#43a047",
+      "role": "DI2",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "dc",
+        "p": "M"
+      },
+      "to": {
+        "c": "drv",
+        "p": "CN1:11"
+      },
+      "color": "#111827",
+      "role": "0V",
+      "size": "1.5",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#43a047": "SIGNAL",
+    "#7c3aed": "SIGNAL"
+  }
+}
