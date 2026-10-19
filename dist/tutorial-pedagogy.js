@@ -5635,10 +5635,12 @@ for(const [suffix,hp] of [['18',false],['19',true]]){
 function mq07MakeAudioLesson(lesson,mix){
  const id=lesson?.id,previous=lesson?.project;
  const expected=['lm358p-dip8','potentiometer','resistor','capacitor'];
+ const actualTypes=previous?.components?.map(c=>c.typeId)||[];
+ const sourceCard=actualTypes.join('|')===expected.join('|')||
+  actualTypes.join('|')===['lm358p-dip8','resistor','capacitor'].join('|');
  if(!previous||lesson.kind!=='quiz'||previous.referenceOnly!==true||
     previous.wires.length!==0||lesson.steps.length!==0||
-    previous.components.map(c=>c.typeId).join('|')!==expected.join('|')||
-    lesson.materials.length!==expected.length||lesson.designStandard==='rich-reference-v1')
+    !sourceCard||lesson.materials.length!==actualTypes.length||lesson.designStandard==='rich-reference-v1')
   throw Error('MQ07 SC076/077 existing audio card differs from source: '+id);
  const p=base(id,lesson.title),needs=[];
  const part=(cid,type,x,y,ref,label,properties,purpose)=>{
@@ -5769,8 +5771,8 @@ function mq07MakeAudioLesson(lesson,mix){
 }
 for(const [suffix,isMixer] of [['24',false],['25',true]]){
  const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
- if(!lesson||!L.mq07Batch200.reviewIds.some(e=>e.id===id&&e.reason==='NO_WIRED_CIRCUIT'))
-  throw Error('MQ07 SC076/077 old source review missing '+id);
+ if(!lesson||lesson.kind!=='quiz'||lesson.project?.referenceOnly!==true||lesson.project?.wires?.length!==0)
+  throw Error('MQ07 SC076/077 source card not reference-only '+id);
  mq07MakeAudioLesson(lesson,isMixer);
  L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(x=>x.id!==id);
  L.mq07Batch200.circuitRepairs=[...(L.mq07Batch200.circuitRepairs||[]),id];
