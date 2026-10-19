@@ -1,0 +1,140 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "SC216 Pano Buton Lambalar",
+  "name": "SC216 24 V DC NO ve NC butonlu panel sinyal lambalari",
+  "symbolNorm": "IEC",
+  "components": [
+    {
+      "id": "dc",
+      "typeId": "supply-dc-plus",
+      "x": 60,
+      "y": 60,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "24V DC eğitim kaynağı",
+      "state": false
+    },
+    {
+      "id": "no",
+      "typeId": "push-no",
+      "x": 300,
+      "y": 80,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "NO başlat",
+      "state": false
+    },
+    {
+      "id": "nc",
+      "typeId": "push-nc",
+      "x": 300,
+      "y": 300,
+      "rotation": 0,
+      "ref": "S2",
+      "label": "NC durdur",
+      "state": false
+    },
+    {
+      "id": "green",
+      "typeId": "lamp-green",
+      "x": 600,
+      "y": 80,
+      "rotation": 0,
+      "ref": "H1",
+      "label": "Yeşil lamba",
+      "state": false
+    },
+    {
+      "id": "red",
+      "typeId": "lamp-red",
+      "x": 600,
+      "y": 300,
+      "rotation": 0,
+      "ref": "H2",
+      "label": "Kırmızı lamba",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "dc",
+        "p": "P"
+      },
+      "to": {
+        "c": "no",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "no",
+        "p": "14"
+      },
+      "to": {
+        "c": "green",
+        "p": "X1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "green",
+        "p": "X2"
+      },
+      "to": {
+        "c": "dc",
+        "p": "M"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "dc",
+        "p": "P"
+      },
+      "to": {
+        "c": "nc",
+        "p": "21"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "nc",
+        "p": "22"
+      },
+      "to": {
+        "c": "red",
+        "p": "X1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "red",
+        "p": "X2"
+      },
+      "to": {
+        "c": "dc",
+        "p": "M"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    }
+  ],
+  "junctions": []
+}
