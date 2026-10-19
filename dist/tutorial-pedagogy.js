@@ -8318,6 +8318,50 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
  lesson.safety='Sanal 24 V DC R-C deneyidir; fiziksel kondansatör veya enerji güvenlik kabulü değildir.';
 }
 
+/* SC261: real BD139 potentiometer-controlled switching, not a static card.
+ * Native simulator shows the transistor cut off at 0% and conducting at
+ * 10% and above for this educational fixed 24 V / 4.7k base circuit. */
+{
+ const id='electronic-switching-outline-026',lesson=L.byId[id],old=lesson?.project,
+   originals=['bd139-npn','potentiometer','resistor'];
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==0||old.components.length!==originals.length||
+    originals.some((id,i)=>old.components[i].typeId!==id))
+  throw Error('SC261 potentiometer switching reference changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',70,240,'G1','24 V DC sanal kaynak'),
+  C('pot','potentiometer',290,330,'RV1','10 kΩ ayar',{potentiometer:0,potMax:10000}),
+  C('rb','resistor',480,440,'RB','4,7 kΩ beyz',{resistance:4700}),
+  C('q','bd139-npn',690,220,'Q1','BD139 NPN'),
+  C('rl','resistor',930,190,'RL','1 kΩ yük',{resistance:1000}),
+  C('v','meter-voltmeter',930,410,'V1','Kolektör voltmetresi')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Potansiyometre ile BD139 beyz sürmesini ve kolektör yükünü ayır.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','pot','3');wire('g','M','pot','1','0V');
+ wire('pot','2','rb','1');wire('rb','2','q','B');
+ wire('q','E','g','M','0V');wire('g','P','rl','1');
+ wire('rl','2','q','C');wire('v','1','q','C');
+ wire('v','2','g','M','0V');
+ if(p.components.length!==6||p.wires.length!==9||
+    new Set(p.wires.map(w=>w.id)).size!==9)
+  throw Error('SC261 BD139 potentiometer graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'Potansiyometre BD139 beyz sürmesini değiştirir. %0 ayarda NPN kesimdedir; artırıldığında kolektör yükünü iletime alır ve V1 gerilimi düşer.',
+  explanation:'Sanal BD139 (B/C/E), 10 kΩ üç uçlu potansiyometre, 4,7 kΩ beyz direnci, 1 kΩ kolektör yükü ve V1 ölçümü dokuz kabloyla bağlandı. Potansiyometrenin 1 ucu 0 V, 3 ucu +24 V, sürgüsü 2 üzerinden RB ve Q1/B uçlarını sürer. Yerel Node modelinde %0 ayarda V1 yaklaşık 24 V, %10 ve üzerinde yaklaşık 0 V ölçülür. Model ideal eğitim anahtarıdır; fiziksel BD139 akım, sıcaklık veya gerçek analog geçiş eşiği kabulü değildir.',
+  goal:'Potansiyometre sürgüsü değiştiğinde beyz uyarımını ve kolektör yükü anahtarlamasını izlemek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07BjtRcScope:'SC252_SC265',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_BJT_POT',
+  titleTopologyIssue:null,nativeDynamicAcceptance:true,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız düşük gerilimli sanal BD139 eğitim modelidir; gerçek transistör akım/ısıl sınırlarının veya saha montajının kabulü değildir.';
+}
+
 /* SC257-SC258: source-backed 2-second native delayed relay lamp circuits. */
 for(const [id,kind,mode] of [
  ['electronic-component-basics-outline-013','coil-delay-off','OFF'],
