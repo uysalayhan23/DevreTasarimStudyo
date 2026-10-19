@@ -8573,6 +8573,53 @@ for(const [id,issue,concept,limits,correction] of mq07ScrTriacScope){
 }
 
 
+/* MQ07_SC280_SC293_NATIVE_REUSE: isolated virtual low-voltage source graphs;
+ * measured holding, phase or manufacturer behavior are NOT accepted. */
+for(const [id,srcId,summary,status] of [
+ ['electronic-switching-outline-039','electronic-switching-src-13',
+  'TYN612RG DC anot-katot ve ayrı gate butonu üzerinden sanal SCR tetikleme şeması.',
+  'SOURCE_WIRED_DC_SCR_LATCH_MEASUREMENT_PENDING'],
+ ['electronic-switching-outline-040','electronic-switching-src-13',
+  'SCR tetikleme yönteminde gate direnci, buton ve anot yük yolu ayrı kablolarla gösterilir.',
+  'SOURCE_WIRED_SCR_GATE_TRIGGER_PENDING'],
+ ['electronic-switching-outline-042','electronic-switching-src-14',
+  'SCR anot kolunda ayrı STOP kontağı ve gate tetik komutu bulunan sanal kapatma şeması.',
+  'SOURCE_WIRED_SCR_STOP_RETRIGGER_PENDING'],
+ ['electronic-switching-outline-044','electronic-switching-src-13',
+  '24 V altında sanal DC SCR gate tetikleme ve yük yolu öğretici temrini.',
+  'SOURCE_WIRED_SCR_DC_PRACTICE_PENDING'],
+ ['electronic-switching-outline-045','electronic-switching-src-14',
+  'SCR için gate tetik, anot STOP ve yeniden tetikleme yollarının sanal bağlantı temrini.',
+  'SOURCE_WIRED_SCR_STOP_PRACTICE_PENDING'],
+ ['electronic-switching-outline-046','electronic-switching-src-15',
+  'Yalnız sanal yalıtılmış 12 VAC kaynağına bağlı SCR tetik ve yük bağlantı örneği.',
+  'SOURCE_WIRED_ISOLATED_AC_SCR_WAVE_PENDING'],
+ ['electronic-switching-outline-047','electronic-switching-src-17',
+  'Sanal yalıtılmış 12 VAC triyak MT1/MT2/G bağlantıları ve ayrı gate tetik kaynağı.',
+  'SOURCE_WIRED_ISOLATED_AC_TRIAC_NATIVE_PENDING'],
+ ['electronic-switching-outline-050','electronic-switching-src-17',
+  'İki yarım dalga için sanal triyak kaynak ve tetikleme bağlantı grafiği.',
+  'SOURCE_WIRED_TRIAC_BIDIRECTIONAL_MEASUREMENT_PENDING']
+]){
+ const lesson=L.byId[id],original=lesson?.project,source=L.byId[srcId],src=source?.project;
+ if(!lesson||lesson.kind!=='quiz'||original?.referenceOnly!==true||original.wires.length!==0||
+    !source||source.kind!=='wiring'||!src||src.wires.length<5)
+  throw Error('SC280-293 virtual baseline changed '+id);
+ const p=clone(src);delete p.referenceOnly;
+ const ids=new Set(p.components.map(c=>c.id));
+ if(ids.size!==p.components.length||p.wires.some(w=>!ids.has(w.from.c)||!ids.has(w.to.c)))
+  throw Error('SC280-293 source endpoint missing '+id);
+ setLesson(lesson,p,{kind:'wiring',summary,
+  explanation:source.explanation+' BU DERS: '+summary+
+   ' Yalnız düşük gerilimli sanal kaynak devresidir. SCR tutma akımı, AC triyak yarım dalga, ateşleme açısı ve fiziksel üretici güvenliği ayrıca doğrulanmalıdır.',
+  goal:'Üç uçlu yarıiletkenin gerçek sanal terminal bağlantılarını güç ve kontrol kollarında ayırt etmek.'});
+ lesson.pedagogyReview={...lesson.pedagogyReview,mq07ScrTriacScope:'SC280_SC293',
+  sourceReusedFrom:srcId,titleTopologyStatus:status,titleTopologyIssue:null,
+  scrLatchAcceptance:false,triacAcRuntimeAcceptance:false,manufacturerPinAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız yalıtılmış düşük gerilimli sanal SCR/triyak devresidir; gerçek AC şebekesi veya fiziksel montaj talimatı değildir.';
+}
+
 /* MQ07_SC294_SC307_TRIAC_OPTO: exact source devices, no fabricated electrical/runtime acceptance. */
 const mq07TriacOptoRows=[["electronic-switching-outline-051","NO_TRIAC_TRIGGER_REFERENCE_RUNTIME",["bta16-600b-triac","virtual-isolated-ac-12v","virtual-ac-triac-trigger-v1"],"Triyak gate tetikleme koşulları AC dalga ve seçili ateşleme kaynağından bağımsız doğrulanır.","Sadece sanal malzemeler vardır; MT1/MT2/G bağlantısı, tetikleme çeyreği ve ölçülmüş AC yük tepkisi yoktur."],["electronic-switching-outline-052","NO_TRIAC_MULTIMETER_HEALTH_MEASUREMENT",["bta16-600b-triac","unit-ut33d-plus"],"Triyak sağlamlık konusu MT1, MT2 ve gate görevlerini üretici terminal tanımıyla ayırt eder.","AVOmetre önceki AC/lamba kartında yoktu; şimdi multimetre referansı vardır fakat prob, test koşulu ve gerçek sağlamlık sonucu yoktur."],["electronic-switching-outline-053","NO_TRIAC_MULTIMETER_PIN_IDENTIFICATION",["bta16-600b-triac","unit-ut33d-plus"],"Triyak uç tanıma üretici paket şeması ve cihaz terminal kimliği gerektirir.","Önceki kartta AVOmetre yoktu; eklenen multimetre gerçek MT1/MT2/G ölçümünün kanıtı değildir."],["electronic-switching-outline-054","NO_TRIAC_DC_LATCH_APPLICATION",["bta16-600b-triac","arduino-bench-supply","push-no","resistor","standard-light"],"Triyak DC uygulamasında kapı tetikleme ve akım tutma koşulları AC çalışma durumundan farklıdır.","Başlıktaki DC için önceki AC kaynak referansı kaldırıldı; sanal DC/tri yak/gate/yük elemanları kablosuzdur, çalışan DC latch yoktur."],["electronic-switching-outline-055","NO_ISOLATED_AC_TRIAC_DIMMER_RUNTIME",["virtual-isolated-ac-12v","bta16-600b-triac","virtual-ac-triac-trigger-v1","standard-light"],"Triyaklı dimmer, faz açıları ile yüke aktarılan AC dalga biçimini ilişkilendirir.","İzole sanal AC ve tetikleyici kavramı referanstır; gerçek faz kontrolü, lambanın RMS gerilimi veya dimmer testi yoktur."],["electronic-switching-outline-056","NO_OPTOCOUPLER_FAMILY_REFERENCE",["arduino-tlp521-1","moc3021-opto-triac"],"Optokuplörler ışıkla ayrılmış giriş ve çıkış yolları sunar; fototransistörlü ve opto-triyaklı türler farklıdır.","Önceki BD139/direnç kartı optokuplör içermiyordu; iki temsilî optik tür gösterilir fakat bağlantı/izolasyon ölçümü yoktur."],["electronic-switching-outline-057","NO_OPTOCOUPLER_ISOLATION_FUNCTION_TEST",["arduino-tlp521-1","resistor"],"TLP521-1 optokuplörün giriş LED'i ve çıkış fototransistörü ayrı görevler taşır.","Önceki triyak ve lamba referansları görev açıklaması için uygun değildi; yeni kartta optik iletim veya galvanik izolasyon testi yoktur."],["electronic-switching-outline-058","NO_OPTOCOUPLER_VARIETY_RUNTIME",["arduino-tlp521-1","moc3021-opto-triac"],"Fototransistör çıkışlı optokuplör ve opto-triyak tetikleyici farklı cihaz aileleridir.","Eski karttaki güç triyağı optokuplör türü değildir; her iki doğru optik eleman kablosuz referans olarak gösterilir."],["electronic-switching-outline-059","NO_TLP521_HEALTH_PROBE_RESULT",["arduino-tlp521-1","unit-ut33d-plus"],"Optokuplör sağlamlık incelemesi giriş ve çıkışın farklı elektriksel görevlerini ayırt eder.","Önceki triyak/lamba test malzemeleri kaldırıldı; multimetre ile gerçek LED/çıkış ölçümü yapılmadı."],["electronic-switching-outline-060","NO_OPTO_TRIAC_FLASHER_RUNTIME",["moc3021-opto-triac","bta16-600b-triac","virtual-opto-flasher-timer-v1","virtual-isolated-ac-12v","standard-light"],"Opto-triyak flaşör kavramı optik tetikleme, güç triyağı ve periyodik kontrolü ayırır.","Önceki kartta opto elemanı veya flaşör kaynağı yoktu; bunlar eklendi ama gerçek sinyal bağlantısı veya dinamik yanıp sönme kabulü yoktur."],["sensor-analog-apps-outline-023","NO_SENSOR_TRANSDUCER_IO_EVIDENCE",null,"Sensör ve transdüser giriş büyüklüğü ile elektriksel çıkışın rolünü ayırt eden kavramlardır.","Endüktif, kapasitif ve optik sensörler yalnız referanstır; elektriksel çıkış veya algılama ölçümü yapılmamıştır."],["sensor-analog-apps-outline-024","NO_SENSOR_CHARACTERISTIC_MEASUREMENT",null,"Sensör karakteristiği için algılama mesafesi, eşik, besleme ve çıkış türü verisi gerekir.","Karttaki üç sensör sembolü üretici karakteristik eğrisi, menzil veya PNP/NPN çalışması kanıtı değildir."],["sensor-analog-apps-outline-025","NO_SENSOR_TYPE_RUNTIME_COMPARISON",null,"Farklı algılama ilkelerini malzeme ve uygulama koşuluna göre karşılaştırmak gerekir.","Üç kablosuz sensör referansı gerçek algılama deneyi veya katalog kıyas ölçümü değildir."],["electronic-component-basics-outline-023","NO_SENSOR_USAGE_DOMAIN_EVIDENCE",["proximity","photoeye","sensor-level-analog"],"Endüktif yaklaşım, optik algılama ve analog seviye sensörü farklı kullanım alanlarını temsil eder.","Eski genel kavram kartı sensör çeşitlerini göstermiyordu; ürünler referanstır, canlı sinyal ve saha kullanım kabulü yoktur."]];
 for(const [id,issue,conceptTypes,concept,limits] of mq07TriacOptoRows){
