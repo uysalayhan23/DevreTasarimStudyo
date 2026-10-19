@@ -8194,6 +8194,53 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
  lesson.safety='Yalnız sanal 24 V bobin/kontak gösterimidir; fiziksel enerjili röle bağlantısı veya güvenlik kabulü değildir.';
 }
 
+/* SC247: relay coil with a reverse-polarized diode and live output.
+ * Native static calculation verifies polarity and switch/load behavior only;
+ * it does not model coil turn-off transients or voltage clamping. */
+{
+ const id='electronic-component-basics-outline-009',lesson=L.byId[id],old=lesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==0||old.components.length!==2||
+    old.components[0].typeId!=='1n4007-do41'||
+    old.components[1].typeId!=='coil-relay')
+  throw Error('SC247 flyback reference baseline changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',100,80,'G1','24 V DC sanal kaynak'),
+  C('s','selector-no',300,100,'S1','Bobin komut seçicisi'),
+  C('k','coil-relay',520,100,'K1','K1 röle bobini'),
+  C('d','diode',520,300,'D1','Bobine ters paralel silikon diyot'),
+  C('q','contact-no',830,100,'K1','K1 yardımcı NO kontağı'),
+  C('lamp','lamp-green',1040,300,'H1','Röle çıkış lambası'),
+  C('vm','meter-voltmeter',830,410,'V1','Diyot DC gerilim ölçümü')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Röle yük yolu ve bobine ters paralel bağlanan diyotun uçlarını ayır.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','s','13');wire('s','14','k','A1');
+ wire('k','A2','g','M','0V');
+ wire('d','K','k','A1');wire('d','A','k','A2');
+ wire('g','P','q','13');wire('q','14','lamp','X1');
+ wire('lamp','X2','g','M','0V');
+ wire('vm','1','d','K');wire('vm','2','d','A');
+ if(p.components.length!==7||p.wires.length!==10||
+    new Set(p.wires.map(w=>w.id)).size!==10)
+  throw Error('SC247 diode and relay graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'S1 açılıp kapandığında röle ve lamba izlenir. D1 katodu K1 A1, anodu K1 A2 tarafındadır; normal 24 V bobin beslemesinde diyot ters polarmalıdır.',
+  explanation:'K1 röle bobini, NO yardımcı kontak, yeşil yük lambası ve D1 diyodu gerçek sanal terminallerle bağlandı. D1 normal enerjilemede iletmez; gerilimi V1 ölçer. Bu simülasyon bobin enerjisi kesildiğinde indüktif gerilim darbesini ve gerçek bastırma tepe değerini çözmez; diyotun fiziksel koruma yeterliliği kabul edilmemiştir.',
+  goal:'Röle bobininin normal beslemesinde ters polarmalı diyot ile kontak yükündeki aç-kapa sonucunu ayırt etmek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FaultRelayScope:'SC238_SC251',titleTopologyStatus:'SOURCE_REPAIRED_STATIC_DIODE',
+  titleTopologyIssue:'COIL_FLYBACK_TRANSIENT_NOT_MODELLED',
+  relayDynamicsAcceptance:true,flybackTransientAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Sanal düşük gerilimli diyot kutuplama dersidir; fiziksel röle koruması veya indüktif gerilim darbesi ölçümü değildir.';
+}
+
 /* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
 const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
