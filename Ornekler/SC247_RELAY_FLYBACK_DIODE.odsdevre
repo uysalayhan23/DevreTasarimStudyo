@@ -1,0 +1,212 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "SC247 Relay Flyback Diode",
+  "name": "SC247 24 V röle bobini ve ters kutuplu diyot",
+  "symbolNorm": "IEC",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 100,
+      "y": 80,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "24 V DC sanal kaynak",
+      "state": false
+    },
+    {
+      "id": "s",
+      "typeId": "selector-no",
+      "x": 300,
+      "y": 100,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "Röle bobin komutu",
+      "state": false
+    },
+    {
+      "id": "k",
+      "typeId": "coil-relay",
+      "x": 520,
+      "y": 100,
+      "rotation": 0,
+      "ref": "K1",
+      "label": "K1 röle bobini",
+      "state": false
+    },
+    {
+      "id": "d",
+      "typeId": "diode",
+      "x": 520,
+      "y": 300,
+      "rotation": 0,
+      "ref": "D1",
+      "label": "Bobine ters paralel silikon diyot",
+      "state": false
+    },
+    {
+      "id": "q",
+      "typeId": "contact-no",
+      "x": 830,
+      "y": 100,
+      "rotation": 0,
+      "ref": "K1",
+      "label": "K1 NO kontağı",
+      "state": false
+    },
+    {
+      "id": "lamp",
+      "typeId": "lamp-green",
+      "x": 1040,
+      "y": 300,
+      "rotation": 0,
+      "ref": "H1",
+      "label": "Kontak çıkış lambası",
+      "state": false
+    },
+    {
+      "id": "vm",
+      "typeId": "meter-voltmeter",
+      "x": 830,
+      "y": 410,
+      "rotation": 0,
+      "ref": "V1",
+      "label": "Diyot uçları DC voltmetre",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "s",
+        "p": "13"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "s",
+        "p": "14"
+      },
+      "to": {
+        "c": "k",
+        "p": "A1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "k",
+        "p": "A2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "d",
+        "p": "K"
+      },
+      "to": {
+        "c": "k",
+        "p": "A1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "d",
+        "p": "A"
+      },
+      "to": {
+        "c": "k",
+        "p": "A2"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "q",
+        "p": "13"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "q",
+        "p": "14"
+      },
+      "to": {
+        "c": "lamp",
+        "p": "X1"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "lamp",
+        "p": "X2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "vm",
+        "p": "1"
+      },
+      "to": {
+        "c": "d",
+        "p": "K"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "vm",
+        "p": "2"
+      },
+      "to": {
+        "c": "d",
+        "p": "A"
+      },
+      "points": [],
+      "color": "#8b5a2b"
+    }
+  ],
+  "junctions": []
+}
