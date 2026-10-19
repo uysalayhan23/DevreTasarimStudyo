@@ -8287,7 +8287,7 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
  * independently operable while the capacitor retains its simulated state. */
 {
  const id='electronic-component-basics-outline-012',lesson=L.byId[id],original=lesson?.project;
- const ids=['g1','s1','r1','c1','v1'];
+ const ids=['g1','s1','r1','c1','v1','v1-red','v1-black'];
  if(!lesson||lesson.kind!=='wiring'||original?.wires.length!==6||
     original.components.length!==ids.length||
     ids.some(x=>!original.components.some(c=>c.id===x))||
@@ -8303,7 +8303,7 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
   W('rd','1','c1','1','R2/1 → C1/1','Deşarj direncinin üst ucu kondansatörün + düğümündedir.','#43a047','SIGNAL'),
   W('rd','2','c1','2','R2/2 → C1/2','Seçici açılınca kondansatör R2 üzerinden boşalır.','#111827','0V')
  );
- if(p.components.length!==6||p.wires.length!==8||
+ if(p.components.length!==8||p.wires.length!==8||
     new Set(p.wires.map(w=>w.id)).size!==8)
   throw Error('SC256 RC discharge graph incomplete');
  setLesson(lesson,p,{kind:'wiring',
