@@ -1,0 +1,193 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "SC261 BD139",
+  "name": "SC261 potansiyometre ile BD139 NPN anahtarlama",
+  "symbolNorm": "IEC",
+  "components": [
+    {
+      "id": "g",
+      "typeId": "supply-dc-plus",
+      "x": 70,
+      "y": 240,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "24 V DC",
+      "state": false
+    },
+    {
+      "id": "pot",
+      "typeId": "potentiometer",
+      "x": 290,
+      "y": 330,
+      "rotation": 0,
+      "ref": "RV1",
+      "label": "10 kΩ ayar",
+      "state": false,
+      "potentiometer": 0,
+      "potMax": 10000
+    },
+    {
+      "id": "rb",
+      "typeId": "resistor",
+      "x": 480,
+      "y": 440,
+      "rotation": 0,
+      "ref": "RB",
+      "label": "4,7 kΩ beyz",
+      "state": false,
+      "resistance": 4700
+    },
+    {
+      "id": "q",
+      "typeId": "bd139-npn",
+      "x": 690,
+      "y": 220,
+      "rotation": 0,
+      "ref": "Q1",
+      "label": "BD139 NPN",
+      "state": false
+    },
+    {
+      "id": "rl",
+      "typeId": "resistor",
+      "x": 930,
+      "y": 190,
+      "rotation": 0,
+      "ref": "RL",
+      "label": "1 kΩ yük",
+      "state": false,
+      "resistance": 1000
+    },
+    {
+      "id": "v",
+      "typeId": "meter-voltmeter",
+      "x": 930,
+      "y": 410,
+      "rotation": 0,
+      "ref": "V1",
+      "label": "Kolektör DC voltmetresi",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "pot",
+        "p": "3"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g",
+        "p": "M"
+      },
+      "to": {
+        "c": "pot",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "pot",
+        "p": "2"
+      },
+      "to": {
+        "c": "rb",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "rb",
+        "p": "2"
+      },
+      "to": {
+        "c": "q",
+        "p": "B"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "q",
+        "p": "E"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "g",
+        "p": "P"
+      },
+      "to": {
+        "c": "rl",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "rl",
+        "p": "2"
+      },
+      "to": {
+        "c": "q",
+        "p": "C"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "v",
+        "p": "1"
+      },
+      "to": {
+        "c": "q",
+        "p": "C"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "v",
+        "p": "2"
+      },
+      "to": {
+        "c": "g",
+        "p": "M"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    }
+  ],
+  "junctions": []
+}
