@@ -8728,9 +8728,10 @@ for(const id of [
  };
  if(!lesson||lesson.kind!=='wiring'||lesson.designStandard==='rich-reference-v1'||
     p.referenceOnly===true||u?.typeId!=='lm358p-dip8'||
-    g?.typeId!=='supply-dc-plus'||!p.wires?.length||
+    !['supply-dc-plus','arduino-bench-supply'].includes(g?.typeId)||!p.wires?.length||
     componentIds.size!==p.components.length||!existing.powerP||!existing.powerM||
-    !['1','2','3'].every(pin=>uPins.includes(pin))||
+    !['2','3'].every(pin=>uPins.includes(pin))||
+    (!uPins.includes('1')&&!p.components.some(c=>c.typeId==='unit-ut33d-plus'))||
     uPins.some(pin=>!expectedPins.has(pin))||
     endpoints.some(e=>!componentIds.has(e.c))||
     lesson.steps.length!==p.wires.length||
