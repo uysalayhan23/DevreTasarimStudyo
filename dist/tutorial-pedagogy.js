@@ -8647,6 +8647,43 @@ for(const [id,issue,conceptTypes,concept,limits] of mq07TriacOptoRows){
 }
 
 
+/* MQ07_SC294_SC307_NATIVE_REUSE: real virtual drive paths; no physical acceptance. */
+for(const [id,srcId,summary,status] of [
+ ['electronic-switching-outline-051','electronic-switching-src-17',
+  'BTA16 MT1/MT2/G ve sanal yalıtılmış AC tetikleyici bağlantı grafiği.',
+  'SOURCE_WIRED_TRIAC_TRIGGER_RUNTIME_PENDING'],
+ ['electronic-switching-outline-054','electronic-switching-src-16',
+  'Yalnız sanal düşük gerilimli DC triyak gate komutu ve yük devresi.',
+  'SOURCE_WIRED_DC_TRIAC_HOLDING_PENDING'],
+ ['electronic-switching-outline-055','electronic-switching-src-17',
+  'Yalıtılmış 12 VAC kaynak ve gate tetikleyiciyle sanal triyak dimmer bağlantıları.',
+  'SOURCE_WIRED_ISOLATED_TRIAC_DIMMER_RMS_PENDING'],
+ ['electronic-switching-outline-057','electronic-switching-src-18',
+  'TLP521-1 giriş LED ve fototransistör çıkış yolları ayrı sanal beslemelere bağlıdır.',
+  'SOURCE_WIRED_TLP521_OPTICAL_FUNCTION_PENDING'],
+ ['electronic-switching-outline-060','electronic-switching-src-19',
+  'MOC3021 ve BTA16 sanal optotriyak flaşörünün kontrol ve yalıtılmış AC yük kolları.',
+  'SOURCE_WIRED_OPTO_TRIAC_FLASHER_PENDING']
+]){
+ const lesson=L.byId[id],old=lesson?.project,source=L.byId[srcId],src=source?.project;
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    !source||source.kind!=='wiring'||!src||src.wires.length<5)
+  throw Error('SC294-307 virtual tutorial baseline changed '+id);
+ const p=clone(src);delete p.referenceOnly;
+ const ids=new Set(p.components.map(c=>c.id));
+ if(ids.size!==p.components.length||p.wires.some(w=>!ids.has(w.from.c)||!ids.has(w.to.c)))
+  throw Error('SC294-307 endpoint missing '+id);
+ setLesson(lesson,p,{kind:'wiring',summary,
+  explanation:source.explanation+' BU DERS: '+summary+
+   ' Bu sanal kaynak grafiği fiziksel optokuplör izolasyonunu, AC faz/rms davranışını veya gerçek ürün sağlamlığını tek başına kanıtlamaz.',
+  goal:'Sanal sinyal, optik kontrol ve yük devrelerinin farklı terminallerini ayırt etmek.'});
+ lesson.pedagogyReview={...lesson.pedagogyReview,mq07TriacOptoScope:'SC294_SC307',sourceReusedFrom:srcId,
+  titleTopologyIssue:null,titleTopologyStatus:status,
+  isolationAcceptance:false,acPhaseRuntimeAcceptance:false,optoFlasherRuntimeAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız yalıtılmış düşük gerilimli sanal elektronik eğitimidir; gerçek şebeke devresi, yalıtım testi veya fiziksel montaj kabulü değildir.';
+}
+
 /* MQ07_SC308_SC321_SENSOR_SCOPE: truthful temperature sensor references and no unproven runtime claims. */
 const mq07SensorSc308to321=[["sensor-analog-apps-outline-026","NO_SENSOR_SELECTION_DATASHEET_EVIDENCE",0,["proximity","capacitive-detector","photoeye"],"Sensör seçimi hedef ortam, çıkış türü ve üretici veri sayfasıyla uyumlu değerlendirilmelidir.","Görünen üç sensör yalnız kavram referansıdır; kapsama, besleme, koruma sınıfı veya ölçüm karşılaştırması yapılmamıştır."],["sensor-analog-apps-outline-027","NO_DIGITAL_ANALOG_SIGNAL_MEASUREMENT",0,["proximity","sensor-level-analog","arduino-lm35"],"Sensör çıkışında dijital anahtarlama ve analog gerilim/akım verisi ayrı ele alınır.","Endüktif algılama, analog seviye ve LM35 referansları gösterilir; elektriksel çıkış kablosu, kalibrasyon ve ölçüm yoktur."],["sensor-analog-apps-outline-028","NO_TEMPERATURE_APPLICATION_WIRING",0,["sensor-ntc","sensor-ptc","thermocouple","sensor-pt100","arduino-lm35"],"NTC, PTC, termokupl, PT100 ve LM35 farklı sıcaklık algılama ilkelerini temsil eder.","Eski yakınlık sensörüyle çalışan röle/lamba çizimi sıcaklık ölçümü değildi; mevcut kart yalnız doğru sıcaklık malzemelerinin kavramsal listesidir, gerçek karşılaştırıcı veya test değildir."],["electronic-component-basics-outline-024","NO_THERMISTOR_PROBE_SENSOR_CONTACT",2,["sensor-ntc","unit-ut33d-plus","test-probe-red","test-probe-black"],"NTC ve PTC termistörlerin direnç değişimi sıcaklıkla ilişkilidir.","Kartta iki tel yalnız UT33D+ ölçüm problarının cihaz fişleridir; NTC sensör ucuna erişen gerçek ölçüm kablosu ve sıcaklık/direnç değeri yoktur."],["sensor-analog-apps-outline-029","NO_THERMOCOUPLE_MV_MEASUREMENT",0,["thermocouple"],"Termokupl iki metalin sıcaklık farkından düşük seviyeli termoelektrik sinyal üretmesiyle tanımlanır.","Tek termokupl referansı vardır; soğuk uç kompanzasyonu, ölçüm cihazı, polarite veya mV testi yoktur."],["electronic-component-basics-outline-025","NO_PT100_RTD_MEASUREMENT_CONNECTION",0,["sensor-pt100","unit-ut33d-plus"],"RTD/PT100 direnç tabanlı sıcaklık algılama elemanıdır; ölçüm için uygun köprü/cihaz bağlantısı gerektirir.","Eski genel direnç ve yalnız multimetre fişlerine takılmış problar yerine gerçek PT100 ile ölçü cihazı referansı kondu; üç telli bağlantı veya sıcaklık/ohm ölçümü doğrulanmadı."],["electronic-component-basics-outline-026","NO_THERMOSTAT_CONTROL_RUNTIME",0,["tutorial-thermostat","sensor-ntc"],"Termostat, sıcaklık durumuna göre ayarlanmış bir eşik çevresinde anahtarlama işlevini temsil eder.","NTC ve termostat malzemesi gösterilir, bağlı çıkış, eşik/ölü bant veya sıcaklık geçiş simülasyonu yoktur."],["sensor-analog-apps-outline-030","NO_LM35_ANALOG_ADC_CONNECTION",0,["arduino-lm35","arduino-uno"],"LM35 entegre sıcaklık sensörü analog gerilim sinyalinin okunması kavramını tanıtır.","Eski yakınlık/kapasitif/optik sensörler yerine LM35 ve Arduino referansı kondu; gerçek besleme, A0 bağlantısı veya ADC sıcaklık testi bulunmaz."],["sensor-analog-apps-outline-031","NTC_COMPARATOR_OUTLINE_NATIVE_UNVERIFIED",12,["arduino-bench-supply","sensor-ntc","resistor","lm358p-dip8","resistor","resistor","unit-ut33d-plus","test-probe-red","test-probe-black"],"NTC bölücü ve LM358P karşılaştırıcı sıcaklık gerilimini bir eşikle karşılaştırma kavramını gösterir.","12 kablolu ders grafiği korunmuştur; kaynak topolojisi tek başına 15/35 derece motor/yük davranışını veya gerçek üretici onayını kanıtlamaz."],["sensor-analog-apps-outline-032","PTC_COMPARATOR_OUTLINE_NATIVE_UNVERIFIED",12,["arduino-bench-supply","sensor-ptc","resistor","lm358p-dip8","resistor","resistor","unit-ut33d-plus","test-probe-red","test-probe-black"],"PTC ve karşılaştırıcı çıkışı sıcaklıkla değişen direnç eşiği kavramını açıklar.","12 kablolu ders grafiği korunmuştur; gerçek 35/65 derece çıkış davranışı ayrı dinamik test olmadan kabul edilemez."],["electronic-component-basics-outline-027","LM35_ARDUINO_OUTLINE_NATIVE_UNVERIFIED",5,["arduino-bench-supply","arduino-lm35","arduino-uno"],"LM35 gerilimi Arduino analog okumasıyla sıcaklık değeri olarak yorumlanabilir.","Beş uçlu sanal kaynak grafiği korunmuştur; Arduino ADC ve sıcaklık dönüşümü, gerçek çalışma kanıtı olmadan kabul edilmez."],["sensor-analog-apps-outline-035","HALL_RELAY_OUTLINE_DYNAMIC_UNVERIFIED",7,["arduino-bench-supply","sensor-hall","coil-relay","contact-no","lamp-green"],"Hall algılayıcı ile röle bobini ve kontak çıkışı farklı devre görevlerine sahiptir.","Yedi kablolu kaynak örneği korunmuştur; manyetik alan geçişi ve röle/lamba dinamiği bu ders için test edilmemiştir."],["sensor-analog-apps-outline-036","NO_REED_SWITCH_RUNTIME",0,["arduino-reed"],"Reed algılama manyetik alan ile kontak durumunun değişmesine dayanır.","Tek reed elemanı referansı, canlı mıknatıs, devre bağlantısı veya kontak geçişi ölçümü değildir."],["sensor-analog-apps-outline-037","NO_HALL_OUTPUT_RUNTIME",0,["sensor-hall"],"Hall sensöründe manyetik alana tepki uygun besleme ve sensör türüyle ilişkilidir.","Tek Hall sensörü referansında çıkış kablosu, alan değişimi veya ölçüm bulunmaz."]];
 const mq07SensorReplacements={"sensor-analog-apps-outline-027":{"old":["proximity","capacitive-detector","photoeye"],"parts":[["proximity","Dijital endüktif sensör"],["sensor-level-analog","Analog seviye sensörü"],["arduino-lm35","LM35 analog sıcaklık sensörü"]],"wires":0},"sensor-analog-apps-outline-028":{"old":["arduino-bench-supply","proximity","coil-relay","contact-no","lamp-green"],"parts":[["sensor-ntc","NTC"],["sensor-ptc","PTC"],["thermocouple","Termokupl"],["sensor-pt100","PT100 RTD"],["arduino-lm35","LM35"]],"wires":7},"electronic-component-basics-outline-025":{"old":["resistor","unit-ut33d-plus","test-probe-red","test-probe-black"],"parts":[["sensor-pt100","PT100 3 telli RTD"],["unit-ut33d-plus","UNI-T ölçüm referansı"]],"wires":2},"sensor-analog-apps-outline-030":{"old":["proximity","capacitive-detector","photoeye"],"parts":[["arduino-lm35","LM35 sıcaklık sensörü"],["arduino-uno","Arduino A0 okuma referansı"]],"wires":0}};
