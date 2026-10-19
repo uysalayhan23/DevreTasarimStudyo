@@ -70,6 +70,15 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      else if(reverse)c._plcDirection='R';
    }
    q0=healthyStop&&c._plcDirection==='F';
+ } else if(mode==='delayed-stop-sc202'){
+   // SC202 only: delayed motor shutdown on NC STOP input. Not a safety stop.
+   const delay=Math.max(100,Math.min(60000,num(c.plcTimerMs,3000)));
+   if(start&&stop){c._plcLatch=true;delete c._plcStopSince}
+   if(c._plcLatch&&!stop&&c._plcStopSince===undefined)c._plcStopSince=now;
+   if(c._plcStopSince!==undefined&&now-c._plcStopSince>=delay){
+     c._plcLatch=false;delete c._plcStopSince;
+   }
+   q0=!!c._plcLatch;
  } else if(mode==='timed-stop'){
    const duration=Math.max(100,num(c.plcTimerMs,3000));
    if(!stop){delete c._plcTimerStart;c._plcLatch=false}
@@ -108,7 +117,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcDirection;delete c._plcRearm}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
