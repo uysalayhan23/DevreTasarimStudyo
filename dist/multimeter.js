@@ -41,7 +41,7 @@
     if(fixed.has(red)&&fixed.has(black))warning='Akım probu beslemeye paralel bağlı. Devreyi açıp ölçü aletini seri bağlayın.';
     const b=branches.find(b=>b.c===c&&b.role==='ut-current'),a=voltages.get(red),z=voltages.get(black);value=b&&a&&z?(a[0]-z[0])/b.r:0;unit='A';
     if(Math.abs(value)>(range===10?10:.2)){if(!warning)warning='Akım girişinin '+(range===10?'10 A':'200 mA')+' sınırı aşıldı.';beep=true}
-   }else{const a=voltages.get(red),z=voltages.get(black);value=a&&z?mode==='DCV'?a[0]-z[0]:Math.hypot(a[0]-z[0],a[1]-z[1]):0;unit='V';if(mode==='DCV'&&isAC||mode==='ACV'&&isDC)warning='AC/DC ölçüm kademesi devredeki besleme ile uyuşmuyor.';if(Math.abs(value)>600){warning='600 V ölçüm sınırı aşıldı.';beep=true}}
+   }else{const a=voltages.get(red),z=voltages.get(black);value=a&&z?mode==='DCV'?a[0]-z[0]:Math.hypot(a[0]-z[0],a[1]-z[1]):null;unit='V';if(!a||!z)warning='Ölçüm noktası açık veya prob teması yok.';else if(mode==='DCV'&&isAC||mode==='ACV'&&isDC)warning='AC/DC ölçüm kademesi devredeki besleme ile uyuşmuyor.';if(Math.abs(value)>600){warning='600 V ölçüm sınırı aşıldı.';beep=true}}
   }
   const fmt=format(value,mode,range,c.meterContinuity);unit=fmt.unit;display=warning?'OL':fmt.display;
   if(c.meterHold&&c._meter?.mode===mode&&c._meter.range===range&&!warning){display=c._meter.display;unit=c._meter.unit;value=c._meter.value}
