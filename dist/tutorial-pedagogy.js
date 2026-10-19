@@ -7991,6 +7991,42 @@ for(const [suffix,issue,concept,limits] of mq07PanelRows){
 }
 
 
+/* SC216: verified six-link NO/NC pushbutton and signal lamp lesson. */
+{
+ const id='panel-power-systems-src-03',lesson=L.byId[id],prev=lesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||prev?.referenceOnly!==true||prev.wires.length!==0)
+  throw Error('SC216 signal-lamp reference baseline changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('dc','supply-dc-plus',60,60,'G1','24 V DC sanal kaynak'),
+  C('no','push-no',300,80,'S1','NO başlat'),
+  C('nc','push-nc',300,300,'S2','NC durdur'),
+  C('green','lamp-green',600,80,'H1','Yeşil sinyal'),
+  C('red','lamp-red',600,300,'H2','Kırmızı sinyal')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'İlgili buton kontağından ilgili sinyal lambasına ve 0 V dönüşüne giden sanal yol.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('dc','P','no','13');wire('no','14','green','X1');
+ wire('green','X2','dc','M','0V');
+ wire('dc','P','nc','21');wire('nc','22','red','X1');
+ wire('red','X2','dc','M','0V');
+ if(p.components.length!==5||p.wires.length!==6||
+    new Set(p.wires.map(w=>w.id)).size!==6)
+  throw Error('SC216 six-link source graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'24 V DC sanal pano: NO butona basılınca yeşil lamba yanar, NC butona basılınca kırmızı lamba söner.',
+  explanation:'SC216 artık yalnız buton ve lamba kartı değildir. Altı gerçek sanal terminal bağlantısıyla S1 NO, S2 NC, H1 yeşil ve H2 kırmızı lambalar gösterilir. Bu, panelin fiziksel montajı veya güvenlik kabulü değildir.',
+  goal:'NO ve NC butonların farklı normal durumlarını, iki sinyal lambasının akım yollarında ayırt etmek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07PanelScope:'SC214_SC227',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_BUTTON_LAMPS',
+  titleTopologyIssue:null,nativeLampAcceptance:true,panelEngineeringAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Sadece düşük gerilimli sanal buton ve ikaz lambası bağlantı eğitimidir; fiziksel pano montajı veya koruma doğrulaması değildir.';
+}
+
 /* MQ07_SC228_SC237_WORKSHOP_SCOPE: accurate reference materials, original quizzes preserved. */
 const mq07WorkshopRows=[["01","NO_WORKSHOP_HAZARD_ASSESSMENT","tutorial-ppe","Atölye güvenliğinde genel risk değerlendirmesi ve gözetimli çalışma gerekir.","Kart yalnız KKD referansı; gerçek risk kontrolü gözlenmedi."],["02","NO_PPE_SUITABILITY_VERIFICATION","tutorial-ppe","KKD seçimi uygunluk ve risk koşullarına göre değerlendirilir.","Görsel KKD, gerçek uygunluk belgesi veya kullanım yeterliği değildir."],["03","NO_DIMENSION_MEASUREMENT_EVIDENCE","tutorial-hand-tools","Uzunluk kontrolü ölçü aracı, tolerans ve birim bilgisi gerektirir.","Kartta kalibre ölçüm cihazı, gerçek mm okuması veya kontrol sonucu yok."],["04","NO_CUTTING_VISE_PROCESS_VERIFICATION","tutorial-hand-tools","Kesme ve mengene farklı ve gözetim gerektiren işlemlerdir.","Yalnız genel el aleti referansı; gerçek işlem sonucu yok."],["05","NO_DRILLING_FASTENER_PROCESS_VERIFICATION","tutorial-hand-tools","Delme ve vidalama ayrı araçlar ve güvenlik değerlendirmeleri gerektirir.","Yalnız genel el aleti görseli; montaj veya işlem kanıtı yok."],["06","NO_SURFACE_BENDING_PROCESS_VERIFICATION","tutorial-hand-tools","Eğeleme, zımparalama ve bükme malzeme yüzey/şekil işlemleridir.","Kart gerçek parça, ölçüm veya işleme kalitesi kanıtı değildir."],["07","NO_SOLDER_JOINT_QUALITY_TEST","tutorial-soldering,tutorial-soldering","Lehim türü ve bağlantı kalitesi ayrı kavramlardır.","İki lehimleme aracı referansı var; lehimli bağlantı/kalite testi yok."],["08","NO_CONDUCTOR_SPLICE_SOLDER_JOINT","tutorial-conductor-cable,tutorial-soldering","İletken eki ve lehimli bağlantı malzeme ve kalite bakımından ayrı değerlendirilir.","İletken ve lehimleme referansı var; gerçek ek, bağlantı veya ölçüm yok."],["09","NO_PERFORATED_BOARD_SOLDER_VERIFICATION","tutorial-pcb,tutorial-soldering","Delikli plaket bileşen taşıyıcı ve bağlantı kavramlarını gösterir.","Gerçek lehimli plaket, bileşen yerleşimi veya devre testi yok."],["10","NO_PCB_PREPARATION_INSPECTION_EVIDENCE","tutorial-pcb,tutorial-soldering","PCB hazırlama ve kontrol farklı tasarım ve kalite kanıtları gerektirir.","Gerçek üretim çıktısı, ölçüm ve PCB test sonucu yok."]];
 for(const [suffix,reason,partSpec,concept,limitation] of mq07WorkshopRows){
