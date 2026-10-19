@@ -3317,7 +3317,8 @@ for(const [suffix,issue,concept,limitation] of mq07BrakingScope156to163){
 /* MQ07 real motor lesson content: use existing golden-derived circuit
    templates only for scoped lesson clones, never mutate source exemplars. */
 function mq07ReplaceMotorLesson(lesson,source,kind){
- const p=clone(source);
+ // topicBoard returns {p, kind}; existing wired templates pass the project directly.
+ const p=clone(source?.p||source);
  if(kind==='wiring'&&!p.wires.length||kind==='quiz'&&(p.wires.length||!p.referenceOnly))
   throw Error('MQ07 replacement has wrong source type');
  setLesson(lesson,p,{kind,quiz:lesson.quiz});
