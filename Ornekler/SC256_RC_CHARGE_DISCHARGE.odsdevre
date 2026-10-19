@@ -1,0 +1,179 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "name": "SC256 RC Şarj/Deşarj",
+  "projectId": "SC256 RC",
+  "symbolNorm": "IEC",
+  "components": [
+    {
+      "id": "g1",
+      "typeId": "supply-dc-plus",
+      "x": 70,
+      "y": 260,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "24 VDC kaynak",
+      "state": false
+    },
+    {
+      "id": "s1",
+      "typeId": "selector-no",
+      "x": 280,
+      "y": 260,
+      "rotation": 0,
+      "ref": "S1",
+      "label": "ŞARJ seçicisi",
+      "state": false
+    },
+    {
+      "id": "r1",
+      "typeId": "resistor",
+      "x": 500,
+      "y": 260,
+      "rotation": 0,
+      "ref": "R1",
+      "label": "10 kΩ şarj",
+      "state": false,
+      "resistance": 10000
+    },
+    {
+      "id": "c1",
+      "typeId": "capacitor",
+      "x": 730,
+      "y": 260,
+      "rotation": 0,
+      "ref": "C1",
+      "label": "100 µF kondansatör",
+      "state": false,
+      "capacitance": 0.0001
+    },
+    {
+      "id": "rd",
+      "typeId": "resistor",
+      "x": 730,
+      "y": 465,
+      "rotation": 0,
+      "ref": "R2",
+      "label": "100 kΩ deşarj",
+      "state": false,
+      "resistance": 100000
+    },
+    {
+      "id": "v1",
+      "typeId": "meter-voltmeter",
+      "x": 980,
+      "y": 330,
+      "rotation": 0,
+      "ref": "V1",
+      "label": "C1 gerilimi",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "P"
+      },
+      "to": {
+        "c": "s1",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "s1",
+        "p": "14"
+      },
+      "to": {
+        "c": "r1",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "r1",
+        "p": "2"
+      },
+      "to": {
+        "c": "c1",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "c1",
+        "p": "2"
+      },
+      "to": {
+        "c": "g1",
+        "p": "M"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "v1",
+        "p": "1"
+      },
+      "to": {
+        "c": "c1",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "v1",
+        "p": "2"
+      },
+      "to": {
+        "c": "c1",
+        "p": "2"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "rd",
+        "p": "1"
+      },
+      "to": {
+        "c": "c1",
+        "p": "1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "rd",
+        "p": "2"
+      },
+      "to": {
+        "c": "c1",
+        "p": "2"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    }
+  ],
+  "junctions": []
+}
