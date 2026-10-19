@@ -1,0 +1,241 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "SC208 V20 Kalici Yon Secici",
+  "symbolNorm": "IEC",
+  "name": "SC208 V20 kalıcı ileri-geri yön seçici (BOP 25 Hz referans)",
+  "components": [
+    {
+      "typeId": "supply-1p",
+      "id": "g1",
+      "x": 100,
+      "y": 100,
+      "rotation": 0,
+      "label": "1 Faz Besleme",
+      "ref": "G1",
+      "state": false
+    },
+    {
+      "typeId": "sinamics-v20-1p",
+      "id": "a1",
+      "x": 520,
+      "y": 170,
+      "rotation": 0,
+      "label": "SINAMICS V20 · 1 Faz Giriş",
+      "ref": "A1",
+      "state": false,
+      "driveSpeedSource": "local",
+      "driveControl": "terminal",
+      "driveRun": false,
+      "v20": {
+        "params": {
+          "P0700": 2,
+          "P1000": 1,
+          "P0701": 1,
+          "P0702": 12,
+          "P0703": 9,
+          "P0704": 10,
+          "P0727": 0,
+          "P1120": 1,
+          "P1121": 1,
+          "P1040": 25
+        },
+        "run": false,
+        "reverse": false,
+        "reset": 0,
+        "stopSerial": 0
+      },
+      "driveFrequency": 25
+    },
+    {
+      "typeId": "motor-3p",
+      "id": "m1",
+      "x": 1050,
+      "y": 620,
+      "rotation": 0,
+      "label": "3 Faz Motor",
+      "ref": "M1",
+      "state": false,
+      "motorConnection": "delta"
+    },
+    {
+      "typeId": "selector-no",
+      "id": "s1",
+      "x": 130,
+      "y": 420,
+      "rotation": 0,
+      "label": "Kalıcı RUN / STOP",
+      "ref": "S1",
+      "state": false
+    },
+    {
+      "typeId": "selector-no",
+      "id": "s2",
+      "x": 130,
+      "y": 600,
+      "rotation": 0,
+      "label": "Kalıcı İleri / Geri",
+      "ref": "S2",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "L"
+      },
+      "to": {
+        "c": "a1",
+        "p": "L1"
+      },
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g1",
+        "p": "N"
+      },
+      "to": {
+        "c": "a1",
+        "p": "N"
+      },
+      "color": "#1e88e5",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "g1",
+        "p": "PE"
+      },
+      "to": {
+        "c": "a1",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "a1",
+        "p": "PE2"
+      },
+      "to": {
+        "c": "m1",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "a1",
+        "p": "U"
+      },
+      "to": {
+        "c": "m1",
+        "p": "U"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "a1",
+        "p": "V"
+      },
+      "to": {
+        "c": "m1",
+        "p": "V"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "a1",
+        "p": "W"
+      },
+      "to": {
+        "c": "m1",
+        "p": "W"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "a1",
+        "p": "13"
+      },
+      "to": {
+        "c": "s1",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "s1",
+        "p": "14"
+      },
+      "to": {
+        "c": "a1",
+        "p": "8"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "a1",
+        "p": "13"
+      },
+      "to": {
+        "c": "s2",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "s2",
+        "p": "14"
+      },
+      "to": {
+        "c": "a1",
+        "p": "9"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w11",
+      "from": {
+        "c": "a1",
+        "p": "12"
+      },
+      "to": {
+        "c": "a1",
+        "p": "14"
+      },
+      "color": "#111827",
+      "points": []
+    }
+  ],
+  "junctions": []
+}
