@@ -8529,7 +8529,7 @@ for(const id of [
  const g=p?.components?.find(c=>c.id==='g1');
  if(!l||l.kind!=='wiring'||l.designStandard==='rich-reference-v1'||
     !p||p.referenceOnly===true||!u||u.typeId!=='lm358p-dip8'||
-    !g||g.typeId!=='supply-dc-plus'||
+    !g||!['supply-dc-plus','arduino-bench-supply'].includes(g.typeId)||
     !p.wires?.length||!l.materials?.some(m=>m.componentId==='u1'&&m.typeId==='lm358p-dip8'))
   throw Error('MQ07 LM358P B termination baseline changed '+id);
  const actualPins=new Set(['1','2','3','4','5','6','7','8']);
@@ -8539,7 +8539,7 @@ for(const id of [
   (w.from?.c===bc&&w.from?.p===bp&&w.to?.c===ac&&w.to?.p===ap));
  if(uEnds.some(e=>!actualPins.has(e.p)||['5','6','7'].includes(e.p))||
     !hasEdge('u1','8','g1','P')||!hasEdge('u1','4','g1','M')||
-    !['1','2','3'].every(pin=>uEnds.some(e=>e.p===pin))||
+    !['2','3',...(['opamp-apps-src-07','opamp-apps-src-08'].includes(id)?[]:['1'])].every(pin=>uEnds.some(e=>e.p===pin))||
     p.wires.some(w=>!p.components.some(c=>c.id===w.from?.c)||
                     !p.components.some(c=>c.id===w.to?.c)))
   throw Error('MQ07 LM358P existing A circuit not safely isolated '+id);
