@@ -8155,6 +8155,45 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
  lesson.safety='Sanal eğitim modeli: iki yön seçiciyle karşılıklı dışlanır; gerçek motor kumandasında bağımsız mekanik/elektriksel emniyet kilitlemeleri ve uzman denetimi gereklidir.';
 }
 
+/* SC246: verified 24 V SPDT relay and two-lamp native teaching circuit. */
+{
+ const id='electronic-component-basics-outline-008',lesson=L.byId[id],old=lesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==0||old.components.length!==2||
+    old.components[0].typeId!=='coil-relay'||old.components[1].typeId!=='contact-both')
+  throw Error('SC246 relay reference baseline changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',100,80,'G1','24 V DC sanal kaynak'),
+  C('s','selector-no',300,100,'S1','Bobin komut seçicisi'),
+  C('k','coil-relay',520,100,'K1','K1 röle bobini'),
+  C('q','contact-both',520,360,'K1','K1 değiştirici kontak'),
+  C('hno','lamp-green',810,320,'H1','NO çıkış lambası'),
+  C('hnc','lamp-red',810,520,'H2','NC çıkış lambası')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Bobin beslemesi ile değiştirici kontağın NO/NC yük yollarını ayrı gösterir.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','s','13');wire('s','14','k','A1');
+ wire('k','A2','g','M','0V');wire('g','P','q','11');
+ wire('q','13','hno','X1');wire('q','21','hnc','X1');
+ wire('hno','X2','g','M','0V');wire('hnc','X2','g','M','0V');
+ if(p.components.length!==6||p.wires.length!==8||
+    new Set(p.wires.map(w=>w.id)).size!==8)
+  throw Error('SC246 SPDT relay source graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'S1 bobini çekince K1 NO yeşil lamba yanar ve NC kırmızı söner; bobin bırakılınca sonuç tersine döner.',
+  explanation:'Sekiz sanal kabloyla K1 A1/A2 bobini, 11 ortak, 13 NO ve 21 NC uçları ayrı yük lambalarına bağlanır. Değiştirici kontağın durumu K1 bobininden gelir. Bu sanal prensip örneği rölenin üretici kontak kapasitesi ya da fiziksel kabulü değildir.',
+  goal:'Bir röle bobini enerjilendiğinde NO ve NC yollarının karşıt durumlara geçtiğini göstermek.'
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FaultRelayScope:'SC238_SC251',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_SPDT',
+  titleTopologyIssue:null,relayDynamicsAcceptance:true,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız sanal 24 V bobin/kontak gösterimidir; fiziksel enerjili röle bağlantısı veya güvenlik kabulü değildir.';
+}
+
 /* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
 const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
