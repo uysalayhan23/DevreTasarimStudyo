@@ -1,0 +1,393 @@
+{
+  "version": 7,
+  "symbolNorm": "IEC",
+  "name": "SC251 Motor ileri geri, secicili 18 dogrudan terminal baglantisi",
+  "components": [
+    {
+      "typeId": "supply-3p",
+      "id": "supply",
+      "ref": "G1",
+      "x": 660,
+      "y": 80,
+      "label": "3 Faz Besleme",
+      "state": false,
+      "rotation": 180,
+      "labelPositions": {
+        "ref": {
+          "x": 60,
+          "y": 55
+        },
+        "symbol:source:N": {
+          "x": 110,
+          "y": 76
+        }
+      }
+    },
+    {
+      "typeId": "selector-3",
+      "id": "selector",
+      "ref": "S1",
+      "x": 170,
+      "y": 290,
+      "label": "0 → SAĞ → DUR → SOL",
+      "state": false,
+      "rotation": 0,
+      "note": "Her tıklama bir sonraki konuma geçer.",
+      "showNote": false,
+      "labelPositions": {
+        "ref": {
+          "x": -60,
+          "y": 130
+        },
+        "label": {
+          "x": -60,
+          "y": 146
+        }
+      },
+      "position": 0
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil1",
+      "ref": "K1",
+      "x": 120,
+      "y": 560,
+      "label": "Sağ yön bobini",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "coil-contactor",
+      "id": "coil2",
+      "ref": "K2",
+      "x": 340,
+      "y": 560,
+      "label": "Sol yön bobini",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "main-contact",
+      "id": "forward",
+      "ref": "K1",
+      "x": 570,
+      "y": 340,
+      "label": "Sağ yön güç kontakları",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "main-contact",
+      "id": "reverse",
+      "ref": "K2",
+      "x": 880,
+      "y": 340,
+      "label": "Sol yön güç kontakları",
+      "state": false,
+      "rotation": 0
+    },
+    {
+      "typeId": "motor-3p",
+      "id": "motor",
+      "ref": "M1",
+      "x": 730,
+      "y": 700,
+      "label": "İki faz yer değiştirir",
+      "state": false,
+      "rotation": 0
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "supply",
+        "p": "L1"
+      },
+      "to": {
+        "c": "selector",
+        "p": "11"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "selector",
+        "p": "13"
+      },
+      "to": {
+        "c": "coil1",
+        "p": "A1"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "selector",
+        "p": "15"
+      },
+      "to": {
+        "c": "coil2",
+        "p": "A1"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "coil1",
+        "p": "A2"
+      },
+      "to": {
+        "c": "supply",
+        "p": "N"
+      },
+      "role": "N",
+      "color": "#1e88e5",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "coil2",
+        "p": "A2"
+      },
+      "to": {
+        "c": "supply",
+        "p": "N"
+      },
+      "role": "N",
+      "color": "#1e88e5",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "supply",
+        "p": "L1"
+      },
+      "to": {
+        "c": "forward",
+        "p": "1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "supply",
+        "p": "L1"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "1"
+      },
+      "role": "L1",
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "forward",
+        "p": "2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "U"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "reverse",
+        "p": "2"
+      },
+      "to": {
+        "c": "motor",
+        "p": "W"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "supply",
+        "p": "L2"
+      },
+      "to": {
+        "c": "forward",
+        "p": "3"
+      },
+      "role": "L2",
+      "color": "#f97316",
+      "points": []
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "supply",
+        "p": "L2"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "3"
+      },
+      "role": "L2",
+      "color": "#f97316",
+      "points": []
+    },
+    {
+      "id": "w11",
+      "from": {
+        "c": "forward",
+        "p": "4"
+      },
+      "to": {
+        "c": "motor",
+        "p": "V"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w12",
+      "from": {
+        "c": "reverse",
+        "p": "4"
+      },
+      "to": {
+        "c": "motor",
+        "p": "V"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w13",
+      "from": {
+        "c": "supply",
+        "p": "L3"
+      },
+      "to": {
+        "c": "forward",
+        "p": "5"
+      },
+      "role": "L3",
+      "color": "#f4c430",
+      "points": []
+    },
+    {
+      "id": "w14",
+      "from": {
+        "c": "supply",
+        "p": "L3"
+      },
+      "to": {
+        "c": "reverse",
+        "p": "5"
+      },
+      "role": "L3",
+      "color": "#f4c430",
+      "points": []
+    },
+    {
+      "id": "w15",
+      "from": {
+        "c": "forward",
+        "p": "6"
+      },
+      "to": {
+        "c": "motor",
+        "p": "W"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w16",
+      "from": {
+        "c": "reverse",
+        "p": "6"
+      },
+      "to": {
+        "c": "motor",
+        "p": "U"
+      },
+      "role": "CONTROL",
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w17",
+      "from": {
+        "c": "supply",
+        "p": "PE"
+      },
+      "to": {
+        "c": "motor",
+        "p": "PE"
+      },
+      "role": "PE",
+      "color": "#16a34a",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#1e88e5": "N",
+    "#16a34a": "PE",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#8b5cf6": "SIGNAL",
+    "#808080": "CONTROL"
+  },
+  "colorLocks": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#f97316": "L2",
+    "#f4c430": "L3",
+    "#808080": "CONTROL",
+    "#16a34a": "PE"
+  },
+  "lineColors": {
+    "L1": "#e53935",
+    "N": "#1e88e5",
+    "L2": "#f97316",
+    "L3": "#f4c430",
+    "CONTROL": "#808080",
+    "PE": "#16a34a"
+  },
+  "colorSizes": {
+    "#e53935": "1,5 mm²",
+    "#1e88e5": "1,5 mm²",
+    "#f97316": "1,5 mm²",
+    "#f4c430": "1,5 mm²",
+    "#808080": "6 mm²",
+    "#16a34a": "1,5 mm²"
+  },
+  "conductorVersion": 1,
+  "workspaceMode": "control",
+  "projectId": "SC251 Motor Ileri Geri Secici"
+}
