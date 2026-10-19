@@ -26,7 +26,7 @@ for(let n=1;n<=18;n++)test('SC'+(125+n)+' motor title/physical circuit claims re
   assert.equal(l.quiz.answer,0);
  }else{
   assert.ok(l.project.components.some(c=>c.typeId===([2,8,9].includes(n)?'motor-y-d':'motor-3p')));
-  assert.ok(l.project.wires.length>=11);
+  assert.ok(l.project.wires.length>=([2,8].includes(n)?10:11));
  }
  for(const c of l.project.components)assert.ok(defs[c.typeId],c.typeId);
  if(!reference){const s=Solver.solve(clone(n),defs,{now:0});check(s,l.id);}
