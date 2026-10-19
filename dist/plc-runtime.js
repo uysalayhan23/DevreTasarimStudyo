@@ -103,9 +103,13 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  const sp=supplyPair(d),ioCount=pins(d,'DI').length+pins(d,'DO').length+pins(d,'AI').length+pins(d,'AO').length;
  const powered=sp?!!net.voltage(c,sp.a.id,sp.b.id):(ioCount>0&&(d.plcBackplane!==false||c.plcBackplanePowered===true));
  const inputPins=pins(d,'DI'),inputs=inputPins.map(p=>({id:p.id,label:p.label,value:powered&&inputState(c,d,net,p)}));
+ const analogInputs=Object.fromEntries(pins(d,'AI').map(p=>{
+   const anchor=inputAnchor(d,p),raw=powered&&anchor&&anchor.id!==p.id?Number(net.voltage(c,p.id,anchor.id)):0;
+   return [p.id,Number.isFinite(raw)?raw:0];
+ }));
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  if(!powered)for(const p of outputPins)prg.outputs[p.id]=false;
- const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
+ const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
  c._plcRuntime=state;c._active=powered;return state;
 }
 function links(c,d){
