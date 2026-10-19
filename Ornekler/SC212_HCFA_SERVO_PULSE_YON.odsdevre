@@ -1,0 +1,256 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "name": "SC212 HCFA X2E PTO pulse/yön servo motor devresi (PLC PTO yerine eğitim kaynağı)",
+  "projectId": "SC212 HCFA 400W",
+  "symbolNorm": "IEC",
+  "preferredAppearance": "material",
+  "components": [
+    {
+      "id": "ac",
+      "typeId": "supply-1p",
+      "x": 70,
+      "y": 80,
+      "rotation": 0,
+      "ref": "G1",
+      "label": "1~ 230 VAC",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "dc",
+      "typeId": "supply-dc-plus",
+      "x": 70,
+      "y": 360,
+      "rotation": 0,
+      "ref": "G2",
+      "label": "24 VDC kontrol",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "drv",
+      "typeId": "hcfa-sv-x2ea040a-a",
+      "x": 520,
+      "y": 80,
+      "rotation": 0,
+      "ref": "SD1",
+      "label": "SV-X2EA040A-A",
+      "state": false,
+      "address": "",
+      "note": "",
+      "hcfa": {
+        "params": {
+          "P00.01": 0,
+          "P00.05": 0,
+          "P00.08": 10000,
+          "P04.11": 1
+        }
+      }
+    },
+    {
+      "id": "mot",
+      "typeId": "hcfa-sv-x2mh040a-n2ln",
+      "x": 1280,
+      "y": 250,
+      "rotation": 0,
+      "ref": "M1",
+      "label": "SV-X2MH040A-N2LN",
+      "state": false,
+      "address": "",
+      "note": ""
+    },
+    {
+      "id": "pto",
+      "typeId": "hcfa-pulse-source",
+      "x": 180,
+      "y": 610,
+      "rotation": 0,
+      "ref": "PTO1",
+      "label": "24 V PTO",
+      "state": false,
+      "address": "",
+      "note": "",
+      "pulseHz": 5000,
+      "pulseDirection": 1
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "ac",
+        "p": "L"
+      },
+      "to": {
+        "c": "drv",
+        "p": "L1"
+      },
+      "color": "#e53935",
+      "role": "L1",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "ac",
+        "p": "N"
+      },
+      "to": {
+        "c": "drv",
+        "p": "L2"
+      },
+      "color": "#1e88e5",
+      "role": "N",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "drv",
+        "p": "U"
+      },
+      "to": {
+        "c": "mot",
+        "p": "U"
+      },
+      "color": "#e53935",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "drv",
+        "p": "V"
+      },
+      "to": {
+        "c": "mot",
+        "p": "V"
+      },
+      "color": "#f9a825",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "drv",
+        "p": "W"
+      },
+      "to": {
+        "c": "mot",
+        "p": "W"
+      },
+      "color": "#43a047",
+      "role": "MOTOR",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "drv",
+        "p": "CN2"
+      },
+      "to": {
+        "c": "mot",
+        "p": "ENC"
+      },
+      "color": "#7c3aed",
+      "role": "ENCODER",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "dc",
+        "p": "P"
+      },
+      "to": {
+        "c": "pto",
+        "p": "24V"
+      },
+      "color": "#8b5a2b",
+      "role": "CONTROL",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "dc",
+        "p": "M"
+      },
+      "to": {
+        "c": "pto",
+        "p": "0V"
+      },
+      "color": "#111827",
+      "role": "0V",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "dc",
+        "p": "P"
+      },
+      "to": {
+        "c": "drv",
+        "p": "CN1:35"
+      },
+      "color": "#8b5a2b",
+      "role": "CONTROL",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "pto",
+        "p": "PULSE"
+      },
+      "to": {
+        "c": "drv",
+        "p": "CN1:43"
+      },
+      "color": "#43a047",
+      "role": "PULSE",
+      "size": "1.5",
+      "points": []
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "pto",
+        "p": "DIR"
+      },
+      "to": {
+        "c": "drv",
+        "p": "CN1:39"
+      },
+      "color": "#7c3aed",
+      "role": "DIRECTION",
+      "size": "1.5",
+      "points": []
+    }
+  ],
+  "junctions": [],
+  "colorRoles": {
+    "#e53935": "L1",
+    "#1e88e5": "N",
+    "#8b5a2b": "+24V",
+    "#111827": "0V",
+    "#43a047": "SIGNAL",
+    "#7c3aed": "SIGNAL"
+  }
+}
