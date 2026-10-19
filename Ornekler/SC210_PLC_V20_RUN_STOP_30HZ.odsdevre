@@ -1,0 +1,390 @@
+{
+  "version": 7,
+  "workspaceMode": "control",
+  "projectId": "SC210 PLC-V20 RUN STOP 30Hz",
+  "symbolNorm": "IEC",
+  "name": "SC210 PLC ile SINAMICS V20 RUN/STOP ve 30 Hz referans",
+  "components": [
+    {
+      "typeId": "supply-1p",
+      "id": "g1",
+      "x": 100,
+      "y": 100,
+      "rotation": 0,
+      "label": "1 Faz Besleme",
+      "ref": "G1",
+      "state": false
+    },
+    {
+      "typeId": "sinamics-v20-1p",
+      "id": "a1",
+      "x": 520,
+      "y": 170,
+      "rotation": 0,
+      "label": "SINAMICS V20 · 1 Faz Giriş",
+      "ref": "A1",
+      "state": false,
+      "driveSpeedSource": "local",
+      "driveControl": "terminal",
+      "driveFrequency": 30,
+      "v20": {
+        "params": {
+          "P0700": 2,
+          "P0701": 1,
+          "P0702": 12,
+          "P0703": 9,
+          "P0704": 10,
+          "P1000": 1,
+          "P1040": 30,
+          "P1120": 2,
+          "P1121": 2,
+          "P0727": 0
+        },
+        "run": false,
+        "reverse": false,
+        "reset": 0,
+        "stopSerial": 0
+      }
+    },
+    {
+      "typeId": "motor-3p",
+      "id": "m1",
+      "x": 1050,
+      "y": 620,
+      "rotation": 0,
+      "label": "3 Faz Motor",
+      "ref": "M1",
+      "state": false,
+      "motorConnection": "delta"
+    },
+    {
+      "typeId": "potentiometer",
+      "id": "r1",
+      "x": 170,
+      "y": 850,
+      "rotation": 0,
+      "label": "Analog Potansiyometre",
+      "ref": "R1",
+      "state": false,
+      "potentiometer": 60
+    },
+    {
+      "typeId": "plc-hw-6es7211-1ae40-0xb0",
+      "id": "plc1",
+      "x": 80,
+      "y": 1100,
+      "rotation": 0,
+      "label": "S7-1211C PLC",
+      "ref": "PLC1",
+      "state": false,
+      "plcProgram": "start-stop-latch"
+    },
+    {
+      "typeId": "supply-dc-plus",
+      "id": "dc1",
+      "x": 65,
+      "y": 920,
+      "rotation": 0,
+      "label": "24 VDC",
+      "ref": "DC1",
+      "state": false,
+      "dcVoltage": 24
+    },
+    {
+      "typeId": "push-no",
+      "id": "start",
+      "x": 340,
+      "y": 1000,
+      "rotation": 0,
+      "label": "START",
+      "ref": "S1",
+      "state": false
+    },
+    {
+      "typeId": "push-nc",
+      "id": "stop",
+      "x": 340,
+      "y": 1170,
+      "rotation": 0,
+      "label": "STOP NC",
+      "ref": "S2",
+      "state": false
+    }
+  ],
+  "wires": [
+    {
+      "id": "w0",
+      "from": {
+        "c": "g1",
+        "p": "L"
+      },
+      "to": {
+        "c": "a1",
+        "p": "L1"
+      },
+      "color": "#e53935",
+      "points": []
+    },
+    {
+      "id": "w1",
+      "from": {
+        "c": "g1",
+        "p": "N"
+      },
+      "to": {
+        "c": "a1",
+        "p": "N"
+      },
+      "color": "#1e88e5",
+      "points": []
+    },
+    {
+      "id": "w2",
+      "from": {
+        "c": "g1",
+        "p": "PE"
+      },
+      "to": {
+        "c": "a1",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "points": []
+    },
+    {
+      "id": "w3",
+      "from": {
+        "c": "a1",
+        "p": "PE2"
+      },
+      "to": {
+        "c": "m1",
+        "p": "PE"
+      },
+      "color": "#16a34a",
+      "points": []
+    },
+    {
+      "id": "w4",
+      "from": {
+        "c": "a1",
+        "p": "U"
+      },
+      "to": {
+        "c": "m1",
+        "p": "U"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w5",
+      "from": {
+        "c": "a1",
+        "p": "V"
+      },
+      "to": {
+        "c": "m1",
+        "p": "V"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w6",
+      "from": {
+        "c": "a1",
+        "p": "W"
+      },
+      "to": {
+        "c": "m1",
+        "p": "W"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w7",
+      "from": {
+        "c": "a1",
+        "p": "12"
+      },
+      "to": {
+        "c": "a1",
+        "p": "14"
+      },
+      "color": "#111827",
+      "points": []
+    },
+    {
+      "id": "w8",
+      "from": {
+        "c": "a1",
+        "p": "1"
+      },
+      "to": {
+        "c": "r1",
+        "p": "1"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w9",
+      "from": {
+        "c": "a1",
+        "p": "2"
+      },
+      "to": {
+        "c": "r1",
+        "p": "2"
+      },
+      "color": "#808080",
+      "points": []
+    },
+    {
+      "id": "w10",
+      "from": {
+        "c": "a1",
+        "p": "5"
+      },
+      "to": {
+        "c": "r1",
+        "p": "3"
+      },
+      "color": "#111827",
+      "points": []
+    },
+    {
+      "id": "w11",
+      "from": {
+        "c": "dc1",
+        "p": "P"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X10:1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w12",
+      "from": {
+        "c": "dc1",
+        "p": "M"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X10:2"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w13",
+      "from": {
+        "c": "dc1",
+        "p": "M"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X10:6"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w14",
+      "from": {
+        "c": "dc1",
+        "p": "P"
+      },
+      "to": {
+        "c": "start",
+        "p": "13"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w15",
+      "from": {
+        "c": "start",
+        "p": "14"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X10:7"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w16",
+      "from": {
+        "c": "dc1",
+        "p": "P"
+      },
+      "to": {
+        "c": "stop",
+        "p": "21"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w17",
+      "from": {
+        "c": "stop",
+        "p": "22"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X10:8"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w18",
+      "from": {
+        "c": "a1",
+        "p": "13"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X12:1"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w19",
+      "from": {
+        "c": "plc1",
+        "p": "X12:3"
+      },
+      "to": {
+        "c": "a1",
+        "p": "8"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    },
+    {
+      "id": "w20",
+      "from": {
+        "c": "a1",
+        "p": "14"
+      },
+      "to": {
+        "c": "plc1",
+        "p": "X12:2"
+      },
+      "color": "#8b5a2b",
+      "points": []
+    }
+  ],
+  "junctions": []
+}
