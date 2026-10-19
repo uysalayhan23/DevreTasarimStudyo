@@ -8501,6 +8501,52 @@ for(const [id,issue,types,concept,limitation] of mq07FetIgbtRows){
  lesson.safety='Yalnız sanal düşük gerilim MOSFET uç tanıma dersidir; üretici pinout veya fiziksel ölçüm kabulü değildir.';
 }
 
+/* MQ07_SC264_SC280_NATIVE_REUSE: verified wired teaching projects, not real-device acceptance. */
+for(const [id,sourceId,summary,goal,status] of [
+ ['electronic-switching-outline-034','electronic-switching-src-09',
+  'MOSFET üzerinden RC gecikmeli durdurma: sanal kapasitör, 20 kΩ deşarj yolu ve ayrı yük devresi.',
+  'Kapasitör deşarjının sanal N-MOSFET gate gerilimini nasıl geciktirdiğini gözlemek.',
+  'SOURCE_WIRED_FET_RC_DELAY_DYNAMIC_PENDING'],
+ ['electronic-switching-outline-035','electronic-switching-src-10',
+  'IRF540N sanal G/D/S işlev temrini: gate ve yük için ayrı voltmetre prob çiftleri.',
+  'Sanal ON/OFF işlev kontrolünü fiziksel cihaz sağlamlık teşhisinden ayırmak.',
+  'SOURCE_WIRED_MOSFET_FUNCTION_TEST_DYNAMIC_PENDING'],
+ ['motor-direct-power-outline-021','electronic-switching-src-11',
+  'PWM çıkışı IRF540N gate girişini, drain ise DC motor yükünü sürer; sanal anlık anahtarlama.',
+  'PWM duty ile anlık sanal motor enerjilenmesini karşılaştırmak; RPM iddia etmemek.',
+  'SOURCE_WIRED_PWM_MOTOR_NATIVE_PENDING'],
+ ['electronic-switching-outline-036','electronic-switching-src-12',
+  'FGA25N120ANTD IGBT G/C/E terminalleriyle ayrı PWM kontrol ve 12 V sanal lamba yükü.',
+  'IGBT gate sürmesi ile collector-emitter yük yolunu ayırt etmek.',
+  'SOURCE_WIRED_DC_IGBT_NATIVE_PENDING'],
+ ['electronic-switching-outline-037','electronic-switching-src-13',
+  'TYN612RG SCR A/K/G terminalleri; sanal DC gate butonu ve ayrı lamba yük kolu.',
+  'Gate tetiklemesi ve anot-katot akım yolunu SCR eğitim modeliyle ayırt etmek.',
+  'SOURCE_WIRED_DC_SCR_NATIVE_PENDING']
+]){
+ const lesson=L.byId[id],source=L.byId[sourceId],old=lesson?.project,src=source?.project;
+ if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||old.wires.length!==0||
+    !source||source.kind!=='wiring'||!src||src.wires.length<5||src.components.length<5)
+  throw Error('SC264-280 virtual tutorial baseline changed '+id+'/'+sourceId);
+ const p=clone(src);
+ delete p.referenceOnly;
+ const copiedIds=new Set(p.components.map(c=>c.id));
+ if(copiedIds.size!==p.components.length||p.wires.some(w=>
+    !copiedIds.has(w.from.c)||!copiedIds.has(w.to.c)))
+  throw Error('SC264-280 source endpoint missing '+id);
+ setLesson(lesson,p,{kind:'wiring',summary,
+  explanation:source.explanation+' BU DERSE UYARLAMA: '+summary+
+   ' Bu kaynak grafiği mevcut sanal öğreticiden alınmıştır; bağımsız dinamik kabul, gerçek cihaz sağlamlığı, üretici/SPICE kalibrasyonu veya fiziksel güvenlik onayı değildir.',
+  goal});
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FetIgbtScope:'SC266_SC279',sourceReusedFrom:sourceId,
+  titleTopologyStatus:status,titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,
+  manufacturerDeviceAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız düşük gerilimli sanal eğitim devresidir; şebeke, gerçek cihaz, güç kaybı veya saha güvenliği kabulü değildir.';
+}
+
 /* MQ07_SC280_SC293_SCR_TRIAC: reflect source component truth; no invented AC/SCR/triac runtime. */
 const mq07ScrTriacScope=[["electronic-switching-outline-038","SCR_CONSTRUCTION_REFERENCE_ONLY","SCR üç uçlu, kendinden kilitleme gösterebilen kontrollü yarı iletkendir.","SCR/DC direnç sembolleri iç yapı, üretici pin kimliği veya gerçek iletim ölçümü değildir.",null],["electronic-switching-outline-039","NO_SCR_LATCHING_RUNTIME","SCR anottan katoda giden yol ve kapı tetiklemesi için ayrı koşullar gerektirir.","DC kaynağı ve SCR yalnız görsel referanstır; tutma akımı, kapı darbesi ve kilitlenme deneyi yoktur.",null],["electronic-switching-outline-040","NO_SCR_TRIGGER_METHOD_RUNTIME","SCR tetiklemede gate komutu ve anot yük yolu kavramsal olarak ayrılmalıdır.","Buton ve direnç sembolleri gerçek tetikleme devresi, açı ayarı, kapı akımı veya dinamik latch kabulü değildir.",[["tyn612rg-scr","SCR A/K/G"],["push-no","Sanal tetikleme butonu"],["resistor","Gate direnci"]]],["electronic-switching-outline-041","INTRO_SWITCHING_FAMILY_REFERENCE_ONLY","Anahtarlama malzemelerinde BJT, SCR ve triyak farklı terminal ve çalışma ilkeleri taşır.","Eski yalnız BD139/direnç kartı geniş bölüm başlığını temsil etmiyordu; yeni üç ürün yalnız kavram karşılaştırmasıdır.",[["bd139-npn","NPN BJT"],["tyn612rg-scr","SCR"],["bta16-600b-triac","Triyak"]]],["electronic-component-basics-outline-022","SAFETY_SIGNS_VISUAL_NOT_VERIFIED","Güvenlik işaretleri uyarı, yasak ve zorunluluk gibi farklı anlam kategorileri taşır.","Yalnız genel kavram sembolü gösterilir; doğrulanmış işaret görseli, mevzuata uygun piktogram veya atölye denetimi yoktur.",null],["electronic-switching-outline-042","NO_SCR_COMMUTATION_STOP_RUNTIME","SCR durdurma anottaki akımın tutma koşulunu kaybetmesiyle ilişkilidir.","STOP butonu sembolü gerçek seri güç kesme, tutma akımı ölçümü veya tekrar tetiklenme davranışı değildir.",[["tyn612rg-scr","SCR"],["push-nc","STOP / kavram"],["standard-light","Yük kavramı"]]],["electronic-switching-outline-043","NO_SCR_AKG_IDENTIFICATION_TEST","Tristör uçları A, K ve G olarak işlevsel bakımdan farklıdır.","SCR ve multimetre referansı gerçek üretici terminal haritası, prob bağlantısı veya ölçüm sonucu değildir.",[["tyn612rg-scr","SCR · A K G"],["unit-ut33d-plus","UNI-T referans multimetre"]]],["electronic-switching-outline-044","NO_SCR_DC_LATCH_PRACTICE","DC SCR tetikleme temrini gate komutu ve DC anot yük yolunun birlikte sınanmasını gerektirir.","SCR, izole sanal buton, direnç ve yük sadece malzeme kartıdır; canlı iletim ve latch simülasyonu mevcut değildir.",[["tyn612rg-scr","SCR"],["arduino-bench-supply","Sanal 24 VDC kaynak"],["push-no","Gate tetik komutu"],["resistor","Gate direnci"],["standard-light","Sanal DC yük"]]],["electronic-switching-outline-045","NO_SCR_STOP_AND_RETRIGGER_PRACTICE","Tristör durdurma temrini anottaki akımın kesilmesi ve yeni gate komutu koşullarını ayırmalıdır.","SCR/STOP/yük referansları canlı durdurma, tutma akımı veya tekrar tetikleme kanıtı sunmaz.",[["tyn612rg-scr","SCR"],["push-nc","STOP kavramı"],["standard-light","Sanal yük"]]],["electronic-switching-outline-046","NO_ISOLATED_AC_SCR_TRIGGER_RUNTIME","SCR AC davranışı, polarite ve uygun gate tetiklemesi ile dalga biçimine bağlıdır.","Önceki DC kaynaklı referans düzeltildi: yalıtılmış sanal AC, SCR, AC tetikleyici ve yük gösterilir; AC dalga ve akım simülasyonu burada kablolanmamıştır.",[["virtual-isolated-ac-12v","Yalıtılmış sanal 12 VAC"],["tyn612rg-scr","SCR"],["virtual-ac-scr-trigger-v1","AC tetikleyici kavramı"],["standard-light","Sanal AC yük"]]],["electronic-switching-outline-047","NO_TRIAC_SWITCHING_RUNTIME","Triyak çift yönlü AC anahtarlamada MT1/MT2 ve gate görevlerine dayanır.","Triyak, kaynak ve lamba kablosuzdur; gerçek iletim, ateşleme açısı ve AC dalga kabulü yoktur.",null],["electronic-switching-outline-048","NO_DIAC_BREAKOVER_MEASUREMENT","Diyak eşik aşımına bağlı çift yönlü davranış kavramıyla ilişkilidir.","DB3 ve triyak gösterilir; gerçek kırılma gerilimi, geçiş eğrisi veya sürücü bağlantısı yoktur.",null],["electronic-switching-outline-049","NO_TRIAC_PACKAGE_PIN_VALIDATION","Triyak yapısında MT1, MT2 ve G görevleri üretici terminallerine göre incelenmelidir.","Karttaki triyağın gerçek terminal haritası ve paket/üretici fiziksel kabulü yapılmamıştır.",null],["electronic-switching-outline-050","NO_TRIAC_BIDIRECTIONAL_RUNTIME","Triyakın AC çift yönlü davranışı tetikleme ve tutma koşullarıyla ayrı sınanır.","AC kaynak ve lamba malzeme kartıdır; iki yarım dalga, gate komutu ve yük akımı simülasyonu yoktur.",null]];
 for(const [id,issue,concept,limits,correction] of mq07ScrTriacScope){
