@@ -2591,6 +2591,26 @@ for(const [suffix,issue,wired,concept,limits] of mq07PlcFollowup201to203){
 }
 
 
+/* SC202: replace the previous plain DOL latch with an isolated
+ * educational 3-second delayed STOP PLC program. This is not E-STOP. */
+{
+ const id='plc-hardware-programming-src-21',lesson=L.byId[id],p=lesson?.project;
+ const plc=p?.components?.find(c=>c.typeId==='plc-hw-6es7211-1ae40-0xb0');
+ if(!lesson||lesson.kind!=='wiring'||p.wires.length!==18||!plc||
+    plc.plcProgram&&plc.plcProgram!=='start-stop-latch')
+  throw Error('SC202 delayed-stop PLC source changed');
+ plc.plcProgram='delayed-stop-sc202';
+ plc.plcTimerMs=3000;
+ lesson.summary='PLC START komutuyla motoru çalıştırır; normal STOP isteğinden 3 saniye sonra kontaktör çıkışını bırakır.';
+ lesson.explanation='Kaydedilmiş X10:7 START, X10:8 NC STOP ve X12:3 çıkış devresi üzerinde yalnız SC202 için 3 saniyelik gecikmeli bırakma programı tanımlanır. Normal STOP sonrasında motor gecikme süresince çalışır; bu program acil durdurma veya güvenlik devresi değildir. Fiziksel PLC ve gerçek motor kabulü yapılmamıştır.';
+ lesson.learningGoal='Normal STOP sonrası üç saniyelik yazılımsal gecikmeli bırakma ile anında enerjiyi kesmesi gereken emniyet durdurmasını ayırt etmek.';
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),
+  titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_PENDING',
+  titleTopologyIssue:'SC202_DELAYED_STOP_PLC_NATIVE_PENDING',
+  plcAdvancedLogicAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC204_SC213_VFD_SERVO: no-wire source truth, protect quizzes and remove unrelated DOL steps. */
 const mq07DriveScope204to213=[["01","NO_VFD_ARCHITECTURE_PARAMETER_EVIDENCE",["sinamics-v20-1p","motor-3p"],"VFD çıkış frekansı ve gerilimiyle motor davranışını düzenleme ilkesi.","Sürücü kablosu, parametre değerleri veya ölçülmüş motor çalışması yoktur."],["02","NO_VFD_START_STOP_WIRING",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"VFD START/STOP işlevi kontrol kaynağı ve sürücünün duruş tanımına bağlıdır.","Butonlar V20'ye bağlı değildir, start/stop çalışma kanıtı yoktur."],["03","NO_VFD_REVERSE_CONTROL_WIRING",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"VFD yön komutu uygun sürücü mantığıyla değerlendirilir, doğrudan motor faz değiştirmesi değildir.","Kablolu yön seçimi, parametreler ve ölçülmüş ileri/geri hareket yoktur."],["04","NO_VFD_POT_ANALOG_REFERENCE",["sinamics-v20-1p","motor-3p","potentiometer"],"Potansiyometre referansı doğru analog giriş ve ölçekleme ister.","Potansiyometre-V20 analog bağlantısı veya ölçülen hız sonucu yoktur."],["05","NO_MAINTAINED_DIRECTION_SELECTOR",["sinamics-v20-1p","motor-3p","push-no","push-nc"],"Kalıcı yön seçici ve anlık NO/NC basma düğmeleri aynı davranışta değildir.","Kalıcı seçim cihazı, VFD kablosu veya işleyen yön komutu yoktur."],["06","NO_VFD_COMBINED_IO_CONTROL",["sinamics-v20-1p","motor-3p","potentiometer","push-no","push-nc"],"START/STOP, yön ve analog hız ayrı sürücü komutlarıdır.","Buton/pot kontrol hatları, VFD parametreleri veya birlikte çalışan komut dizisi yoktur."],["07","NO_PLC_VFD_COMMAND_CHANNEL",["plc-hw-6es7211-1ae40-0xb0","sinamics-v20-1p","motor-3p"],"PLC–VFD kontrolü desteklenen komut ve geri bildirim arayüzü ister.","PLC ile V20 arasında kablo, program, haberleşme veya motor kontrolü yoktur."],["08","NO_VFD_NAMEPLATE_PARAMETER_WRITE",["sinamics-v20-1p","motor-3p"],"Etiket verilerinin sürücü ayarına eşlenmesi kaynak ve model kontrolü gerektirir.","Motor etiket veri seti, V20 parametre yazma/okuma kanıtı yoktur."],["09","NO_PLC_SERVO_CONNECTION",["plc-hw-6es7211-1ae40-0xb0","hcfa-sv-x2ea040a-a","hcfa-sv-x2mh040a-n2ln"],"PLC, servo sürücü ve servo motor kumandası ayrı işlevsel katmanlardır.","Kablo, hareket programı, geri bildirim veya doğrulanmış servo hareketi yoktur."],["10","NO_SERVO_PARAMETER_MOTION_VERIFICATION",["plc-hw-6es7211-1ae40-0xb0","hcfa-sv-x2ea040a-a","hcfa-sv-x2mh040a-n2ln"],"Servo ayarı kontrol modu ve motor-geribildirim uyumuna bağlıdır.","Servo parametre kayıtları, ölçüm veya yürütülen hareket yoktur."]];
 for(const [suffix,issue,expected,concept,limitation] of mq07DriveScope204to213){
