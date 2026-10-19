@@ -8574,11 +8574,16 @@ for(const id of [
 {
  const id='electronic-switching-src-05',l=L.byId[id],original=l?.project;
  const expected=['arduino-bd139','arduino-pot','arduino-resistor-1k'];
- if(!l||l.kind!=='quiz'||l.designStandard==='rich-reference-v1'||
-    !original||original.referenceOnly!==true||original.wires.length!==0||
-    l.steps.length!==0||l.materials.length!==3||
-    original.components.map(c=>c.typeId).join('|')!==expected.join('|')||
-    !L.mq07Batch200?.reviewIds?.some(x=>x.id===id&&x.reason==='NO_WIRED_CIRCUIT'))
+ const legacyCard=original?.referenceOnly===true&&original.wires.length===0&&
+    l.kind==='quiz'&&l.steps.length===0&&l.materials.length===3&&
+    original.components.map(c=>c.typeId).join('|')===expected.join('|');
+ // Earlier lesson upgrade already turns this into a source-wired BD139 switch.
+ const priorSwitch=original?.referenceOnly!==true&&l.kind==='wiring'&&
+    original.wires.length===8&&l.steps.length===8&&
+    original.components.map(c=>c.typeId).join('|')===
+     ['arduino-bench-supply','push-no','resistor','bd139-npn','resistor','unit-ut33d-plus','test-probe-red','test-probe-black'].join('|');
+ if(!l||l.designStandard==='rich-reference-v1'||!original||
+    (!legacyCard&&!priorSwitch))
   throw Error('MQ07 SC027 pot-controlled BJT baseline changed');
  const p=base(id,l.title);
  p.components=[
