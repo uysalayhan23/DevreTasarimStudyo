@@ -6253,7 +6253,7 @@ function mq07WirePassiveRcLesson(lesson,notch){
 }
 for(const [suffix,notch] of [['20',false],['21',true]]){
  const id='oscillator-filter-apps-src-'+suffix,lesson=L.byId[id];
- if(!lesson||!L.mq07Batch200.reviewIds.some(r=>r.id===id&&r.reason==='NO_WIRED_CIRCUIT'))
+ if(!lesson||lesson.kind!=='quiz'||lesson.project?.referenceOnly!==true||lesson.project?.wires?.length!==0)
   throw Error('MQ07 RC filter review baseline changed '+id);
  mq07WirePassiveRcLesson(lesson,notch);
  L.mq07Batch200.reviewIds=L.mq07Batch200.reviewIds.filter(r=>r.id!==id);
