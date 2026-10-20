@@ -9123,6 +9123,57 @@ for(const [id,issue,corrected,concept,limits] of mq07PulseScope){
 }
 
 
+/* MQ07_SC390_SC400_PULSE_WIRED_REUSE: real virtual clipper, clamper,
+ * Schmitt and NE555 terminal graphs; no unmeasured waveform PASS. */
+for(const [id,sourceId,summary,status] of [
+ ['electronic-component-basics-outline-038','oscillator-filter-apps-src-14',
+  'Pals üretimine örnek: NE555, zamanlama dirençleri ve kondansatör ile bağlı sanal devre.',
+  'SOURCE_WIRED_555_PULSE_EXAMPLE_FREQUENCY_PENDING'],
+ ['electronic-component-basics-outline-039','oscillator-filter-apps-src-09',
+  'Sanal diyot kırpıcı devrenin giriş, diyot ve çıkış ölçüm bağlantıları.',
+  'SOURCE_WIRED_CLIPPER_WAVE_PENDING'],
+ ['electronic-component-basics-outline-040','oscillator-filter-apps-src-10',
+  'Sanal kondansatörlü kenetleme devresinin diyot ve yük direnci bağlantıları.',
+  'SOURCE_WIRED_CLAMPER_SHIFT_PENDING'],
+ ['electronic-component-basics-outline-041','oscillator-filter-apps-src-14',
+  'Sanal NE555 astable RC devresinde darbe üretim bağlantıları.',
+  'SOURCE_WIRED_555_PULSE_GENERATOR_PENDING'],
+ ['electronic-component-basics-outline-042','oscillator-filter-apps-src-09',
+  'Sanal girişli diyotlu kırpma uygulama devresi.',
+  'SOURCE_WIRED_CLIPPER_EXERCISE_PENDING'],
+ ['electronic-component-basics-outline-043','oscillator-filter-apps-src-10',
+  'Sanal diyot/kondansatör kenetleme ve yük gerilim yolu temrini.',
+  'SOURCE_WIRED_CLAMPER_EXERCISE_PENDING'],
+ ['electronic-component-basics-outline-046','oscillator-filter-apps-src-13',
+  'Sanal karşılaştırıcıda pozitif geri besleme ile Schmitt şeması; ayrı iki eşik ölçümü henüz onaylanmadı.',
+  'SOURCE_WIRED_OPAMP_SCHMITT_THRESHOLDS_PENDING'],
+ ['oscillator-filter-apps-outline-043','oscillator-filter-apps-src-14',
+  'Gerçek sanal NE555 pinleri, dirençler ve kondansatörle astable osilatör şeması.',
+  'SOURCE_WIRED_NE555_ASTABLE_FREQUENCY_PENDING']
+]){
+ const lesson=L.byId[id],old=lesson?.project,srcLesson=L.byId[sourceId],src=srcLesson?.project;
+ if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||old.wires.length!==0||
+    !srcLesson||srcLesson.kind!=='wiring'||!src||src.wires.length<7)
+  throw Error('SC390-400 source/reference mismatch '+id+'/'+sourceId);
+ const p=clone(src);delete p.referenceOnly;
+ const ids=new Set(p.components.map(c=>c.id));
+ if(ids.size!==p.components.length||new Set(p.wires.map(w=>w.id)).size!==p.wires.length||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c)))
+  throw Error('SC390-400 source terminal missing '+id);
+ setLesson(lesson,p,{kind:'wiring',summary,
+  explanation:srcLesson.explanation+' BU DERS: '+summary+
+   ' Dalga biçimi, frekans, duty, kaydırma gerilimi veya gerçek Schmitt eşik kabulü bu uyarlamadan çıkarılamaz.',
+  goal:'Sanal pals devresinde kaynak, reaktif bileşen, aktif eleman ve çıkış uçlarını ayırt etmek.'});
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07PulseScope:'SC390_SC400',sourceReusedFrom:sourceId,
+  titleTopologyStatus:status,titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,waveformAcceptance:false,
+  frequencyResponseAcceptance:false,physicalAcceptance:false,
+  manufacturerDeviceAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız düşük gerilimli sanal pals/analog eğitim devresidir; gerçek cihaz ve üretici kabulü değildir.';
+}
+
 /* MQ07_SC406_SC419_ACTIVE_RF: correct filter and RF reference parts, no imaginary runtime. */
 const mq07ActiveRfCases=[["oscillator-filter-apps-outline-050","ACTIVE_LOWPASS_CUTOFF_UNWIRED",null,"Alçak geçiren aktif filtre, düşük frekansı geçirip üst frekansları bastıran bir aktarım işlevi taşır.","LM358, direnç ve kondansatör yalnız parça referansıdır; opamp besleme, RC konumu, kazanç ve kesim frekansı ölçülmemiştir."],["oscillator-filter-apps-outline-051","ACTIVE_HIGHPASS_CUTOFF_UNWIRED",["capacitor","resistor","lm358p-dip8","resistor"],"Yüksek geçiren aktif filtrede kapasitif giriş ile direnç referansı, yükselteç geri beslemesinden ayrılmalıdır.","Giriş C, R ve geri besleme direnci görsel kavramdır; terminaller, alt kesim frekansı ve gerçek çıkış bağlı değildir."],["oscillator-filter-apps-outline-052","ACTIVE_BANDPASS_TWO_CUTOFFS_UNWIRED",["lm358p-dip8","resistor","capacitor","resistor","capacitor"],"Bant geçiren aktif filtre, alt ve üst frekans sınırlayıcı iki farklı RC etkiye dayanabilir.","İki R–C referansı ayrı alt/üst sınırları temsil eder; bu malzemeler kablolu devre, transfer fonksiyonu veya ölçülmüş bant değildir."],["oscillator-filter-apps-outline-053","ACTIVE_BANDSTOP_NOTCH_UNWIRED",["lm358p-dip8","resistor","resistor","resistor","capacitor","capacitor","capacitor"],"Bant durduran filtre bir frekans aralığını bastırır; uygun pasif çentik ağı ve aktif tampon işlevi farklı bölümlerdir.","Üç R–C sembolü yalnız örnek çentik ağı kavramıdır; twin-T bağlantısı, direnç eşleşmesi, opamp beslemesi ve notch cevabı yoktur."],["oscillator-filter-apps-outline-054","MODULATION_DEMODULATION_RF_CHAIN_UNWIRED",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],"Modülasyon ve demodülasyon bilgi sinyali, taşıyıcı/verici ve alıcı/çözme basamaklarını içerir.","Eski LM358+R+C filtre kartı bu RF konusu için uygun değildi. Yeni RF verici, alıcı ve sinyal üreteci malzeme referansında gerçek RF yolu yoktur."],["electronic-component-basics-outline-047","AM_MODULATION_DEMODULATION_UNWIRED",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],"Genlik modülasyonunda bilgi taşıyıcının genliğiyle, demodülasyon ise alıcı ayıklama işleviyle ilişkilidir.","Verici ve alıcı aynı referans kartındadır; modülatör, detektör, demodüle edilmiş işaret ve taşıyıcı dalga ölçümü yoktur."],["electronic-component-basics-outline-048","FM_MODULATION_DEMODULATION_UNWIRED",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],"Frekans modülasyonunda bilgi taşıyıcının anlık frekans değişimine, demodülasyon ise alıcı işlevine bağlıdır.","FM taşıyıcı dalga, frekans sapması, algılayıcı/demodülatör bağlantısı ve ölçüm bulunmaz."],["electronic-component-basics-outline-049","RF_TRANSMITTER_SIGNAL_PATH_UNWIRED",null,"Verici, modülasyon ve RF çıkış işlevlerini kaynak modeline göre ayrı değerlendirir.","RF modülü ve işaret kaynağı kablosuzdur; gerçek çıkış, taşıyıcı, anten ve spektrum ölçümü yoktur."],["electronic-component-basics-outline-050","AM_TRANSMITTER_MODULATOR_UNWIRED",null,"GM vericisi genlik modülasyonu için taşıyıcı ve bilgi sinyalinin birleşimini gerektirir.","Kart verici+işaret üreteci malzemesinden ibarettir; gerçek modülatör ve genlik zarfı kanıtlanmamıştır."],["oscillator-filter-apps-outline-055","FM_TRANSMITTER_DEVIATION_UNWIRED",null,"FM vericisinde bilgi sinyali taşıyıcı frekansını kontrollü değiştirir.","Frekans sapması, RF sinyal yolu ve taşıyıcı spektrumu simüle edilmemiştir."],["oscillator-filter-apps-outline-056","FM_TRANSMITTER_EXERCISE_UNWIRED",null,"FM verici uygulaması modülasyon kontrolü ve ölçülen çıkış gerektirir.","Temrin adına rağmen malzemeler bağlantısızdır; çalışan devre/frekans izi gösterilmemiştir."],["electronic-component-basics-outline-051","RF_RECEIVER_TUNING_UNWIRED",null,"RF alıcıda anten, seçicilik, demodülasyon ve ses/veri çıkışı farklı bloklardır.","RF alıcı ve işaret jeneratörü ayrı referanstır; sinyal yolu veya seçici kanal ölçümü yoktur."],["electronic-component-basics-outline-052","AM_RECEIVER_DEMODULATOR_UNWIRED",null,"GM alıcısı modüleli taşıyıcıdan genlik zarfı bilgisini ayrıştırır.","Alıcı/demodülatör kablolanmamıştır; detektör, alıcı çıkışı veya zarf ölçümü bulunmaz."],["oscillator-filter-apps-outline-057","FM_RECEIVER_DISCRIMINATOR_UNWIRED",null,"FM alıcısında kanal seçimi ve frekans değişiminden bilgi çıkarma ayrı aşamalardır.","RF alıcı ve üreteç yalnız görsel malzemedir; FM demodülasyon çıkışı veya sinyal kalitesi ölçülmemiştir."]];
 const mq07ActiveRfReplacements=[["oscillator-filter-apps-outline-051",["capacitor","resistor","lm358p-dip8","resistor"],["Giriş C — yüksek geçiren sınır","Giriş R — referans","LM358P — aktif blok","Rf — geri besleme kavramı"]],["oscillator-filter-apps-outline-052",["lm358p-dip8","resistor","capacitor","resistor","capacitor"],["LM358P aktif blok","R1 — alt sınır","C1 — alt sınır","R2 — üst sınır","C2 — üst sınır"]],["oscillator-filter-apps-outline-053",["lm358p-dip8","resistor","resistor","resistor","capacitor","capacitor","capacitor"],["LM358P aktif tampon kavramı","R1 çentik ağı","R2 çentik ağı","R3 çentik ağı","C1 çentik ağı","C2 çentik ağı","C3 çentik ağı"]],["oscillator-filter-apps-outline-054",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],["RF verici — taşıyıcı","RF alıcı — çözme","Bilgi işareti kaynağı"]],["electronic-component-basics-outline-047",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],["AM verici kavramı","AM alıcı/demodülatör kavramı","Bilgi işareti kaynağı"]],["electronic-component-basics-outline-048",["tutorial-rf-transmitter","tutorial-rf-receiver","arduino-signal-generator"],["FM verici kavramı","FM alıcı/demodülatör kavramı","Bilgi işareti kaynağı"]]];
