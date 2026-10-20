@@ -9685,6 +9685,35 @@ for(const [id,srcId,summary,status] of [
 }
 
 
+/* SC336 optical PNP exercise: reuse source-14's virtual draggable target. */
+{
+ const id='sensor-analog-apps-outline-049',l=L.byId[id],p=l?.project;
+ const src=L.byId['sensor-analog-apps-src-14']?.project;
+ const find=(q,key)=>q?.components.find(c=>c.id===key);
+ const edges=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ const sensor=find(p,'s1'),opt=find(src,'s1');
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||l.steps.length!==7||
+    find(p,'g1')?.dcVoltage!==24||sensor?.typeId!=='sensor-through-beam'||
+    sensor.outputType!=='PNP'||sensor.sensing!==undefined||src?.wires.length!==7||
+    edges(p)!==edges(src)||opt?.sensing?.target!=='plastic'||
+    opt.sensing.range!==40||opt.sensing.distance!==80)
+  throw Error('Optical SC336 source/outline wiring changed');
+ sensor.sensing=clone(opt.sensing);
+ l.summary='24 V sanal PNP optik sensör, sürüklenebilir plastik hedef 40 mm içine girdiğinde röle ve lambayı çalıştırır.';
+ l.explanation='S1 BN/BU 24 V besleme, BK çıkışı K1 bobini, K1 NO 13/14 kontağı H1 lambası içindir. Sanal hedef 80 mm uzakta OFF, 40 mm ve yakınında ON, 41 mm dışarıda OFF; uyumsuz hedef, yanlış hizalama ve kopuk BN/BU/BK hatlarında devre tepkisi karşılaştırılır. 40 mm gerçek üretici menzili veya fiziksel kalibrasyon değildir.';
+ l.beginnerSteps=[
+  'S1 BN/BU besleme ve BK→K1/A1, K1 13/14→H1 yük bağlantılarını izle.',
+  'Plastik hedefi 80 mm uzakta tut: röle ve lamba OFF.',
+  'Hedefi 40 mm içine sürükle: röle ve lamba ON.',
+  '41 mm dışarı taşı, hizalamayı boz veya sıvı hedef seç: OFF.',
+  'BN, BU ve BK kablolarını ayrı ayrı çıkarıp elektriksel etkilerini gözle.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_OPTICAL_TARGET_PNP_RELAY',
+  sourceOpticalEnvironment:'sensor-analog-apps-src-14',nativeDynamicAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,opticalCalibrationAcceptance:false};
+}
+
 /* MQ07_SC350_SC363_OPAMP_FEEDBACK: LM358P real pins, virtual-probe output, fail-closed gain/dynamics. */
 const mq07Opamp350Rows=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0,"Negatif geri besleme, çıkış pin 1’den eviren giriş pin 2’ye uygun direnç dönüşüdür.","Malzeme kartında giriş ve geri besleme dirençleri var; gerçek kablo, ölçülen kazanç yok."],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14,"Bu genel başlık 14 telli yalnız eviren LM358P örneğini gösterir.","Diğer op-amp işlevleri ve kazanç dinamiği test edilmedi."],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14,"10 kΩ giriş, 47 kΩ negatif geri besleme pin 2’ye; pin 3 referansa gider.","Gerilim kazancı ve besleme sınırı farklı girişlerde ölçülmedi."],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13,"AC jeneratör pin 2’yi giriş direnci üzerinden sürer, çıkış pin 1 geri beslemeye bağlıdır.","Frekans cevabı, kırpılma ve genlik doğrulaması yok."],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14,"DC potansiyometre giriş direnciyle pin 2’ye, Rf çıkış pin 1’den pin 2’ye bağlıdır.","DC transfer eğrisi ve gerçek çıkış sınırları test edilmedi."],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",11,"Evirmeyen giriş pin 3’tedir; pin 2 dirençli negatif geri besleme düğümüdür.","Gerçek sayısal kazanç ve yük davranışı native olarak doğrulanmadı."],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10,"AC jeneratör pin 3’e bağlı, Rf çıkış pin 1’den pin 2’ye bağlıdır.","AC kazanç ve doyum sınırı native olarak ölçülmedi."],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",11,"DC potansiyometre pin 3’ü; çıkış geri beslemesi pin 2’yi besler.","Çoklu DC giriş/çıkış testi yok."],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8,"Gerilim izleyicide çıkış pin 1 doğrudan eviren giriş pin 2’ye döner.","Birim kazanç, çıkış akım ve farklı giriş gerilimleri native ölçülmedi."],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8,"Gerilim izleyici temrininde pin 1→pin 2 doğrudan geri beslemedir.","Girişe karşı gerçek sanal çıkış izleme ölçümü yapılmadı."],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11,"Karşılaştırıcıda ölçülen giriş pin 3, dirençli referans pin 2 ve çıkış pin 1’dir.","Çıkış sanal multimetre probuyla okunur; Schmitt histerezisi ve yeni ders için eşik taraması kanıtlanmadı."],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11,"Karşılaştırıcı temrini giriş pin 3, referans pin 2 ve çıkış pin 1 topolojisini gösterir.","Ölçüm probu modeli kabloyla aynı şey değildir; native eşik taraması yapılmadı."],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12,"GL5528 ve dirençli bölücü pin 3 girişini, referans bölücü pin 2’yi besler.","SC42 golden 12 tel grafiğiyle eşleşir; yeni outline lux→çıkış dinamik ölçümü yapılmadı."],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12,"NTC bölücüsü pin 3 girişini, referans bölücü pin 2’yi besler.","SC43 golden 12 tel grafiğiyle eşleşir; yeni outline °C→çıkış ölçümü yapılmadı."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
