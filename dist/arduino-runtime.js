@@ -54,7 +54,7 @@
  const near=clamp(c.reedMagnet,0,100,0)>=65,high=powered&&near;
  c._mq07ReedMagnetNear=near;c._mq07ReedPowered=powered;c._mq07ReedDO=high?1:0;
  return high?1:0;
- }if(r==='digital')return c.state?1:0;if(r==='ne555'&&p==='OUT')return c._ne555Out?1:0;if(r==='pot')return Math.round(clamp(c.potentiometer,0,100,50)*10.23);if(r==='analog'){const value=Math.round(clamp(c.arduinoValue,0,1023,d.arduinoDefault??512));if(p==='DO'&&d.dualDigital)return value>=Number(d.arduinoThreshold??512)?1:0;return value}if(r==='temperature'&&d.id==='arduino-lm35'&&c.mq07Lm35Model===true&&p==='AO'&&mode==='analog'){
+ }if(r==='digital')return c.state?1:0;if(r==='ne555'&&p==='OUT')return c._ne555Out?1:0;if(r==='pot')return Math.round(clamp(c.potentiometer,0,100,50)*10.23);if(r==='analog'){const input=Object.prototype.hasOwnProperty.call(c,'arduinoValue')?c.arduinoValue:d.arduinoDefault;const valid=(typeof input==='number'||(typeof input==='string'&&input.trim()!==''))&&Number.isFinite(Number(input));if(!valid)return 0;const value=Math.round(Math.max(0,Math.min(1023,Number(input))));if(p==='DO'&&d.dualDigital)return value>=Number(d.arduinoThreshold??512)?1:0;return value}if(r==='temperature'&&d.id==='arduino-lm35'&&c.mq07Lm35Model===true&&p==='AO'&&mode==='analog'){
  let powered=false;
  if(ctx){
   const {project,byId,g,b}=ctx,connected=(id1,p1,id2,p2)=>g.find(key(id1,p1))===g.find(key(id2,p2));
