@@ -9270,21 +9270,35 @@ for(const [id,reason,expectedWires,types,concept,limits] of mq07SensorSc308to321
  sensorWire.tutorialWhy='Isınınca PTC direnci artar ve IN− gerilimi düşer.';
  refWire.to.p='3';refWire.tutorialHint='12 V referans → U1/3 (IN+)';
  refWire.tutorialWhy='Referans, PTC geriliminin sıcaklıkla düşmesine göre yüksek çıkışı tetikler.';
+ // Dedicated high-value bias directly on the comparator input makes a broken
+ // sensor SIGNAL lead resolve to IN- high / output LOW in the virtual circuit.
+ // It cannot diagnose every sensor power/ground fault; do not label fail-safe.
+ if(part('rf')||p.wires.some(w=>w.from.c==='rf'||w.to.c==='rf'))
+  throw Error('PTC comparator fault-bias baseline changed');
+ p.components.push(C('rf','resistor',320,80,'RF','100 kΩ PTC sinyal pull-up',
+  {resistance:100000,tutorialPurpose:'PTC/LM358P sinyal teli koparsa, IN− girişini sanal +24 V düzeyine çeker; bu bağlantı diğer kablo arızalarının güvenli kapandığını kanıtlamaz.'}));
+ p.wires.push(
+  W('g1','P','rf','1','+24 V → RF 100 kΩ',
+    'Kopuk algılama hattı için sanal +24 V yönünde yüksek değerli giriş bias direnci.','#8b5a2b','+24V'),
+  W('rf','2','u1','2','RF → LM358P IN−/2',
+    'Algılama sinyali kaybolursa IN− yüksek kalır, sanal karşılaştırıcı çıkışı LOW olur.','#43a047','SIGNAL'));
+
+
  lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
  lesson.materials=materialRows(p);
- lesson.summary='PTC ve 2 kΩ alt dirençli sanal LM358P karşılaştırıcı: 35 °C’de çıkış düşük, 65 °C’de yüksek.';
- lesson.explanation='G1 24 V sanal beslemede PTC üst koldadır, R1 2 kΩ 0 V yönündedir. PTC/R1 düğümü LM358P pin 2 (IN−), R2/R3 10 kΩ referans düğümü pin 3 (IN+) girişidir. Sıcaklık 35 °C iken sanal çıkış yaklaşık 0,02 V; 65 °C iken yaklaşık 22,01 V olur. Bu, özgün SC21 sanal PTC karşılaştırıcı polaritesini paylaşan yalnız gerilim ölçüm deneyidir. Devrede ayrıca motor/lamba yükü veya fiziksel sıcaklık kalibrasyonu yoktur.';
+ lesson.summary='PTC ve 2 kΩ alt dirençli sanal LM358P karşılaştırıcı: 35 °C LOW, 65 °C HIGH; 100 kΩ bias ile kopuk algılama sinyali LOW.';
+ lesson.explanation='G1 24 V sanal beslemede PTC üst koldadır, R1 2 kΩ 0 V yönündedir. PTC/R1 düğümü LM358P pin 2 (IN−), R2/R3 10 kΩ referans düğümü pin 3 (IN+) girişidir. Sıcaklık 35 °C iken sanal çıkış yaklaşık 0,02 V; 65 °C iken yaklaşık 22,01 V olur. Bu, özgün SC21 sanal PTC karşılaştırıcı polaritesini paylaşan yalnız gerilim ölçüm deneyidir. IN− ucuna +24 V üzerinden eklenen RF 100 kΩ bias, yalnız sensörden IN− girişine giden kablo kopunca sanal çıkışı LOW durumuna çeker. Sensör besleme/alt dönüşü kopmasında çıkış HIGH kalabilir; bütün arızalarda güvenli kapanma iddiası yoktur. Devrede ayrıca motor/lamba yükü veya fiziksel sıcaklık kalibrasyonu yoktur.';
  lesson.learningGoal='PTC direnci arttıkça IN− gerilimi düşerken LM358P çıkışının 35→65→35 °C için LOW→HIGH→LOW değişimini V1 ile izlemek.';
  lesson.beginnerSteps=[
   'G1/P → PTC/1–2 → R1 2 kΩ → G1/M bölücüsünü ve 0 V dönüşünü bul.',
   'PTC orta düğümünün LM358P pin 2 IN−, 12 V referansın pin 3 IN+ olduğunu kontrol et.',
   '35 °C’de V1 düşük, 65 °C’de V1 yüksek, yeniden 35 °C’de düşük olmalıdır.',
-  'PTC algılama kablosunu kopararak karşılaştırıcının normal çalışmadığını gözle.',
+  'PTC sinyal kablosunu (S1/2 → U1/2) kopar: RF 100 kΩ bias üzerinden sanal çıkış LOW olmalı. Sensör besleme/alt dönüşü kopmaları farklı davranabilir.',
   'Bu yalnız sanal gerilim deneyidir; üretici hassasiyeti veya fiziksel yük kabulü değildir.'
  ];
  lesson.pedagogyReview={...lesson.pedagogyReview,
-  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_PTC_COMPARATOR_35_65_THRESHOLD',
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_PTC_COMPARATOR_35_65_THRESHOLD_SIGNAL_BIAS',
   sourceComparatorModel:'sensor-analog-apps-src-02',nativeDynamicAcceptance:false,
   manufacturerDeviceAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
   independentPedagogicalAcceptance:false,sensorCalibrationAcceptance:false};
