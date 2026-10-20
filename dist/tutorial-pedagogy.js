@@ -10728,6 +10728,28 @@ for(const id of [
   independentPedagogicalAcceptance:false,manufacturerCalibrationVerified:false};
 }
 
+/* Activate native draggable targets in two otherwise complete relay practices. */
+{
+ const edges=p=>p.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ for(const [id,sourceId,type,target,range] of [
+  ['sensor-analog-apps-outline-083','sensor-analog-apps-src-07','sensor-hall','magnet',10],
+  ['sensor-analog-apps-outline-084','sensor-analog-apps-src-14','sensor-through-beam','plastic',40]
+ ]){
+  const l=L.byId[id],p=l?.project,sp=L.byId[sourceId]?.project;
+  const sensor=p?.components.find(c=>c.id==='s1'),known=sp?.components.find(c=>c.id==='s1');
+  if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||l.steps.length!==7||
+     p.components.find(c=>c.id==='g1')?.dcVoltage!==24||sensor?.typeId!==type||
+     sensor.outputType!=='PNP'||sensor.sensing!==undefined||sp?.wires.length!==7||
+     edges(p)!==edges(sp)||known?.sensing?.target!==target||known.sensing.range!==range)
+    throw Error('Source-wired magnetic/optical exercise baseline changed: '+id);
+  sensor.sensing=clone(known.sensing);
+  l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+   titleTopologyStatus:'VIRTUAL_'+(target==='magnet'?'HALL_MAGNET':'OPTICAL_TARGET')+'_PNP_RELAY',
+   sourceSensorEnvironment:sourceId,nativeDynamicAcceptance:false,
+   physicalAcceptance:false,windowsVisualAcceptance:false};
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
