@@ -9464,6 +9464,60 @@ for(const id of [
   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+/* MQ07_SC400_NE555_PWM: real separate 1N4148 charge/discharge branches.
+ * An educational RC switch model; not an analog NE555/SPICE certification. */
+{
+ const srcId='oscillator-filter-apps-src-15',srcLesson=L.byId[srcId],old=srcLesson?.project;
+ const original=L.byId['oscillator-filter-apps-src-14']?.project;
+ if(!srcLesson||srcLesson.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    !original||original.components.map(x=>x.id).join(',')!=='g1,u1,rl,h1,cc,ra,rb,c1'||
+    original.wires.length!==15)throw Error('SC400 PWM source baseline changed');
+ const p=clone(original);
+ p.components=p.components.filter(x=>x.id!=='rb');
+ p.wires=p.wires.filter(w=>w.from.c!=='rb'&&w.to.c!=='rb');
+ const u=p.components.find(x=>x.id==='u1');
+ u.ne555Mode='pwm';u.mq07Standalone555Astable=false;u.mq07Standalone555Pwm=true;
+ u.tutorialPurpose='Sanal NE555: iki ayrı 1N4148 yönlendirmeli pot ayarı, gerçek GND/TRIG/OUT/RESET/THRES/DISCH/VCC uçları. PWM frekans/duty üretici kabulü değildir.';
+ p.components.push(
+  C('rv','potentiometer',465,260,'RV1','10 kΩ duty ayarı',{potMax:10000,potentiometer:25}),
+  C('dch','1n4148-do35',345,180,'D1','Şarj diyodu 1N4148'),
+  C('rmin','resistor',620,355,'RD','1 kΩ minimum deşarj direnci',{resistance:1000}),
+  C('ddis','1n4148-do35',475,405,'D2','Deşarj diyodu 1N4148')
+ );
+ const wire=(a,ap,b,bp,text)=>p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,text,'#43a047','SIGNAL'));
+ wire('u1','DISCH','dch','A','D1 şarj yönü: pin7 → diyot A.');
+ wire('dch','K','rv','1','D1/K → RV1/1 üst şarj direnç bölümü.');
+ wire('rv','2','u1','THRES','RV1/2 sürgüsü eşik pin 6 ya.');
+ wire('rv','2','u1','TRIG','RV1/2 sürgüsü tetik pin 2 ye.');
+ wire('rv','2','c1','+','RV1/2 ortak zamanlama kondansatörü pozitif ucu.');
+ wire('rv','3','rmin','1','RV1/3 deşarj kolu RD/1.');
+ wire('rmin','2','ddis','A','RD/2 → D2/A deşarj yönü.');
+ wire('ddis','K','u1','DISCH','D2/K → NE555 pin7 deşarj ucu.');
+ if(p.components.length!==11||p.wires.length!==19||
+    new Set(p.wires.map(w=>w.id)).size!==p.wires.length||
+    p.wires.some(w=>!p.components.some(c=>c.id===w.from.c)||!p.components.some(c=>c.id===w.to.c)))
+  throw Error('SC400 PWM diode network incomplete');
+ setLesson(srcLesson,p,{kind:'wiring',
+  summary:'NE555 5 V sanal PWM: 10 kΩ potansiyometre ve iki ters yönlü 1N4148 diyot şarj/deşarj süresini ayrı ayarlar.',
+  explanation:'RA 1 kΩ kaynak–pin7; D1 A/K yönünde RV1/1 şarj, RV1/3–RD 1 kΩ–D2 A/K yönünde pin7 deşarj yolu oluşturur. RV1/2, TRIG/THRES ve C1+ ortaktır. Duty oranı sürgüde değişir; ideal diyotlu RC modelidir, gerçek NE555 analog dalga/üretici kabulü değildir.',
+  goal:'Şarj/deşarj diyot yollarını ve 10 kΩ potansiyometrenin PWM açık/kapalı sürelerine etkisini sanal LED ile gözlemlemek.'});
+ srcLesson.pedagogyReview={...srcLesson.pedagogyReview,mq07Ne555Pwm:'DIODE_SPLIT_RC_NATIVE_MODEL',
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ const target=L.byId['oscillator-filter-apps-outline-044'],initial=target?.project;
+ if(!target||target.kind!=='quiz'||initial?.referenceOnly!==true||initial.wires.length!==0||
+    initial.components.map(c=>c.typeId).join(',')!=='arduino-ne555,resistor,potentiometer,capacitor')
+  throw Error('SC400 PWM outline baseline changed');
+ const q=clone(p);
+ setLesson(target,q,{kind:'wiring',summary:srcLesson.summary,explanation:srcLesson.explanation,
+  goal:srcLesson.learningGoal});
+ target.pedagogyReview={...target.pedagogyReview,mq07PulseScope:'SC392_SC405',
+  mq07Ne555Pwm:'DIODE_SPLIT_RC_NATIVE_MODEL',sourceReusedFrom:srcId,
+  titleTopologyStatus:'SOURCE_WIRED_PWM_DUTY_NATIVE_PENDING',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
