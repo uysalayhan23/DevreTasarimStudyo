@@ -877,8 +877,9 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // waveform using an actual terminal-connected resistive load and SCR threshold.
   // This is an opt-in virtual model, not 230 V mains or a manufacturer SPICE model.
   function solveSc15AcCycle(project,byId,options={}){
-    const scene=project?.tutorialLesson?.id==='electronic-switching-src-15'||
-      ['tutorial-electronic-switching-src-15','tutorial-session-source-electronic-switching-src-15'].includes(project?.projectId);
+    const scene=['electronic-switching-src-15','electronic-switching-outline-046'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-electronic-switching-src-15','tutorial-session-source-electronic-switching-src-15',
+       'tutorial-session-source-electronic-switching-outline-046'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),sampled:false};
     const result=solve(project,byId,options);
     const part=id=>project.components.find(c=>c.id===id),source=part('ac1'),trigger=part('trg1'),scr=part('q1'),lamp=part('h1'),rg=part('rg');
