@@ -1010,8 +1010,11 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // SC17 opt-in: bipolar AC TRIAC with two *independent* half-cycle firings.
   // Educational low-voltage virtual source; not a product SPICE or mains model.
   function solveSc17TriacDimmerCycle(project,byId,options={}){
-    const scene=project?.tutorialLesson?.id==='electronic-switching-src-17'||
-      ['tutorial-electronic-switching-src-17','tutorial-session-source-electronic-switching-src-17'].includes(project?.projectId);
+    const scene=['electronic-switching-src-17','electronic-switching-outline-051',
+      'electronic-switching-outline-055'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-electronic-switching-src-17','tutorial-session-source-electronic-switching-src-17',
+       'tutorial-session-source-electronic-switching-outline-051',
+       'tutorial-session-source-electronic-switching-outline-055'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),verified:false};
     const result=solve(project,byId,options),part=id=>project.components.find(c=>c.id===id);
     const src=part('ac1'),driver=part('trg1'),triac=part('q1'),lamp=part('h1'),rg=part('rg');
