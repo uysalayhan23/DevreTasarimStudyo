@@ -9010,6 +9010,88 @@ for(const [id,srcId,summary,status] of [
  l.safety='Yalnız yalıtılmış düşük gerilimli sanal SCR A/K/G terminal laboratuvarı; fiziksel donanım veya güvenlik uygulaması değildir.';
 }
 
+/* SC201-400: functional IGBT structure lesson. The insulated gate and
+ * C/E collector load are two separate, observable virtual paths. This does
+ * not depict or certify microscopic semiconductor die construction. */
+{
+ const id='electronic-component-basics-outline-019',l=L.byId[id],old=l?.project;
+ const donor=L.byId['electronic-component-basics-outline-018']?.project;
+ if(!l||l.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.map(c=>c.typeId).join(',')!=='fga25n120antd-igbt,resistor'||
+    !donor||donor.components.length!==9||donor.wires.length!==14||
+    donor.components.find(c=>c.id==='q')?.typeId!=='fga25n120antd-igbt')
+  throw Error('SC201-400 IGBT structure/donor source changed');
+ const p=clone(donor);
+ const index=p.wires.findIndex(w=>w.from.c==='g'&&w.from.p==='P'&&w.to.c==='h1'&&w.to.p==='X1');
+ if(index<0)throw Error('IGBT collector load source connection missing');
+ p.components.push(C('sp','selector-no',270,280,'S2','24 V kolektör besleme seçicisi',{state:true}));
+ p.wires.splice(index,1,
+  W('g','P','sp','13','G1/P → S2/13','Sanal 24 V yük beslemesi seçicisi.'),
+  W('sp','14','h1','X1','S2/14 → H1/X1','IGBT kolektör yükünü gate den bağımsız kes.'));
+ if(p.components.length!==10||p.wires.length!==15||
+    new Set(p.wires.map(w=>w.id)).size!==15)
+  throw Error('IGBT gate/collector virtual circuit incomplete');
+ setLesson(l,p,{kind:'wiring',
+  summary:'IGBT içyapısının işlevsel anlatımı: yalıtılmış sanal G/E kumandası ve ayrı C/E yük yolu. S1 5 V gate kontrolünü, S2 24 V yük beslemesini seçer; V1/V2/V3 ayrı ölçer.',
+  explanation:'FGA25N120ANTD sanal IGBT sembolünde G gate kontrol ucu, C kolektör akım yolu, E emiter dönüşüdür. G2 5 V gate ve G1 24 V yük kaynakları ayrı işlev görür; RG 10 kΩ gate referansı, H1 sanal lamba yüküdür. S1 etkin, S2 kapalı/ayrık olduğunda VGE yaklaşık 5 V olsa bile H1 sönüktür: gate tek başına kolektör enerjisi üretmez. İki seçici de etkinse H1 üzerinde yaklaşık 24 V görülür. V1 G/E, V2 C/E, V3 H1 yük gerilimidir. Gerçek mikroskobik IGBT katmanları, iç fiziksel yapısı, anahtarlama kayıpları ve üretici kalibrasyonu simüle edilmemektedir.',
+  goal:'IGBT gate kontrolünü kolektör-emiter yük devresinden ayrı ele alarak sanal G/C/E terminal işlevlerini göstermek.',
+  beginnerSteps:['S1 kapalı, S2 etkinken V1/V2/V3 ve H1 durumlarını gözle.',
+   'S1 etkinleşince V1 5 V ve H1 24 V olur; V2 yaklaşık 0 V olur.',
+   'S1 etkin kalırken S2 yi ayır: V1 5 V kaldığı halde H1 sönmelidir.',
+   'S2 yi tekrar etkinleştir, ardından S1 i bırak; iki kontrol yolunu karşılaştır.',
+   'Bu terminal deneyi yarıiletkenin iç fiziksel katmanlarını veya üretici güvenlik kabulünü kanıtlamaz.'],
+  quiz:{question:'IGBT sanal deneyinde VGE 5 V iken S2 yük beslemesi kesilirse H1 ne olur?',
+   options:['Lamba söner; gate komutu tek başına 24 V kolektör enerjisi sağlamaz.','Lamba değişmeden yanar.','Gate üzerinden ana yük akımı akar.'],
+   answer:0,why:'Sanal G/E komutu ile C/E yük beslemesi ayrı yollardır.'}
+ });
+ l.pedagogyReview={...l.pedagogyReview,
+  mq07FetIgbtScope:'SC266_SC279',sourceReusedFrom:'electronic-component-basics-outline-018',
+  titleTopologyStatus:'SOURCE_WIRED_IGBT_GATE_COLLECTOR_INDEPENDENT',
+  titleTopologyIssue:null,nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ l.safety='Yalnız 5 V gate ve 24 V sanal yük devresiyle IGBT işlevsel kavramı; fiziksel içyapı, ürün sınırı veya elektrik güvenliği kabulü değildir.';
+}
+
+/* SCR structure lesson: anode/cathode/gate paths with independent
+ * anode-to-cathode virtual voltmeter. No wafer-layer or pinout claim. */
+{
+ const id='electronic-switching-outline-038',l=L.byId[id],old=l?.project;
+ const donor=L.byId['electronic-switching-outline-043']?.project;
+ if(!l||l.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.map(c=>c.typeId).join(',')!=='tyn612rg-scr,arduino-bench-supply,resistor'||
+    !donor||donor.components.length!==8||donor.wires.length!==11||
+    donor.components.find(c=>c.id==='q1')?.typeId!=='tyn612rg-scr')
+  throw Error('SC201-400 SCR structure/donor source changed');
+ const p=clone(donor);
+ p.components.push(C('vak','meter-voltmeter',1020,680,'V3','Q1 anot-katot gerilimi'));
+ p.wires.push(
+  W('vak','1','q1','A','V3/1 → Q1/A','SCR anot potansiyeli.'),
+  W('vak','2','q1','K','V3/2 → Q1/K','SCR katot dönüş referansı.','#111827','0V'));
+ if(p.components.length!==9||p.wires.length!==13||
+    new Set(p.wires.map(w=>w.id)).size!==13)
+  throw Error('SCR A/K/G virtual structure circuit incomplete');
+ setLesson(l,p,{kind:'wiring',
+  summary:'SCR işlevsel yapısı: TYN612RG A/K yük yolu ve G/K tetik yolu, SG gate komutu, SP anot akımı kesme ve V1 yük, V2 gate, V3 A/K ölçümüyle gözlenir.',
+  explanation:'Sanal 12 V DC modelde Q1 TYN612RG SCR anodu (A) yükten, katodu (K) dönüşten akım taşır; gate (G) ise SG ve 1 kΩ RG üzerinden tetikleme kontrolünü alır. SG basıldığında sanal SCR iletir, H1 12 V olur ve V3 A/K potansiyel farkı yaklaşık sıfıra iner. SG bırakıldığında sanal latch yeterli anot akımı varsa sürer; SP yükü kesince latch sıfırlanır, SP geri gelse de yeni gate komutu gerekir. V1 H1, V2 G/K, V3 A/K gerilimlerini ayırır. Bu iç kristal tabaka resmi, fiziksel paket pin doğrulaması veya kalibre edilmiş gerçek tutma akımı değildir.',
+  goal:'Tristörün A/K güç akımı yolunu G/K tetik kontrolünden işlevsel olarak ayırmak ve sanal gerilim ölçümlerini karşılaştırmak.',
+  beginnerSteps:['Q1 A, K ve G uçlarını ve V1/V2/V3 ölçüm yerlerini bul.',
+   'SG tetiklemesi öncesi V3 anot–katot gerilimini incele.',
+   'SG ye bas: V1 yükte 12 V, V3 A/K da yaklaşık 0 V olmalıdır.',
+   'SG bırak: sanal latch in yük akımı devam ettiği sürece korunduğunu incele.',
+   'SP ile anot akımını kes, bırak ve yeni SG komutu olmadan yeniden iletim oluşmadığını gör.',
+   'Sanal terminal çalışmasını gerçek yarıiletken iç katmanlarıyla eşdeğer sayma.'],
+  quiz:{question:'SCR sanal dersinde iletim durumunda V1 yük gerilimi yükselirken V3 A/K gerilimi nasıl değişir?',
+   options:['A/K iletim yolunda yaklaşık 0 V olur.','Her zaman 12 V olarak kalır.','Gate bağlantısı anotla aynı terminal olur.'],
+   answer:0,why:'Sanal SCR ilettiğinde yük gerilimi oluşur ve A/K uçları arasındaki ideal anahtar düşümü küçülür.'}
+ });
+ l.pedagogyReview={...l.pedagogyReview,
+  mq07ScrTriacScope:'SC280_SC293',sourceReusedFrom:'electronic-switching-outline-043',
+  titleTopologyStatus:'SOURCE_WIRED_SCR_AKG_VIRTUAL_STRUCTURE',
+  titleTopologyIssue:null,scrLatchAcceptance:false,manufacturerPinAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ l.safety='Yalnız sanal 12 V SCR terminal ve yük yolu kavramı; yarıiletken iç kristal yapısı, fiziksel test veya üretici güvenlik kabulü değildir.';
+}
+
 /* MQ07_SC294_SC307_TRIAC_OPTO: exact source devices, no fabricated electrical/runtime acceptance. */
 const mq07TriacOptoRows=[["electronic-switching-outline-051","NO_TRIAC_TRIGGER_REFERENCE_RUNTIME",["bta16-600b-triac","virtual-isolated-ac-12v","virtual-ac-triac-trigger-v1"],"Triyak gate tetikleme koşulları AC dalga ve seçili ateşleme kaynağından bağımsız doğrulanır.","Sadece sanal malzemeler vardır; MT1/MT2/G bağlantısı, tetikleme çeyreği ve ölçülmüş AC yük tepkisi yoktur."],["electronic-switching-outline-052","NO_TRIAC_MULTIMETER_HEALTH_MEASUREMENT",["bta16-600b-triac","unit-ut33d-plus"],"Triyak sağlamlık konusu MT1, MT2 ve gate görevlerini üretici terminal tanımıyla ayırt eder.","AVOmetre önceki AC/lamba kartında yoktu; şimdi multimetre referansı vardır fakat prob, test koşulu ve gerçek sağlamlık sonucu yoktur."],["electronic-switching-outline-053","NO_TRIAC_MULTIMETER_PIN_IDENTIFICATION",["bta16-600b-triac","unit-ut33d-plus"],"Triyak uç tanıma üretici paket şeması ve cihaz terminal kimliği gerektirir.","Önceki kartta AVOmetre yoktu; eklenen multimetre gerçek MT1/MT2/G ölçümünün kanıtı değildir."],["electronic-switching-outline-054","NO_TRIAC_DC_LATCH_APPLICATION",["bta16-600b-triac","arduino-bench-supply","push-no","resistor","standard-light"],"Triyak DC uygulamasında kapı tetikleme ve akım tutma koşulları AC çalışma durumundan farklıdır.","Başlıktaki DC için önceki AC kaynak referansı kaldırıldı; sanal DC/tri yak/gate/yük elemanları kablosuzdur, çalışan DC latch yoktur."],["electronic-switching-outline-055","NO_ISOLATED_AC_TRIAC_DIMMER_RUNTIME",["virtual-isolated-ac-12v","bta16-600b-triac","virtual-ac-triac-trigger-v1","standard-light"],"Triyaklı dimmer, faz açıları ile yüke aktarılan AC dalga biçimini ilişkilendirir.","İzole sanal AC ve tetikleyici kavramı referanstır; gerçek faz kontrolü, lambanın RMS gerilimi veya dimmer testi yoktur."],["electronic-switching-outline-056","NO_OPTOCOUPLER_FAMILY_REFERENCE",["arduino-tlp521-1","moc3021-opto-triac"],"Optokuplörler ışıkla ayrılmış giriş ve çıkış yolları sunar; fototransistörlü ve opto-triyaklı türler farklıdır.","Önceki BD139/direnç kartı optokuplör içermiyordu; iki temsilî optik tür gösterilir fakat bağlantı/izolasyon ölçümü yoktur."],["electronic-switching-outline-057","NO_OPTOCOUPLER_ISOLATION_FUNCTION_TEST",["arduino-tlp521-1","resistor"],"TLP521-1 optokuplörün giriş LED'i ve çıkış fototransistörü ayrı görevler taşır.","Önceki triyak ve lamba referansları görev açıklaması için uygun değildi; yeni kartta optik iletim veya galvanik izolasyon testi yoktur."],["electronic-switching-outline-058","NO_OPTOCOUPLER_VARIETY_RUNTIME",["arduino-tlp521-1","moc3021-opto-triac"],"Fototransistör çıkışlı optokuplör ve opto-triyak tetikleyici farklı cihaz aileleridir.","Eski karttaki güç triyağı optokuplör türü değildir; her iki doğru optik eleman kablosuz referans olarak gösterilir."],["electronic-switching-outline-059","NO_TLP521_HEALTH_PROBE_RESULT",["arduino-tlp521-1","unit-ut33d-plus"],"Optokuplör sağlamlık incelemesi giriş ve çıkışın farklı elektriksel görevlerini ayırt eder.","Önceki triyak/lamba test malzemeleri kaldırıldı; multimetre ile gerçek LED/çıkış ölçümü yapılmadı."],["electronic-switching-outline-060","NO_OPTO_TRIAC_FLASHER_RUNTIME",["moc3021-opto-triac","bta16-600b-triac","virtual-opto-flasher-timer-v1","virtual-isolated-ac-12v","standard-light"],"Opto-triyak flaşör kavramı optik tetikleme, güç triyağı ve periyodik kontrolü ayırır.","Önceki kartta opto elemanı veya flaşör kaynağı yoktu; bunlar eklendi ama gerçek sinyal bağlantısı veya dinamik yanıp sönme kabulü yoktur."],["sensor-analog-apps-outline-023","NO_SENSOR_TRANSDUCER_IO_EVIDENCE",null,"Sensör ve transdüser giriş büyüklüğü ile elektriksel çıkışın rolünü ayırt eden kavramlardır.","Endüktif, kapasitif ve optik sensörler yalnız referanstır; elektriksel çıkış veya algılama ölçümü yapılmamıştır."],["sensor-analog-apps-outline-024","NO_SENSOR_CHARACTERISTIC_MEASUREMENT",null,"Sensör karakteristiği için algılama mesafesi, eşik, besleme ve çıkış türü verisi gerekir.","Karttaki üç sensör sembolü üretici karakteristik eğrisi, menzil veya PNP/NPN çalışması kanıtı değildir."],["sensor-analog-apps-outline-025","NO_SENSOR_TYPE_RUNTIME_COMPARISON",null,"Farklı algılama ilkelerini malzeme ve uygulama koşuluna göre karşılaştırmak gerekir.","Üç kablosuz sensör referansı gerçek algılama deneyi veya katalog kıyas ölçümü değildir."],["electronic-component-basics-outline-023","NO_SENSOR_USAGE_DOMAIN_EVIDENCE",["proximity","photoeye","sensor-level-analog"],"Endüktif yaklaşım, optik algılama ve analog seviye sensörü farklı kullanım alanlarını temsil eder.","Eski genel kavram kartı sensör çeşitlerini göstermiyordu; ürünler referanstır, canlı sinyal ve saha kullanım kabulü yoktur."]];
 for(const [id,issue,conceptTypes,concept,limits] of mq07TriacOptoRows){
