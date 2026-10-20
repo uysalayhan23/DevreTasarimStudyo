@@ -9250,6 +9250,47 @@ for(const [id,reason,expectedWires,types,concept,limits] of mq07SensorSc308to321
 }
 
 
+/* SC308-321 virtual PTC comparator: align this wired exercise with the existing
+ * SC21 2-kOhm sensor divider and hot-ON LM358 input polarity. Neither physical
+ * thermistor calibration nor a switched power load is implied. */
+{
+ const id='sensor-analog-apps-outline-032',lesson=L.byId[id],p=lesson?.project;
+ const source=L.byId['sensor-analog-apps-src-02']?.project;
+ const part=name=>p?.components.find(c=>c.id===name);
+ const sensorWire=p?.wires.find(w=>w.from.c==='s1'&&w.from.p==='2'&&w.to.c==='u1');
+ const refWire=p?.wires.find(w=>w.from.c==='r2'&&w.from.p==='2'&&w.to.c==='u1');
+ if(!lesson||lesson.kind!=='wiring'||p.wires.length!==12||
+    part('s1')?.typeId!=='sensor-ptc'||part('r1')?.resistance!==10000||
+    source?.components.find(c=>c.id==='r1')?.resistance!==2000||
+    sensorWire?.to.p!=='3'||refWire?.to.p!=='2')
+  throw Error('SC308-321 PTC comparator wiring or calibrated virtual source changed');
+ part('r1').resistance=2000;
+ part('r1').label='2 kΩ PTC alt bölücü';
+ sensorWire.to.p='2';sensorWire.tutorialHint='PTC düğümü → U1/2 (IN−)';
+ sensorWire.tutorialWhy='Isınınca PTC direnci artar ve IN− gerilimi düşer.';
+ refWire.to.p='3';refWire.tutorialHint='12 V referans → U1/3 (IN+)';
+ refWire.tutorialWhy='Referans, PTC geriliminin sıcaklıkla düşmesine göre yüksek çıkışı tetikler.';
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ lesson.summary='PTC ve 2 kΩ alt dirençli sanal LM358P karşılaştırıcı: 35 °C’de çıkış düşük, 65 °C’de yüksek.';
+ lesson.explanation='G1 24 V sanal beslemede PTC üst koldadır, R1 2 kΩ 0 V yönündedir. PTC/R1 düğümü LM358P pin 2 (IN−), R2/R3 10 kΩ referans düğümü pin 3 (IN+) girişidir. Sıcaklık 35 °C iken sanal çıkış yaklaşık 0,02 V; 65 °C iken yaklaşık 22,01 V olur. Bu, özgün SC21 sanal PTC karşılaştırıcı polaritesini paylaşan yalnız gerilim ölçüm deneyidir. Devrede ayrıca motor/lamba yükü veya fiziksel sıcaklık kalibrasyonu yoktur.';
+ lesson.learningGoal='PTC direnci arttıkça IN− gerilimi düşerken LM358P çıkışının 35→65→35 °C için LOW→HIGH→LOW değişimini V1 ile izlemek.';
+ lesson.beginnerSteps=[
+  'G1/P → PTC/1–2 → R1 2 kΩ → G1/M bölücüsünü ve 0 V dönüşünü bul.',
+  'PTC orta düğümünün LM358P pin 2 IN−, 12 V referansın pin 3 IN+ olduğunu kontrol et.',
+  '35 °C’de V1 düşük, 65 °C’de V1 yüksek, yeniden 35 °C’de düşük olmalıdır.',
+  'PTC algılama kablosunu kopararak karşılaştırıcının normal çalışmadığını gözle.',
+  'Bu yalnız sanal gerilim deneyidir; üretici hassasiyeti veya fiziksel yük kabulü değildir.'
+ ];
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_PTC_COMPARATOR_35_65_THRESHOLD',
+  sourceComparatorModel:'sensor-analog-apps-src-02',nativeDynamicAcceptance:false,
+  manufacturerDeviceAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,sensorCalibrationAcceptance:false};
+}
+
+
 /* MQ07_SC308_SC321_SENSOR_WIRED_REUSE: source-exact virtual instruments,
  * not a new calibration or manufacturer-performance certificate. */
 for(const [id,srcId,summary,status] of [
