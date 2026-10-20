@@ -775,8 +775,8 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // SC11 samples electrical ON/OFF phases through the original nodal solver.
   // Speed is an explicitly *uncalibrated normalized educational response*, never RPM.
   function solveSc11Cycle(project,byId,options={}){
-    const scene=project?.projectId==='tutorial-session-source-electronic-switching-src-11'||
-      project?.tutorialLesson?.id==='electronic-switching-src-11';
+    const scene=['electronic-switching-src-11','motor-direct-power-outline-021'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-session-source-electronic-switching-src-11','tutorial-session-source-motor-direct-power-outline-021'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),sampled:false};
     const now=Number.isFinite(options.now)?options.now:Date.now();
     const component=id=>project.components.find(c=>c.id===id);
