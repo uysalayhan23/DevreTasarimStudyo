@@ -8539,6 +8539,73 @@ for(const [id,kind,mode] of [
  lesson.safety='Bu yalnız sanal 24 V zaman rölesi eğitim devresidir; fiziksel koruma veya acil durdurma işlevi olarak kullanılmaz.';
 }
 
+/* SC259-SC260: replace abstract timer exercise cards with independent,
+ * adjustable, source-backed TON/TOF wiring plus coil/load voltage readings.
+ * These are educational 24 V DC circuits, never emergency-stop devices. */
+for(const [id,sourceId,seconds,mode] of [
+ ['electronic-component-basics-outline-016','electronic-component-basics-outline-014',3,'ON'],
+ ['electronic-component-basics-outline-017','electronic-component-basics-outline-013',4,'OFF']
+]){
+ const lesson=L.byId[id],previous=lesson?.project,source=L.byId[sourceId];
+ const kind=mode==='ON'?'coil-delay-on':'coil-delay-off';
+ if(!lesson||lesson.kind!=='quiz'||previous?.referenceOnly!==true||
+    previous.wires.length!==0||!source||source.kind!=='wiring'||
+    source.project.wires.length!==6||
+    source.project.components.find(c=>c.id==='k1')?.typeId!==kind)
+  throw Error('SC259/260 original exercise or native timer source changed: '+id);
+ const p=clone(source.project),timer=p.components.find(c=>c.id==='k1');
+ timer.delayValue=seconds;timer.delayUnit='sec';
+ p.components.push(C('vcoil','meter-voltmeter',500,620,'V1','K1 A1/A2 bobin giriş voltmetresi'));
+ p.components.push(C('vload','meter-voltmeter',930,620,'V2','H1 X1/X2 çıkış voltmetresi'));
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Kumanda gerilimi ile zaman rölesi çıkış gerilimini karşılaştır.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('vcoil','1','k1','A1');wire('vcoil','2','k1','A2','0V');
+ wire('vload','1','h1','X1');wire('vload','2','h1','X2','0V');
+ if(p.components.length!==7||p.wires.length!==10||
+    new Set(p.wires.map(w=>w.id)).size!==10||
+    p.components.some(c=>!['g1','s1','k1','aux','h1','vcoil','vload'].includes(c.id)))
+  throw Error('SC259/260 timed practice graph incomplete: '+id);
+ const isOn=mode==='ON';
+ setLesson(lesson,p,{kind:'wiring',
+  summary:isOn?
+   'SC259: S1 etkinleşince V1 anında 24 V okur; K1 üç saniye sonra NO kontağı kapatır ve H1/V2 24 V olur. S1 bırakılınca lamba hemen söner.':
+   'SC260: S1 etkinleşince H1 ve V1/V2 hemen 24 V olur. S1 bırakılınca V1 0 V, H1/V2 dört saniye boyunca 24 V kalır, sonra söner.',
+  explanation:'Sanal G1 24 V kaynak, S1 kalıcı seçici, K1 '+(isOn?'çekmede':'bırakmada')+
+   ' gecikmeli bobin (ayar '+seconds+' saniye), aynı K1 referanslı NO yardımcı kontak ve H1 lambası tam 10 terminal bağlantısıyla çalışır. V1 doğrudan K1 A1/A2 bobin gerilimini, V2 ise H1 X1/X2 yük gerilimini ölçer. '+
+   (isOn?'S1 açıldığında bobin beslemesi hemen gelir, ancak V2 ve H1 gecikmeden sonra etkinleşir.':
+    'S1 bırakıldığında bobin gerilimi hemen sıfır olurken K1 kontak ve yük gerilimi ayar süresince korunur.')+
+   ' Zaman ölçümü ve sanal cihaz modeli fiziksel zaman rölesi hassasiyeti veya güvenlik işlevinin kabulü değildir.',
+  goal:isOn?'Üç saniyelik çekme gecikmesini V1 ve V2 arasındaki zamansal farkla ölçmek.':
+   'Dört saniyelik bırakma gecikmesini V1 ve V2 arasındaki zamansal farkla ölçmek.',
+  beginnerSteps:[
+   'G1 24 V besleme, S1, K1 A1/A2 bobin ve K1 13/14 NO kontak yollarını incele.',
+   'V1 bobine; V2 ise H1 lambasına paralel bağlı mı kontrol et.',
+   isOn?'S1 etkinleştir; V1 24 V iken V2 sıfır kaldığı süreyi izle.':
+    'S1 etkinleştir; V1 ve V2 hemen 24 V olmalı.',
+   isOn?'Üç saniye geçince H1 ve V2 nin 24 V olmasını, S1 bırakıldığında hemen sıfırlanmasını izle.':
+    'S1 bırak; V1 sıfır olurken H1 ve V2 nin dört saniye daha etkin kalmasını izle.',
+   'Zaman rölesinin ayarını değiştirip sanal çıkışın gecikme süresiyle karşılaştır.',
+   'Acil durdurma veya fiziksel pano güvenlik kabulü çıkarma.'
+  ],
+  quiz:isOn?
+   {question:'SC259 da S1 açıldıktan bir saniye sonra V1 24 V ise V2 ve H1 ne durumdadır?',
+    options:['V2 0 V; H1 sönük, çünkü K1 üç saniyeyi doldurmadı.','V2 24 V; H1 anında yanar.','K1 artık koruma rölesi olur.'],
+    answer:0,why:'Çekmede gecikme bobin beslemesinin varlığıyla kontak çıkışını ayırır.'}:
+   {question:'SC260 da S1 dört saniyelik gecikme ayarıyla bırakıldıktan bir saniye sonra ne gözlenir?',
+    options:['V1 0 V iken V2 24 V ve H1 yanar.','V1 ve V2 hemen 0 V olur.','Zaman rölesi acil durdurma sağlar.'],
+    answer:0,why:'Bırakmada gecikmede K1 kontağı giriş kaybından sonra ayarlanan süre kadar açık kalmaz, kapalı kalır.'}
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07BjtRcScope:'SC252_SC265',sourceReusedFrom:sourceId,
+  titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_TIMER_PRACTICE',
+  titleTopologyIssue:null,nativeTimerAcceptance:true,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız sanal 24 V zaman rölesi uygulaması; gerçek tesisat, emniyet durdurma veya üretici gecikme toleransı kabulü değildir.';
+}
+
 /* MQ07_SC266_SC279_FET_IGBT_SCOPE: reference cards are not verified live MOSFET/JFET/IGBT circuits. */
 const mq07FetIgbtRows=[["electronic-switching-outline-029","FET_FAMILY_JFET_MOSFET_REFERENCE",["j113-jfet","irf540n-mosfet"],"FET ailesinde J113 JFET ve IRF540N MOSFET farklı kapı yapısıyla kanal akımını kontrol eder.","JFET ve MOSFET doğru iki katalog malzemesi olarak gösterilir; G/D/S çalışma eğrileri ve elektriksel ölçüm bu referans kartında yoktur."],["electronic-switching-outline-030","FET_VARIETIES_REFERENCE_ONLY",["j113-jfet","irf540n-mosfet"],"JFET ve MOSFET farklı kapı yapısı ve sürme koşullarına sahip alan etkili transistörlerdir.","Önceki tek JFET ve direnç kartı, J113 ve IRF540N örnekleriyle düzeltildi; tür tablosu, ölçüm veya işleyen anahtarlama bulunmaz."],["electronic-switching-outline-031","JFET_TERMINALS_NOT_MEASURED",["j113-jfet","resistor"],"JFET üzerinde G/D/S görevleri ve kapı-kanal özellikleri ayrı incelenmelidir.","J113 sembolü bulunur, ancak gerçek G/D/S uç ölçümü veya bias çalışma eğrisi yoktur."],["electronic-switching-outline-032","MOSFET_TERMINALS_NOT_MEASURED",["irf540n-mosfet","resistor"],"MOSFET gate, drain ve source uçlarının model etiketleriyle tanınması gerekir.","IRF540N malzeme kartı fiziksel sağlamlık veya çalışan MOSFET sürme devresi değildir."],["electronic-switching-outline-033","NO_JFET_MOSFET_HEALTH_TEST",["j113-jfet","irf540n-mosfet"],"JFET ve MOSFET sağlamlık kontrolü cihaz türüne özgü uç ve ölçüm kanıtı gerektirir.","Önceki tek MOSFET kartına J113 eklendi; ölçü aleti, prob bağlantısı ve gerçek arıza tespit sonucu yoktur."],["electronic-switching-outline-034","NO_FET_RC_DELAY_RUNTIME",["j113-jfet","resistor","capacitor"],"FET gecikmeli durdurma başlığı enerji depolama, RC yolu ve kontrollü çıkış davranışı gerektirir.","J113 ve direnç yanına kondansatör kavramı eklendi. Kablo, RC yük/deşarj yolu, eşik ve ölçülmüş gecikme yoktur; MOSFET uygulamasıyla eşdeğer sayılmaz."],["electronic-switching-outline-035","NO_MOSFET_HEALTH_EXERCISE",["irf540n-mosfet","resistor"],"MOSFET sağlamlık uygulamasında modelin G/D/S uçları ile doğrulanabilir test sonucu gerekir.","IRF540N referansı gerçekte ölçülmüş MOSFET testi veya üretici uygunluk kanıtı değildir."],["motor-direct-power-outline-021","NO_MOSFET_PWM_MOTOR_SPEED_RUNTIME",["irf540n-mosfet","virtual-pwm-generator-v1","motor-dc"],"DC motor hız kontrolünde PWM komut kaynağı, MOSFET güç yolu ve motor yükü farklı işlevlerdir.","PWM, IRF540N ve DC motor kavramı aynı kartta gösterilir; kontrol/güç uçları kablosuzdur ve değişen motor hızı veya RPM kanıtlanmamıştır."],["electronic-switching-outline-036","NO_IGBT_SWITCHING_RUNTIME",["fga25n120antd-igbt","resistor"],"IGBT gate kontrolü ve kolektör-emiter güç yolu ayrı değerlendirilir.","IGBT ve direnç referansı gerçek sürücü ve yük anahtarlama devresi değildir."],["electronic-component-basics-outline-018","NO_IGBT_CHARACTERISTIC_MEASUREMENT",["fga25n120antd-igbt","resistor"],"IGBT birleşik MOS kapı ve bipolar iletim ilkesiyle açıklanır.","Tek IGBT örneğinde VGE, VCE veya anahtarlama ölçümü bulunmaz."],["electronic-component-basics-outline-019","NO_IGBT_INTERNAL_STRUCTURE_MEASUREMENT",["fga25n120antd-igbt","resistor"],"IGBT iç yapısı kapı yalıtımı ve akım taşıyan yarıiletken katmanlarla ilişkilidir.","Malzeme kartı ayrıntılı fiziksel kesit veya çip ölçümü değildir."],["electronic-component-basics-outline-020","SINGLE_IGBT_NOT_FULL_DEVICE_VARIETY",["fga25n120antd-igbt","resistor"],"IGBT çeşitleri paket, gerilim, akım ve anahtarlama özelliklerine göre ayrılır.","Kart yalnız tek FGA25N120ANTD örneği taşır; çeşitlerin karşılaştırması veya üretici katalog kabulü değildir."],["electronic-component-basics-outline-021","NO_AC_IGBT_DIMMER_RUNTIME",["fga25n120antd-igbt","supply-1p","standard-light"],"IGBT ile dimmer kavramında kontrollü anahtar, kaynak ve yük ayrı görevler üstlenir.","AC kaynak, IGBT ve lambanın kablosuz referansı gerçek AC faz-kesme veya PWM dimmer devresi değildir; şebeke bağlantısı/ışık eğrisi gösterilmez."],["electronic-switching-outline-037","NO_SCR_TRIGGER_LATCH_CIRCUIT",["tyn612rg-scr","arduino-bench-supply","resistor"],"Tristör tetikleme ve tutma davranışı kapı komutu, anot-katot yük yolu ve tutma akımıyla değerlendirilir.","SCR, DC kaynak ve direnç kablosuz malzeme kartıdır; latch, tetik ve akım davranışı simüle edilmemiştir."]];
 const mq07FetIgbtFixes={"electronic-switching-outline-029":{"old":["j113-jfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["irf540n-mosfet","IRF540N MOSFET"]]},"electronic-switching-outline-030":{"old":["j113-jfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["irf540n-mosfet","IRF540N MOSFET"]]},"electronic-switching-outline-033":{"old":["irf540n-mosfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["irf540n-mosfet","IRF540N MOSFET"]]},"electronic-switching-outline-034":{"old":["j113-jfet","resistor"],"parts":[["j113-jfet","J113 JFET"],["resistor","Direnç"],["capacitor","RC zamanlama kondansatörü"]]},"motor-direct-power-outline-021":{"old":["irf540n-mosfet","motor-dc"],"parts":[["irf540n-mosfet","IRF540N MOSFET"],["virtual-pwm-generator-v1","PWM kavramı"],["motor-dc","DC motor"]]}};
