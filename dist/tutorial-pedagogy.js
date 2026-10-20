@@ -9570,6 +9570,66 @@ for(const id of [
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+/* MQ07_SC386_BJT_MONOSTABLE: low-voltage triggered two-BJT RC topology.
+ * One shot is ideal virtual RC switching, not analog BJT/SPICE acceptance. */
+{
+ const srcId='oscillator-filter-apps-src-06',source=L.byId[srcId],old=source?.project;
+ if(!source||source.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.filter(c=>c.typeId==='arduino-bd139').length!==2)
+  throw Error('SC386 monostable original material reference changed');
+ const p=base(srcId,source.title,'control');
+ p.components=[
+  C('g','arduino-bench-supply',80,170,'G1','5 V sanal besleme',{dcVoltage:5,currentLimit:1}),
+  C('q1','bd139-npn',460,305,'Q1','BD139 darbe kolu',{mq07StandaloneBjtMonostable:true}),
+  C('q2','bd139-npn',925,305,'Q2','BD139 kararlı kol',{mq07StandaloneBjtMonostable:true}),
+  C('rc1','resistor',350,160,'RC1','1 kΩ Q1 kolektör',{resistance:1000}),
+  C('rc2','resistor',1060,160,'RC2','1 kΩ Q2 kolektör',{resistance:1000}),
+  C('rb2','resistor',1050,475,'RB2','10 kΩ zamanlama',{resistance:10000}),
+  C('rfb','resistor',760,460,'RFB','47 kΩ Q2/C → Q1/B',{resistance:47000}),
+  C('rpd','resistor',340,555,'RPD','10 kΩ Q1/B dönüş',{resistance:10000}),
+  C('rtr','resistor',260,385,'RTR','1 kΩ tetik beyz',{resistance:1000}),
+  C('c1','capacitor',690,265,'C1','100 µF Q1/C → Q2/B',{capacitance:100e-6}),
+  C('s1','push-no',170,315,'S1','Tek darbe tetikleyici'),
+  C('v1','meter-voltmeter',480,635,'V1','Q1 kolektör ölçümü'),
+  C('v2','meter-voltmeter',970,635,'V2','Q2 kolektör ölçümü')
+ ];
+ const wire=(a,ap,b,bp)=>p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,
+  'Sanal 5 V tetiklenmiş iki BD139 ve RC tek kararlı geri dönüş yolu.','#43a047','SIGNAL'));
+ wire('g','P','rc1','1');wire('rc1','2','q1','C');
+ wire('g','P','rc2','1');wire('rc2','2','q2','C');
+ wire('q1','E','g','M');wire('q2','E','g','M');
+ wire('g','P','rb2','1');wire('rb2','2','q2','B');
+ wire('q2','C','rfb','1');wire('rfb','2','q1','B');
+ wire('q1','C','c1','1');wire('c1','2','q2','B');
+ wire('g','P','s1','13');wire('s1','14','rtr','1');wire('rtr','2','q1','B');
+ wire('q1','B','rpd','1');wire('rpd','2','g','M');
+ wire('v1','1','q1','C');wire('v1','2','g','M');
+ wire('v2','1','q2','C');wire('v2','2','g','M');
+ const ids=new Set(p.components.map(c=>c.id));
+ if(p.components.length!==13||p.wires.length!==21||ids.size!==13||
+    new Set(p.wires.map(w=>w.id)).size!==21||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c)))
+  throw Error('SC386 monostable graph incomplete');
+ setLesson(source,p,{kind:'wiring',
+  summary:'S1 tetik basışında Q1 geçici iletime geçer; sanal ideal RB2–C1 süre dolunca Q2 kararlı iletim durumuna geri döner.',
+  explanation:'İki BD139 B/C/E, 5 V kolektör yükleri, C1 üzerinden Q1/C → Q2/B çapraz RC yolu, RFB geri beslemesi, S1/RTR tetik kolu ve iki voltmetre terminal bağlıdır. İdeal eğitim modelinde 10 kΩ × 100 µF × ln2 = yaklaşık 693 ms tek darbe üretilir. Tetik basılı tutulduğunda tekrar darbe başlamaz. Bu analog BJT zaman eğrisi veya gerçek cihaz güvenlik kabulü değildir.',
+  goal:'Buton tetiklemesiyle kısa süreli sanal Q1/Q2 durum değişimini ve tek kararlı geri dönüşü gözlemlemek.'});
+ source.pedagogyReview={...source.pedagogyReview,mq07BjtMonostable:'SOURCE_WIRED_RC_NONRETRIGGERABLE',
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ const target=L.byId['oscillator-filter-apps-outline-040'],before=target?.project;
+ if(!target||target.kind!=='quiz'||before?.referenceOnly!==true||before.wires.length!==0||
+    before.components.filter(c=>c.typeId==='bd139-npn').length!==2)
+  throw Error('SC386 monostable outline baseline changed');
+ setLesson(target,clone(p),{kind:'wiring',summary:source.summary,
+  explanation:source.explanation,goal:source.learningGoal});
+ target.pedagogyReview={...target.pedagogyReview,mq07OscillatorScope:'SC378_SC391',
+  sourceReusedFrom:srcId,mq07BjtMonostable:'SOURCE_WIRED_RC_NONRETRIGGERABLE',
+  titleTopologyStatus:'SOURCE_WIRED_MONOSTABLE_NATIVE_IDEAL',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC387_BJT_BISTABLE: low-voltage opt-in cross-coupled BJT SET/RESET memory.
  * A binary virtual memory lesson, not analog BJT latch or physical safety acceptance. */
 {
