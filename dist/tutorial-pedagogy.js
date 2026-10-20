@@ -8721,6 +8721,45 @@ for(const [id,reason,expectedWires,types,concept,limits] of mq07SensorSc308to321
 }
 
 
+/* MQ07_SC308_SC321_SENSOR_WIRED_REUSE: source-exact virtual instruments,
+ * not a new calibration or manufacturer-performance certificate. */
+for(const [id,srcId,summary,status] of [
+ ['sensor-analog-apps-outline-029','sensor-analog-apps-src-03',
+  'K tipi sanal termokupl ve DC mV ölçüm uçları bağlı örnek; soğuk uç ve kompanzasyon yalnız simülatör modelidir.',
+  'SOURCE_WIRED_THERMOCOUPLE_MV_CALIBRATION_PENDING'],
+ ['electronic-component-basics-outline-025','sensor-analog-apps-src-04',
+  'Üç uçlu PT100 RTD ve sanal gösterge terminal bağlantıları; direnç-sıcaklık davranışı model sınırlıdır.',
+  'SOURCE_WIRED_PT100_3WIRE_CALIBRATION_PENDING'],
+ ['sensor-analog-apps-outline-030','sensor-analog-apps-src-05',
+  '5 V LM35 ve Arduino UNO A0 analog giriş yoluyla sanal sıcaklık okuma.',
+  'SOURCE_WIRED_LM35_ADC_RUNTIME_PENDING'],
+ ['sensor-analog-apps-outline-036','sensor-analog-apps-src-06',
+  'Sanal Reed sensör beslemesi ve Arduino D2 dijital giriş kablo devresi.',
+  'SOURCE_WIRED_REED_ARDUINO_FIELD_PENDING']
+]){
+ const lesson=L.byId[id],old=lesson?.project,source=L.byId[srcId],src=source?.project;
+ if(!lesson||lesson.kind!=='quiz'||!old||old.referenceOnly!==true||old.wires.length!==0||
+    !source||source.kind!=='wiring'||!src||src.wires.length<4)
+  throw Error('SC308-321 sensor source baseline changed '+id+'/'+srcId);
+ const p=clone(src);delete p.referenceOnly;
+ const componentIds=new Set(p.components.map(c=>c.id));
+ if(componentIds.size!==p.components.length||
+    p.wires.some(w=>!componentIds.has(w.from?.c)||!componentIds.has(w.to?.c))||
+    new Set(p.wires.map(w=>w.id)).size!==p.wires.length)
+  throw Error('SC308-321 sensor source endpoint missing '+id);
+ setLesson(lesson,p,{kind:'wiring',summary,
+  explanation:source.explanation+' BU DERS: '+summary+
+   ' İdeal sanal ölçüm modeli gerçek sensör kalibrasyonu, üretici doğruluğu, saha kablolaması veya Windows görüntü kabulü değildir.',
+  goal:'Sensör besleme, sinyal ve gösterge/ADC uçlarını sanal terminal isimleriyle doğru ayırt etmek.'});
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07TemperatureScope:'SC308_SC321',sourceReusedFrom:srcId,
+  titleTopologyStatus:status,titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,sensorCalibrationAcceptance:false,
+  manufacturerDeviceAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız düşük gerilimli sanal sensör ölçüm dersidir; fiziksel sensör kalibrasyonu veya tesisat güvenliği kabulü değildir.';
+}
+
 /* MQ07_SC322_SC335_PRESSURE_FORCE: fix nonpressure proximity graphs; preserve golden piezo/TX11 solvers without false native PASS. */
 const mq07PressureCases=[["038","REED_ARDUINO_OUTLINE_NATIVE_UNVERIFIED",5,["arduino-bench-supply","arduino-reed","arduino-uno"],"Reed sensörü ile Arduino girişini gösteren mevcut sanal bağlantı korunur.","Gerçek mıknatıs hareketi, debounce veya Arduino programı bu yeni ders ID'sinde ayrıca test edilmedi."],["039","HALL_RELAY_OUTLINE_NATIVE_UNVERIFIED",7,["arduino-bench-supply","sensor-hall","coil-relay","contact-no","lamp-green"],"Hall sensörü, 24 V bobin ve K1 kontak yükü farklı elektriksel görevlere sahiptir.","Bu yeni dersin sensör manyetik alan dinamiği ve röle yük tepkisi bağımsız native test görmedi."],["040","NO_PRESSURE_TRANSDUCER_WIRING",0,["capacitor","resistor","tutorial-piezo","load-cell"],"Basınç/kuvvet algılamada kapasitif, dirençsel, piezoelektrik ve köprü tabanlı ölçüm ilkeleri farklıdır.","Önceki endüktif proximity–röle–lamba devresi basınç sensörü değildi. Karttaki öğeler sadece prensip karşılaştırmasıdır; gerçek basınç dönüştürücü ve kalibre basınç okuması bulunmaz."],["041","NO_CAPACITIVE_PRESSURE_SENSOR_MODEL",0,["capacitor","tutorial-concept"],"Kapasitif basınç algılama, membran yer değiştirmesinin kapasiteye etkisi kavramına dayanır.","Gösterilen kondansatör ve kavram kartı gerçek basınç elemanı veya kalibre ölçüm değildir; önceki endüktif/optik sensörler çıkarıldı."],["042","NO_RESISTIVE_FORCE_SENSOR_MODEL",0,["resistor","tutorial-concept"],"Dirençsel kuvvet/basınç algılamada mekanik etkiyle direnç değerinin değişmesi incelenir.","Genel direnç, FSR basınç elemanının doğrulanmış transfer eğrisi değildir; endüktif/optik kartın yerine kavram gösterilir."],["043","NO_PIEZORESISTIVE_PRESSURE_BRIDGE",0,["resistor","tutorial-concept"],"Piezodirençli sensör, basıncın mekanik gerinim üzerinden direnç değişimine etkisini kullanır.","Bu piezoelektrik darbe sensörü değildir; gerçek köprü, basınç transdüseri, sıcaklık telafisi ve kalibrasyon yoktur."],["044","NO_PIEZOELECTRIC_PRESSURE_CALIBRATION",0,["tutorial-piezo"],"Piezoelektrik dönüştürücü değişen mekanik gerilimde elektriksel darbe tepkisi üretebilir.","Bu kart gerçek mutlak/statik basınç ölçeri, kalibrasyon veya bağlantılı ölçüm senaryosu değildir."],["045","NO_STRAIN_GAUGE_ELEMENT_CALIBRATION",0,["load-cell","tutorial-concept"],"Gerinim ölçer küçük direnç değişimlerinin köprü üzerinden ölçülmesi ilkesine dayanır.","Load-cell ürünü gerinim ölçer kullanımına örnektir, fakat tekil strain-gauge elemanı, yapıştırma, köprü kalibrasyonu ve gerçek kuvvet testi yoktur."],["046","NO_LOAD_CELL_MVV_WIRING",0,["load-cell","weighing-indicator"],"Yük hücresi ile göstergenin uyartım ve diferansiyel sinyal bağlantıları birlikte değerlendirilir.","Görüntüdeki ürünler kablosuz referanstır; ağırlık göstergesinde gerçek mV/V ölçümü, dara ve gerçek tartım testi yapılmamıştır."],["047","PIEZO_IMPULSE_OUTLINE_NATIVE_UNVERIFIED",4,["tutorial-piezo","resistor","unit-ut33d-plus","test-probe-red","test-probe-black"],"Piezoelektrik sensör darbesi sanal UT33D+ ve yük direnciyle ölçülebilir.","Önceki endüktif yakınlık–röle kartı, depoda önceden doğrulanan sanal piezo dört telli devreyle değiştirildi; yeni outline kimliğinde darbe izinin native Node kabulü yapılmadı."],["048","LOAD_CELL_TX11_OUTLINE_NATIVE_UNVERIFIED",6,["arduino-bench-supply","load-cell","weighing-indicator"],"Load cell köprüsü, 5 V uyartım ve TX11 diferansiyel mV/V girişine dayanır.","Önceki proximity–röle devresi, mevcut TX11 6 telli sanal kaynak şemasıyla değiştirildi; yeni ders için ayrı çözücü ve gerçek kalibrasyon kabulü yoktur."],["049","OPTICAL_RELAY_OUTLINE_NATIVE_UNVERIFIED",7,["arduino-bench-supply","sensor-through-beam","coil-relay","contact-no","lamp-green"],"Optik sensörün 24 V çıkışının röleyi ve kontağı sürmesi kaynak şemadaki bir sanal örnektir.","Yeni outline kimliğinde gerçek ışık kesilmesi ve röle çıkış dinamiği ölçülmedi."],["050","NO_LDR_VOLTAGE_DIVIDER_WIRING",0,["ldr-gl5528"],"LDR'nin direnci aydınlatma ile değişebilir; gerilim için uygun kaynak ve bölücü gerekir.","Görsel LDR referansında ışık şiddeti, direnç eğrisi, devre kablosu veya ölçüm yoktur."],["electronic-component-basics-outline-028","NO_PHOTODIODE_BIAS_READOUT",0,["bpw34-photodiode","photoeye"],"Fotodiyodun ışığa bağlı akımı uygun bias ve okuma yoluyla ölçülebilir.","Bu referans kartındaki BPW34 ve optik eleman tek başına fotodiyot akım ölçümü veya çalışan devre değildir."]];
 for(const [suffix,issue,wireCount,types,concept,limits] of mq07PressureCases){
