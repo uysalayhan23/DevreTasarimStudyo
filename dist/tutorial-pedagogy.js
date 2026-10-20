@@ -9518,6 +9518,58 @@ for(const id of [
   independentPedagogicalAcceptance:false};
 }
 
+/* MQ07_SC388_BJT_ASTABLE: physical two-NPN crossed capacitor graph.
+ * Opt-in virtual idealized RC switching, never analog BJT/SPICE acceptance. */
+{
+ const srcId='oscillator-filter-apps-src-08',source=L.byId[srcId],old=source?.project;
+ if(!source||source.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.filter(c=>c.typeId==='arduino-bd139').length!==2)
+  throw Error('SC388 two-BJT astable baseline changed');
+ const p=base(srcId,source.title,'control');
+ p.components=[
+  C('g','arduino-bench-supply',100,200,'G1','5 V sanal besleme',{dcVoltage:5,currentLimit:1}),
+  C('q1','bd139-npn',480,260,'Q1','BD139 sol NPN',{mq07StandaloneBjtAstable:true}),
+  C('q2','bd139-npn',900,260,'Q2','BD139 sağ NPN',{mq07StandaloneBjtAstable:true}),
+  C('rc1','resistor',360,140,'RC1','1 kΩ kolektör',{resistance:1000}),
+  C('rc2','resistor',1040,140,'RC2','1 kΩ kolektör',{resistance:1000}),
+  C('rb1','resistor',300,460,'RB1','10 kΩ beyz',{resistance:10000}),
+  C('rb2','resistor',1090,460,'RB2','10 kΩ beyz',{resistance:10000}),
+  C('c1','capacitor',600,400,'C1','100 µF çapraz RC',{capacitance:100e-6}),
+  C('c2','capacitor',820,520,'C2','100 µF çapraz RC',{capacitance:100e-6})
+ ];
+ const wire=(a,ap,b,bp)=>p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,
+  'İki BD139 kolektör-beyz RC çapraz bağlantısı ve sanal güç dönüşü.','#8b5a2b','SIGNAL'));
+ wire('g','P','rc1','1');wire('rc1','2','q1','C');
+ wire('g','P','rc2','1');wire('rc2','2','q2','C');
+ wire('q1','E','g','M');wire('q2','E','g','M');
+ wire('g','P','rb1','1');wire('rb1','2','q1','B');
+ wire('g','P','rb2','1');wire('rb2','2','q2','B');
+ wire('q1','C','c1','1');wire('c1','2','q2','B');
+ wire('q2','C','c2','1');wire('c2','2','q1','B');
+ if(p.components.length!==9||p.wires.length!==14||
+    new Set(p.wires.map(w=>w.id)).size!==14||
+    p.wires.some(w=>!p.components.some(c=>c.id===w.from.c)||!p.components.some(c=>c.id===w.to.c)))
+  throw Error('SC388 two-BJT cross RC wiring incomplete');
+ setLesson(source,p,{kind:'wiring',
+  summary:'BD139 Q1/Q2 karşılıklı RC kuplaj ve 5 V yük dirençleriyle bağlandı; sanal ideal zamanlama modeli alternatif C–E iletim gösterir.',
+  explanation:'RC1/RC2 kolektör, RB1/RB2 beyz ve C1/C2 çapraz kolektör-beyz bağlantılarını oluşturur. İdeal modelde her yarım periyot yaklaşık 0,693×10 kΩ×100 µF = 693 ms, sanal frekans 0,721 Hz dir. Gerçek BJT doğrusal olmayan fiziksel akım, başlangıç simetrisi, üretici toleransı veya SPICE kabulü değildir.',
+  goal:'İki BD139 un sırayla iletimini ve çapraz RC periyodunu sanal simülasyonda izlemek.'});
+ source.pedagogyReview={...source.pedagogyReview,mq07BjtAstable:'CROSS_RC_IDEAL_NATIVE',
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ const target=L.byId['oscillator-filter-apps-outline-042'],before=target?.project;
+ if(!target||target.kind!=='quiz'||before?.referenceOnly!==true||before.wires.length!==0||
+    before.components.filter(c=>c.typeId==='bd139-npn').length!==2)
+  throw Error('SC388 two-BJT outline baseline changed');
+ setLesson(target,clone(p),{kind:'wiring',summary:source.summary,
+  explanation:source.explanation,goal:source.learningGoal});
+ target.pedagogyReview={...target.pedagogyReview,mq07OscillatorScope:'SC378_SC391',
+  sourceReusedFrom:srcId,mq07BjtAstable:'CROSS_RC_IDEAL_NATIVE',
+  titleTopologyStatus:'SOURCE_WIRED_CROSS_RC_NATIVE_IDEAL',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,oscillationAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
