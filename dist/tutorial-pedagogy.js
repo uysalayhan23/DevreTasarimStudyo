@@ -10644,6 +10644,49 @@ for(const id of [
   independentPedagogicalAcceptance:false};
 }
 
+
+/* SC29 dark-switch outline: finish source-proven LDR/LM358/MOSFET load path.
+ * Preserve the nine existing instruments/supply/sensor IDs and 12 wires. */
+{
+ const id='sensor-analog-apps-outline-051',l=L.byId[id],p=l?.project;
+ const src=L.byId['sensor-analog-apps-src-10'],sp=src?.project;
+ const key=w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p;
+ const part=(q,id)=>q?.components.find(c=>c.id===id);
+ const have=new Set(p?.wires.map(key));
+ if(!l||l.kind!=='wiring'||p.components.length!==9||p.wires.length!==12||
+    l.steps.length!==12||!sp||sp.components.length!==13||sp.wires.length!==19||
+    part(p,'s1')?.typeId!=='ldr-gl5528'||part(p,'s1').illuminationLux!==undefined||
+    part(p,'u1')?.typeId!=='lm358p-dip8'||part(p,'g1')?.dcVoltage!==24||
+    !have.has('s1/2>u1/3')||!have.has('r2/2>u1/2')||
+    ['rg','rp','q1','h1'].some(x=>part(p,x))||
+    part(sp,'q1')?.mq07LdrDarkSwitch!==true)
+  throw Error('SC29 outline/source canonical dark-switch baseline changed');
+ part(p,'s1').illuminationLux=part(sp,'s1').illuminationLux;
+ for(const [id,pin] of [['s1','2'],['r2','3']]){
+  const w=p.wires.find(w=>w.from.c===id&&w.from.p==='2'&&w.to.c==='u1');
+  w.to.p=pin;const sw=sp.wires.find(x=>key(x)===key(w));
+  if(!sw)throw Error('Dark-switch source comparator wiring changed');
+  Object.assign(w,{tutorialHint:sw.tutorialHint,tutorialWhy:sw.tutorialWhy});
+ }
+ for(const id of ['rg','rp','q1','h1'])p.components.push(clone(part(sp,id)));
+ const updated=new Set(p.wires.map(key));
+ for(const w of sp.wires)if(!updated.has(key(w)))p.wires.push(clone(w));
+ if(p.components.length!==13||p.wires.length!==19||
+    p.wires.some((w,i)=>!sp.wires.some(x=>key(x)===key(w)))||
+    new Set(p.wires.map(key)).size!==19)
+  throw Error('SC29 dark-switch load circuit failed source parity');
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary=src.summary;l.explanation=src.explanation;
+ l.learningGoal=src.learningGoal;l.beginnerSteps=clone(src.beginnerSteps);
+ l.quiz=clone(src.quiz);
+ l.pedagogyReview={...l.pedagogyReview,sourceReusedFrom:'sensor-analog-apps-src-10',
+  titleTopologyStatus:'SOURCE_WIRED_LDR_DARK_SWITCH_WITH_LOAD',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,manufacturerCalibrationVerified:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
