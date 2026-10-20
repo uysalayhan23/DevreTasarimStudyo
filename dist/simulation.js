@@ -1169,8 +1169,9 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // MQ-05 SC19 optically gated TRIAC / flashing load, only 5 V virtual DC and
   // independent 12 V RMS isolated virtual AC domains. Not a mains/SPICE model.
   function solveSc19OptoTriacCycle(project,byId,options={}){
-    const active=project?.tutorialLesson?.id==='electronic-switching-src-19'||
-      ['tutorial-electronic-switching-src-19','tutorial-session-source-electronic-switching-src-19'].includes(project?.projectId);
+    const active=['electronic-switching-src-19','electronic-switching-outline-060'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-electronic-switching-src-19','tutorial-session-source-electronic-switching-src-19',
+       'tutorial-session-source-electronic-switching-outline-060'].includes(project?.projectId);
     if(!active)return {result:solve(project,byId,options),verified:false};
     const result=solve(project,byId,options),part=id=>project.components.find(c=>c.id===id);
     const g1=part('g1'),t=part('t1'),rin=part('rin'),u=part('u1'),
