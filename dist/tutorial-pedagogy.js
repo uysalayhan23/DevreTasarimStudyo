@@ -10687,6 +10687,47 @@ for(const id of [
   independentPedagogicalAcceptance:false,manufacturerCalibrationVerified:false};
 }
 
+
+/* SC20 NTC outline: finish the original source-proven temperature-driven load.
+ * Keep all 12 existing sensor, comparator and probe connections unchanged.
+ * The seven new wires add a separate 24 V IRF540N/lamp load, not power from
+ * the LM358 OUT pin. A virtual educational model, not physical acceptance. */
+{
+ const id='sensor-analog-apps-outline-031',l=L.byId[id],p=l?.project;
+ const source=L.byId['sensor-analog-apps-src-01'],sp=source?.project;
+ const wireKey=w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p;
+ const part=(q,id)=>q?.components.find(c=>c.id===id);
+ const oldWires=new Set(p?.wires.map(wireKey));
+ if(!l||l.kind!=='wiring'||p.components.length!==9||p.wires.length!==12||
+    l.steps.length!==12||!sp||sp.components.length!==13||sp.wires.length!==19||
+    part(p,'s1')?.typeId!=='sensor-ntc'||part(p,'u1')?.typeId!=='lm358p-dip8'||
+    part(p,'g1')?.dcVoltage!==24||
+    ['rg','rp','q1','h1'].some(id=>part(p,id))||
+    oldWires.size!==12||!sp.wires.every(w=>oldWires.has(wireKey(w))||
+      ['rg','rp','q1','h1'].includes(w.from.c)||['rg','rp','q1','h1'].includes(w.to.c))||
+    ![...oldWires].every(k=>sp.wires.some(w=>wireKey(w)===k))||
+    part(sp,'q1')?.mq07NtcThermalSwitch!==true)
+  throw Error('SC20 NTC outline/source wiring baseline changed');
+ for(const id of ['rg','rp','q1','h1'])p.components.push(clone(part(sp,id)));
+ for(const w of sp.wires)if(!oldWires.has(wireKey(w)))p.wires.push(clone(w));
+ if(p.components.length!==13||p.wires.length!==19||
+    new Set(p.wires.map(wireKey)).size!==19||
+    p.wires.some(w=>!sp.wires.some(x=>wireKey(w)===wireKey(x))))
+  throw Error('SC20 NTC teaching load graph differs from native source');
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary=source.summary;
+ l.explanation=source.explanation;
+ l.learningGoal=source.learningGoal;
+ l.beginnerSteps=clone(source.beginnerSteps);
+ l.quiz=clone(source.quiz);
+ l.pedagogyReview={...l.pedagogyReview,sourceReusedFrom:'sensor-analog-apps-src-01',
+  titleTopologyIssue:null,titleTopologyStatus:'SOURCE_WIRED_NTC_THERMAL_SWITCH_WITH_LOAD',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,manufacturerCalibrationVerified:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
