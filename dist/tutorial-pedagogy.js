@@ -9714,6 +9714,47 @@ for(const [id,srcId,summary,status] of [
   physicalAcceptance:false,windowsVisualAcceptance:false,opticalCalibrationAcceptance:false};
 }
 
+/* SC322-335 Reed practical: preserve the five canonical 5 V Arduino wires.
+ * Enable the existing opt-in KY-021 magnetic model and real digitalRead(2).
+ * This is a virtual simulation, not physical reed-switch validation. */
+{
+ const id='sensor-analog-apps-outline-038',lesson=L.byId[id],p=lesson?.project;
+ const src=L.byId['sensor-analog-apps-src-06']?.project;
+ const part=(q,key)=>q?.components.find(c=>c.id===key);
+ const graph=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ if(!lesson||lesson.kind!=='wiring'||p?.workspaceMode!=='arduino'||
+    p.components.length!==3||p.wires.length!==5||lesson.steps.length!==5||
+    !src||graph(p)!==graph(src)||
+    part(p,'ps')?.typeId!=='arduino-bench-supply'||
+    part(p,'s1')?.typeId!=='arduino-reed'||part(p,'u1')?.typeId!=='arduino-uno'||
+    part(p,'ps').dcVoltage!==undefined||
+    part(p,'s1').mq07ReedDigitalModel!==undefined||
+    part(p,'u1').arduinoSketch!==undefined||
+    part(src,'ps')?.dcVoltage!==5||
+    part(src,'s1')?.mq07ReedDigitalModel!==true||
+    !part(src,'u1')?.arduinoSketch?.includes('digitalRead(2)'))
+  throw Error('Reed 25th exercise or canonical magnetic source changed');
+ part(p,'ps').dcVoltage=part(src,'ps').dcVoltage;
+ part(p,'s1').reedMagnet=part(src,'s1').reedMagnet;
+ part(p,'s1').mq07ReedDigitalModel=true;
+ part(p,'u1').arduinoSketch=part(src,'u1').arduinoSketch;
+ lesson.summary='KY-021 sanal reed sensörü 5 V ve Arduino UNO D2: mıknatıs ayarı %65 altında dijital 0, %65 ve üzerinde dijital 1.';
+ lesson.explanation='Beş özgün kablo korunur: PS +5 V/0 V ile KY-021 VCC/GND ve UNO 5V/GND, S1 DO ile UNO D2 bağlıdır. Arduino programı pinMode(2,INPUT) ve reed=digitalRead(2) okur. Sanal mıknatıs ayarı %65 ve üzerindeyken D2=1, altında D2=0 olur. Kopuk VCC/GND/DO veya geçersiz sanal beslemede D2=0 okunur. Bu davranış gerçek KY-021 manyetik kalibrasyon, kontak sıçraması veya fiziksel kurulum kabulü değildir.';
+ lesson.learningGoal='Reed anahtarın sanal mıknatıs eşik tepkisinin Arduino UNO D2 sayısal okumasını değiştirdiğini göstermek.';
+ lesson.beginnerSteps=[
+  'PS +5 V ve 0 V uçlarının Reed VCC/GND ve UNO 5V/GND bağlantılarını kontrol et.',
+  'Reed DO çıkışının UNO D2 girişine bağlı olduğunu doğrula.',
+  'Mıknatıs değerini %0, %64, %65 ve %80 yaparak D2 0/0/1/1 okumasını izle.',
+  'Mıknatısı uzaklaştırıp %20 yap: D2 tekrar 0 olmalıdır.',
+  'Reed VCC, GND veya DO bağlantısını kopar; sanal D2 0 olur. Gerçek sensör testi olarak yorumlama.'
+ ];
+ lesson.pedagogyReview={...lesson.pedagogyReview,titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_REED_5V_ARDUINO_D2',
+  sourceMagneticEnvironment:'sensor-analog-apps-src-06',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,sensorCalibrationAcceptance:false};
+}
+
 /* MQ07_SC350_SC363_OPAMP_FEEDBACK: LM358P real pins, virtual-probe output, fail-closed gain/dynamics. */
 const mq07Opamp350Rows=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0,"Negatif geri besleme, çıkış pin 1’den eviren giriş pin 2’ye uygun direnç dönüşüdür.","Malzeme kartında giriş ve geri besleme dirençleri var; gerçek kablo, ölçülen kazanç yok."],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14,"Bu genel başlık 14 telli yalnız eviren LM358P örneğini gösterir.","Diğer op-amp işlevleri ve kazanç dinamiği test edilmedi."],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14,"10 kΩ giriş, 47 kΩ negatif geri besleme pin 2’ye; pin 3 referansa gider.","Gerilim kazancı ve besleme sınırı farklı girişlerde ölçülmedi."],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13,"AC jeneratör pin 2’yi giriş direnci üzerinden sürer, çıkış pin 1 geri beslemeye bağlıdır.","Frekans cevabı, kırpılma ve genlik doğrulaması yok."],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14,"DC potansiyometre giriş direnciyle pin 2’ye, Rf çıkış pin 1’den pin 2’ye bağlıdır.","DC transfer eğrisi ve gerçek çıkış sınırları test edilmedi."],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",11,"Evirmeyen giriş pin 3’tedir; pin 2 dirençli negatif geri besleme düğümüdür.","Gerçek sayısal kazanç ve yük davranışı native olarak doğrulanmadı."],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10,"AC jeneratör pin 3’e bağlı, Rf çıkış pin 1’den pin 2’ye bağlıdır.","AC kazanç ve doyum sınırı native olarak ölçülmedi."],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",11,"DC potansiyometre pin 3’ü; çıkış geri beslemesi pin 2’yi besler.","Çoklu DC giriş/çıkış testi yok."],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8,"Gerilim izleyicide çıkış pin 1 doğrudan eviren giriş pin 2’ye döner.","Birim kazanç, çıkış akım ve farklı giriş gerilimleri native ölçülmedi."],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8,"Gerilim izleyici temrininde pin 1→pin 2 doğrudan geri beslemedir.","Girişe karşı gerçek sanal çıkış izleme ölçümü yapılmadı."],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11,"Karşılaştırıcıda ölçülen giriş pin 3, dirençli referans pin 2 ve çıkış pin 1’dir.","Çıkış sanal multimetre probuyla okunur; Schmitt histerezisi ve yeni ders için eşik taraması kanıtlanmadı."],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11,"Karşılaştırıcı temrini giriş pin 3, referans pin 2 ve çıkış pin 1 topolojisini gösterir.","Ölçüm probu modeli kabloyla aynı şey değildir; native eşik taraması yapılmadı."],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12,"GL5528 ve dirençli bölücü pin 3 girişini, referans bölücü pin 2’yi besler.","SC42 golden 12 tel grafiğiyle eşleşir; yeni outline lux→çıkış dinamik ölçümü yapılmadı."],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12,"NTC bölücüsü pin 3 girişini, referans bölücü pin 2’yi besler.","SC43 golden 12 tel grafiğiyle eşleşir; yeni outline °C→çıkış ölçümü yapılmadı."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
