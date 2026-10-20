@@ -10780,6 +10780,39 @@ for(const id of [
   physicalAcceptance:false,windowsVisualAcceptance:false,manufacturerCalibrationVerified:false};
 }
 
+/* SC201–400 capacitive relay practice: activate the existing native target
+ * model, without changing the five original devices or seven IEC wires.
+ * The 10 mm threshold is a virtual teaching preset, not product calibration. */
+{
+ const id='sensor-analog-apps-outline-082',l=L.byId[id],p=l?.project;
+ const inductive=L.byId['sensor-analog-apps-outline-081']?.project;
+ const part=(q,key)=>q?.components.find(c=>c.id===key);
+ const graph=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ const s=part(p,'s1');
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    l.steps.length!==7||!inductive||graph(p)!==graph(inductive)||
+    part(p,'g1')?.dcVoltage!==24||s?.typeId!=='capacitive-detector'||
+    s.outputType!=='PNP'||s.sensing!==undefined||
+    part(p,'k1')?.typeId!=='coil-relay'||part(p,'h1')?.typeId!=='lamp-green')
+   throw Error('SC201–400 capacitive PNP relay source/target topology changed');
+ s.sensing={target:'liquid',range:10,distance:20,offset:0,face:'right',auto:false};
+ l.summary='Kapasitif PNP sensörün sanal sıvı hedefi 10 mm içine geldiğinde K1 rölesi ve H1 lambası çalışır.';
+ l.explanation='S1 kapasitif sensörün BN/BU uçları 24 V sanal beslemeye, BK PNP çıkışı K1 bobinine bağlıdır; K1 NO 13/14 ayrı H1 yük yolunu kontrol eder. Sürüklenebilir sıvı hedef başlangıçta 20 mm OFF, 10 mm ve yakınında ON, 10 mm dışındayken OFF olur. Sanal kapasitif model başka malzemelere de tepki verebilir; bu gerçek ürünün ayarlanabilir hassasiyetinin, nem etkisinin veya üretici algılama mesafesinin kalibrasyonu değildir.';
+ l.learningGoal='Sanal kapasitif hedef yaklaşma/uzaklaşma durumunu PNP BK, K1 bobini, NO kontak ve H1 yükünde ayrı ayrı izlemek.';
+ l.beginnerSteps=[
+  'Beş bileşen ve yedi kabloda BN/BU beslemesini, BK–K1 bobini ve K1 NO/H1 yük yolunu takip et.',
+  'Sıvı hedef 20 mm uzaktayken sensör, K1 ve H1 çıkışlarının OFF olduğunu gözle.',
+  'Hedefi 7 mm yaklaştır: sensör, K1 ve H1 ON olur.',
+  'Hedefi 11 mm uzaklaştır: K1 ve H1 OFF olur; metal/plastik farklı hedefleri de dene.',
+  'BN/BU/BK kopukluklarının etkilerini sanal olarak kontrol et; gerçek sensör kalibrasyonu olarak yorumlama.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_CAPACITIVE_TARGET_PNP_RELAY',
+  sensorEnvironmentModel:'native-capacitive-detector',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  manufacturerCalibrationVerified:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
