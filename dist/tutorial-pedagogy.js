@@ -9092,6 +9092,63 @@ for(const [id,srcId,summary,status] of [
  l.safety='Yalnız sanal 12 V SCR terminal ve yük yolu kavramı; yarıiletken iç kristal yapısı, fiziksel test veya üretici güvenlik kabulü değildir.';
 }
 
+/* IGBT dimmer application: replace the disconnected AC reference card
+ * with a real, powered, LOW-VOLTAGE 12 V DC PWM gate/load exercise.
+ * AC phase-cut behavior remains explicitly unsupported and unaccepted. */
+{
+ const id='electronic-component-basics-outline-021',l=L.byId[id],old=l?.project;
+ const sourceId='electronic-switching-src-12',donor=L.byId[sourceId],original=donor?.project;
+ const oldTypes=['fga25n120antd-igbt','supply-1p','standard-light'];
+ if(!l||l.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.length!==oldTypes.length||
+    oldTypes.some((t,i)=>old.components[i].typeId!==t)||
+    donor?.kind!=='wiring'||original.components.length!==6||original.wires.length!==9||
+    original.components.find(c=>c.id==='q1')?.mq07DcPwmDimmer!==true||
+    original.components.find(c=>c.id==='pwm1')?.typeId!=='virtual-pwm-generator-v1')
+  throw Error('IGBT dimmer application or native DC PWM donor source changed');
+ const p=clone(original);delete p.referenceOnly;
+ p.components.push(
+  C('vge','meter-voltmeter',1040,620,'V1','IGBT gate-emitter gerilimi'),
+  C('vl','meter-voltmeter',1360,470,'V2','H1 sanal yük gerilimi')
+ );
+ p.wires.push(
+  W('vge','1','q1','G','V1/1 → Q1/G','IGBT gate gerilimi.','#8b5cf6','SIGNAL'),
+  W('vge','2','q1','E','V1/2 → Q1/E','Emitter ortak sanal referans.','#111827','0V'),
+  W('vl','1','h1','X1','V2/1 → H1/X1','Yük pozitif terminali.','#8b5a2b'),
+  W('vl','2','h1','X2','V2/2 → H1/X2','IGBT collector yanındaki yük ucu.','#8b5cf6','SIGNAL')
+ );
+ const known=new Set(p.components.map(c=>c.id));
+ if(p.components.length!==8||known.size!==8||p.wires.length!==13||
+    new Set(p.wires.map(w=>w.id)).size!==13||
+    p.wires.some(w=>!known.has(w.from.c)||!known.has(w.to.c)))
+  throw Error('IGBT 12 V DC PWM exercise source graph incomplete');
+ setLesson(l,p,{kind:'wiring',
+  summary:'IGBT dimmer uygulaması: 12 V sanal DC PWM kaynağı FGA25N120ANTD gate girişini sürer; %0–%100 duty, H1 lambasının ON/OFF zaman oranını değiştirir. AC şebeke faz dimmeri değildir.',
+  explanation:'Önceki kablosuz AC kaynak/IGBT/lamba kartı yerine, mevcut çalışan SC12 sanal DC PWM devresinden türetilmiş 13 bağlantılı ders kullanılır. G1 ayarlı 12 V DC kaynak PWM1 V+/GND uçlarına enerji sağlar; PWM1 OUT → RG 1 kΩ → Q1/G gate kontrolüdür. RP 100 kΩ gate/emitter referansıdır. G1/P → H1/X1–X2 → Q1/C → Q1/E → G1/M yük yoludur. V1 G/E, V2 H1 X1/X2 gerilimini ölçer. PWM1 frekansı 1 kHz iken %0, %25, %50, %75 ve %100 duty oranlarında simülatörün örneklenen iletim zamanı değişir. Bu, yazılımdaki anlık gate/lamba davranışıdır; ölçülmüş ışık parlaklığı, gerçek IGBT kayıpları veya AC faz-açılı dimmer uygulaması değildir. 230 V ve gerçek şebeke devresi bu temrinin kapsamında yoktur.',
+  goal:'Düşük gerilimli PWM görev oranının sanal IGBT gate sinyali ve 12 V yük enerjilenme süresine etkisini ölçmek.',
+  beginnerSteps:[
+   'G1 12 V sanal DC kaynak, PWM1 V+/GND/OUT ve Q1 G/C/E uçlarını incele.',
+   'Gate yolu RG üzerinden Q1/G ye; yük yolu H1 üzerinden Q1/C ye gitmelidir.',
+   'PWM duty %0 iken V1/V2 ve H1 in kapalı kaldığını gözle.',
+   'Duty %25, %50 ve %75 ayarlarında farklı zaman örneklerinde V1 ile V2 yi karşılaştır.',
+   'Duty %100 iken gate ve yükün sürekli enerjili olduğu sanal sonucu gözle.',
+   'Bu devreyi AC faz kesme veya gerçek şebeke dimmeri kabul etme.'
+  ],
+  quiz:{question:'Sanal DC PWM–IGBT temrininde PWM duty %0 olduğunda H1 ne yapar?',
+   options:['Yük kapalı kalır; IGBT gate tetiklemesi yoktur.','Lamba AC faz kesmesiyle kısılır.','IGBT collector ucundan gate beslemesi üretilir.'],
+   answer:0,why:'Bu devre AC faz kesme değil, düşük gerilimli DC PWM ile anlık gate/yük kontrolü gösterir.'}
+ });
+ l.pedagogyReview={...l.pedagogyReview,
+  mq07FetIgbtScope:'SC266_SC279',sourceReusedFrom:sourceId,
+  titleTopologyStatus:'SOURCE_WIRED_VIRTUAL_IGBT_DC_PWM_DIMMER',
+  titleTopologyIssue:'AC_PHASE_DIMMER_RUNTIME_NOT_SUPPORTED',
+  virtualDcPwmSwitchingVerified:true,acPhaseDimmerAcceptance:false,
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ l.safety='Yalnız sanal 12 V DC PWM yük laboratuvarıdır. AC şebeke faz dimmeri, gerçek elektrik tesisatı veya fiziksel güvenlik kabulü değildir.';
+}
+
 /* MQ07_SC294_SC307_TRIAC_OPTO: exact source devices, no fabricated electrical/runtime acceptance. */
 const mq07TriacOptoRows=[["electronic-switching-outline-051","NO_TRIAC_TRIGGER_REFERENCE_RUNTIME",["bta16-600b-triac","virtual-isolated-ac-12v","virtual-ac-triac-trigger-v1"],"Triyak gate tetikleme koşulları AC dalga ve seçili ateşleme kaynağından bağımsız doğrulanır.","Sadece sanal malzemeler vardır; MT1/MT2/G bağlantısı, tetikleme çeyreği ve ölçülmüş AC yük tepkisi yoktur."],["electronic-switching-outline-052","NO_TRIAC_MULTIMETER_HEALTH_MEASUREMENT",["bta16-600b-triac","unit-ut33d-plus"],"Triyak sağlamlık konusu MT1, MT2 ve gate görevlerini üretici terminal tanımıyla ayırt eder.","AVOmetre önceki AC/lamba kartında yoktu; şimdi multimetre referansı vardır fakat prob, test koşulu ve gerçek sağlamlık sonucu yoktur."],["electronic-switching-outline-053","NO_TRIAC_MULTIMETER_PIN_IDENTIFICATION",["bta16-600b-triac","unit-ut33d-plus"],"Triyak uç tanıma üretici paket şeması ve cihaz terminal kimliği gerektirir.","Önceki kartta AVOmetre yoktu; eklenen multimetre gerçek MT1/MT2/G ölçümünün kanıtı değildir."],["electronic-switching-outline-054","NO_TRIAC_DC_LATCH_APPLICATION",["bta16-600b-triac","arduino-bench-supply","push-no","resistor","standard-light"],"Triyak DC uygulamasında kapı tetikleme ve akım tutma koşulları AC çalışma durumundan farklıdır.","Başlıktaki DC için önceki AC kaynak referansı kaldırıldı; sanal DC/tri yak/gate/yük elemanları kablosuzdur, çalışan DC latch yoktur."],["electronic-switching-outline-055","NO_ISOLATED_AC_TRIAC_DIMMER_RUNTIME",["virtual-isolated-ac-12v","bta16-600b-triac","virtual-ac-triac-trigger-v1","standard-light"],"Triyaklı dimmer, faz açıları ile yüke aktarılan AC dalga biçimini ilişkilendirir.","İzole sanal AC ve tetikleyici kavramı referanstır; gerçek faz kontrolü, lambanın RMS gerilimi veya dimmer testi yoktur."],["electronic-switching-outline-056","NO_OPTOCOUPLER_FAMILY_REFERENCE",["arduino-tlp521-1","moc3021-opto-triac"],"Optokuplörler ışıkla ayrılmış giriş ve çıkış yolları sunar; fototransistörlü ve opto-triyaklı türler farklıdır.","Önceki BD139/direnç kartı optokuplör içermiyordu; iki temsilî optik tür gösterilir fakat bağlantı/izolasyon ölçümü yoktur."],["electronic-switching-outline-057","NO_OPTOCOUPLER_ISOLATION_FUNCTION_TEST",["arduino-tlp521-1","resistor"],"TLP521-1 optokuplörün giriş LED'i ve çıkış fototransistörü ayrı görevler taşır.","Önceki triyak ve lamba referansları görev açıklaması için uygun değildi; yeni kartta optik iletim veya galvanik izolasyon testi yoktur."],["electronic-switching-outline-058","NO_OPTOCOUPLER_VARIETY_RUNTIME",["arduino-tlp521-1","moc3021-opto-triac"],"Fototransistör çıkışlı optokuplör ve opto-triyak tetikleyici farklı cihaz aileleridir.","Eski karttaki güç triyağı optokuplör türü değildir; her iki doğru optik eleman kablosuz referans olarak gösterilir."],["electronic-switching-outline-059","NO_TLP521_HEALTH_PROBE_RESULT",["arduino-tlp521-1","unit-ut33d-plus"],"Optokuplör sağlamlık incelemesi giriş ve çıkışın farklı elektriksel görevlerini ayırt eder.","Önceki triyak/lamba test malzemeleri kaldırıldı; multimetre ile gerçek LED/çıkış ölçümü yapılmadı."],["electronic-switching-outline-060","NO_OPTO_TRIAC_FLASHER_RUNTIME",["moc3021-opto-triac","bta16-600b-triac","virtual-opto-flasher-timer-v1","virtual-isolated-ac-12v","standard-light"],"Opto-triyak flaşör kavramı optik tetikleme, güç triyağı ve periyodik kontrolü ayırır.","Önceki kartta opto elemanı veya flaşör kaynağı yoktu; bunlar eklendi ama gerçek sinyal bağlantısı veya dinamik yanıp sönme kabulü yoktur."],["sensor-analog-apps-outline-023","NO_SENSOR_TRANSDUCER_IO_EVIDENCE",null,"Sensör ve transdüser giriş büyüklüğü ile elektriksel çıkışın rolünü ayırt eden kavramlardır.","Endüktif, kapasitif ve optik sensörler yalnız referanstır; elektriksel çıkış veya algılama ölçümü yapılmamıştır."],["sensor-analog-apps-outline-024","NO_SENSOR_CHARACTERISTIC_MEASUREMENT",null,"Sensör karakteristiği için algılama mesafesi, eşik, besleme ve çıkış türü verisi gerekir.","Karttaki üç sensör sembolü üretici karakteristik eğrisi, menzil veya PNP/NPN çalışması kanıtı değildir."],["sensor-analog-apps-outline-025","NO_SENSOR_TYPE_RUNTIME_COMPARISON",null,"Farklı algılama ilkelerini malzeme ve uygulama koşuluna göre karşılaştırmak gerekir.","Üç kablosuz sensör referansı gerçek algılama deneyi veya katalog kıyas ölçümü değildir."],["electronic-component-basics-outline-023","NO_SENSOR_USAGE_DOMAIN_EVIDENCE",["proximity","photoeye","sensor-level-analog"],"Endüktif yaklaşım, optik algılama ve analog seviye sensörü farklı kullanım alanlarını temsil eder.","Eski genel kavram kartı sensör çeşitlerini göstermiyordu; ürünler referanstır, canlı sinyal ve saha kullanım kabulü yoktur."]];
 for(const [id,issue,conceptTypes,concept,limits] of mq07TriacOptoRows){
