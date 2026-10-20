@@ -1105,8 +1105,9 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // SC18 opto model: two isolated virtual supplies, LED-to-phototransistor
   // coupling ONLY through an illustrative CTR; never connect the DC rails.
   function solveSc18OptocouplerCycle(project,byId,options={}){
-    const scene=project?.tutorialLesson?.id==='electronic-switching-src-18'||
-      ['tutorial-electronic-switching-src-18','tutorial-session-source-electronic-switching-src-18'].includes(project?.projectId);
+    const scene=['electronic-switching-src-18','electronic-switching-outline-057'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-electronic-switching-src-18','tutorial-session-source-electronic-switching-src-18',
+       'tutorial-session-source-electronic-switching-outline-057'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),verified:false};
     const result=solve(project,byId,options),part=id=>project.components.find(c=>c.id===id);
     const g1=part('g1'),g2=part('g2'),sg=part('sg'),rin=part('rin'),rout=part('rout'),u=part('u1');
