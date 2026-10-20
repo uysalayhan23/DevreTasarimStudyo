@@ -8241,6 +8241,104 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
  lesson.safety='Sanal düşük gerilimli diyot kutuplama dersidir; fiziksel röle koruması veya indüktif gerilim darbesi ölçümü değildir.';
 }
 
+/* SC248: native low-voltage relay fault diagnosis; independent simulated coil
+ * and load interruptions are observable at two physical voltmeter terminals. */
+{
+ const id='electronic-component-basics-outline-010',lesson=L.byId[id],old=lesson?.project;
+ const original=['unit-ut33d-plus','tutorial-troubleshooting','test-probe-red','test-probe-black'];
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==2||old.components.length!==original.length||
+    original.some((type,i)=>old.components[i].typeId!==type))
+  throw Error('SC248 fault-diagnosis baseline changed');
+ const p=base(id,lesson.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',70,80,'G1','24 V sanal kaynak'),
+  C('s','selector-no',275,90,'S1','Ana kumanda',{state:true}),
+  C('fcoil','selector-no',460,90,'F1','Bobin hattı sağlam / kopuk',{state:true}),
+  C('k','coil-relay',690,90,'K1','K1 röle bobini'),
+  C('q','contact-no',690,350,'K1','K1 yardımcı NO kontağı'),
+  C('fload','selector-no',900,350,'F2','Yük hattı sağlam / kopuk',{state:true}),
+  C('h','lamp-green',1110,350,'H1','Arıza gözlem lambası'),
+  C('vcoil','meter-voltmeter',680,550,'V1','Bobin A1/A2 ölçümü'),
+  C('vlamp','meter-voltmeter',1100,550,'V2','Lamba X1/X2 ölçümü')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Yalnız sanal 24 V devrede kontrol edilen bobin veya yük yolunu takip et.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','s','13');wire('s','14','fcoil','13');
+ wire('fcoil','14','k','A1');wire('k','A2','g','M','0V');
+ wire('g','P','q','13');wire('q','14','fload','13');
+ wire('fload','14','h','X1');wire('h','X2','g','M','0V');
+ wire('vcoil','1','k','A1');wire('vcoil','2','k','A2');
+ wire('vlamp','1','h','X1');wire('vlamp','2','h','X2');
+ if(p.components.length!==9||p.wires.length!==12||
+    new Set(p.wires.map(w=>w.id)).size!==12)
+  throw Error('SC248 live relay-fault lesson graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'SC248: Sağlam sanal röle devresinde H1 yanar; F1 bobin hattını, F2 yük hattını ayrı ayrı keser. V1 ve V2 arızanın hangi kolda olduğunu gösterir.',
+  explanation:'Gerçek 12 sanal terminal bağlantısı: G1 24 V, S1 ana komut, F1 bobin yolu, K1 A1/A2 bobin ve K1 13/14 NO kontak, F2 yük yolu ve H1 lamba. Sağlam durumda V1=24 V ve V2=24 V; F1 açılırsa K1 bırakır ve iki değer 0 V olur; F2 açılırsa K1 çekili kalır, V1=24 V ve V2=0 V olur. Bu bir sanal arıza tespit laboratuvarıdır; gerçek ölçüm cihazı veya tesisat emniyet doğrulaması değildir.',
+  goal:'Kontrollü iki ayrı sanal hat kesilmesini, röle bobini durumu ve iki gerilim okumasıyla ayırt etmek.',
+  beginnerSteps:['Sanal S1, F1 ve F2 seçicilerinin kapalı/sağlam konumunu ve H1 lambasını incele.',
+   'K1 bobininin A1/A2 ve K1 NO kontağının 13/14 uçlarını göster.',
+   'F1 hattını aç: röle, lamba ve V1/V2 değerleri neden birlikte sıfırlanır?',
+   'F1 kapalıyken F2 hattını aç: röle çekili kalırken neden yalnız lamba söner?',
+   'F1 ve F2 sağlama döndür, S1 ana komutu açıp kapatarak karşılaştır.',
+   'Gerçek donanım veya fiziksel güvenlik kabulü çıkarma.'],
+  quiz:{question:'Sanal K1 bobini çekili ve V1 24 V iken H1 sönük ve V2 0 V ise hangi kolu kontrol etmeliyiz?',
+   options:['F2 ile gösterilen yük hattını.','Yalnız bobin A1/A2 beslemesini.','Bu, rölenin fiziksel arıza kalibrasyonunu kanıtlar.'],
+   answer:0,why:'Bobin enerjili kaldığı halde yük gerilimi yoksa ayrı yük yolu açık olabilir.'}
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FaultRelayScope:'SC238_SC251',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_FAULT_BRANCHES',
+  titleTopologyIssue:null,nativeDynamicAcceptance:false,
+  faultDiagnosisAcceptance:false,relayDynamicsAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız çevrimdışı sanal 24 V röle arıza gözlemi; fiziksel tesisat, gerçek gerilimle arıza arama veya güvenlik testi değildir.';
+}
+
+/* SC249: convert the unwired relay terminal-identification card into
+ * SC246's real SPDT contact graph plus dedicated coil/NO voltage probes. */
+{
+ const id='electronic-component-basics-outline-011',lesson=L.byId[id],old=lesson?.project;
+ const reference=L.byId['electronic-component-basics-outline-008'];
+ if(!lesson||lesson.kind!=='quiz'||old?.referenceOnly!==true||
+    old.wires.length!==0||old.components.length!==2||
+    old.components[0].typeId!=='coil-relay'||old.components[1].typeId!=='contact-both'||
+    reference?.kind!=='wiring'||reference.project.wires.length!==8)
+  throw Error('SC249 original terminal-card or SC246 reference changed');
+ const p=clone(reference.project);
+ p.components.push(C('vcoil','meter-voltmeter',725,100,'V1','A1/A2 bobin gerilimi'));
+ p.components.push(C('vno','meter-voltmeter',940,110,'V2','NO 13 / 0 V gerilimi'));
+ p.wires.push(W('vcoil','1','k','A1','V1/1 → K1/A1','Bobin ucu',' #8b5a2b'.trim()));
+ p.wires.push(W('vcoil','2','k','A2','V1/2 → K1/A2','Bobin dönüşü','#111827','0V'));
+ p.wires.push(W('vno','1','q','13','V2/1 → K1/13','NO uç durumunu gözlemle.'));
+ p.wires.push(W('vno','2','g','M','V2/2 → G1/M','Ortak 0 V ölçüm ucu.','#111827','0V'));
+ if(p.components.length!==8||p.wires.length!==12||
+    new Set(p.wires.map(w=>w.id)).size!==12)
+  throw Error('SC249 relay terminal identification graph incomplete');
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'SC249: K1 rölenin A1/A2 bobin uçları ile değiştirici kontağın 11 ortak, 13 NO ve 21 NC uçları iki lamba ve V1/V2 üzerinden canlı olarak ayrılır.',
+  explanation:'Önceden iki kablosuz röle sembolü olan ders artık SC246 ile aynı doğrulanmış 24 V sanal bobin–değiştirici kontak devresini ve V1/V2 ölçüm bağlantılarını içerir. S1 açıkken H2 NC lambası, kapalıyken H1 NO lambası yanar. V1 bobin A1/A2; V2 NO 13 / 0 V gerilimini gözler. Bu yalnız sanal terminal tanıma etkinliğidir; gerçek ürün pin eşlemesi veya ölçüm güvenliği kabulü değildir.',
+  goal:'K1 A1/A2 bobinini, 11 ortak, 13 NO, 21 NC terminal rollerinden ölçüm ve lamba durumuyla ayırmak.',
+  beginnerSteps:['K1 bobin A1/A2 ile değiştirici kontağın 11/13/21 uçlarını etiketle.',
+   'S1 konumunu değiştirip H1/H2 karşıt durumunu gör.',
+   'V1 ölçüm noktalarının neden bobine paralel olduğunu açıkla.',
+   'V2 noktasını 13 NO ve ortak 0 V hattı ile karşılaştır.',
+   'Bu sanal değerlerin üretici pin güvenlik belgesi olmadığını belirt.'],
+  quiz:{question:'K1 üzerindeki A1 ve A2 uçlarının görevi nedir?',
+   options:['Rölenin bobin besleme uçlarıdır.','Değiştirici kontağın 11 ve 13 uçlarıdır.','İki bağımsız koruma topraklamasıdır.'],
+   answer:0,why:'A1/A2 bobindir; 11 ortak, 13 NO ve 21 NC ayrı kontak uçlarıdır.'}
+ });
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  mq07FaultRelayScope:'SC238_SC251',titleTopologyStatus:'SOURCE_REPAIRED_NATIVE_TERMINAL_IDENTIFICATION',
+  titleTopologyIssue:null,nativeDynamicAcceptance:false,
+  relayDynamicsAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ lesson.safety='Yalnız sanal düşük gerilimli röle uçlarını tanıma laboratuvarıdır; fiziksel cihaz pinleri, uygulama ve güvenlik kabulü değildir.';
+}
+
 /* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
 const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
