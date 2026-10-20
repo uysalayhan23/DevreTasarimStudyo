@@ -1049,7 +1049,7 @@
     if(piezoTap){
       const c=project.components.find(x=>x.id===piezoTap.closest('.component')?.dataset.id);
       e.preventDefault();e.stopPropagation();
-      if(!c||c.typeId!=='tutorial-piezo'||c.mq07PiezoTapUi!==true||project.tutorialLesson?.id!=='sensor-analog-apps-src-08')return;
+      if(!c||c.typeId!=='tutorial-piezo'||c.mq07PiezoTapUi!==true||(project.tutorialLesson?.id!=='sensor-analog-apps-src-08'&&project.tutorialLesson?.id!=='sensor-analog-apps-outline-047'))return;
       if(!running){toast('Sanal piezo darbesi için önce SİMÜLE ET seçin.');return}
       // A transient runtime event on the locked lesson, not an edit/snapshot.
       c.piezoTapAt=performance.now();c.piezoTapMv=100;
