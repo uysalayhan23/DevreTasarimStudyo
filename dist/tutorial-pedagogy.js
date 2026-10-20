@@ -10849,6 +10849,27 @@ for(const id of [
  }
 }
 
+/* Enable virtual targets for magnetic/optical classification: source-exact
+ * seven-wire PNP relay/lamp circuits with no graph or component edits. */
+{
+ const graph=p=>p?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ for(const [id,srcId,type,target,range] of [
+  ['sensor-analog-apps-outline-129','sensor-analog-apps-src-07','sensor-hall','magnet',10],
+  ['sensor-analog-apps-outline-131','sensor-analog-apps-src-14','sensor-through-beam','plastic',40]
+ ]){
+  const lesson=L.byId[id],project=lesson?.project,source=L.byId[srcId]?.project;
+  const part=(p,id)=>p?.components.find(c=>c.id===id);
+  const sensor=part(project,'s1'),known=part(source,'s1');
+  if(!lesson||lesson.kind!=='wiring'||project.components.length!==5||
+     project.wires.length!==7||lesson.steps.length!==7||source?.wires.length!==7||
+     graph(project)!==graph(source)||part(project,'g1')?.dcVoltage!==24||
+     sensor?.typeId!==type||sensor.outputType!=='PNP'||sensor.sensing!==undefined||
+     known?.sensing?.target!==target||known.sensing.range!==range)
+   throw Error('SC201–400 magnetic/optical outline graph changed: '+id);
+  sensor.sensing=clone(known.sensing);
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
