@@ -10750,6 +10750,36 @@ for(const id of [
  }
 }
 
+/* SC201–400 wired inductive relay practice: enable source-proven metal target.
+ * This is a virtual 4 mm educational threshold, not a sensor calibration. */
+{
+ const id='sensor-analog-apps-outline-081',l=L.byId[id],p=l?.project;
+ const src=L.byId['sensor-analog-apps-src-13']?.project;
+ const pick=(q,k)=>q?.components.find(c=>c.id===k);
+ const graph=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ const c=pick(p,'s1'),known=pick(src,'s1');
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    l.steps.length!==7||graph(p)!==graph(src)||pick(p,'g1')?.dcVoltage!==24||
+    c?.typeId!=='proximity'||c.outputType!=='PNP'||c.sensing!==undefined||
+    known?.sensing?.target!=='metal'||known.sensing.range!==4||known.sensing.distance!==8)
+  throw Error('Enduktif SC201-400 source graph or metal target changed');
+ c.sensing=clone(known.sensing);
+ l.summary='Sanal endüktif PNP sensör: metal hedef 4 mm içine gelince K1 rölesi ve H1 lambası çalışır; uzaklaşınca kapanır.';
+ l.explanation='24 V sanal kaynak S1 BN/BU uçlarını besler; BK çıkışı K1 bobinine gider. K1 NO 13/14 kontağı ayrı H1 yük yolunu kapatır. Sürüklenebilir metal hedef başlangıçta 8 mm OFF, 4 mm ve yakınında ON, 5 mm ve uzakta OFF olur. Plastik hedef ve kopuk BN/BU/BK kablolarının etkileri incelenir. 4 mm sadece yazılım modelinin sanal eşiğidir; gerçek ürün menzili veya fiziksel saha kabulü değildir.';
+ l.learningGoal='Endüktif metal algılaması, PNP BK, röle bobini ve lamba güç kolu arasındaki ilişkiyi sanal hedef mesafesiyle izlemek.';
+ l.beginnerSteps=[
+  'Yedi kabloda S1 BN/BU beslemesini, BK–K1 bobin bağlantısını ve K1 NO/H1 güç kolunu takip et.',
+  'Metal hedef 8 mm uzaktayken K1 ve H1 OFF olduğunu gözle.',
+  'Hedefi 2 mm yaklaştır: sensör algılar, K1 ve H1 ON olur.',
+  'Hedefi 5 mm uzaklaştır veya plastik hedef seç: K1 ve H1 OFF olur.',
+  'BN/BU/BK hatlarını ayrı ayrı sanal ortamda çıkar, sonra bağlantıları geri getir.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_INDUCTIVE_METAL_TARGET_PNP_RELAY',
+  sourceSensorEnvironment:'sensor-analog-apps-src-13',nativeDynamicAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,manufacturerCalibrationVerified:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
