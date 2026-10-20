@@ -842,8 +842,9 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // SC12: phase sample the real IGBT gate and DC load path.
   // The output is a normalized education-only duty response (NOT lumens or watts).
   function solveSc12DimmerCycle(project,byId,options={}){
-    const scene=project?.projectId==='tutorial-session-source-electronic-switching-src-12'||
-      project?.tutorialLesson?.id==='electronic-switching-src-12';
+    const scene=['electronic-switching-src-12','electronic-switching-outline-036'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-session-source-electronic-switching-src-12',
+       'tutorial-session-source-electronic-switching-outline-036'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),sampled:false};
     const part=id=>project.components.find(c=>c.id===id);
     const pwm=part('pwm1'),igbt=part('q1'),lamp=part('h1');
