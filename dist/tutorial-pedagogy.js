@@ -9570,6 +9570,65 @@ for(const id of [
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+/* MQ07_SC387_BJT_BISTABLE: low-voltage opt-in cross-coupled BJT SET/RESET memory.
+ * A binary virtual memory lesson, not analog BJT latch or physical safety acceptance. */
+{
+ const srcId='oscillator-filter-apps-src-07',source=L.byId[srcId],old=source?.project;
+ if(!source||source.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.filter(c=>c.typeId==='arduino-bd139').length!==2)
+  throw Error('SC387 bistable original material reference changed');
+ const p=base(srcId,source.title,'control');
+ p.components=[
+  C('g','arduino-bench-supply',80,160,'G1','5 V sanal besleme',{dcVoltage:5,currentLimit:1}),
+  C('q1','bd139-npn',470,300,'Q1','BD139 SET kolu',{mq07StandaloneBjtBistable:true}),
+  C('q2','bd139-npn',920,300,'Q2','BD139 RESET kolu',{mq07StandaloneBjtBistable:true}),
+  C('rc1','resistor',355,160,'RC1','1 kΩ Q1 kolektör',{resistance:1000}),
+  C('rc2','resistor',1050,160,'RC2','1 kΩ Q2 kolektör',{resistance:1000}),
+  C('rfb1','resistor',630,355,'RFB1','10 kΩ Q1/C → Q2/B',{resistance:10000}),
+  C('rfb2','resistor',780,480,'RFB2','10 kΩ Q2/C → Q1/B',{resistance:10000}),
+  C('sset','push-no',230,445,'S1','SET · Q1 ON'),
+  C('rset','resistor',375,520,'RSET','1 kΩ SET beyz',{resistance:1000}),
+  C('sreset','push-no',1110,445,'S2','RESET · Q2 ON'),
+  C('rreset','resistor',945,520,'RRESET','1 kΩ RESET beyz',{resistance:1000}),
+  C('v1','meter-voltmeter',480,625,'V1','Q1 kolektör ölçümü'),
+  C('v2','meter-voltmeter',970,625,'V2','Q2 kolektör ölçümü')
+ ];
+ const wire=(a,ap,b,bp)=>p.wires.push(W(a,ap,b,bp,a+'/'+ap+' → '+b+'/'+bp,
+  'Sanal 5 V çapraz BJT geri besleme ve bağımsız SET/RESET devresi.','#43a047','SIGNAL'));
+ wire('g','P','rc1','1');wire('rc1','2','q1','C');
+ wire('g','P','rc2','1');wire('rc2','2','q2','C');
+ wire('q1','E','g','M');wire('q2','E','g','M');
+ wire('q1','C','rfb1','1');wire('rfb1','2','q2','B');
+ wire('q2','C','rfb2','1');wire('rfb2','2','q1','B');
+ wire('g','P','sset','13');wire('sset','14','rset','1');wire('rset','2','q1','B');
+ wire('g','P','sreset','13');wire('sreset','14','rreset','1');wire('rreset','2','q2','B');
+ wire('v1','1','q1','C');wire('v1','2','g','M');
+ wire('v2','1','q2','C');wire('v2','2','g','M');
+ const ids=new Set(p.components.map(c=>c.id));
+ if(p.components.length!==13||p.wires.length!==20||ids.size!==13||
+    new Set(p.wires.map(w=>w.id)).size!==20||
+    p.wires.some(w=>!ids.has(w.from?.c)||!ids.has(w.to?.c)))
+  throw Error('SC387 bistable graph incomplete');
+ setLesson(source,p,{kind:'wiring',
+  summary:'İki BD139 çapraz dirençli geri beslemeye sahiptir. S1 SET ve S2 RESET sanal çıkış belleğini değiştirir; bırakılınca son durum saklanır.',
+  explanation:'Q1/Q2 kolektörleri 1 kΩ üzerinden 5 V a, emitörler 0 V a bağlıdır. 10 kΩ çapraz C→B dirençleri ve ayrı SET/RESET butonları gerçek uç grafiğidir. S1 Q1 i, S2 Q2 yi seçer. İki butona birden basıldığında sanal iki çıkış güvenli kapatılır. Bu ideal ikili durum modeli gerçek BD139 akım, metastabilite, üretici veya fiziksel latch kabulü değildir.',
+  goal:'SET/RESET düğmelerinin ayrı B/C/E yollarını ve iki kararlı sanal bellek durumunu kolektör voltmetreleriyle gözlemlemek.'});
+ source.pedagogyReview={...source.pedagogyReview,mq07BjtBistable:'OPT_IN_CROSS_COUPLED_VIRTUAL_MEMORY',
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ const target=L.byId['oscillator-filter-apps-outline-041'],before=target?.project;
+ if(!target||target.kind!=='quiz'||before?.referenceOnly!==true||before.wires.length!==0||
+    before.components.filter(c=>c.typeId==='bd139-npn').length!==2)
+  throw Error('SC387 bistable outline baseline changed');
+ setLesson(target,clone(p),{kind:'wiring',summary:source.summary,
+  explanation:source.explanation,goal:source.learningGoal});
+ target.pedagogyReview={...target.pedagogyReview,mq07OscillatorScope:'SC378_SC391',
+  sourceReusedFrom:srcId,mq07BjtBistable:'OPT_IN_CROSS_COUPLED_VIRTUAL_MEMORY',
+  titleTopologyStatus:'SOURCE_WIRED_BISTABLE_NATIVE_IDEAL',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
