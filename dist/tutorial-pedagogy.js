@@ -5347,7 +5347,7 @@ function mq07Wire555Source(lesson,mode){
  add('g1','arduino-bench-supply',80,120,'G1','Sanal 5 VDC besleme',
   {dcVoltage:5,currentLimit:1},'Yalnızca düşük gerilimli yazılım kaynağı; fiziksel NE555 güvenlik onayı değildir.');
  add('u1','arduino-ne555',690,285,'U1','NE555P DIP-8 · gerçek adlandırılmış 1–8 uçlar',
-  {ne555Mode:mode,ne555RaK:1,ne555RbK:10,ne555Cuf:100},
+  {ne555Mode:mode,ne555RaK:1,ne555RbK:10,ne555Cuf:100,mq07Standalone555Astable:astable},
   'GND=1 TRIG=2 OUT=3 RESET=4 CTRL=5 THRES=6 DISCH=7 VCC=8. Runtime modeli Arduino board ortamına bağımlıdır.');
  add('rl','resistor',940,305,'RL','330 Ω LED akım sınırlama',
   {resistance:330},'OUT–LED arası seri gösterge direncidir; ses veya motor sürücü gücü değildir.');
