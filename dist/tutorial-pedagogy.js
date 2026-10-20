@@ -9597,6 +9597,46 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
 }
 
 
+/* SC350–363 NTC comparator reference-lead fault: real input-bias resistor.
+ * This is a low-voltage virtual lesson guard for ONE open reference signal;
+ * it is not a certified sensor supply/return fail-safe circuit. */
+{
+ const id='sensor-analog-apps-outline-055',lesson=L.byId[id],p=lesson?.project;
+ const part=x=>p?.components.find(c=>c.id===x);
+ const referenceWire=p?.wires.find(w=>w.from.c==='r2'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='2');
+ if(!lesson||lesson.kind!=='wiring'||p.wires.length!==12||lesson.steps.length!==12||
+    part('s1')?.typeId!=='sensor-ntc'||part('u1')?.typeId!=='lm358p-dip8'||
+    part('r2')?.resistance!==10000||part('r3')?.resistance!==10000||
+    !referenceWire||part('rb')||p.wires.some(w=>w.from.c==='rb'||w.to.c==='rb'))
+  throw Error('NTC outline reference input/wiring baseline changed');
+ p.components.push(C('rb','resistor',745,110,'RB','100 kΩ referans giriş pull-up',
+  {resistance:100000,tutorialPurpose:'Yalnız R2 referans düğümü ile LM358P IN− arasındaki sinyal hattı açıldığında sanal çıkış LOW olacak şekilde giriş biası.'}));
+ p.wires.push(
+  W('g1','P','rb','1','+24 V → RB 100 kΩ',
+   'Referans sinyali kaybolduğunda LM358P IN− ucunu sanal pozitif beslemeye çek.', '#8b5a2b','+24V'),
+  W('rb','2','u1','2','RB → LM358P IN− / pin 2',
+   'Normal 10 kΩ/10 kΩ referans bölücüsünü değiştirmeden kopuk R2→U1 sinyal hattına giriş biası ekle.', '#43a047','SIGNAL'));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials=materialRows(p);
+ lesson.summary='NTC ve LM358P sanal sıcaklık karşılaştırıcısı: 15 °C LOW, 35 °C HIGH; R2→IN− referans sinyali koparsa 100 kΩ bias ile LOW.';
+ lesson.explanation='24 V sanal kaynaktaki NTC–R1 10 kΩ bölücüsü LM358P IN+ / pin 3 girişini besler. R2 ve R3 10 kΩ referans bölücüsü IN− / pin 2 girişindedir. RB 100 kΩ, sanal +24 V ile doğrudan IN− arasında ek bir bias yoludur. Normal 15→35→15 °C deneyinde çıkış LOW→HIGH→LOW geçer. Yalnız R2/2→U1/2 referans sinyal kablosu koparsa RB girişin yükselmesini ve çıkışın LOW olmasını sağlar. Sensör dönüşü koparsa HIGH oluşabilir; tüm arızalarda güvenli durma, fiziksel sensör doğruluğu veya sertifikalı emniyet devresi olduğu iddia edilmez.';
+ lesson.learningGoal='NTC sıcaklık eşik tepkisini ve ayrı referans sinyal kablosu koptuğunda RB giriş biasının sanal karşılaştırıcı çıkışına etkisini ölçmek.';
+ lesson.beginnerSteps=[
+  'G1 +24 V, NTC/R1 10 kΩ algılama düğümü ile LM358P pin 3 IN+ arasındaki bağı izle.',
+  'R2/R3 referans düğümünü pin 2 IN− girişine ve RB 100 kΩ biasını +24 V–IN− arasına bağla.',
+  '15 °C LOW, 35 °C HIGH, tekrar 15 °C LOW çıkış sırasını sanal ölçü aletiyle doğrula.',
+  'Yalnız R2/2 → U1/2 sinyal kablosunu çıkar; RB bias üzerinden çıkışın LOW olduğunu gözlemle.',
+  'Sensör dönüşünde kopukluk ve diğer arızalar için güvenli kapanma iddiasında bulunma.'
+ ];
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  titleTopologyStatus:'VIRTUAL_NTC_REFERENCE_SIGNAL_OPEN_BIAS',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,manufacturerLimitsAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
+
 /* MQ07_SC364_SC377_OPAMP_SPECIAL: preserve verified LM358 pins, refuse invented special functionality. */
 const mq07SpecialOpampRows=[["033","NO_OPAMP_ON_DELAY_STORAGE",14,"ON-delay işlevi ancak giriş tepkisinden sonra eşik/RC gecikmesiyle tanımlanabilir.","Önceki 14 kablolu eviren yükselteçte zamanlama kondansatörü ve gecikmeli çıkış yoktu.",["lm358p-dip8","resistor","capacitor"]],["034","NO_OPAMP_OFF_DELAY_STORAGE",14,"OFF-delay işlevinde tetik kalktıktan sonra kontrollü bırakma davranışı gerekir.","Önceki eviren yükselteçte enerji depolama/deşarj ağı veya gecikmeli bırakma yoktu.",["lm358p-dip8","resistor","capacitor"]],["035","NO_SUBTRACTOR_TWO_INDEPENDENT_INPUTS",14,"Fark yükselteci iki bağımsız girişi tanımlanmış direnç oranlarıyla karşılaştırır.","Önceki 14 kablolu eviren yükselteçte bağımsız ikinci çıkarma girişi yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["036","NO_SUBTRACTOR_PRACTICE_TWO_INPUTS",14,"Çıkarıcı devre temrini iki bağımsız girişin çıkışta fark oluşturduğunu göstermelidir.","Önceki devrede yalnız bir ayar potansiyometresi vardı; çıkarma ölçümü yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["037","NO_SUMMER_INDEPENDENT_INPUT_BRANCHES",14,"Toplayıcı yükselteç ayrı giriş dirençleri ve işaret toplamı ile değerlendirilir.","Önceki eviren örnekte ikinci giriş dalı ve gerçek toplam çıkışı yoktu.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["038","NO_SUMMER_PRACTICE_INPUT_BRANCHES",14,"Toplayıcı uygulama her girişin ayrı dirençli toplama düğümüne ulaşmasını gerektirir.","Tek kaynaklı önceki devre iki giriş toplamı değildi.",["lm358p-dip8","resistor","resistor","potentiometer","potentiometer"]],["039","DIFFERENTIATOR_NATIVE_AC_RESPONSE_PENDING",14,"Türev alıcıda seri giriş kondansatörü ve çıkıştan eviren girişe dirençli geri besleme bulunur.","100 nF C1, 47 kΩ Rf ve fiziksel LM358P pinleri vardır; AC darbe tepkisi native olarak ölçülmedi.",null],["040","DIFFERENTIATOR_PRACTICE_NATIVE_PENDING",14,"Türev alıcı temrini giriş değişim hızının çıkışla ilişkisini ölçmeyi gerektirir.","Giriş kondansatörü ve dirençli geri besleme çizilidir; zaman/frekans cevabı native kabul edilmedi.",null],["041","INTEGRATOR_NATIVE_RAMP_PENDING",14,"İntegral alıcıda giriş direnci ve çıkıştan eviren girişe kondansatör geri beslemesi bulunur.","10 kΩ R1, 1 µF C1 vardır; sanal ramp/saturasyon ve sıfırlama zaman davranışı ölçülmedi.",null],["042","INTEGRATOR_PRACTICE_NATIVE_PENDING",14,"İntegral uygulama çıkışın girişin zamansal toplamını izlediğini göstermelidir.","Fiziksel LM358P pinleri ve kapasitif geri besleme çizilidir; gerçek dinamik kabul yoktur.",null],["component-035","RECTIFIER_BRIDGE_REFERENCE_ONLY",0,"Doğrultmaç, akım yönlendiren diyot elemanları ve isteğe bağlı filtrelemeden oluşur.","Köprü ve filtre kondansatörü malzeme referansıdır; giriş-çıkış dalga biçimi veya kablo yoktur.",null],["043","NO_PRECISION_HALF_WAVE_DIODE_PATH",14,"Op-amp destekli yarım dalga doğrultmada diyot yönü ve giriş/çıkış geri besleme yolunun tanımlanması gerekir.","Önceki 14 kablolu eviren yükselteçte doğrultucu diyot yoktu, yarım dalga davranışı iddia edilemez.",["lm358p-dip8","1n4007-do41","resistor"]],["component-036","NO_INSTRUMENTATION_AMPLIFIER_TOPOLOGY",0,"Enstrümantasyon yükselteci çok kademeli diferansiyel giriş ve eşleştirilmiş direnç oranları gerektirir.","Mevcut LM358P, direnç ve kondansatör yalnız semboliktir; üç yükselteçli devre ve CMRR ölçümü yoktur.",null],["044","SCHMITT_HYSTERESIS_SWEEP_NATIVE_PENDING",14,"Schmitt devresinde LM358P çıkış pin 1 pozitif geri besleme ile pin 3 girişini etkiler; pin 2 referanstır.","47 kΩ pozitif geri besleme ve 10 kΩ eşik ağı çizilidir; yukarı/aşağı giriş taraması ve eşik-histerezis farkı native ölçülmedi.",null]];
 
