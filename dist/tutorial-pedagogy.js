@@ -9651,6 +9651,40 @@ for(const [id,srcId,summary,status] of [
  lesson.safety='Yalnız düşük gerilimli sanal sensör/optik eğitimidir; gerçek ışık ve alan kalibrasyonu veya saha montajı kabulü değildir.';
 }
 
+/* SC322–335 Hall practice: source-exact interactive magnet environment.
+ * The seven 24 V PNP relay/lamp wires remain untouched. This enables an
+ * actual target drag, not a physical Hall switching/calibration acceptance. */
+{
+ const id='sensor-analog-apps-outline-039',lesson=L.byId[id],p=lesson?.project;
+ const srcLesson=L.byId['sensor-analog-apps-src-07'],src=srcLesson?.project;
+ const sensor=p?.components.find(c=>c.id==='s1'),srcSensor=src?.components.find(c=>c.id==='s1');
+ const edges=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ if(!lesson||lesson.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    lesson.steps.length!==7||p.components.find(c=>c.id==='g1')?.dcVoltage!==24||
+    sensor?.typeId!=='sensor-hall'||sensor?.outputType!=='PNP'||
+    sensor.sensing!==undefined||src?.wires.length!==7||edges(p)!==edges(src)||
+    srcSensor?.typeId!=='sensor-hall'||srcSensor.sensing?.target!=='magnet'||
+    srcSensor.sensing.range!==10||srcSensor.sensing.distance!==20)
+  throw Error('Hall 26th exercise seven-wire or source magnetic environment changed');
+ sensor.sensing=clone(srcSensor.sensing);
+ lesson.summary='24 V sanal PNP Hall sensörü, hareket ettirilebilir mıknatıs ile K1 rölesini ve NO kontak üzerinden H1 lambasını sürer.';
+ lesson.explanation='Özgün yedi kablolu devrede S1 Hall PNP sensörü BN +24 V, BU 0 V, BK çıkışı K1 bobinini sürer; K1 NO kontağı H1 lambasını kontrol eder. Mıknatıs 10 mm sanal algılama sınırının dışındayken röle/lamba OFF, 5 mm içine taşındığında ON, tekrar uzaklaştırıldığında OFF olur. Bu yalnız sanal 24 V algılama egzersizidir; üretici manyetik alan kalibrasyonu veya fiziksel güvenlik kabulü değildir.';
+ lesson.learningGoal='Sürüklenebilir mıknatısın Hall PNP çıkışını ve ayrı K1 röle/NO lamba güç yolunu sanal mesafeye göre açıp kapatmasını gözlemlemek.';
+ lesson.beginnerSteps=[
+  'G1/P→S1/BN, G1/M→S1/BU ve S1/BK→K1/A1 kontrol uçlarını takip et.',
+  'K1/13–14 NO kontağının H1/X1–X2 lamba yolunu ayırdığını doğrula.',
+  'Önce sanal mıknatıs 20 mm uzakta: S1/K1/H1 kapalı kalmalıdır.',
+  'Mıknatısı 5 mm yakına sürükle: S1 algılar, K1 enerjilenir, H1 yanar.',
+  'Mıknatısı 20 mm uzağa götür: K1 ve H1 söner; metal dışı hedef veya kopuk sensör hattında ayrı sonuçları gözle.'
+ ];
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  titleTopologyIssue:null,titleTopologyStatus:'VIRTUAL_HALL_24V_MAGNET_PNP_RELAY',
+  sourceMagneticEnvironment:'sensor-analog-apps-src-07',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,sensorCalibrationAcceptance:false};
+}
+
+
 /* MQ07_SC350_SC363_OPAMP_FEEDBACK: LM358P real pins, virtual-probe output, fail-closed gain/dynamics. */
 const mq07Opamp350Rows=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0,"Negatif geri besleme, çıkış pin 1’den eviren giriş pin 2’ye uygun direnç dönüşüdür.","Malzeme kartında giriş ve geri besleme dirençleri var; gerçek kablo, ölçülen kazanç yok."],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14,"Bu genel başlık 14 telli yalnız eviren LM358P örneğini gösterir.","Diğer op-amp işlevleri ve kazanç dinamiği test edilmedi."],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14,"10 kΩ giriş, 47 kΩ negatif geri besleme pin 2’ye; pin 3 referansa gider.","Gerilim kazancı ve besleme sınırı farklı girişlerde ölçülmedi."],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13,"AC jeneratör pin 2’yi giriş direnci üzerinden sürer, çıkış pin 1 geri beslemeye bağlıdır.","Frekans cevabı, kırpılma ve genlik doğrulaması yok."],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14,"DC potansiyometre giriş direnciyle pin 2’ye, Rf çıkış pin 1’den pin 2’ye bağlıdır.","DC transfer eğrisi ve gerçek çıkış sınırları test edilmedi."],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",11,"Evirmeyen giriş pin 3’tedir; pin 2 dirençli negatif geri besleme düğümüdür.","Gerçek sayısal kazanç ve yük davranışı native olarak doğrulanmadı."],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10,"AC jeneratör pin 3’e bağlı, Rf çıkış pin 1’den pin 2’ye bağlıdır.","AC kazanç ve doyum sınırı native olarak ölçülmedi."],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",11,"DC potansiyometre pin 3’ü; çıkış geri beslemesi pin 2’yi besler.","Çoklu DC giriş/çıkış testi yok."],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8,"Gerilim izleyicide çıkış pin 1 doğrudan eviren giriş pin 2’ye döner.","Birim kazanç, çıkış akım ve farklı giriş gerilimleri native ölçülmedi."],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8,"Gerilim izleyici temrininde pin 1→pin 2 doğrudan geri beslemedir.","Girişe karşı gerçek sanal çıkış izleme ölçümü yapılmadı."],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11,"Karşılaştırıcıda ölçülen giriş pin 3, dirençli referans pin 2 ve çıkış pin 1’dir.","Çıkış sanal multimetre probuyla okunur; Schmitt histerezisi ve yeni ders için eşik taraması kanıtlanmadı."],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11,"Karşılaştırıcı temrini giriş pin 3, referans pin 2 ve çıkış pin 1 topolojisini gösterir.","Ölçüm probu modeli kabloyla aynı şey değildir; native eşik taraması yapılmadı."],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12,"GL5528 ve dirençli bölücü pin 3 girişini, referans bölücü pin 2’yi besler.","SC42 golden 12 tel grafiğiyle eşleşir; yeni outline lux→çıkış dinamik ölçümü yapılmadı."],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12,"NTC bölücüsü pin 3 girişini, referans bölücü pin 2’yi besler.","SC43 golden 12 tel grafiğiyle eşleşir; yeni outline °C→çıkış ölçümü yapılmadı."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
