@@ -10902,6 +10902,38 @@ for(const id of [
   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+
+/* MQ07_SC201_400_TEMPERATURE_TITLE_SOURCE: use the established low-voltage
+ * NTC/LM358P/IRF540N load graph, not an unrelated PNP metal detector. */
+{
+ const id='sensor-analog-apps-outline-085',sourceId='sensor-analog-apps-src-01';
+ const lesson=L.byId[id],source=L.byId[sourceId],before=lesson?.project,donor=source?.project;
+ if(!lesson||lesson.kind!=='wiring'||before.components.length!==5||
+    before.wires.length!==7||lesson.steps.length!==7||
+    before.components.find(c=>c.id==='s1')?.typeId!=='proximity'||
+    before.components.find(c=>c.id==='g1')?.dcVoltage!==24||
+    !source||source.kind!=='wiring'||donor?.components.length!==13||
+    donor.wires.length!==19||
+    !donor.components.some(c=>c.id==='s1'&&c.typeId==='sensor-ntc')||
+    !donor.components.some(c=>c.id==='u1'&&c.typeId==='lm358p-dip8')||
+    !donor.components.some(c=>c.id==='q1'&&c.typeId==='irf540n-mosfet'&&c.mq07NtcThermalSwitch===true)||
+    !donor.components.some(c=>c.id==='h1'&&c.typeId==='standard-light'))
+  throw Error('SC201–400 temperature lesson/source graph changed: '+id);
+ const p=clone(donor);
+ setLesson(lesson,p,{kind:'wiring',
+  summary:'Sıcaklık sensörü uygulaması: gerçek NTC–LM358P karşılaştırıcı–IRF540N–H1 sanal 24 V yük devresi. Endüktif sensör yerine NTC kullanılır.',
+  explanation:source.explanation+' Bu ders sıcaklık sensörlerine bir NTC uygulama örneğidir; diğer sıcaklık sensörlerini veya gerçek donanım kabulünü temsil etmez.',
+  goal:source.learningGoal,
+  beginnerSteps:clone(source.beginnerSteps),
+  quiz:clone(source.quiz)});
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  titleTopologyStatus:'NTC_THERMAL_SOURCE_MATCHED',
+  titleTopologyIssue:null,sourceReusedFrom:sourceId,
+  nativeDynamicAcceptance:false,manufacturerCalibrationVerified:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
