@@ -9685,6 +9685,44 @@ for(const [id,srcId,summary,status] of [
 }
 
 
+/* Hall chapter magnet environment for source-wired subtopics.
+ * The 035 circuit is the original seven-wire PNP relay application;
+ * the 037 circuit is its earlier canonical wire-graph reuse. */
+{
+ const original=L.byId['sensor-analog-apps-src-07']?.project;
+ const sourceSensor=original?.components.find(c=>c.id==='s1');
+ const graph=p=>p?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ if(!original||original.wires.length!==7||sourceSensor?.typeId!=='sensor-hall'||
+    sourceSensor.sensing?.target!=='magnet'||sourceSensor.sensing.range!==10)
+  throw Error('Hall source target baseline changed');
+ for(const id of ['sensor-analog-apps-outline-035','sensor-analog-apps-outline-037']){
+  const l=L.byId[id],p=l?.project,part=key=>p?.components.find(c=>c.id===key);
+  if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+     l.steps.length!==7||graph(p)!==graph(original)||
+     part('g1')?.dcVoltage!==24||part('s1')?.typeId!=='sensor-hall'||
+     part('s1').outputType!=='PNP'||part('s1').sensing!==undefined||
+     part('k1')?.typeId!=='coil-relay'||part('h1')?.typeId!=='lamp-green')
+    throw Error('Hall source-wired chapter topology changed '+id);
+  part('s1').sensing=clone(sourceSensor.sensing);
+  l.summary='Sanal 24 V PNP Hall sensörü ve sürüklenebilir mıknatıs, yedi kablolu K1 rölesi/NO kontak/H1 lambasını çalıştırır.';
+  l.explanation='G1 24 V beslemede S1 Hall sensörü BN/BU uçlarını kullanır; BK çıkışı K1 bobinini, K1 NO kontağı H1 yükünü kontrol eder. Mıknatıs 10 mm sanal mesafe içinde röle ve lambayı ON, 20 mm dışındayken OFF yapar. Hedef plastik seçilirse veya algılama/kablo koşulları sağlanmazsa lamba çalışmaz. Bu, üretici manyetik kalibrasyonu ya da gerçek saha montajı kabulü değildir.';
+  l.learningGoal='Hall manyetik hedefin mesafesiyle ayrı sensör/PNP/röle/lamba durumlarının nasıl değiştiğini sanal devrede gözlemlemek.';
+  l.beginnerSteps=[
+   'Özgün yedi bağlantıda sensör BN/BU besleme, BK/K1 bobin ve K1 NO/H1 yük yollarını ayır.',
+   'Mıknatısı 20 mm uzakta tut: K1 ve H1 OFF olmalıdır.',
+   'Mıknatısı 5 mm içine sürükle: sensör, K1 ve H1 ON olmalıdır.',
+   'Mıknatısı tekrar 20 mm uzaklaştır: K1 ve H1 OFF olmalıdır.',
+   'Plastik hedef, yanlış hizalama ve ayrı BN/BU/BK kopukluklarını sanal olarak karşılaştır.'
+  ];
+  l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+   titleTopologyStatus:'VIRTUAL_HALL_PNP_MAGNET_RELAY',
+   sourceMagneticEnvironment:'sensor-analog-apps-src-07',
+   nativeDynamicAcceptance:false,physicalAcceptance:false,
+   windowsVisualAcceptance:false,sensorCalibrationAcceptance:false,
+   independentPedagogicalAcceptance:false};
+ }
+}
+
 /* SC336 optical PNP exercise: reuse source-14's virtual draggable target. */
 {
  const id='sensor-analog-apps-outline-049',l=L.byId[id],p=l?.project;
