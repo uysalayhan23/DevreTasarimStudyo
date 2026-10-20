@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;delete c._mq07NtcGateV;delete c._mq07PtcGateV;delete c._mq07LdrGateV;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc18LedCurrentA;delete c._sc18CollectorCurrentA;delete c._sc18CollectorVoltageV;delete c._sc18LedOn;delete c._sc18TransistorOn;delete c._sc18Isolated;delete c._sc18VirtualCtr;delete c._sc18CurrentA;delete c._sc19TimerHigh;delete c._sc19TimerHz;delete c._sc19DutyPct;delete c._sc19LedCurrentA;delete c._sc19LedOn;delete c._sc19OptoOn;delete c._sc19Isolated;delete c._sc19Wave;delete c._sc19PhaseDeg;delete c._sc19CurrentA;delete c._sc19Conducting;delete c._sc19RmsV;delete c._sc19LoadV;delete c._sc19ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._mq07Ne555Epoch;delete c._mq07Ne555StandalonePowered;delete c._ne555Out;delete c._ne555Discharge;delete c._ne555Frequency;delete c._ne555HighMs;delete c._ne555LowMs;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc18LedCurrentA;delete c._sc18CollectorCurrentA;delete c._sc18CollectorVoltageV;delete c._sc18LedOn;delete c._sc18TransistorOn;delete c._sc18Isolated;delete c._sc18VirtualCtr;delete c._sc18CurrentA;delete c._sc19TimerHigh;delete c._sc19TimerHz;delete c._sc19DutyPct;delete c._sc19LedCurrentA;delete c._sc19LedOn;delete c._sc19OptoOn;delete c._sc19Isolated;delete c._sc19Wave;delete c._sc19PhaseDeg;delete c._sc19CurrentA;delete c._sc19Conducting;delete c._sc19RmsV;delete c._sc19LoadV;delete c._sc19ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._mq07Ne555PwmEpoch;delete c._mq07Ne555PwmPowered;delete c._ne555DutyPercent;delete c._mq07Ne555Epoch;delete c._mq07Ne555StandalonePowered;delete c._ne555Out;delete c._ne555Discharge;delete c._ne555Frequency;delete c._ne555HighMs;delete c._ne555LowMs;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     // SC082 must restart its RC controls and remove stale RMS labels.
     if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-30')
       for(const c of project.components){
@@ -240,6 +240,53 @@
         if(powered){
           seed(c,'OUT','mq07-ne555:'+c.id,high?'+':'0','dc',rail.volts);
           seed(c,'GND','mq07-ne555:'+c.id,'0','dc',rail.volts);
+        }
+      }
+      /* MQ07_STANDALONE_NE555_PWM: only the correct D1/D2-potentiometer RC
+       * terminal graph enables this ideal educational (not SPICE) PWM model. */
+      for(const c of project.components){
+        const d=definition(byId,c);
+        if(d?.arduinoRole!=='ne555'||c.ne555Mode!=='pwm'||c.mq07Standalone555Pwm!==true)continue;
+        const root=(x,p)=>find(pinKey(x.id,p)),same=(x,p,y,q)=>root(x,p)===root(y,q),
+          parts=project.components;
+        const rail=at(c,'VCC').find(x=>x.type==='dc'&&x.leg==='+'&&x.volts>=4.5&&x.volts<=5.5&&
+          at(c,'GND').some(y=>y.domain===x.domain&&y.leg==='0')),
+          resetOk=!!rail&&same(c,'RESET',c,'VCC');
+        const timing=parts.find(x=>definition(byId,x)?.arduinoRole==='electrolytic'&&
+          same(x,'+',c,'TRIG')&&same(x,'+',c,'THRES')&&same(x,'-',c,'GND')),
+          resistors=parts.filter(x=>definition(byId,x)?.kind==='resistor'),
+          ra=resistors.find(x=>same(x,'1',c,'VCC')&&same(x,'2',c,'DISCH')),
+          rv=parts.find(x=>definition(byId,x)?.kind==='potentiometer'&&
+            timing&&same(x,'2',timing,'+')),
+          diodes=parts.filter(x=>['1n4148-do35','arduino-diode-1n4148'].includes(x.typeId)),
+          dch=diodes.find(x=>same(x,'A',c,'DISCH')&&rv&&same(x,'K',rv,'1')),
+          rd=resistors.find(x=>rv&&same(x,'1',rv,'3')),
+          ddis=diodes.find(x=>x!==dch&&rd&&same(x,'A',rd,'2')&&same(x,'K',c,'DISCH')),
+          rA=Number(ra?.resistance??definition(byId,ra||{})?.resistance),
+          rD=Number(rd?.resistance??definition(byId,rd||{})?.resistance),
+          rPot=Number(rv?.potMax??definition(byId,rv||{})?.potMax),
+          pct=Number(rv?.potentiometer),
+          cap=Number(timing?.capacitance??definition(byId,timing||{})?.capacitance),
+          ok=!!(resetOk&&timing&&ra&&rv&&dch&&ddis&&rd&&
+            Number.isFinite(rA)&&rA>0&&Number.isFinite(rD)&&rD>0&&
+            Number.isFinite(rPot)&&rPot>0&&Number.isFinite(pct)&&pct>=0&&pct<=100&&
+            Number.isFinite(cap)&&cap>0&&Number.isFinite(now)&&now>=0);
+        const tHigh=ok?Math.LN2*(rA+rPot*pct/100)*cap*1000:0,
+          tLow=ok?Math.LN2*(rD+rPot*(1-pct/100))*cap*1000:0,
+          period=tHigh+tLow,
+          powered=!!(ok&&Number.isFinite(period)&&period>.01&&period<1e9);
+        if(!powered||!Number.isFinite(c._mq07Ne555PwmEpoch)||now<c._mq07Ne555PwmEpoch)
+          c._mq07Ne555PwmEpoch=powered?now:null;
+        const phase=powered?(now-c._mq07Ne555PwmEpoch)%period:0,
+          high=!!(powered&&phase<tHigh);
+        c._mq07Ne555PwmPowered=powered;c._ne555Out=high;c._ne555Discharge=!high;
+        c._ne555HighMs=powered?tHigh:0;c._ne555LowMs=powered?tLow:0;
+        c._ne555Frequency=powered?1000/period:0;
+        c._ne555DutyPercent=powered?100*tHigh/period:0;
+        c._active=high;
+        if(powered){
+          seed(c,'OUT','mq07-ne555-pwm:'+c.id,high?'+':'0','dc',rail.volts);
+          seed(c,'GND','mq07-ne555-pwm:'+c.id,'0','dc',rail.volts);
         }
       }
       // Terminalized virtual PWM source: the output is electrically referenced to
@@ -571,7 +618,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
     }
     for(const w of project.wires){if(w.mechanical||w.role==='MECHANICAL'){w._fault=false;w._active=false;continue}const r=net.find(endpointKey(w.from)),atPotential=[...(net.potentials.get(r)?.values()||[])].some(p=>!net.faultDomains.has(p.domain)&&hot(p)),atSolvedVoltage=endpoint=>{if(!numericState||!endpoint?.c)return false;const c=project.components.find(x=>x.id===endpoint.c);if(!c)return false;const v=numericState.voltages.get(numericState.pin(c,endpoint.p));return !!v&&Math.hypot(v[0],v[1])>.25};w._fault=net.faultRoots.has(r);w._active=atPotential||atSolvedVoltage(w.from)||atSolvedVoltage(w.to);}
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
-    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||(c.mq07Standalone555Astable===true&&c._mq07Ne555StandalonePowered)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
+    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||(c.mq07Standalone555Astable===true&&c._mq07Ne555StandalonePowered)||(c.mq07Standalone555Pwm===true&&c._mq07Ne555PwmPowered)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
   }
   // SC11 samples electrical ON/OFF phases through the original nodal solver.
   // Speed is an explicitly *uncalibrated normalized educational response*, never RPM.
