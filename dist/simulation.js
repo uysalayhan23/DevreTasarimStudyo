@@ -943,8 +943,9 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
   // SC16 only. Explicitly model a virtual low-voltage DC TRIAC in series with
   // the actual wired load. No physical BTA16 calibration or AC behavior claimed.
   function solveSc16DcCycle(project,byId,options={}){
-    const scene=project?.tutorialLesson?.id==='electronic-switching-src-16'||
-      ['tutorial-electronic-switching-src-16','tutorial-session-source-electronic-switching-src-16'].includes(project?.projectId);
+    const scene=['electronic-switching-src-16','electronic-switching-outline-054'].includes(project?.tutorialLesson?.id)||
+      ['tutorial-electronic-switching-src-16','tutorial-session-source-electronic-switching-src-16',
+       'tutorial-session-source-electronic-switching-outline-054'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),verified:false};
     const part=id=>project.components.find(c=>c.id===id);
     const source=part('g1'),gate=part('sg'),resistor=part('rg'),stop=part('sp'),triac=part('q1'),load=part('h1');
