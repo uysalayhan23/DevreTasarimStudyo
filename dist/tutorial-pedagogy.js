@@ -8666,6 +8666,127 @@ for(const [id,issue,types,concept,limitation] of mq07FetIgbtRows){
  lesson.safety='Yalnız sanal düşük gerilim MOSFET uç tanıma dersidir; üretici pinout veya fiziksel ölçüm kabulü değildir.';
 }
 
+/* MQ07 FET lessons: native J113/IRF540N teaching circuits.
+ * J113 uses an intentionally direct 0 V G-to-S reference and switched drain
+ * LOAD, not an invented JFET cutoff voltage. IRF540N has a separate 5 V
+ * gate supply and a 10 kOhm pull-down; its 24 V drain load is isolated from
+ * the gate control branch. No manufacturer health/SPICE acceptance is implied. */
+{
+ const compareId='electronic-switching-outline-029';
+ const p=base(compareId,'FET ve MOSFET/JFET canlı sanal karşılaştırma','control');
+ p.components=[
+  C('g','supply-dc-plus',80,110,'G1','24 V sanal yük kaynağı'),
+  C('b','arduino-bench-supply',80,560,'G2','5 V sanal MOSFET gate kaynağı',{dcVoltage:5}),
+  C('sj','selector-no',280,110,'S1','J113 drain yük hattı seçicisi'),
+  C('qj','j113-jfet',770,180,'Q1','J113 N-JFET G/D/S'),
+  C('hj','lamp-green',510,100,'H1','JFET drain yükü'),
+  C('sm','selector-no',280,550,'S2','MOSFET 5 V gate seçicisi'),
+  C('qm','irf540n-mosfet',770,510,'Q2','IRF540N N-MOSFET G/D/S'),
+  C('hm','lamp-red',510,460,'H2','MOSFET drain yükü'),
+  C('rp','resistor',1030,560,'R1','10 kΩ gate pull-down',{resistance:10000}),
+  C('vj','meter-voltmeter',1080,95,'V1','JFET yük gerilimi'),
+  C('vm','meter-voltmeter',1080,315,'V2','MOSFET yük gerilimi'),
+  C('vg','meter-voltmeter',1110,670,'V3','MOSFET gate-source gerilimi')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'JFET drain yükü ile MOSFET gate/yük kontrol kollarını farklı tut.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','sj','13');wire('sj','14','hj','X1');wire('hj','X2','qj','D');
+ wire('qj','S','g','M','0V');wire('qj','G','qj','S','0V');
+ wire('vj','1','hj','X1');wire('vj','2','hj','X2');
+ wire('g','P','hm','X1');wire('hm','X2','qm','D');wire('qm','S','g','M','0V');
+ wire('b','M','g','M','0V');wire('b','P','sm','13');wire('sm','14','qm','G');
+ wire('qm','G','rp','1');wire('rp','2','g','M','0V');
+ wire('vm','1','hm','X1');wire('vm','2','hm','X2');
+ wire('vg','1','qm','G');wire('vg','2','qm','S');
+ if(p.components.length!==12||p.wires.length!==19||
+   new Set(p.wires.map(w=>w.id)).size!==19)
+  throw Error('FET comparative source graph incomplete');
+ const ids=['electronic-switching-outline-029','electronic-switching-outline-030',
+  'electronic-switching-outline-033'];
+ const expected={
+  'electronic-switching-outline-029':['j113-jfet','irf540n-mosfet'],
+  'electronic-switching-outline-030':['j113-jfet','irf540n-mosfet'],
+  'electronic-switching-outline-033':['j113-jfet','irf540n-mosfet']
+ };
+ for(const id of ids){
+  const l=L.byId[id],original=l?.project;
+  if(!l||l.kind!=='quiz'||original?.referenceOnly!==true||
+     original.wires.length!==0||original.components.map(c=>c.typeId).join(',')!==expected[id].join(','))
+   throw Error('FET original lesson scope changed '+id);
+  const v=clone(p);
+  const isCheck=id.endsWith('033'),isType=id.endsWith('030');
+  setLesson(l,v,{kind:'wiring',
+   summary:isCheck?
+    'Sanal FET işlev karşılaştırması: J113 G/S=0 V referansında S1 drain yükünü, IRF540N ise S2 ile 0/5 V gate komutunu kontrol eder. H1/H2 ve V1/V2 çıkışları ayrı gözlenir.':
+    'J113 JFET ile IRF540N MOSFET artık iki ayrı canlı sanal 24 V yükü sürer. JFET S1 drain yolundan, MOSFET S2 5 V gate yolundan kumanda edilir.',
+   explanation:'S1 ile J113 G/D/S kolunun yükü seçilir; J113 G ve S doğrudan ortak 0 V da olduğundan bu uygulama JFET in negatif gate kesim karakteristiğini ölçmez. S2, G2 5 V sanal kaynağını IRF540N gate ucuna uygular; 10 kΩ R1 gate pull-down ile S2 kapalıyken G/S 0 V olur. V1 ve V2 lamba gerilimini, V3 IRF540N G/S gerilimini gösterir. Her iki transistor ve lambanın sanal anahtarlaması gözlenir; MOSFET/JFET üretici karakteristik eğrisi, gerçek sağlamlık ölçümü veya fiziksel elektrik güvenliği kabulü değildir.',
+   goal:isCheck?'İki ayrı FET kolunun sanal işlevini gözleyip fiziksel sağlamlık testiyle karıştırmamak.':
+    isType?'J113 normal iletim ile IRF540N gate kontrollü anahtarlama farkını iki canlı yükle karşılaştırmak.':
+    'N-JFET ve N-MOSFET gate/drain/source görevleriyle yük ve kumanda yollarını ayırmak.',
+   beginnerSteps:['S1/S2 kapalıyken iki lamba ve V1/V2 gerilimlerini incele.',
+    'S1 i etkinleştir: J113 drain yükünde H1 yanarken MOSFET H2 sönük kalsın.',
+    'S2 yi etkinleştir: V3 5 V ve H2/V2 24 V değerlerini gözle.',
+    'S1 i kapat: J113 yükü sönsün, MOSFET yükü S2 etkinse yansın.',
+    'G/S=0 V J113 durumu negatif gate kesim testi değildir; fiziksel transistor sağlamlığı çıkarma.'],
+   quiz:{question:'Bu sanal devrede MOSFET H2 lambasının yanması için S2 açık/etkin konumdayken V3 yaklaşık kaç volt olmalıdır?',
+    options:['5 V sanal gate-source sürmesi.','24 V doğrudan gate-source.','G/S uçları birbiriyle kısa devre olmalıdır.'],
+    answer:0,why:'IRF540N sanal sürmesi ayrı 5 V kaynaktan gelir; 24 V yalnız drain yük kolundadır.'}
+  });
+  l.pedagogyReview={...l.pedagogyReview,mq07FetIgbtScope:'SC266_SC279',
+   sourceReusedFrom:compareId===id?null:compareId,
+   titleTopologyStatus:'SOURCE_WIRED_NATIVE_FET_COMPARISON',
+   titleTopologyIssue:null,nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,
+   physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+  l.safety='Yalnız 24 V yük ve ayrı sanal 5 V gate referanslı eğitim modeli; gerçek transistor sağlamlığı ya da fiziksel elektriksel kurulum talimatı değildir.';
+ }
+}
+/* J113 JFET G/D/S terminal lesson: real nine-wire switched-drain circuit. */
+{
+ const id='electronic-switching-outline-031',l=L.byId[id],old=l?.project;
+ if(!l||l.kind!=='quiz'||old?.referenceOnly!==true||old.wires.length!==0||
+    old.components.map(c=>c.typeId).join(',')!=='j113-jfet,resistor')
+  throw Error('J113 terminal reference changed');
+ const p=base(id,l.title,'control');
+ p.components=[
+  C('g','supply-dc-plus',90,150,'G1','24 V sanal DC kaynak'),
+  C('sj','selector-no',300,120,'S1','Drain yük seçicisi'),
+  C('qj','j113-jfet',750,200,'Q1','J113 G/D/S terminalleri'),
+  C('hj','lamp-green',540,110,'H1','Drain yük lambası'),
+  C('vj','meter-voltmeter',920,115,'V1','Yük X1/X2 gerilimi'),
+  C('vgs','meter-voltmeter',925,445,'V2','JFET G/S referansı')
+ ];
+ const wire=(a,ap,b,bp,role='CONTROL')=>p.wires.push(W(a,ap,b,bp,
+  a+'/'+ap+' → '+b+'/'+bp,
+  'Gate ve source ortak 0 V da; seçici yalnız drain yük hattını kontrol eder.',
+  role==='0V'?'#111827':'#8b5a2b',role));
+ wire('g','P','sj','13');wire('sj','14','hj','X1');wire('hj','X2','qj','D');
+ wire('qj','S','g','M','0V');wire('qj','G','qj','S','0V');
+ wire('vj','1','hj','X1');wire('vj','2','hj','X2');
+ wire('vgs','1','qj','G');wire('vgs','2','qj','S','0V');
+ if(p.components.length!==6||p.wires.length!==9||
+    new Set(p.wires.map(w=>w.id)).size!==9)
+  throw Error('J113 source terminal lesson graph incomplete');
+ setLesson(l,p,{kind:'wiring',
+  summary:'J113 G/D/S terminalleri artık sanal 24 V yük, S1 seçici, H1 lamba ve iki voltmetreyle dokuz gerçek bağlantıda gösterilir.',
+  explanation:'JFET gate (G) ve source (S) ortak 0 V referansındadır; bu yüzden sanal ideal modelde kanal drain beslemesi varken iletir. S1 drain yük beslemesini açar/kapatır; H1 üzerindeki V1 0/24 V, G/S üzerindeki V2 0 V gösterir. Bu devre negatif gate ile kesim testi ya da gerçek J113 veri sayfası kalibrasyonu değildir.',
+  goal:'J113 G/D/S uçlarının ayrı görevlerini canlı sanal drain yükü ve VGS ölçümüyle ayırt etmek.',
+  beginnerSteps:['J113 G, D ve S uçlarını bul ve 24 V yük yolunu izle.',
+   'S1 etkinleştirilince H1 ve V1 de 24 V gözle.',
+   'V2 den J113 G/S nin 0 V referansında olduğunu kontrol et.',
+   'S1 bırakılınca H1/V1 sıfırlanmalı; negatif gate kesimi bu devrede denenmez.'],
+  quiz:{question:'J113 dersinde S1 seçicisi devrenin hangi kolunu açar/kapatır?',
+   options:['Drain yük besleme kolunu.','Gate e doğrudan 24 V uygular.','JFET paket pin sırasını değiştirir.'],
+   answer:0,why:'S1 drain yük beslemesindedir; J113 G/S ortak 0 V referansını korur.'}
+ });
+ l.pedagogyReview={...l.pedagogyReview,mq07FetIgbtScope:'SC266_SC279',
+  titleTopologyStatus:'SOURCE_WIRED_J113_GDS_LOAD',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,manufacturerDeviceAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ l.safety='Yalnız sanal 24 V JFET terminal/yük gösterimi; fiziksel J113 pin sırası, sağlamlık veya güvenlik kabulü değildir.';
+}
+
 /* MQ07_SC264_SC280_NATIVE_REUSE: verified wired teaching projects, not real-device acceptance. */
 for(const [id,sourceId,summary,goal,status] of [
  ['electronic-switching-outline-034','electronic-switching-src-09',
