@@ -63,10 +63,12 @@
     Math.abs(Number(s.dcVoltage??byId[s.typeId]?.defaultVoltage??5)-5)<.01&&
     connected(c.id,'VCC',s.id,'P')&&connected(c.id,'GND',s.id,'M'));
  }
- const temperature=clamp(c.arduinoValue,0,125,d.arduinoDefault??25);
- const voltage=powered?temperature*.01:0;
- c._mq07Lm35SupplyOk=powered;c._mq07Lm35TempC=temperature;c._mq07Lm35OutputV=voltage;
- c._mq07Lm35Fault=powered?'':'LM35 sanal 5 V besleme veya ortak GND eksik';
+ const input=Object.prototype.hasOwnProperty.call(c,'arduinoValue')?c.arduinoValue:d.arduinoDefault;
+ const temperature=typeof input==='number'?input:(typeof input==='string'&&input.trim()!==''?Number(input):NaN);
+ const valid=Number.isFinite(temperature)&&temperature>=0&&temperature<=125;
+ const voltage=powered&&valid?temperature*.01:0;
+ c._mq07Lm35SupplyOk=powered&&valid;c._mq07Lm35TempC=valid?temperature:null;c._mq07Lm35OutputV=voltage;
+ c._mq07Lm35Fault=!valid?'LM35 sanal sıcaklık değeri geçersiz':powered?'':'LM35 sanal 5 V besleme veya ortak GND eksik';
  return Math.round(voltage/5*1023);
  }if(r==='temperature')return Math.round((clamp(c.arduinoValue,-40,125,d.arduinoDefault??25)+40)/165*1023);if(r==='joystick'){if(p==='VRX')return Math.round(clamp(c.arduinoX,0,1023,512));if(p==='VRY')return Math.round(clamp(c.arduinoY,0,1023,512));if(p==='SW')return c.state?0:1}if(r==='encoder'){if(p==='CLK')return Number(c._encoderCLK??0);if(p==='DT')return Number(c._encoderDT??0);if(p==='SW')return c.state?0:1}if(r==='industrial-encoder'){if(!c._encoderPowered)return null;return IncrementalEncoder.line(c,p)}if(r==='dht')return mode==='digital'?1:Math.round(clamp(c.arduinoHumidity,0,100,50)*10.23);if(r==='bluetooth-hc05'&&p==='STATE')return c._hc05Connected?1:0;if(r==='signal-generator'&&p==='OUT'){const v=clamp(c._signalVoltage,0,5,0);return mode==='digital'?(v>=2.5?1:0):Math.round(v/5*1023)}return null}
   const utf8Encode=s=>{const out=[];for(const ch of String(s??'')){const n=ch.codePointAt(0);if(n<128)out.push(n);else if(n<2048)out.push(192|(n>>6),128|(n&63));else if(n<65536)out.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else out.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63))}return out};
