@@ -9305,6 +9305,64 @@ for(const [id,reason,expectedWires,types,concept,limits] of mq07SensorSc308to321
 }
 
 
+/* PTC comparator source-supply monitor, using the spare channel of the same
+ * LM358P DIP-8. This is an educational virtual AND of A's hot comparator
+ * output and the sensor's separate top-feed potential. The signal fault bias
+ * from the preceding block stays in place; only channel B (pin 7) is measured.
+ * No physical functional-safety claim: missing GND, shorted or tampered leads
+ * are not independently guaranteed to yield LOW. */
+{
+ const id='sensor-analog-apps-outline-032',l=L.byId[id],p=l?.project;
+ const part=id=>p?.components.find(c=>c.id===id);
+ const lead=part('v1-red'),sensor=part('s1'),amplifier=part('u1');
+ if(!l||l.kind!=='wiring'||p.wires.length!==14||l.steps.length!==14||
+    p.components.length!==10||sensor?.typeId!=='sensor-ptc'||
+    amplifier?.typeId!=='lm358p-dip8'||part('rf')?.resistance!==100000||
+    part('r1')?.resistance!==2000||lead?.probeTarget?.p!=='1'||
+    p.wires.some(w=>[w.from,w.to].some(e=>e.c==='u1'&&['5','6','7'].includes(e.p)))||
+    ['r4','r5','r6'].some(id=>part(id)))
+   throw Error('PTC unused LM358 comparator channel or sensor source changed');
+ for(const [id,x,y,name] of [
+   ['r4',660,100,'10 kΩ A çıkışı'],
+   ['r5',830,100,'10 kΩ PTC besleme izleme'],
+   ['r6',1000,100,'10 kΩ 0 V toplama']
+ ])p.components.push(C(id,'resistor',x,y,id.toUpperCase(),name,{resistance:10000,
+    tutorialPurpose:'LM358P ikinci kanalında, normal sıcaklık eşik çıkışıyla sensörün üst besleme durumunu birlikte doğrulayan sanal direnç ağı.'}));
+ const bWires=[
+  ['u1','1','r4','1','LM358P 1OUT → R4', 'Birinci kanalın sıcaklık eşiği çıkışı.','SIGNAL'],
+  ['r4','2','u1','5','R4 → LM358P 2IN+', 'Sıcaklık kararı ikinci kanal girişinde ağırlıklandırılır.','SIGNAL'],
+  ['s1','1','r5','1','PTC üst besleme → R5','PTC ucunun sanal 24 V beslemesinin devamlılığı ölçülür.','+24V'],
+  ['r5','2','u1','5','R5 → LM358P 2IN+','Kopuk sensör beslemesi B kanalını düşükte tutar.','SIGNAL'],
+  ['g1','M','r6','1','0 V → R6','B kanalı girişinde 0 V ağırlıklandırma direnci.','0V'],
+  ['r6','2','u1','5','R6 → LM358P 2IN+','R4/R5/R6 10 kΩ giriş ağı; 12 V referansa göre karşılaştırılır.','SIGNAL'],
+  ['r2','2','u1','6','12 V referans → LM358P 2IN−','İkinci kanalın karşılaştırma referansı.','SIGNAL']
+ ];
+ for(const [a,ap,b,bp,hint,why,role] of bWires)
+  p.wires.push(W(a,ap,b,bp,hint,why,
+    role==='0V'?'#111827':role==='+24V'?'#8b5a2b':'#43a047',role));
+ lead.probeTarget={c:'u1',p:'7'};
+ lead.tutorialPurpose='Kırmızı UNI-T probu LM358P ikinci kanal 2OUT / pin 7 üzerinde sanal izleme gerilimini ölçer.';
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
+  why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=materialRows(p);
+ l.summary='PTC 35 °C LOW, 65 °C HIGH; LM358P ikinci kanalında hem sıcaklık komutu hem PTC besleme kontrolüyle kopuk +24 V sensör hattı LOW.';
+ l.explanation='Birinci LM358P kanalı PTC/R1 2 kΩ düğümünü 12 V referansla karşılaştırır; ikinci kanal B (pin 5/6/7) bu çıkışı ve PTC üst besleme noktasını R4/R5/R6 10 kΩ ağıyla ayrı ayrı izler. 2IN− pin 6 mevcut 12 V referansına bağlıdır. 2OUT pin 7 üzerindeki V1 değeri normal 35 °C için yaklaşık 0,02 V, 65 °C için yaklaşık 21,45 V; PTC üst +24 V kablosu kopunca yaklaşık 0,02 V olur. Önceki RF 100 kΩ sensör sinyal biası da korunmuştur. Bu ders yalnız sanal düşük gerilimli karşılaştırıcı işlevini gösterir; sensörün bütün hat arızaları, gerçek op-amp çıkış akımı veya fiziksel emniyet sertifikası test edilmiş değildir.';
+ l.learningGoal='LM358P A kanalında sıcaklık karşılaştırması ve B kanalında sıcaklık kararı ile PTC beslemesinin birlikte izlenmesini, kopuk üst hat halinde V1 LOW sonucu ile ayırt etmek.';
+ l.beginnerSteps=[
+  'PTC ile R1 2 kΩ bölücü bağlantısını ve LM358P A kanalı 2IN−/3IN+ uçlarını izle.',
+  'U1/1 üzerinden R4; S1/1 üzerinden R5; G1/M üzerinden R6 ile U1/5 toplam noktasını kur.',
+  'R2/R3 12 V referansını U1/6 girişine bağla ve V1 kırmızı probunu U1/7 2OUT noktasında tut.',
+  '35 °C’de V1 LOW, 65 °C’de HIGH; 35 °C’ye dönünce LOW değerini karşılaştır.',
+  'Yalnız G1/P→S1/1 üst besleme kablosunu çıkar: V1 ikinci kanal çıkışının LOW olduğunu gözle.',
+  'Bu bir fiziksel emniyet rölesi değildir; tüm kopukluk ve kısa devrelerde güvenli durma garantisi yoktur.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,
+  titleTopologyStatus:'VIRTUAL_PTC_DUAL_COMPARATOR_SUPPLY_OPEN_MONITOR',titleTopologyIssue:null,
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  sensorCalibrationAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
+
 /* MQ07_SC308_SC321_SENSOR_WIRED_REUSE: source-exact virtual instruments,
  * not a new calibration or manufacturer-performance certificate. */
 for(const [id,srcId,summary,status] of [
