@@ -9612,6 +9612,42 @@ for(const [id,reason,expectedWires,partIds,concept,limits] of mq07OpticalRows){
 }
 
 
+/* SC336-349 sound sensor outline: preserve source-exact 8-wire Arduino circuit.
+ * The missing digital sketch prevented the existing buzzer output from ever
+ * reacting to the threshold. 5 V line roles are merely truthful wire labels. */
+{
+ const id='sensor-analog-apps-outline-053',l=L.byId[id],p=l?.project;
+ const src=L.byId['sensor-analog-apps-src-16']?.project;
+ const part=(q,key)=>q?.components.find(c=>c.id===key);
+ const graph=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ if(!l||l.kind!=='wiring'||p?.components.length!==4||p.wires.length!==8||l.steps.length!==8||
+    !src||src.components.length!==4||src.wires.length!==8||graph(p)!==graph(src)||
+    part(p,'ps')?.typeId!=='arduino-bench-supply'||part(p,'ps').dcVoltage!==5||
+    part(p,'s1')?.typeId!=='arduino-sound-sensor'||part(p,'u1')?.typeId!=='arduino-uno'||
+    part(p,'bz')?.typeId!=='arduino-buzzer'||part(p,'u1').arduinoSketch!==undefined||
+    !part(src,'u1')?.arduinoSketch?.includes('digitalRead(2)')||
+    !part(src,'u1')?.arduinoSketch?.includes('digitalWrite(9,'))
+  throw Error('Sound outline source/Arduino baseline changed');
+ part(p,'u1').arduinoSketch=part(src,'u1').arduinoSketch;
+ part(p,'u1').arduinoProgramName=part(src,'u1').arduinoProgramName;
+ for(const w of p.wires)if(w.from?.c==='ps'&&w.from?.p==='P'&&w.role==='+24V')w.role='+5V';
+ if(p.colorRoles?.['#8b5a2b']==='+24V')p.colorRoles['#8b5a2b']='+5V';
+ l.summary='Sanal 5 V KY-037/038 ses sensörü DO → Arduino UNO D2; D9 çıkışı buzzerı eşik üstünde çalıştırır.';
+ l.explanation='Sekiz özgün bağlantıda 5 V besleme sensör, UNO ve buzzer için ortaktır. Ses sensörü DO dijital çıkışı Arduino D2 girişine gider; gerçek sanal sketch digitalRead(2) sonucunu digitalWrite(9) ile buzzer SIG hattına taşır. Ses ayarı 120→800→120 iken buzzer OFF→ON→OFF olur. Bu yalnız simülatörün dijital eşik modelidir; fiziksel desibel, gerçek alkış sınıflandırması, ses kalibrasyonu veya buzzer sürme güvenliği kabulü değildir.';
+ l.learningGoal='Kablolu 5 V ses sensörü dijital eşik sinyalini Arduino D2 girişi ve D9 buzzer çıkışından takip etmek.';
+ l.beginnerSteps=[
+  'PS +5 V ve 0 V hatlarını sensör VCC/GND, Arduino 5V/GND ve buzzer VCC/GND uçlarında izle.',
+  'Ses sensörünün DO çıkışının Arduino UNO D2 girişine bağlı olduğunu doğrula.',
+  'Arduino D9 çıkışının buzzer SIG ucuna bağlandığını ve sketch içindeki digitalRead(2)/digitalWrite(9) akışını incele.',
+  'Ses değerini 120→800→120 yap: buzzer sırasıyla OFF→ON→OFF olmalıdır.',
+  'D2 veya D9 sinyal bağlantısını çıkarıp sonuçları karşılaştır; gerçek ses/desibel kalibrasyonu iddia etme.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+  titleTopologyStatus:'VIRTUAL_SOUND_D2_D9_BUZZER',sourceAudioCircuit:'sensor-analog-apps-src-16',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,windowsVisualAcceptance:false,
+  acousticCalibrationAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 /* MQ07_SC322_SC349_SENSOR_OPTICAL_WIRED_REUSE: reuse exact native sensor terminals.
  * Non-calibrated sensors do not receive a physical or dynamic PASS. */
 for(const [id,srcId,summary,status] of [
