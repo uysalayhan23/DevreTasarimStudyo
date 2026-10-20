@@ -10870,6 +10870,38 @@ for(const id of [
  }
 }
 
+
+/* MQ07_SC201_400_OPTICAL_HEADING_TARGET: source-matched virtual detection.
+ * The existing 7-wire lesson previously had no draggable optical target. */
+{
+ const id='sensor-analog-apps-outline-060',sourceId='sensor-analog-apps-src-14';
+ const lesson=L.byId[id],p=lesson?.project,source=L.byId[sourceId]?.project;
+ const part=(q,key)=>q?.components.find(c=>c.id===key);
+ const graph=q=>q?.wires.map(w=>w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p).sort().join('|');
+ const target=part(p,'s1'),native=part(source,'s1');
+ if(!lesson||lesson.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    lesson.steps.length!==7||source?.wires.length!==7||graph(p)!==graph(source)||
+    part(p,'g1')?.dcVoltage!==24||target?.typeId!=='sensor-through-beam'||
+    target.outputType!=='PNP'||target.sensing!==undefined||
+    native?.sensing?.target!=='plastic'||native.sensing.range!==40||
+    native.sensing.distance!==80)
+  throw Error('SC201–400 optical outline-060 native wiring baseline changed');
+ target.sensing=clone(native.sensing);
+ lesson.beginnerSteps=[
+  'Optik B1 sensörü BN ve BU üzerinden sanal 24 V besleme alır; BK çıkışı K1 bobinini kontrol eder.',
+  'Başlangıçtaki plastik hedef 80 mm uzaktayken K1 bobini ve H1 lambası OFF kalır.',
+  'Sanal hedefi 20 mm mesafeye sürükle: K1 bobini çeker, K1/13–14 kapanır ve H1 yanar.',
+  'Hedefi 41 mm uzaklaştır: K1 bobini ve H1 tekrar OFF olur.',
+  'Sıvı gibi uyumsuz hedefi veya 7 mm yanal kaymayı dene; röle ve lamba OFF kalır.',
+  'Bu sanal eğitim modeli gerçek optik verici/alıcı kalibrasyonu değildir.'
+ ];
+ lesson.explanation+=' Bu kablolu örnekte optik sanal plastik hedef 40 mm menzil içinde ve hizalıyken PNP BK çıkışı K1/A1 bobinini etkinleştirir, K1/13–14 kontağı H1 yükünü besler. Başlangıçta hedef 80 mm uzaktır (OFF). Sürüklenebilir hedefin 20 mm yaklaşması ON, 41 mm uzaklaşması OFF sonucunu verir. Menzil ve hizalama eğitim modelidir; gerçek ürün veya Windows görsel kabulü değildir.';
+ lesson.pedagogyReview={...lesson.pedagogyReview,sourceSensorEnvironment:sourceId,
+  virtualOpticalTarget:'SOURCE_MATCHED_PNP_40MM',
+  nativeDynamicAcceptance:false,manufacturerCalibrationVerified:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
