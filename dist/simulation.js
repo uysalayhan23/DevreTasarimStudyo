@@ -30,7 +30,7 @@
     for(const c of project.components){delete c._sc12BrightnessPct;delete c._sc12DimmerVerified;}
     for(const c of project.components){V20.clear(c);ACS.clear(c);HCFA.clear(c);PLC?.clear?.(c);DigitalIC?.clear?.(c);delete c._motorHz;delete c._motorRPM;delete c._motorDrive;delete c._motorAngle;delete c._sc11SpeedPercent;delete c._sc11DriveTargetPercent;delete c._sc11ResponseNow;delete c._sc11VgsMean;delete c._mq07NtcGateV;delete c._mq07PtcGateV;delete c._mq07LdrGateV;}
     for(const c of project.components){for(const k of ['_sensorSignal','_instrument','_controller','_pid','_alarmArmed1','_alarmArmed2','_voltageValue','_meter','_clamp','_shownMeterWarning','_a1pid','_autoTune','_ncv'])delete c[k]}
-    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc18LedCurrentA;delete c._sc18CollectorCurrentA;delete c._sc18CollectorVoltageV;delete c._sc18LedOn;delete c._sc18TransistorOn;delete c._sc18Isolated;delete c._sc18VirtualCtr;delete c._sc18CurrentA;delete c._sc19TimerHigh;delete c._sc19TimerHz;delete c._sc19DutyPct;delete c._sc19LedCurrentA;delete c._sc19LedOn;delete c._sc19OptoOn;delete c._sc19Isolated;delete c._sc19Wave;delete c._sc19PhaseDeg;delete c._sc19CurrentA;delete c._sc19Conducting;delete c._sc19RmsV;delete c._sc19LoadV;delete c._sc19ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._mq07Ne555PwmEpoch;delete c._mq07Ne555PwmPowered;delete c._ne555DutyPercent;delete c._mq07Ne555Epoch;delete c._mq07Ne555StandalonePowered;delete c._ne555Out;delete c._ne555Discharge;delete c._ne555Frequency;delete c._ne555HighMs;delete c._ne555LowMs;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
+    for(const c of project.components){c._active=false;c._lampActive=false;c._actuated=false;c._closed=null;c._contactStates={};c._hot=[];c._powered=false;c._fault=false;c._spin=0;delete c._timing;delete c._sensorSupply;delete c._currentValue;delete c._primaryCurrent;delete c._secondaryCurrent;delete c._secondaryOpen;delete c._phaseFault;delete c._signalMv;delete c._loadExcitation;delete c._loadStatus;delete c._hcfaLinkedDrive;delete c._hcfaModbusLinked;delete c._doldEval;delete c._doldMemory;delete c._capacitorVoltage;delete c._inductorCurrent;delete c._reactiveVoltage;delete c._reactiveCurrent;delete c._reactiveModel;delete c._reactiveNow;delete c._scrLatched;delete c._scrGateVoltage;delete c._scrHoldingCurrentA;delete c._triacLatched;delete c._triacGateVoltage;delete c._triacHoldingCurrentA;delete c._sc16DcValid;delete c._sc16PowerPath;delete c._sc16CurrentA;delete c._sc17Wave;delete c._sc17PhaseDeg;delete c._sc17SourceV;delete c._sc17GateV;delete c._sc17FiringAngleDeg;delete c._sc17CurrentA;delete c._sc17Conducting;delete c._sc17Half;delete c._sc17RmsV;delete c._sc17LoadV;delete c._sc17ConductionPct;delete c._sc18LedCurrentA;delete c._sc18CollectorCurrentA;delete c._sc18CollectorVoltageV;delete c._sc18LedOn;delete c._sc18TransistorOn;delete c._sc18Isolated;delete c._sc18VirtualCtr;delete c._sc18CurrentA;delete c._sc19TimerHigh;delete c._sc19TimerHz;delete c._sc19DutyPct;delete c._sc19LedCurrentA;delete c._sc19LedOn;delete c._sc19OptoOn;delete c._sc19Isolated;delete c._sc19Wave;delete c._sc19PhaseDeg;delete c._sc19CurrentA;delete c._sc19Conducting;delete c._sc19RmsV;delete c._sc19LoadV;delete c._sc19ConductionPct;delete c._sc15InstantSourceV;delete c._sc15InstantLoadV;delete c._sc15CurrentA;delete c._sc15OutputRmsV;delete c._sc15GateOutputV;delete c._sc15FiringAngleDeg;delete c._sc15PhaseDeg;delete c._sc15ConductionPct;delete c._sc15Wave;delete c._sc15Conducting;delete c._mq07BjtAstableEpoch;delete c._mq07BjtAstablePowered;delete c._mq07BjtAstableHz;delete c._mq07Ne555PwmEpoch;delete c._mq07Ne555PwmPowered;delete c._ne555DutyPercent;delete c._mq07Ne555Epoch;delete c._mq07Ne555StandalonePowered;delete c._ne555Out;delete c._ne555Discharge;delete c._ne555Frequency;delete c._ne555HighMs;delete c._ne555LowMs;delete c._pwmSupplyValid;delete c._pwmHigh;delete c._bjtOn;delete c._mosfetOn;delete c._jfetOn;delete c._igbtOn;delete c._thyristorOn;delete c._diacOn;delete c._opampOutput;delete c._opampDiff;delete c._opampPowered}
     // SC082 must restart its RC controls and remove stale RMS labels.
     if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-30')
       for(const c of project.components){
@@ -444,6 +444,46 @@
         (cfg.dutyPercent===100||(cfg.dutyPercent>0&&(now%period)<period*cfg.dutyPercent/100)));
       sw._mq05PwmValid=!!valid;
     }
+    /* MQ07_SC388_BJT_ASTABLE: source-validated opt-in virtual ideal RC switching.
+     * This does not replace the default physical BJT solver. */
+    {
+      const pair=project.components.filter(c=>c.mq07StandaloneBjtAstable===true);
+      if(pair.length){
+        const [q1,q2]=[project.components.find(c=>c.id==='q1'),project.components.find(c=>c.id==='q2')];
+        const wire=(a,ap,b,bp)=>project.wires.some(w=>(
+          (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+          (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap)));
+        const get=x=>project.components.find(c=>c.id===x),g=get('g'),
+          rc1=get('rc1'),rc2=get('rc2'),rb1=get('rb1'),rb2=get('rb2'),c1=get('c1'),c2=get('c2');
+        const ok=!!(pair.length===2&&q1&&q2&&pair.includes(q1)&&pair.includes(q2)&&
+          definition(byId,q1)?.kind==='bjt-npn'&&definition(byId,q2)?.kind==='bjt-npn'&&
+          definition(byId,g)?.id==='arduino-bench-supply'&&Number(g?.dcVoltage)===5&&
+          [rc1,rc2,rb1,rb2].every(x=>definition(byId,x)?.kind==='resistor'&&
+            Number(x.resistance)>0)&&
+          [c1,c2].every(x=>definition(byId,x)?.kind==='capacitor'&&Number(x.capacitance)>0)&&
+          wire('g','P','rc1','1')&&wire('rc1','2','q1','C')&&
+          wire('g','P','rc2','1')&&wire('rc2','2','q2','C')&&
+          wire('q1','E','g','M')&&wire('q2','E','g','M')&&
+          wire('g','P','rb1','1')&&wire('rb1','2','q1','B')&&
+          wire('g','P','rb2','1')&&wire('rb2','2','q2','B')&&
+          wire('q1','C','c1','1')&&wire('c1','2','q2','B')&&
+          wire('q2','C','c2','1')&&wire('c2','2','q1','B'));
+        const half1=ok?Math.LN2*Number(rb2.resistance)*Number(c1.capacitance)*1000:0,
+          half2=ok?Math.LN2*Number(rb1.resistance)*Number(c2.capacitance)*1000:0,
+          period=half1+half2,
+          powered=!!(ok&&Number.isFinite(period)&&period>.01&&period<1e9&&Number.isFinite(now)&&now>=0);
+        if(!powered||!Number.isFinite(q1?._mq07BjtAstableEpoch)||now<q1._mq07BjtAstableEpoch)
+          if(q1)q1._mq07BjtAstableEpoch=powered?now:null;
+        const phase=powered?(now-q1._mq07BjtAstableEpoch)%period:0;
+        if(q1&&q2){
+          q1._bjtOn=!!(powered&&phase<half1);
+          q2._bjtOn=!!(powered&&phase>=half1);
+          q1._mq07BjtAstablePowered=powered;q2._mq07BjtAstablePowered=powered;
+          q1._mq07BjtAstableHz=powered?1000/period:0;
+          q2._mq07BjtAstableHz=q1._mq07BjtAstableHz;
+        }
+      }
+    }
 for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);if(ed?.incrementalEncoder38mm){const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef;IncrementalEncoder.state(c,ed,now,true)}}if(c.typeId===V20.id)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};if(c.typeId===ACS.id)c._acs800Frame={now,base:c._acs800?JSON.parse(JSON.stringify(c._acs800)):null};if(c.typeId===HCFA.id)c._hcfaFrame={now,base:c._hcfa?JSON.parse(JSON.stringify(c._hcfa)):null};}
     let actuators=new Map(),sensors=new Set();
     for(const c of project.components){const d=definition(byId,c);if(d&&['overload','thermal-magnetic'].includes(d.kind)&&c.state&&normalizeRef(c.ref))actuators.set('thermal:'+normalizeRef(c.ref),true)}
@@ -461,7 +501,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       const plcChanged=plcBefore!==JSON.stringify(project.components.filter(c=>definition(byId,c)?.isPLC).map(c=>[c.id,c._plcRuntime?.inputs||{},c._plcRuntime?.outputs||{},!!c._plcLatch]));
       if(!firstNet)firstNet=net;
       let bjtChanged=false,bjtNumeric=null;
-      for(const tc of project.components){const td=definition(byId,tc);if(!['bjt-npn','bjt-pnp'].includes(td?.kind))continue;let vb=td.kind==='bjt-npn'?net.dcVoltage(tc,'B','E'):net.dcVoltage(tc,'E','B');if(vb===null){bjtNumeric ||= Numeric.update(project,byId,net,{now,sampleOnly:true});vb=td.kind==='bjt-npn'?bjtNumeric.dc(tc,'B','E'):-bjtNumeric.dc(tc,'B','E')}const on=vb!==null&&vb>=0.62;if(on!==!!tc._bjtOn){tc._bjtOn=on;bjtChanged=true}}
+      for(const tc of project.components){const td=definition(byId,tc);if(!['bjt-npn','bjt-pnp'].includes(td?.kind)||tc.mq07StandaloneBjtAstable===true)continue;let vb=td.kind==='bjt-npn'?net.dcVoltage(tc,'B','E'):net.dcVoltage(tc,'E','B');if(vb===null){bjtNumeric ||= Numeric.update(project,byId,net,{now,sampleOnly:true});vb=td.kind==='bjt-npn'?bjtNumeric.dc(tc,'B','E'):-bjtNumeric.dc(tc,'B','E')}const on=vb!==null&&vb>=0.62;if(on!==!!tc._bjtOn){tc._bjtOn=on;bjtChanged=true}}
       let semiconductorChanged=false;
       for(const tc of project.components){const td=definition(byId,tc);if(!td)continue;let stateKey=null,on=false,v=null;
         if(td.kind==='mosfet-n'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');if(tc.mq07FetRcDelay||tc.mq07MosfetHealth||tc.mq07NtcThermalSwitch||tc.mq07PtcThermalSwitch||tc.mq07LdrDarkSwitch){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','S');if(tc.mq07FetRcDelay)tc._mq07GateSampleV=v;if(tc.mq07MosfetHealth)tc._mq07HealthGateV=v;if(tc.mq07NtcThermalSwitch)tc._mq07NtcGateV=v;if(tc.mq07PtcThermalSwitch)tc._mq07PtcGateV=v;if(tc.mq07LdrDarkSwitch)tc._mq07LdrGateV=v}on=v!==null&&v>=4}
@@ -618,7 +658,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
     }
     for(const w of project.wires){if(w.mechanical||w.role==='MECHANICAL'){w._fault=false;w._active=false;continue}const r=net.find(endpointKey(w.from)),atPotential=[...(net.potentials.get(r)?.values()||[])].some(p=>!net.faultDomains.has(p.domain)&&hot(p)),atSolvedVoltage=endpoint=>{if(!numericState||!endpoint?.c)return false;const c=project.components.find(x=>x.id===endpoint.c);if(!c)return false;const v=numericState.voltages.get(numericState.pin(c,endpoint.p));return !!v&&Math.hypot(v[0],v[1])>.25};w._fault=net.faultRoots.has(r);w._active=atPotential||atSolvedVoltage(w.from)||atSolvedVoltage(w.to);}
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
-    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||(c.mq07Standalone555Astable===true&&c._mq07Ne555StandalonePowered)||(c.mq07Standalone555Pwm===true&&c._mq07Ne555PwmPowered)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
+    return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||(c.mq07Standalone555Astable===true&&c._mq07Ne555StandalonePowered)||(c.mq07Standalone555Pwm===true&&c._mq07Ne555PwmPowered)||(c.mq07StandaloneBjtAstable===true&&c._mq07BjtAstablePowered)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
   }
   // SC11 samples electrical ON/OFF phases through the original nodal solver.
   // Speed is an explicitly *uncalibrated normalized educational response*, never RPM.
