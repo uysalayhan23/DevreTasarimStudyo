@@ -182,6 +182,23 @@
    const a=pin(c,'A'),k=pin(c,'K');c._diodeForward=false;
    return !acNodes.has(a)&&!acNodes.has(k);
   }).map(({c,drop})=>{const b=add(c,'A','K',.05,'diode');b.drop=drop;return b});
+  // For the two existing LM358P + 1N4148 positive half-wave feedback graphs,
+  // the diode must be selected from the powered comparator input, not the
+  // pre-opamp initial estimate. Other circuits retain their normal diode model.
+  const rectifierId=project?.tutorialLesson?.id;
+  const scopedRectifier=rectifierId==='opamp-apps-src-15'||rectifierId==='opamp-apps-outline-043';
+  if(scopedRectifier){
+   const link=(a,ap,b,bp)=>project.wires.some(w=>
+    (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
+    (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
+   const required=[['rv1','2','u1','3'],['u1','1','d1','A'],['d1','K','u1','2'],
+    ['d1','K','r5','1'],['r5','2','r3','2'],['d1','K','v1','1'],['v1','2','r3','2']];
+   if(project.components.length!==8||
+      project.wires.length!==(rectifierId==='opamp-apps-src-15'?16:14)||
+      diodeCandidates.length!==1||diodeCandidates[0].c.id!=='d1'||
+      opamps.length!==2||!required.every(e=>link(...e)))
+    throw Error('Scoped LM358/1N4148 rectifier topology changed: '+rectifierId);
+  }
   let activeDiodes=new Set(diodeCandidates),diodeBias=new Map();
   for(let pass=0;pass<diodeCandidates.length+1;pass++){
    for(const b of diodeCandidates){const i=branches.indexOf(b);if(i>=0)branches.splice(i,1)}
@@ -192,6 +209,14 @@
    const trial=solveGraph(branches,fixed,combined),next=new Set(diodeCandidates.filter(b=>current(b,trial)>1e-9));
    if(next.size===activeDiodes.size&&[...next].every(b=>activeDiodes.has(b))){voltages=trial;break}
    activeDiodes=next;voltages=trial;
+  }
+  if(scopedRectifier){
+   const u=project.components.find(c=>c.id==='u1');
+   const ref=project.components.find(c=>c.id==='r3');
+   const positive=(voltages.get(pin(u,'3'))||[0,0])[0]-
+    (voltages.get(pin(ref,'2'))||[0,0])[0]>1e-3;
+   if(positive)activeDiodes.add(diodeCandidates[0]);
+   else activeDiodes.delete(diodeCandidates[0]);
   }
   for(const b of diodeCandidates)b.c._diodeForward=activeDiodes.has(b);
   for(const b of diodeCandidates){const i=branches.indexOf(b);if(i>=0)branches.splice(i,1)}
@@ -209,6 +234,9 @@
    const addCurrent=(map,a,b,v)=>{const av=map.get(a)||[0,0],bv=map.get(b)||[0,0];map.set(a,[av[0]+v,av[1]]);map.set(b,[bv[0]-v,bv[1]])};
    for(let iter=0;iter<30;iter++){
     const work=new Map([...injected].map(([k,v])=>[k,[v[0],v[1]]]));let change=0;
+    // The forward-drop Norton current belongs to the op-amp feedback solve.
+    if(scopedRectifier)for(const [n,v] of diodeBias)
+     work.set(n,[(work.get(n)?.[0]||0)+v[0],(work.get(n)?.[1]||0)+v[1]]);
     for(const o of opamps){
      const val=n=>(guess.get(n)||[0,0])[0],lo=val(o.vm),hi=val(o.vp),vp=val(o.ip),vm=val(o.im),ch=o.channel||'main';
      const channels=o.c._opampChannels||(o.c._opampChannels={}),cs=channels[ch]||(channels[ch]={});
