@@ -11092,6 +11092,39 @@ for(const id of [
  }
 }
 
+/* MQ07 SC201–400 TX11 4–20 mA load: close the formerly open current
+ * loop in the virtual SC048 lesson; actual weighing calibration remains REVIEW. */
+{
+ const id='sensor-analog-apps-outline-048',lesson=L.byId[id],p=lesson?.project;
+ const part=k=>p?.components.find(c=>c.id===k);
+ const connected=(a,ap,b,bp)=>p.wires.some(w=>w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp);
+ if(!lesson||lesson.kind!=='wiring'||p.components.length!==3||
+    p.wires.length!==6||lesson.steps.length!==6||
+    part('tx')?.typeId!=='weighing-indicator'||part('lc')?.typeId!=='load-cell'||
+    !connected('lc','SIG+','tx','S+')||!connected('lc','SIG−','tx','S−')||
+    !Array.isArray(lesson.pedagogyReview?.componentIds)||
+    lesson.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+    lesson.pedagogyReview?.titleTopologyIssue!=='LOAD_CELL_TX11_OUTLINE_NATIVE_UNVERIFIED'||
+    p.components.some(c=>c.id==='rout'))
+  throw Error('SC048 TX11 open-loop source baseline changed');
+ p.components.push(C('rout','resistor',910,460,'RL','250 Ω 4–20 mA sanal alıcı yükü',
+  {resistance:250,tutorialPurpose:'TX11 I–G akım çıkışındaki alıcı yüküdür; 4–20 mA için sanal 1–5 V gözlenebilir.'}));
+ p.wires.push(
+  W('tx','I','rout','1','TX1/I → RL/1','TX11 akım çıkışı 250 Ω alıcı direncine gider.','#43a047','SIGNAL'),
+  W('rout','2','tx','G','RL/2 → TX1/G','Alıcı direnci TX11 akım dönüş ucuna bağlanarak açık döngü kapatılır.','#111827','0V'));
+ lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ lesson.materials.push({componentId:'rout',typeId:'resistor',
+  label:'RL · 250 Ω sanal alıcı yükü',
+  why:'TX11 I–G akım döngüsünü kapatır; 4/12/20 mA için 1/3/5 V yük gerilimi beklenir.'});
+ lesson.explanation+=' TX11 I ve G çıkışı artık RL 250 Ω alıcı yükü üzerinden kapanır; sanal 0/500/1000 ağırlık koşullarında 4/12/20 mA çıkışı ve yük üzerinde ideal 1/3/5 V beklenir. Önceki açık döngü uyarısının nedeni alıcı yükün bulunmamasıydı. Bu, TX11 üretici kalibrasyonu, mekanik kapasite veya gerçek fiziksel kabul değildir.';
+ lesson.beginnerSteps.push('TX1/I → RL/1 → RL/2 → TX1/G sanal 4–20 mA alıcı döngüsünü izle.');
+ lesson.pedagogyReview={...lesson.pedagogyReview,
+  componentIds:p.components.map(c=>c.typeId),
+  mq07Tx11CurrentLoop:'250R_I_TO_G_VIRTUAL',nativeDynamicAcceptance:false,
+  physicalAcceptance:false,manufacturerCalibrationVerified:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
