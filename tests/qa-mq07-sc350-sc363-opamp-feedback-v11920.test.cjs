@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const cases=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",11],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",11],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12]];
+const cases=[["opamp-apps-outline-021","NO_NEGATIVE_FEEDBACK_CIRCUIT",0],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",12],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",12],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12],["sensor-analog-apps-outline-055","NTC_COMPARATOR_TEMPERATURE_NATIVE_PENDING",12]];
 const edge=(p,a,ap,b,bp)=>p.wires.some(w=>(w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
 for(const [id,reason,wires] of cases)test(id+' opamp physical pin and negative-acceptance contract',()=>{
@@ -99,5 +99,27 @@ test('NATIVE ONLY: SC362/363 comparator real solve lux and temperature sweep',()
    assert.ok(Number.isFinite(m?.value)&&!m.warning);read.push(m.value);
   }
   assert.ok(read.some(x=>x<1)&&read.some(x=>x>20),id);
+ }
+});
+
+test('SC355/357 series input feed makes noninverting DC sweep measurable without changing protected review',()=>{
+ for(const id of ['opamp-apps-outline-026','opamp-apps-outline-028']){
+  const l=L.byId[id],p=l.project,rs=p.components.find(c=>c.id==='rs');
+  assert.equal(rs?.typeId,'resistor');assert.equal(rs.resistance,47000);
+  assert.equal(p.wires.length,12);assert.equal(l.steps.length,12);
+  assert.equal(l.pedagogyReview.titleTopologyStatus,'REVIEW');
+  assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+  assert.ok(edge(p,'g1','P','rs','1')&&edge(p,'in','1','rs','2'));
+  const result=[];
+  for(const pct of [10,25,40,55,70,85]){
+   const q=structuredClone(p);q.components.find(c=>c.id==='in').potentiometer=pct;
+   const state=Native.solve(q,defs,{now:1000});
+   assert.ok(state.stable&&!state.blocked&&!state.shortCircuit&&!state.oscillating,id);
+   const v=q.components.find(c=>c.id==='v1')._meter;
+   assert.ok(Number.isFinite(v?.value)&&!v.warning,id+' pct='+pct);
+   result.push(v.value);
+  }
+  assert.ok(result[0]-result.at(-1)>12,id+' input remains rail-clipped');
+  for(let i=1;i<result.length;i++)assert.ok(result[i-1]>result[i],id+' sweep order');
  }
 });

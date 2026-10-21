@@ -10987,6 +10987,42 @@ for(const id of [
   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
 }
 
+
+/* MQ07 SC355_SC357_INPUT_LIMIT_47K: keep 24 V LM358 rails and 10 kΩ/47 kΩ feedback;
+ * limit the potentiometer feed so normal slider positions are not all clipped. */
+{
+ for(const id of ['opamp-apps-outline-026','opamp-apps-outline-028']){
+  const l=L.byId[id],p=l?.project;
+  const part=key=>p?.components.find(c=>c.id===key);
+  const wire=p?.wires.find(w=>w.from.c==='in'&&w.from.p==='1'&&w.to.c==='g1'&&w.to.p==='P');
+  if(!l||l.kind!=='wiring'||p.components.length!==8||p.wires.length!==11||
+     l.steps.length!==11||part('g1')?.dcVoltage!==24||
+     part('u1')?.typeId!=='lm358p-dip8'||part('in')?.typeId!=='potentiometer'||
+     part('r1')?.resistance!==10000||part('r2')?.resistance!==47000||
+     p.components.some(c=>c.id==='rs')||!wire)
+   throw Error('SC355/357 noninverting source baseline changed: '+id);
+  p.components.push(C('rs','resistor',205,205,'RS','47 kΩ potansiyometre besleme direnci',
+    {resistance:47000,tutorialPurpose:'24 V besleme ile 10 kΩ giriş potansiyometresi arasındaki seri direnç; kazanç 1+47k/10k korunurken giriş aralığını düşürür.'}));
+  wire.to={c:'rs',p:'2'};
+  wire.tutorialHint='IN/1 → RS/2';
+  wire.tutorialWhy='Pot girişinin pozitif ucu doğrudan 24 V yerine sınırlı giriş beslemesine bağlanır.';
+  p.wires.push(W('g1','P','rs','1','G1/P → RS/1',
+   'Sanal 24 V kaynak 47 kΩ üzerinden 10 kΩ giriş potansiyometresini besler.','#8b5a2b','SIGNAL'));
+  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials.push({componentId:'rs',typeId:'resistor',
+    label:'RS · 47 kΩ giriş besleme direnci',
+    why:'Tek beslemeli 24 V LM358P nin 5,7 kazancında potansiyometre girişini sanal doğrusal çalışma aralığına yaklaştırır.'});
+  l.explanation+=' RS 47 kΩ kaynak beslemesinden IN/1 potansiyometre ucuna seri bağlanır; IN/3 0 V ve IN/2 doğrudan U1/3 kalır. R1=10 kΩ ve R2=47 kΩ negatif geri besleme değişmez. Sanal giriş üst sınırı düşürülür; fiziksel LM358 giriş ortak-mod sınırları ve üretici kazanç doğruluğu onaylanmış değildir.';
+  l.beginnerSteps.push('RS 47 kΩ seri beslemeyi izleyerek giriş ayarının çıkışı doyumdan çıkarmasını gözle; 5,7 kazanç ve üretici kabulü ayrı inceleme konusudur.');
+  l.pedagogyReview={...l.pedagogyReview,
+    mq07InputFeedAttenuation:'SERIES_47K_TO_10K_POT',
+    nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+    manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+    windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
