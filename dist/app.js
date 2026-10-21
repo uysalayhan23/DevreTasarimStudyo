@@ -813,6 +813,16 @@
   function refreshArtwork(){
     if(project.workspaceMode==='panel'){window.DTSPanelEditor?.render();return}
     if(project.components.some(c=>c.auxFor||byId[c.typeId]?.materialPins)){render();return}
+    // Physical product bodies are a separate layer behind wires. Update that
+    // layer on IEC/3D switches without rebuilding the circuit or solver state.
+    for(const old of els.scene.querySelectorAll('[data-component-backdrop]'))old.remove();
+    if(appearance==='material'){
+      const bodies=project.components.filter(c=>!Leads.floating(byId[c.typeId])&&wireOverDeviceBody(byId[c.typeId]));
+      for(let i=bodies.length-1;i>=0;i--){
+        renderComponentBackdrop(bodies[i]);
+        els.scene.insertBefore(els.scene.lastChild,els.scene.firstChild);
+      }
+    }
     for(const g of els.scene.querySelectorAll('g.component')){
       const c=project.components.find(c=>c.id===g.dataset.id),d=c&&byId[c.typeId];if(!d)continue;
       g.setAttribute('class',Symbols.classes(d,c,appearance)+(selectedIds.has(c.id)?' selected':''));
