@@ -11125,6 +11125,39 @@ for(const id of [
   physicalAcceptance:false,manufacturerCalibrationVerified:false};
 }
 
+/* MQ07 SC364/365/377: terminate unused physical LM358P channel B.
+ * Channel A RC-delay and Schmitt graphs, historical REVIEW and all acceptance
+ * flags remain unchanged; no extra device/calibration claim. */
+{
+ const scoped=[
+  ['opamp-apps-outline-033',15,'SOURCE_WIRED_OPAMP_ON_DELAY_NATIVE_PENDING'],
+  ['opamp-apps-outline-034',15,'SOURCE_WIRED_OPAMP_OFF_DELAY_NATIVE_PENDING'],
+  ['opamp-apps-outline-044',14,'REVIEW']
+ ];
+ for(const [id,count,status] of scoped){
+  const lesson=L.byId[id],p=lesson?.project;
+  const op=p?.components.find(c=>c.id==='u1');
+  if(!lesson||lesson.kind!=='wiring'||p.wires.length!==count||
+     lesson.steps.length!==count||op?.typeId!=='lm358p-dip8'||
+     !p.components.some(c=>c.id==='g1')||
+     lesson.pedagogyReview?.titleTopologyStatus!==status||
+     lesson.pedagogyReview?.nativeDynamicAcceptance!==false||
+     p.wires.some(w=>['5','6','7'].includes(w.from?.c==='u1'?w.from.p:w.to?.c==='u1'?w.to.p:'')))
+   throw Error('SC364/365/377 LM358 spare channel baseline changed: '+id);
+  p.wires.push(
+   W('u1','5','g1','M','U1/5 → G1/M',
+    'Kullanılmayan LM358P B kanalı pozitif girişi sanal 0 V referansındadır.','#111827','0V'),
+   W('u1','7','u1','6','U1/7 → U1/6',
+    'Kullanılmayan LM358P B kanalı çıkışı, eviren girişine geri beslenir.','#43a047','SIGNAL'));
+  lesson.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.explanation+=' Kullanılmayan fiziksel LM358P B kanalının pin 5 girişi sanal 0 V’a ve pin 7 çıkışı pin 6 eviren girişine bağlanmıştır; U1A geri besleme, RC zaman ve Schmitt eşik ağı değişmemiştir. Gerçek cihaz performansı ve fiziksel kabul ayrıca açıktır.';
+  lesson.pedagogyReview={...lesson.pedagogyReview,
+   mq07SpareLm358B:'PIN5_GND_PIN7_PIN6_SC364_SC365_SC377_WIRED',
+   nativeSpareChannelAcceptance:false};
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
