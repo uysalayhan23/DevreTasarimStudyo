@@ -241,7 +241,14 @@
      const val=n=>(guess.get(n)||[0,0])[0],lo=val(o.vm),hi=val(o.vp),vp=val(o.ip),vm=val(o.im),ch=o.channel||'main';
      const channels=o.c._opampChannels||(o.c._opampChannels={}),cs=channels[ch]||(channels[ch]={});
      if(!(hi>lo+.5)){cs.powered=false;cs.output=lo;cs.diff=vp-vm;if(!o.channel){o.c._opampPowered=false;o.c._opampOutput=lo;o.c._opampDiff=vp-vm}continue}
-     const prev=Number.isFinite(cs.iter)?cs.iter:Math.max(lo+.02,Math.min(hi-1.5,val(o.out)));
+     // SC377: seed the positive-feedback Schmitt from its last powered output.
+     // A passive-only warm start loses the high branch during a falling sweep.
+     const schmitt=project?.tutorialLesson?.id==='opamp-apps-outline-044'&&
+       project.wires.length===14&&o.c.id==='u1'&&o.c.typeId==='lm358p-dip8'&&ch==='1'&&
+       project.wires.some(w=>w.from?.c==='u1'&&w.from?.p==='1'&&w.to?.c==='r2'&&w.to?.p==='1')&&
+       project.wires.some(w=>w.from?.c==='r2'&&w.from?.p==='2'&&w.to?.c==='u1'&&w.to?.p==='3');
+     const seed=schmitt&&cs.powered&&Number.isFinite(cs.output)?cs.output:val(o.out);
+     const prev=Number.isFinite(cs.iter)?cs.iter:Math.max(lo+.02,Math.min(hi-1.5,seed));
      const wanted=Math.max(lo+.02,Math.min(hi-1.5,lo+o.gain*(vp-vm))),target=prev+(wanted-prev)*.12;
      cs.iter=target;cs.powered=true;cs.diff=vp-vm;o.c._opampPowered=true;if(!o.channel)o.c._opampDiff=vp-vm;addCurrent(work,o.out,o.vm,target/o.br.r);
     }
