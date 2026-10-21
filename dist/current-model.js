@@ -249,6 +249,50 @@
     for(const o of opamps){const a=(next.get(o.out)||[0,0])[0],b=(guess.get(o.out)||[0,0])[0],ch=o.channel||'main',cs=o.c._opampChannels?.[ch]||(o.c._opampChannels[ch]={});change=Math.max(change,Math.abs(a-b));cs.output=a;if(!o.channel)o.c._opampOutput=a}
     guess=next;if(change<1e-4)break;
    }
+   // SC366–369 (virtual only): solve the two-input LM358 negative-feedback
+   // condition directly from its linear nodal response. The global LM358,
+   // protected oscillator and other op-amp solvers retain their old path.
+   const dualInputId=project?.tutorialLesson?.id||'',
+     isDiff=/^opamp-apps-outline-03[56]$/.test(dualInputId),
+     isSum=/^opamp-apps-outline-03[78]$/.test(dualInputId),
+     expectedWires=isDiff?19:isSum?18:0,
+     expectedParts=isDiff?13:isSum?12:0;
+   if(expectedWires&&project.wires.length===expectedWires&&
+      project.components.length===expectedParts&&opamps.length===2&&
+      opamps.some(o=>o.channel==='1'&&o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
+      !project.wires.some(w=>[w.from,w.to].some(e=>e?.c==='u1'&&['5','6','7'].includes(e.p)))){
+     const amp=opamps.find(o=>o.channel==='1'),
+       spare=opamps.find(o=>o.channel==='7'),
+       v=(state,node)=>(state.get(node)||[0,0])[0],
+       spareTarget=Number(spare?.c._opampChannels?.['7']?.iter),
+       spareDrive=Number.isFinite(spareTarget)?spareTarget/spare.br.r:0,
+       drive=(amps)=>{
+         const work=new Map([...injected].map(([n,x])=>[n,[x[0],x[1]]]));
+         if(spare) addCurrent(work,spare.out,spare.vm,spareDrive);
+         addCurrent(work,amp.out,amp.vm,amps);
+         return solveGraph(branches,fixed,work);
+       };
+     const base=drive(0),unit=drive(1),
+       diff0=v(base,amp.ip)-v(base,amp.im),
+       diffSlope=v(unit,amp.ip)-v(unit,amp.im)-diff0,
+       low=v(base,amp.vm),high=v(base,amp.vp),
+       divisor=amp.br.r-amp.gain*diffSlope;
+     if(high>low+.5&&Number.isFinite(divisor)&&divisor>1e-8){
+       const target=Math.max(low+.02,Math.min(high-1.5,
+         amp.br.r*(low+amp.gain*diff0)/divisor));
+       if(Number.isFinite(target)){
+         guess=drive(target/amp.br.r);
+         const active=amp.c._opampChannels?.['1'];
+         if(active){active.iter=target;active.output=v(guess,amp.out);
+           active.diff=v(guess,amp.ip)-v(guess,amp.im)}
+         amp.c._opampOutput=v(guess,amp.out);
+         amp.c._opampDiff=v(guess,amp.ip)-v(guess,amp.im);
+         const idle=spare?.c._opampChannels?.['7'];
+         if(idle){idle.output=v(guess,spare.out);
+           idle.diff=v(guess,spare.ip)-v(guess,spare.im)}
+       }
+     }
+   }
    secondary=guess;
    // These virtual LM358 lessons use a Norton drive (target/Ro) parallel to
    // Ro. The resistor branch current is not the external output/load current.
