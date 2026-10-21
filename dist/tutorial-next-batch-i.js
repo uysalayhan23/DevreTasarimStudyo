@@ -47,5 +47,195 @@ for(const [topic,rows] of Object.entries(specs)){
   l.pedagogyReview={...l.pedagogyReview,previousVersion:l.pedagogyReview?.version||null,version:'v1.19.20-next-batch-i',codeImplemented:true,visualAcceptance:false,simulationAcceptance:false,sourceCircuitPreserved:true};
  }
 }
+
+/* Pedagojik açıklamalar: SC034–041; yalnız gerçek ders içeriği. */
+const lessonDetails={
+  "control-combinations-1": {
+    "goal": "Başlat butonunu bıraktığında K1 rölesinin kendi yardımcı kontağı sayesinde neden çalışmaya devam ettiğini anla.",
+    "task": "Sanal devrede önce S1 Başlat'a bas; K1 bobini çalıştığında K1'in 13–14 mühürleme kontağının Start yoluna paralel ikinci yol oluşturduğunu izle. S1'i bırakınca tutma yolunun görevini, S0 Durdur'a basınca bu yolun nasıl kesildiğini karşılaştır.",
+    "question": "S1 bırakıldığında K1 bobininin enerjili kalmasını hangi bağlantı sağlar?",
+    "options": [
+      "Stop çıkışından K1/13–14 üzerinden bobine giden paralel yol",
+      "S0 Durdur butonunun sürekli basılı kalması",
+      "Bobin dönüşünü kaynağın pozitif ucuna bağlamak"
+    ],
+    "points": [
+      "S0/21–22 normalde kapalı Stop yoludur.",
+      "S1/13–14 ile K1/13–14 bobinin A1 ucuna paralel yollar açar.",
+      "K1/A2, G1/M dönüş ucuna bağlıdır."
+    ],
+    "steps": [
+      "G1, S0, S1, K1 yardımcı kontağı ve bobini tanı.",
+      "Sanal Başlat'a basıp K1'in tutma yolunu izle.",
+      "Başlat'ı bırak ve rölenin durumunu gözlemle.",
+      "Durdur'a basıp tutmanın neden sona erdiğini anlat.",
+      "Altı kabloyu gerçek terminal adımlarıyla yeniden kur."
+    ]
+  },
+  "control-combinations-2": {
+    "goal": "Röle bobininin kumanda yolu ile lambanın ayrı yük yolunun nasıl birlikte çalıştığını öğren.",
+    "task": "Sanal S1 butonuna basınca K1 bobininin enerjilenmesini ve K1'in 13–14 NO kontağının H1 lambasının ayrı besleme yolunu kapatmasını izle. Buton bırakıldığında lamba yolunu tekrar gözlemle; burada mühürleme kontağı bulunmadığını ayırt et.",
+    "question": "H1 lambasının ayrı besleme kolunu hangi röle uçları açıp kapatır?",
+    "options": [
+      "K1/13–14 yardımcı NO kontağı",
+      "K1/A1–A2 bobin uçları doğrudan",
+      "G1/M'nin yerine geçen buton"
+    ],
+    "points": [
+      "S1/13–14, K1/A1 bobin girişini kumanda eder.",
+      "K1/A2, G1/M'ye döner.",
+      "Ayrı lamba kolunda G1/P→K1/13–14→H1/X1→H1/X2→G1/M bulunur."
+    ],
+    "steps": [
+      "S1 butonu ile K1 bobininin yolunu tanı.",
+      "Ayrı K1/13–14–H1 lamba yolunu göster.",
+      "Sanal S1'e basarken bobin ve lambayı birlikte izle.",
+      "S1'i bırakınca NO kontağının durumunu karşılaştır.",
+      "Altı bağlantıyı devrenin kendi uçlarıyla yeniden kur."
+    ]
+  },
+  "control-combinations-3": {
+    "goal": "PNP endüktif sensörün çıkışının röle bobinine, röle kontağının ise ayrı lambaya kumanda ettiğini anla.",
+    "task": "Sanal B1 sensörünün kahverengi BN besleme, mavi BU dönüş ve siyah BK PNP çıkış uçlarını ayırt et. Sanal algılama durumunu değiştirirken BK'den K1/A1'e giden sinyal yolunu, ardından K1/13–14 üzerinden H1 lambasının yük yolunu izle. Desteklenmeyen algılamayı gerçekleşmiş sayma.",
+    "question": "PNP sensörün BK ucundan çıkan sanal kumanda hattı nereye gider?",
+    "options": [
+      "K1/A1 bobin girişine",
+      "H1/X2 dönüş ucuna",
+      "G1/M'nin yerine"
+    ],
+    "points": [
+      "B1/BN G1/P'ye, B1/BU G1/M'ye bağlıdır.",
+      "B1/BK yalnız K1/A1'e kumanda sinyali taşır.",
+      "K1'in NO 13–14 kontağı H1 için ayrı G1/P besleme yolu oluşturur."
+    ],
+    "steps": [
+      "B1 sensörünün BN, BU ve BK uçlarını tanı.",
+      "Sanal algılama hedefini ve K1 bobin yolunu izle.",
+      "K1 NO kontağından H1'e giden ayrı yolu göster.",
+      "Simülasyonun desteklediği durumu gözlemle; desteklenmeyeni varsayma.",
+      "Yedi gerçek terminal bağlantısını yeniden kur."
+    ]
+  },
+  "control-combinations-4": {
+    "goal": "Start/Stop mühürlemeli kontaktörün çalışmasını ve H1 çalışma göstergesinin neden yandığını açıkla.",
+    "task": "Sanal S1 Başlat'a basınca K1 kontaktör bobininin, ardından mühürleme kontağının ve ayrı çalışma lambası kontağının durumunu izle. Başlat'ı bıraktığında tutma yolunu; S0 Durdur'a bastığında hem bobinin hem H1 lambasının durumunu karşılaştır.",
+    "question": "H1 çalışma göstergesi kontaktör çalışırken hangi yol üzerinden beslenir?",
+    "options": [
+      "G1/P→K1'in ayrı NO 13–14 kontağı→H1→G1/M",
+      "Yalnız Start butonuna paralel olmayan açık uçtan",
+      "K1 bobininin A2 terminalinden doğrudan"
+    ],
+    "points": [
+      "S0/21–22 ile S1/13–14, K1 bobininin kumanda yolundadır.",
+      "K1 mühürleme kontağı Start'a paralel tutma yoludur.",
+      "Diğer K1 NO kontağı, H1 çalışma lambasının ayrı kolundadır."
+    ],
+    "steps": [
+      "S0 ve S1'in kontaktör bobinine uzanan yolunu bul.",
+      "K1 mühürleme kontağını ayrı gösterge kontağından ayır.",
+      "Sanal Başlat ve Durdur komutlarını sırayla dene.",
+      "H1 göstergesinin bobinle aynı durumu izlemesini yorumla.",
+      "Dokuz kabloyu değiştirmeden terminal adımlarıyla yeniden kur."
+    ]
+  },
+  "loop-420-1": {
+    "goal": "İki telli 4–20 mA vericinin hem besleme hem ölçüm akımını tek kapalı devrede taşıdığını öğren.",
+    "task": "Sanal G1 24 V kaynağından B1 vericinin 2 ucuna, B1/1'den P1 ampermetrenin 1 ucuna ve P1/2'den G1/M'ye dönen üç kabloyu takip et. Ampermetrenin neden seri olduğunu açıkla; gerçek ölçüm değeri doğrulanmamışsa sayısal sonuç varsayma.",
+    "question": "Bu üç bağlantılı akım döngüsünde P1 ampermetre nereye yerleştirilmiştir?",
+    "options": [
+      "B1/1 ile G1/M arasındaki seri dönüş yoluna",
+      "G1/P ile G1/M arasına doğrudan paralel",
+      "B1'in dışındaki açık bir uca"
+    ],
+    "points": [
+      "G1/P, B1'in 2 ucuna gider.",
+      "B1/1 çıkışı P1/1 ampermetre girişine gider.",
+      "P1/2, G1/M'ye dönerek çevrimi tamamlar."
+    ],
+    "steps": [
+      "G1 24 V kaynak, B1 verici ve P1 ampermetreyi tanı.",
+      "Üç bağlantının tek bir kapalı akım yolu olduğunu izle.",
+      "P1'in seri ölçüm yerini göster.",
+      "Sanal simülasyon sonucunu, varsa doğrulanmış ölçüm olarak değerlendir.",
+      "Üç terminal bağlantısını yeniden kur."
+    ]
+  },
+  "loop-420-2": {
+    "goal": "4–20 mA döngüsündeki 250 Ω yük üzerinde akıma bağlı gerilim oluştuğunu kavra.",
+    "task": "Sanal akım yolunda B1 verici, P1 ampermetre ve R1 250 Ω yükün seri olduğunu izle. İdeal V=I×R ilişkisiyle 4 mA için 1 V, 20 mA için 5 V hesapla; simülatörün bu değerleri gerçekten ürettiğini kanıtsız söyleme.",
+    "question": "İdeal 20 mA akım 250 Ω üzerinden geçerse gerilim kaç volt olur?",
+    "options": [
+      "5 V",
+      "1 V",
+      "24 V"
+    ],
+    "points": [
+      "G1/P→B1/2 ile döngü başlar.",
+      "B1/1→P1/1→P1/2→R1/1 tek seri yoldur.",
+      "R1/2, G1/M'ye döner; 250 Ω için ideal 4–20 mA karşılığı 1–5 V'tur."
+    ],
+    "steps": [
+      "B1, P1 ve R1'in ayrı görevlerini tanı.",
+      "Dört bağlantılı kapalı çevrimi izle.",
+      "4 mA×250 Ω ve 20 mA×250 Ω hesaplarını yap.",
+      "Beklenen ideal değeri simülasyondan ayrı tut.",
+      "Dört kabloyu değiştirmeden yeniden kur."
+    ]
+  },
+  "loop-420-3": {
+    "goal": "Akım döngüsünde kaynaktan vericiye, ölçere ve dönüş ucuna kadar kesintisiz bir yolun neden gerektiğini gör.",
+    "task": "Sanal G1/P→B1/2→B1/1→P1/1→P1/2→G1/M yolunu izle. Dönüş kablosu olmazsa ideal kapalı çevrimin tamamlanamayacağını düşün; uygulama desteklemiyorsa kabloyu gerçekten söküp ölçüm sonucu uydurma.",
+    "question": "P1/2 ile G1/M arasındaki bağlantının görevi nedir?",
+    "options": [
+      "Döngünün dönüş yolunu tamamlamak",
+      "Vericinin ikinci güç kaynağını oluşturmak",
+      "Ölçüm cihazını paralel yüke çevirmek"
+    ],
+    "points": [
+      "B1'in iki ucu seri loop yolundadır.",
+      "P1/1 ve P1/2 akımı seri yol üzerinde ölçer.",
+      "P1/2→G1/M dönüş kablosu olmadan kapalı akım çevrimi kurulmaz."
+    ],
+    "steps": [
+      "G1/P'den B1/2'ye giden hattı bul.",
+      "B1/1'den P1/1'e uzanan akım yolunu izle.",
+      "P1/2→G1/M dönüş hattının görevini anlat.",
+      "Sanal devrenin desteklenen durumunu gözlemle.",
+      "Üç kabloyu orijinal terminal dizilişinde yeniden kur."
+    ]
+  },
+  "loop-420-4": {
+    "goal": "4–20 mA döngüsündeki 250 Ω yükün ideal 1–5 V karşılığını yorumla.",
+    "task": "Sanal B1 verici, P1 ampermetre ve R1 250 Ω direnç seri bağlıdır. İdeal olarak 4 mA×250 Ω=1 V ve 20 mA×250 Ω=5 V olduğunu karşılaştır; bu değerlerin gerçek native ölçümle doğrulanması ayrı iştir.",
+    "question": "250 Ω ideal alıcı yükünde 4 mA akım kaç volta karşılık gelir?",
+    "options": [
+      "1 V",
+      "5 V",
+      "24 V"
+    ],
+    "points": [
+      "G1/P→B1/2 verici beslemesidir.",
+      "B1/1→P1/1→P1/2→R1/1 ölçüm ve yük yoludur.",
+      "R1/2→G1/M dönüşüdür; gerilim ideal olarak akımla orantılıdır."
+    ],
+    "steps": [
+      "G1/B1/P1/R1 elemanlarını bul.",
+      "Dört kabloyla kurulan tek seri yolu izle.",
+      "4 mA için 1 V, 20 mA için 5 V ilişkisini hesapla.",
+      "İdeal hesap ile doğrulanmış simülasyon sonucunu ayır.",
+      "Dört bağlantıyı tekrar kurup soruyu yanıtla."
+    ]
+  }
+};
+for(const [id,detail] of Object.entries(lessonDetails)){
+  const l=L.byId[id];
+  if(!l||!l.project||l.steps.length!==l.project.wires.length)throw Error('Missing canonical teaching lesson '+id);
+  l.learningGoal=detail.goal;
+  l.summary=detail.goal;
+  l.explanation=detail.task+' Bu ders yalnız sanal eğitim ortamında uygulanır.';
+  l.measurementUpgrade={...l.measurementUpgrade,goal:detail.goal,task:detail.task,question:detail.question,options:copy(detail.options),observationPoints:copy(detail.points)};
+  l.beginnerSteps=copy(detail.steps);
+  l.quiz={question:detail.question,options:copy(detail.options),answer:0,why:detail.goal};
+}
 L._nextBatchI=true;
 })(typeof window==='undefined'?globalThis:window);
