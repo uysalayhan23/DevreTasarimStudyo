@@ -250,7 +250,19 @@
     guess=next;if(change<1e-4)break;
    }
    secondary=guess;
-   for(const o of opamps){const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];if(cs)delete cs.iter;const amps=Math.abs(((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r);if(cs)cs.current=amps;o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps)}
+   // These virtual LM358 lessons use a Norton drive (target/Ro) parallel to
+   // Ro. The resistor branch current is not the external output/load current.
+   // Do not change the accepted solver or readings outside this teaching scope.
+   const virtualLm358Lesson=/^opamp-apps-outline-(?:02[1-9]|03[0-9]|04[0-4])$/.test(project?.tutorialLesson?.id||'')||
+     ['sensor-analog-apps-outline-054','sensor-analog-apps-outline-055'].includes(project?.tutorialLesson?.id);
+   for(const o of opamps){
+    const ch=o.channel||'main',cs=o.c._opampChannels?.[ch];
+    const branchAmps=((secondary.get(o.out)||[0,0])[0]-(secondary.get(o.vm)||[0,0])[0])/o.br.r;
+    const amps=virtualLm358Lesson&&Number.isFinite(cs?.iter)?
+      Math.abs(cs.iter/o.br.r-branchAmps):Math.abs(branchAmps);
+    if(cs){cs.current=amps;delete cs.iter}
+    o.c._currentValue=Math.max(Number(o.c._currentValue)||0,amps);
+   }
   }
 
   // SC076/SC077: solve the actual LM358P dual channels for either the
