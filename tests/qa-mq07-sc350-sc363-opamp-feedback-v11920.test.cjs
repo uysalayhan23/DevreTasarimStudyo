@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",12],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",12],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",11],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",11],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",12],["sensor-analog-apps-outline-055",null,14]];
+const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",12],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",12],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
 const edge=(p,a,ap,b,bp)=>p.wires.some(w=>(w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
 for(const [id,reason,wires] of cases)test(id+' opamp physical pin and negative-acceptance contract',()=>{
@@ -75,6 +75,20 @@ test('SC360–361 comparator uses virtual probeTarget at output and reference at
   assert.ok(p.components.some(c=>c.probeTarget?.c==='u1'&&c.probeTarget?.p==='1'));
  }
 });
+test('SC360–363 second LM358 channel is safely grounded and negatively fed back',()=>{
+ for(const [id,count] of [
+  ['opamp-apps-outline-031',13],['opamp-apps-outline-032',13],
+  ['sensor-analog-apps-outline-054',14],['sensor-analog-apps-outline-055',16]]){
+  const l=L.byId[id],p=l.project;
+  assert.equal(p.wires.length,count,id);
+  assert.equal(l.steps.length,count,id);
+  assert.ok(edge(p,'u1','5','g1','M')&&edge(p,'u1','7','u1','6'),id);
+  assert.equal(l.pedagogyReview.mq07SpareLm358B,'PIN5_GND_PIN7_PIN6_OUTLINE_WIRED');
+  assert.equal(l.pedagogyReview.nativeSpareChannelAcceptance,false);
+  assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+  assert.equal(l.pedagogyReview.physicalAcceptance,false);
+ }
+});
 test('SC362/363 retain source comparator branches and NTC-specific added bias',()=>{
  for(const [id,gold] of [['sensor-analog-apps-outline-054','opamp-apps-src-07'],
   ['sensor-analog-apps-outline-055','opamp-apps-src-08']]){
@@ -84,10 +98,11 @@ test('SC362/363 retain source comparator branches and NTC-specific added bias',(
   assert.deepEqual(Array.from(a.wires.slice(0,12),w=>[w.from.c,w.from.p,w.to.c,w.to.p]),
    Array.from(b.wires.slice(0,12),w=>[w.from.c,w.from.p,w.to.c,w.to.p]));
   assert.ok(edge(b,'u1','5','g1','M')&&edge(b,'u1','7','u1','6'));
+  assert.ok(edge(a,'u1','5','g1','M')&&edge(a,'u1','7','u1','6'));
   assert.equal(L.byId[id].pedagogyReview.nativeDynamicAcceptance,false);
  }
  const p=L.byId['sensor-analog-apps-outline-055'].project;
- assert.equal(p.components.length,10);assert.equal(p.wires.length,14);
+ assert.equal(p.components.length,10);assert.equal(p.wires.length,16);
  assert.equal(p.components.find(c=>c.id==='rb')?.resistance,100000);
  assert.ok(edge(p,'g1','P','rb','1')&&edge(p,'rb','2','u1','2'));
  assert.equal(L.byId['sensor-analog-apps-outline-055'].pedagogyReview.titleTopologyStatus,'VIRTUAL_NTC_REFERENCE_SIGNAL_OPEN_BIAS');
