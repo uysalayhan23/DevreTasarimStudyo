@@ -10934,6 +10934,59 @@ for(const id of [
   independentPedagogicalAcceptance:false};
 }
 
+
+/* SC201–400 / MQ-07: ultrasonic NO proximity triggers actual buzzer 1/2 load.
+ * Educational virtual sensor only; real manufacturer/rating acceptance stays OPEN. */
+{
+ const id='sensor-analog-apps-outline-089',l=L.byId[id],p=l?.project;
+ const expected=['g1/P>s1/BN','g1/M>s1/BU','s1/BK>k1/A1','k1/A2>g1/M',
+                 'g1/P>ka1/13','ka1/14>h1/X1','h1/X2>g1/M'];
+ const parts=id=>p?.components.find(c=>c.id===id);
+ if(!l||l.kind!=='wiring'||p.components.length!==5||p.wires.length!==7||
+    l.steps.length!==7||p.wires.some((w,i)=>expected[i]!==w.from.c+'/'+w.from.p+'>'+w.to.c+'/'+w.to.p)||
+    parts('g1')?.dcVoltage!==24||parts('s1')?.typeId!=='proximity'||
+    parts('s1').outputType!=='PNP'||parts('k1')?.typeId!=='coil-relay'||
+    parts('ka1')?.typeId!=='contact-no'||parts('h1')?.typeId!=='lamp-green')
+  throw Error('SC201–400 ultrasonic/buzzer baseline changed: '+id);
+ const sensor=parts('s1'),buzzer=parts('h1');
+ sensor.typeId='ultrasonic-switch';sensor.outputType='PNP';sensor.state=false;
+ sensor.label='Sanal ultrasonik mesafe anahtarı';
+ sensor.sensing={target:'metal',range:400,distance:1000,offset:0,face:'right',auto:false};
+ sensor.tutorialPurpose='S1 BN/BU sanal 24 V besleme; BK PNP NO çıkışı K1 bobinini sürer. Hedef mesafesi üretici kalibrasyonu değildir.';
+ buzzer.typeId='buzzer';buzzer.ref='BZ1';buzzer.label='Sanal uyarı buzzeri';
+ buzzer.tutorialPurpose='K1 13/14 NO kontağından BZ1/1 ve BZ1/2 yük yoluna sanal enerji gelir; gerçek ses seviyesi ve cihazın anma değeri doğrulanmamıştır.';
+ for(const w of p.wires){
+  if(w.to?.c==='h1'&&w.to.p==='X1')w.to.p='1';
+  if(w.from?.c==='h1'&&w.from.p==='X2')w.from.p='2';
+ }
+ const links=[
+  ['G1/P → S1/BN','Sanal 24 V pozitif besleme ultrasonik sensöre gider.'],
+  ['G1/M → S1/BU','Sanal 0 V sensör besleme dönüşüdür.'],
+  ['S1/BK → K1/A1','Hedef algılandığında PNP NO çıkışı K1 bobinine akım sağlar.'],
+  ['K1/A2 → G1/M','Bobinin sanal 0 V dönüşü tamamlanır.'],
+  ['G1/P → K1/13','Ayrı buzzer yükünün pozitif beslemesi NO kontağa girer.'],
+  ['K1/14 → BZ1/1','Röle çekince NO kontak kapanarak buzzer 1 ucunu besler.'],
+  ['BZ1/2 → G1/M','Buzzer 2 terminali sanal 0 V besleme dönüşüdür.']];
+ p.wires.forEach((w,i)=>{w.tutorialHint=links[i][0];w.tutorialWhy=links[i][1]});
+ setLesson(l,p,{kind:'wiring',
+  summary:'Sanal ultrasonik sensörün PNP BK çıkışı K1 rölesini, K1/13–14 NO kontağı BZ1 buzzer yükünü kontrol eder.',
+  explanation:'G1 sanal 24 V, S1/BN–BU beslemesini oluşturur; S1/BK → K1/A1, K1/A2 → 0 V bobin yoludur. K1/13 +24 V, K1/14 → BZ1/1 ve BZ1/2 → 0 V ayrı uyarı yoludur. Metal sanal hedef 1000 mm uzaktayken OFF, 150 mm yakındayken ON, yeniden 1000 mm uzaktayken OFF olur. 30 mm altı kör bölge ve hedef hizalaması bu ideal yazılım modeline aittir; ürün menzili, buzzer anma değeri, ses gücü veya fiziksel güvenlik onayı değildir.',
+  goal:'Hedefin sanal mesafesiyle BK çıkışı, K1 bobini, K1 13/14 kontağı ve BZ1 buzzer durumlarını karşılaştırmak.',
+  beginnerSteps:['S1/BN ve S1/BU sanal 24 V beslemeyi bul; S1/BK→K1/A1 sinyal yolunu izle.',
+    'K1/13–14 kontağı ile BZ1/1–2 uçlarının ayrı uyarı yük devresi olduğunu göster.',
+    '1000 mm mesafede K1 ve BZ1 OFF durumunu incele.',
+    '150 mm mesafede K1 ve BZ1 ON, sonra tekrar 1000 mm mesafede OFF durumunu izle.',
+    '20 mm kör bölgeyi ve yanal hizalama kaybını dene; gerçek ürün kalibrasyonu kabul etme.'],
+  quiz:{question:'Sanal ultrasonik hedef algılanınca BZ1 buzzeri hangi kontak besler?',
+    options:['K1/13–14 NO kontağı','S1/BU dönüş hattı','S1/BN besleme ucu'],
+    answer:0,why:'Sensör BK çıkışı röle bobinini çeker, NO kontak kapanınca buzzerin 1/2 uçları beslenir.'}});
+ l.pedagogyReview={...l.pedagogyReview,titleTopologyIssue:null,
+  titleTopologyStatus:'ULTRASONIC_BUZZER_NO_SOURCE_WIRED_VIRTUAL',
+  nativeDynamicAcceptance:false,physicalAcceptance:false,
+  buzzerElectricalRatingVerified:false,manufacturerCalibrationVerified:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);

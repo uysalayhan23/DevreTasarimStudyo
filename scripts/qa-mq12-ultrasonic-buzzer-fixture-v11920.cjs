@@ -1,5 +1,5 @@
 'use strict';
-// Native solver, CLONE-ONLY electrical fixture; physical model & canonical lesson remain REVIEW.
+// Native solver CLONE-ONLY regression; preserve historical X1/X2 terminal-mismatch negative case. Physical acceptance remains REVIEW.
 const QA=require('./qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const ID='sensor-analog-apps-outline-089';
@@ -16,10 +16,10 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Native}={}){
   sensor.typeId=sensorType;
   load.typeId='buzzer';load.label='Fixture only — ultrasonic buzzer';
   sensor.sensing={target:'metal',range:400,distance:1000,offset:0};
-  if(wireMapping){for(const wire of project.wires){for(const end of [wire.from,wire.to]){
+  if(!wireMapping){for(const wire of project.wires){for(const end of [wire.from,wire.to]){
     if(end.c==='h1'){
-     if(end.p==='X1')end.p='1';
-     else if(end.p==='X2')end.p='2';
+     if(end.p==='1')end.p='X1';
+     else if(end.p==='2')end.p='X2';
     }
    }}}
   const values=[];
@@ -33,10 +33,10 @@ function run({L=QA.curriculum(),defs=QA.catalog(),solver=Native}={}){
     stable:values.every(x=>x.stable),phases:values,physicalAccepted:false});
  }
  const meta=defs.buzzer;
- return {scope:'CLONE_ONLY_NONCANONICAL_ULTRASONIC_BUZZER',lessonId:ID,lessonTitle:lesson.title,
+ return {scope:'CLONE_ONLY_ULTRASONIC_BUZZER_REGRESSION',lessonId:ID,lessonTitle:lesson.title,
   canonicalSensorType:origSensor.typeId,canonicalLoadType:origLoad.typeId,
   canonicalUnchanged:JSON.stringify(lesson.project)===original,
-  originalSourcePins:['BN','BU','BK'],originalLoadPins:['X1','X2'],
+  originalSourcePins:['BN','BU','BK','WH'],originalLoadPins:['1','2'],
   fixtureLoadType:'buzzer',fixtureLoadPins:['1','2'],buzzerElectricalRatingVerified:!!meta?.ratedVoltage,
   exactUltrasonicManufacturerModelVerified:false,syntheticPhysicalTargetOnly:true,
   results,physicalAccepted:false,fullAcceptance:'REVIEW'};
