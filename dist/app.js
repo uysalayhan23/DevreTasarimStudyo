@@ -234,7 +234,7 @@
 
   function renderComponentBackdrop(c,parent=els.scene){
     const d=byId[c.typeId];if(!d||!wireOverDeviceBody(d))return;
-    const g=svg('g',{class:'component-backdrop material-device-body'+(c._active?' active':'')+(c._closed&&['sensor','detector'].includes(d.kind)?' detecting':'')+(c._pressed?' pressing':''),'data-component-backdrop':c.id,'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
+    const g=svg('g',{class:'component-backdrop material-device-body'+(c._active?' active':'')+(c._active&&['sensor','detector'].includes(d.kind)&&Sensors.actuated(c,d)?' detecting':'')+(c._pressed?' pressing':''),'data-component-backdrop':c.id,'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
     if(Number.isFinite(c._sc11SpeedPercent))g.setAttribute('style','--shaft-duration:'+Math.max(.4,8/Math.max(.1,c._sc11SpeedPercent/10))+'s');else if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
     g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireBodyOnly:true});
     parent.appendChild(g);
@@ -268,7 +268,7 @@
       const c=project.components.find(c=>c.id===g.dataset.componentBackdrop),d=c&&byId[c.typeId];
       if(!d)continue;
       g.classList.toggle('active',!!c._active);
-      g.classList.toggle('detecting',!!c._closed&&['sensor','detector'].includes(d.kind));
+      g.classList.toggle('detecting',!!c._active&&['sensor','detector'].includes(d.kind)&&Sensors.actuated(c,d));
       g.classList.toggle('pressing',!!c._pressed);
     }
     const wireById=new Map(project.wires.map(w=>[w.id,w]));
