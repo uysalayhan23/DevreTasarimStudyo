@@ -234,7 +234,7 @@
 
   function renderComponentBackdrop(c,parent=els.scene){
     const d=byId[c.typeId];if(!d||!wireOverDeviceBody(d))return;
-    const g=svg('g',{class:'component-backdrop material-device-body','data-component-backdrop':c.id,'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
+    const g=svg('g',{class:'component-backdrop material-device-body'+(c._active?' active':'')+(c._closed&&['sensor','detector'].includes(d.kind)?' detecting':'')+(c._pressed?' pressing':''),'data-component-backdrop':c.id,'data-id':c.id,transform:'translate('+c.x+' '+c.y+')'});
     if(Number.isFinite(c._sc11SpeedPercent))g.setAttribute('style','--shaft-duration:'+Math.max(.4,8/Math.max(.1,c._sc11SpeedPercent/10))+'s');else if(c._motorHz!==undefined)g.setAttribute('style','--shaft-duration:'+Math.max(.2,55/Math.max(.1,c._motorHz))+'s');
     g.innerHTML=Symbols.markup(materialDefinition(c,d),c,{pending:pendingPort,mode:appearance,norm:project.symbolNorm,includeNote:false,wireBodyOnly:true});
     parent.appendChild(g);
@@ -262,6 +262,15 @@
   }
   function flowClass(w){if(!w?._flowActive)return w?._flowCertainty==='ambiguous'?'flow-ambiguous':'';if(w._flowCertainty==='ambiguous')return'flow-ambiguous';if(w._flowMode==='ac')return'flow-ac';return w._flowDirection<0?'flow-reverse':'flow-forward'}
   function updateSimulationPresentation(){
+    // Preserve the separate 3D body; mirror solver state without recreating
+    // the material image, terminals, wires or component DOM each tick.
+    for(const g of els.scene.querySelectorAll('[data-component-backdrop]')){
+      const c=project.components.find(c=>c.id===g.dataset.componentBackdrop),d=c&&byId[c.typeId];
+      if(!d)continue;
+      g.classList.toggle('active',!!c._active);
+      g.classList.toggle('detecting',!!c._closed&&['sensor','detector'].includes(d.kind));
+      g.classList.toggle('pressing',!!c._pressed);
+    }
     const wireById=new Map(project.wires.map(w=>[w.id,w]));
     for(const g of els.scene.querySelectorAll('[data-wire]')){const w=wireById.get(g.dataset.wire),line=g.querySelector('.wire');if(!w||!line)continue;line.classList.toggle('energized',!!w._active);for(const cls of ['flow-forward','flow-reverse','flow-ac','flow-ambiguous'])line.classList.remove(cls);const fc=flowClass(w);if(fc)line.classList.add(fc);line.setAttribute('data-flow-direction',String(w._flowDirection||0));line.setAttribute('stroke',w.color);line.setAttribute('style','color:'+w.color);if(!w.probeLead)g.setAttribute('style',wireStyle(w));const label=g.querySelector('.wire-role-label');if(label)label.textContent=w.freeColor?'':w.role+(Lines.voltageLabel(project,w.color)?' · '+Lines.voltageLabel(project,w.color):'')}
     for(const g of els.scene.querySelectorAll('g.component')){
@@ -301,7 +310,9 @@
     const c=project.components.find(c=>c.id===id);if(!c)return;c._pressed=down;
     const g=[...els.scene.querySelectorAll('g.component')].find(g=>g.dataset.id===id);if(!g)return;
     g.classList.toggle('pressing',down);
-    const cap=g.querySelector('.material-actuator');
+    const backdrop=[...els.scene.querySelectorAll('[data-component-backdrop]')].find(x=>x.dataset.componentBackdrop===id);
+    backdrop?.classList.toggle('pressing',down);
+    const cap=g.querySelector('.material-actuator')||backdrop?.querySelector('.material-actuator');
     if(cap?.animate){
       (cap.getAnimations?.()||[]).forEach(a=>a.cancel());
       cap.animate(down?[{transform:'translateY(0) scale(1)',filter:'brightness(1)'},{transform:'translateY(2.5px) scale(.88)',filter:'brightness(.78)'}]:[{transform:'translateY(2.5px) scale(.88)',filter:'brightness(.78)'},{transform:'translateY(0) scale(1)',filter:'brightness(1)'}],{duration:down?85:100,easing:'ease-out'});
