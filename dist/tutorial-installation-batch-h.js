@@ -127,6 +127,254 @@ const commutatorVariants=[
     ]
   }
 ];
+const twoWayVariants=[
+  {
+    "goal": "Bir tavan lambasının iki ayrı noktadaki S1 ve S2 vaviyenleriyle kontrol edilebildiğini gözlemle.",
+    "task": "Sanal S1'i değiştirdiğinde H lambasının nasıl tepki verdiğini izle. Sonra S1'i sabit bırakıp S2'yi değiştir. İki anahtarın ortak uçları arasındaki 12 ve 14 gezgin yollarını takip et.",
+    "question": "Bu devrede S2'nin 11 ortak ucundan çıkan kablo nereye gider?",
+    "options": [
+      "H/X1 lamba girişine",
+      "Doğrudan G1/N'ye",
+      "S1/11'e"
+    ],
+    "points": [
+      "G1/L, S1/11 ortak ucuna gelir.",
+      "S1/12→S2/12 ve S1/14→S2/14 gezgin hatlarıdır.",
+      "S2/11, H/X1'i besler; H/X2, G1/N'ye döner."
+    ],
+    "steps": [
+      "G1, S1, S2 ve H tavan lambasını tanı.",
+      "Önce S1'in sonra S2'nin konumunu sanal olarak değiştir.",
+      "12 ve 14 gezgin hatlarının iki anahtar arasındaki görevini açıkla.",
+      "Beş bağlantıyı terminal uçlarından yeniden kur.",
+      "İki farklı noktadan kumanda sonucunu gözlemle."
+    ]
+  },
+  {
+    "goal": "E27 duy kullanılan aydınlatmada da iki vaviyenin aynı gezgin hat mantığıyla çalıştığını anla.",
+    "task": "H yükünün bu derste E27 duy olduğunu fark et. Sanal S1 ve S2'yi sırayla değiştir; 12 ve 14 arasındaki iki gezgin hattın malzeme türü değişse de aynı bağlantıyı kurduğunu gör.",
+    "question": "E27 duy seçildiğinde iki vaviyen arasındaki hangi hatlar korunur?",
+    "options": [
+      "12–12 ve 14–14 gezgin hatları",
+      "Her iki anahtarın N bağlantısı",
+      "G1/N ile S1/11 arasındaki hat"
+    ],
+    "points": [
+      "S1/12 ve S2/12, ilk gezgin yoludur.",
+      "S1/14 ve S2/14, ikinci gezgin yoludur.",
+      "S2/11 E27 duy H/X1'e, H/X2 ise G1/N'ye bağlanır."
+    ],
+    "steps": [
+      "E27 duyun H olarak kullanıldığını belirle.",
+      "S1/11'e gelen kaynağı ve iki gezgin yolu göster.",
+      "S1 ve S2 konumlarını sırayla değiştir.",
+      "Beş bağlantıyı sanal ortamda yeniden kur.",
+      "Duy değişse de kumanda mantığının neden aynı kaldığını söyle."
+    ]
+  },
+  {
+    "goal": "İki gezgin hattı terminal kimlikleriyle ayırt etmeyi ve lamba durumuyla ilişkilendirmeyi öğren.",
+    "task": "Sanal devrede S1/12–S2/12 yolunu birinci, S1/14–S2/14 yolunu ikinci gezgin olarak izle. S1 ve S2'nin konumlarını değiştirirken hangi yolun süreklilik sağladığına dikkat et. Belirli bir kablo rengini elektriksel kimlik sanma.",
+    "question": "Bu devrede ilk gezgin hattı hangi uçları birleştirir?",
+    "options": [
+      "S1/12 ve S2/12",
+      "S1/11 ve G1/N",
+      "S2/11 ve H/X2"
+    ],
+    "points": [
+      "12 ve 14, gezgin uç kimlikleridir; renkler tek başına terminali belirlemez.",
+      "S1/12→S2/12 ve S1/14→S2/14 iki ayrı hat oluşturur.",
+      "S2/11 üzerinden H/X1'e ulaşan yol tamamlanınca lamba beslenir."
+    ],
+    "steps": [
+      "S1/11 ve S2/11 ortak uçlarını bul.",
+      "12 ve 14 uçlu iki gezgin hattı birbirinden ayır.",
+      "İki vaviyeni ayrı ayrı değiştirip sanal sonucu gözlemle.",
+      "Devreyi aynı beş bağlantıyla yeniden kur.",
+      "Lamba davranışını terminal yoluyla açıkla."
+    ]
+  },
+  {
+    "goal": "İki vaviyen ve E27 duyun beş bağlantısını bağımsız olarak yeniden kurup sonucu açıklayabil.",
+    "task": "Sanal yeniden kurma adımında G1/L→S1/11, S1/12→S2/12, S1/14→S2/14, S2/11→H/X1 ve H/X2→G1/N yollarını sırasıyla kontrol et. Sonra iki anahtarı da sırayla değiştirerek H duyunu izle.",
+    "question": "Besleme bu devrede ilk olarak hangi terminalden vaviyene girer?",
+    "options": [
+      "S1/11",
+      "S1/12",
+      "S2/14"
+    ],
+    "points": [
+      "İlk vaviyenin S1/11 ucu G1/L'yi alır.",
+      "Gezginler S1/12–S2/12 ve S1/14–S2/14 arasında uzanır.",
+      "Son vaviyenin S2/11 ucu E27 duy H/X1'e gider."
+    ],
+    "steps": [
+      "G1, iki vaviyen ve E27 duyun uçlarını tanı.",
+      "G1/L→S1/11 bağlantısıyla başla.",
+      "12 ve 14 gezginlerini ayrı ayrı tamamla.",
+      "S2/11→H/X1 ve H/X2→G1/N dönüşünü kur.",
+      "Sanal simülasyonda iki anahtarın da sonucu değiştirebildiğini açıkla."
+    ]
+  }
+];
+const intermediateVariants=[
+  {
+    "goal": "İki uç vaviyenin arasına ara vaviyen eklenince lambanın üç noktadan kumanda edilebildiğini gör.",
+    "task": "Sanal S1 ve S2'yi sabit tutup ortadaki Sx ara vaviyenin konumunu değiştir. Ardından uç anahtarlardan birini değiştir. Ortadaki anahtarın iki gezgin hattın geçişini değiştirdiğini gözlemle.",
+    "question": "Üç noktadan kumandada ortadaki Sx'in temel görevi nedir?",
+    "options": [
+      "Gezgin çiftini düz veya çapraz geçirmek",
+      "Nötr gerilimini yükseltmek",
+      "Lambanın gücünü değiştirmek"
+    ],
+    "points": [
+      "G1/L, ilk vaviyen S1/11'e gelir.",
+      "S1/12→Sx/1 ve S1/14→Sx/3 ara vaviyene girer.",
+      "Sx/2→S2/12 ve Sx/4→S2/14 üzerinden son vaviyene ulaşır."
+    ],
+    "steps": [
+      "S1, ortadaki Sx ve S2 anahtarlarını ayırt et.",
+      "Ortadaki Sx'i sanal olarak değiştirerek lambayı izle.",
+      "S1 veya S2'den birini değiştirip sonucu karşılaştır.",
+      "Yedi bağlantıyı devre üzerinde takip et.",
+      "Üç noktadan kontrolün ara vaviyenle mümkün olduğunu açıkla."
+    ]
+  },
+  {
+    "goal": "Ara vaviyenin düz ve çapraz geçişiyle gezginlerin yönünün nasıl değiştiğini anla.",
+    "task": "Sanal S1 ve S2'yi aynı konumda tut. Sx ara vaviyenini iki konumu arasında değiştir; bir konumda gezginlerin düz, diğerinde çapraz bağlandığını fark et. Bu devrenin yükü E27 duydur.",
+    "question": "Sx konumu değiştiğinde ne değişir?",
+    "options": [
+      "İki gezgin yolunun düz/çapraz eşleşmesi",
+      "G1 kaynağının 230 VAC değeri",
+      "E27 duyun terminal kimliği"
+    ],
+    "points": [
+      "S1/12 ve S1/14, Sx/1 ve Sx/3'e girer.",
+      "Sx/2 ve Sx/4, S2'nin 12 ve 14 uçlarına gider.",
+      "E27 duy H/X2, anahtarlardan bağımsız olarak G1/N'ye döner."
+    ],
+    "steps": [
+      "Sx'in iki girişini ve iki çıkışını bul.",
+      "Düz geçiş ile çapraz geçişi sanal konumlarda karşılaştır.",
+      "H E27 duyun durumunu gözlemle.",
+      "Gezgin hatları değiştirmeden yedi bağlantıyı yeniden kur.",
+      "Ara anahtarın neden üçüncü kontrol noktası olduğunu anlat."
+    ]
+  },
+  {
+    "goal": "S1, Sx ve S2 arasındaki dört gezgin terminal bağlantısını doğru eşleştir.",
+    "task": "Sanal bağlantıları takip ederken S1/12'yi Sx/1'e, S1/14'ü Sx/3'e eşleştir. Sx/2'nin S2/12'ye, Sx/4'ün S2/14'e ulaştığını doğrula. Sonra üç anahtarı sırayla değiştirerek H lambasını izle.",
+    "question": "Sx/4 terminalinden çıkan gezgin hattı hangi uca bağlanır?",
+    "options": [
+      "S2/14'e",
+      "S2/11'e",
+      "G1/N'ye"
+    ],
+    "points": [
+      "S1/12→Sx/1 ilk giriş gezginidir.",
+      "S1/14→Sx/3 ikinci giriş gezginidir.",
+      "Sx/2→S2/12 ve Sx/4→S2/14 iki çıkış gezginidir."
+    ],
+    "steps": [
+      "S1/11 ile G1/L kaynağını ayırt et.",
+      "S1'den Sx'e giden iki gezgini bul.",
+      "Sx'ten S2'ye giden iki gezgini bul.",
+      "Bağlantıları gerçek dersin yedi kablosuyla yeniden kur.",
+      "Sanal sonuçla doğru terminal eşleşmesini karşılaştır."
+    ]
+  },
+  {
+    "goal": "Üç anahtarlı aydınlatma yolunu yedi bağlantıyla yeniden kurup hangi anahtarın neyi değiştirdiğini açıklayabil.",
+    "task": "Sanal devrede G1/L→S1/11 ile başla; iki gezgini Sx'in giriş ve çıkışlarından S2'ye taşı. Sonra S2/11→H/X1 ve H/X2→G1/N bağlantılarını tamamla. Üç anahtarı sırayla değiştirerek E27 duyun durumunu gözlemle.",
+    "question": "Bu üç noktalı devrede H/X2 dönüş ucu nereye bağlanır?",
+    "options": [
+      "G1/N'ye",
+      "Sx/1'e",
+      "S1/14'e"
+    ],
+    "points": [
+      "S1/11 besleme girişidir; S2/11 yük tarafındaki ortak uçtur.",
+      "Sx/1 ve Sx/3 giriş, Sx/2 ve Sx/4 çıkış gezgin uçlarıdır.",
+      "H/X1, S2/11 ile; H/X2, G1/N ile bağlantılıdır."
+    ],
+    "steps": [
+      "İlk vaviyen, ara vaviyen ve son vaviyeni sırala.",
+      "G1/L→S1/11 ve dört gezgin bağlantısını yeniden kur.",
+      "S2/11→H/X1 ve H/X2→G1/N dönüşünü tamamla.",
+      "Üç anahtarın her birini sanal olarak değiştir.",
+      "Gözlenen lamba davranışını gezgin sürekliliğiyle açıkla."
+    ]
+  }
+];
+const bellVariants=[
+  {
+    "goal": "Tek bir butonun yalıtılmış sanal 12 VAC kaynakla ortak zili nasıl çalıştırdığını anla.",
+    "task": "Sanal B0 butonuna basıp bırak; Z zilinin hangi durumda devreye girdiğini izle. TR1/S1'den butonun 13–14 uçları üzerinden ziline, oradan TR1/S2'ye dönen yolu tanı.",
+    "question": "Tek butonlu sanal zil devresinde çağrıyı hangi eleman başlatır?",
+    "options": [
+      "B0 butonu",
+      "İkinci bir buton",
+      "G1/N hattı"
+    ],
+    "points": [
+      "TR1/S1, B0/13 ucuna bağlıdır.",
+      "B0/14, Z/1 girişine gider.",
+      "Z/2 dönüşü TR1/S2 yalıtılmış sanal kaynağına bağlanır."
+    ],
+    "steps": [
+      "TR1 sanal zil kaynağını, B0 butonunu ve Z zilini tanı.",
+      "Yalnız B0'ya sanal ortamda basarak devreyi gözlemle.",
+      "B0/13–14 arasındaki anahtarlanan yolu izle.",
+      "Üç kabloyu var olan uçlarla yeniden kur.",
+      "B0 bırakıldığında çağrı yolunun neden açıldığını açıkla."
+    ]
+  },
+  {
+    "goal": "İki ayrı çağrı butonunun paralel bağlanarak aynı sanal zili çalıştırabildiğini gör.",
+    "task": "Sanal B0 butonuna basıp Z zilini izle; sonra B0'ı bırakıp B1'e bas. İkisinin de aynı Z/1 girişine ayrı birer yoldan ulaştığını karşılaştır.",
+    "question": "B0 bırakılmışken B1'e basılırsa ne olur?",
+    "options": [
+      "B1 de Z zilini çalıştırır",
+      "Z yalnız B0 ile çalışır",
+      "TR1/S2 bağlantısı kaybolur"
+    ],
+    "points": [
+      "TR1/S1 iki butonun 13 girişine ayrı kablolarla gider.",
+      "B0/14 ve B1/14 aynı Z/1 girişinde birleşir.",
+      "Z/2, TR1/S2 yalıtılmış sanal dönüş ucudur."
+    ],
+    "steps": [
+      "TR1, B0, B1 ve Z'yi tanı.",
+      "B0 ile B1'i sırayla sanal ortamda dene.",
+      "Paralel kolların aynı Z/1 girişinde birleştiğini bul.",
+      "Beş kabloyu devre üzerinde yeniden kur.",
+      "İki farklı çağrı noktasının aynı zili nasıl çalıştırdığını anlat."
+    ]
+  },
+  {
+    "goal": "Üç çağrı butonunun ayrı paralel kollarının tek bir zili çalıştırdığını ve ortak dönüşü ayırt et.",
+    "task": "Sanal B0, B1 ve B2 butonlarını tek tek basıp bırak. Hangi butona basılırsa basılsın aynı Z zilinin etkinleştiğini; hepsi bırakıldığında çağrı yolunun açık kaldığını gözlemle.",
+    "question": "Üç buton da bırakılmışsa Z zilinin durumu ne olur?",
+    "options": [
+      "Çağrı yolu açık olduğundan zil çalışmaz",
+      "Zil sürekli çalışır",
+      "Kaynak gerilimi iki katına çıkar"
+    ],
+    "points": [
+      "B0, B1 ve B2'nin 13 uçları TR1/S1'e bağlıdır.",
+      "Üç butonun 14 çıkışları Z/1'e ayrı kollardan gelir.",
+      "Z/2, TR1/S2 yalıtılmış sanal kaynağına döner."
+    ],
+    "steps": [
+      "Üç çağrı butonunu ve ortak Z zilini tanı.",
+      "B0, B1 ve B2'yi sırayla sanal olarak dene.",
+      "Üç paralel kolun nerede birleştiğini göster.",
+      "Yedi kablonun tamamını mevcut terminallerle yeniden kur.",
+      "Hepsi bırakıldığında zilin neden durduğunu açıkla."
+    ]
+  }
+];
 function endpoint(w){return JSON.stringify([w.from?.c,w.from?.p,w.to?.c,w.to?.p]);}
 for(const [topicId,cfg] of Object.entries(topics)){
  for(let variant=1;variant<=4;variant++){
@@ -142,7 +390,7 @@ for(const [topicId,cfg] of Object.entries(topics)){
   // B4 is a fourth, distinct call input. Its catalog name says "light",
   // but this canonical two-pin device models only its NO 13/14 contact.
   const fourthBell=topicId==='bells'&&variant===4;
-  const own=topicId==='commutator'?commutatorVariants[variant-1]:null;
+  const own=topicId==='commutator'?commutatorVariants[variant-1]:topicId==='two-way'?twoWayVariants[variant-1]:topicId==='intermediate'?intermediateVariants[variant-1]:topicId==='bells'&&variant<=3?bellVariants[variant-1]:null;
   if(fourthBell&&(!p.components.some(c=>c.id==='bl'&&c.typeId==='bell-light-push')||
       p.wires.filter(w=>w.from?.c==='bl'||w.to?.c==='bl').length!==2))
     throw Error('Four-button bell canonical contact graph mismatch '+id);
