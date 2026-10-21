@@ -2929,3 +2929,9 @@ MQ-00 scope: `uysalayhan23/DevreTasarimStudyo` `main`; **no new test files, no t
 - Sadece içerik dosyası ve yerel index→bootstrap→mode→timer önbellek zinciri değiştirildi. Proje, 8 kablo/terminal adımı, solver, katalog, görseller ve teknik kabul bayrakları korunur. SC377 `dist/current-model.js` teknik commitleri korunur.
 - MQ-05 bağımsız zaman modeli ve metin karşılaştırması: dört devrede 0–2,1 saniye arasında yeşil/kırmızı tamamlayıcı; NO13–14 ve NC21–22 karşıt, A1/A2 sürekli besleniyor. MQ-12 hedefli 4 testte 3 PASS/1 eski yükleyici sürüm beklentisi FAIL; değişiklik öncesi aynı sonuç. 28 zaman noktası kararlı, kısa devre/engelleme yok. 1.655 dersin proje ve rehber bağlantı adımı özetleri başlangıçla aynı; kabul bayrakları aynı; quiz değişimi yalnız bu dört derste. Tam 1.846 testlik eski çalışmada 1.604 PASS/242 FAIL; tekrar çalıştırılmış veya düzelmiş sayılmadı.
 - Fiziksel/Windows/Edge/3D görsel kabulü bu dört ders için yapılmadı. Genel pedagojik ilerleme 17/1.655; tüm paket DONE değil, tarihsel SC001–200 PARTIAL_REVIEW ve teknik açık sorunlar korunur.
+
+## 2026-10-21 — Pedagojik dersler 18–21 (komütatör)
+
+- `commutator-1`–`commutator-4` derslerinin ayrı amaçları, gerçek S1/1–2 ve S1/3–4 yollarına dayalı gözlem yönergeleri, başlangıç adımları ve dört farklı quiz sorusu düzenlendi. H1/H2 ürün farkları ve X2→N dönüşleri doğru aktarıldı; yalnız sanal eğitim devresinde kullanılacağı belirtildi.
+- Karşılaştırmalı JavaScript kaynak kontrolünde yalnız dört dersin öğretici alanları değişti; 81 temel dersin tamamının proje bağlantıları ve rehber kablo adımları aynen korundu. Mevcut teknik REVIEW, simülasyon ve görsel kabul alanları değiştirilmedi. Çevrimdışı index→bootstrap→mode→installation yükleme revizyonları yenilendi.
+- Sırayla pedagojik çalışma ilerlemesi **21/1.655**. Bu veri dört ders için kaynak inceleme/doğrulamadır; tam native Node.js veya Windows/Edge/3D kabulü değildir. Sonraki ders aralığı `two-way-1`–`two-way-4` (22–25).
