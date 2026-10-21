@@ -237,5 +237,193 @@ for(const [id,detail] of Object.entries(lessonDetails)){
   l.beginnerSteps=copy(detail.steps);
   l.quiz={question:detail.question,options:copy(detail.options),answer:0,why:detail.goal};
 }
+/* SC042–049: distinct loop-powered and active/passive teaching content. */
+const laterLessonDetails={
+  "loop-powered-1": {
+    "goal": "İki telli B1 vericinin aynı seri yol üzerinden hem sanal 24 V besleme aldığını hem 4–20 mA ölçüm akımı oluşturduğunu anla.",
+    "task": "G1/P kaynağından B1/2 ucuna, B1/1'den P1 ampermetreye ve oradan G1/M'ye uzanan üç bağlantıyı izle. Besleme ile sinyal için ayrı bir ikinci kablo çifti varmış gibi düşünme.",
+    "question": "B1 iki telli vericinin bu dersindeki toplam döngü uçları hangileridir?",
+    "options": [
+      "B1/1 ve B1/2",
+      "B1/7 ve B1/8",
+      "B1/A1 ve B1/A2"
+    ],
+    "points": [
+      "G1/P, B1/2 terminaline bağlanır.",
+      "B1/1, P1/1 ampermetre girişine gider.",
+      "P1/2, G1/M dönüş yolunu kapatır."
+    ],
+    "steps": [
+      "G1, B1 ve P1'i tanı.",
+      "B1'in yalnız 1 ve 2 döngü uçlarını bul.",
+      "Kaynak, verici ve ölçeri sırasıyla izle.",
+      "Sanal gözlemdeki ölçümle ideal 4–20 mA bilgisini ayır.",
+      "Üç bağlantıyı olduğu gibi yeniden kur."
+    ]
+  },
+  "loop-powered-2": {
+    "goal": "İki telli verici döngüsünde R1 250 Ω alıcı yükünün P1 ile aynı seri akım yolunda olduğunu gör.",
+    "task": "B1 vericiden çıkan yolun önce P1 ampermetreye, sonra R1 direncine ve G1/M dönüşüne ulaştığını takip et. R1'in yük görevi ile P1'in ölçüm görevini ayırt et; gerçek çıktı değerini doğrulanmadan varsayma.",
+    "question": "Bu devrede P1/2 terminalinden çıkan kablo hangi uca gider?",
+    "options": [
+      "R1/1",
+      "B1/2",
+      "G1/P"
+    ],
+    "points": [
+      "G1/P → B1/2, vericinin besleme girişidir.",
+      "B1/1 → P1/1 ve P1/2 → R1/1 aynı seri yoldur.",
+      "R1/2 → G1/M dönüş bağlantısıdır."
+    ],
+    "steps": [
+      "B1, P1 ve R1'in görevlerini belirle.",
+      "P1/2'den R1/1'e giden hattı bul.",
+      "R1/2'nin kaynak dönüşünü tamamladığını göster.",
+      "İdeal 4 mA × 250 Ω hesabıyla 1 V'u ilişkilendir.",
+      "Dört kanonik kabloyu yeniden kur."
+    ]
+  },
+  "loop-powered-3": {
+    "goal": "İki telli akım döngüsünde doğru besleme yönünü terminal bağlantılarından okuyabil.",
+    "task": "G1/P'den B1/2'ye uzanan besleme hattını, B1/1'den P1/1'e giden ölçüm hattını ve P1/2→G1/M dönüşünü izle. Elektriksel terminal kimliğini, cihaz üzerindeki LOOP+ / LOOP− kavramıyla karıştırmadan gerçek numaralı uçları kullan.",
+    "question": "Sanal G1/P pozitif kaynağı bu devrede hangi B1 ucuna bağlanır?",
+    "options": [
+      "B1/2",
+      "P1/2",
+      "G1/M"
+    ],
+    "points": [
+      "G1/P, vericinin B1/2 terminaline gider.",
+      "B1/1, P1/1'e bağlıdır.",
+      "P1/2, G1/M'ye dönerek seri yolu tamamlar."
+    ],
+    "steps": [
+      "G1/P ve G1/M'yi ayırt et.",
+      "Pozitif hattan B1/2'ye bağlantıyı takip et.",
+      "B1/1–P1/1 ölçüm yolunu izle.",
+      "P1/2–G1/M dönüşünü göster.",
+      "Üç kabloyu terminallerine göre yeniden kur."
+    ]
+  },
+  "loop-powered-4": {
+    "goal": "250 Ω dirençli iki telli verici döngüsünde akım ile ideal yük gerilimi arasındaki ilişkiyi kur.",
+    "task": "B1, P1 ve R1'in seri yolunu izle. R1=250 Ω olduğu için ideal 4 mA akımın 1 V, 20 mA akımın 5 V oluşturduğunu hesapla. Simülatörün tam ölçümünü ayrıca doğrulamak gerekir.",
+    "question": "20 mA akım R1=250 Ω üzerinden geçerse ideal gerilim kaç olur?",
+    "options": [
+      "5 V",
+      "1 V",
+      "20 V"
+    ],
+    "points": [
+      "G1/P → B1/2, B1/1 → P1/1 verici ve ölçü yoludur.",
+      "P1/2 → R1/1 ve R1/2 → G1/M yük dönüşüdür.",
+      "250 Ω için ideal 4–20 mA aralığı 1–5 V'a karşılık gelir."
+    ],
+    "steps": [
+      "G1, B1, P1 ve R1'i tanı.",
+      "Dört seri bağlantıyı takip et.",
+      "4 mA için 1 V değerini hesapla.",
+      "20 mA için 5 V değerini hesapla.",
+      "İdeal sonucu gerçek simülasyon kabulünden ayrı tut."
+    ]
+  },
+  "active-passive-1": {
+    "goal": "Harici G1 24 V kaynağıyla beslenen pasif iki telli verici döngüsünü tanı.",
+    "task": "Sanal B1 vericiye G1/P hattının nereden ulaştığını ve B1/1 çıkışının P1 ampermetreden G1/M'ye nasıl döndüğünü izle. Pasif döngü elemanının kendi başına ikinci bir bağımsız 24 V kaynağı gibi çalıştığını söyleme.",
+    "question": "Bu devrede B1 vericiyi besleyen harici kaynak hangisidir?",
+    "options": [
+      "G1 24 VDC kaynağı",
+      "P1 ampermetre ekranı",
+      "İkinci bir seri aktif verici"
+    ],
+    "points": [
+      "G1/P → B1/2 verici besleme koludur.",
+      "B1/1 → P1/1 seri ölçüm yoludur.",
+      "P1/2 → G1/M harici kaynağın dönüşüdür."
+    ],
+    "steps": [
+      "G1 harici kaynak ve B1 vericiyi ayırt et.",
+      "G1/P'den B1/2'ye gelen yolu izle.",
+      "P1 ampermetrenin seri konumunu göster.",
+      "P1/2–G1/M dönüşünü takip et.",
+      "Üç kabloyu değişmeden yeniden kur."
+    ]
+  },
+  "active-passive-2": {
+    "goal": "Pasif döngüde P1 ampermetre ile R1 250 Ω alıcı yükün aynı seri akımı taşıdığını anla.",
+    "task": "G1/B1/P1/R1 tek seri yolunu göster. P1 ölçer, R1 ise 250 Ω yük görevi görür. Akım ortak olsa da her elemanın üzerindeki gerilimin aynı olmak zorunda olmadığını ayırt et.",
+    "question": "Bu seri devrede P1 ve R1 üzerinden geçen ortak büyüklük hangisidir?",
+    "options": [
+      "Aynı döngü akımı",
+      "Her elemanın direnç değeri",
+      "Her elemanın uç gerilimi"
+    ],
+    "points": [
+      "B1/1 → P1/1 ile akım ölçme kolu başlar.",
+      "P1/2 → R1/1 yük direncine gider.",
+      "R1/2 → G1/M seri dönüş yoludur."
+    ],
+    "steps": [
+      "B1 verici, P1 ölçer ve R1 yükü tanı.",
+      "P1/2 ile R1/1 arasındaki bağlantıyı takip et.",
+      "Seri akımın tüm elemanlardan geçtiğini açıkla.",
+      "250 Ω üzerindeki ideal gerilim hesabını yap.",
+      "Dört bağlantıyı yeniden kur."
+    ]
+  },
+  "active-passive-3": {
+    "goal": "Aktif WAZ5 U1 dönüştürücünün beslemesiyle 4–20 mA çıkış döngüsünü birbirinden ayır.",
+    "task": "Sanal G1/P–U1/10 ve U1/11–G1/M hatlarını yalnız cihaz beslemesi olarak izle. Ölçüm için U1/7 çıkışı P1/1'e, P1/2 ise U1/8 dönüşüne bağlıdır. Aynı çıkış döngüsüne ikinci bir aktif akım kaynağı eklenmiş gibi anlatma.",
+    "question": "Bu WAZ5 devresinde P1 ampermetre hangi uçların oluşturduğu çıkış döngüsündedir?",
+    "options": [
+      "U1/7 ve U1/8",
+      "U1/10 ve U1/11",
+      "G1/P ve G1/M doğrudan"
+    ],
+    "points": [
+      "U1/10 ve U1/11, harici 24 VDC beslemesidir.",
+      "U1/7 → P1/1 aktif 4–20 mA çıkış yoludur.",
+      "P1/2 → U1/8 çıkış döngüsünün dönüşüdür."
+    ],
+    "steps": [
+      "G1 ile U1/10–11 besleme kablolarını bul.",
+      "U1/7 ve U1/8 çıkış uçlarını ayırt et.",
+      "P1 ampermetrenin yalnız çıkış döngüsünde yer aldığını göster.",
+      "Besleme ve ölçüm yollarını sanal ortamda ayrı izle.",
+      "Dört kabloyu terminallere göre yeniden kur."
+    ]
+  },
+  "active-passive-4": {
+    "goal": "Aktif dönüştürücü çıkışının pasif alıcıyla tek kapalı ölçüm döngüsü kurması gerektiğini öğren.",
+    "task": "G1/P–U1/10 ve U1/11–G1/M, WAZ5 beslemesini oluşturur. U1/7–P1/1 ve P1/2–U1/8 ise ayrı kapalı ölçüm çıkışıdır. İki aktif çıkışı birbiriyle bağlamayı öğretme; sanal örnekte tek aktif verici ve pasif ölçer vardır.",
+    "question": "Sanal WAZ5 devresindeki akım çıkışının kapalı dönüş hattı hangisidir?",
+    "options": [
+      "P1/2 → U1/8",
+      "P1/2 → G1/P",
+      "U1/10 → P1/1"
+    ],
+    "points": [
+      "U1/10–11, G1 24 VDC besleme çiftidir.",
+      "U1/7 ve U1/8 dönüştürücünün ölçüm çıkış çiftidir.",
+      "P1/1–P1/2 ampermetre uçları bu çıkışa seri bağlanır."
+    ],
+    "steps": [
+      "G1 ve U1'in besleme terminallerini belirle.",
+      "WAZ5 çıkış uçları U1/7–8'i bul.",
+      "P1'in giriş ve dönüş yolunu takip et.",
+      "İkinci aktif akım kaynağı olmadığını açıkla.",
+      "Dört gerçek bağlantıyı aynı şekilde yeniden kur."
+    ]
+  }
+};
+for(const [id,detail] of Object.entries(laterLessonDetails)){
+  const l=L.byId[id];
+  if(!l||!l.project||l.project.wires.length!==l.steps.length)throw Error('Missing physical loop lesson '+id);
+  l.learningGoal=detail.goal;l.summary=detail.goal;
+  l.explanation=detail.task+' Bu ders yalnız sanal eğitim ortamında uygulanır.';
+  l.measurementUpgrade={...l.measurementUpgrade,goal:detail.goal,task:detail.task,question:detail.question,options:copy(detail.options),observationPoints:copy(detail.points)};
+  l.beginnerSteps=copy(detail.steps);
+  l.quiz={question:detail.question,options:copy(detail.options),answer:0,why:detail.goal};
+}
 L._nextBatchI=true;
 })(typeof window==='undefined'?globalThis:window);

@@ -2947,3 +2947,9 @@ MQ-00 scope: `uysalayhan23/DevreTasarimStudyo` `main`; **no new test files, no t
 - `control-combinations-1`–`control-combinations-4` ve `loop-420-1`–`loop-420-4` için gerçek terminallere bağlı sekiz ayrı, kısa ve konuya özel amaç, çalışma açıklaması, gözlem rehberi, beş adım ve quiz hazırlandı; mevcut genel ve tekrarlı anlatımlar kaldırıldı.
 - Hedefli V8 öğretici yükleme karşılaştırması: sekiz dersin yalnız pedagojik alanları değişti, 1.686 benzersiz müfredat kaydının tüm proje/bağlantı adımları ve teknik REVIEW alanları eşit kaldı. Çevrimdışı index→bootstrap→mode→next-batch yükleme revizyonları yenilendi. Native Node.js, Windows/Edge ve gerçek 3D görsel kabulü yapılmadı; teknik kabul bayrakları değişmedi.
 - Önceki 1.655 ders hedefiyle güncel 1.686 benzersiz müfredat kimliği arasında 31 kayıtlık envanter farkı var; kapsamı doğrulanana kadar 31 kayıt dışlanmayacak. Sıralı inceleme: **41 ders**. Sıradaki dersler 42–49 (`loop-powered-1`–`active-passive-4`).
+
+## 2026-10-21 — Pedagojik dersler 42–49 (loop-powered / aktif-pasif)
+
+- `loop-powered-1`–`loop-powered-4` ile `active-passive-1`–`active-passive-4` derslerinde gerçek 3–4 kablolu verici döngülerinin ayrı görevleri, 250 Ω ideal yük hesabı ve WAZ5 U1/10–11 besleme ile U1/7–8 çıkış ayrımı doğal Türkçeyle açıklandı. Sekiz dersin amaç, açıklama, gözlem, beş adım ve quiz içerikleri derslere özgü güncellendi.
+- Hedefli JavaScript öncesi/sonrası incelemesi: sekiz pedagojik kayıt değişti, 1.686 müfredat kaydının proje, kablo, rehber adım ve REVIEW/simülasyon kabul alanları korundu. Çevrimdışı index→bootstrap→mode→next-batch-i önbellek revizyonları güncellendi. Native Node.js, Windows/Edge ve malzeme 3D görsel kabulü yapılmadı.
+- Sıralı pedagojik inceleme ilerlemesi **49 ders**; mevcut 1.655 hedef ile 1.686 benzersiz ders kimliği arasındaki fark açık kayıt olarak korunur. Sonraki grup `pnp-npn-1`–`pnp-npn-4` (50–53).
