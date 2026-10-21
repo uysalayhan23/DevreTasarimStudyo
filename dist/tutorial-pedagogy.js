@@ -11023,6 +11023,23 @@ for(const id of [
  }
 }
 
+/* MQ07 SC350_SC377_MATERIAL_GRAPH_SYNC: list the actual installed component
+ * types, including the LM358P DIP8, added input resistor and NTC bias.
+ * All historical REVIEW and runtime/manufacturer acceptance flags stay intact. */
+{
+ const first=L.lessons.findIndex(l=>l.id==='opamp-apps-outline-021');
+ if(first<0||L.lessons[first+27]?.id!=='opamp-apps-outline-044')
+  throw Error('SC350–377 material metadata scope changed');
+ for(const lesson of L.lessons.slice(first,first+28)){
+  const review=lesson.pedagogyReview;
+  if(!Array.isArray(review?.componentIds))continue;
+  const types=lesson.project.components.map(c=>c.typeId);
+  if(review.componentIds.length!==types.length||
+     review.componentIds.some((id,i)=>id!==types[i]))
+   review.componentIds=types;
+ }
+}
+
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
 })(typeof window==='undefined'?globalThis:window);
