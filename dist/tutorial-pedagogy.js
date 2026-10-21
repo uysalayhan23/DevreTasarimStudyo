@@ -10976,7 +10976,7 @@ for(const id of [
     'K1/13–14 kontağı ile BZ1/1–2 uçlarının ayrı uyarı yük devresi olduğunu göster.',
     '1000 mm mesafede K1 ve BZ1 OFF durumunu incele.',
     '150 mm mesafede K1 ve BZ1 ON, sonra tekrar 1000 mm mesafede OFF durumunu izle.',
-    '20 mm kör bölgeyi ve yanal hizalama kaybını dene; gerçek ürün kalibrasyonu kabul etme.'],
+    '30 mm altındaki kör bölgeyi (ör. 20 mm) ve yanal hizalama kaybını dene; gerçek ürün kalibrasyonu kabul etme.'],
   quiz:{question:'Sanal ultrasonik hedef algılanınca BZ1 buzzeri hangi kontak besler?',
     options:['K1/13–14 NO kontağı','S1/BU dönüş hattı','S1/BN besleme ucu'],
     answer:0,why:'Sensör BK çıkışı röle bobinini çeker, NO kontak kapanınca buzzerin 1/2 uçları beslenir.'}});
