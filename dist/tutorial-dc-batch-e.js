@@ -6,6 +6,19 @@ const clone=x=>JSON.parse(JSON.stringify(x)),data=[["01","Doğru akımın yönü
 const W=(a,ap,b,bp,role,why,n)=>({id:'dce-'+n,from:{c:a,p:ap},to:{c:b,p:bp},role,color:role==='0V'?'#111827':role==='SERIES'?'#f59e0b':'#e53935',size:'1.5',points:[],tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why});
 function combined(l){
  const p=clone(l.project),source=L.byId['dc-circuits-src-03']?.project;if(!source)throw Error('Canonical serial-pair voltage laboratory missing');
+ // Repair only the known four-item placeholder, retaining the six authored 2S2P wires.
+ if(!['pg0','pg1','pg2','pg3'].every(id=>p.components.some(c=>c.id===id&&c.typeId==='tutorial-battery'))){
+  const placeholder=new Set(['g1','b','r','l']);
+  if(p.components.length!==4||p.wires.length!==4||!p.components.every(c=>placeholder.has(c.id)))
+   throw Error('Unknown 2S2P source: leave source untouched');
+  p.components=[
+   {id:'pg0',typeId:'tutorial-battery',ref:'BT1',label:'A kolu birinci pil',x:140,y:150,rotation:0,cellVoltage:1.5},
+   {id:'pg1',typeId:'tutorial-battery',ref:'BT2',label:'A kolu ikinci pil',x:140,y:540,rotation:0,cellVoltage:1.5},
+   {id:'pg2',typeId:'tutorial-battery',ref:'BT3',label:'B kolu birinci pil',x:515,y:150,rotation:0,cellVoltage:1.5},
+   {id:'pg3',typeId:'tutorial-battery',ref:'BT4',label:'B kolu ikinci pil',x:515,y:540,rotation:0,cellVoltage:1.5},
+   {id:'pg4',typeId:'resistor',ref:'R1',label:'100 Ω yük',x:925,y:390,rotation:0,resistance:100}
+  ];
+ }
  for(const [id,pack,i] of [['pg0','PACK-A',0],['pg1','PACK-A',1],['pg2','PACK-B',0],['pg3','PACK-B',1]]){
   const cell=p.components.find(c=>c.id===id);if(!cell||cell.typeId!=='tutorial-battery')throw Error('Missing cell '+id);
   cell.cellVoltage=1.5;cell.seriesPackId=pack;cell.seriesIndex=i;cell.tutorialPurpose='Sanal '+pack+' seri hücre '+(i+1)+' · 1,5 V';
@@ -85,6 +98,20 @@ for(const [suffix,heading,goal,task,question,options] of data){
  l.quiz={question,options,answer:0,why:goal};
  l.materials=l.project.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal ders malzemesi'}));
  if(Number(suffix)<=4){const f=friendly[Number(suffix)-1];l.summary=f.summary;l.learningGoal=f.goal;l.explanation=f.story+' Bu yalnız sanal eğitim örneğidir.';l.beginnerSteps=[...f.steps]}
+ if(suffix==='05'){
+  l.summary='Dört pilin iki seri kolunu paralel birleştirerek 3 V sanal paket elde ediyoruz.';
+  l.learningGoal='İki adet 3 V seri kolun paralel bağlandığında toplam gerilimin neden 3 V kaldığını ve 100 Ω yükte ideal 30 mA akımı açıklayacaksın.';
+  l.explanation='Dört pilin olduğunu düşün: ilk ikisi bir sıra, diğer ikisi ikinci sıra. Her sıranın gerilimi 1,5 + 1,5 = 3 V. İki sıranın artı ve eksi uçlarını ortaklaştırınca gerilim yine 3 V kalır. 100 Ω yük için beklenen akım 30 mA olur. Bu yalnız sanal örnektir.';
+  l.beginnerSteps=['İlk iki pilin seri köprüsünü bul.','İkinci seri kolun köprüsünü bul.','İki kolun ortak artı ve eksi bağlantılarını izle.','3 V / 100 Ω hesabını yap.'];
+  if(!l.project.components.some(c=>c.typeId==='unit-ut61e-plus'||c.typeId==='unit-ut33d-plus'||c.typeId==='multimeter'))
+   l.measurementUpgrade.task='Sanal devrede dört pili ve 100 Ω yükü izle; 3 V ve 30 mA ideal değerlerini hesapla. Bu proje henüz bağlı bir ölçü aleti içermediğinden cihaz okuması doğrulanmış değildir.';
+ }
+ if(suffix==='06'){
+  l.summary='Gerilimi ya da direnci değiştirince akımın nasıl değiştiğini keşfediyoruz.';
+  l.learningGoal='Ohm Kanunu ile 24 V ve 120 Ω için ideal 0,20 A akımı bulabileceksin.';
+  l.explanation='Sanal bir deney masasında önce kaynağın gerilimini, sonra R1 direncini değiştiriyoruz. Aynı dirençte daha yüksek gerilim daha yüksek akım demek. Aynı gerilimde direnç büyürse akım azalır. Beklenen sonucu hesapla ve çalışan sanal ölçüm varsa karşılaştır.';
+  l.beginnerSteps=['24 V ve 120 Ω için akımı tahmin et.','Gerilimi değiştirip ideal akımı hesapla.','Direnci değiştirip sonucu karşılaştır.','Çalışan sanal ölçüm yoksa hesapla ölçümü eşit sayma.'];
+ }
  l.pedagogyReview={version:'v1.19.20-dc-batch-e',reviewed:true,codeImplemented:true,visualAcceptance:false,canonicalContinuity:true};
 }
 L._dcBatteryBatchE=true;
