@@ -4199,6 +4199,22 @@ for(const [index,notes] of Object.entries(mq07ReferenceScope72to82)){
   notes[1],
   'Gerçek kablo bağlantısı ve ölçüm sonucu olmadan devreye elektriksel PASS verme.'
  ];
+ if(index==='27'){
+  // Eko yalnız kavramsal karttır; gecikme hattı veya işlenmiş ses çıkışı yoktur.
+  if(lesson.kind!=='quiz'||!lesson.project?.referenceOnly||lesson.project.wires.length!==0||
+     !lesson.quiz||!Array.isArray(lesson.quiz.options)||lesson.quiz.options.length!==3)
+   throw Error('Eko referans/quiz kaynağı değişti: '+id);
+  lesson.learningGoal='Gecikmiş ses kopyasını sıradan yükseltmeden ayırt etmek; kartın gerçek eko üretmediğini bilmek.';
+  lesson.beginnerSteps=[
+   'Bir arkadaşının kısa bir sözü söylediğini düşün. Biraz sonra daha hafif duyulan tekrar, eko fikrini anlatır.',
+   'Eko için giriş sesinin gecikmiş bir kopyası gerekir; LM358P sembolü tek başına bu gecikmeyi oluşturmaz.',
+   'Bu kartta gecikme hattı, bellek ve giriş-çıkış kablolarının bulunmadığını kontrol et.',
+   'Ses işlenmediği ve ölçüm yapılmadığı için çalışır eko veya elektriksel PASS sonucuna varma.'
+  ];
+  lesson.quiz={question:'Sadece sesi yükseltmek yerine eko oluşturmak için hangi işlev gerekir?',
+   options:['Sesin gecikmiş kopyasını asıl işaretle birleştirmek','Sesi yalnız daha yüksek yapmak','Bağlantısız LM358P sembolüne bakmak'],
+   answer:0,why:'Eko geciktirilmiş kopya gerektirir; bu kartta gecikme ya da kablolanmış ses yolu yoktur.'};
+ }
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),mq07Batch:'001_200',
   semanticNarrativeAdded:true,titleTopologyStatus:'REVIEW',
   titleTopologyIssue:'NO_WIRED_CIRCUIT',terminalGrounded:false,
