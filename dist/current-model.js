@@ -1023,6 +1023,59 @@
       }
     }
   }
+
+  // Precision rectifier lesson 043: expose ACTUAL LM358/1N4148 native
+  // DC transfer; source wired and diode conduction must match exactly.
+  // Not an AC half-wave rectification or calibrated physical measurement.
+  {
+    const scoped=project?.tutorialLesson?.id==='opamp-apps-outline-043';
+    if(scoped){
+      const get=id=>project.components.find(c=>c.id===id),
+        expected=[['g1','supply-dc-plus'],['rv1','potentiometer'],
+          ['r3','resistor'],['r4','resistor'],['u1','lm358p-dip8'],
+          ['d1','1n4148-do35'],['r5','resistor'],['v1','meter-voltmeter']],
+        wires=['g1.P>rv1.1','rv1.3>g1.M','rv1.2>u1.3',
+          'g1.P>r3.1','r3.2>r4.1','r4.2>g1.M',
+          'g1.P>u1.8','g1.M>u1.4','u1.1>d1.A','d1.K>u1.2',
+          'd1.K>r5.1','r5.2>r3.2','d1.K>v1.1','v1.2>r3.2'],
+        norm=(a,b)=>[a,b].sort().join('~'),
+        observed=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,
+          w.to.c+'.'+w.to.p)).sort(),
+        required=wires.map(s=>norm(...s.split('>'))).sort(),
+        meter=get('v1'),op=get('u1'),diode=get('d1'),
+        pct=Number(get('rv1')?.potentiometer);
+      if(meter)delete meter._nativePrecisionRectifierDc;
+      if(op)delete op._nativePrecisionRectifierDc;
+      if(meter&&op&&diode&&project.components.length===8&&
+         observed.length===required.length&&
+         observed.every((v,i)=>v===required[i])&&
+         expected.every(([id,type])=>get(id)?.typeId===type)&&
+         Number.isFinite(pct)&&pct>=0&&pct<=100&&
+         Number(get('rv1').potMax)>0&&
+         Number(get('r3').resistance)===10000&&
+         Number(get('r4').resistance)===10000&&
+         Number(get('r5').resistance)===100000){
+        const real=(c,p)=>secondary.get(pin(c,p))?.[0],
+          grounded=real(get('g1'),'M'),
+          input=real(get('rv1'),'2'),
+          ref=real(get('r3'),'2'),
+          out=real(get('v1'),'1'),
+          minus=real(get('v1'),'2'),
+          voltage=out-minus,inputRelative=input-ref;
+        if([grounded,input,ref,out,minus,voltage,inputRelative].every(Number.isFinite)){
+          const data={model:'native-wired-LM358-1N4148-precision-rectifier-DC',
+            potentiometerPercent:pct,inputRelativeToVrefV:inputRelative,
+            outputRelativeToVrefV:voltage,referenceV:ref-grounded,
+            diodeForward:diode._diodeForward===true,
+            dcTransferOnly:true,acWaveformAcceptance:false,
+            hardwareAcceptance:false,physicalAcceptance:false,
+            calibratedMeter:false};
+          meter._nativePrecisionRectifierDc=data;
+          op._nativePrecisionRectifierDc={...data};
+        }
+      }
+    }
+  }
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
   for(const b of branches){if(!b.c||!b.ap||!b.bp||b.role==='opamp-output')continue;let i=b._signedFlowCurrent||signedCurrent(b,secondary);if(b.role==='current-source'&&b.source)i=[i[0]-Number(b.source.value||0),i[1]];addTerminal(b.c,b.ap,i);addTerminal(b.c,b.bp,[-i[0],-i[1]])}
