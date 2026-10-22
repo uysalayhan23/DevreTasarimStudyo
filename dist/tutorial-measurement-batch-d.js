@@ -86,7 +86,12 @@ for(const [suffix,mode,heading,goal,task,question,answers] of entries){
   p=clone(src.project);workbench='energy';l.energyAnalyzerRich=true;l.kind='explore';l.steps=[];
  }else if(mode==='sensor'){
   p=clone(l.project);workbench='sensor';l.kind='explore';l.steps=p.wires.filter(w=>!w.probeLead).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'Sensör terminalini bağla',why:w.tutorialWhy||'Sensör çıkışını incele'}));
-  const sensor=p.components.find(c=>c.typeId==='proximity');if(!sensor)throw Error('PNP sensor missing');sensor.sensing={target:'metal',distance:10,range:4,offset:0};
+  const sensor=p.components.find(c=>c.typeId==='proximity');
+  if(!sensor){
+   l.pedagogyReview={...(l.pedagogyReview||{}),titleTopologyIssue:'MISSING_PNP_SENSOR',codeImplemented:false,simulationAcceptance:false,visualAcceptance:false};
+   continue; // Preserve unresolved sensor source; do not block unrelated lesson loading.
+  }
+  sensor.sensing={target:'metal',distance:10,range:4,offset:0};
   p.components=p.components.filter(c=>!['mr','mb'].includes(c.id));
   p.wires=p.wires.filter(w=>!['mr','mb'].includes(w.from?.c)&&!['mr','mb'].includes(w.to?.c));
   const m=p.components.find(c=>c.typeId==='unit-ut33d-plus'),red=p.components.find(c=>c.id==='mm-red'),black=p.components.find(c=>c.id==='mm-black');
