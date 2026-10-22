@@ -5785,9 +5785,9 @@ function mq07MakeAudioLesson(lesson,mix){
   limits
  ];
  lesson.quiz=mix?{
-  question:'İki kanallı tersleyen LM358P mikserde A/B işaretleri hangi düğüme ayrı dirençlerden gelir?',
-  options:['IN− pin 2 ortak toplama düğümüne','Besleme pin 8 e doğrudan','OUT pin 1 den ayrı kaynaklara'],answer:0,
-  why:'RV1/RV2 sürgüleri RA/RB üzerinden IN− pin 2 de toplanır; OUT–RF negatif geri beslemesi ayrı bağlanır.'
+  question:'İki girişli LM358P mikserde FG1 ve FG2 sinyalleri hangi düğümde toplanır?',
+  options:['A kanalının IN− pin 2 düğümünde, RA/RB üzerinden','A kanalının IN+ pin 3 VREF düğümünde','B kanalının OUT pin 7 tampon çıkışında'],answer:0,
+  why:'FG1/FG2 sinyalleri RV1/RV2 sürgülerinden RA/RB üzerinden A kanalının IN− pin 2 düğümüne gelir. IN+ pin 3 ve B tampon OUT pin 7 orta-besleme VREF referansını taşır.'
  }:{
   question:'Tek beslemeli LM358P ön yükselteçte giriş neden kuplaj kondansatörü ve VREF bias kullanır?',
   options:['AC giriş bileşenini orta-besleme DC çalışma noktasına oturtmak için','Hoparlörden 100 W elde etmek için','Gerçek RMS değerini otomatik kalibre etmek için'],answer:0,
@@ -6000,9 +6000,9 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
   'Simülasyonda RV1 seviyesini azalt/artır veya FG1 i kapat; seviye geriliminin şarj ve R1×C1 ölçeğinde boşalmasını izle.',
   'Bağıl dB re 1 V tepe göstergesi IEC VU kalibrasyonu değildir.'
  ];
- l.quiz={question:'SC080 zarf devresinde FG1 kapatıldığında V1 neden zamanla azalır?',
-   options:['C1 sakladığı yükü R1 üzerinden boşaltır','LM358P kendiliğinden enerji üretir','IEC VU standardı devreyi besler'],answer:0,
-   why:'D1 tek yönlü iletim ve C1/R1 ≈ 0,47 s zaman sabitiyle seviye davranışı üretir.'};
+ l.quiz={question:'VU metre zarf devresinde kaynak sinyali kesilirse C1 üzerindeki gerilim hangi yolla azalır?',
+   options:['C1, paralel R1 üzerinden boşalır','D1, ters yönde ileterek C1 yükünü kaynağa aktarır','C1, R1 olmadan da aynı 0,47 s zaman sabitiyle boşalır'],answer:0,
+   why:'D1 ters yöndeki akışı sınırlar. İdeal RC boşalma süresi R1×C1 = 100 kΩ × 4,7 µF ≈ 0,47 s olur; bu süre IEC VU kalibrasyonu veya native ölçüm kabulü değildir.'};
  l.safety='Yalnız düşük gerilimli sanal diyot-RC ölçüm laboratuvarı; gerçek hoparlör gücü, üretici kalibrasyonu, IEC VU kabulü yoktur.';
  l.pedagogyReview={...(l.pedagogyReview||{}),componentIds:p.components.map(c=>c.typeId),
    mq07AudioScope:'SC080_RECTIFIED_RC_ENVELOPE',titleTopologyStatus:'NATIVE_RECTIFIER_ENVELOPE_TARGETED',
