@@ -5897,7 +5897,7 @@ for(const [suffix,isMixer] of [['24',false],['25',true]]){
   boundary
  ];
  l.quiz={question:'Pasif iki bantlı ton kartında bas ve tiz sinyal kolları nasıl ayrılır?',
-  options:['Bas kolu alçak geçiren, tiz kolu yüksek geçiren RC ağından geçer','İki kol doğrudan üç faz kontaktörüne bağlanır','Ses gücü sadece V1 gerilim etiketinden doğrulanır'],
+  options:['Bas kolu alçak geçiren, tiz kolu yüksek geçiren RC ağından geçer','Bas kolu yüksek geçiren, tiz kolu alçak geçiren RC ağından geçer','Her iki kol yalnız sabit dirençle frekanstan bağımsız çalışır'],
   answer:0,why:'RL/CL alçak geçiren, CH/RH yüksek geçiren koldur; RV1/RV2 çıkış seviyelerini ayrı etkiler. Dinamik frekans cevabı kabul edilmemiştir.'};
  l.safety='Yalnız yazılımsal düşük gerilimli pasif RC ton birleştirme laboratuvarı; gerçek ses gücü veya AC kalibrasyonu değildir.';
  l.pedagogyReview={...(l.pedagogyReview||{}),mq07Batch:'001_200',
