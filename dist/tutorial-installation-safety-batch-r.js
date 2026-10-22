@@ -60,7 +60,8 @@ for(const spec of specs){
   if(!ids.has(a)||!ids.has(b))throw Error('Missing endpoint in '+spec.id);
   return {id:'safety-r-'+spec.id.slice(-2)+'-'+(index+1),from:{c:a,p},to:{c:b,p:q},color:'#16a34a',role:'PE',size:'2.5',points:[],tutorialHint:'Sanal koruma güzergâhında '+a+'/'+p+' ve '+b+'/'+q+' noktalarını bul.',tutorialWhy:'Bu kablo yalnız kavramsal bir koruma güzergâhını gösterir; ölçüm veya koruma testi değildir.'};
  });
- l.project={...clone(old),components:parts,wires,junctions:[],tutorialLesson:{...(old.tutorialLesson||{}),phase:'quiz'},tutorialExplore:{type:'unpowered-protection-concept',simulationOnly:true,protectivePerformanceModelled:false,devicePerformanceModelled:false}};
+ const project=clone(old);delete project.intentionalElectricalIslands;
+ l.project={...project,components:parts,wires,junctions:[],colorRoles:{...(project.colorRoles||{}),'#16a34a':'PE'},tutorialLesson:{...(old.tutorialLesson||{}),phase:'quiz'},tutorialExplore:{type:'unpowered-protection-concept',simulationOnly:true,protectivePerformanceModelled:false,devicePerformanceModelled:false}};
  l.kind='quiz';l.steps=[];
  l.summary=spec.goal;l.learningGoal=spec.goal;
  l.explanation=spec.title+': '+spec.goal+' '+spec.note+' Bu enerjisiz sanal bir gösterimdir.';
