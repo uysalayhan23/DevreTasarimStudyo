@@ -34,10 +34,10 @@ const specs=[
   'LM358P, R ve C burada referanstır. Besleme, geri besleme ve çıkış ölçümü yapılmadan osilatör çalışıyor denemez.',
   ['Filtre başka bir sinyalin frekanslarını seçerken osilatörün sinyal ürettiğini düşün.','LM358P ile R-C öğelerini ayırt et; kartın hiç kablolanmadığını kontrol et.','Salınım için kapalı aktif çevrim gerektiğini kendi cümlenle anlat.']],
  ['060',null,['arduino-bd139','reactor','capacitor'],
-  'Colpitts osilatör için bu eksik malzeme kartında hangi geri besleme ağı gösterilmeliydi?',
-  ['İki kondansatörün oluşturduğu kapasitif bölücü.','Yalnız bir bobinin fiziksel rengi.','Tek başına bir rölenin NO kontağı.'],
-  'Bu kart yalnız BD139, L ve tek bir C gösterir: Colpitts geri beslemesini tamamlayan ikinci kondansatör ve çalışan bağlantılar yoktur.',
-  ['Colpitts için L-C rezonansını ve iki kapasitörlü geri besleme bölücüsünü ayrı düşün.','Bu karttaki tek C sembolünün yeterli Colpitts topolojisi oluşturmadığını fark et.','Gerçek salınım, frekans veya fiziksel BD139 kabulü verilmediğini söyle.']]
+  'Colpitts osilatörde iki kondansatörün temel görevi nedir?',
+  ['C1 ve C2 birlikte kapasitif geri besleme bölücüsünü oluşturabilir.','Tek bir bobinin fiziksel rengini değiştirmek.','Kondansatörlerin tüm uçlarını bağlamadan salınımı kanıtlamak.'],
+  'Kartta C1 ve C2 artık ayrı 10 nF örnek bileşenlerdir. Gerçek Colpitts salınımı için aktif kutuplama, kapalı geri besleme, besleme ve ölçüm gerekir; hiçbir terminal henüz bağlanmamıştır.',
+  ['Bobinin rezonans ağındaki görevini, C1/C2 kapasitif bölücü görevinden ayır.','İki kondansatörü ayrı malzeme olarak bul; 10 nF yalnız eğitsel örnektir.','Bu kartın kablosu olmadığından hesaplanmış salınım veya fiziksel BD139 kabulü çıkarma.']]
 ];
 for(const [suffix,issue,types,question,options,why,steps] of specs){
  const id='oscillator-filter-apps-outline-'+suffix,l=L.byId[id];
@@ -55,6 +55,30 @@ for(const [suffix,issue,types,question,options,why,steps] of specs){
  const oldQuestion='“'+l.title+'” konusunda hangi temel teknik ilke doğrudur?';
  if(l.quiz?.question!==oldQuestion||l.quiz?.answer!==0||l.quiz?.options?.length!==3)
    throw Error('Previously specialized concept question - preserve '+id);
+ if(suffix==='060'){
+   const oldCap=l.project.components[2],p=l.project;
+   if(oldCap?.typeId!=='capacitor'||p.components.some(c=>c.id==='colpitts-c2')||
+      l.materials.length!==3||!l.materials.some(m=>m.componentId===oldCap.id))
+     throw Error('Colpitts concept source cannot be repaired safely: '+id);
+   const oldFirstTwo=JSON.stringify(p.components.slice(0,2));
+   oldCap.ref='C1';oldCap.label='C1 · örnek 10 nF';
+   oldCap.capacitance=10e-9;
+   oldCap.tutorialPurpose='İlk Colpitts kapasitif geri besleme bölücü elemanı; değer yalnız kavramsal örnektir.';
+   const second={id:'colpitts-c2',typeId:'capacitor',x:790,y:170,rotation:0,
+      ref:'C2',label:'C2 · ikinci örnek 10 nF',state:false,address:'',note:'',
+      capacitance:10e-9,
+      tutorialPurpose:'İkinci Colpitts kapasitif geri besleme bölücü elemanı; kablo ve salınım modeli henüz yoktur.'};
+   p.components.push(second);
+   l.materials=l.materials.map(m=>m.componentId===oldCap.id?
+      {...m,label:oldCap.label,why:oldCap.tutorialPurpose}:m);
+   l.materials.push({componentId:second.id,typeId:second.typeId,
+      label:second.label,why:second.tutorialPurpose});
+   l.pedagogyReview={...l.pedagogyReview,componentIds:p.components.map(c=>c.typeId)};
+   l.explanation+=' C1 ve C2 örnek kondansatörler kartta ayrı bulunur; bağlantı, ölçüm ve gerçek osilasyon yoktur.';
+   if(JSON.stringify(p.components.slice(0,2))!==oldFirstTwo||p.wires.length!==0||
+      p.referenceOnly!==true||l.steps.length!==0)
+     throw Error('Colpitts concept repair modified protected source: '+id);
+ }
  const original=JSON.stringify([l.project,l.steps,l.kind,l.materials,l.pedagogyReview]);
  l.quiz={question,options:[...options],answer:0,why};
  l.beginnerSteps=[...steps];
