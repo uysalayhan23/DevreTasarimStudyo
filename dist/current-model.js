@@ -754,6 +754,77 @@
     secondary=solveSecondary();
    }
   }
+
+  // SC Schmitt: only the exact 14-wire LM358P A-channel, potentiometer,
+  // R1/R2 positive-feedback source may use an IDEAL two-threshold latch.
+  // Preserve all other op-amp solvers and physical acceptance flags.
+  {
+    const id=project?.tutorialLesson?.id,
+      scoped=id==='electronic-component-basics-outline-046',
+      get=name=>project.components.find(c=>c.id===name),
+      amp=scoped?get('u1'):null,meter=scoped?get('v1'):null;
+    if(scoped){
+      if(amp){delete amp._nativeSchmitt; if(options.reset)delete amp._nativeSchmittHigh;}
+      if(meter)delete meter._nativeSchmitt;
+      const partTypes=[['g1','supply-dc-plus'],['u1','lm358p-opamp-a'],
+        ['in','potentiometer'],['r1','resistor'],['r2','resistor'],
+        ['v1','meter-voltmeter'],['ref1','resistor'],['ref2','resistor']],
+        links=['g1.P>u1.V+','g1.M>u1.V-','v1.1>u1.OUT','v1.2>g1.M',
+          'in.1>g1.P','in.3>g1.M','g1.P>ref1.1','ref1.2>ref2.1',
+          'ref2.2>g1.M','ref1.2>u1.IN-','in.2>r1.1',
+          'r1.2>u1.IN+','u1.OUT>r2.1','r2.2>u1.IN+'],
+        norm=(a,b)=>[a,b].sort().join('~'),
+        actual=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p)).sort(),
+        wanted=links.map(x=>norm(...x.split('>'))).sort(),
+        rIn=Number(get('r1')?.resistance),rFeedback=Number(get('r2')?.resistance),
+        position=Number(get('in')?.potentiometer),
+        potRange=Number(get('in')?.potMax);
+      const valid=amp&&meter&&opamps.length===1&&
+        project.components.length===partTypes.length&&project.wires.length===links.length&&
+        partTypes.every(([name,type])=>get(name)?.typeId===type)&&
+        actual.every((edge,i)=>edge===wanted[i])&&
+        Number.isFinite(rIn)&&rIn>0&&Number.isFinite(rFeedback)&&rFeedback>rIn&&
+        Number.isFinite(position)&&position>=0&&position<=100&&
+        Number.isFinite(potRange)&&potRange>0;
+      if(!valid){if(amp)delete amp._nativeSchmittHigh;}
+      else{
+        const supplyPlus=(secondary.get(pin(get('g1'),'P'))||[])[0],
+          supplyMinus=(secondary.get(pin(get('g1'),'M'))||[])[0],
+          railSpan=supplyPlus-supplyMinus;
+        if(Number.isFinite(railSpan)&&railSpan>=5&&railSpan<=24.1){
+          // Ideal virtual output limits; never claim a measured LM358 rail swing.
+          const low=supplyMinus+.02,high=supplyPlus-2,
+            ratio=rIn/rFeedback,prev=amp._nativeSchmittHigh===true,
+            forceOutput=state=>solveGraph(branches,
+              new Map([...fixed,[pin(amp,'OUT'),[state?high:low,0]]])),
+            assumed=forceOutput(prev),
+            vin=(assumed.get(pin(get('in'),'2'))||[])[0]-
+                (assumed.get(pin(get('g1'),'M'))||[])[0],
+            vref=(assumed.get(pin(get('ref1'),'2'))||[])[0]-
+                 (assumed.get(pin(get('g1'),'M'))||[])[0],
+            upper=vref*(1+ratio)-(low-supplyMinus)*ratio,
+            lower=vref*(1+ratio)-(high-supplyMinus)*ratio,
+            active=prev?vin>lower:vin>=upper;
+          if([vin,vref,lower,upper].every(Number.isFinite)&&
+             upper>lower&&lower>0&&upper<railSpan&&
+             high>low+2){
+            secondary=forceOutput(active);
+            const outV=(secondary.get(pin(amp,'OUT'))||[])[0]-supplyMinus;
+            const info={model:'native-wired-ideal-LM358-Schmitt-hysteresis',
+              potPercent:position,inputV:vin,referenceV:vref,
+              risingThresholdV:upper,fallingThresholdV:lower,
+              high:active,outputV:outV,
+              idealStatefulThresholdsOnly:true,calibratedMeter:false,
+              analogDeviceAcceptance:false,physicalAcceptance:false};
+            amp._opampOutput=outV;
+            amp._nativeSchmitt=info;
+            meter._nativeSchmitt={...info};
+            if(!options.sampleOnly)amp._nativeSchmittHigh=active;
+          }else delete amp._nativeSchmittHigh;
+        }else delete amp._nativeSchmittHigh;
+      }
+    }
+  }
   for(const b of reactive){
    const va=secondary.get(b.a)||[0,0],vb=secondary.get(b.b)||[0,0],vr=[va[0]-vb[0],va[1]-vb[1]],vm=Math.hypot(vr[0],vr[1]);let amps=current(b,secondary);
    if(b.role==='capacitor-dc'){const signed=(vr[0]-b.previous)/b.r;b._signedFlowCurrent=[signed,0];amps=Math.abs(signed);if(!options.sampleOnly){b.c._capacitorVoltage=vr[0];b.c._reactiveNow=now}}
