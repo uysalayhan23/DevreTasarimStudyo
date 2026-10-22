@@ -6180,7 +6180,7 @@ l.explanation=l.summary+' Yazılım yalnız lineer frekans alanı V_RMS ve P=Vrm
 l.learningGoal='TDA7293 dış pinlerini, negatif geri besleme, RMS yük hesabı ve gecikmeli MUTE/STBY RC durumlarını ayırt etmek.';
 l.beginnerSteps=['Sanal ± kaynak düğümlerini incele.','Giriş ve negatif geri besleme yollarını ayırt et.',
  'Harici bootstrap bağlantısı ile doğrulanmayan iç model farkını gör.',
- 'Sanal 5 V STBY ve MUTE komutlarının RC gecikmesini izle.',
+ 'Sanal 5 V STBY ve MUTE hatlarındaki direnç-kondansatör bağlantılarını incele; doğrulanmış zaman izi olmadan anahtarlama gecikmesi ölçüldü deme.',
  '8 Ω ideal direnç RMS hesabını üreticinin 100 W / %10 THD koşulundan ayır.'];
 l.quiz={question:'Sanal 8 Ω direnç yükünde sinüs bileşeni gücü nasıl hesaplanır?',
  options:['Vrms²/8 Ω','Sabit 100 W','THD otomatik doğrulanır'],answer:0,why:'Yalnız ideal dirençli lineer frekans çözümüdür.'};
