@@ -261,5 +261,85 @@ for(const [id,t] of Object.entries(sensorLessonDetails)){
   lesson.beginnerSteps=['Cihazların model ve terminal adlarını tanı.',...t.points,'Sanal durumu gözlemle ve dört kabloyu yeniden kur.'];
   lesson.quiz={question:t.q,options:clone(t.answers),answer:0,why:t.goal};
 }
+
+/* SC066–SC069: distinct BERO lessons; do not invent counter or NC wiring. */
+const beroLessonDetails={
+  "bero-1": {
+    "goal": "PNP endüktif yaklaşım sensörünün metal hedefte nasıl anahtarlama sinyali verdiğini öğren.",
+    "text": "BERO, temassız yaklaşım sensörleri için kullanılan bir adlandırmadır. Bu PNP endüktif örnekte metal hedefe yaklaşıldığında BK çıkışı H1 lambasının pozitif yolunu anahtarlar; BN/BU besleme uçlarıdır.",
+    "question": "Bu BERO tipi endüktif devrede BK çıkışı nereye gider?",
+    "answers": [
+      "H1/X1'e",
+      "G1/M dönüşüne",
+      "Boştaki WH ucuna"
+    ],
+    "steps": [
+      "PNP endüktif sensörün metal hedefini tanı.",
+      "G1/P→S/BN ve S/BU→G1/M yollarını izle.",
+      "BK→H1/X1 bağlantısını göster.",
+      "Metal hedefi sanal olarak yaklaştırıp lambayı gözlemle.",
+      "Dört kabloyu yeniden kur."
+    ]
+  },
+  "bero-2": {
+    "goal": "Dört telli endüktif sensörün BK NO ve WH NC çıkışlarını ayırt et.",
+    "text": "Bu BERO uygulamasında dört telli PNP sensör bulunur. BK NO çıkışı H1'e bağlıdır; WH NC çıkışı ise kablolanmamıştır. Bu nedenle ikinci çıkışın davranışı burada yük üzerinde gösterilmez.",
+    "question": "Dört telli BERO sensörün bu örnekte boşta kalan çıkışı hangisidir?",
+    "answers": [
+      "WH (NC)",
+      "BK (NO)",
+      "BN (+24 V)"
+    ],
+    "steps": [
+      "Dört telli PNP sensörün BN/BU beslemesini bul.",
+      "BK NO ve WH NC çıkışlarını ayırt et.",
+      "BK→H1/X1 kablosunu izle.",
+      "WH'nin boşta olduğunu fark et.",
+      "Gerçek dört kabloyu değiştirmeden yeniden kur."
+    ]
+  },
+  "bero-3": {
+    "goal": "Sanal endüktif sensör sinyalinin sayma işleminde nasıl kullanılabileceğini ayırt et.",
+    "text": "Metal parçanın temassız algılanması sayma sistemlerinde bir giriş sinyali olabilir. Ancak bu sanal devrede yalnız sensör ve H1 lamba vardır; bağımsız sayaç veya darbe sayma modeli bulunmaz. Lamba tepkisini gözlemle, sayım yapıldığını varsayma.",
+    "question": "Bu metal sayma örneğinin gerçek devresinde hangi eleman bulunmuyor?",
+    "answers": [
+      "Darbe sayacı",
+      "Endüktif sensör",
+      "H1 gösterge lambası"
+    ],
+    "steps": [
+      "Metal hedefin sensörü tetiklediğini incele.",
+      "Sensörün BN/BU beslemesini tanı.",
+      "BK→H1/X1 sinyal yolunu izle.",
+      "Sanal hedef değişiminde lambayı gözlemle.",
+      "Devrede sayaç olmadığını açıklayarak dört kabloyu kur."
+    ]
+  },
+  "bero-4": {
+    "goal": "Dört telli endüktif sensörle bir metal nesnenin belirli konumda algılanmasını anla.",
+    "text": "Burada dört telli BERO tipindeki sensör, metal hedef yakınlığını BK çıkışından H1'e iletir. Bu bir anahtarlamalı var/yok bilgisidir; hedefin sürekli analog konumunu ölçmez. WH NC çıkışı devrede bağlı değildir.",
+    "question": "Bu sensör bu örnekte hangi tür konum bilgisi verir?",
+    "answers": [
+      "Hedef var/yok anahtarlama bilgisi",
+      "Sürekli milimetre cinsinden analog konum",
+      "Motorun dönüş hızı"
+    ],
+    "steps": [
+      "Metal nesnenin algılama noktasını belirle.",
+      "S/BN ve S/BU beslemesini izle.",
+      "BK→H1/X1 ile H1/X2→0 V yolunu göster.",
+      "Sanal hedef yakındayken ve uzaktayken davranışı karşılaştır.",
+      "WH bağlı olmadığını koruyarak dört kabloyu kur."
+    ]
+  }
+};
+for(const [id,t] of Object.entries(beroLessonDetails)){
+  const l=L.byId[id];
+  if(!l||l.project?.wires?.length!==4||l.steps?.length!==4)throw Error('BERO lesson graph mismatch '+id);
+  l.learningGoal=t.goal;l.summary=t.goal;l.explanation=t.text+' Yalnız sanal eğitim devresidir.';
+  l.measurementUpgrade={...l.measurementUpgrade,goal:t.goal,task:t.text,question:t.question,options:clone(t.answers),simulationOnly:true,canonicalCircuitPreserved:true};
+  l.beginnerSteps=clone(t.steps);
+  l.quiz={question:t.question,options:clone(t.answers),answer:0,why:t.goal};
+}
 L._sensorBatchJ=true;
 })(typeof window==='undefined'?globalThis:window);
