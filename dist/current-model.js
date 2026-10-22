@@ -269,15 +269,36 @@
    // SC366–369 (virtual only): solve the two-input LM358 negative-feedback
    // condition directly from its linear nodal response. The global LM358,
    // protected oscillator and other op-amp solvers retain their old path.
+
+   // Scoped dual-input native DC solve: exact 24 V DIP8 wiring,
+   // two 10-kOhm controls, physical spare-B termination and real UNI-T probes.
    const dualInputId=project?.tutorialLesson?.id||'',
      isDiff=/^opamp-apps-outline-03[56]$/.test(dualInputId),
      isSum=/^opamp-apps-outline-03[78]$/.test(dualInputId),
-     expectedWires=isDiff?19:isSum?18:0,
-     expectedParts=isDiff?13:isSum?12:0;
-   if(expectedWires&&project.wires.length===expectedWires&&
-      project.components.length===expectedParts&&opamps.length===2&&
-      opamps.some(o=>o.channel==='1'&&o.c.id==='u1'&&o.c.typeId==='lm358p-dip8')&&
-      !project.wires.some(w=>[w.from,w.to].some(e=>e?.c==='u1'&&['5','6','7'].includes(e.p)))){
+     expectedWires=isDiff?21:isSum?20:0,
+     expectedParts=isDiff?13:isSum?12:0,
+     required=[...(isDiff?["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","in.2>r1.1","r1.2>u1.2","u1.1>r2.1","r2.2>u1.2","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","in2.1>g1.P","in2.3>g1.M","in2.2>r5.1","r5.2>u1.3","ref1.2>r6.1","r6.2>u1.3"]:["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.3","in.2>r1.1","r1.2>u1.2","u1.1>r2.1","r2.2>u1.2","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","in2.1>g1.P","in2.3>g1.M","in2.2>r5.1","r5.2>u1.2"]),
+       'u1.5>g1.M','u1.7>u1.6'],
+     normal=x=>x.split('>').sort().join('~'),
+     wanted=required.map(normal).sort(),
+     actual=project.wires.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort(),
+     get=id=>project.components.find(c=>c.id===id),
+     exact=expectedWires&&project.wires.length===expectedWires&&
+       project.components.length===expectedParts&&actual.length===wanted.length&&
+       actual.every((x,i)=>x===wanted[i])&&
+       opamps.length===2&&opamps.every(o=>o.c===get('u1')&&o.c.typeId==='lm358p-dip8')&&
+       get('g1')?.typeId==='arduino-bench-supply'&&Number(get('g1')?.dcVoltage)===24&&
+       ['in','in2'].every(id=>get(id)?.typeId==='potentiometer'&&Number(get(id)?.potMax)===10000)&&
+       ['r1','r2','r5','ref1','ref2',...(isDiff?['r6']:[])].every(id=>
+         get(id)?.typeId==='resistor'&&Number(get(id)?.resistance)===10000)&&
+       get('v1')?.typeId==='unit-ut33d-plus'&&get('v1')?.meterPosition===4&&
+       get('v1-red')?.probeTarget?.c==='u1'&&get('v1-red')?.probeTarget?.p==='1'&&
+       get('v1-black')?.probeTarget?.c==='g1'&&get('v1-black')?.probeTarget?.p==='M';
+   if(expectedWires){
+    if(get('u1'))delete get('u1')._nativeTwoInputDC;
+    if(get('v1'))delete get('v1')._nativeTwoInputDC;
+   }
+   if(exact){
      const amp=opamps.find(o=>o.channel==='1'),
        spare=opamps.find(o=>o.channel==='7'),
        v=(state,node)=>(state.get(node)||[0,0])[0],
@@ -307,6 +328,18 @@
          const idle=spare?.c._opampChannels?.['7'];
          if(idle){idle.output=v(guess,spare.out);
            idle.diff=v(guess,spare.ip)-v(guess,spare.im)}
+
+         const meter=get('v1'),
+          data={model:isDiff?'native-wired-LM358-DIP8-difference-ideal-DC':
+           'native-wired-LM358-DIP8-inverting-summer-ideal-DC',
+           inputAV:v(guess,pin(get('in'),'2'))-v(guess,amp.vm),
+           inputBV:v(guess,pin(get('in2'),'2'))-v(guess,amp.vm),
+           referenceV:v(guess,pin(get('ref1'),'2'))-v(guess,amp.vm),
+           outputV:v(guess,amp.out)-v(guess,amp.vm),
+           actualRedProbe:'u1/1',actualBlackProbe:'g1/M',
+           idealEducationalModel:true,physicalAcceptance:false,
+           manufacturerLimitsAccepted:false,calibratedMeter:false};
+         amp.c._nativeTwoInputDC=data;if(meter)meter._nativeTwoInputDC={...data};
        }
      }
    }

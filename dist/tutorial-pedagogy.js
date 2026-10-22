@@ -11265,4 +11265,78 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* Four source-grounded LM358P two-input outlines. Keep their A-channel
+ * and sensor behavior; physically terminate the otherwise floating B channel. */
+{
+ const rows=[['035',true],['036',true],['037',false],['038',false]],
+  diff=["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","in.2>r1.1","r1.2>u1.2","u1.1>r2.1","r2.2>u1.2","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","in2.1>g1.P","in2.3>g1.M","in2.2>r5.1","r5.2>u1.3","ref1.2>r6.1","r6.2>u1.3"],sum=["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.3","in.2>r1.1","r1.2>u1.2","u1.1>r2.1","r2.2>u1.2","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","in2.1>g1.P","in2.3>g1.M","in2.2>r5.1","r5.2>u1.2"],
+  issues=["SOURCE_WIRED_DIFFERENCE_AMPLIFIER_GAIN_PENDING","SOURCE_WIRED_DIFFERENCE_EXERCISE_NATIVE_PENDING","SOURCE_WIRED_SUMMING_AMPLIFIER_GAIN_PENDING","SOURCE_WIRED_SUMMER_EXERCISE_NATIVE_PENDING"],
+  canon=w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~');
+ for(let i=0;i<rows.length;i++){
+  const [suffix,difference]=rows[i],id='opamp-apps-outline-'+suffix,
+   l=L.byId[id],p=l?.project,component=k=>p?.components.find(c=>c.id===k),
+   expected=(difference?diff:sum).map(v=>v.split('>').sort().join('~')).sort(),
+   observed=p?.wires?.map(canon).sort();
+  if(!l||l.kind!=='wiring'||l.pedagogyReview?.titleTopologyStatus!==issues[i]||
+   l.pedagogyReview?.sourceReusedFrom!==(difference?'opamp-apps-src-11':'opamp-apps-src-12')||
+   !observed||observed.length!==expected.length||observed.some((e,j)=>e!==expected[j])||
+   p.components.length!==(difference?13:12)||component('u1')?.typeId!=='lm358p-dip8'||
+   component('g1')?.typeId!=='arduino-bench-supply'||Number(component('g1').dcVoltage)!==24||
+   !['in','in2'].every(k=>component(k)?.typeId==='potentiometer'&&Number(component(k).potMax)===10000)||
+   !['r1','r2','r5','ref1','ref2',...(difference?['r6']:[])].every(k=>
+     component(k)?.typeId==='resistor'&&Number(component(k).resistance)===10000)||
+   component('v1')?.typeId!=='unit-ut33d-plus'||component('v1')?.meterPosition!==4||
+   component('v1-red')?.probeTarget?.c!=='u1'||component('v1-red')?.probeTarget?.p!=='1'||
+   component('v1-black')?.probeTarget?.c!=='g1'||component('v1-black')?.probeTarget?.p!=='M'||
+   !['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance',
+      'independentPedagogicalAcceptance'].every(k=>l.pedagogyReview[k]===false))
+   throw Error('Protected dual-input topology changed: '+id);
+  const original=JSON.stringify([p.components,l.materials,l.title]);
+  p.wires.push(
+   {id:'twoinput-'+suffix+'-5',from:{c:'u1',p:'5'},to:{c:'g1',p:'M'},
+    color:'#111827',role:'0V',size:'1.5',points:[],
+    tutorialHint:'U1 pin 5 → 0 V',tutorialWhy:'Boş LM358 B kanalının pozitif girişini referansa bağla.'},
+   {id:'twoinput-'+suffix+'-76',from:{c:'u1',p:'7'},to:{c:'u1',p:'6'},
+    color:'#43a047',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'U1 pin 7 → pin 6',tutorialWhy:'B kanalının çıkışını eviren girişine geri bağla.'});
+  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.summary=difference?
+    'LM358P fark yükselteci: 12 V referans çevresindeki iki DC girişin farkını gerçek uçlarla sanal ölçme.':
+    'LM358P eviren toplayıcı: iki ayrı DC girişi 12 V orta referansa göre gerçek uçlarla sanal ölçme.';
+  l.explanation=difference?
+    'İki ayar düğmesi düşün: A ve B. A sinyali 10 kΩ üzerinden U1 pin 2 ye, B ise 10 kΩ üzerinden pin 3 e gelir. Pin 3 ayrıca 12 V referansa 10 kΩ ile bağlıdır. Çıkış pin 1 den 10 kΩ geri besleme direnciyle pin 2 ye döner. Böylece ideal doğrusal bölgede çıkış yaklaşık 12 + B − A volt olur: A artarsa düşer, B artarsa yükselir. Kırmızı UNI-T probu pin 1 de, siyah prob 0 V da. Boş B kanalının pin 5→0 V ve pin 7→6 bağlantısı da tamamlandı. Besleme sınırına gelince ideal fark hesabı geçerli değildir; fiziksel LM358P ve Windows kabulü yapılmadı.':
+    'İki giriş ayrı dirençlerden aynı eviren düğüme akar: A ve B, 10 kΩ giriş dirençleriyle U1 pin 2 ye bağlıdır. Pin 3 ise 12 V referansı görür. Çıkış pin 1 den 10 kΩ R2 üzerinden pin 2 ye geri dönerek denge kurar. Doğrusal ideal bölgede çıkış yaklaşık 36 − A − B volttur; iki giriş yükseldikçe çıkış düşer. Kırmızı UNI-T probu pin 1, siyah prob 0 V üzerinde. Kullanılmayan B kanalı pin 5→0 V ve pin 7→6 olarak sonlandırıldı. Besleme sınırı, gerçek üretici toleransı ve Windows kabulü ayrıca değerlendirilmelidir.';
+  l.learningGoal=difference?'A ve B sinyallerinin 12+B−A sanal ideal DC transferini karşılaştırmak.':
+   'İki bağımsız girişin 36−A−B sanal ideal DC transferine katkısını ölçmek.';
+  l.beginnerSteps=difference?[
+   'LM358P pin 8 +24 V, pin 4 0 V besleme uçlarını incele.',
+   'A: RV1/2 → R1 10 kΩ → pin 2; çıkış pin 1 → R2 10 kΩ → pin 2.',
+   'B: RV2/2 → R5 10 kΩ → pin 3; 12 V referans → R6 10 kΩ → pin 3.',
+   'Boş B kanalını pin 5→0 V ve pin 7→pin 6 olacak şekilde bağla.',
+   'Sanal UNI-T ile iki farklı A/B durumunu karşılaştır; fiziksel PASS sayma.'
+  ]:[
+   'LM358P pin 8 ve 4 besleme bağlantılarını bul.',
+   'RV1 ve RV2 den 10 kΩ üzerinden pin 2 ye gelen iki giriş yolunu izle.',
+   '12 V referansı pin 3 te, çıkıştan gelen R2 10 kΩ geri beslemesini pin 2 de gör.',
+   'Boş B kanalında pin 5→0 V ve pin 7→pin 6 bağlantılarını kur.',
+   'Sanal UNI-T çıkışını iki potansiyometre konumunda karşılaştır.'
+  ];
+  l.quiz={question:difference?'A girişi artıp B sabit kalınca ideal fark çıkışı ne yapar?':
+     'A ve B girişleri birlikte artınca eviren toplayıcı çıkışı ne yapar?',
+   options:difference?['Azalır.','Sınırsız artar.','Sabit kalır.']:
+     ['Azalır.','Her zaman artar.','Bağlantılardan bağımsızdır.'],
+   answer:0,why:difference?'12 V referans için Vout≈12+B−A.':'12 V referans için Vout≈36−A−B.'};
+  l.pedagogyReview={...l.pedagogyReview,sourceGraphUpdated:true,
+    nativeIdealTwoInputDcTargetedPass:true,unpoweredSpareChannelTerminated:true,
+    nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+    physicalAcceptance:false,manufacturerDeviceAcceptance:false,
+    windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+  if(JSON.stringify([p.components,l.materials,l.title])!==original||
+    p.wires.length!==(difference?21:20)||l.steps.length!==p.wires.length)
+   throw Error('Protected two-input component drift '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
