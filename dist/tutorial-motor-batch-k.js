@@ -125,5 +125,110 @@ for(const [id,t] of Object.entries(motorReversalDetails)){
  l.beginnerSteps=copy(t.steps);
  l.quiz={question:t.question,options:copy(t.answers),answer:0,why:t.goal};
 }
+
+/* SC074–077: canonical virtual star/delta, not physical mains instructions. */
+const starDeltaTeaching={
+  "motor-star-delta-1": {
+    "goal": "Manuel 0–Yıldız–Üçgen paket şalterinin üç sanal konumunu ayırt et.",
+    "task": "S1 paket şalterin 0 konumunda motor durur; Yıldız konumunda U2/V2/W2 uçları ortak noktaya alınır; Üçgen konumunda sargı uçları eşleştirilir. Bu ders sanal paket şalter seçimine dayanır; otomatik 2 saniyelik bir zaman rölesi yoktur.",
+    "q": "Birinci yıldız/üçgen uygulamasında geçişi kim seçer?",
+    "answers": [
+      "S1 manuel paket şalter",
+      "KT1 zaman rölesi",
+      "H1 yön lambası"
+    ],
+    "points": [
+      "G1/L1, L2 ve L3, S1 paket şalter beslemesidir.",
+      "S1'in U1/V1/W1 ve U2/V2/W2 çıkışları motorun altı sargı terminaline gider.",
+      "0 konumu devreyi açık bırakır; Yıldız ve Üçgen ayrı sanal şalter konumlarıdır."
+    ],
+    "steps": [
+      "G1, S1 paket şalter ve altı uçlu M1 motoru tanı.",
+      "Sanal 0 konumunda motorun durumunu izle.",
+      "Yıldız konumunda motor bağlantısını gözlemle.",
+      "Üçgen konumunda değişen sargı bağlantısını karşılaştır.",
+      "On gerçek sanal bağlantıyı değiştirmeden kontrol et."
+    ]
+  },
+  "motor-star-delta-2": {
+    "goal": "2 saniye ayarlı sanal otomatik yıldız/üçgen geçişini ve kontaktör kilidini öğren.",
+    "task": "Sanal S1 Start ile K1 ana kontaktör ve KT1 zaman rölesi beslenir. KT1'in süre dolmadan kapalı NC yolu K2 Yıldız bobinini, süre dolunca kapattığı NO yolu K3 Üçgen bobinini etkinleştirir. K2/K3 çapraz NC kilit aynı anda çekmeyi engeller. S0 Stop kumandayı keser.",
+    "q": "Bu ikinci uygulamada yaklaşık 2 saniye sonra hangi sanal kontaktör devreye girer?",
+    "answers": [
+      "K3 Üçgen",
+      "K2 Yıldız sürekli kalır",
+      "K1 ana kontaktör bırakır"
+    ],
+    "points": [
+      "K1 mühürleme kontağı Start'a paralel yoldadır.",
+      "KT1 NC→K2 Yıldız, KT1 NO→K3 Üçgen kumandasını ayırır.",
+      "K2/K3 karşılıklı NC kilitli yardımcı yollardır.",
+      "Motor U2/V2/W2 yıldız noktası ile üçgen bağları ayrı kontaktörlerde kurulmuştur."
+    ],
+    "steps": [
+      "Sanal K1 ana, K2 Yıldız, K3 Üçgen ve KT1 zaman rölesini tanı.",
+      "S1 sanal Start ile önce K2 Yıldız durumunu gözlemle.",
+      "Süre dolduğunda K2'nin bırakıp K3'ün çekmesini karşılaştır.",
+      "K2/K3'ün eşzamanlı kapanmadığını, S0 Stop etkisini incele.",
+      "34 mevcut kablonun sanal görevlerini takip et."
+    ]
+  },
+  "motor-star-delta-3": {
+    "goal": "4 saniyelik yıldız/üçgen geçişinde H1/H2 göstergelerinin bobin durumunu izle.",
+    "task": "Sanal KT1 zaman rölesi 4 saniyeye ayarlıdır. Start sonrasında K2 Yıldız ile H1 yeşil gösterge etkindir. Süre dolunca K2 bırakır, K3 Üçgen devreye girer ve H2 kırmızı gösterge yanar. Karşılıklı NC kilit eşzamanlı çekmeyi engeller; Stop her iki göstergeyi söndürür.",
+    "q": "Bu üçüncü uygulamada 4 saniye sonrasındaki Üçgen durumunu hangi gösterge bildirir?",
+    "answers": [
+      "H2 kırmızı",
+      "H1 yeşil",
+      "İkisi aynı anda"
+    ],
+    "points": [
+      "KT1'in ayarı 4 saniyedir.",
+      "H1/X1, K2/A1 Yıldız bobini düğümündedir.",
+      "H2/X1, K3/A1 Üçgen bobini düğümündedir.",
+      "K2/K3 karşılıklı NC kilitleri ve Start mühürlemesi korunur."
+    ],
+    "steps": [
+      "K1, K2, K3 ve KT1 sanal kumanda elemanlarını tanı.",
+      "Start sonrası K2 Yıldız ve H1 göstergesini izle.",
+      "Dört saniyelik zaman geçişinde H1'den H2'ye değişimi gözlemle.",
+      "Sanal Stop ile bobinlerin ve iki lambanın bırakmasını doğrula.",
+      "38 devre kablosunun göstergeler dahil görevlerini incele."
+    ]
+  },
+  "motor-star-delta-4": {
+    "goal": "6 saniyelik yıldız/üçgen geçişini ve iki ayrı çalışma lambasını birlikte yorumla.",
+    "task": "Bu sanal uygulamada KT1, 6 saniyelik Yıldız süresi için ayarlıdır. K1 ana kontaktör mühürlenirken önce K2 Yıldız ve H1 yeşil, süre dolunca K3 Üçgen ve H2 kırmızı etkinleşir. K2/K3 NC kilitler birlikte çalışmayı engeller. S0 Stop devreyi bırakır.",
+    "q": "Dördüncü uygulamada yaklaşık 4. saniyede hangi sanal durum devam eder?",
+    "answers": [
+      "K2 Yıldız ve H1 yeşil",
+      "K3 Üçgen ve H2 kırmızı",
+      "Her iki kontaktör birlikte"
+    ],
+    "points": [
+      "KT1 Yıldız zaman ayarı 6 saniyedir.",
+      "K2 Yıldız bobini ve H1 aynı kumanda düğümünde bulunur.",
+      "K3 Üçgen bobini ve H2 diğer düğüme bağlıdır.",
+      "S0 Stop her iki bobini ve lambayı kapatır."
+    ],
+    "steps": [
+      "Sanal KT1'in 6 saniye ayarını tanı.",
+      "Start sonrası Yıldız/H1 durumunu gözlemle.",
+      "Dördüncü saniyede geçişin henüz tamamlanmadığını ayırt et.",
+      "Altıncı saniyeden sonra Üçgen/H2 durumunu ve kilidi incele.",
+      "Stop sonrası 38 kablolu sanal devreyi değiştirmeden karşılaştır."
+    ]
+  }
+};
+for(const [id,t] of Object.entries(starDeltaTeaching)){
+ const lesson=L.byId[id],expectedWires=id.endsWith('-1')?10:id.endsWith('-2')?34:38;
+ if(!lesson||lesson.project?.wires?.length!==expectedWires||lesson.steps?.length!==expectedWires)
+   throw Error('Star/delta lesson graph changed '+id);
+ lesson.learningGoal=t.goal;lesson.summary=t.goal;
+ lesson.explanation=t.task+' Yalnız sanal eğitim ortamı içindir; gerçek elektrik tesisatı uygulama yönergesi değildir.';
+ lesson.measurementUpgrade={...lesson.measurementUpgrade,goal:t.goal,task:t.task,question:t.q,options:copy(t.answers),observationPoints:copy(t.points),simulationOnly:true,canonicalCircuitPreserved:true};
+ lesson.beginnerSteps=copy(t.steps);
+ lesson.quiz={question:t.q,options:copy(t.answers),answer:0,why:t.goal};
+}
 L._motorBatchK=true;
 })(typeof window==='undefined'?globalThis:window);
