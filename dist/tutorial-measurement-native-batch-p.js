@@ -58,5 +58,49 @@ for(const [id,kind,summary,goal] of cases){
  lesson.materials=cs.filter(c=>!/^test-probe-/.test(c.typeId)).map(c=>({componentId:c.id,typeId:c.typeId,label:c.label,why:'Bu dersin sanal ölçüm veya kaynak elemanı.'}));
  lesson.pedagogyReview={...(lesson.pedagogyReview||{}),codeImplemented:true,simulationAcceptance:false,visualAcceptance:false,sourceStatus:'native-instrument-demo'};
 }
+// SC098: reuse the native energy analyzer to measure power factor.
+{
+ const lesson=L.byId['measurement-workshop-src-07'],base=L.byId['measurement-workshop-src-06'];
+ const types=['supply-dc-plus','converter-temperature','meter-ammeter'];
+ if(!lesson||lesson.project?.components?.length!==3||!types.every(t=>lesson.project.components.some(c=>c.typeId===t))||
+    !base?.project?.components?.some(c=>c.typeId==='energy-analyzer-1p')||base.project.wires.length!==7)throw Error('SC098 canonical precondition');
+ const p=copy(base.project);
+ lesson.project={...p,tutorialExplore:{...p.tutorialExplore,type:'power-factor-measurement-rich',simulationOnly:true}};
+ lesson.kind='explore';lesson.steps=[];lesson.energyAnalyzerRich=true;
+ lesson.summary='Sanal analizörde güç katsayısı değişince ne oluyor?';
+ lesson.learningGoal='230 VA görünür güçte PF 1,00 ve 0,80 değerlerini karşılaştır.';
+ lesson.explanation='Önce dirençli, ardından endüktif ve kapasitif yükü seç. Ekrandaki watt ve var değerlerini gözlemle.';
+ lesson.beginnerSteps=['Dirençli yükte PF 1,00 değerini incele.','Endüktif yükte PF 0,80 değerini karşılaştır.','Kapasitif yükte reaktif gücün işaretine bak.'];
+ lesson.quiz={question:'230 VA ve PF 0,80 için aktif güç yaklaşık kaç W olur?',options:['184 W','230 W','138 W'],answer:0,why:'P=230×0,80=184 W'};
+ lesson.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:'Sanal güç faktörü deneyinde katalog elemanı.'}));
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),codeImplemented:true,simulationAcceptance:false,visualAcceptance:false,sourceStatus:'native-power-factor'};
+}
+// SC101: preserve the accepted PNP sensor connection and add a real UNI-T voltage measurement.
+{
+ const lesson=L.byId['measurement-workshop-src-10'],source=L.byId['pnp-npn-1'];
+ if(!lesson||lesson.project?.components?.length!==3||
+    !['supply-dc-plus','converter-temperature','meter-ammeter'].every(t=>lesson.project.components.some(c=>c.typeId===t))||
+    !source||source.project?.wires?.length!==4||
+    !['supply-dc-plus','proximity','lamp-green'].every(t=>source.project.components.some(c=>c.typeId===t)))throw Error('SC101 canonical PNP precondition');
+ const p=copy(source.project),sensor=p.components.find(c=>c.typeId==='proximity');
+ sensor.sensing={target:'metal',distance:10,range:4,offset:0};
+ p.components.push(
+  {id:'mm',typeId:'unit-ut33d-plus',ref:'MM1',label:'UNI-T UT33D+',x:640,y:380,rotation:0,meterPosition:4},
+  {id:'mm-red',typeId:'test-probe-red',ref:'PR',x:850,y:440,rotation:0,probeTarget:{c:sensor.id,p:'BK'}},
+  {id:'mm-black',typeId:'test-probe-black',ref:'PB',x:850,y:535,rotation:0,probeTarget:{c:sensor.id,p:'BU'}}
+ );
+ p.wires.push(...[
+  {id:'pnp-meter-red',from:{c:'mm',p:'V'},to:{c:'mm-red',p:'PLUG'}},
+  {id:'pnp-meter-black',from:{c:'mm',p:'COM'},to:{c:'mm-black',p:'PLUG'}}
+ ].map(w=>({...w,role:'MEASURE',probeLead:true,color:'#e53935',size:'1.5',points:[]})));
+ p.tutorialExplore={...(p.tutorialExplore||{}),type:'pnp-multimeter-rich',simulationOnly:true,choices:[10,2,6],choiceIndex:0};
+ lesson.project=p;lesson.kind='explore';lesson.steps=copy(source.steps);
+ lesson.summary='Metal yaklaştığında PNP sensörün BK çıkışı nasıl değişir?';
+ lesson.learningGoal='BK ve BU arasındaki sanal gerilimi 10 mm ve 2 mm için karşılaştır.';
+ lesson.explanation='BN ve BU beslemedir; BK sinyalini siyah BU referansına göre sanal multimetreyle ölç.';
+ lesson.beginnerSteps=['BN, BU ve BK uçlarını ayırt et.','UNI-T DCV 200 V konumunu incele.','10 mm ile 2 mm sanal ölçümlerini karşılaştır.'];
+ lesson.materials=p.components.filter(c=>!/^test-probe-/.test(c.typeId)).map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:'Sanal PNP sensör ve ölçüm elemanı.'}));
+ lesson.pedagogyReview={...(lesson.pedagogyReview||{}),codeImplemented:true,simulationAcceptance:false,visualAcceptance:false,sourceStatus:'canonical-pnp-multimeter'};
+}
 L._nativeMeasurementBatchP=true;
 })(typeof window==='undefined'?globalThis:window);
