@@ -903,6 +903,55 @@
       }
     }
   }
+
+  // Electronics basics diode clipping: read the ACTUAL wired DC solver,
+  // never synthesize an AC waveform or assume an ideal 12.7 V hard limit.
+  {
+    const name=project?.tutorialLesson?.id||'',
+      scoped=name==='electronic-component-basics-outline-039'||
+             name==='electronic-component-basics-outline-042';
+    if(scoped){
+      const expectedTypes=[['g1','supply-dc-plus'],['rv','potentiometer'],
+        ['rin','resistor'],['d1','1n4148-do35'],['load','resistor'],
+        ['ref1','resistor'],['ref2','resistor'],['v1','meter-voltmeter']],
+        expectedWires=[
+          'g1.P>rv.1','rv.3>g1.M','rv.2>rin.1','rin.2>d1.A',
+          'rin.2>load.1','load.2>g1.M','g1.P>ref1.1',
+          'ref1.2>ref2.1','ref2.2>g1.M','d1.K>ref1.2',
+          'rin.2>v1.1','v1.2>g1.M'];
+      const part=id=>project.components.find(c=>c.id===id),meter=part('v1'),
+        norm=(a,b)=>[a,b].sort().join('~'),
+        observed=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,
+                                               w.to.c+'.'+w.to.p)).sort(),
+        wanted=expectedWires.map(w=>norm(...w.split('>'))).sort();
+      if(meter)delete meter._nativeClipperDc;
+      const pot=part('rv'),diode=part('d1'),position=Number(pot?.potentiometer),
+        original=project.components.length===expectedTypes.length&&
+          observed.length===wanted.length&&
+          observed.every((v,i)=>v===wanted[i])&&
+          expectedTypes.every(([id,type])=>part(id)?.typeId===type)&&
+          Number.isFinite(position)&&position>=0&&position<=100&&
+          Number.isFinite(Number(pot?.potMax))&&Number(pot.potMax)>0;
+      if(original&&meter){
+        const dc=(a,p,b,q)=>{
+          const x=secondary.get(pin(part(a),p)),y=secondary.get(pin(part(b),q));
+          return x&&y?x[0]-y[0]:NaN;
+        };
+        const outputV=dc('v1','1','g1','M'),
+          inputV=dc('rv','2','g1','M'),
+          referenceV=dc('ref1','2','g1','M');
+        if([outputV,inputV,referenceV].every(Number.isFinite)){
+          meter._nativeClipperDc={
+            model:'native-wired-1N4148-pot-controlled-DC-clipper',
+            potPercent:position,inputV,outputV,referenceV,
+            diodeForward:diode?._diodeForward===true,
+            diodeAssumption:'existing native piecewise 1N4148 diode model',
+            dcTransferOnly:true,acWaveformAcceptance:false,
+            physicalAcceptance:false,calibratedMeter:false};
+        }
+      }
+    }
+  }
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
   for(const b of branches){if(!b.c||!b.ap||!b.bp||b.role==='opamp-output')continue;let i=b._signedFlowCurrent||signedCurrent(b,secondary);if(b.role==='current-source'&&b.source)i=[i[0]-Number(b.source.value||0),i[1]];addTerminal(b.c,b.ap,i);addTerminal(b.c,b.bp,[-i[0],-i[1]])}
