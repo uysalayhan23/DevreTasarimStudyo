@@ -854,6 +854,55 @@
       }
     }
   }
+
+  // Scoped active filter: ideal AC nodal RC + ideal LM358P unity follower.
+  // Only exact source-terminal graphs qualify. No calibrated/hardware acceptance.
+  {
+    const suffix=(project?.tutorialLesson?.id||'').match(/^oscillator-filter-apps-outline-(05[0-3])$/)?.[1];
+    if(suffix){
+      const common=[["g","arduino-bench-supply"],["fg","arduino-signal-generator"],["u","lm358p-dip8"],["v","meter-voltmeter"],["ra","resistor"],["rb","resistor"],["cref","capacitor"],["cin","capacitor"],["rbias","resistor"]],
+        profiles={"050":{"type":"lowpass","extra":[["r1","resistor"],["c1","capacitor"]],"wires":["cin.2>r1.1","r1.2>c1.1","c1.2>ra.2","r1.2>u.3"]},"051":{"type":"highpass","extra":[["c1","capacitor"],["r1","resistor"]],"wires":["cin.2>c1.1","c1.2>r1.1","r1.2>ra.2","c1.2>u.3"]},"052":{"type":"bandpass","extra":[["c1","capacitor"],["r1","resistor"],["r2","resistor"],["c2","capacitor"]],"wires":["cin.2>c1.1","c1.2>r1.1","r1.2>ra.2","c1.2>r2.1","r2.2>c2.1","c2.2>ra.2","r2.2>u.3"]},"053":{"type":"twin-t-notch","extra":[["r1","resistor"],["r2","resistor"],["c3","capacitor"],["c1","capacitor"],["c2","capacitor"],["r3","resistor"]],"wires":["cin.2>r1.1","r1.2>r2.1","r1.2>c3.1","c3.2>ra.2","cin.2>c1.1","c1.2>c2.1","c1.2>r3.1","r3.2>ra.2","r2.2>c2.2","r2.2>u.3"]}},
+        shared=["g.P>u.8","g.M>u.4","ra.1>g.P","ra.2>rb.1","rb.2>g.M","cref.1>ra.2","cref.2>g.M","fg.GND>g.M","fg.OUT>cin.1","cin.2>rbias.1","rbias.2>ra.2","u.1>u.2","u.1>v.1","v.2>ra.2","u.5>g.M","u.7>u.6"],
+        cfg=profiles[suffix],part=id=>project.components.find(c=>c.id===id),
+        norm=(a,b)=>[a,b].sort().join('~'),
+        actual=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p)).sort(),
+        wanted=[...shared,...cfg.wires].map(w=>norm(...w.split('>'))).sort(),
+        expected=[...common,...cfg.extra],gen=part('fg'),supply=part('g'),meter=part('v');
+      if(meter)delete meter._nativeActiveFilter;
+      if(project.components.length===expected.length&&actual.length===wanted.length&&
+         actual.every((e,i)=>e===wanted[i])&&
+         expected.every(([id,type])=>part(id)?.typeId===type)&&
+         gen?.generatorWaveform==='sine'&&Number(supply?.dcVoltage)===12){
+        const hz=Number(gen.generatorFrequency),vpp=Number(gen.generatorAmplitude),
+          passive=expected.filter(([id,type])=>type==='resistor'||type==='capacitor'),
+          valid=Number.isFinite(hz)&&hz>0&&hz<=20000&&
+                Number.isFinite(vpp)&&vpp>=0&&vpp<=5&&
+                passive.every(([id,type])=>{
+                  const n=Number(type==='resistor'?part(id).resistance:part(id).capacitance);
+                  return Number.isFinite(n)&&n>0;
+                });
+        if(valid){
+          const ids=new Set(passive.map(([id])=>id)),
+            network=branches.filter(br=>ids.has(br.c?.id)).map(br=>
+              br.reactiveType==='C'?{...br,y:[0,2*Math.PI*hz*Number(br.c.capacitance)]}:br),
+            ac=solveGraph(network,new Map([[pin(gen,'OUT'),[1,0]],
+              [pin(gen,'GND'),[0,0]],[pin(supply,'P'),[0,0]],[pin(supply,'M'),[0,0]]])),
+            up=ac.get(pin(part('u'),'3'))||[0,0],
+            ref=ac.get(pin(part('ra'),'2'))||[0,0],
+            gain=Math.hypot(up[0]-ref[0],up[1]-ref[1]),
+            inputPeak=gen.generatorEnabled===false?0:vpp/2,
+            outputPeak=inputPeak*gain,rms=outputPeak/Math.SQRT2;
+          if(Number.isFinite(gain)&&Number.isFinite(rms)){
+            meter._nativeActiveFilter={model:'native-wired-ideal-RC-LM358-unity-buffer',
+              type:cfg.type,frequencyHz:hz,gain,gainDb:gain>0?20*Math.log10(gain):null,
+              outputPeakV:outputPeak,outputRmsV:rms,idealSmallSignalOnly:true,
+              calibratedMeter:false,physicalAcceptance:false};
+            meter._voltageValue=rms;
+          }
+        }
+      }
+    }
+  }
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
   for(const b of branches){if(!b.c||!b.ap||!b.bp||b.role==='opamp-output')continue;let i=b._signedFlowCurrent||signedCurrent(b,secondary);if(b.role==='current-source'&&b.source)i=[i[0]-Number(b.source.value||0),i[1]];addTerminal(b.c,b.ap,i);addTerminal(b.c,b.bp,[-i[0],-i[1]])}
