@@ -291,5 +291,66 @@ for(const [id,t] of Object.entries(motorStories)){
  l.summary=t.summary;l.learningGoal=t.goal;l.explanation=t.story+' Bu yalnız sanal eğitim devresidir.';
  l.measurementUpgrade={...l.measurementUpgrade,goal:t.summary,task:t.task};l.beginnerSteps=copy(t.steps);
 }
+
+/* SC074–077: approachable stories grounded in the verified virtual timer. */
+const starDeltaStories={
+  "motor-star-delta-1": {
+    "summary": "Bu sanal motorda yıldız ve üçgen bağlantıları arasında geçişi üç konumlu paket şalterle sen seçiyorsun.",
+    "goal": "0, Yıldız ve Üçgen konumları arasında motorun bağlantısının nasıl değiştiğini göreceksin.",
+    "description": "Önünde üç konumlu bir sanal anahtar var. İlk konum 0: motor sessizce bekliyor. Şalteri Yıldız'a çevirince motor çalışıyor, sargılar yıldız düzeninde birleşiyor. Üçgen'i seçtiğinde sargıların bağlantısı değişiyor. Burada otomatik zaman rölesi yok; geçişi sanal şalterin konumu belirliyor.",
+    "task": "Önce 0'ı, sonra Yıldız'ı, ardından Üçgen'i seç. Motor ve sargı bağlantılarında ne değişiyor?",
+    "steps": [
+      "Şalter 0 konumundayken motoru gözlemle.",
+      "Yıldız'ı seçip motoru izle.",
+      "Üçgen'e geçerek farkı gör.",
+      "Sargı uçlarında ne değiştiğine dikkat et.",
+      "Bu örnekte geçişe kimin karar verdiğini söyle."
+    ]
+  },
+  "motor-star-delta-2": {
+    "summary": "Bu kez yıldızdan üçgene geçişi sanal zaman rölesi iki saniye sonra kendisi yapıyor.",
+    "goal": "Motorun neden önce Yıldız'da çalışıp süre dolunca Üçgen'e geçtiğini anlayacaksın.",
+    "description": "Başlat'a basıyorsun; motor önce Yıldız bağlantısında çalışıyor ve K2 devrede. Zaman rölesi iki saniyeyi sayarken Üçgen kontaktörü K3 bekliyor. Süre dolunca K2 bırakıyor, K3 devreye giriyor. İkisinin birlikte çalışmasını kilit engelliyor. Durdur'a bastığında motor duruyor.",
+    "task": "Başlat'a bas, önce K2'yi izle. İki saniye dolunca hangi kontaktör çalışıyor? Durdur'a basınca ne oluyor?",
+    "steps": [
+      "Başlat'a basıp Yıldız durumunu izle.",
+      "İki saniyenin geçmesini gözlemle.",
+      "K2 ve K3'ün nasıl yer değiştirdiğini gör.",
+      "İkisinin aynı anda çalışmadığını kontrol et.",
+      "Durdur'a basınca motorun durumuna bak."
+    ]
+  },
+  "motor-star-delta-3": {
+    "summary": "Dört saniyelik Yıldız–Üçgen geçişini yeşil ve kırmızı lambalarla kolayca izleyebilirsin.",
+    "goal": "Yeşil H1'in Yıldız'ı, kırmızı H2'nin Üçgen'i nasıl gösterdiğini keşfedeceksin.",
+    "description": "Sanal motoru başlatıyorsun. Önce Yıldız kontaktörü çalışıyor ve yeşil H1 yanıyor. Dört saniye boyunca bu ışığı görüyorsun. Süre dolunca K2 bırakıyor, K3 Üçgen devreye giriyor. Yeşil sönüyor, kırmızı H2 yanıyor. Küçük gösterge lambaları sanki sana motorun o an hangi bağlantıda olduğunu anlatıyor. Durdur'a basınca ikisi de sönüyor.",
+    "task": "Başlangıçta hangi renk yanıyor? Dört saniye dolunca renk değişiyor mu? Durdur'a basınca ışıklara bak.",
+    "steps": [
+      "Başlat'a basıp yeşil H1'i izle.",
+      "Dört saniyelik süreye dikkat et.",
+      "Geçişte K2 ve K3'ü karşılaştır.",
+      "Kırmızı H2'nin ne zaman yandığını gözlemle.",
+      "Durdur'a basınca ışıkları kontrol et."
+    ]
+  },
+  "motor-star-delta-4": {
+    "summary": "Bu örnekte bekleme süresi altı saniye; lambalar yıldızdan üçgene geçişi gösteriyor.",
+    "goal": "Dördüncü saniyede neden hâlâ Yıldız'da kalındığını, altıncı saniyeden sonra neden Üçgen'e geçildiğini göreceksin.",
+    "description": "Başlat'a bastığında motor Yıldız bağlantısında çalışıyor ve yeşil H1 yanıyor. Dört saniye geçti ama ışık hâlâ yeşil. Çünkü bu kez zaman rölesi altı saniyeye ayarlı. Süre tamamlanınca Yıldız kontaktörü bırakıyor, Üçgen kontaktörü çalışıyor ve kırmızı H2 yanıyor. Zaman ayarındaki iki saniyelik farkı böylece gözünle görüyorsun.",
+    "task": "Dördüncü saniyede hangi lamba yanıyor? Altı saniye dolunca ne değişiyor? Durdur'a basıp sonucu gör.",
+    "steps": [
+      "Başlat'a basıp yeşil H1'i izle.",
+      "Dördüncü saniyede ne olduğunu gözlemle.",
+      "Altı saniye dolunca geçişi takip et.",
+      "Kırmızı H2'nin ne zaman yandığını bul.",
+      "Durdur'la motorun durduğunu kontrol et."
+    ]
+  }
+};
+for(const [id,t] of Object.entries(starDeltaStories)){
+ const l=L.byId[id];if(!l||l.steps?.length!==l.project?.wires?.length)throw Error('Motor star/delta graph changed '+id);
+ l.summary=t.summary;l.learningGoal=t.goal;l.explanation=t.description+' Bu yalnız sanal eğitim devresidir.';
+ l.measurementUpgrade={...l.measurementUpgrade,goal:t.summary,task:t.task};l.beginnerSteps=copy(t.steps);
+}
 L._motorBatchK=true;
 })(typeof window==='undefined'?globalThis:window);
