@@ -68,5 +68,198 @@ for(const [topic,config] of Object.entries(specs)){
   lesson.pedagogyReview={...lesson.pedagogyReview,previousVersion:lesson.pedagogyReview?.version||null,version:'v1.19.20-sensor-batch-j2',codeImplemented:true,visualAcceptance:false,simulationAcceptance:false,preserveSourceCircuit:true,sourceCorrectionRequired:!!collectorNotes?.correction,sourceSolverVerified:collector&&n===3,sourceStatus:collector&&n===3?'source-solver-checked-windows-acceptance-open':'canonical-graph-not-runtime-verified'};
  }
 }
+
+/* SC050–SC061: actual wired PNP/NPN and NC sensor teaching distinctions. */
+const sensorLessonDetails={
+  "pnp-npn-1": {
+    "goal": "PNP çıkışın lambaya pozitif akım yolu sağladığını gör.",
+    "task": "BN +24 V, BU 0 V beslemedir. BK H1/X1'e, H1/X2 ise 0 V'a bağlıdır; sensör aktif olduğunda lambanın pozitif yolu tamamlanır.",
+    "q": "PNP sensörlü lambanın dönüş ucu nereye gider?",
+    "answers": [
+      "G1/M (0 V)",
+      "G1/P (+24 V)",
+      "Koruma toprağı"
+    ],
+    "points": [
+      "BN/BU besleme çiftini bul.",
+      "BK → H1/X1 pozitif çıkışı göster.",
+      "H1/X2 → G1/M dönüşünü incele."
+    ]
+  },
+  "pnp-npn-2": {
+    "goal": "NPN sensörün lambanın 0 V yönündeki dönüşünü anahtarladığını öğren.",
+    "task": "H1/X1 doğrudan +24 V alır. NPN sensörün BK çıkışı, H1/X2 için anahtarlanan dönüş yoludur; PNP ile karıştırma.",
+    "q": "NPN sensörlü devrede H1/X1 hangi hatta bağlıdır?",
+    "answers": [
+      "G1/P (+24 V)",
+      "S/BK",
+      "G1/M (0 V)"
+    ],
+    "points": [
+      "Sensör BN/BU beslemesini ayırt et.",
+      "G1/P → H1/X1 yolunu takip et.",
+      "H1/X2 → S/BK dönüşünü göster."
+    ]
+  },
+  "pnp-npn-3": {
+    "goal": "PNP sourcing yolunu terminal etiketlerinden okuyabil.",
+    "task": "S/BK çıkışı H1/X1'e pozitif yol verir. H1/X2'nin G1/M'ye dönmesiyle sensör çıkışı ve yük tamamlanır.",
+    "q": "PNP sourcing bağlantısında S/BK hangi lamba ucuna gider?",
+    "answers": [
+      "H1/X1",
+      "H1/X2",
+      "G1/M"
+    ],
+    "points": [
+      "PNP modelini doğrula.",
+      "BK–X1 sourcing yolunu izle.",
+      "X2–G1/M dönüşünü bul."
+    ]
+  },
+  "pnp-npn-4": {
+    "goal": "NPN sinking devresini PNP sourcing devresinden ayırt et.",
+    "task": "H1'in X1 ucu +24 V'a, X2 ucu S/BK'ye bağlıdır. NPN BK çıkışı yükün dönüşünü anahtarlar; kaynaktan pozitif güç vermez.",
+    "q": "NPN sinking devresinde H1/X2 nereye bağlanır?",
+    "answers": [
+      "S/BK",
+      "S/BN",
+      "G1/P"
+    ],
+    "points": [
+      "+24 V girişini H1/X1 üzerinde bul.",
+      "H1/X2–BK dönüşünü takip et.",
+      "PNP örneğiyle yük yerini karşılaştır."
+    ]
+  },
+  "inductive-capacitive-1": {
+    "goal": "Endüktif PNP yaklaşım sensörünün metal algılama görevini öğren.",
+    "task": "Bu endüktif sensörün hedefi metaldir. BN/BU ile beslenir; BK, H1/X1'i anahtarlar. Sanal metal hedefin mesafesini değiştirerek sensör çıktısını gözlemle.",
+    "q": "Bu endüktif sensör için uygun sanal hedef hangisidir?",
+    "answers": [
+      "Metal",
+      "Ahşap",
+      "Sıvı"
+    ],
+    "points": [
+      "Sensörün endüktif tipini doğrula.",
+      "Metal hedefi sanal olarak yaklaştır.",
+      "BK–H1 ve H1–0 V yollarını bul."
+    ]
+  },
+  "inductive-capacitive-2": {
+    "goal": "NPN kapasitif sensörün yük dönüşünü ve hedef çeşitliliğini tanı.",
+    "task": "Kapasitif model uygun metal olmayan hedefi de algılayabilir. H1/X1 +24 V'a, H1/X2 sensörün NPN BK ucuna gider.",
+    "q": "Bu NPN kapasitif bağlantıda H1'in pozitif beslemesi hangisidir?",
+    "answers": [
+      "G1/P → H1/X1",
+      "S/BU → H1/X1",
+      "G1/M → H1/X1"
+    ],
+    "points": [
+      "Kapasitif ve endüktif algılamayı ayır.",
+      "H1/X1 +24 V hattını izle.",
+      "X2–BK dönüşünde NPN görevini bul."
+    ]
+  },
+  "inductive-capacitive-3": {
+    "goal": "Dört telli endüktif sensörün NO ve NC uçlarını ayırt et.",
+    "task": "S'nin BK NO ve WH NC çıkışları vardır. Bu örnekte yalnız BK–H1/X1 bağlıdır; WH kullanılmadığı için ikinci çıkışta lamba davranışı test edilmiş sayılmaz.",
+    "q": "Dört telli sensörün bu devrede boşta kalan çıkışı hangisidir?",
+    "answers": [
+      "WH (NC)",
+      "BK (NO)",
+      "BN (+24 V)"
+    ],
+    "points": [
+      "BN/BU besleme çiftini tanı.",
+      "BK NO çıkışının H1'e bağlantısını gör.",
+      "WH NC'nin kablo bağlanmadığını doğrula."
+    ]
+  },
+  "inductive-capacitive-4": {
+    "goal": "NC kapasitif sensörün ters anahtarlama davranışını gözlemle.",
+    "task": "Bu sensörün PNP BK çıkışı NC'dir. Hedef yokken H1 yolu kapalı olabilir; sanal hedef algılandığında NC açılır ve H1 söner. Hedef algısı ile kontak kapalılığını eşitleme.",
+    "q": "NC kapasitif sensör hedef algılayınca lambaya ne olur?",
+    "answers": [
+      "NC açılır, H1 söner",
+      "H1 sürekli yanar",
+      "Besleme uçları yer değiştirir"
+    ],
+    "points": [
+      "S/BN ve S/BU beslemesini incele.",
+      "Hedef yokken NC çıkışını gözlemle.",
+      "Hedef gelince çıkışın açılmasını izle."
+    ]
+  },
+  "source-sink-1": {
+    "goal": "PNP sourcing çıkışının yüke pozitif besleme sağladığını anla.",
+    "task": "PNP sensör S/BK'den H1/X1'e pozitif yol oluşturur. H1/X2, G1/M'ye döner. Sourcing terimini bu terminal yolu üzerinden açıkla.",
+    "q": "PNP sourcing BK çıkışı hangi uca bağlıdır?",
+    "answers": [
+      "H1/X1",
+      "H1/X2",
+      "G1/M"
+    ],
+    "points": [
+      "Sourcing kavramını BK çıkışında göster.",
+      "BK–H1/X1 hattını izle.",
+      "H1/X2'nin G1/M dönüşünü bul."
+    ]
+  },
+  "source-sink-2": {
+    "goal": "NPN sinking sensörün yük için 0 V dönüşü oluşturduğunu öğren.",
+    "task": "H1/X1 doğrudan +24 V'a gider; H1/X2, NPN BK ucuna bağlanır. BK yükün düşük tarafındaki dönüşünü anahtarlar.",
+    "q": "NPN sinking BK çıkışının görevi nedir?",
+    "answers": [
+      "Lambanın 0 V dönüşünü anahtarlamak",
+      "AC faz üretmek",
+      "BN beslemesini kesmek"
+    ],
+    "points": [
+      "G1/P–H1/X1 besleme hattını bul.",
+      "H1/X2–BK dönüşünü izle.",
+      "Sinking terimini dönüş yoluyla açıkla."
+    ]
+  },
+  "source-sink-3": {
+    "goal": "PNP sourcing terminal eşleşmesini NPN sinking ile karşılaştırabil.",
+    "task": "PNP modelde BK–H1/X1, H1/X2–0 V bağlantıları kullanılır. Aynı kablo renkleri farklı çıkış modelini kanıtlamaz; gerçek katalog çıkış türünü esas al.",
+    "q": "PNP sourcing örneğinde H1/X2 nereye döner?",
+    "answers": [
+      "G1/M (0 V)",
+      "S/BN (+24 V)",
+      "S/BK"
+    ],
+    "points": [
+      "Sensörün PNP modelini kontrol et.",
+      "BK–H1/X1 hattını izle.",
+      "X2–0 V ile NPN dönüşünü karşılaştır."
+    ]
+  },
+  "source-sink-4": {
+    "goal": "NPN sinking bağlantısının uçlarını bağımsız eşleştir.",
+    "task": "Bu NPN örnekte H1/X1 +24 V'a, H1/X2 ise S/BK'ye bağlıdır. Sensör aktif olduğunda BK üzerinden 0 V dönüşü tamamlanır.",
+    "q": "NPN sinking devresinde +24 V doğrudan hangi lamba ucuna bağlanır?",
+    "answers": [
+      "H1/X1",
+      "H1/X2",
+      "S/BK"
+    ],
+    "points": [
+      "NPN çıkışlı sensörü tanı.",
+      "H1/X1'deki pozitif hattı bul.",
+      "BK–H1/X2 dönüşünü takip et."
+    ]
+  }
+};
+for(const [id,t] of Object.entries(sensorLessonDetails)){
+  const lesson=L.byId[id];
+  if(!lesson||lesson.project?.wires?.length!==4||lesson.steps?.length!==4)throw Error('Sensor lesson changed: '+id);
+  lesson.learningGoal=t.goal;lesson.summary=t.goal;
+  lesson.explanation=t.task+' Yalnız sanal eğitim devresinde incele.';
+  lesson.measurementUpgrade={...lesson.measurementUpgrade,goal:t.goal,task:t.task,question:t.q,options:clone(t.answers),observationPoints:clone(t.points)};
+  lesson.beginnerSteps=['Cihazların model ve terminal adlarını tanı.',...t.points,'Sanal durumu gözlemle ve dört kabloyu yeniden kur.'];
+  lesson.quiz={question:t.q,options:clone(t.answers),answer:0,why:t.goal};
+}
 L._sensorBatchJ=true;
 })(typeof window==='undefined'?globalThis:window);
