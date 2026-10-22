@@ -11176,4 +11176,93 @@ for(const id of [
 
 L.count=L.lessons.length;
 L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-reference-v1',reviewedLessons:L.lessons.length,removedExactDuplicates:removedDuplicateIds.size,dcCircuitsKept:dcKeep.size,rule:'Yalnız konu, kazanım, amaç, komponent, uygulama/devre ve materyal anlatımı aynı olan ders kopyaları birleştirilir; DC devre analizi konusu kullanıcı kararıyla ilk 10 dersle sınırlıdır; ölçüm derslerinde UNI-T cihazları ve fiziksel problar kullanılır; tüm yeni/zenginleştirilen öğretici sayfaları rich-reference-v1 standardını izler: ayarlı güç kaynağı görseli, devrenin amacı, eleman görevleri, ölçüm yöntemi, bağlantı nedeni ve beklenen sonuç tek bakışta anlaşılır; düzen zengin fakat sıkışık değildir; DC derslerinde ayarlanabilir 0–30 VDC masa kaynağı işlevsel beslemedir, AC/3-faz/pil derslerinde yanlış elektriksel besleme olarak kullanılmaz; Ohm, Seri Devre Analizi, Paralel Devre Analizi, Karışık Devre Analizi ve Kirchhoff devre kontrolü kabul kilitleri korunur; wattmetre ve güç faktörü derslerinde enerji analizörü kabul kilidi korunur; pil seri/paralel derslerinin kabul kilitleri korunur.'};
+
+/* SC350/352/355/357: close unused physical LM358P B channels.
+ * Scope four existing wired 24 V DC gain lessons, not general AC/dynamics. */
+{
+ const cases=[["023","INVERTING_GAIN_NATIVE_PENDING",true],["025","INVERTING_DC_RESPONSE_NATIVE_PENDING",true],
+  ["026","NONINVERTING_GAIN_NATIVE_PENDING",false],["028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",false]];
+ const normal=x=>x.split('>').sort().join('~');
+ const common=['g1.P>u1.8','g1.M>u1.4','in.3>g1.M','u1.1>r2.1',
+   'r2.2>u1.2','v1.V>v1-red.PLUG','v1.COM>v1-black.PLUG'];
+ for(const [suffix,issue,inv] of cases){
+  const id='opamp-apps-outline-'+suffix,l=L.byId[id],p=l?.project,
+   get=k=>p?.components.find(c=>c.id===k),
+   expected=[...common,...(inv?
+    ['in.1>g1.P','g1.P>ref1.1','ref1.2>ref2.1','ref2.2>g1.M',
+     'ref1.2>u1.3','in.2>r1.1','r1.2>u1.2']:
+    ['g1.P>rs.1','in.1>rs.2','in.2>u1.3','u1.2>r1.1','r1.2>g1.M'])
+   ].map(normal).sort(),observed=p?.wires?.map(w=>normal(w.from.c+'.'+w.from.p+'>'+w.to.c+'.'+w.to.p)).sort(),
+   types=inv?['g1','u1','in','r1','r2','v1','ref1','ref2','v1-red','v1-black']:
+    ['g1','u1','in','r1','r2','v1','v1-red','v1-black','rs'];
+  if(!l||l.kind!=='wiring'||l.topicId!=='opamp-apps'||
+   l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+   l.pedagogyReview?.titleTopologyIssue!==issue||
+   !['nativeDynamicAcceptance','physicalAcceptance','feedbackGainAcceptance',
+     'windowsVisualAcceptance','independentPedagogicalAcceptance'].every(x=>l.pedagogyReview[x]===false)||
+   !observed||observed.length!==expected.length||observed.some((x,i)=>x!==expected[i])||
+   p.components.length!==types.length||types.some(k=>!get(k))||
+   get('u1').typeId!=='lm358p-dip8'||get('g1').typeId!=='arduino-bench-supply'||
+   Number(get('g1').dcVoltage)!==24||get('in').typeId!=='potentiometer'||
+   Number(get('in').potMax)!==10000||Number(get('r1').resistance)!==10000||
+   Number(get('r2').resistance)!==47000||
+   (inv&&[get('ref1'),get('ref2')].some(x=>Number(x?.resistance)!==10000))||
+   (!inv&&Number(get('rs').resistance)!==47000)||
+   get('v1')?.typeId!=='unit-ut33d-plus'||get('v1')?.meterPosition!==4||
+   get('v1-red')?.probeTarget?.c!=='u1'||get('v1-red')?.probeTarget?.p!=='1'||
+   get('v1-black')?.probeTarget?.c!=='g1'||get('v1-black')?.probeTarget?.p!=='M')
+   throw Error('LM358 gain canonical mismatch '+id);
+  const protect=JSON.stringify([p.components,l.materials,l.title]);
+  p.wires.push(
+   {id:'am-'+suffix+'-5',from:{c:'u1',p:'5'},to:{c:'g1',p:'M'},
+    color:'#111827',role:'0V',size:'1.5',points:[],
+    tutorialHint:'U1/5 → G1/M',
+    tutorialWhy:'Kullanılmayan B kanalının IN+ ucunu ortak 0 V referansına bağla.'},
+   {id:'am-'+suffix+'-76',from:{c:'u1',p:'7'},to:{c:'u1',p:'6'},
+    color:'#43a047',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'U1/7 → U1/6',
+    tutorialWhy:'Kullanılmayan B kanalının çıkışını IN− ucuna geri bağla.'});
+  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.quiz={question:inv?
+   'Eviren yükselteçte 10 kΩ giriş ve 47 kΩ geri besleme neyi belirler?':
+   'Evirmeyen yükselteçte 10 kΩ ve 47 kΩ ile ideal kazanç kaç olur?',
+   options:inv?['12 V referansa göre yaklaşık −4,7.','Her durumda +4,7.','Sınırsız çıkış.']:
+    ['Doğrusal bölgede yaklaşık +5,7.','Her zaman −5,7.','Çıkış hep 24 V.'],
+   answer:0,why:inv?
+    'R2/R1=47/10; 12 V referansa göre Vout ≈ 12 − 4,7×(Vin−12). Besleme sınırında bu doğrusal kazanç geçersizdir.':
+    'R2/R1=47/10, dolayısıyla 1+47/10=5,7. RS 47 kΩ ve RV1 10 kΩ girişin erişebileceği değeri sınırlar.'};
+  l.summary=inv?'LM358P gerçek DIP-8 eviren DC devresi; 12 V referanslı sanal ideal −4,7 kazanç ve UNI-T çıkış ölçümü.':
+    'LM358P gerçek DIP-8 evirmeyen DC devresi; sanal ideal +5,7 kazanç, RS ile sınırlı giriş ve UNI-T ölçümü.';
+  l.explanation=inv?
+   'RV1 düğmesini çevirdiğinde giriş değişir. LM358P U1/3 yaklaşık 12 V referanstadır. U1/1 çıkışı R2 47 kΩ üzerinden U1/2 ye geri döner; R1 10 kΩ ise giriş akımını belirler. Giriş referansın üstündeyse çıkış aşağı, altındaysa yukarı gider: doğrusal bölgede Vout ≈ 12 − 4,7×(Vin−12). Sınıra yaklaşınca kazanç artık böyle devam edemez. UNI-T kırmızı prob U1/1, siyah prob G1/M üzerindedir. Boş B kanalını U1/5→0 V, U1/7→U1/6 olarak bağladık. Bu sanal ideal DC ölçümüdür, fiziksel üretici ve Windows kabulü değildir.':
+   'RV1 ayarı LM358P U1/3 girişini değiştirir. Besleme ile RV1 arasındaki RS 47 kΩ direnç ve 10 kΩ potansiyometre giriş gerilimini sınırlar. U1/1 çıkışı R2 47 kΩ üzerinden U1/2 ye döner; R1 10 kΩ U1/2 yi 0 V a bağlar. Doğrusal bölgede çıkış girişin yaklaşık 5,7 katıdır. UNI-T kırmızı prob U1/1, siyah prob 0 V üzerindedir. Boş B kanalının U1/5→0 V ve U1/7→U1/6 bağlantısı tamamlandı. Gerçek cihaz toleransı, tam çıkış salınımı ve fiziksel kabul henüz doğrulanmadı.';
+  l.learningGoal=inv?'Eviren negatif geri besleme ve 12 V referanslı DC transferi sanal multimetreyle karşılaştırmak.':
+   'Evirmeyen negatif geri besleme, RS giriş sınırlaması ve +5,7 DC kazancı karşılaştırmak.';
+  l.beginnerSteps=inv?[
+   'LM358P besleme uçlarını bul: pin 8 = +24 V, pin 4 = 0 V.',
+   'RV1 → R1 10 kΩ → U1/2 ve U1/1 → R2 47 kΩ → U1/2 yollarını takip et.',
+   'U1/3 için iki 10 kΩ direncin oluşturduğu yaklaşık 12 V referansı gör.',
+   'U1/5 → 0 V ve U1/7 → U1/6 bağlantılarını da kontrol et.',
+   'RV1 yüzde 40 ve 55 iken UNI-T çıkışını karşılaştır; gerçek donanım sonucu sayma.'
+  ]:[
+   'LM358P pin 8 ve pin 4 sanal besleme bağlantısını gör.',
+   'G1 + → RS 47 kΩ → RV1 → U1/3 girişini izle.',
+   'U1/1 → R2 47 kΩ → U1/2; U1/2 → R1 10 kΩ → 0 V yollarını karşılaştır.',
+   'U1/5 → 0 V ve U1/7 → U1/6 bağlantılarını kontrol et.',
+   'RV1 yüzde 25 ve 55 iken UNI-T çıkışını ölç; ideal kazanç ile gerçek cihaz sınırını ayır.'
+  ];
+  l.pedagogyReview={...l.pedagogyReview,sourceGraphUpdated:true,
+   nativeIdealOpampDcTargetedPass:true,terminalGrounded:true,
+   nativeIdealOpampDcModel:inv?'native-wired-ideal-LM358-DIP8-inverting-DC':
+    'native-wired-ideal-LM358-DIP8-noninverting-DC',
+   nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+   manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+  if(JSON.stringify([p.components,l.materials,l.title])!==protect||
+   p.wires.length!==(inv?16:14)||l.steps.length!==p.wires.length)
+   throw Error('LM358 preserved graph changed '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);

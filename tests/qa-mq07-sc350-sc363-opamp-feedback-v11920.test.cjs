@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",12],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",12],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
+const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",16],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",16],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
 const edge=(p,a,ap,b,bp)=>p.wires.some(w=>(w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
 for(const [id,reason,wires] of cases)test(id+' opamp physical pin and negative-acceptance contract',()=>{
@@ -168,5 +168,41 @@ test('SC355/357 series input feed makes noninverting DC sweep measurable without
   }
   assert.ok(result[0]-result.at(-1)>12,id+' input remains rail-clipped');
   for(let i=1;i<result.length;i++)assert.ok(result[i-1]>result[i],id+' sweep order');
+ }
+});
+
+test('Four corrected LM358 DC gain lessons close B and preserve native-vs-hardware gates',()=>{
+ for(const [suffix,count] of [['023',16],['025',16],['026',14],['028',14]]){
+  const l=L.byId['opamp-apps-outline-'+suffix],p=l.project;
+  assert.equal(p.wires.length,count);assert.equal(l.steps.length,count);
+  assert.ok(edge(p,'u1','5','g1','M')&&edge(p,'u1','7','u1','6'));
+  assert.equal(l.pedagogyReview.nativeIdealOpampDcTargetedPass,true);
+  for(const key of ['nativeDynamicAcceptance','physicalAcceptance','feedbackGainAcceptance',
+    'windowsVisualAcceptance','independentPedagogicalAcceptance'])
+   assert.equal(l.pedagogyReview[key],false);
+  const values=[];
+  for(const pct of [10,25,40,55,70,85]){
+   const q=structuredClone(p);
+   q.components.find(c=>c.id==='in').potentiometer=pct;
+   const state=Native.solve(q,defs,{now:1000}),amp=q.components.find(c=>c.id==='u1'),
+     meter=q.components.find(c=>c.id==='v1'),result=amp._nativeOpampGainDc;
+   assert.ok(state.stable&&!state.shortCircuit&&!state.blocked,suffix+' '+pct);
+   assert.ok(result&&meter._nativeOpampGainDc,suffix+' '+pct);
+   assert.equal(meter._meter.warning,'');
+   assert.ok(Math.abs(meter._meter.value-result.outputV)<.05);
+   if(result.linearRange){
+    const expected=['023','025'].includes(suffix)?
+     result.referenceV-4.7*(result.inputV-result.referenceV):5.7*result.inputV;
+    assert.ok(Math.abs(expected-result.outputV)<.15,suffix+' '+pct);
+   }
+   values.push(result.outputV);
+  }
+  if(['023','025'].includes(suffix))assert.ok(values.at(-1)>values[0]+15);
+  else assert.ok(values[0]>values.at(-1)+15);
+  const broken=structuredClone(p);
+  broken.wires=broken.wires.filter(w=>!(w.from.c==='r2'&&w.from.p==='2'&&
+   w.to.c==='u1'&&w.to.p==='2'));
+  Native.solve(broken,defs,{now:1000});
+  assert.equal(broken.components.find(c=>c.id==='u1')._nativeOpampGainDc,undefined);
  }
 });

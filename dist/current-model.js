@@ -311,6 +311,86 @@
      }
    }
    secondary=guess;
+
+   // Only four complete LM358P DIP-8 feedback circuits: exact terminal topology,
+   // real resistor values and probes; bounded ideal DC gain, no hardware claim.
+   {
+    const found=(project?.tutorialLesson?.id||'').match(/^opamp-apps-outline-(023|025|026|028)$/);
+    if(found){
+     const inv=found[1]==='023'||found[1]==='025',get=id=>project.components.find(c=>c.id===id),
+      op=get('u1'),meter=get('v1'),red=get('v1-red'),black=get('v1-black'),
+      parts=inv?[['g1','arduino-bench-supply'],['u1','lm358p-dip8'],['in','potentiometer'],
+       ['r1','resistor'],['r2','resistor'],['v1','unit-ut33d-plus'],['ref1','resistor'],
+       ['ref2','resistor'],['v1-red','test-probe-red'],['v1-black','test-probe-black']]:
+       [['g1','arduino-bench-supply'],['u1','lm358p-dip8'],['in','potentiometer'],
+        ['r1','resistor'],['r2','resistor'],['v1','unit-ut33d-plus'],
+        ['v1-red','test-probe-red'],['v1-black','test-probe-black'],['rs','resistor']],
+      common=['g1.P>u1.8','g1.M>u1.4','in.3>g1.M','u1.1>r2.1','r2.2>u1.2',
+        'v1.V>v1-red.PLUG','v1.COM>v1-black.PLUG','u1.5>g1.M','u1.7>u1.6'],
+      extra=inv?['in.1>g1.P','g1.P>ref1.1','ref1.2>ref2.1','ref2.2>g1.M',
+        'ref1.2>u1.3','in.2>r1.1','r1.2>u1.2']:
+       ['g1.P>rs.1','rs.2>in.1','in.2>u1.3','u1.2>r1.1','r1.2>g1.M'],
+      normal=x=>x.split('>').sort().join('~'),
+      wanted=[...common,...extra].map(normal).sort(),
+      observed=project.wires.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort(),
+      amp=opamps.find(o=>o.c===op&&o.channel==='1'),
+      spare=opamps.find(o=>o.c===op&&o.channel==='7');
+     if(op)delete op._nativeOpampGainDc;
+     if(meter)delete meter._nativeOpampGainDc;
+     if(observed.length===wanted.length&&observed.every((e,i)=>e===wanted[i])&&
+      project.components.length===parts.length&&
+      parts.every(([n,t])=>get(n)?.typeId===t)&&
+      Number(get('g1')?.dcVoltage)===24&&Number(get('in')?.potMax)===10000&&
+      Number.isFinite(Number(get('in')?.potentiometer))&&
+      Number(get('in').potentiometer)>=0&&Number(get('in').potentiometer)<=100&&
+      Number(get('r1')?.resistance)===10000&&Number(get('r2')?.resistance)===47000&&
+      (!inv||[get('ref1'),get('ref2')].every(c=>Number(c?.resistance)===10000))&&
+      (inv||Number(get('rs')?.resistance)===47000)&&
+      red?.probeTarget?.c==='u1'&&red?.probeTarget?.p==='1'&&
+      black?.probeTarget?.c==='g1'&&black?.probeTarget?.p==='M'&&
+      meter?.meterPosition===4&&amp&&spare&&opamps.length===2){
+      const val=(m,n)=>m.get(n)?.[0]??0,lo=val(secondary,amp.vm),
+       hi=val(secondary,amp.vp),
+       add=(work,a,b,x)=>{
+        const av=work.get(a)||[0,0],bv=work.get(b)||[0,0];
+        work.set(a,[av[0]+x,av[1]]);work.set(b,[bv[0]-x,bv[1]]);
+       },
+       solve=target=>{
+        const work=new Map([...injected].map(([n,v])=>[n,[...v]]));
+        add(work,amp.out,amp.vm,target/amp.br.r);
+        add(work,spare.out,spare.vm,(lo+.02)/spare.br.r);
+        return solveGraph(branches,fixed,work);
+       },
+       mismatch=s=>val(s,amp.out)-val(s,amp.vm)-
+         amp.gain*(val(s,amp.ip)-val(s,amp.im)),
+       baseline=solve(0),unit=solve(1),slope=mismatch(unit)-mismatch(baseline);
+      if(hi>lo+5&&hi-lo<=24.1&&Number.isFinite(slope)&&Math.abs(slope)>1e-8){
+       const targetRaw=-mismatch(baseline)/slope,
+        target=Math.max(lo+.02,Math.min(hi-2,targetRaw));
+       if(Number.isFinite(targetRaw)&&Number.isFinite(target)){
+        secondary=solve(target);
+        const input=val(secondary,pin(get('in'),'2')),
+         plus=val(secondary,amp.ip),minus=val(secondary,amp.im),
+         out=val(secondary,amp.out),ground=val(secondary,pin(get('g1'),'M')),
+         info={model:inv?'native-wired-ideal-LM358-DIP8-inverting-DC':
+            'native-wired-ideal-LM358-DIP8-noninverting-DC',
+          inputV:input-ground,referenceV:plus-ground,outputV:out-ground,
+          idealGain:inv?-4.7:5.7,potPercent:Number(get('in').potentiometer),
+          linearRange:targetRaw>=lo+.02&&targetRaw<=hi-2,
+          actualRedProbe:'u1/1',actualBlackProbe:'g1/M',
+          idealEducationalModel:true,physicalAcceptance:false,
+          manufacturerLimitsAccepted:false,calibratedMeter:false};
+        const ch=op._opampChannels?.['1'];if(ch){ch.output=out;ch.diff=plus-minus}
+        op._opampOutput=out;
+        const b=op._opampChannels?.['7'];if(b){
+         b.output=val(secondary,spare.out);
+         b.diff=val(secondary,spare.ip)-val(secondary,spare.im)}
+        op._nativeOpampGainDc=info;meter._nativeOpampGainDc={...info};
+       }
+      }
+     }
+    }
+   }
    // These virtual LM358 lessons use a Norton drive (target/Ro) parallel to
    // Ro. The resistor branch current is not the external output/load current.
    // Do not change the accepted solver or readings outside this teaching scope.
