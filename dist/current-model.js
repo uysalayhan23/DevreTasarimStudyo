@@ -96,6 +96,16 @@
           .every(([a,p,b,q])=>wired(a,p,b,q))&&
         Number(project.components.find(c=>c.id==='spk')?.impedanceOhm??4)===4;
     })();
+  // SC081: once an authored TDA2030 wire or component is changed, the
+  // native stage no longer applies. Drop its previous RMS/power readouts
+  // instead of leaving yesterday's values on U1, the load and V1.
+  if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-29'&&!sc81Power){
+    for(const c of project.components){
+      delete c._sc81NativePower;
+      if(c.id==='spk'){delete c._speakerPowerW;c._active=false;}
+      if(c.id==='v1')delete c._voltageValue;
+    }
+  }
   // SC082 specific circuit guard.
   const sc82Linear=project?.tutorialLesson?.id==='oscillator-filter-apps-src-30'&&
     project.components.length===21&&project.wires.length===40&&(()=>{
