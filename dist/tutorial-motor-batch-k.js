@@ -230,5 +230,66 @@ for(const [id,t] of Object.entries(starDeltaTeaching)){
  lesson.beginnerSteps=copy(t.steps);
  lesson.quiz={question:t.q,options:copy(t.answers),answer:0,why:t.goal};
 }
+
+/* SC070–073: short conversational observations, no graph changes. */
+const motorStories={
+  "motor-forward-reverse-1": {
+    "summary": "Motoru ileri ve geri çalıştırmak için iki kontaktörün sırayla görev yapmasını sağlıyoruz.",
+    "goal": "Düğmeyi bıraksan da motorun neden çalıştığını ve geri gitmek için neden önce durdurduğunu anlayacaksın.",
+    "story": "Bir atölyedeki küçük taşıma bandını düşün. İleri'ye bastığında K1 motoru çalıştırır. Parmağını çekersin, yine de durmaz: mühürleme kontağı K1'i çalışır tutar. Geri'ye basınca K2 hemen devreye girmez; kilit bunu engeller. Önce Durdur'a, sonra Geri'ye bastığında motorun yönü değişir.",
+    "task": "İleri'ye basıp bırak. Motoru izle. Geri'yi dene; sonra Durdur'a basıp yeniden Geri'yi seç.",
+    "steps": [
+      "İleri'ye bas, motoru izle.",
+      "Düğmeyi bırakınca ne olduğunu gör.",
+      "İleri çalışırken Geri'yi dene.",
+      "Durdur'a bas, ardından Geri'yi seç.",
+      "İki kontaktörün neden birlikte çalışmadığını anlat."
+    ]
+  },
+  "motor-forward-reverse-2": {
+    "summary": "Motorun hangi yönde çalıştığını yeşil ve kırmızı ışıklara bakarak anlayabiliyoruz.",
+    "goal": "Yeşil H1 ile kırmızı H2'nin ne zaman yandığını ve iki yönün neden birlikte çalışmadığını göreceksin.",
+    "story": "Küçük bir depodaki taşıma bandını hayal et. İleri'ye bastığında K1 çalışır, yeşil H1 yanar. Düğmeden elini çeksen de motor hemen durmaz; mühürleme onu çalışır tutar. Şimdi Geri'ye dokun: kilit iki yönün birden çalışmasını önler. Önce Durdur'a bas, sonra Geri'yi seç. Bu kez K2 çalışır ve kırmızı H2 yanar. Işıklar sana motorun hangi yönde olduğunu anlatır.",
+    "task": "Önce İleri'yi seçip yeşili izle. Düğmeyi bırak. Sonra Durdur ve Geri'yi dene: hangi ışık yandı?",
+    "steps": [
+      "İleri'ye bas ve yeşil H1'i izle.",
+      "Düğmeyi bırak; motor devam ediyor mu?",
+      "İleri çalışırken Geri'yi dene.",
+      "Durdur'a basıp Geri'yi seç.",
+      "Kırmızı H2 neden şimdi yanıyor?"
+    ]
+  },
+  "motor-forward-reverse-3": {
+    "summary": "Geri dönüş için yeni bir motor gerekmiyor; bu devrede L1 ile L2'nin yeri değişiyor.",
+    "goal": "İleri ve geri çalışmada ilk iki fazın değişmesinin yönü nasıl etkilediğini fark edeceksin.",
+    "story": "Motorun ileri döndüğünü düşün. K1 çalışırken fazlar motorun U, V, W uçlarına sırayla gider. Önce Durdur'a basıp ardından Geri'yi seçtiğinde K2 devreye girer. Bu kez L1 ile L2 yer değiştirir ve aynı motor ters yönde döner. Kilit iki kontaktörün aynı anda çalışmasına izin vermez.",
+    "task": "İleri ve Geri komutlarını Durdur ile ayır. Motorun yönünü ve L1 ile L2 yollarını karşılaştır.",
+    "steps": [
+      "İleri'yi seç; motorun yönüne bak.",
+      "İleri devresinde L1 ve L2'yi bul.",
+      "Durdur'a basıp Geri'yi seç.",
+      "Faz yollarında ne değiştiğini gör.",
+      "Yönün neden tersine döndüğünü anlat."
+    ]
+  },
+  "motor-forward-reverse-4": {
+    "summary": "Bu kez motorun yönüyle birlikte yeşil ve kırmızı gösterge lambaları da değişiyor.",
+    "goal": "Faz değişimi, mühürleme ve yön lambalarının birlikte nasıl çalıştığını göreceksin.",
+    "story": "Bir taşıma bandını yönettiğini hayal et. İleri'ye basınca K1 çalışır ve yeşil H1 yanar. Elini çekince mühürleme motoru çalışır tutar. Ters yöne geçmek istediğinde önce Durdur'a basarsın. Ardından Geri'yi seçince K2 devreye girer, iki fazın yeri değişir ve kırmızı H2 yanar. Kilit, iki yönün birden açılmasına engel olur.",
+    "task": "İleri'de yeşili, Durdur'dan sonra Geri'de kırmızıyı izle. Motorun yönünü de karşılaştır.",
+    "steps": [
+      "İleri'ye basıp yeşil H1'i gözlemle.",
+      "Düğmeyi bırakınca motoru izle.",
+      "Geri komutunun neden engellendiğini gör.",
+      "Durdur'a bas, ardından Geri'yi seç.",
+      "Kırmızı H2 ile ters dönüşü karşılaştır."
+    ]
+  }
+};
+for(const [id,t] of Object.entries(motorStories)){
+ const l=L.byId[id];if(!l||l.project?.wires?.length!==l.steps?.length)throw Error('Motor graph changed '+id);
+ l.summary=t.summary;l.learningGoal=t.goal;l.explanation=t.story+' Bu yalnız sanal eğitim devresidir.';
+ l.measurementUpgrade={...l.measurementUpgrade,goal:t.summary,task:t.task};l.beginnerSteps=copy(t.steps);
+}
 L._motorBatchK=true;
 })(typeof window==='undefined'?globalThis:window);
