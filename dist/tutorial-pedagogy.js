@@ -6042,7 +6042,7 @@ for(const [suffix,role] of Object.entries(mq07AudioMissingScope79to82)){
  part('fg','arduino-signal-generator',55,415,'FG1','1 kHz sanal ses test sinüsü',
    {generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:1000,
     generatorAmplitude:0.5,generatorOffset:0},
-   'Sanal küçük sinyal; 0,5 Vpp ile devrenin kayıpları/gain hesaba katılır.');
+   'FG1 sinüs kaynağında genlik ayarı 0,5 olarak girilmiştir. Bu ayar tek başına ölçülmüş Vpp, RMS gerilim veya 14 W çıkış gücü sonucu değildir.');
  part('u1','tda2030-pentawatt5',945,290,'U1','TDA2030H · Pentawatt 5 pin',
    {heatsinkThermalResistanceCPerW:4.2,ambientTemperatureC:25},
    'Pin 1 IN+, 2 IN−, 3 −Vs/tab, 4 OUT, 5 +Vs; nominal 3 °C/W junction-case.');
