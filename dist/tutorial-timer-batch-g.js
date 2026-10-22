@@ -56,7 +56,8 @@ for(const [id,on,off,heading,question,options] of rows){
  lesson.explanation=teaching.explanation+' Yalnız sanal devre ve zaman modeli gözlemlenir; gerçek enerjili ekipmana müdahale edilmez.';
  lesson.measurementUpgrade={heading,goal,task,question,options,timingModel:true,onSeconds:on,offSeconds:off};
  lesson.beginnerSteps=[...teaching.steps];
- lesson.materials=lesson.materials.map(m=>({...m,why:materialPurpose[m.componentId]||m.why}));
+ const definedMaterials=Array.isArray(lesson.materials)?lesson.materials:lesson.project.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal devre bileşeni'}));
+ lesson.materials=definedMaterials.map(m=>({...m,why:materialPurpose[m.componentId]||m.why}));
  lesson.quiz={question,options:[...options],answer:0,why:teaching.why};
  lesson.pedagogyReview={...lesson.pedagogyReview,previousVersion:lesson.pedagogyReview?.version||null,version:'v1.19.20-timer-batch-g',reviewed:true,codeImplemented:true,visualAcceptance:false,timingModel:'DTSDeviceBehavior.timed + Simulation.solve',preserveSourceWires:true};
 }

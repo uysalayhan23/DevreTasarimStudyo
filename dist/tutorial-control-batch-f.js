@@ -132,7 +132,8 @@ for(const [id,heading,goal,task,question,options] of rows){
    if(teaching.task)l.measurementUpgrade.task=teaching.task;
   l.beginnerSteps=clone(teaching.steps);
   l.quiz.why=teaching.why;
-  l.materials=l.materials.map(m=>({...m,why:teaching.materials[m.componentId]||m.why}));
+  const definedMaterials=Array.isArray(l.materials)?l.materials:l.project.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal devre bileşeni'}));
+ l.materials=definedMaterials.map(m=>({...m,why:teaching.materials[m.componentId]||m.why}));
  }
 }
 L._controlBatchF=true;
