@@ -794,6 +794,66 @@
          !acNodes.has(pin(c,d.pins[0].id))&&!acNodes.has(pin(c,d.pins[1].id)))?
           a[0]-b[0]:Math.hypot(a[0]-b[0],a[1]-b[1])):0);
   }}
+  // SC072/SC073: solve only the source-wired passive filter's ideal AC
+  // transfer; the result is not a calibrated voltmeter or hardware test.
+  {
+    const id=project?.tutorialLesson?.id,band=id==='oscillator-filter-apps-src-20',
+      notch=id==='oscillator-filter-apps-src-21';
+    if(band||notch){
+      const part=id=>project.components.find(c=>c.id===id),
+        expectedTypes=band?[['gen','arduino-signal-generator'],['c1','capacitor'],
+          ['r1','resistor'],['r2','resistor'],['c2','capacitor'],['v1','meter-voltmeter']]:
+          [['gen','arduino-signal-generator'],['r1','resistor'],['r2','resistor'],
+           ['c3','capacitor'],['c1','capacitor'],['c2','capacitor'],
+           ['r3','resistor'],['v1','meter-voltmeter']],
+        expected=band?[
+          'gen.OUT>c1.1','c1.2>r1.1','r1.2>gen.GND','c1.2>r2.1',
+          'r2.2>c2.1','c2.2>gen.GND','v1.1>r2.2','v1.2>gen.GND']:
+          ['gen.OUT>r1.1','r1.2>r2.1','r1.2>c3.1','c3.2>gen.GND',
+           'gen.OUT>c1.1','c1.2>c2.1','c1.2>r3.1','r3.2>gen.GND',
+           'r2.2>c2.2','v1.1>c2.2','v1.2>gen.GND'],
+        norm=(a,b)=>[a,b].sort().join('~'),
+        actual=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p)).sort(),
+        desired=expected.map(w=>norm(...w.split('>'))).sort(),
+        generator=part('gen'),meter=part('v1');
+      if(meter)delete meter._nativePassiveFilter;
+      const original=project.components.length===expectedTypes.length&&
+        actual.length===desired.length&&actual.every((e,i)=>e===desired[i])&&
+        expectedTypes.every(([id,type])=>part(id)?.typeId===type)&&
+        (generator?.generatorWaveform??'sine')==='sine';
+      if(original){
+        const hz=Number(generator.generatorFrequency??159),
+          vpp=Number(generator.generatorAmplitude??2),
+          passives=expectedTypes.filter(([id,type])=>type==='resistor'||type==='capacitor'),
+          valid=hz>0&&hz<=20000&&Number.isFinite(hz)&&
+            vpp>=0&&vpp<=5&&Number.isFinite(vpp)&&
+            passives.every(([id,type])=>{
+              const value=Number(type==='resistor'?part(id).resistance:part(id).capacitance);
+              return Number.isFinite(value)&&value>0;
+            });
+        if(valid){
+          const ids=new Set(passives.map(x=>x[0])),
+            network=branches.filter(br=>ids.has(br.c?.id)).map(br=>
+              br.reactiveType==='C'?{...br,y:[0,2*Math.PI*hz*Number(br.c.capacitance)]}:br),
+            ac=solveGraph(network,new Map([[pin(generator,'OUT'),[1,0]],
+                                           [pin(generator,'GND'),[0,0]]])),
+            pos=ac.get(pin(meter,'1'))||[0,0],neg=ac.get(pin(meter,'2'))||[0,0],
+            re=pos[0]-neg[0],im=pos[1]-neg[1],gain=Math.hypot(re,im),
+            inputPeak=generator.generatorEnabled===false?0:vpp/2,
+            outputPeak=inputPeak*gain,rms=outputPeak/Math.SQRT2;
+          if(Number.isFinite(rms)&&Number.isFinite(gain)){
+            meter._nativePassiveFilter={model:'native-wired-passive-RC-ideal-phasor',
+              type:band?'bandpass':'twin-t-notch',frequencyHz:hz,gain,
+              gainDb:gain>0?20*Math.log10(gain):null,
+              phaseDeg:Math.atan2(im,re)*180/Math.PI,
+              inputPeakV:inputPeak,outputPeakV:outputPeak,
+              outputRmsV:rms,calibratedMeter:false,physicalAcceptance:false};
+            meter._voltageValue=rms;
+          }
+        }
+      }
+    }
+  }
   for(const b of cts){const a=pin(b.c,'S1'),z=pin(b.c,'S2'),adj=new Map();for(const v of branches){if(!adj.has(v.a))adj.set(v.a,[]);if(!adj.has(v.b))adj.set(v.b,[]);adj.get(v.a).push(v.b);adj.get(v.b).push(v.a)}const seen=new Set(),q=[a];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);q.push(...(adj.get(n)||[]))}b.c._secondaryOpen=!seen.has(z);}
   const terminalCurrents=new Map(),addTerminal=(c,p,v)=>{if(!c||!p||!v)return;const k=key(c.id,p),old=terminalCurrents.get(k)||[0,0];terminalCurrents.set(k,[old[0]+v[0],old[1]+v[1]])};
   for(const b of branches){if(!b.c||!b.ap||!b.bp||b.role==='opamp-output')continue;let i=b._signedFlowCurrent||signedCurrent(b,secondary);if(b.role==='current-source'&&b.source)i=[i[0]-Number(b.source.value||0),i[1]];addTerminal(b.c,b.ap,i);addTerminal(b.c,b.bp,[-i[0],-i[1]])}
