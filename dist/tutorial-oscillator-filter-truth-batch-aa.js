@@ -42,7 +42,14 @@ const specs=[
  'FM modülasyonunda gönderilen bilgi taşıyıcı sinyalin neyini değiştirir?',
  ['Anlık frekansını','Her durumda yalnız DC gerilimini','Bir rölenin NO/NC kontağını'],
  'Bu sayfada FM verici bloku kavramsal referanstır. Anten çıkışı, yayın gücü ve modülasyon spektrumu doğrulanmış değildir.',
- ['FM’de taşıyıcının anlık frekans değişimi ile bilgi iletimini ilişkilendir.','Bu referansı çalışan RF verici veya yayın testi olarak değerlendirme.']]
+ ['FM’de taşıyıcının anlık frekans değişimi ile bilgi iletimini ilişkilendir.','Bu referansı çalışan RF verici veya yayın testi olarak değerlendirme.']],
+['23',1,0,'REVIEW',
+ 'FM alıcı, seçilen radyo kanalındaki ses veya veriyi nasıl geri elde eder?',
+ ['Taşıyıcının anlık frekans değişimlerini demodüle ederek.','Alıcı çıkışına yalnızca daha büyük bir direnç ekleyerek.','RF alıcı simgesini ölçülmüş ses çıkışı sayarak.'],
+ 'FM alıcı önce uygun RF kanalını seçer, ardından taşıyıcının frekans değişiminden bilgiyi geri elde eder. Bu kart yalnız kablosuz bir alıcı referansıdır; gerçek alım, duyarlılık veya ses çıkışı ölçülmedi.',
+ ['Önce bir radyo kanalını seçmekle o kanaldaki bilgiyi çözmenin farklı işler olduğunu düşün.',
+  'Demodülasyonun frekans değişimindeki bilgiyi ses veya veri işaretine dönüştürdüğünü açıkla.',
+  'Bu kartta tek alıcı sembolü var; anten, kablo ve ölçüm bulunmadığından çalışır devre sayma.']]
 ];
 for(const [suffix,count,wires,status,question,options,why,guide,displayTitle] of specs){
  const id='oscillator-filter-apps-src-'+suffix,l=L.byId[id];
