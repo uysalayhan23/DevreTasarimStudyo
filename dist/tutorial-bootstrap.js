@@ -18,7 +18,7 @@ async function ensure(){
  loading=(async()=>{
   await load('tutorial-lessons.js?v=20261014-bell-trafo-v1');
   await load('tutorial-micro-hints.js?v=1.19.20-micro-hints1');
-  await load('tutorial-mode.js?v=20261022-sensor-source1');
+  await load('tutorial-mode.js?v=20261022-sensor-followup1');
   await load('tutorial-enhancements.js?v=1.19.20-coach-restore1');
   if(!root.DTSTutorialMode)throw new Error('Öğretici Modu başlatılamadı');
   return root.DTSTutorialMode;
