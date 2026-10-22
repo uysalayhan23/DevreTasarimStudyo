@@ -1251,13 +1251,14 @@
   });
   $('#symbolMode').addEventListener('change',e=>{
     appearance=['iec','material'].includes(e.target.value)?e.target.value:'iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();
-    // A style change only replaces component artwork. It does not solve the
-    // circuit, change state, rebuild wires, move pins, or alter zoom/pan.
-    refreshArtwork();materialLayoutWarning();
+    // Real 3D terminals have different, manufacturer-grounded coordinates.
+    // Rebuild wire routes together with terminals on a view switch; keep
+    // project components, electrical connections, state and camera intact.
+    render();materialLayoutWarning();
   });
   $('#symbolNorm').addEventListener('change',e=>{
     const norm=Norms.normalize(e.target.value);if(project.symbolNorm!==norm){if(!snapshot())return;project.symbolNorm=norm}
-    localStorage.setItem('ccs-norm',norm);appearance='iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();refreshArtwork();scheduleSave();setStatus(norm+' sembolleri seçildi · Terminal ve kablolar korundu');
+    localStorage.setItem('ccs-norm',norm);appearance='iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();render();scheduleSave();setStatus(norm+' sembolleri seçildi · Terminal ve kablolar korundu');
   });
   $('#newBtn').onclick=()=>modal('Yeni proje','<p>Geçerli çalışma alanı temizlenecek. Kaydetmediğiniz değişiklikleri önce dışa aktarabilirsiniz.</p>',()=>{if(!snapshot())return;const mode=project.workspaceMode||'control';window.DTSEditor.create(mode,mode==='control'?'Kumanda Devresi 1':undefined);toast('Yeni proje açıldı')});
   $('#saveBtn').onclick=()=>{localStorage.setItem('ods-project',JSON.stringify(project));toast('Proje bu tarayıcıya kaydedildi')};$('#exportBtn').onclick=download;$('#openBtn').onclick=()=>$('#fileInput').click();
@@ -1311,7 +1312,7 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
       modeUI();populateWireMenu();renderLibrary();render();if(project.workspaceMode==='panel')window.DTSPanelEditor?.fit();else materialLayoutWarning();
     },
     create(mode,name){if(mode==='arduino'&&Arduino){const p=Arduino.exampleProject('blank',window.DTSProjects.uid());p.name=name||'Arduino Projem';this.load(p);return}this.load({version:7,projectId:window.DTSProjects.uid(),workspaceMode:mode,name:name||'Yeni Proje',symbolNorm:Norms.normalize(localStorage.getItem('ccs-norm')),components:[],wires:[],junctions:[],colorRoles:clone(defaultColorRoles),...(mode==='panel'?{panel:window.DTSPanel.defaults()}:{})})},
-    setAppearance(value){appearance=value==='material'?'material':'iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();refreshArtwork();materialLayoutWarning()}
+    setAppearance(value){appearance=value==='material'?'material':'iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();render();materialLayoutWarning()}
   };
   const cached=localStorage.getItem('ods-project');if(cached){try{project=migrateProject(JSON.parse(cached))}catch{}}else project=migrateProject(project);
   populateWireMenu();
