@@ -5,14 +5,14 @@ const L=root.DTSTutorialLessons;
 if(!L||L._switchingRelaySourceBatchU)return;
 const clone=x=>JSON.parse(JSON.stringify(x));
 const rows=[
- {id:'electronic-switching-src-01',parts:['supply-dc-plus','push-no','coil-relay','lamp-green','contact-no'],
+ {id:'electronic-switching-src-01',parts:['arduino-bench-supply','push-no','coil-relay','lamp-green','contact-no','contact-nc','lamp-red'],wires:9,
   goal:'Rölenin bobin uçları ile anahtarladığı kontak uçlarını birbirinden ayırt et.',
-  story:'Bu sanal devrede S1 butonuna basınca K1 bobini A1–A2 üzerinden enerjilenir. Bobin çektiğinde K1 yardımcı NO kontağı 13–14 kapanır ve H1 lambasının ayrı yolu tamamlanır. S1 bırakıldığında bobin ve NO kontak eski durumuna döner. Röledeki bütün kontak çeşitleri bu örnekte gösterilmez.',
-  steps:['G1 sanal 24 V kaynağı ile S1/13–14 girişini tanı.','K1/A1 ve K1/A2 bobin uçlarını gör.','K1/13–14 yardımcı NO kontağının H1 yük yolundan ayrı bir kumanda işlevi olduğunu izle.','Sanal butona basıp bırakınca bobin ve kontağın durumunu karşılaştır.'],
+  story:'Bu sanal devrede S1 butonuna basınca K1 bobini A1–A2 üzerinden enerjilenir. Bobin çektiğinde K1 yardımcı NO kontağı 13–14 kapanır ve H1 lambasının ayrı yolu tamamlanır. Aynı anda NC 21–22 kontağı açılır ve H2 kırmızı lamba söner. S1 bırakıldığında bobin enerjisizleşir, H1 söner ve H2 yeniden yanar. Gösterilen örnek yalnız NO ve NC yardımcı kontakları kapsar.',
+  steps:['G1 sanal 24 V kaynağı ile S1/13–14 girişini tanı.','K1/A1 ve K1/A2 bobin uçlarını gör.','K1/13–14 NO kontağının yeşil H1 yolunu, 21–22 NC kontağının kırmızı H2 yolunu yönettiğini gör.','Sanal S1 butonuna basıp bırakınca H1 ve H2 durumlarının birbirinin tersi olduğunu karşılaştır.'],
   question:'K1 rölesinin hangi terminal çifti bobine aittir?',
   answers:['A1 ve A2','13 ve 14','H1/X1 ve X2'],
-  why:'A1–A2 bobindir. 13–14 ise bu devredeki normalde açık yardımcı kontak çiftidir.'},
- {id:'electronic-switching-src-02',parts:['supply-dc-plus','push-nc','push-no','contact-no','coil-relay'],
+  why:'A1–A2 bobindir. 13–14 normalde açık, 21–22 normalde kapalı yardımcı kontak çiftleridir.'},
+ {id:'electronic-switching-src-02',parts:['arduino-bench-supply','push-nc','push-no','contact-no','coil-relay'],wires:6,
   goal:'Başlat butonu bırakıldıktan sonra K1 rölesinin hangi yoldan çalışmaya devam ettiğini keşfet.',
   story:'Sanal S1 Başlat butonuna kısa süre bastığında K1 bobini çeker. K1/13–14 yardımcı NO kontağı, Başlat ile paralel ikinci bir yol açar; böylece S1 bırakıldığında bobin enerjili kalabilir. S0 Durdur butonu 21–22 NC yolunu açınca hem ilk başlatma hem de mühürleme yolu kesilir.',
   steps:['S0/21–22 normalde kapalı Durdur yolunu bul.','S1/13–14 Başlat yolunu ve buna paralel K1/13–14 mühürleme yolunu karşılaştır.','K1/A1–A2 bobini ile 24 VDC kaynağın dönüş yolunu izle.','Sanal Başlat ve Durdur komutlarının farkını gözlemle.'],
@@ -26,7 +26,7 @@ for(const r of rows){
  if(!l||l.topicId!=='electronic-switching'||!l.project||!Array.isArray(l.steps))throw Error('Missing relay lesson '+r.id);
  if(l.designStandard==='rich-reference-v1'||l.pedagogyReview?.simulationAcceptance===true){affected.push(r.id+':rich-preserved');continue}
  const before=JSON.stringify(l.project),p=l.project;
- if(p.components.length!==r.parts.length||p.components.some((c,i)=>c.typeId!==r.parts[i])||p.wires.length!==6||l.steps.length!==6)
+ if(p.components.length!==r.parts.length||p.components.some((c,i)=>c.typeId!==r.parts[i])||p.wires.length!==r.wires||l.steps.length!==r.wires)
   throw Error('Changed canonical relay topology '+r.id);
  const ids=new Set(p.components.map(c=>c.id));
  const stepEnds=new Set(l.steps.map(s=>JSON.stringify([s.from?.c,s.from?.p,s.to?.c,s.to?.p])));
