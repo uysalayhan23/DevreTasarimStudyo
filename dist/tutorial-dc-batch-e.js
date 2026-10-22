@@ -28,6 +28,52 @@ function combined(l){
  p.tutorialExplore={type:'battery-series-parallel-rich',simulationOnly:true,topology:'2S2P',expectedVoltageV:3,expectedCurrentA:.03};
  return p;
 }
+const friendly=[
+ {
+  "summary": "Doğru akımın yönünü, 24 V kaynağı ve voltmetreyle birlikte keşfediyoruz.",
+  "goal": "Bir yükün neden akım çektiğini ve probları ters çevirince ölçüm işaretinin neden değiştiğini anlayacaksın.",
+  "story": "Bir el fenerinin pili gibi G1 sanal kaynağı da belirli kutuplara sahip. Kaynağın P ve M uçlarını bul, R1 yükünü izle, sonra ölçüm problarını karşılaştır.",
+  "steps": [
+   "G1'in P ve M uçlarını bul.",
+   "R1 üzerindeki gerilimi gözlemle.",
+   "Probları aynı düğüme taşıyıp ölç.",
+   "Probları ters çevirip işareti karşılaştır."
+  ]
+ },
+ {
+  "summary": "Bir DC devresi yalnız gidiş kablosuyla çalışmaz; dönüş yolu da gerekir.",
+  "goal": "Kaynak, yük ve dönüş hattının kapalı bir akım yolu oluşturduğunu göreceksin.",
+  "story": "G1'in artı ucunu R1'e bağladığını düşün. Peki akım nereye dönecek? Yükün diğer ucunu G1'in M noktasına bağlayan sanal yolun neden gerektiğine bakalım.",
+  "steps": [
+   "G1'in artı ve 0 V uçlarını tanı.",
+   "R1'in iki terminalini bul.",
+   "Devredeki kapalı dönüş yolunu izle.",
+   "Kaynak ve yük gerilimlerini sanal multimetrede karşılaştır."
+  ]
+ },
+ {
+  "summary": "İki 1,5 V pili seri bağlayınca toplam gerilim yaklaşık 3 V olur.",
+  "goal": "Seri köprüyü ve paketin dış uçlarını bulup gerilimlerin nasıl toplandığını ölçeceksin.",
+  "story": "El fenerine iki pil koyduğunu düşün. Bir pilin eksi ucuyla öbürünün artı ucu birleşince tek bir seri yol oluşur. Önce pilleri tek tek, sonra paketin dış uçlarını ölç.",
+  "steps": [
+   "İki pilin artı ve eksi uçlarını bul.",
+   "Aradaki seri köprüyü incele.",
+   "Her hücreyi ayrı ölç.",
+   "Paketi dış uçlarından ölç ve değerleri topla."
+  ]
+ },
+ {
+  "summary": "İki eş pili paralel bağlayınca gerilim yaklaşık 1,5 V kalır.",
+  "goal": "Ortak artı ve eksi hatlarını bulup neden gerilimin toplanmadığını göreceksin.",
+  "story": "İki eş pilin artı uçlarını aynı noktada, eksi uçlarını da başka bir noktada birleştirdiğini düşün. Bu sanal pakette iki pil aynı gerilimi paylaşıyor; seri devre gibi 3 V üretmiyor.",
+  "steps": [
+   "İki pilin artı uçlarını bul.",
+   "Ortak eksi bağlantısını incele.",
+   "Pilleri tek tek ölç.",
+   "Ortak uçları ölçüp seri devreyle karşılaştır."
+  ]
+ }
+];
 for(const [suffix,heading,goal,task,question,options] of data){
  const id='dc-circuits-src-'+suffix,l=L.byId[id];if(!l||l.topicId!=='dc-circuits')throw Error('DC lesson missing: '+id);
  if(suffix==='05'){
@@ -38,6 +84,7 @@ for(const [suffix,heading,goal,task,question,options] of data){
  l.beginnerSteps=['Önce kutupları ve kullanılan bileşenleri öğren.','Devreyi çalıştırmadan sonucu tahmin et.',task,'Probu taşı, ölçümün neden değiştiğini açıkla.','Devreyi yeniden kur ve konu kontrolünü cevapla.'];
  l.quiz={question,options,answer:0,why:goal};
  l.materials=l.project.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal ders malzemesi'}));
+ if(Number(suffix)<=4){const f=friendly[Number(suffix)-1];l.summary=f.summary;l.learningGoal=f.goal;l.explanation=f.story+' Bu yalnız sanal eğitim örneğidir.';l.beginnerSteps=[...f.steps]}
  l.pedagogyReview={version:'v1.19.20-dc-batch-e',reviewed:true,codeImplemented:true,visualAcceptance:false,canonicalContinuity:true};
 }
 L._dcBatteryBatchE=true;
