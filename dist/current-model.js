@@ -825,6 +825,83 @@
       }
     }
   }
+
+  // One scoped lesson family only: real-pin LM358P follower/comparator
+  // with physically connected UNI-T 200 DCV probes. Follower A output is
+  // explicitly idealized; comparator uses the actual solved DC result.
+  // Never treat these as calibrated LM358P or hardware measurements.
+  {
+    const match=(project?.tutorialLesson?.id||'').match(/^opamp-apps-outline-(029|030|031|032)$/);
+    if(match){
+      const suffix=match[1],follow=suffix==='029'||suffix==='030',
+        get=id=>project.components.find(c=>c.id===id),
+        op=get('u1'),meter=get('v1'),red=get('v1-red'),black=get('v1-black'),
+        expectTypes=[['g1','arduino-bench-supply'],['u1','lm358p-dip8'],
+          ['in','potentiometer'],['v1','unit-ut33d-plus'],
+          ...(follow?[]:[['ref1','resistor'],['ref2','resistor']]),
+          ['v1-red','test-probe-red'],['v1-black','test-probe-black']],
+        links=follow?["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","in.2>u1.3","u1.1>u1.2","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","u1.5>g1.M","u1.7>u1.6"]:["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.2","in.2>u1.3","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","u1.5>g1.M","u1.7>u1.6"],
+        norm=(a,b)=>[a,b].sort().join('~'),
+        got=project.wires.map(w=>norm(w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p)).sort(),
+        wanted=links.map(w=>norm(...w.split('>'))).sort(),
+        valid=project.components.length===expectTypes.length&&
+          got.length===wanted.length&&got.every((v,i)=>v===wanted[i])&&
+          expectTypes.every(([id,type])=>get(id)?.typeId===type)&&
+          opamps.length===2&&opamps.every(v=>v.c===op)&&
+          red?.probeTarget?.c==='u1'&&red?.probeTarget?.p==='1'&&
+          black?.probeTarget?.c==='g1'&&black?.probeTarget?.p==='M'&&
+          meter?.meterPosition===4&&
+          Number(get('g1')?.dcVoltage)===24&&
+          Number(get('in')?.potMax)===10000&&
+          Number.isFinite(Number(get('in')?.potentiometer))&&
+          Number(get('in').potentiometer)>=0&&Number(get('in').potentiometer)<=100&&
+          (follow||(Number(get('ref1')?.resistance)===10000&&
+                    Number(get('ref2')?.resistance)===10000));
+      if(op)delete op._nativeOpampDc;
+      if(meter)delete meter._nativeOpampDc;
+      if(valid){
+        const value=(c,p)=>secondary.get(pin(c,p))?.[0],
+          lo=value(get('g1'),'M'),hi=value(get('g1'),'P'),
+          vin=value(op,'3'),ref=follow?null:value(op,'2'),
+          trueRail=Number.isFinite(hi)&&Number.isFinite(lo)&&
+             hi-lo>=5&&hi-lo<=24.1;
+        if(trueRail&&Number.isFinite(vin)&&
+           (follow||Number.isFinite(ref))){
+          const min=lo+.02,max=hi-2;
+          if(max>min+2){
+            if(follow){
+              // This ideal follower is conditioned on exact OUT=IN- feedback
+              // and both DIP8 channels grounded/closed, not a global solver patch.
+              const ideal=Math.max(min,Math.min(max,vin));
+              secondary.set(pin(op,'1'),[ideal,0]);
+              if(op._opampChannels?.['1']){
+                op._opampChannels['1'].output=ideal;
+                op._opampChannels['1'].diff=vin-ideal;
+              }
+              op._opampOutput=ideal;
+            }
+            const out=value(op,'1'),
+              active=follow?null:vin>ref,
+              comparatorCoherent=follow||
+                 (Math.abs(vin-ref)<=.15)||
+                 (active?out>max-1.5:out<min+1.5);
+            if(Number.isFinite(out)&&comparatorCoherent){
+              const data={model:follow?'native-wired-ideal-LM358-DIP8-follower':
+                'native-wired-LM358-DIP8-comparator-DC',
+                inputV:vin,referenceV:ref,outputV:out,
+                potPercent:Number(get('in').potentiometer),
+                comparatorHigh:active,actualRedProbe:'u1/1',
+                actualBlackProbe:'g1/M',idealFollowerGain:follow?1:null,
+                idealEducationalModel:true,physicalAcceptance:false,
+                manufacturerLimitsAccepted:false,calibratedMeter:false};
+              op._nativeOpampDc=data;
+              meter._nativeOpampDc={...data};
+            }
+          }
+        }
+      }
+    }
+  }
   for(const b of reactive){
    const va=secondary.get(b.a)||[0,0],vb=secondary.get(b.b)||[0,0],vr=[va[0]-vb[0],va[1]-vb[1]],vm=Math.hypot(vr[0],vr[1]);let amps=current(b,secondary);
    if(b.role==='capacitor-dc'){const signed=(vr[0]-b.previous)/b.r;b._signedFlowCurrent=[signed,0];amps=Math.abs(signed);if(!options.sampleOnly){b.c._capacitorVoltage=vr[0];b.c._reactiveNow=now}}
