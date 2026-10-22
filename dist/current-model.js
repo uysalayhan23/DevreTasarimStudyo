@@ -647,8 +647,14 @@
         spk._speakerPowerW=powerW;spk._active=powerW>1e-5;
       }
     }else{
-      u._sc81NativePower={...outputData,powered:false,outputPowerW:0,
+      // Supply removed/outside the model range: clear all linked displays,
+      // not just U1. Otherwise the 4 ohm load and V1 retain stale power.
+      const off={...outputData,powered:false,outputRmsV:0,outputVpp:0,
+        outputPowerW:0,outputCurrentRmsA:0,peakCurrentA:0,
         reason:'besleme aralığı 12–36 V dışında'};
+      u._sc81NativePower=off;spk._sc81NativePower=off;
+      meter._sc81NativePower=off;
+      spk._speakerPowerW=0;spk._active=false;
     }
   }
   // SC082 only: true wired RC nodes, one complex dependent-source driver.
