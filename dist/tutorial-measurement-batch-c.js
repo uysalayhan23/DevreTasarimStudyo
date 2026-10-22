@@ -32,6 +32,12 @@ for(const [id,mode,heading,goal,task,question,options] of entries){
  l.summary=goal;l.learningGoal=goal;
  l.explanation=task+' Bu deney yalnız uygulama içindeki sanal ölçüm modelidir; gerçek enerjili ekipmanda uygulama talimatı değildir.';
  l.beginnerSteps=['Malzeme ve ölçüm birimlerini incele.','Önce beklenen ölçüm değerini tahmin et.',task,'Simülasyondaki ölçümün kaynağını kontrol et.','Konu kontrolüyle sonucunu açıkla.'];
+ if(id==='measurement-workshop-src-09'){
+  l.summary='Motorun dönüş hızını sanal takometrede izleyelim.';
+  l.learningGoal='750, 1500 ve 3000 rpm değerlerini karşılaştırıp rpm biriminin anlamını açıklayacaksın.';
+  l.explanation='Bir pervanenin döndüğünü düşün. Her turu tek tek saymak yerine takometre hızını gösterir. Burada cihaz, motorun sanal modelindeki devri okur; motor durduğunda geçerli ölçüm de durur.';
+  l.beginnerSteps=['Önce sanal motor ve takometreyi tanı.','750, 1500 ve 3000 rpm değerlerini karşılaştır.','Motor modelini durdurup okumayı gözlemle.','1500 rpm için saniyedeki tur sayısını hesapla.'];
+ }
  l.quiz={question,options,answer:0,why:goal};
  l.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal deney bileşenidir.'}));
  l.pedagogyReview={version:'v1.19.20-measure-batch-c',reviewed:true,componentIds:p.components.map(c=>c.typeId),designStandard:'rich-reference-v1',simulationOnly:true,canonicalLabSource:mode==='power'?'measurement-workshop-src-06':'motor-3p-simulation',measuredFromModel:true};

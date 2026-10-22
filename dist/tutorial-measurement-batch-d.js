@@ -114,6 +114,17 @@ for(const [suffix,mode,heading,goal,task,question,answers] of entries){
  l.measurementUpgrade={heading,goal,task,question,options:answers,workbench};
  l.summary=goal;l.learningGoal=goal;l.explanation=task+' Simülasyon dışında gerçek enerjili cihaz kullanılması gerekmez.';
  l.beginnerSteps=['Ölçüm cihazının neyi ölçtüğünü öğren.','Önce beklediğin sonucu tahmin et.',task,'Ölçek, birim ve modelin sınırlarını açıkla.','Konu kontrolünde ölçümün nedenini yanıtla.'];
+ if(id==='measurement-workshop-src-08'){
+  l.summary='Elektrik sayacı, gücün ne kadar süre kullanıldığını da hesaba katar.';
+  l.learningGoal='230 W sanal yükte 15, 30 ve 60 dakikalık enerji miktarlarını Wh cinsinden karşılaştıracaksın.';
+  l.explanation='Bir lambanın bir saat açık kaldığını düşün. Watt o andaki gücü, watt-saat ise geçen sürede kullanılan enerjiyi anlatır. Sanal sayaçta ikisi arasındaki farkı izle.';
+  l.beginnerSteps=['230 W anlık güç değerini bul.','15, 30 ve 60 dakika seçimlerini sırayla incele.','Yaklaşık 57,5, 115 ve 230 Wh sonuçlarını hesapla karşılaştır.','Wh ile kWh arasındaki farkı söyle.'];
+ }else if(id==='measurement-workshop-src-10'){
+  l.summary='Metal yaklaşınca PNP sensörün çıkışında ne değişiyor?';
+  l.learningGoal='Sanal UNI-T ile BK ve BU uçları arasında 10 mm ve 2 mm uzaklıklardaki gerilim farkını karşılaştıracaksın.';
+  l.explanation='Bir sensörün önüne metal parça yaklaştığını hayal et. Yeterince yaklaştığında çıkış değişiyor. BN besleme, BU referans ve BK çıkış uçlarını tanı; sanal ölçerde 0 V ile 24 V farkını gözlemle.';
+  l.beginnerSteps=['BN, BU ve BK uçlarını bul.','10 mm için sanal gerilimi oku.','Metal hedefi 2 mm konumuna alıp tekrar ölç.','Farkın çıkışın aktifleşmesiyle ilişkisini açıkla.'];
+ }
  l.quiz={question,options:answers,answer:0,why:goal};
  l.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label||c.ref||c.id,why:c.tutorialPurpose||'Sanal ders nesnesi'}));
  l.pedagogyReview={version:'v1.19.20-measure-batch-d',reviewed:true,codeImplemented:true,visualAcceptance:false,model:workbench||mode,source:workbench==='energy'?'verified energy analyzer':workbench==='sensor'?'verified proximity switch contact':'explicit simulated educational calculation / existing lab'};
