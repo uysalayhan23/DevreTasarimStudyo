@@ -185,6 +185,49 @@
    for(const s of [...(d.id==='abb-acs800-r5'&&c._acs800?.board?[{a:'X21:9',b:'X21:10',value:c._acs800.ao[0]/1000,compliance:14},{a:'X21:11',b:'X21:12',value:c._acs800.ao[1]/1000,compliance:14}]:[]),...(c._instrument?.current||[]),...(c._sensorSignal?[c._sensorSignal]:[]),...(d.id==='sinamics-v20-1p'&&c._v20?.powered?[{a:'4',b:'5',value:c._v20.ao/1000,compliance:10}]:[])]){const a=pin(c,s.a),b=pin(c,s.b);injected.set(a,[(injected.get(a)?.[0]||0)+s.value,0]);injected.set(b,[(injected.get(b)?.[0]||0)-s.value,0]);Object.assign(add(c,s.a,s.b,1e10,'current-source'),{source:s})}
   }
   let voltages=solveGraph(branches,fixed);const signedCurrent=(b,v)=>{if(b.a===b.b)return [0,0];const a=v.get(b.a)||[0,0],z=v.get(b.b)||[0,0],vr=a[0]-z[0],vi=a[1]-z[1];if(b.role==='diode')return [Math.max(0,(vr-(b.drop||.7))/b.r),0];if(b.y)return [vr*b.y[0]-vi*b.y[1],vr*b.y[1]+vi*b.y[0]];return [vr/b.r,vi/b.r]};const current=(b,v)=>{const i=signedCurrent(b,v);return Math.hypot(i[0],i[1])};
+
+  // SC390/SC393: use the authored 50 Hz 0..4 V unipolar FG waveform
+  // as a real source for the native C-history and 1N4148 nodal solve.
+  // Exact wires/parts only, no synthetic output or general AC acceptance.
+  const clamperScope=/^electronic-component-basics-outline-(040|043)$/.test(
+    project?.tutorialLesson?.id||''),
+    getClamp=id=>project.components.find(c=>c.id===id),
+    clampFg=clamperScope?getClamp('fg1'):null,
+    clampC=clamperScope?getClamp('c1'):null,
+    clampD=clamperScope?getClamp('d1'):null,
+    clampR=clamperScope?getClamp('r1'):null,
+    clampMeter=clamperScope?getClamp('v1'):null,
+    normalize=s=>s.split('>').sort().join('~'),
+    required=["fg1.OUT>c1.1","c1.2>d1.K","d1.A>fg1.GND","c1.2>r1.1","r1.2>fg1.GND","c1.2>v1.1","v1.2>fg1.GND"].map(normalize).sort(),
+    observed=clamperScope?project.wires.map(w=>[
+      w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort():[],
+    validClamper=clamperScope&&project.components.length===5&&
+      project.wires.length===7&&observed.length===required.length&&
+      observed.every((x,i)=>x===required[i])&&
+      clampFg?.typeId==='arduino-signal-generator'&&
+      clampFg.generatorEnabled===true&&clampFg.generatorWaveform==='sine'&&
+      Number(clampFg.generatorFrequency)===50&&
+      Number(clampFg.generatorAmplitude)===4&&
+      Number(clampFg.generatorOffset)===0&&
+      Number(clampFg.generatorPhaseDeg??0)===0&&
+      clampC?.typeId==='capacitor'&&
+      Math.abs(Number(clampC.capacitance)-1e-6)<1e-13&&
+      clampD?.typeId==='1n4148-do35'&&
+      byId[clampD.typeId]?.kind==='diode'&&
+      clampR?.typeId==='resistor'&&
+      Number(clampR.resistance)===100000&&
+      clampMeter?.typeId==='meter-voltmeter'&&
+      Number.isFinite(now)&&now>=0;
+  if(clamperScope){
+   if(clampMeter)delete clampMeter._nativeClamperShift;
+   if(clampFg)delete clampFg._nativeClamperSource;
+  }
+  if(validClamper){
+   const sourceVoltage=2+2*Math.sin(2*Math.PI*50*now/1000);
+   fixed.set(pin(clampFg,'OUT'),[sourceVoltage,0]);
+   fixed.set(pin(clampFg,'GND'),[0,0]);
+  }
+
   // Start with each DC diode as a candidate branch. Starting with every diode
   // open leaves the LED anode floating, so a series circuit can never reach
   // the forward-voltage check that would turn the diode on.
@@ -1171,6 +1214,29 @@
    else if(!options.sampleOnly)b.c._reactiveNow=now;
    b.c._currentValue=amps;b.c._voltageValue=vm;b.c._reactiveVoltage=vm;b.c._reactiveCurrent=amps;b.c._reactiveModel=b.reactiveType==='C'?(b.role.endsWith('-ac')?'C · Xc=1/(2πfC)':'C · i=C·dv/dt'):(b.role.endsWith('-ac')?'L · Xl=2πfL':'L · v=L·di/dt');
   }
+
+  // Observe actual numeric source, capacitor memory, diode conduction,
+  // and output meter; full AC/Windows/physical status stays pending.
+  if(validClamper&&!options.sampleOnly){
+   const voltage=(c,p)=>(secondary.get(pin(c,p))||[0,0])[0],
+     g=voltage(clampFg,'GND'),
+     input=voltage(clampFg,'OUT')-g,
+     output=voltage(clampMeter,'1')-g,
+     previous=Number(clampC._capacitorVoltage);
+   if([input,output,previous].every(Number.isFinite)){
+    const reading={model:'native-wired-1N4148-100k-1uF-clamper-timestep',
+     inputV:input,outputV:output,capacitorVoltageV:previous,
+     outputMinusInputV:output-input,
+     diodeConducting:clampD._diodeForward===true,
+     sourceFrequencyHz:50,sourceVpp:4,
+     sourceWaveform:'unipolar-sine',tauSeconds:.1,
+     nativeDcStepScopeOnly:true,physicalAcceptance:false,
+     fullAcWaveformAcceptance:false,manufacturerDiodeAcceptance:false};
+    clampMeter._nativeClamperShift=reading;
+    clampFg._nativeClamperSource={...reading};
+   }
+  }
+
   for(const {c} of diodes){const a=secondary.get(pin(c,'A'))||[0,0],k=secondary.get(pin(c,'K'))||[0,0],b=branches.find(x=>x.c===c&&x.role==='diode');c._voltageValue=Math.abs(a[0]-k[0]);c._currentValue=b?current(b,secondary):0}
   for(const b of branches.filter(b=>b.role==='load'&&['resistor','lamp'].includes(byId[b.c.typeId]?.kind))){const a=secondary.get(b.a),z=secondary.get(b.b);b.c._currentValue=current(b,secondary);b.c._voltageValue=a&&z?Math.hypot(a[0]-z[0],a[1]-z[1]):0}
   for(const b of branches.filter(b=>['speaker-load','crystal-bvd','crystal-dc-open'].includes(b.role))){const a=secondary.get(b.a)||[0,0],z=secondary.get(b.b)||[0,0],vm=Math.hypot(a[0]-z[0],a[1]-z[1]),amps=current(b,secondary);b.c._currentValue=amps;b.c._voltageValue=vm;if(b.role==='speaker-load'){const nativeRms=b.c._sc81NativePower||b.c._sc82NativePower;

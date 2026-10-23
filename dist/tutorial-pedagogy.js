@@ -11466,4 +11466,57 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
   throw Error('SC377 protected schematic or steps modified');
 }
 
+
+/* SC390/SC393 source-grounded clampers; no hardware or full AC acceptance. */
+{
+ const rows=[['040','SOURCE_WIRED_CLAMPER_SHIFT_PENDING'],
+  ['043','SOURCE_WIRED_CLAMPER_EXERCISE_PENDING']],
+  expected=["fg1.OUT>c1.1","c1.2>d1.K","d1.A>fg1.GND","c1.2>r1.1","r1.2>fg1.GND","c1.2>v1.1","v1.2>fg1.GND"].map(x=>x.split('>').sort().join('~')).sort();
+ for(const [suffix,status] of rows){
+  const l=L.byId['electronic-component-basics-outline-'+suffix],p=l?.project,
+    c=id=>p?.components.find(x=>x.id===id),
+    wired=p?.wires?.map(w=>[w.from.c+'.'+w.from.p,
+      w.to.c+'.'+w.to.p].sort().join('~')).sort();
+  if(!l||l.kind!=='wiring'||l.pedagogyReview?.titleTopologyStatus!==status||
+   l.pedagogyReview?.sourceReusedFrom!=='oscillator-filter-apps-src-10'||
+   !wired||wired.length!==7||wired.some((w,i)=>w!==expected[i])||
+   p.components.length!==5||c('fg1')?.typeId!=='arduino-signal-generator'||
+   c('fg1').generatorEnabled!==true||c('fg1').generatorWaveform!=='sine'||
+   Number(c('fg1').generatorFrequency)!==50||
+   Number(c('fg1').generatorAmplitude)!==4||
+   Number(c('fg1').generatorOffset)!==0||
+   c('c1')?.typeId!=='capacitor'||
+   Math.abs(Number(c('c1').capacitance)-1e-6)>1e-13||
+   c('d1')?.typeId!=='1n4148-do35'||c('r1')?.typeId!=='resistor'||
+   Number(c('r1').resistance)!==100000||
+   c('v1')?.typeId!=='meter-voltmeter'||
+   !['nativeDynamicAcceptance','waveformAcceptance','frequencyResponseAcceptance',
+     'physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance']
+     .every(k=>l.pedagogyReview[k]===false))
+    throw Error('Protected SC390/393 source mismatch '+suffix);
+  const canonical=JSON.stringify([p,l.title,l.materials,l.steps]);
+  l.summary='50 Hz sanal sinüs kaynağı, seri 1 µF C1, 1N4148 diyot ve 100 kΩ dirençle gerçek kablolu kenetleyici.';
+  l.explanation='FG1 küçük bir sinüs dalgası üretir: 0 ile 4 V arasında gidip gelen 50 Hz sanal giriş. Önce 1 µF C1 den geçer. C1 çıkış noktası diyotun K ucuna, 100 kΩ yük direncine ve voltmetrenin artı ucuna bağlanır. D1 in A ucu, direncin alt ucu ve ölçerin eksi ucu aynı GND noktasına döner. Dalga çok aşağı indiğinde diyot iletir; negatif çıkış yaklaşık −0,7 V çevresinde kenetlenir. C1 önceki yükünü sakladığı için çıkışın ortalaması girişten farklı olur. R×C=0,1 saniyedir, yani etki birkaç 50 Hz çevriminde anlaşılır. V1 sanal anlık voltmetre ölçümü yapar; osiloskop veya kalibre AC ölçer değildir. Hedefli 1 ms sayısal kaynak/R-C/diyot adımları doğrulandı. Tam AC tarama, fiziksel 1N4148 ve Windows/Edge kabulü hâlâ pending.';
+  l.learningGoal='Seri kondansatörün geçmiş gerilimi ve diyotun negatif tepe kenetlemesinin sanal çıkış düzeyini nasıl değiştirdiğini görmek.';
+  l.beginnerSteps=[
+   'FG1 OUT → C1/1 sinüs girişini izle; FG1/GND dönüşünü kontrol et.',
+   'C1/2 çıkışı D1/K, R1/1 ve V1/1 ortak noktasına bağlı.',
+   'D1/A, R1/2 ve V1/2 aynı FG1/GND noktasına gider.',
+   'Giriş değişirken C1 gerilimi ile V1 anlık çıkış gerilimini karşılaştır.',
+   'Diyotu ters bağlarsan veya RC yolunu açarsan aynı kenetleme sonucunu kabul etme.',
+   'Tam AC/fiziksel/Windows doğrulaması olmadan genel PASS verme.'
+  ];
+  l.quiz={question:'C1 kondansatörü bu kenetleyicide ne yapar?',
+   options:['Önceki yükünü saklayıp çıkışın DC düzeyini etkiler.','Şebeke gerilimini artırır.','Diyot yönünü kendiliğinden değiştirir.'],
+   answer:0,why:'Seri C1 önceki yükünü taşır; D1 negatif tepeleri sınırlarken çıkış düzeyi zamanla değişir.'};
+  l.pedagogyReview={...l.pedagogyReview,nativeClamperSineStepTargetedPass:true,
+   realTerminalizedSourcePreserved:true,nativeDynamicAcceptance:false,
+   waveformAcceptance:false,frequencyResponseAcceptance:false,
+   physicalAcceptance:false,manufacturerDeviceAcceptance:false,
+   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+  if(JSON.stringify([p,l.title,l.materials,l.steps])!==canonical)
+    throw Error('Protected SC390/393 schematic drift '+suffix);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
