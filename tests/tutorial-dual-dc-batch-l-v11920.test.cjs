@@ -42,3 +42,18 @@ test('Batch L: isolation is explicit and common references occur only in intende
   }
  }
 });
+
+// SC079: nonshorted simulator state alone does not certify a missing common 0 V lead.
+test('SC079 common reference: positive wiring and disconnected-ground negative control',()=>{
+ const source=require('../dist/tutorial-source-outline.js');
+ const original=structuredClone(source.byId['dual-dc-2'].project);
+ const common=p=>p.wires.filter(w=>(w.from.c==='g1'&&w.from.p==='M'&&w.to.c==='g2'&&w.to.p==='M')||(w.from.c==='g2'&&w.from.p==='M'&&w.to.c==='g1'&&w.to.p==='M'));
+ assert.equal(common(original).length,1,'SC079 needs exactly one common 0 V reference');
+ const disconnected=structuredClone(original);disconnected.wires=disconnected.wires.filter(w=>!common(original).some(c=>c.id===w.id));
+ assert.equal(common(disconnected).length,0,'negative control must remove the common reference');
+ assert.equal(original.wires.length,5);assert.equal(disconnected.wires.length,4);
+ assert.ok(original.wires.some(w=>w.from.c==='g1'&&w.from.p==='P'&&w.to.c==='s'&&w.to.p==='BN'));
+ assert.ok(original.wires.some(w=>w.from.c==='s'&&w.from.p==='BU'&&w.to.c==='g1'&&w.to.p==='M'));
+ assert.ok(original.wires.some(w=>w.from.c==='g2'&&w.from.p==='P'&&w.to.c==='h'&&w.to.p==='X1'));
+ assert.ok(original.wires.some(w=>w.from.c==='h'&&w.from.p==='X2'&&w.to.c==='s'&&w.to.p==='BK'));
+});
