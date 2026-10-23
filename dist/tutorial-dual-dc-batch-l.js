@@ -24,7 +24,7 @@ const stories=[
  {
   "summary": "Ortak 0 V noktası iki cihazın sinyal paylaşmasını kolaylaştırıyor.",
   "goal": "G1/M ve G2/M'nin ortaklaşmasının nedenini fark edeceksin.",
-  "story": "Bir sensörün başka bir cihaza haber verdiğini düşün. Sensörü G1, diğer taraftaki yükü G2 besliyor. İki cihaz bu örnekte aynı 0 V noktasına bakıyor. Böylece gönderilen sinyalin seviyesi her iki taraf için de anlam kazanıyor.",
+  "story": "Bir sensörün başka bir cihaza haber verdiğini düşün. Sensörü G1, diğer taraftaki yükü G2 besliyor. Bu sanal örnekte iki cihaz aynı 0 V referansını kullanıyor. Böylece sensörün çıkış sinyali G2 tarafındaki yük için anlam kazanıyor. Ancak iki gerçek kaynağın 0 V uçları her zaman birleştirilmez; kaynakların bağlantıya uygunluğu ve elektriksel güvenliği ayrıca doğrulanmalıdır.",
   "task": "G1/M ile G2/M arasındaki hattı bul ve sinyali izle.",
   "steps": [
    "İki kaynağın M uçlarını bul.",
@@ -37,7 +37,7 @@ const stories=[
  {
   "summary": "Röle, ayrı iki besleme arasında komut aktarabiliyor.",
   "goal": "Bobin ve kuru kontağın farklı devrelerde görev yaptığını göreceksin.",
-  "story": "Bir odadaki düğmenin başka odadaki sanal lambayı yönettiğini hayal et. G1 rölenin bobinini çalıştırıyor. K1'in kuru kontağı ise G2 ile beslenen lambayı açıp kapatıyor. İki güç kaynağının uçlarını birleştirmeden komut iletiliyor.",
+  "story": "Bir odadaki düğmenin başka odadaki sanal lambayı yönettiğini hayal et. G1 rölenin bobinini çalıştırıyor. K1'in kuru kontağı ise G2 ile beslenen lambayı açıp kapatıyor. K1 kontağı G2 devresini açıp kapatırken G1 beslemesinin artı veya eksi hattı G2 hattına taşınmıyor. Bu, röle kontaklarıyla aktarılan bir anahtarlama komutudur; gerçek rölenin yalıtım ve kontak sınırları ayrıca kontrol edilmelidir.",
   "task": "Önce G1'in röle bobinini, sonra K1 kontağının G2 yükünü nasıl kontrol ettiğini izle.",
   "steps": [
    "G1 tarafındaki bobini bul.",
