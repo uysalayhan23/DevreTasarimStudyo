@@ -5,7 +5,8 @@ const titles=["Anten tesisatı temel bağlantısı","Akıllı ev aydınlatma ve 
 for(let i=0;i<50;i++){
  const id=ids[i],l=L.byId[id];if(!l||l.title!==titles[i])throw Error('SC'+(122+i)+' lesson identity mismatch '+id);
  const category=i<2?'Tesisat':i<21?'Elektronik anahtarlama':i<43?'Sensör':'İşlemsel yükselteç';
- const isVerified=!!l.pedagogyReview?.visualAcceptance&&!!l.pedagogyReview?.simulationAcceptance;
+ const visualAccepted=l.pedagogyReview?.visualAcceptance===true;
+ const nativeAccepted=l.pedagogyReview?.simulationAcceptance===true;
  // The guidance accompanies accepted content; do not replace protected project, quiz, lessons or existing PASS status.
  l.learningSupport={...l.learningSupport,
   version:'20261023-next50-guidance1',
@@ -13,8 +14,8 @@ for(let i=0;i<50;i++){
   focus:l.title,
   questions:['Bu düzenek hangi işlevi yerine getirir?','Katalog terminali, besleme ve ölçüm referansı uygun mu?','Normal ve hatalı bağlantı durumunda hangi sonuç beklenir?'],
   reflection:'Örnekte '+l.title.toLocaleLowerCase('tr-TR')+' konusunu ele alıyoruz. Önce elemanın görevini anlat, sonra doğru referansı ve beklenen sonucu kontrol et.',
-  visualAcceptanceRequired:!isVerified,
-  nativeAcceptanceRequired:!isVerified,
+  visualAcceptanceRequired:!visualAccepted,
+  nativeAcceptanceRequired:!nativeAccepted,
   sourceCircuitPreserved:true,
   nonWorkingDiagramWarning:!!l.project?.referenceOnly||l.kind==='quiz'
  };
