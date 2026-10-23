@@ -345,6 +345,75 @@
    }
    secondary=guess;
 
+
+   // SC377: only the exact physical DIP8 Schmitt may have stateful ideal
+   // DC threshold acceptance. Use the real resistive nodal solve, not a
+   // fabricated output waveform. Full LM358/AC acceptance stays pending.
+   {
+    if(project?.tutorialLesson?.id==='opamp-apps-outline-044'){
+     const get=id=>project.components.find(c=>c.id===id),op=get('u1'),g=get('g1'),
+      meter=get('v1'),pot=get('in'),amp=opamps.find(o=>o.c===op&&o.channel==='1'),
+      spare=opamps.find(o=>o.c===op&&o.channel==='7'),
+      norm=s=>s.split('>').sort().join('~'),
+      expected=["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.2","in.2>r1.1","r1.2>u1.3","u1.1>r2.1","r2.2>u1.3","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","u1.5>g1.M","u1.7>u1.6"].map(norm).sort(),
+      actual=project.wires.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort();
+     if(op){delete op._nativeDip8Schmitt;if(options.reset)delete op._nativeDip8SchmittHigh;}
+     if(meter)delete meter._nativeDip8Schmitt;
+     const valid=project.components.length===10&&project.wires.length===16&&
+      actual.length===expected.length&&actual.every((s,i)=>s===expected[i])&&
+      op?.typeId==='lm358p-dip8'&&g?.typeId==='arduino-bench-supply'&&
+      Number(g.dcVoltage)===24&&pot?.typeId==='potentiometer'&&
+      Number(pot.potMax)===10000&&Number.isFinite(Number(pot.potentiometer))&&
+      Number(pot.potentiometer)>=0&&Number(pot.potentiometer)<=100&&
+      ['r1','ref1','ref2'].every(id=>get(id)?.typeId==='resistor'&&
+       Number(get(id).resistance)===10000)&&get('r2')?.typeId==='resistor'&&
+      Number(get('r2').resistance)===47000&&
+      meter?.typeId==='unit-ut33d-plus'&&meter.meterPosition===4&&
+      get('v1-red')?.probeTarget?.c==='u1'&&get('v1-red')?.probeTarget?.p==='1'&&
+      get('v1-black')?.probeTarget?.c==='g1'&&get('v1-black')?.probeTarget?.p==='M'&&
+      opamps.length===2&&amp&&spare;
+     if(!valid){if(op)delete op._nativeDip8SchmittHigh;}
+     else{
+      const v=(m,n)=>m.get(n)?.[0]??0,zero=v(secondary,amp.vm),
+       top=v(secondary,amp.vp),range=top-zero;
+      if(range>=5&&range<=24.1){
+       const low=zero+.02,high=top-2,wasHigh=op._nativeDip8SchmittHigh===true,
+        solve=state=>solveGraph(branches,
+         new Map([...fixed,[amp.out,[state?high:low,0]]]),injected),
+        previous=solve(wasHigh),
+        nextHigh=v(previous,amp.ip)>=v(previous,amp.im),
+        next=solve(nextHigh),
+        input=v(next,pin(pot,'2'))-zero,
+        reference=v(next,amp.im)-zero,
+        plus=v(next,amp.ip)-zero,
+        output=v(next,amp.out)-zero,
+        ratio=Number(get('r1').resistance)/Number(get('r2').resistance),
+        rising=reference*(1+ratio)-(low-zero)*ratio,
+        falling=reference*(1+ratio)-(high-zero)*ratio;
+       if([input,reference,plus,output,rising,falling].every(Number.isFinite)&&
+        high>low+2&&rising>falling&&falling>0&&rising<range){
+        secondary=next;
+        const data={model:'native-source-exact-ideal-DIP8-Schmitt-DC',
+         high:nextHigh,outputV:output,inputWiperV:input,
+         nonInvertingV:plus,referenceV:reference,
+         risingInputNodeV:rising,fallingInputNodeV:falling,
+         idealHysteresisWidthV:rising-falling,
+         potWiperLoadingIncluded:true,idealEducationalModel:true,
+         physicalAcceptance:false,manufacturerLimitsAccepted:false,
+         calibratedMeter:false,acWaveformAccepted:false};
+        const ch=op._opampChannels?.['1'];
+        if(ch){ch.output=output;ch.diff=plus-reference}
+        op._opampOutput=output;
+        if(!options.sampleOnly){
+         op._nativeDip8Schmitt=data;meter._nativeDip8Schmitt={...data};
+         op._nativeDip8SchmittHigh=nextHigh;
+        }
+       }else delete op._nativeDip8SchmittHigh;
+      }else delete op._nativeDip8SchmittHigh;
+     }
+    }
+   }
+
    // Source-exact SC370–373 feedback solve on the EXISTING RC backward-Euler
    // circuit, not a synthetic waveform. No AC/hardware acceptance inferred.
    {

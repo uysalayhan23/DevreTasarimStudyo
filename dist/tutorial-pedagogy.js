@@ -11421,4 +11421,49 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC377 exact connected DIP8 Schmitt; earlier acceptance is retained. */
+{
+ const l=L.byId['opamp-apps-outline-044'],p=l?.project,
+  comp=id=>p?.components.find(c=>c.id===id),
+  norm=s=>s.split('>').sort().join('~'),
+  expected=["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.2","in.2>r1.1","r1.2>u1.3","u1.1>r2.1","r2.2>u1.3","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG","u1.5>g1.M","u1.7>u1.6"].map(norm).sort(),
+  actual=p?.wires?.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort();
+ if(!l||l.kind!=='wiring'||l.pedagogyReview?.titleTopologyIssue!=='SCHMITT_HYSTERESIS_SWEEP_NATIVE_PENDING'||
+    !actual||actual.length!==16||actual.some((s,i)=>s!==expected[i])||
+    p.components.length!==10||comp('u1')?.typeId!=='lm358p-dip8'||
+    comp('g1')?.typeId!=='arduino-bench-supply'||Number(comp('g1').dcVoltage)!==24||
+    comp('in')?.typeId!=='potentiometer'||Number(comp('in').potMax)!==10000||
+    !['r1','ref1','ref2'].every(id=>comp(id)?.typeId==='resistor'&&Number(comp(id).resistance)===10000)||
+    comp('r2')?.typeId!=='resistor'||Number(comp('r2').resistance)!==47000||
+    comp('v1')?.typeId!=='unit-ut33d-plus'||comp('v1').meterPosition!==4||
+    comp('v1-red')?.probeTarget?.c!=='u1'||comp('v1-red')?.probeTarget?.p!=='1'||
+    comp('v1-black')?.probeTarget?.c!=='g1'||comp('v1-black')?.probeTarget?.p!=='M'||
+    !['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance']
+     .every(k=>l.pedagogyReview[k]===false))
+  throw Error('SC377 protected source drift');
+ const protectedParts=JSON.stringify([p,l.title,l.steps,l.materials]);
+ l.summary='LM358P PDIP-8, 10 kΩ giriş ve 47 kΩ pozitif geri besleme ile gerçek bağlantılı sanal Schmitt histerezisi.';
+ l.explanation='Bir lamba anahtarının küçük dalgalanmalarda sürekli açılıp kapanmasını istemezsin. Bu Schmitt devresinde de çıkış pin 1 den R2=47 kΩ üzerinden pin 3 (+) girişine geri döner. RV1 sinyali R1=10 kΩ üzerinden aynı pine gelir; pin 2 (−) ise 10 kΩ/10 kΩ bölücüyle yaklaşık 12 V referans görür. Çıkış alçakken daha yüksek girişte HIGH olur, yüksekken daha düşük girişte LOW durumuna döner. Buna histerezis denir. İdeal 24 V besleme ve 0.02–22 V sanal çıkış için eşik düğümü hesabı yaklaşık 14.55 V ve 9.87 V; aralarındaki fark yaklaşık 4.68 V tur. RV1 yüzdesiyle bu gerilimleri karıştırma: 10 kΩ potansiyometre de direnç ağından yüklenir. Kırmızı UNI-T probu pin 1, siyah prob 0 V dadır. Kullanılmayan B kanalı pin 5→0 V, pin 7→pin 6 ile sonlandırılmıştır. Bu gerçek DIP8 bağlantılarında yalnız sanal ideal DC histerezis kanıtıdır; fiziksel cihaz salınımı, gürültü, AC ve Windows kabulü değildir.';
+ l.learningGoal='RV1 in iki yöndeki DC taramasında çıkışın ayrı eşiklerde değiştiğini ve aynı ara konumda geçmiş durumunu koruduğunu sanal ölçmek.';
+ l.beginnerSteps=[
+  'LM358P pin 8 (+24 V), pin 4 (0 V) beslemesini ve pin 2 (yaklaşık 12 V) referansı bul.',
+  'RV1/2 → R1 10 kΩ → pin 3 ve pin 1 → R2 47 kΩ → pin 3 yollarını izle.',
+  'Kullanılmayan B kanalını pin 5→0 V, pin 7→pin 6 olarak bağlı tut.',
+  'UNI-T kırmızı probu pin 1, siyah probu 0 V noktasında olsun.',
+  'RV1 i bir yönde, sonra ters yönde tara; farklı geçiş konumlarını karşılaştır.',
+  'Pozitif geri besleme kalkarsa histerezis kabul etme; fiziksel/AC PASS verme.'
+ ];
+ l.quiz={question:'Schmitt Trigger neden açılış ve kapanışta iki farklı giriş eşiği kullanır?',
+  options:['Çıkıştan pin 3 e pozitif geri besleme vardır.','Voltmetre otomatik eşik ayarlar.','Besleme gerilimi değişir.'],
+  answer:0,why:'R2 ile geri beslenen çıkış, pin 3 teki toplam gerilimi önceki çıkış durumuna göre etkiler.'};
+ l.pedagogyReview={...l.pedagogyReview,realDip8IdealDcSchmittTargetedPass:true,
+  idealDcStateMemoryAcceptance:true,nativeDynamicAcceptance:false,
+  physicalAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false,fullAcWaveformAcceptance:false,
+  manufacturerDeviceAcceptance:false};
+ if(JSON.stringify([p,l.title,l.steps,l.materials])!==protectedParts)
+  throw Error('SC377 protected schematic or steps modified');
+}
+
 })(typeof window==='undefined'?globalThis:window);
