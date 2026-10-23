@@ -12,6 +12,9 @@ test('SC082–101: each source lesson has a distinct specific quiz without canon
   const l=L.byId[id];assert.ok(l,'missing '+id);
   assert.equal(JSON.stringify({project:l.project,steps:l.steps}),before.get(id),'canonical topology mutated '+id);
   assert.ok(l.explanation.length>60,'too short '+id);
+  assert.equal(l.beginnerSteps.length,3,'missing guided steps '+id);
+  assert.ok(l.beginnerSteps[0].startsWith('Örneği düşün:'),'missing scenario '+id);
+  assert.ok(l.learningGoal.length>20,'missing specific goal '+id);
   assert.match(l.explanation,/konuya özel kablolu deney olarak doğrulanmış değildir/,'unverified diagram must not be represented as working '+id);
   assert.equal(l.quiz.answer,0);
   assert.equal(l.quiz.options.length,3);
