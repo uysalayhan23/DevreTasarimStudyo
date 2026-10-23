@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",16],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",15],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",16],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
+const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",16],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",15],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",16],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",12],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
 const edge=(p,a,ap,b,bp)=>p.wires.some(w=>(w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
 for(const [id,reason,wires] of cases)test(id+' opamp physical pin and negative-acceptance contract',()=>{
@@ -409,4 +409,50 @@ test('SC024 UNI-T disconnected probe must fail closed, not read false 0 V',()=>{
  missingWire.wires=missingWire.wires.filter(w=>!(w.from.c==='v1'&&w.from.p==='V'));
  const missing=read(missingWire);assert.equal(missing.display,'OL');assert.match(missing.warning,/yuvaları/);
  const off=clone(source);part(off,'v1').meterPosition=0;assert.equal(read(off).display,'');
+});
+
+
+test('SC027 20 Hz noninverting LM358P: native positive and negative cases',()=>{
+ const Arduino=require('../dist/arduino-runtime.js'),l=L.byId['opamp-apps-outline-027'];
+ const clone=x=>JSON.parse(JSON.stringify(x)),source=l.project,
+  part=(p,id)=>p.components.find(x=>x.id===id);
+ const edge=(p,a,ap,b,bp)=>p.wires.some(w=>
+  (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
+  (w.to.c===a&&w.to.p===ap&&w.from.c===b&&w.from.p===bp));
+ const valid=p=>p.wires.length===12&&part(p,'in').generatorFrequency===20&&
+  part(p,'in').generatorEnabled===true&&part(p,'in').generatorWaveform==='sine'&&
+  part(p,'in').generatorOffset===1&&part(p,'in').generatorAmplitude===2&&
+  part(p,'v1').meterPosition===4&&part(p,'r1').resistance===10000&&
+  part(p,'r2').resistance===47000&&edge(p,'in','OUT','u1','3')&&
+  edge(p,'r2','2','u1','2')&&edge(p,'u1','5','g1','M')&&edge(p,'u1','7','u1','6');
+ assert.equal(valid(source),true);
+ assert.equal(l.steps.length,12);
+ assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+ assert.equal(l.pedagogyReview.sc027TargetedNative20HzPass,true);
+ const read=p=>[0,12.5,25,37.5,50].map(now=>{
+  Arduino.tick(p,defs,{now});const status=Native.solve(p,defs,{now});
+  assert.ok(status.stable&&!status.blocked&&!status.shortCircuit);
+  const amp=part(p,'u1')._opampChannels,m=part(p,'v1')._meter;
+  return {input:part(p,'in')._signalVoltage,out:amp['1'].output,
+   spare:amp['7'].output,warning:m.warning,display:m.display,mode:m.mode,value:m.value};
+ });
+ const good=read(clone(source));
+ assert.ok(good.every(x=>x.mode==='DCV'&&x.warning===''&&x.display!=='OL'));
+ assert.ok(good.every(x=>x.spare>=0&&x.spare<.5&&Math.abs(x.out-x.value)<.02));
+ assert.ok(Math.abs(good[1].input-3)<.01&&Math.abs(good[3].input-1)<.01);
+ assert.ok(good[1].out>16&&good[1].out<19&&good[3].out>4&&good[3].out<7);
+ assert.ok(good[1].out-good[3].out>10&&Math.abs(good[0].out-good[4].out)<.1);
+ const ac=clone(source);part(ac,'v1').meterPosition=6;
+ assert.equal(valid(ac),false);assert.ok(read(ac).every(x=>x.display==='OL'&&x.warning.includes('AC/DC')));
+ const broken=clone(source);broken.wires=broken.wires.filter(w=>
+  !(w.from.c==='r2'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='2'));
+ assert.equal(valid(broken),false);const noFb=read(broken).map(x=>x.out);
+ assert.ok(Math.max(...noFb)-Math.min(...noFb)<.1);
+ const wrongB=clone(source);wrongB.wires.find(w=>w.from.c==='u1'&&w.from.p==='5').to.p='P';
+ assert.equal(valid(wrongB),false);assert.ok(read(wrongB)[0].spare>20);
+ const off=clone(source);part(off,'in').generatorEnabled=false;
+ assert.equal(valid(off),false);const zero=read(off).map(x=>x.out);
+ assert.ok(Math.max(...zero)-Math.min(...zero)<.1);
+ const high=clone(source);part(high,'in').generatorAmplitude=5;
+ assert.equal(valid(high),false);assert.ok(read(high)[1].out>21);
 });

@@ -10041,6 +10041,70 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
   throw Error('SC024 UT33D target changed protected circuits');
 }
 
+/* SC027_NATIVE_NONINVERTING_20HZ: LM358P virtual sine sample, not full AC/manufacturer acceptance. */
+{
+ const id='opamp-apps-outline-027',l=L.byId[id],p=l?.project,
+  part=k=>p?.components.find(c=>c.id===k),
+  edge=(a,ap,b,bp)=>p.wires.some(w=>
+   (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
+   (w.to.c===a&&w.to.p===ap&&w.from.c===b&&w.from.p===bp));
+ const fg=part('in'),meter=part('v1');
+ if(!l||l.kind!=='wiring'||p.components.length!==8||p.wires.length!==10||l.steps.length!==10||
+    l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+    l.pedagogyReview?.titleTopologyIssue!=='NONINVERTING_AC_RESPONSE_NATIVE_PENDING'||
+    l.pedagogyReview?.nativeDynamicAcceptance!==false||
+    part('g1')?.dcVoltage!==24||part('u1')?.typeId!=='lm358p-dip8'||
+    fg?.typeId!=='arduino-signal-generator'||fg.generatorFrequency!==undefined||
+    fg.generatorWaveform!==undefined||meter?.typeId!=='unit-ut33d-plus'||
+    meter.meterPosition!==6||part('r1')?.resistance!==10000||part('r2')?.resistance!==47000||
+    !edge('g1','P','u1','8')||!edge('g1','M','u1','4')||
+    !edge('in','GND','g1','M')||!edge('in','OUT','u1','3')||
+    !edge('u1','2','r1','1')||!edge('r1','2','g1','M')||
+    !edge('u1','1','r2','1')||!edge('r2','2','u1','2')||
+    ['5','6','7'].some(pin=>p.wires.some(w=>
+     (w.from.c==='u1'&&w.from.p===pin)||(w.to.c==='u1'&&w.to.p===pin))))
+  throw Error('SC027 protected 10-wire circuit baseline drift');
+ const graph=JSON.stringify(p.wires),keep=p.components.filter(c=>!['in','v1'].includes(c.id)).map(clone);
+ p.wires.push(
+  W('u1','5','g1','M','LM358P B IN+ pin 5 → 0 V',
+    'Boş B kanalının girişini 0 V’a sabitle.','#111827','0V'),
+  W('u1','7','u1','6','LM358P B OUT pin 7 → IN− pin 6',
+    'Boş B kanalını gerilim izleyici olarak sonlandır.','#43a047','SIGNAL')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ Object.assign(fg,{generatorEnabled:true,generatorWaveform:'sine',generatorFrequency:20,
+  signalFrequency:20,generatorOffset:1,generatorAmplitude:2,_signalVoltage:2,
+  tutorialPurpose:'FG1 20 Hz, 1–3 V sanal sinüs girişi.'});
+ meter.meterPosition=4;
+ meter.tutorialPurpose='UNI-T DCV 200 V, yalnız anlık sanal gerilim; AC RMS veya Hz ölçümü değil.';
+ l.materials=materialRows(p);
+ l.summary='Evirmeyen LM358P: 20 Hz 1–3 V sinüs, 10 kΩ/47 kΩ geri besleme ve sonlandırılmış B kanalı.';
+ l.explanation='Bu kez giriş yükselince çıkış da yükselir. FG1 sinüsü doğrudan U1 pin 3’e gelir. Çıkış pin 1, 47 kΩ direnç üzerinden pin 2’ye döner; pin 2 ayrıca 10 kΩ ile 0 V’a bağlıdır. İdeal kazanç 1+47/10=5,7’dir. Sanal çözücü 1 V girişte yaklaşık 5,24 V, 3 V girişte yaklaşık 17,16 V çıkış gösteriyor. Kullanılmayan B kanalı pin 5→0 V, pin 7→pin 6 ile sonlandırıldı. UNI-T DCV yalnız anlık çıkışı okur; jeneratörün 20 Hz periyodu 50 ms’dir. Tam AC frekans yanıtı, RMS kalibrasyonu ve fiziksel LM358P doğruluğu henüz kanıtlanmış değildir.';
+ l.learningGoal='Evirmeyen yükseltecin aynı yönlü giriş/çıkış tepkisini ve negatif geri beslemesini anlamak.';
+ l.beginnerSteps=[
+  'G1 24 V kaynağını U1/8 ve U1/4 pinlerinde izle.',
+  'FG1 20 Hz sinüsü U1/3 girişine uygula: aralık 1–3 V.',
+  'U1/1→R2 47 kΩ→U1/2 ile U1/2→R1 10 kΩ→0 V geri beslemesini kontrol et.',
+  'Boş B kanalını U1/5→0 V ve U1/7→U1/6 olarak sonlandır.',
+  'UNI-T DCV 200 V ile giriş 1 V iken yaklaşık 5,2 V; giriş 3 V iken yaklaşık 17,2 V oku.',
+  '50 ms sonra giriş örneğinin tekrarına bak; bu gerçek RMS veya üretici testi değildir.'
+ ];
+ l.quiz={question:'Evirmeyen yükselteçte giriş artarken çıkış ne yapar?',
+  options:['Negatif geri besleme sayesinde aynı yönde artar.','Her zaman 0 V kalır.','Boş B kanalı açılınca kazanç artar.'],
+  answer:0,why:'Pin 3 sinyali alır, pin 2 ise negatif geri beslemeyi; ideal kazanç 1+47/10=5,7.'};
+ l.pedagogyReview={...l.pedagogyReview,sc027TargetedNative20HzPass:true,
+  sc027UnusedBTerminated:true,sc027MeterDcvSample:true,
+  nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+  physicalAcceptance:false,manufacturerLimitsAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(p.wires.length!==12||l.steps.length!==12||
+    JSON.stringify(p.wires.slice(0,10))!==graph||
+    JSON.stringify(p.components.filter(c=>!['in','v1'].includes(c.id)))!==JSON.stringify(keep)||
+    !edge('u1','5','g1','M')||!edge('u1','7','u1','6'))
+  throw Error('SC027 source-only repair damaged protected original wiring');
+}
+
 /* SC350–363 NTC comparator reference-lead fault: real input-bias resistor.
  * This is a low-voltage virtual lesson guard for ONE open reference signal;
  * it is not a certified sensor supply/return fail-safe circuit. */
