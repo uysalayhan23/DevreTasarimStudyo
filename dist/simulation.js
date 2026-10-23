@@ -769,6 +769,65 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       }
     }
     for(const w of project.wires){if(w.mechanical||w.role==='MECHANICAL'){w._fault=false;w._active=false;continue}const r=net.find(endpointKey(w.from)),atPotential=[...(net.potentials.get(r)?.values()||[])].some(p=>!net.faultDomains.has(p.domain)&&hot(p)),atSolvedVoltage=endpoint=>{if(!numericState||!endpoint?.c)return false;const c=project.components.find(x=>x.id===endpoint.c);if(!c)return false;const v=numericState.voltages.get(numericState.pin(c,endpoint.p));return !!v&&Math.hypot(v[0],v[1])>.25};w._fault=net.faultRoots.has(r);w._active=atPotential||atSolvedVoltage(w.from)||atSolvedVoltage(w.to);}
+
+    // SC391: scoped educational verification of the EXISTING standalone
+    // NE555 astable engine. Preserve its native period/phase decisions.
+    // Requiring all physical DIP8, RC, CTRL, LED and GND links prevents
+    // a broken guided exercise from advertising a verified timing diagram.
+    if(project?.tutorialLesson?.id==='electronic-component-basics-outline-041'){
+     const get=id=>project.components.find(c=>c.id===id),
+      u=get('u1'),g=get('g1'),led=get('h1'),
+      ra=get('ra'),rb=get('rb'),rl=get('rl'),ct=get('c1'),cc=get('cc'),
+      norm=s=>s.split('>').sort().join('~'),
+      expected=["g1.P>u1.VCC","g1.M>u1.GND","u1.OUT>rl.1","rl.2>h1.A","h1.K>g1.M","u1.CTRL>cc.1","cc.2>g1.M","g1.P>u1.RESET","g1.P>ra.1","ra.2>u1.DISCH","u1.DISCH>rb.1","rb.2>u1.THRES","rb.2>u1.TRIG","rb.2>c1.+","c1.->g1.M"].map(norm).sort(),
+      actual=project.wires.map(w=>[w.from.c+'.'+w.from.p,
+       w.to.c+'.'+w.to.p].sort().join('~')).sort();
+     if(u)delete u._nativePulse041;
+     if(led)delete led._nativePulse041;
+     const exact=project.components.length===8&&project.wires.length===15&&
+      actual.length===expected.length&&actual.every((x,i)=>x===expected[i])&&
+      g?.typeId==='arduino-bench-supply'&&Number(g.dcVoltage)===5&&
+      u?.typeId==='arduino-ne555'&&u.ne555Mode==='astable'&&
+      u.mq07Standalone555Astable===true&&
+      Number(u.ne555RaK)===1&&Number(u.ne555RbK)===10&&
+      Number(u.ne555Cuf)===100&&led?.typeId==='arduino-led'&&
+      ra?.typeId==='resistor'&&Number(ra.resistance)===1000&&
+      rb?.typeId==='resistor'&&Number(rb.resistance)===10000&&
+      rl?.typeId==='resistor'&&Number(rl.resistance)===330&&
+      ct?.typeId==='arduino-capacitor-100u'&&
+      Math.abs(Number(ct.capacitance)-1e-4)<1e-12&&
+      cc?.typeId==='capacitor'&&
+      Math.abs(Number(cc.capacitance)-1e-8)<1e-15;
+     if(exact&&u._mq07Ne555StandalonePowered===true&&
+      Number.isFinite(u._ne555HighMs)&&u._ne555HighMs>0&&
+      Number.isFinite(u._ne555LowMs)&&u._ne555LowMs>0&&
+      Number.isFinite(u._ne555Frequency)&&u._ne555Frequency>0&&
+      u._ne555Discharge===!u._ne555Out&&led._active===u._ne555Out){
+       const highMs=u._ne555HighMs,lowMs=u._ne555LowMs,
+        periodMs=highMs+lowMs,charge=Math.LN2*(Number(ra.resistance)+
+         Number(rb.resistance))*Number(ct.capacitance)*1000,
+        discharge=Math.LN2*Number(rb.resistance)*Number(ct.capacitance)*1000;
+       if(Math.abs(highMs-charge)<.001&&
+        Math.abs(lowMs-discharge)<.001&&
+        Math.abs(u._ne555Frequency-1000/periodMs)<1e-8){
+        const info={model:'native-wired-ideal-NE555P-astable-LED-041',
+         periodMs,highMs,lowMs,frequencyHz:u._ne555Frequency,
+         dutyPercent:100*highMs/periodMs,
+         outHigh:u._ne555Out,dischargeActive:u._ne555Discharge,
+         ledOn:led._active,
+         sourceTerminalNames:['GND=1','TRIG=2','OUT=3','RESET=4',
+          'CTRL=5','THRES=6','DISCH=7','VCC=8'],
+         sourceGraphAndIdealTimerVerified:true,
+         analogCapVoltageVerified:false,
+         actualManufacturerTimingVerified:false,
+         physicalAcceptance:false,
+         waveformAcceptance:false,
+         windowsVisualAcceptance:false};
+        u._nativePulse041=info;led._nativePulse041={...info};
+       }
+      }
+    }
+
     SignedFlow.apply(project,byId,net,{numericState,pairs:(c,d)=>conductingPairs(c,d,actuators,sensors)});
     return {blocked:false,stable,oscillating,cyclingRefs,timed:project.components.some(c=>(definition(byId,c)?.kind==='pwm-generator'&&c._pwmSupplyValid&&c.dutyPercent>0&&c.dutyPercent<100)||(c.mq07Standalone555Astable===true&&c._mq07Ne555StandalonePowered)||(c.mq07Standalone555Pwm===true&&c._mq07Ne555PwmPowered)||(c.mq07StandaloneBjtAstable===true&&c._mq07BjtAstablePowered)||(c.mq07StandaloneBjtMonostable===true&&c._mq07BjtMonostablePowered&&c._mq07BjtMonostableRemainingMs>0)||isDrive(definition(byId,c))||definition(byId,c)?.instrument==='et4420'||definition(byId,c)?.doldSafety||c._plcTimerStart!==undefined||['timer','coil-pulse','coil-flasher','flasher','capacitor','reactor'].includes(definition(byId,c)?.kind)||definition(byId,c)?.id==='winding'||definition(byId,c)?.kind.startsWith('delay-')||DigitalIC?.timed?.(c,definition(byId,c))||(definition(byId,c)?.incrementalEncoder38mm&&c._encoderPowered&&Math.abs(Number(c.encoderRPM)||0)>0)),damaged:project.components.filter(c=>c._sensorSupply==='reversed').map(c=>c.id),shortCircuit:net.faultDomains.size>0};
   }

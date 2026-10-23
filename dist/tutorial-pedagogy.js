@@ -11519,4 +11519,59 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC391: preserve canonical wiring, teach real existing standalone NE555
+ * ideal astable instead of falsely claiming Arduino-board dependency. */
+{
+ const l=L.byId['electronic-component-basics-outline-041'],p=l?.project,
+  c=id=>p?.components.find(x=>x.id===id),
+  expect=["g1.P>u1.VCC","g1.M>u1.GND","u1.OUT>rl.1","rl.2>h1.A","h1.K>g1.M","u1.CTRL>cc.1","cc.2>g1.M","g1.P>u1.RESET","g1.P>ra.1","ra.2>u1.DISCH","u1.DISCH>rb.1","rb.2>u1.THRES","rb.2>u1.TRIG","rb.2>c1.+","c1.->g1.M"].map(s=>s.split('>').sort().join('~')).sort(),
+  actual=p?.wires?.map(w=>[w.from.c+'.'+w.from.p,
+   w.to.c+'.'+w.to.p].sort().join('~')).sort();
+ if(!l||l.kind!=='wiring'||
+  l.pedagogyReview?.titleTopologyStatus!=='SOURCE_WIRED_555_PULSE_GENERATOR_PENDING'||
+  l.pedagogyReview?.sourceReusedFrom!=='oscillator-filter-apps-src-14'||
+  !actual||actual.length!==15||actual.some((x,i)=>x!==expect[i])||
+  p.components.length!==8||
+  c('g1')?.typeId!=='arduino-bench-supply'||Number(c('g1').dcVoltage)!==5||
+  c('u1')?.typeId!=='arduino-ne555'||c('u1').ne555Mode!=='astable'||
+  c('u1').mq07Standalone555Astable!==true||
+  Number(c('u1').ne555RaK)!==1||Number(c('u1').ne555RbK)!==10||
+  Number(c('u1').ne555Cuf)!==100||c('h1')?.typeId!=='arduino-led'||
+  c('c1')?.typeId!=='arduino-capacitor-100u'||
+  Math.abs(Number(c('c1').capacitance)-1e-4)>1e-12||
+  c('cc')?.typeId!=='capacitor'||
+  Math.abs(Number(c('cc').capacitance)-1e-8)>1e-15||
+  !['ra','rb','rl'].every((id,i)=>c(id)?.typeId==='resistor'&&
+   Number(c(id).resistance)===[1000,10000,330][i])||
+  !['nativeDynamicAcceptance','waveformAcceptance','frequencyResponseAcceptance',
+   'physicalAcceptance','windowsVisualAcceptance',
+   'independentPedagogicalAcceptance'].every(k=>l.pedagogyReview[k]===false))
+   throw Error('SC391 protected circuit mismatch');
+ const frozen=JSON.stringify([p,l.title,l.steps,l.materials]);
+ l.summary='NE555P DIP-8, iki direnç ve polarize C1 ile sanal LED i düzenli aralıklarla yakan gerçek bağlantılı astable.';
+ l.explanation='Bu devreyi arada bir göz kırpan küçük bir LED gibi düşün. NE555P kendi kendine HIGH ve LOW çıkış üretir; Arduino kartına ihtiyaç duymaz. Sanal 5 V, DIP-8 pin 8 VCC ve pin 1 GND arasında. Pin 4 RESET beslemeye bağlıdır. RA=1 kΩ pin 7 DISCH ucuna, RB=10 kΩ oradan pin 6 THRES ve pin 2 TRIG ortak noktasına gider. C1=100 µF bu düğümden GND ye bağlıdır; artı ve eksi uçların yönüne dikkat edilir. Pin 5 CTRL de 10 nF parazit filtresi bulunur. Pin 3 OUT 330 Ω üzerinden LED e bağlıdır. Önceden mevcut bağımsız sanal NE555 zaman modeli, bu bağlantıda yaklaşık 0,687 Hz üretir: LED yaklaşık 0,762 saniye yanar, 0,693 saniye söner, ideal görev oranı %52,4 tür. Çalışan 555 modelini değiştirmedik; dersin bağlantı ve LED kabulünü ayrıca doğruladık. Bu gerçek kondansatör şarj eğrisi, analog SPICE modeli, fiziksel NE555, üretici toleransı veya Windows/Edge kabulü değildir.';
+ l.learningGoal='NE555 pin 2/6, 7, 3 ile RA-RB-C1 yollarını izleyerek LED in ideal sanal HIGH/LOW aralıklarını anlamak.';
+ l.beginnerSteps=[
+  'G1 5 V → NE555 pin 8 VCC; GND → pin 1. RESET pin 4 de 5 V bul.',
+  'RA 1 kΩ kaynak ile pin 7 DISCH arasında, RB 10 kΩ pin 7 den pin 2/6 ortak düğüme bağlı.',
+  'C1 100 µF artı ucu 2/6 düğümünde, eksi ucu GND de; pin 5 CTRL için 10 nF filtre var.',
+  'Pin 3 OUT → 330 Ω → LED A, LED K → GND yolunu takip et.',
+  'Sanal simülasyonda LED in yaklaşık 0,76 saniye yanıp 0,69 saniye söndüğünü gözle.',
+  'Kablo eksikse doğrulanmış ders sayma; tam dalga/analog/gerçek donanım kabulü ayrıca gerekir.'
+ ];
+ l.quiz={question:'NE555 astable çıkışındaki HIGH ve LOW süresini hangi gerçek ağ belirler?',
+  options:['RA, RB ve C1 zamanlama ağı.','LED in yalnız rengi.','Sadece CTRL filtresinin kalınlığı.'],
+  answer:0,why:'RA+RB ve RB üzerinden ideal 1/3 ve 2/3 eşikleri arasında şarj/deşarj süreleri hesaplanır.'};
+ l.pedagogyReview={...l.pedagogyReview,
+  nativeStandaloneIdealNe555TargetedPass:true,
+  wiredLedTimingTargetedPass:true,
+  nativeDynamicAcceptance:false,waveformAcceptance:false,
+  frequencyResponseAcceptance:false,physicalAcceptance:false,
+  manufacturerDeviceAcceptance:false,windowsVisualAcceptance:false,
+  independentPedagogicalAcceptance:false};
+ if(JSON.stringify([p,l.title,l.steps,l.materials])!==frozen)
+   throw Error('SC391 source/steps changed unexpectedly');
+}
+
 })(typeof window==='undefined'?globalThis:window);
