@@ -1407,7 +1407,18 @@
           observed.every((v,i)=>v===wanted[i])&&
           expectedTypes.every(([id,type])=>part(id)?.typeId===type)&&
           Number.isFinite(position)&&position>=0&&position<=100&&
-          Number.isFinite(Number(pot?.potMax))&&Number(pot.potMax)>0;
+          Number(pot?.potMax)===10000&&
+          // The current acceptance describes this exact 24 V, 22k/100k,
+          // 1k/1k 1N4148 reference network; other values may still
+          // simulate, but are not this verified lesson.
+          Number(part('g1')?.dcVoltage??24)===24&&
+          Number(part('rin')?.resistance)===22000&&
+          Number(part('load')?.resistance)===100000&&
+          Number(part('ref1')?.resistance)===1000&&
+          Number(part('ref2')?.resistance)===1000&&
+          byId[diode?.typeId]?.kind==='diode'&&
+          byId[part('g1')?.typeId]?.kind==='supply-dc-plus'&&
+          byId[meter?.typeId]?.kind==='meter-v';
       if(original&&meter){
         const dc=(a,p,b,q)=>{
           const x=secondary.get(pin(part(a),p)),y=secondary.get(pin(part(b),q));

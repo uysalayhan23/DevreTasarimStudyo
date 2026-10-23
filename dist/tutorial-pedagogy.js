@@ -11574,4 +11574,61 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
    throw Error('SC391 source/steps changed unexpectedly');
 }
 
+
+/* SC389/SC394: existing actual DC diode clipping is preserved, but
+ * full acceptance now requires the exact manufacturer-referenced wiring
+ * and authored R/voltage values. Do not claim an AC transient. */
+{
+ const rows=[['039','SOURCE_WIRED_CLIPPER_WAVE_PENDING'],
+  ['042','SOURCE_WIRED_CLIPPER_EXERCISE_PENDING']],
+  expected=["g1.P>rv.1","rv.3>g1.M","rv.2>rin.1","rin.2>d1.A","rin.2>load.1","load.2>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","d1.K>ref1.2","rin.2>v1.1","v1.2>g1.M"].map(s=>s.split('>').sort().join('~')).sort();
+ for(const [suffix,status] of rows){
+  const l=L.byId['electronic-component-basics-outline-'+suffix],p=l?.project,
+    part=id=>p?.components.find(c=>c.id===id),
+    actual=p?.wires?.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p]
+     .sort().join('~')).sort();
+  if(!l||l.kind!=='wiring'||
+    l.pedagogyReview?.titleTopologyStatus!==status||
+    l.pedagogyReview?.sourceReusedFrom!=='oscillator-filter-apps-src-09'||
+    !actual||actual.length!==12||actual.some((x,i)=>x!==expected[i])||
+    p.components.length!==8||
+    part('g1')?.typeId!=='supply-dc-plus'||
+    Number(part('g1')?.dcVoltage??24)!==24||
+    part('rv')?.typeId!=='potentiometer'||Number(part('rv')?.potMax)!==10000||
+    part('d1')?.typeId!=='1n4148-do35'||
+    part('rin')?.typeId!=='resistor'||Number(part('rin').resistance)!==22000||
+    part('load')?.typeId!=='resistor'||Number(part('load').resistance)!==100000||
+    !['ref1','ref2'].every(id=>part(id)?.typeId==='resistor'&&Number(part(id).resistance)===1000)||
+    part('v1')?.typeId!=='meter-voltmeter'||
+    !['nativeDynamicAcceptance','waveformAcceptance','frequencyResponseAcceptance',
+      'physicalAcceptance','manufacturerDeviceAcceptance','windowsVisualAcceptance',
+      'independentPedagogicalAcceptance'].every(k=>l.pedagogyReview[k]===false))
+    throw Error('Protected clipper baseline mismatch '+suffix);
+  const saved=JSON.stringify([p,l.steps,l.title,l.materials]);
+  l.summary='24 V sanal DC kaynağında 1N4148 ve 12 V referans bölücüsüyle gerçek kablolu üstten kırpma.';
+  l.explanation='RV1 i küçükten büyüğe çevirdiğini düşün. 24 V sanal beslemeden gelen ayarlı sinyal, R1=22 kΩ üzerinden çıkış noktasına ulaşır. Bu nokta R2=100 kΩ yük direnci ve voltmetrenin artı ucuyla ortaktır; geri dönüş 0 V dadır. D1 in A (anot) ucu çıkışta, K (katot) ucu R3/R4=1 kΩ + 1 kΩ bölücünün yaklaşık 12 V referansındadır. Sinyal düşükken diyot kapalıdır, çıkışı dirençler belirler. Çıkış referanstan yaklaşık 0,7 V büyük olmaya zorlanınca diyot iletir ve yükselmeyi sınırlar. Gerçek dirençli referans da diyot akımıyla biraz yükselir; katı 12,7 V sınırı varsayma. RV1 yüzde değeri ile ölçülen giriş gerilimi aynı şey değildir; 10 kΩ potansiyometre yüklenir. Voltmetre çıkışı GND ye göre ölçer. Bu ölçüm sanal gerçek bağlantılarda DC giriş taramasıdır. AC dalga, zaman tepkisi, ısıl ve fiziksel 1N4148 ile Windows/Edge kabulü henüz kanıtlanmadı.';
+  l.learningGoal='RV1 i farklı DC konumlara getirerek D1 kapalı/açık bölgelerini ve yüklenen referansın çıkışı neden sınırladığını sanal gözlemlemek.';
+  l.beginnerSteps=[
+   '24 V kaynaktan RV1/1 e, RV1/3 ten 0 V a dönüşü bul; RV1/2 → 22 kΩ R1 yolunu izle.',
+   'Çıkış düğümü R1/2, D1/A, R2/1 ve voltmetre V1/1 uçlarının ortak noktasıdır.',
+   'D1/K nin R3/R4=1 kΩ + 1 kΩ referans orta ucuna bağlandığını gör.',
+   'RV1 yüzde 90, 50 ve 10 konumlarında V1 DC çıkışını karşılaştır; yüksek girişde diyot iletimi başlayabilir.',
+   'D1 ters dönerse, direnç değeri değişirse veya prob koparsa aynı hedefli DC kabulünü verme.',
+   'Bu derste gerçek AC kırpma dalgası/ısıl ve fiziksel cihaz PASS değildir.'
+  ];
+  l.quiz={question:'Kırpıcı devrede giriş yükseldiğinde çıkış neden aynı hızla yükselmeyi bırakır?',
+   options:['D1 çıkıştan referans orta ucuna iletime geçer.','R2 kendi kendine güç üretir.','Voltmetre kaynağı yükseltir.'],
+   answer:0,why:'D1 anot-katot farkı yeterince büyüyünce iletir; R1 ve R3/R4 akımı ve referans yüklemesini sınırlar.'};
+  l.pedagogyReview={...l.pedagogyReview,
+    exactWiredClipperParameterGateTargetedPass:true,
+    existingNativeClipperDcPreserved:true,
+    nativeDynamicAcceptance:false,waveformAcceptance:false,
+    frequencyResponseAcceptance:false,physicalAcceptance:false,
+    manufacturerDeviceAcceptance:false,windowsVisualAcceptance:false,
+    independentPedagogicalAcceptance:false};
+  if(JSON.stringify([p,l.steps,l.title,l.materials])!==saved)
+    throw Error('Protected clipper circuit or steps changed '+suffix);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
