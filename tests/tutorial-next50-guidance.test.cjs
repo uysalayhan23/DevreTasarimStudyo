@@ -12,6 +12,8 @@ test('SC122-171: fifty ordered lesson identities receive guidance without circui
   assert.equal(l.learningSupport.questions.length,3);
   assert.equal(l.learningSupport.sourceCircuitPreserved,true);
   assert.ok(l.learningSupport.focus===l.title);
+  assert.equal(l.learningSupport.visualAcceptanceRequired,l.pedagogyReview?.visualAcceptance!==true);
+  assert.equal(l.learningSupport.nativeAcceptanceRequired,l.pedagogyReview?.simulationAcceptance!==true);
  }
  const loader=read('tutorial-mode.js');
  assert.ok(loader.indexOf('tutorial-next50-guidance.js?v=')>loader.indexOf('tutorial-installation-first10-specific.js?v='));
