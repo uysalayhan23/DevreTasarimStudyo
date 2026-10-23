@@ -246,3 +246,63 @@ test('SC024 LM358P spare channel: native positive/negative DC sweep without fals
  }
  assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
 });
+
+
+test('SC024 tuned 20 Hz LM358P sine native gain: positive and negative feedback/bias/source cases',()=>{
+ const Arduino=require('../dist/arduino-runtime.js');
+ const l=L.byId['opamp-apps-outline-024'],original=l.project;
+ assert.equal(original.wires.length,15);
+ assert.equal(l.steps.length,15);
+ assert.equal(l.pedagogyReview.sc024NativeSineTargetedPass,true);
+ assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+ assert.equal(l.pedagogyReview.feedbackGainAcceptance,false);
+ const C=p=>JSON.parse(JSON.stringify(p));
+ const part=(p,id)=>p.components.find(c=>c.id===id);
+ const wire=(p,a,ap,b,bp)=>p.wires.some(w=>
+  (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
+  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
+ const goodSource=p=>part(p,'ref1')?.resistance===43000&&
+  part(p,'ref2')?.resistance===10000&&part(p,'r1')?.resistance===10000&&
+  part(p,'r2')?.resistance===47000&&part(p,'in')?.generatorEnabled===true&&
+  part(p,'in')?.generatorWaveform==='sine'&&part(p,'in')?.generatorFrequency===20&&
+  part(p,'in')?.generatorAmplitude===2&&part(p,'in')?.generatorOffset===1.5&&
+  wire(p,'u1','5','g1','M')&&wire(p,'u1','7','u1','6')&&
+  wire(p,'r2','2','u1','2')&&wire(p,'ref1','2','u1','3');
+ assert.equal(goodSource(original),true);
+ const sample=p=>{
+  const samples=[];
+  for(const t of [0,12.5,25,37.5,50]){
+   Arduino.tick(p,defs,{now:t});
+   const s=Native.solve(p,defs,{now:t});
+   assert.ok(s.stable&&!s.blocked&&!s.shortCircuit);
+   const a=part(p,'u1')._opampChannels?.['1']?.output;
+   const b=part(p,'u1')._opampChannels?.['7']?.output;
+   const input=part(p,'in')._signalVoltage;
+   assert.ok(Number.isFinite(a)&&Number.isFinite(b)&&Number.isFinite(input));
+   samples.push({time:t,input,a,b});
+  }
+  return samples;
+ };
+ const ok=sample(C(original));
+ assert.ok(ok.every(x=>x.b>=0&&x.b<.5),'B spare channel must remain near 0 V');
+ assert.ok(ok.every(x=>x.a>8&&x.a<21),'No A-channel clipping at authored sine extrema');
+ assert.ok(Math.abs(ok[1].input-3.5)<1e-6&&Math.abs(ok[3].input-1.5)<1e-6);
+ assert.ok(ok[1].a>=9&&ok[1].a<13,'High input must give low output');
+ assert.ok(ok[3].a>16&&ok[3].a<20,'Low input must give high output');
+ assert.ok(ok[3].a-ok[1].a>6,'Native inverted AC swing absent');
+ const old=C(original);part(old,'ref1').resistance=10000;
+ assert.equal(goodSource(old),false);
+ const stale=sample(old);assert.ok(Math.max(...stale.map(x=>x.a))-Math.min(...stale.map(x=>x.a))<.1,
+  'Old 12 V bias should reproduce the saturated defect');
+ const disabled=C(original);part(disabled,'in').generatorEnabled=false;
+ assert.equal(goodSource(disabled),false);
+ const off=sample(disabled);assert.ok(Math.max(...off.map(x=>x.a))-Math.min(...off.map(x=>x.a))<.1);
+ const opened=C(original);opened.wires=opened.wires.filter(w=>
+  !(w.from.c==='r2'&&w.from.p==='2'&&w.to.c==='u1'&&w.to.p==='2'));
+ assert.equal(goodSource(opened),false);
+ const broken=sample(opened);assert.ok(Math.max(...broken.map(x=>x.a))-Math.min(...broken.map(x=>x.a))<.1);
+ const wrongB=C(original);wrongB.wires.find(w=>w.from.c==='u1'&&w.from.p==='5').to.p='P';
+ assert.equal(goodSource(wrongB),false);
+ const wrong=sample(wrongB);assert.ok(wrong[0].b>20,'Wrong B+ input is not grounded spare');
+ assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
+});

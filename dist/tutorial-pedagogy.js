@@ -9938,6 +9938,66 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
 }
 
 
+/* MQ07_SC024_AC_BIAS20: source-wired inverting sine, not full frequency/physical acceptance. */
+{
+ const id='opamp-apps-outline-024',l=L.byId[id],p=l?.project,
+  part=x=>p?.components.find(c=>c.id===x),
+  edge=(a,ap,b,bp)=>p.wires.some(w=>
+   (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
+   (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
+ const fg=part('in'),refTop=part('ref1'),refBottom=part('ref2');
+ if(!l||l.kind!=='wiring'||p.wires.length!==15||l.steps.length!==15||
+    p.components.length!==10||l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+    l.pedagogyReview?.titleTopologyIssue!=='INVERTING_AC_RESPONSE_NATIVE_PENDING'||
+    l.pedagogyReview?.unusedLm358BTopologyRepaired!==true||
+    l.pedagogyReview?.nativeDynamicAcceptance!==false||
+    fg?.typeId!=='arduino-signal-generator'||fg._signalVoltage!==2.5||
+    fg.generatorWaveform!==undefined||fg.generatorFrequency!==undefined||
+    refTop?.resistance!==10000||refBottom?.resistance!==10000||
+    part('r1')?.resistance!==10000||part('r2')?.resistance!==47000||
+    part('g1')?.typeId!=='arduino-bench-supply'||
+    !edge('g1','P','u1','8')||!edge('g1','M','u1','4')||
+    !edge('ref1','2','u1','3')||!edge('in','OUT','r1','1')||
+    !edge('r1','2','u1','2')||!edge('u1','1','r2','1')||
+    !edge('r2','2','u1','2')||!edge('u1','5','g1','M')||
+    !edge('u1','7','u1','6'))
+  throw Error('SC024 sine-bias source or protected LM358 A/B graph changed');
+ const graph=JSON.stringify(p.wires),steps=JSON.stringify(l.steps),
+  other=p.components.filter(c=>!['in','ref1'].includes(c.id)).map(c=>clone(c));
+ refTop.resistance=43000;
+ refTop.label='43 kΩ Vref üst';
+ refTop.tutorialPurpose='43 kΩ/10 kΩ bölücü: 24 V sanal kaynaktan yaklaşık 4,53 V A-kanalı giriş referansı.';
+ Object.assign(fg,{generatorEnabled:true,generatorWaveform:'sine',
+  generatorFrequency:20,signalFrequency:20,generatorAmplitude:2,generatorOffset:1.5,
+  tutorialPurpose:'0–5 V sanal jeneratörün 1,5–3,5 V aralığında 20 Hz sinüs örneği.'});
+ l.materials=materialRows(p);
+ l.summary='Sanal LM358P eviren AC yükselteç: 20 Hz sinüs 1,5–3,5 V; 43 kΩ/10 kΩ referans, R1 10 kΩ ve R2 47 kΩ. Boş B kanalı 0 V izleyici.';
+ l.explanation='Bir sinyalin ters çevrildiğini görmek için onu doğru çalışma noktasına getirmeliyiz. Eski 12 V referans, 0–5 V jeneratörle birleşince çıkışı yaklaşık 22 V’ta tutuyordu. Üst referans direncini 43 kΩ yapınca R3/R4 bölücüsü yaklaşık 4,53 V üretir. FG1 şimdi 20 Hz sinüsle 1,5–3,5 V arasında değişir. 10 kΩ giriş ve 47 kΩ geri besleme için ideal işaret kazancı −4,7’dir; sanal native örnekte yüksek girişte çıkış yaklaşık 10,5 V, düşük girişte yaklaşık 19,1 V olur. Bu yalnız hedefli sanal DC-zaman örneklemesidir; geniş bant frekans yanıtı, AC RMS kalibrasyonu ve fiziksel LM358P kabulü değildir. Kullanılmayan B kanalı pin 5→0 V ve pin 7→pin 6 bağlantıları korunmuştur.';
+ l.learningGoal='AC girişin orta referansla uyumunu ve eviren kazancı sanal giriş-çıkış değişiminden tanımak; açık B kanalının sonlandırmasını korumak.';
+ l.beginnerSteps=[
+  'FG1 20 Hz sinüs, 1,5–3,5 V aralığında; G1 24 V sanal beslemeyi sağlar.',
+  'R3 43 kΩ ve R4 10 kΩ bölücüsünden yaklaşık 4,53 V referansı izle.',
+  'U1 A kanalında R1 10 kΩ giriş ile R2 47 kΩ çıkış geri beslemesini karşılaştır.',
+  'Giriş 3,5 V iken çıkışın düştüğünü; giriş 1,5 V iken yükseldiğini gözle.',
+  'Kullanılmayan B kanalında pin 5→0 V ve pin 7→6 bağlantılarını koru.',
+  'Tam AC frekans tepkisi ve gerçek cihaz kabulü için ayrıca test gerektiğini unutma.'
+ ];
+ l.quiz={question:'Bu eviren yükselteçte giriş sinüsü yükselirken çıkışın ters yönde değişmesine ne yardım eder?',
+  options:['4,53 V referans ve çıkıştan eviren girişe 47 kΩ negatif geri besleme',
+    '12 V referansı aynen bırakıp 0–5 V girişle tam kazanç beklemek',
+    'LM358P kullanılmayan B kanalını boşta bırakmak'],answer:0,
+  why:'43 kΩ/10 kΩ referans bölücüsü çalışma noktasını kaydırır; 47 kΩ/10 kΩ oranı ideal olarak −4,7 işaret kazancı sağlar. Bu sanal modelin hedefli doğrulamasıdır.'};
+ l.pedagogyReview={...l.pedagogyReview,sc024NativeSineTargetedPass:true,
+  sc024ReferenceV:24*10000/53000,sc024InputRangeV:[1.5,3.5],
+  nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+  manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(JSON.stringify(p.wires)!==graph||JSON.stringify(l.steps)!==steps||
+    JSON.stringify(p.components.filter(c=>!['in','ref1'].includes(c.id)))!==JSON.stringify(other)||
+    p.wires.length!==15||l.steps.length!==15)
+  throw Error('SC024 source repair altered protected A/B wires or guided steps');
+}
+
 /* SC350–363 NTC comparator reference-lead fault: real input-bias resistor.
  * This is a low-voltage virtual lesson guard for ONE open reference signal;
  * it is not a certified sensor supply/return fail-safe circuit. */
