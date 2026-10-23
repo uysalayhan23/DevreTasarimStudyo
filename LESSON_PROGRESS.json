@@ -6,6 +6,56 @@
   "verifiedCompleteCount": 0,
   "verifiedCompleteCountMeaning": "Bu deftere aktarılmış kanıtlı COMPLETE sayısı; geçmişteki 77 dersin yanlış/eksik olduğu iddiası değildir.",
   "nextSequentialLesson": 78,
-  "records": [],
-  "note": "Mevcut uygulama ekran sayacıyla otomatik eşleşme henüz uygulanmadı. Kayıtlar hiçbir dersi kanıtsız COMPLETE yapmaz."
+  "records": [
+    {
+      "lessonId": "dual-dc-1",
+      "sequence": 78,
+      "status": "REVIEW",
+      "sourcePath": "dist/tutorial-dual-dc-batch-l.js",
+      "sourceBlobSha": "0f5dc1bad2c22c197e3bea0c2b56bc37f8f8e6e5",
+      "pending": [
+        "Gerçek Chrome/3D terminal-kablo görsel kabulü",
+        "Uygulama arama değişikliğinin Chrome'da doğrulanması"
+      ],
+      "note": "Native ve pedagojik ilerleme vardır; zorunlu görsel kabul yokken COMPLETE ilan edilmez."
+    },
+    {
+      "lessonId": "dual-dc-2",
+      "sequence": 79,
+      "status": "REVIEW",
+      "sourcePath": "dist/tutorial-dual-dc-batch-l.js",
+      "sourceBlobSha": "0f5dc1bad2c22c197e3bea0c2b56bc37f8f8e6e5",
+      "pending": [
+        "Gerçek Chrome/3D terminal-kablo görsel kabulü",
+        "Uygulama arama değişikliğinin Chrome'da doğrulanması"
+      ],
+      "note": "Native ve pedagojik ilerleme vardır; zorunlu görsel kabul yokken COMPLETE ilan edilmez."
+    },
+    {
+      "lessonId": "dual-dc-3",
+      "sequence": 80,
+      "status": "REVIEW",
+      "sourcePath": "dist/tutorial-dual-dc-batch-l.js",
+      "sourceBlobSha": "0f5dc1bad2c22c197e3bea0c2b56bc37f8f8e6e5",
+      "pending": [
+        "Gerçek Chrome/3D terminal-kablo görsel kabulü",
+        "Uygulama arama değişikliğinin Chrome'da doğrulanması"
+      ],
+      "note": "Native ve pedagojik ilerleme vardır; zorunlu görsel kabul yokken COMPLETE ilan edilmez."
+    },
+    {
+      "lessonId": "dual-dc-4",
+      "sequence": 81,
+      "status": "REVIEW",
+      "sourcePath": "dist/tutorial-dual-dc-batch-l.js",
+      "sourceBlobSha": "0f5dc1bad2c22c197e3bea0c2b56bc37f8f8e6e5",
+      "pending": [
+        "Gerçek Chrome/3D terminal-kablo görsel kabulü",
+        "Uygulama arama değişikliğinin Chrome'da doğrulanması"
+      ],
+      "note": "Native ve pedagojik ilerleme vardır; zorunlu görsel kabul yokken COMPLETE ilan edilmez."
+    }
+  ],
+  "note": "78–81 REVIEW durumunda. Teknik inceleme 82'ye geçebilir, sıralı COMPLETE ilerlemesi ancak 78'in tam kabulüyle yükselir. Öğrenci ekranındaki kullanıcı tamamlama sayacı ayrı kalır.",
+  "activeTechnicalLesson": 82
 }
