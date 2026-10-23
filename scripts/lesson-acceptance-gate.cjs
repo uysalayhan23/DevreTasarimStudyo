@@ -15,6 +15,9 @@ for(const r of progress.records){
  assert.ok(typeof r.lessonId==='string'&&r.lessonId.length,'lessonId required');
  assert.ok(!ids.has(r.lessonId),'duplicate '+r.lessonId);ids.add(r.lessonId);
  assert.ok(['UNVERIFIED','IN_PROGRESS','BLOCKED','REVIEW','COMPLETE'].includes(r.status),'invalid status: '+r.lessonId);
+ assert.ok(typeof r.sourcePath==='string'&&r.sourcePath.length,'missing source path: '+r.lessonId);
+ assert.match(r.sourceBlobSha||'',/^[0-9a-f]{40}$/,'source SHA invalid: '+r.lessonId);
+ if(r.status==='REVIEW')assert.ok(Array.isArray(r.pending)&&r.pending.length,'REVIEW requires actionable pending gates: '+r.lessonId);
  if(r.status!=='COMPLETE')continue;
  assert.ok(typeof r.sourcePath==='string'&&r.sourcePath.length,'missing source: '+r.lessonId);
  assert.match(r.sourceBlobSha||'',/^[0-9a-f]{40}$/,'source SHA missing: '+r.lessonId);
