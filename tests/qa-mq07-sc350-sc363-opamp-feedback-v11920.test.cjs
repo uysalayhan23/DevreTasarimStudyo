@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog();
-const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",16],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",13],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",16],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
+const cases=[["opamp-apps-outline-021",null,14],["opamp-apps-outline-022","INVERTING_DEMO_NOT_COMPLETE_OPAMP_APPLICATIONS",14],["opamp-apps-outline-023","INVERTING_GAIN_NATIVE_PENDING",16],["opamp-apps-outline-024","INVERTING_AC_RESPONSE_NATIVE_PENDING",15],["opamp-apps-outline-025","INVERTING_DC_RESPONSE_NATIVE_PENDING",16],["opamp-apps-outline-026","NONINVERTING_GAIN_NATIVE_PENDING",14],["opamp-apps-outline-027","NONINVERTING_AC_RESPONSE_NATIVE_PENDING",10],["opamp-apps-outline-028","NONINVERTING_DC_RESPONSE_NATIVE_PENDING",14],["opamp-apps-outline-029","VOLTAGE_FOLLOWER_NATIVE_PENDING",8],["opamp-apps-outline-030","FOLLOWER_PRACTICE_NATIVE_PENDING",8],["opamp-apps-outline-031","COMPARATOR_THRESHOLD_NATIVE_PENDING",13],["opamp-apps-outline-032","COMPARATOR_PRACTICE_NATIVE_PENDING",13],["sensor-analog-apps-outline-054","LDR_COMPARATOR_LUX_NATIVE_PENDING",14],["sensor-analog-apps-outline-055",null,16]];
 const edge=(p,a,ap,b,bp)=>p.wires.some(w=>(w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
  (w.from.c===b&&w.from.p===bp&&w.to.c===a&&w.to.p===ap));
 for(const [id,reason,wires] of cases)test(id+' opamp physical pin and negative-acceptance contract',()=>{
@@ -205,4 +205,44 @@ test('Four corrected LM358 DC gain lessons close B and preserve native-vs-hardwa
   Native.solve(broken,defs,{now:1000});
   assert.equal(broken.components.find(c=>c.id==='u1')._nativeOpampGainDc,undefined);
  }
+});
+
+
+test('SC024 LM358P spare channel: native positive/negative DC sweep without false AC acceptance',()=>{
+ const l=L.byId['opamp-apps-outline-024'],original=l.project;
+ const copy=x=>JSON.parse(JSON.stringify(x));
+ const edge=(p,a,ap,b,bp)=>p.wires.some(w=>
+  [w.from.c,w.from.p,w.to.c,w.to.p].join('/')===[a,ap,b,bp].join('/')||
+  [w.to.c,w.to.p,w.from.c,w.from.p].join('/')===[a,ap,b,bp].join('/'));
+ const terminated=p=>edge(p,'u1','5','g1','M')&&edge(p,'u1','7','u1','6');
+ assert.equal(original.wires.length,15);
+ assert.equal(l.steps.length,15);
+ assert.equal(terminated(original),true);
+ assert.equal(l.pedagogyReview.unusedLm358BTopologyRepaired,true);
+ assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+ assert.equal(l.pedagogyReview.feedbackGainAcceptance,false);
+ const p=copy(original);
+ for(const [step,volts] of [0,1,2.5,4,5].entries()){
+  p.components.find(c=>c.id==='in')._signalVoltage=volts;
+  const s=Native.solve(p,defs,{now:step*5});
+  assert.ok(s.stable&&!s.blocked&&!s.shortCircuit);
+  const channels=p.components.find(c=>c.id==='u1')._opampChannels;
+  assert.ok(Number.isFinite(channels?.['1']?.output));
+  assert.ok(Number.isFinite(channels?.['7']?.output));
+  assert.ok(channels['7'].output>=0&&channels['7'].output<.5,
+   'B channel must remain close to 0 V');
+ }
+ const wrong=copy(original);
+ wrong.wires.find(w=>w.from.c==='u1'&&w.from.p==='5').to.p='P';
+ assert.equal(terminated(wrong),false);
+ const sample=Native.solve(wrong,defs,{now:0});
+ assert.ok(sample.stable&&!sample.shortCircuit&&!sample.blocked);
+ assert.ok(wrong.components.find(c=>c.id==='u1')._opampChannels['7'].output>20,
+  'wrong +24 V B input must be detected');
+ for(const ending of ['5','7']){
+  const open=copy(original);
+  open.wires=open.wires.filter(w=>!(w.from.c==='u1'&&w.from.p===ending));
+  assert.equal(terminated(open),false,'open channel termination must be rejected');
+ }
+ assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
 });

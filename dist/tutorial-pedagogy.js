@@ -9886,6 +9886,58 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
 }
 
 
+
+/* MQ07_SC024_UNUSED_LM358_B: physical unused-channel topology only; AC acceptance still REVIEW. */
+{
+ const id='opamp-apps-outline-024',l=L.byId[id],p=l?.project,
+  edge=(a,ap,b,bp)=>p.wires.some(w=>[w.from.c,w.from.p,w.to.c,w.to.p].join('/')===[a,ap,b,bp].join('/')||
+   [w.to.c,w.to.p,w.from.c,w.from.p].join('/')===[a,ap,b,bp].join('/'));
+ if(!l||l.kind!=='wiring'||p.components.length!==10||p.wires.length!==13||
+    l.steps.length!==13||l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+    l.pedagogyReview?.titleTopologyIssue!=='INVERTING_AC_RESPONSE_NATIVE_PENDING'||
+    l.pedagogyReview?.nativeDynamicAcceptance!==false||
+    p.components.find(c=>c.id==='u1')?.typeId!=='lm358p-dip8'||
+    p.components.find(c=>c.id==='in')?.typeId!=='arduino-signal-generator'||
+    p.components.find(c=>c.id==='r1')?.resistance!==10000||
+    p.components.find(c=>c.id==='r2')?.resistance!==47000||
+    !edge('g1','P','u1','8')||!edge('g1','M','u1','4')||
+    !edge('ref1','2','u1','3')||!edge('in','OUT','r1','1')||
+    !edge('r1','2','u1','2')||!edge('u1','1','r2','1')||
+    !edge('r2','2','u1','2')||
+    ['5','6','7'].some(pin=>p.wires.some(w=>
+     (w.from.c==='u1'&&w.from.p===pin)||(w.to.c==='u1'&&w.to.p===pin))))
+  throw Error('SC024 protected source graph or unused B terminal changed');
+ const originalA=JSON.stringify(p.wires),originalComponents=JSON.stringify(p.components);
+ p.wires.push(
+  W('u1','5','g1','M','Boş B kanalı pin 5 → 0 V',
+    'LM358P ikinci kanalının IN+ girişini açıkta bırakma.','#111827','0V'),
+  W('u1','7','u1','6','Boş B kanalı pin 7 → pin 6',
+    'İkinci kanal çıkışını IN− girişine bağlayıp gerilim izleyici olarak sonlandır.','#43a047','SIGNAL')
+ );
+ l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.summary='LM358P A kanalı 10 kΩ giriş ve 47 kΩ geri besleme kullanır; boş B kanalı 0 V izleyici olarak sonlandırıldı. AC kazanç beklemede.';
+ l.explanation='Bir AC işareti yükseltmek istediğinde önce girişin orta referansa uyması gerekir. Burada LM358P A kanalı 12 V referans kullanıyor, jeneratör ise 0–5 V aralığında. Mevcut sanal modelde çıkış yüksek sınıra gidiyor; çalışan AC kazanç veya frekans tepkisi henüz kanıtlanmadı. Boş B kanalında pin 5 ortak 0 V’a, pin 7 ise pin 6’ya bağlandı; kullanılmayan ikinci kanal açıkta kalmaz. Bu bağlantı, A kanalının AC davranışını tek başına düzeltmez.';
+ l.learningGoal='A kanalının giriş ve geri beslemesini izlerken boş B kanalının neden sonlandırıldığını ve AC kazancın neden ayrıca ölçülmesi gerektiğini ayırt etmek.';
+ l.beginnerSteps=[
+  'G1 sanal 24 V beslemeyi ve U1 A kanalının 1/2/3/4/8 uçlarını bul.',
+  'R1 10 kΩ giriş, R2 47 kΩ geri besleme yolunu izle.',
+  'Boş B kanalında 5 numarayı 0 V’a, 7 numarayı 6 numaraya bağla.',
+  'Jeneratör 0–5 V, A kanalının referansı 12 V: neden çıkış yüksek sınıra gidiyor, karşılaştır.',
+  'Gerçek AC kazanç ölçülmeden bu dersi dinamik olarak PASS sayma.'
+ ];
+ l.pedagogyReview={...l.pedagogyReview,unusedLm358BTopologyRepaired:true,
+  nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+  manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(p.wires.length!==15||l.steps.length!==15||
+    JSON.stringify(p.wires.slice(0,13))!==originalA||
+    JSON.stringify(p.components)!==originalComponents||
+    !edge('u1','5','g1','M')||!edge('u1','7','u1','6'))
+  throw Error('SC024 new termination altered protected A graph');
+}
+
+
 /* SC350–363 NTC comparator reference-lead fault: real input-bias resistor.
  * This is a low-voltage virtual lesson guard for ONE open reference signal;
  * it is not a certified sensor supply/return fail-safe circuit. */
