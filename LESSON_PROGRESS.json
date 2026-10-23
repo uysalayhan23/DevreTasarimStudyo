@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "curriculumTotal": 1686,
+  "historicalReportedSequentialCompleted": 77,
+  "historicalReportedPercent": 4.6,
+  "verifiedCompleteCount": 0,
+  "verifiedCompleteCountMeaning": "Bu deftere aktarılmış kanıtlı COMPLETE sayısı; geçmişteki 77 dersin yanlış/eksik olduğu iddiası değildir.",
+  "nextSequentialLesson": 78,
+  "records": [],
+  "note": "Mevcut uygulama ekran sayacıyla otomatik eşleşme henüz uygulanmadı. Kayıtlar hiçbir dersi kanıtsız COMPLETE yapmaz."
+}
