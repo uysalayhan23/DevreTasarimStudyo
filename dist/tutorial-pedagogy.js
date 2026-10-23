@@ -11339,4 +11339,86 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* Targeted SC370–373: real LM358P DIP8 B-channel termination and
+ * source-based R/C explanation. Existing AC and hardware gates stay pending. */
+{
+ const targets=[['039',true,'DIFFERENTIATOR_NATIVE_AC_RESPONSE_PENDING'],
+  ['040',true,'DIFFERENTIATOR_PRACTICE_NATIVE_PENDING'],
+  ['041',false,'INTEGRATOR_NATIVE_RAMP_PENDING'],
+  ['042',false,'INTEGRATOR_PRACTICE_NATIVE_PENDING']],
+  shared=["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.3","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG"],dif=["in.2>c1.1","c1.2>u1.2","u1.1>r2.1","r2.2>u1.2"],integ=["in.2>r1.1","r1.2>u1.2","u1.1>c1.1","c1.2>u1.2"],
+  norm=s=>s.split('>').sort().join('~');
+ for(const [suffix,derivative,issue] of targets){
+  const l=L.byId['opamp-apps-outline-'+suffix],p=l?.project,
+   c=id=>p?.components.find(x=>x.id===id),
+   exp=[...shared,...(derivative?dif:integ)].map(norm).sort(),
+   got=p?.wires?.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort(),
+   r=c(derivative?'r2':'r1');
+  if(!l||l.kind!=='wiring'||l.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+   l.pedagogyReview?.titleTopologyIssue!==issue||
+   !got||got.length!==14||got.some((x,i)=>x!==exp[i])||p.components.length!==10||
+   c('u1')?.typeId!=='lm358p-dip8'||c('g1')?.typeId!=='arduino-bench-supply'||
+   Number(c('g1').dcVoltage)!==24||c('in')?.typeId!=='potentiometer'||
+   Number(c('in').potMax)!==10000||c('c1')?.typeId!=='capacitor'||
+   Math.abs(Number(c('c1').capacitance)-(derivative?1e-7:1e-6))>1e-13||
+   r?.typeId!=='resistor'||Number(r.resistance)!==(derivative?47000:10000)||
+   !['ref1','ref2'].every(id=>c(id)?.typeId==='resistor'&&Number(c(id).resistance)===10000)||
+   c('v1')?.typeId!=='unit-ut33d-plus'||c('v1').meterPosition!==4||
+   c('v1-red')?.probeTarget?.c!=='u1'||c('v1-red')?.probeTarget?.p!=='1'||
+   c('v1-black')?.probeTarget?.c!=='g1'||c('v1-black')?.probeTarget?.p!=='M'||
+   !['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance',
+    'independentPedagogicalAcceptance'].every(k=>l.pedagogyReview[k]===false))
+   throw Error('SC370-373 source drift '+suffix);
+  const kept=JSON.stringify([p.components,l.title,l.materials]);
+  p.wires.push(
+   {id:'rct-'+suffix+'-5',from:{c:'u1',p:'5'},to:{c:'g1',p:'M'},
+    color:'#111827',role:'0V',size:'1.5',points:[],
+    tutorialHint:'LM358P U1/5 → 0 V',
+    tutorialWhy:'Kullanılmayan B kanalının pozitif girişini ortak referansa bağla.'},
+   {id:'rct-'+suffix+'-76',from:{c:'u1',p:'7'},to:{c:'u1',p:'6'},
+    color:'#43a047',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'LM358P U1/7 → U1/6',
+    tutorialWhy:'Kullanılmayan B kanalına negatif geri besleme uygula.'});
+  l.steps=p.wires.map(w=>({from:clone(w.from),to:clone(w.to),
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.summary=derivative?'LM358P 100 nF giriş kondansatörü ve 47 kΩ geri besleme üzerinden gerçek bağlantılı sanal DC basamak yanıtı.':
+   'LM358P 10 kΩ giriş direnci ve 1 µF geri besleme kondansatörü üzerinden gerçek bağlantılı sanal DC rampa yanıtı.';
+  l.explanation=derivative?
+   'RV1 giriş ayarını birden değiştirince C1=100 nF üzerinden kısa süreli akım akar. LM358P çıkışı R2=47 kΩ ile pin 2 ye geri bağlanır; pin 3 yaklaşık 12 V referanstır. Bir anlık çıkış tepkisi oluşur, sonra giriş sabit kalınca çıkış referansa yaklaşır. Kırmızı UNI-T probu pin 1 de, siyah prob 0 V da. Kullanılmayan B kanalı pin 5→0 V ve pin 7→6 ile sonlandırıldı. Bu yalnız gerçek R/C nodal ağının sanal DC basamak tepkisidir; AC frekans ölçümü, fiziksel LM358P sınırları ve Windows kabulü değildir.':
+   'Bir kap yavaşça dolar gibi, C1 kondansatörü zaman içinde giriş akımını biriktirir. RV1 den gelen sinyal R1=10 kΩ üzerinden LM358P pin 2 ye ulaşır. Çıkış pin 1 ile pin 2 arasında C1=1 µF geri besleme oluşturur; pin 3 yaklaşık 12 V referanstır. Giriş referanstan yüksek olursa çıkış aşağı, düşük olursa yukarı doğru rampaya geçer; besleme sınırında durur. Kırmızı UNI-T probu pin 1 de, siyahı 0 V da. Boş B kanalı pin 5→0 V ve pin 7→6 ile sonlandırıldı. Bu sanal DC geçici rejimidir; reset devresi, AC frekans cevabı ve fiziksel kabul henüz kanıtlanmadı.';
+  l.learningGoal=derivative?
+   'Girişteki değişime bağlı kısa sanal çıkış tepkisini ve sabit girişte sönümü karşılaştırmak.':
+   '10 kΩ ve 1 µF geri besleme ağındaki sanal çıkış rampasını zaman içinde ölçmek.';
+  l.beginnerSteps=derivative?[
+   'LM358P pin 8 (+24 V), pin 4 (0 V), pin 3 (yaklaşık 12 V) bağlantılarını bul.',
+   'RV1/2 → C1 100 nF → pin 2 ile pin 1 → R2 47 kΩ → pin 2 bağlantılarını izle.',
+   'Boş B kanalını pin 5→0 V ve pin 7→pin 6 üzerinden kapat.',
+   'RV1 yüzde 50 den 55 e geçince sanal DC basamak tepkisine, ardından sönüme bak.',
+   'Gerçek AC/donanım kanıtı olmadan genel dinamik PASS verme.'
+  ]:[
+   'LM358P pin 8, pin 4 ve pin 3 teki yaklaşık 12 V referansı kontrol et.',
+   'RV1/2 → R1 10 kΩ → pin 2 ve pin 1 → C1 1 µF → pin 2 yollarını izle.',
+   'Boş B kanalını pin 5→0 V ve pin 7→pin 6 olarak bağla.',
+   'RV1 yüzde 50 den 49 a alınca çıkışın yavaşça azaldığını sanal ölç.',
+   'AC/donanım ve kondansatör sıfırlama kabulü yoksa tam PASS verme.'
+  ];
+  l.quiz={question:derivative?
+   'Türev alıcıda giriş sabit kalınca kısa basamak tepkisi ne olur?':
+   'İntegral alıcıda giriş referansın biraz üstündeyse ideal çıkış ne yapar?',
+   options:derivative?['Söner ve çıkış referansa yaklaşır.','Sonsuz artar.','Kondansatör kaynak olur.']:
+    ['Aşağı rampaya geçer.','Sonsuz yükselir.','Geri besleme etkisizdir.'],
+   answer:0,why:derivative?'Kondansatör akımı girişin değişmesine bağlıdır.':
+    'Dirençten gelen giriş akımı geri besleme kondansatöründe yük biriktirir.'};
+  l.pedagogyReview={...l.pedagogyReview,sourceGraphUpdated:true,
+   nativeIdealRcStepTargetedPass:true,unusedLm358BTerminated:true,
+   nativeDynamicAcceptance:false,fullAcWaveformAcceptance:false,
+   manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+  if(JSON.stringify([p.components,l.title,l.materials])!==kept||
+   p.wires.length!==16||l.steps.length!==16)
+   throw Error('SC370-373 locked components drift '+suffix);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);

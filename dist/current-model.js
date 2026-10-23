@@ -345,6 +345,86 @@
    }
    secondary=guess;
 
+   // Source-exact SC370–373 feedback solve on the EXISTING RC backward-Euler
+   // circuit, not a synthetic waveform. No AC/hardware acceptance inferred.
+   {
+    const lid=project?.tutorialLesson?.id||'',
+     scope=lid.match(/^opamp-apps-outline-(039|040|041|042)$/);
+    if(scope){
+     const derivative=scope[1]==='039'||scope[1]==='040',
+      get=id=>project.components.find(c=>c.id===id),
+      op=get('u1'),cap=get('c1'),meter=get('v1'),
+      r=get(derivative?'r2':'r1'),pot=get('in'),
+      amplifier=opamps.find(o=>o.c===op&&o.channel==='1'),
+      spare=opamps.find(o=>o.c===op&&o.channel==='7'),
+      links=[...["g1.P>u1.8","g1.M>u1.4","in.1>g1.P","in.3>g1.M","g1.P>ref1.1","ref1.2>ref2.1","ref2.2>g1.M","ref1.2>u1.3","v1.V>v1-red.PLUG","v1.COM>v1-black.PLUG"],...(derivative?["in.2>c1.1","c1.2>u1.2","u1.1>r2.1","r2.2>u1.2"]:["in.2>r1.1","r1.2>u1.2","u1.1>c1.1","c1.2>u1.2"]),
+       'u1.5>g1.M','u1.7>u1.6'],
+      norm=s=>s.split('>').sort().join('~'),
+      intended=links.map(norm).sort(),
+      actual=project.wires.map(w=>[w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort(),
+      cb=reactive.find(x=>x.c===cap&&x.role==='capacitor-dc');
+     if(op)delete op._nativeRcStep;
+     if(meter)delete meter._nativeRcStep;
+     const valid=project.wires.length===16&&project.components.length===10&&
+      actual.length===intended.length&&actual.every((w,i)=>w===intended[i])&&
+      op?.typeId==='lm358p-dip8'&&get('g1')?.typeId==='arduino-bench-supply'&&
+      Number(get('g1')?.dcVoltage)===24&&pot?.typeId==='potentiometer'&&
+      Number(pot.potMax)===10000&&Number.isFinite(Number(pot.potentiometer))&&
+      Number(pot.potentiometer)>=0&&Number(pot.potentiometer)<=100&&
+      cap?.typeId==='capacitor'&&
+      Math.abs(Number(cap.capacitance)-(derivative?1e-7:1e-6))<1e-13&&
+      r?.typeId==='resistor'&&Number(r.resistance)===(derivative?47000:10000)&&
+      ['ref1','ref2'].every(x=>get(x)?.typeId==='resistor'&&Number(get(x).resistance)===10000)&&
+      meter?.typeId==='unit-ut33d-plus'&&meter.meterPosition===4&&
+      get('v1-red')?.probeTarget?.c==='u1'&&get('v1-red')?.probeTarget?.p==='1'&&
+      get('v1-black')?.probeTarget?.c==='g1'&&get('v1-black')?.probeTarget?.p==='M'&&
+      opamps.length===2&&amplifier&&spare&&cb&&
+      Number.isFinite(cb.previous)&&Number.isFinite(cb.dt)&&
+      cb.dt>=.001&&cb.dt<=.25;
+     if(valid){
+      const v=(m,n)=>m.get(n)?.[0]??0,
+       low=v(secondary,amplifier.vm),high=v(secondary,amplifier.vp),
+       add=(m,a,b,i)=>{
+        const av=m.get(a)||[0,0],bv=m.get(b)||[0,0];
+        m.set(a,[av[0]+i,av[1]]);m.set(b,[bv[0]-i,bv[1]]);
+       },drive=t=>{
+        const work=new Map([...injected].map(([k,x])=>[k,[...x]]));
+        add(work,amplifier.out,amplifier.vm,t/amplifier.br.r);
+        add(work,spare.out,spare.vm,(low+.02)/spare.br.r);
+        return solveGraph(branches,fixed,work);
+       },error=m=>v(m,amplifier.out)-low-
+        amplifier.gain*(v(m,amplifier.ip)-v(m,amplifier.im)),
+       base=drive(0),unit=drive(1),slope=error(unit)-error(base);
+      if(high-low>5&&high-low<=24.1&&Number.isFinite(slope)&&Math.abs(slope)>1e-9){
+       const raw=-error(base)/slope,target=Math.max(low+.02,Math.min(high-2,raw));
+       if(Number.isFinite(raw)&&Number.isFinite(target)){
+        secondary=drive(target);
+        const out=v(secondary,amplifier.out)-low,
+         result={model:derivative?'native-wired-ideal-LM358P-differentiator-DC-step':
+           'native-wired-ideal-LM358P-integrator-DC-ramp',
+          inputV:v(secondary,pin(pot,'2'))-low,
+          referenceV:v(secondary,amplifier.ip)-low,
+          outputV:out,capacitorPreviousV:cb.previous,
+          capacitorVoltageV:v(secondary,cb.a)-v(secondary,cb.b),
+          stepSeconds:cb.dt,resistanceOhms:Number(r.resistance),
+          capacitanceFarads:Number(cap.capacitance),
+          railLimited:raw<low+.02||raw>high-2,
+          actualRedProbe:'u1/1',actualBlackProbe:'g1/M',
+          idealEducationalModel:true,physicalAcceptance:false,
+          manufacturerLimitsAccepted:false,acWaveformAccepted:false,
+          calibratedMeter:false};
+        const ch=op._opampChannels?.['1'];
+        if(ch){ch.output=out;ch.diff=v(secondary,amplifier.ip)-v(secondary,amplifier.im)}
+        op._opampOutput=out;
+        if(!options.sampleOnly){
+         op._nativeRcStep=result;meter._nativeRcStep={...result};
+        }
+       }
+      }
+     }
+    }
+   }
+
    // Only four complete LM358P DIP-8 feedback circuits: exact terminal topology,
    // real resistor values and probes; bounded ideal DC gain, no hardware claim.
    {
