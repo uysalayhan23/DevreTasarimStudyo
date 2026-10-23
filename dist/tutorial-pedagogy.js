@@ -10023,12 +10023,15 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
  l.summary+=' UT33D+ DCV 200 V, yalnız anlık sanal gerilim örneklemesi.';
  l.explanation+=' Ölçüm cihazı şimdi DCV 200 V konumunda: çünkü bu simülatör, sinüsün her anlık çıkışını DC gerilim örneği olarak hesaplıyor. Ekranda 10–19 V arasında değişen değerler görebilirsin. Sinüsün 20 Hz (50 ms periyot) olduğu jeneratör zaman örneklerinden doğrulanır; UT33D+ bu dersin içinde gerçek AC RMS ya da frekans ölçümü yapmaz.';
  l.learningGoal+=' DCV anlık okumayı AC RMS ve frekans ölçümünden ayırmak.';
+ l.explanation+=' Kırmızı veya siyah prob ölçüm noktasına değmiyorsa UNI-T artık OL ve temas uyarısı gösterir; bu bir 0 V ölçümü değildir.';
+ l.beginnerSteps.push('Probu ölçüm noktasından kaldır: OL ve temas uyarısını gör; bunu sıfır volt diye okuma.');
  l.beginnerSteps=[...l.beginnerSteps,
   'UT33D+ DCV 200 V ile çıkışın anlık değerini oku; bu sayı AC RMS değildir.',
   'FG1 için bir tam çevrimi 50 ms olarak karşılaştır; multimetre frekans göstermiyor.'];
  l.materials=materialRows(p);
  l.pedagogyReview={...l.pedagogyReview,
   sc024MeterDcSampleTargetedPass:true,sc024GeneratorPeriodMs:50,
+  sc024ProbeContactTargetedPass:true,
   nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
   manufacturerLimitsAcceptance:false,physicalAcceptance:false,
   windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};

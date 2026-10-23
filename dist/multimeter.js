@@ -23,6 +23,25 @@
   const {branches,fixed,voltages,solveGraph,acNodes,dcNodes,pin,project}=context,[mode,range]=setting(c,d),red=pin(c,jack(c,d)),black=pin(c,'COM'),wired=p=>project.wires.some(w=>[w.from,w.to].some(e=>e.c===c.id&&e.p===p));
   let value=null,unit='',warning='',beep=false,display='—';
   if(mode==='OFF'){c._meter={display:'',warning:'',beep:false};return}
+
+  // SC024 only: floating/detached UNI-T probe tips cannot indicate 0 V.
+  if(project?.tutorialLesson?.id==='opamp-apps-outline-024'&&
+     c.id==='v1'&&d.id==='unit-ut33d-plus'&&['DCV','ACV'].includes(mode)){
+    const Leads=typeof module==='object'&&module.exports?
+      require('./probe-leads.js'):root.DTSProbeLeads;
+    const contacted=id=>{
+      const lead=project.components.find(x=>x.id===id),target=lead?.probeTarget;
+      const ep=target&&Leads?.resolve(project,context.byId,target);
+      return !!(ep&&(!ep.j||project.wires.some(w=>[w.from,w.to].some(e=>e?.j===ep.j))));
+    };
+    if(!contacted('v1-red')||!contacted('v1-black')){
+      c._meter={display:'OL',unit:'V',value:null,
+        warning:'Ölçüm probu açık veya temas yok. Kırmızı ve siyah prob uçlarını ölçüm noktalarına dokundurun.',
+        beep:false,mode,range};
+      return;
+    }
+  }
+
   if(mode==='NCV'){const sensed=!!c._ncv;c._meter={display:sensed?'EF':'—',warning:'',beep:sensed};return}
   if(!wired('COM')||!wired(jack(c,d))||(!isUT61(d)&&wired(jack(c,d)==='V'?'10A':'V')))warning='Prob yuvaları yanlış. Siyah prob COM, kırmızı prob '+(isUT61(d)?'VΩHz':(jack(c,d)==='V'?'VΩmA':'10A'))+' yuvasına bağlanmalı.';
   const circuit=branches.filter(b=>b.c!==c),seen=new Set(),q=[red,black];while(q.length){const n=q.pop();if(seen.has(n))continue;seen.add(n);for(const b of circuit){if(b.a===n)q.push(b.b);if(b.b===n)q.push(b.a)}}

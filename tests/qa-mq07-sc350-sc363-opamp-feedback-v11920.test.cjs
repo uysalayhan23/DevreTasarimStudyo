@@ -373,3 +373,40 @@ test('SC024 20 Hz UNI-T DCV instantaneous native sample and negative meter/frequ
   'Open red probe is a separate unresolved meter-contact warning issue');
  assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
 });
+
+
+test('SC024 UNI-T disconnected probe must fail closed, not read false 0 V',()=>{
+ const Arduino=require('../dist/arduino-runtime.js'),lesson=L.byId['opamp-apps-outline-024'];
+ const clone=x=>JSON.parse(JSON.stringify(x)),source=lesson.project,part=(p,id)=>p.components.find(c=>c.id===id);
+ assert.equal(source.wires.length,15);assert.equal(lesson.steps.length,15);
+ assert.equal(lesson.pedagogyReview.sc024ProbeContactTargetedPass,true);
+ assert.equal(lesson.pedagogyReview.nativeDynamicAcceptance,false);
+ const read=(p,now=12.5)=>{
+  Arduino.tick(p,defs,{now});const s=Native.solve(p,defs,{now});
+  assert.ok(s.stable&&!s.blocked&&!s.shortCircuit);
+  return part(p,'v1')._meter;
+ };
+ const ok=read(clone(source));
+ assert.equal(ok.warning,'');assert.notEqual(ok.display,'OL');
+ assert.ok(ok.value>10&&ok.value<20);
+ for(const id of ['v1-red','v1-black']){
+  const p=clone(source);delete part(p,id).probeTarget;
+  const m=read(p);assert.equal(m.display,'OL');assert.equal(m.value,null);
+  assert.match(m.warning,/temas/);
+ }
+ const badPin=clone(source);part(badPin,'v1-red').probeTarget={c:'u1',p:'NOT_A_REAL_PIN'};
+ assert.equal(read(badPin).display,'OL');
+ const orphan=clone(source);orphan.junctions=[{id:'orphan'}];
+ part(orphan,'v1-red').probeTarget={j:'orphan'};
+ assert.equal(read(orphan).display,'OL');
+ const other=clone(source);part(other,'v1-red').probeTarget={c:'g1',p:'P'};
+ const supply=read(other);assert.equal(supply.warning,'');
+ assert.ok(Math.abs(supply.value-24)<.1);
+ const hold=clone(source);read(hold,0);part(hold,'v1').meterHold=true;
+ delete part(hold,'v1-red').probeTarget;
+ const stale=read(hold);assert.equal(stale.display,'OL');assert.equal(stale.value,null);
+ const missingWire=clone(source);
+ missingWire.wires=missingWire.wires.filter(w=>!(w.from.c==='v1'&&w.from.p==='V'));
+ const missing=read(missingWire);assert.equal(missing.display,'OL');assert.match(missing.warning,/yuvaları/);
+ const off=clone(source);part(off,'v1').meterPosition=0;assert.equal(read(off).display,'');
+});
