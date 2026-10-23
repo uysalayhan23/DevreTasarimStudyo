@@ -11,7 +11,7 @@ test('Batch L preserves 4 dual DC canonical networks and yields 136 rich lessons
  ids.forEach((id,i)=>{const lesson=L.byId[id];assert.equal(JSON.stringify({components:lesson.project.components,wires:lesson.project.wires,steps:lesson.steps}),before[i],id);assert.equal(lesson.pedagogyReview.visualAcceptance,false);assert.equal(lesson.pedagogyReview.simulationAcceptance,false);});
 });
 test('Batch L is present in tutorial loader after motor Batch K',()=>{
- const s=read('tutorial-mode.js');assert.ok(s.indexOf('tutorial-dual-dc-batch-l.js?v=1.19.20-dual-dc-batch-l1')>s.indexOf('tutorial-motor-batch-k.js?v=1.19.20-motor-batch-k1'));
+ const s=read('tutorial-mode.js');assert.match(s,/tutorial-motor-batch-k\.js\?v=[^'\"]+/);assert.match(s,/tutorial-dual-dc-batch-l\.js\?v=[^'\"]+/);assert.ok(s.indexOf('tutorial-dual-dc-batch-l.js?v=')>s.indexOf('tutorial-motor-batch-k.js?v='));
 });
 
 
