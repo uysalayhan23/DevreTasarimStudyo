@@ -1,5 +1,6 @@
 # Devre Tasarım Stüdyosu
 
+> **Güncel çalışma bilgisi (2026-10-23):** Aktif geliştirme deposu/dalı **uysalayhan23/DevreTasarimStudyo / main**. Aşağıdaki v1.19.20/Actions açıklamaları tarihsel kayıttır; geliştirmeyi bunlara göre başka dala taşıma veya Actions tetikleme. Yeni oturumda önce [AGENTS.md](AGENTS.md), [PROJECT_MANIFESTO.md](PROJECT_MANIFESTO.md), [ACCEPTANCE_PROTOCOL.md](ACCEPTANCE_PROTOCOL.md), [NEXT_TASK.md](NEXT_TASK.md) ve [LESSON_PROGRESS.json](LESSON_PROGRESS.json) oku. Kanıtlar [LESSON_EVIDENCE.jsonl](LESSON_EVIDENCE.jsonl), kontrol `node scripts/lesson-acceptance-gate.cjs`. Yalnız gerçek doğrulanmış onarımlar `[skip ci]` ile doğrudan main'e gönderilir.\n\n
 Yakub Uysal için hazırlanmış, Türkçe ve çevrimdışı çalışan elektrik eğitim, devre çizimi ve pano yerleşim uygulaması.
 
 ## Güncel sürüm gerçeği
