@@ -417,7 +417,46 @@
     }
     return {voltage,dcVoltage,threePhase,phaseDirection,dcDirection,at,find,potentials,faultDomains,faultRoots,enabled,settled};
   }
+  // Opt-in low-voltage SC127/128 teaching model. No other BJT/NE555 project changes.
+  function solveSc127Motor(project,byId,options={}){
+    if(!['electronic-switching-src-04','electronic-switching-src-05'].includes(project?.tutorialLesson?.id))return null;
+    const c=Object.fromEntries(project.components.map(x=>[x.id,x]));
+    const {ps,btn,r,q,m: motor,d}=c;
+    if(![ps,btn,r,q,motor,d].every(Boolean)||project.components.length!==6)return null;
+    if(ps.typeId!=='arduino-bench-supply'||btn.typeId!=='arduino-button'||
+      r.typeId!=='arduino-resistor-1k'||q.typeId!=='arduino-bd139'||
+      motor.typeId!=='arduino-dc-motor'||d.typeId!=='arduino-diode-1n4007')return null;
+    const pins=definition(byId,q)?.pinMap;
+    if(pins?.['1']!=='B'||pins?.['2']!=='C'||pins?.['3']!=='E')return null;
+    const links=new Set(project.wires.map(w=>[w.from.c+'/'+w.from.p,w.to.c+'/'+w.to.p].sort().join('~')));
+    const wire=(id,p,id2,p2)=>links.has([id+'/'+p,id2+'/'+p2].sort().join('~'));
+    const buttonSupply=wire('ps','P','btn','VCC')&&wire('ps','M','btn','GND');
+    const base=wire('btn','SIG','r','1')&&wire('r','2','q','1');
+    const emitter=wire('q','3','ps','M'),collector=wire('m','-','q','2'),feed=wire('ps','P','m','+');
+    const diodeOK=wire('m','-','d','A')&&wire('d','K','m','+');
+    const reverseDiode=wire('m','-','d','K')&&wire('d','A','m','+');
+    const voltage=Number(ps.dcVoltage??definition(byId,ps)?.defaultVoltage??5);
+    const resistance=Number(r.resistance??definition(byId,r)?.resistance??1000);
+    const supply=ps.sourceEnabled!==false&&Number.isFinite(voltage)&&voltage>=3&&voltage<=6&&
+      Number.isFinite(resistance)&&resistance>=220&&resistance<=10000;
+    const pressed=btn.state===true||btn._pressed===true;
+    const on=!!(supply&&pressed&&buttonSupply&&base&&emitter&&collector&&feed&&diodeOK&&!reverseDiode);
+    for(const component of project.components){component._active=false;component._powered=false;}
+    btn._active=btn._powered=!!(supply&&buttonSupply&&pressed);
+    q._bjtOn=q._active=q._powered=on;
+    motor._active=motor._powered=on;motor._spin=on?1:0;
+    motor._motorRPM=on?(Number(motor.motorRatedRpm)||3000):0;
+    motor._motorAngle=on?((Number(motor._motorAngle)||0)+Number(options.now||0)*.12)%360:0;
+    motor._arduinoMotorAngle=motor._motorAngle;
+    r._active=r._powered=on;
+    const fault=!!(reverseDiode&&supply&&pressed&&buttonSupply&&base&&emitter&&collector&&feed);
+    return {blocked:fault,stable:true,oscillating:false,shortCircuit:fault,
+      reason:fault?'sc127-reversed-flyback-diode':null,nativeModel:'sc127-low-voltage-bd139',motorPowered:on};
+  }
+
   function solve(project,byId,options={}){
+    const scopedMotor=solveSc127Motor(project,byId,options);
+    if(scopedMotor)return scopedMotor;
     // BELL_TRANSFORMER_V1: refuse legacy mains-fed bell schematics.
     // Saved user graphs are never silently rewritten or converted.
     const bellPresent=project.components.some(c=>c.typeId==='bell-electronic');
