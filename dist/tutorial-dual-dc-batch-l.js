@@ -19,7 +19,7 @@ const stories=[
    "G2 için de aynısını yap.",
    "İki kaynak arasında kablo olmadığını gözlemle."
   ],
-  "why": "Her kaynağın kendi kapalı akım yolu vardır."
+  "why": "Her kaynağın kendi kapalı akım yolu vardır. Bir kaynağın artı ucunu ötekinin dönüşüne rastgele bağlamak, bu iki ayrı devre örneğinin amacı değildir."
  },
  {
   "summary": "Ortak 0 V noktası iki cihazın sinyal paylaşmasını kolaylaştırıyor.",
