@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const dist=path.join(__dirname,'../dist'),read=n=>fs.readFileSync(path.join(dist,n),'utf8');
 test('SC082–101: each source lesson has a distinct specific quiz without canonical rewiring',()=>{
  const base=require('../dist/tutorial-source-outline.js');
- const L=structuredClone(base),ids=Array.from({length:20},(_,i)=>(i<10?'dc-circuits':'measurement-workshop')+'-src-'+String(i%10+1).padStart(2,'0'));
+ const L=JSON.parse(JSON.stringify(base)),ids=Array.from({length:20},(_,i)=>(i<10?'dc-circuits':'measurement-workshop')+'-src-'+String(i%10+1).padStart(2,'0'));
  const before=new Map(ids.map(id=>[id,JSON.stringify({project:L.byId[id]?.project,steps:L.byId[id]?.steps})]));
  const ctx={window:{DTSTutorialLessons:L}};
  vm.runInNewContext(read('tutorial-source-first20-specific.js'),ctx,{filename:'tutorial-source-first20-specific.js'});
