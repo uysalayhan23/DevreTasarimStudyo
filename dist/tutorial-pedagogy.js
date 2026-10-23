@@ -9998,6 +9998,46 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Opamp350Rows){
   throw Error('SC024 source repair altered protected A/B wires or guided steps');
 }
 
+/* MQ07_SC024_UT33D_SAMPLE20: 20 Hz sample observation only; no AC RMS claim. */
+{
+ const id='opamp-apps-outline-024',l=L.byId[id],p=l?.project,
+  get=x=>p?.components.find(c=>c.id===x);
+ const meter=get('v1'),fg=get('in'),red=get('v1-red'),black=get('v1-black');
+ const before=JSON.stringify(p?.wires),beforeSteps=JSON.stringify(l?.steps),
+  protectedParts=p?.components.filter(c=>c.id!=='v1').map(clone);
+ if(!l||l.kind!=='wiring'||p.components.length!==10||p.wires.length!==15||
+    l.steps.length!==15||meter?.typeId!=='unit-ut33d-plus'||meter.meterPosition!==6||
+    fg?.typeId!=='arduino-signal-generator'||fg.generatorEnabled!==true||
+    fg.generatorWaveform!=='sine'||fg.generatorFrequency!==20||
+    fg.generatorOffset!==1.5||fg.generatorAmplitude!==2||
+    get('ref1')?.resistance!==43000||get('ref2')?.resistance!==10000||
+    get('r1')?.resistance!==10000||get('r2')?.resistance!==47000||
+    red?.probeTarget?.c!=='u1'||red.probeTarget.p!=='1'||
+    black?.probeTarget?.c!=='g1'||black.probeTarget.p!=='M'||
+    l.pedagogyReview?.sc024NativeSineTargetedPass!==true||
+    l.pedagogyReview?.nativeDynamicAcceptance!==false||
+    l.pedagogyReview?.titleTopologyIssue!=='INVERTING_AC_RESPONSE_NATIVE_PENDING')
+  throw Error('SC024 AC observation scope or protected graph changed');
+ meter.meterPosition=4;
+ meter.tutorialPurpose='UNI-T UT33D+ · DCV 200 V: sanal op-amp çıkışının anlık DC örneğini izler; 20 Hz sinüsün AC RMS değerini veya frekansını ölçmez.';
+ l.summary+=' UT33D+ DCV 200 V, yalnız anlık sanal gerilim örneklemesi.';
+ l.explanation+=' Ölçüm cihazı şimdi DCV 200 V konumunda: çünkü bu simülatör, sinüsün her anlık çıkışını DC gerilim örneği olarak hesaplıyor. Ekranda 10–19 V arasında değişen değerler görebilirsin. Sinüsün 20 Hz (50 ms periyot) olduğu jeneratör zaman örneklerinden doğrulanır; UT33D+ bu dersin içinde gerçek AC RMS ya da frekans ölçümü yapmaz.';
+ l.learningGoal+=' DCV anlık okumayı AC RMS ve frekans ölçümünden ayırmak.';
+ l.beginnerSteps=[...l.beginnerSteps,
+  'UT33D+ DCV 200 V ile çıkışın anlık değerini oku; bu sayı AC RMS değildir.',
+  'FG1 için bir tam çevrimi 50 ms olarak karşılaştır; multimetre frekans göstermiyor.'];
+ l.materials=materialRows(p);
+ l.pedagogyReview={...l.pedagogyReview,
+  sc024MeterDcSampleTargetedPass:true,sc024GeneratorPeriodMs:50,
+  nativeDynamicAcceptance:false,feedbackGainAcceptance:false,
+  manufacturerLimitsAcceptance:false,physicalAcceptance:false,
+  windowsVisualAcceptance:false,independentPedagogicalAcceptance:false};
+ if(JSON.stringify(p.wires)!==before||JSON.stringify(l.steps)!==beforeSteps||
+    JSON.stringify(p.components.filter(c=>c.id!=='v1'))!==JSON.stringify(protectedParts)||
+    meter.meterPosition!==4||l.pedagogyReview.titleTopologyStatus!=='REVIEW')
+  throw Error('SC024 UT33D target changed protected circuits');
+}
+
 /* SC350–363 NTC comparator reference-lead fault: real input-bias resistor.
  * This is a low-voltage virtual lesson guard for ONE open reference signal;
  * it is not a certified sensor supply/return fail-safe circuit. */

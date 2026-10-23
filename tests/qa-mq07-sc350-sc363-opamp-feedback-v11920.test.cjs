@@ -306,3 +306,70 @@ test('SC024 tuned 20 Hz LM358P sine native gain: positive and negative feedback/
  const wrong=sample(wrongB);assert.ok(wrong[0].b>20,'Wrong B+ input is not grounded spare');
  assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
 });
+
+
+test('SC024 20 Hz UNI-T DCV instantaneous native sample and negative meter/frequency controls',()=>{
+ const Arduino=require('../dist/arduino-runtime.js');
+ const l=L.byId['opamp-apps-outline-024'],source=l.project;
+ const clone=p=>JSON.parse(JSON.stringify(p));
+ const get=(p,id)=>p.components.find(c=>c.id===id);
+ const correctProbes=p=>get(p,'v1-red')?.probeTarget?.c==='u1'&&
+  get(p,'v1-red')?.probeTarget?.p==='1'&&
+  get(p,'v1-black')?.probeTarget?.c==='g1'&&
+  get(p,'v1-black')?.probeTarget?.p==='M';
+ assert.equal(source.wires.length,15);
+ assert.equal(l.steps.length,15);
+ assert.equal(get(source,'v1').meterPosition,4);
+ assert.equal(get(source,'in').generatorFrequency,20);
+ assert.equal(l.pedagogyReview.sc024MeterDcSampleTargetedPass,true);
+ assert.equal(l.pedagogyReview.sc024GeneratorPeriodMs,50);
+ assert.equal(l.pedagogyReview.nativeDynamicAcceptance,false);
+ assert.equal(l.pedagogyReview.feedbackGainAcceptance,false);
+ assert.equal(correctProbes(source),true);
+ const trace=(p,times)=>{
+  const sampled=[];
+  for(const now of times){
+   Arduino.tick(p,defs,{now});
+   const state=Native.solve(p,defs,{now});
+   assert.ok(state.stable&&!state.blocked&&!state.shortCircuit);
+   const generator=get(p,'in'),u1=get(p,'u1'),meter=get(p,'v1')._meter;
+   assert.ok(Number.isFinite(generator._signalVoltage)&&
+    Number.isFinite(u1._opampChannels?.['1']?.output)&&
+    Number.isFinite(u1._opampChannels?.['7']?.output));
+   sampled.push({now,input:generator._signalVoltage,output:u1._opampChannels['1'].output,
+    spare:u1._opampChannels['7'].output,reading:meter.value,warning:meter.warning,
+    display:meter.display,mode:meter.mode});
+  }
+  return sampled;
+ };
+ const times=[0,12.5,25,37.5,50,62.5],good=trace(clone(source),times);
+ const near=(a,b,tol=.05)=>Math.abs(a-b)<=tol;
+ for(const s of good){
+  assert.equal(s.mode,'DCV');assert.equal(s.warning,'');
+  assert.ok(!s.display.includes('OL'));
+  assert.ok(near(s.output,s.reading),'UT33D+ should show an instantaneous output sample');
+  assert.ok(s.spare>=0&&s.spare<.5);
+ }
+ assert.ok(near(good[0].input,good[4].input)&&
+  near(good[1].input,good[5].input)&&
+  near(good[1].output,good[5].output),
+  '20 Hz sine must repeat after 50 ms');
+ assert.ok(good[1].input-good[3].input>1.9&&good[3].output-good[1].output>6,
+  'LM358P A channel must invert the positive and negative sine peaks');
+ const wrongRange=clone(source);get(wrongRange,'v1').meterPosition=6;
+ const ol=trace(wrongRange,times);
+ assert.ok(ol.every(x=>x.display==='OL'&&x.warning.includes('AC/DC')),
+  'Old ACV position must reproduce the warning, not a fake RMS reading');
+ const wrongFrequency=clone(source);get(wrongFrequency,'in').generatorFrequency=40;
+ const shifted=trace(wrongFrequency,times);
+ assert.ok(Math.abs(shifted[1].input-good[1].input)>.5,
+  '40 Hz negative control must not pass the 20 Hz time checkpoint');
+ const off=clone(source);get(off,'in').generatorEnabled=false;
+ const zero=trace(off,times);
+ assert.ok(Math.max(...zero.map(x=>x.output))-Math.min(...zero.map(x=>x.output))<.1,
+  'Disabled generator must not produce a 20 Hz output');
+ const lostProbe=clone(source);delete get(lostProbe,'v1-red').probeTarget;
+ assert.equal(correctProbes(lostProbe),false,
+  'Open red probe is a separate unresolved meter-contact warning issue');
+ assert.equal(l.pedagogyReview.titleTopologyIssue,'INVERTING_AC_RESPONSE_NATIVE_PENDING');
+});
