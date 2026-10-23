@@ -102,3 +102,11 @@ Bu dosya uygulama içindeki kilitleri belgeler; GitHub dal koruması veya Window
 - Pano mm-native kalır; ortak uzayla kıyaslandığında 1 mm = 2 scene-unit dönüşümü kullanılır.
 - Görsel ajanları yalnız container/SVG kutusunu değil, asset içindeki görünen ürün gövdesini de fiziksel frame'e göre doğrulamak zorundadır.
 - Mantıksal alt parçalar bağımsız fiziksel ürün ölçüsü uyduramaz; primary physical component proxy'si olarak işaretlenir.
+
+## Kalıcı proje hafızası ve zorunlu onarım kapısı (2026-10-23)
+
+Her yeni sohbet/oturumda **ilk gerçek işlem** canlı `main` HEAD'i doğrulamak ve sırayla `PROJECT_MANIFESTO.md`, `ACCEPTANCE_PROTOCOL.md`, `LESSON_PROGRESS.json`, `LESSON_EVIDENCE.jsonl`, `NEXT_TASK.md` okumaktır. Bu dosyalar olmadan kullanıcıdan eski talimatları yeniden isteme; kanıtsız hatırlama ile dersi COMPLETE ilan etme.
+
+**Esas kural: hatayı bul → kaynağında düzelt → hedefli pozitif/negatif native test → [skip ci] main teslim → gerçek ilerleme güncelle.** FAIL için kök neden ve yeni hipotezle en çok üç farklı anlamlı onarım yaklaşımı; aynı başarısız denemeyi döndürme. Dış engel sürerse `BLOCKED` ve yeniden açılma koşulunu kaydet; sonraki bağımsız işe geç. Yalnız rapor/plan için commit yapma; mevcut kaynakta zaten doğru olan davranışı bozma. `node scripts/lesson-acceptance-gate.cjs` ile kayıttaki COMPLETE kanıtlarını doğrula; kapıyı geçmek gerçek native/görsel test yerine geçmez.
+
+Önceden raporlanan 77/1686 tarihsel sıralı sayaçtır; yeni kanıt defterindeki 0 sertifikalı ders, önceki 77'nin başarısız olduğu anlamına gelmez. Uygulama içi sayacın hangi kaynaktan okunduğu doğrulanmadan bu JSON'un ekranı değiştirdiği iddia edilmez. Kullanıcının tüm Golden/PASS/HOLD, BASLAT.bat, NE555/iki-BD139, Edge/3D ve Actions/Work/Codex/force-push/geçici dal yasakları geçerlidir.
