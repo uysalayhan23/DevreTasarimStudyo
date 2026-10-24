@@ -37,8 +37,9 @@ for(const id of covered){
  l.beginnerSteps=['Günlük örnek: '+note,...(l.beginnerSteps||[])];
  if(quiz[id]){
   const expected='“'+l.title+'” konusunda hangi temel teknik ilke doğrudur?';
-  if(l.quiz?.question!==expected)throw Error('Preserve already specialized FM question: '+id);
-  const [question,options,why]=quiz[id];l.quiz={question,options,answer:0,why};
+  if(l.quiz?.question===expected){
+   const [question,options,why]=quiz[id];l.quiz={question,options,answer:0,why};
+  } // An earlier accepted, topic-specific FM question must remain untouched.
  }
  l.sc203Sc222Specific='20261024-sc203-sc222-1';
 }
