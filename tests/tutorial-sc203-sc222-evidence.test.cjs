@@ -53,3 +53,13 @@ test('SC203-222 story overlay is idempotent and placed after source/truth layers
  const first=loader.indexOf('tutorial-sc183-sc202-stories.js?v='),second=loader.indexOf('tutorial-sc203-sc222-specific.js?v=');
  assert.ok(first>=0&&second>first,'new lesson layer must load after prior accepted layers');
 });
+test('SC203-204 previously specialized FM questions remain untouched',()=>{
+ const fresh=QA.curriculum(),ctx2={window:{DTSTutorialLessons:fresh}};
+ for(const id of ['oscillator-filter-apps-src-22','oscillator-filter-apps-src-23']){
+  fresh.byId[id].quiz={question:'Already accepted '+id,options:['Correct','Wrong 1','Wrong 2'],answer:0,why:'Protected previous quiz'};
+ }
+ const snapshots=['oscillator-filter-apps-src-22','oscillator-filter-apps-src-23'].map(id=>JSON.stringify(fresh.byId[id].quiz));
+ vm.runInNewContext(script,ctx2);
+ assert.equal(JSON.stringify(fresh.byId['oscillator-filter-apps-src-22'].quiz),snapshots[0]);
+ assert.equal(JSON.stringify(fresh.byId['oscillator-filter-apps-src-23'].quiz),snapshots[1]);
+});
