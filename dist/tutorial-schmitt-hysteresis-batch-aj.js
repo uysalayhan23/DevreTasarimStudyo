@@ -3,6 +3,23 @@
 (function(root){
 'use strict';
 const L=root.DTSTutorialLessons;if(!L||L._schmittIdealHysteresisBatchAJ)return;
+const existing=L.byId['electronic-component-basics-outline-046'];
+if(existing?.project?.components?.find(c=>c.id==='u1')?.typeId==='lm358p-dip8'){
+ const p=existing.project;
+ const terminalLinks=[['g1','P','u1','8'],['g1','M','u1','4'],['v1','1','u1','1'],
+  ['ref1','2','u1','2'],['r1','2','u1','3'],['u1','1','r2','1'],['r2','2','u1','3']];
+ const has=(a,pa,b,pb)=>p.wires.some(w=>
+  (w.from.c===a&&w.from.p===pa&&w.to.c===b&&w.to.p===pb)||
+  (w.to.c===a&&w.to.p===pa&&w.from.c===b&&w.from.p===pb));
+ if(existing.kind!=='wiring'||p.components.length!==8||p.wires.length!==14||
+ existing.steps?.length!==14||!terminalLinks.every(e=>has(...e))||
+ existing.pedagogyReview?.noSubstitute!==true||
+ existing.pedagogyReview?.nativeDynamicAcceptance!==false)
+  throw Error('Unknown LM358 DIP8 Schmitt topology');
+ L._schmittIdealHysteresisBatchAJ=true;
+ L._schmittDIP8PhysicalPreserved=true;
+ return;
+}
 const id='electronic-component-basics-outline-046',l=L.byId[id],p=l?.project,
   types=[['g1','supply-dc-plus'],['u1','lm358p-opamp-a'],
     ['in','potentiometer'],['r1','resistor'],['r2','resistor'],
