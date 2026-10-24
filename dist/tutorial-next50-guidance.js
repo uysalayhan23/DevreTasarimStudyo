@@ -5,8 +5,12 @@ const titles=["Anten tesisatı temel bağlantısı","Akıllı ev aydınlatma ve 
 for(let i=0;i<50;i++){
  const id=ids[i],l=L.byId[id];if(!l||l.title!==titles[i])throw Error('SC'+(122+i)+' lesson identity mismatch '+id);
  const category=i<2?'Tesisat':i<21?'Elektronik anahtarlama':i<43?'Sensör':'İşlemsel yükselteç';
- const visualAccepted=l.pedagogyReview?.visualAcceptance===true;
- const nativeAccepted=l.pedagogyReview?.simulationAcceptance===true;
+ const review=l.pedagogyReview||{};
+ const unresolvedTopology=typeof review.titleTopologyIssue==='string'&&review.titleTopologyIssue.length>0;
+ const unverifiedHysteresis=review.nativeHysteresisAcceptance===false&&/Schmitt/i.test(l.title);
+ const nativePending=unresolvedTopology||unverifiedHysteresis;
+ const visualAccepted=review.visualAcceptance===true;
+ const nativeAccepted=review.simulationAcceptance===true&&!nativePending;
  // The guidance accompanies accepted content; do not replace protected project, quiz, lessons or existing PASS status.
  l.learningSupport={...l.learningSupport,
   version:'20261023-next50-guidance1',
@@ -17,7 +21,8 @@ for(let i=0;i<50;i++){
   visualAcceptanceRequired:!visualAccepted,
   nativeAcceptanceRequired:!nativeAccepted,
   sourceCircuitPreserved:true,
-  nonWorkingDiagramWarning:!!l.project?.referenceOnly||l.kind==='quiz'
+  nonWorkingDiagramWarning:!!l.project?.referenceOnly||l.kind==='quiz'||nativePending,
+  nativeReviewReason:nativePending?(review.titleTopologyIssue||'NATIVE_HYSTERESIS_UNVERIFIED'):null
  };
 }
 L._next50Guidance=true;
