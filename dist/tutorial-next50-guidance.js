@@ -24,6 +24,13 @@ for(let i=0;i<50;i++){
   nonWorkingDiagramWarning:!!l.project?.referenceOnly||l.kind==='quiz'||nativePending,
   nativeReviewReason:nativePending?(review.titleTopologyIssue||'NATIVE_HYSTERESIS_UNVERIFIED'):null
  };
+ // SC131: native DC sweep produced oscillatory/unstable states. Expose the
+ // actual open evidence on the lesson, without changing canonical topology.
+ if(id==='electronic-switching-src-08'&&unverifiedHysteresis){
+   const caution='Native RV1 giriş taramasında bazı yükselen ve düşen adımlarda çözücü kararsız kaldı. İki farklı güvenilir geçiş eşiği ve gerçek histerezis henüz doğrulanmadı; bu devre REVIEW durumundadır.';
+   if(!l.explanation.includes(caution))l.explanation+=' '+caution;
+   l.learningSupport.schmittNativeReviewCaution=caution;
+ }
 }
 L._next50Guidance=true;
 })(typeof window==='undefined'?globalThis:window);
