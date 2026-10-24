@@ -26,8 +26,11 @@ for(const [suffix,expectedStatus,parts,wires,question,options,why,conceptSteps] 
   }
  }
  const generic='“'+l.title+'” konusunda hangi temel teknik ilke doğrudur?';
- if(l.quiz?.question!==generic||l.quiz?.answer!==0||l.quiz.options?.length!==3)
-  throw Error('Non-generic lesson quiz: preserve '+id);
+ if(l.quiz?.question!==generic||l.quiz?.answer!==0||l.quiz.options?.length!==3){
+  if(l.quiz?.answer!==0||l.quiz.options?.length!==3||typeof l.quiz.question!=='string'||!l.quiz.why)
+   throw Error('Unknown previously edited oscillator quiz: '+id);
+  continue; // Keep accepted, already topic-specific quizzes without overwriting them.
+ }
  const oldProject=JSON.stringify(l.project),oldSteps=JSON.stringify(l.steps);
  l.quiz={question,options:[...options],answer:0,why};
  if(conceptSteps)l.beginnerSteps=[...conceptSteps];
