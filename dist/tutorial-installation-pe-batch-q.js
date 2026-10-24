@@ -24,6 +24,19 @@ const lessons=[
   [['earth','PE','pebar','1'],['pebar','2','motor','PE'],['pebar','3','fan','PE'],['pebar','4','socket','PE']],
   'PE ve N baraları niçin ayrı gösteriliyor?',['Koruma ve normal dönüş görevleri farklı olduğu için','İkisi her noktada rastgele birleştirilebildiği için','PE normal çalışma akımını taşıdığı için']]
 ];
+const known={
+ 'installation-grounding-src-01':['wiring',3,2,['supply-1p','terminal-pe','ground']],
+ 'installation-grounding-src-02':['wiring',5,4,['supply-1p','bar-pe','terminal-pe','socket-power','ground']],
+ 'installation-grounding-src-03':['quiz',5,0,['bar-pe','terminal-pe','terminal-pe','terminal-pe','ground']],
+ 'installation-grounding-src-04':['quiz',4,0,['supply-3p','mcb-3p','bar-pe','ground']]
+};
+const richPE=Object.entries(known).every(([id,[kind,count,wires,types]])=>{
+ const l=L.byId[id],p=l?.project;
+ return l?.pedagogyReview?.noSubstitute===true&&l.kind===kind&&p.components.length===count&&
+ p.wires.length===wires&&JSON.stringify(p.components.map(c=>c.typeId).sort())===JSON.stringify([...types].sort())&&
+ (kind==='wiring'||p.referenceOnly===true);
+});
+if(richPE){L._virtualPeBatchQ=true;L._virtualPeBatchQCanonicalPreserved=true;return;}
 for(const [id,short,idea,parts,edges,question,answers] of lessons){
  const l=L.byId[id],old=l?.project;
  if(!old||old.components?.length!==6||old.wires?.length!==6||!['push-no','coil-relay','contact-no','lamp-red'].every(t=>old.components.some(c=>c.typeId===t)))throw Error('Protected non-placeholder grounding lesson '+id);
