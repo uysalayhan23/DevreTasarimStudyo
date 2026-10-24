@@ -50,6 +50,23 @@ const labs=[
 for(const [id,kind,summary,goal] of labs){
  const lesson=L.byId[id];if(!lesson?.project)throw Error('No lesson '+id);
  const p=lesson.project,isM=id.startsWith('measurement-workshop-');
+ // Preserve previously authored richer UNI-T/DC graphs only for exact known signatures.
+ const rich={
+  'dc-circuits-src-06':[8,5,1],'dc-circuits-src-07':[9,6,2],
+  'dc-circuits-src-08':[9,7,2],'dc-circuits-src-09':[10,8,3],
+  'dc-circuits-src-10':[10,8,3],'measurement-workshop-src-01':[5,4,1],
+  'measurement-workshop-src-02':[5,3,1]
+ }[id];
+ if(p.components.some(c=>c.typeId==='arduino-bench-supply')){
+  const count=type=>p.components.filter(c=>c.typeId===type).length;
+  if(!rich||p.components.length!==rich[0]||p.wires.length!==rich[1]||
+     count('resistor')!==rich[2]||count('unit-ut33d-plus')<(id.startsWith('dc-circuits')?2:1)||
+     !p.components.some(c=>c.typeId==='test-probe-red')||
+     !p.components.some(c=>c.typeId==='test-probe-black'))
+    throw Error('Unknown protected DC source: '+id);
+  continue;
+ }
+
  const types=isM?['supply-dc-plus','converter-temperature','meter-ammeter']:['supply-dc-plus','push-no','resistor','led'];
  if(p.components.length!==types.length||!types.every(t=>p.components.some(c=>c.typeId===t)))throw Error('Protected non-template graph '+id);
  const b=make(kind);
