@@ -72,6 +72,21 @@ const placeholders={
  '11':['supply-dc-plus','push-no','resistor','led'],
  '12':['supply-1p','wall-vavien','wall-vavien','lampholder-e27']
 };
+const canonical={
+ '07':['quiz',0,['supply-1p','mcb-1p','ceiling-light','socket-power','mcb-1p']],
+ '08':['wiring',4,['supply-1p','building-junction','building-junction','ceiling-light']],
+ '09':['wiring',4,['supply-1p','one-line-bus-tap','mcb-1p','resistor']],
+ '10':['wiring',4,['phone-floor-box','phone-apartment-box','telephone']],
+ '11':['wiring',2,['satellite-dish','antenna-distributor','tv-socket']],
+ '12':['wiring',6,['knx-power','knx-logic','knx-actuator','ceiling-light']]
+};
+const accepted=Object.entries(canonical).every(([index,[kind,wires,types]])=>{
+ const l=L.byId['installation-systems-src-'+index],p=l?.project;
+ return l?.pedagogyReview?.noSubstitute===true&&l.kind===kind&&p?.wires?.length===wires&&
+ JSON.stringify(p.components.map(c=>c.typeId).sort())===JSON.stringify([...types].sort())&&
+ (kind==='wiring'||p.referenceOnly===true);
+});
+if(accepted){L._installationSystemsBatchT=true;L._installationSystemsBatchTCanonicalPreserved=true;return;}
 for(const spec of specs){
  const id='installation-systems-src-'+spec.i,l=L.byId[id];
  const old=l?.project,original=placeholders[spec.i];
