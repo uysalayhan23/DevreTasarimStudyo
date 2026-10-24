@@ -36,3 +36,17 @@ test('SC257: simultaneous forward/reverse remains REVIEW, never counted as safe/
  const p=structuredClone(l.project);p.components.find(c=>c.id==='startF').state=true;p.components.find(c=>c.id==='startR').state=true;
  const r=Sim.solve(p,defs,{now:1000});assert.equal(r.stable,false);assert.notEqual(l.pedagogyReview.physicalAcceptance,true);
 });
+
+test('SC257–261: native start + interrupted contactor-control path negative cases',()=>{
+ for(const seq of [257,258,259,260,261]){
+  const orig=snapshots.get(ids[seq-243]).project;
+  const on=structuredClone(orig),start=on.components.find(c=>c.id==='start'||c.id==='startF');
+  assert.ok(start);start.state=true;
+  let result=Sim.solve(on,defs,{now:500});assert.ok(result.stable&&!result.blocked&&!result.shortCircuit);
+  assert.equal(on.components.find(c=>c.id==='motor')._active,true,'start should drive '+seq);
+  const broken=structuredClone(orig);broken.components.find(c=>c.id===start.id).state=true;
+  broken.wires=broken.wires.filter(w=>!['coil','coilF'].includes(w.to.c)&&!['coil','coilF'].includes(w.from.c));
+  result=Sim.solve(broken,defs,{now:500});assert.ok(result.stable&&!result.blocked&&!result.shortCircuit);
+  assert.equal(!!broken.components.find(c=>c.id==='motor')._active,false,'control interruption must stop '+seq);
+ }
+});
