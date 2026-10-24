@@ -50,6 +50,21 @@ const specs=[
   ['Faz ile nötrden geçen akımların farkını','PE iletkeninin rengini','Prizin toplam kablo uzunluğunu'],
   'RCD cihazı bu şemada modellenmez; açma akımı/süresi, test düğmesi ve koruma uygunluğu simüle edilmez.')
 ];
+const knownProtected={
+ '05':['tutorial-conductor-cable','terminal-2'],
+ '06':['socket-power','terminal-pe','ground'],
+ '07':['tutorial-earth-tester','ground'],
+ '08':['tutorial-insulation-tester','terminal-2','ground'],
+ '09':['tutorial-conductor-cable','terminal-2'],
+ '10':['arduino-bench-supply','unit-ut33d-plus','resistor','test-probe-red','test-probe-black']
+};
+const protectedCards=Object.entries(knownProtected).every(([n,types])=>{
+ const l=L.byId['installation-grounding-src-'+n],p=l?.project;
+ return l?.pedagogyReview?.noSubstitute===true&&l.kind==='quiz'&&p?.referenceOnly===true&&
+ p.wires?.length===(n==='10'?2:0)&&
+ JSON.stringify(p.components.map(c=>c.typeId).sort())===JSON.stringify([...types].sort());
+});
+if(protectedCards){L._installationSafetyBatchR=true;L._installationSafetyBatchRProtected=true;return;}
 for(const spec of specs){
  const l=L.byId[spec.id],old=l?.project;
  if(!old||old.components?.length!==6||old.wires?.length!==6||!['push-no','coil-relay','contact-no','lamp-red'].every(t=>old.components.some(c=>c.typeId===t)))
