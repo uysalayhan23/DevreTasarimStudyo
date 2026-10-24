@@ -30,6 +30,22 @@ const specs=[
  'Üç paralel butondan herhangi birine basınca ne olur?',['Ortak zil için bir çağrı yolu kapanır','Bütün butonlar seri bağlanır','Trafo çıkışı iki katına çıkar']]
 ];
 const names=['supply-dc-plus','push-nc','resistor','led'];
+const canonical={
+ '01':['supply-1p','mcb-1p','wall-switch','ceiling-light',4],
+ '02':['supply-1p','wall-commutator','ceiling-light','lampholder-e27',6],
+ '03':['supply-1p','wall-vavien','wall-vavien','ceiling-light',5],
+ '04':['supply-1p','wall-vavien','wall-intermediate','wall-vavien','ceiling-light',7],
+ '05':['bell-transformer','bell-push','bell-electronic',3],
+ '06':['bell-transformer','bell-push','bell-push','bell-push','bell-electronic',7]
+};
+const alreadyCanonical=Object.entries(canonical).every(([n,types])=>{
+ const l=L.byId['installation-systems-src-'+n],p=l?.project;
+ return l?.kind==='wiring'&&l.pedagogyReview?.noSubstitute===true&&
+ p?.wires?.length===types.at(-1)&&
+ JSON.stringify(p.components.map(c=>c.typeId).sort())===JSON.stringify(types.slice(0,-1).sort())&&
+ l.steps?.length===p.wires.length;
+});
+if(alreadyCanonical){L._installationSourceBatchS=true;L._installationSourceBatchSCanonicalPreserved=true;return;}
 for(const [index,template,oldParts,oldWires,newParts,newWires,goal,task,question,options] of specs){
  const id='installation-systems-src-'+index,l=L.byId[id],ref=L.byId[template];
  if(!l||!ref||l.topicId!=='installation-systems'||!l.title)throw Error('Missing lesson or reference '+id);
