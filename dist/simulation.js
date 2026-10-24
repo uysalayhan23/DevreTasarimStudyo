@@ -638,7 +638,15 @@
 for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);if(ed?.incrementalEncoder38mm){const motor=IncrementalEncoder.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef;IncrementalEncoder.state(c,ed,now,true)}}if(c.typeId===V20.id)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};if(c.typeId===ACS.id)c._acs800Frame={now,base:c._acs800?JSON.parse(JSON.stringify(c._acs800)):null};if(c.typeId===HCFA.id)c._hcfaFrame={now,base:c._hcfa?JSON.parse(JSON.stringify(c._hcfa)):null};}
     let actuators=new Map(),sensors=new Set();
     for(const c of project.components){const d=definition(byId,c);if(d&&['overload','thermal-magnetic'].includes(d.kind)&&c.state&&normalizeRef(c.ref))actuators.set('thermal:'+normalizeRef(c.ref),true)}
-    if(!options.reset)for(const c of project.components){const d=definition(byId,c);if(d&&coils.has(d.kind)&&c._active&&normalizeRef(c.ref))actuators.set(normalizeRef(c.ref),true)}
+    if(!options.reset)for(const c of project.components){
+      const d=definition(byId,c);
+      if(d&&coils.has(d.kind)&&c._active&&normalizeRef(c.ref))actuators.set(normalizeRef(c.ref),true);
+      // SC270 only: preserve the phase monitor's previously verified permission
+      // during the first relay iteration so K1 seal-in is not lost on START release.
+      // A missing/reversed phase is still re-evaluated every solve and removes permission.
+      if(project?.tutorialLesson?.id==='motor-direct-power-src-16'&&
+         d?.kind==='phase-monitor'&&c._active)actuators.set('@'+c.id,true);
+    }
     const initialActuators=new Map(actuators),initialSensors=new Set(sensors);
     let net,firstNet,stable=false,cycle=null;
     const seen=new Map(),frames=[];
