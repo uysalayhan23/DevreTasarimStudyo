@@ -2,6 +2,26 @@
 (function(root){
 'use strict';
 const L=root.DTSTutorialLessons;if(!L||L._nativeMeasurementBatchP)return;
+// The earlier pedagogy layer may have already installed real UNI-T sources.
+// Preserve those accepted physical graphs rather than replacing them with legacy templates.
+const alreadyRich={
+ '03':['resistor','unit-ut33d-plus','test-probe-red','test-probe-black'],
+ '04':['supply-1p','resistor','unit-ut200a'],
+ '05':['arduino-signal-generator','unit-ut61e-plus','test-probe-red','test-probe-black'],
+ '06':['supply-1p','current-transformer-edu-1p','energy-training-load-1p','energy-analyzer-1p'],
+ '07':['supply-1p','current-transformer-edu-1p','energy-training-load-1p','energy-analyzer-1p'],
+ '10':['proximity','unit-ut33d-plus','test-probe-red','test-probe-black']
+};
+const allRich=Object.entries(alreadyRich).every(([suffix,types])=>{
+ const l=L.byId['measurement-workshop-src-'+suffix],p=l?.project;
+ return p&&p.wires?.length>=2&&types.every(t=>p.components.some(c=>c.typeId===t))&&
+   (l.pedagogyReview?.noSubstitute===true||suffix==='10');
+});
+if(allRich){
+ L._nativeMeasurementBatchP=true;
+ L._nativeMeasurementBatchPRichPreserved=true;
+ return;
+}
 const copy=x=>JSON.parse(JSON.stringify(x));
 const C=(id,typeId,x,y,o={})=>({id,typeId,x,y,rotation:0,ref:id.toUpperCase(),label:id.toUpperCase(),state:false,...o});
 let n=0;
