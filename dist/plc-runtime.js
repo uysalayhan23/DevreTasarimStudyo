@@ -73,7 +73,7 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  } else if(mode==='delayed-stop-sc202'){
    // SC202 only: delayed motor shutdown on NC STOP input. Not a safety stop.
    const delay=Math.max(100,Math.min(60000,num(c.plcTimerMs,3000)));
-   if(start&&stop){c._plcLatch=true;delete c._plcStopSince}
+   if(start&&stop&&!c._sc331RequireFreshStart){c._plcLatch=true;delete c._plcStopSince}
    if(c._plcLatch&&!stop&&c._plcStopSince===undefined)c._plcStopSince=now;
    if(c._plcStopSince!==undefined&&now-c._plcStopSince>=delay){
      c._plcLatch=false;delete c._plcStopSince;
@@ -107,6 +107,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    const anchor=inputAnchor(d,p),raw=powered&&anchor&&anchor.id!==p.id?Number(net.voltage(c,p.id,anchor.id)):0;
    return [p.id,Number.isFinite(raw)?raw:0];
  }));
+ // SC331 only: a PLC supply failure clears delayed-stop memory and requires
+ // release of START before a fresh press can rearm the motor after power returns.
+ // This is virtual control logic, not an emergency-stop or hardware-safety model.
+ if(c.plcProgram==='delayed-stop-sc202'){
+   if(!powered){
+     c._plcLatch=false;delete c._plcStopSince;c._sc331RequireFreshStart=true;
+   }else if(c._sc331RequireFreshStart&&!inputs[0]?.value)c._sc331RequireFreshStart=false;
+ }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  if(!powered)for(const p of outputPins)prg.outputs[p.id]=false;
  const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
@@ -121,7 +129,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
