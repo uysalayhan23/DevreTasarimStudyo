@@ -149,6 +149,10 @@
     if(p.P2200){pidSet=v.macro==='Cn009'?[0,1,2].reduce((sum,i)=>sum+(mask&(1<<i)?p['P220'+(i+1)]:0),0):ai[0].percent;const err=pidSet-pidFeedback,addition=run&&p.P2285>0?err*p.P2280*dt/p.P2285:0;integral=clamp(integral+addition,-100,100);target=clamp(p.P2280*err+integral,0,100)*p.P2000/100;}
     const jog=local?!!v.jog:has(10)||has(11);
     if(jog){run=true;reverse=!local&&has(11);target=reverse?p.P1059:p.P1058;}
+    // Power restoration must not reuse a held RUN / JOG command automatically.
+    // Require a command release after power returns, followed by a fresh start.
+    let powerRearmRequired=!!b.powerRearmRequired||(!power&&!!b.powered);
+    if(power&&!run)powerRearmRequired=false;
     if(reverse)target=-target;
     if(p.P1110)target=Math.max(0,target);
     target=Math.sign(target)*clamp(Math.abs(target),p.P1080,p.P1082);
@@ -162,7 +166,7 @@
     if(power){if(input.voltage<170)cause='F3';else if(input.voltage>264)cause='F2';else if(input.outputShort&&(run||b.running))cause='F1';else if(v.temperature>=100)cause='F4';else if(assigned(29)&&!has(29))cause='F85';else if(ai.some((a,i)=>[1,3].includes(p['P0756.'+i])&&a.raw<Math.max(.1,p['P0761.'+i]/2)))cause='F80';}
     let fault=power?(cause||(!reset?b.fault||'':'')):'';
     if(fault)inhibit=true;
-    if(!run||inhibit||off3||p.P0010||!power||fault)target=0;
+    if(!run||powerRearmRequired||inhibit||off3||p.P0010||!power||fault)target=0;
     const down=off3?1.1*p.P1135:jog||b.jog?p.P1061:p.P1121,up=jog?p.P1060:p.P1120;
     let hz=!power||fault||off2?0:ramp(b.hz||0,target,up,down,p.P1082,dt);
     if(Math.abs(hz)<1e-6)hz=0;
@@ -173,7 +177,7 @@
     if(power&&!fault&&(overload>=75||current>p.P0305*p.P0640/100)){fault=overload>=75?'F5':'F11';hz=0;inhibit=true;}
     const active=power&&!fault&&Math.abs(hz)>0,warning=power?(v.temperature>=80?'A504':current>7.8?'A505':input.motorConnected===false&&active?'MOTOR YOK':''):'';
     const status=!power?'ENERJİ YOK':fault?'ARIZA':p.P0010?'DEVREYE ALMA':off2?'SERBEST DURUŞ':active?(off3?'HIZLI DURUYOR':Math.abs(hz-target)<.005?'ÇALIŞIYOR':target===0?'DURUYOR':hz*target<0?'YÖN DEĞİŞTİRİYOR':Math.abs(hz)<Math.abs(target)?'HIZLANIYOR':'YAVAŞLIYOR'):inhibit?'YENİ KOMUT BEKLİYOR':target?'HIZLANIYOR':'HAZIR';
-    const s={now,powered:power,voltageIn:input.voltage,hz,target,voltage:active?voltage:0,current:active?current:0,bus:power?input.voltage*Math.SQRT2:0,rpm:active?hz/p.P0310*p.P0311:0,running:active,status,fault,warning,di,ai,mop,mopParam:p.P1040,latch,latchedReverse:reverse,reset:v.reset,stopSerial:serial,inhibit,commandRun:run,integral,pidSet,pidFeedback,overload,jog};
+    const s={now,powered:power,voltageIn:input.voltage,hz,target,voltage:active?voltage:0,current:active?current:0,bus:power?input.voltage*Math.SQRT2:0,rpm:active?hz/p.P0310*p.P0311:0,running:active,status,fault,warning,di,ai,mop,mopParam:p.P1040,latch,latchedReverse:reverse,reset:v.reset,stopSerial:serial,inhibit,commandRun:run,integral,pidSet,pidFeedback,overload,jog,powerRearmRequired};
     const output=k=>{const functionId=String(p[k]),signals={'52':power&&!fault,'52.0':power&&!fault,'52.1':power&&!fault&&!p.P0010,'52.2':active,'52.3':power&&!fault,'52.7':!!warning};return !!signals[functionId];};
     s.do1=power&&(output('P0731')!==!!(p.P0748&1));s.do2=power&&(output('P0732')!==!!(p.P0748&2));
     let ao=({21:s.hz/p.P2000,24:s.hz/p.P2000,25:s.voltage/p.P2001,26:s.bus/p.P2001,27:s.current/p.P2002}[p.P0771]||0)*100;if(p.P0775)ao=Math.abs(ao);

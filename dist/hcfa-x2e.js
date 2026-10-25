@@ -61,7 +61,12 @@ function tick(c,input,now=Date.now()){
  const h=config(c),p=h.params,b=c._hcfa||{now,rpm:0,positionUnits:h.positionUnits||0,commandPosition:h.commandPosition||0,inputPulseCount:0,trigger:false,overload:0,resetSerial:h.resetSerial};const dt=Math.max(0,Math.min(1,(now-(b.now??now))/1000));
  const voltage=num(input.voltage),powered=voltage>20,di=diEffective(c,input),reset=diHas(p,di,2)||h.resetSerial!==b.resetSerial;
  let fault=reset?'':(b.fault||'');if(powered&&voltage<180)fault='Err.021';else if(powered&&voltage>264)fault='Err.020';else if(powered&&input.motorCompatible===false)fault='Err.005';else if(powered&&input.motorConnected&&!input.encoderConnected)fault='Err.013';else if(powered&&input.outputPhaseLoss)fault='Err.045';else if(powered&&h.temperature>=100)fault='Err.049';
- const servoOn=!!(powered&&!fault&&(h.panelServo||diHas(p,di,1)||((p['P09.05']&2)&&(h.commDI&2))));
+ const enableRequested=!!(h.panelServo||diHas(p,di,1)||((p['P09.05']&2)&&(h.commDI&2)));
+ // Interrupted power blocks a still-held Servo ON command until it is released
+ // after restoration. Neither the panel nor DI / communication may auto-restart.
+ let powerRearmRequired=!!b.powerRearmRequired||(!powered&&!!b.powered);
+ if(powered&&!enableRequested)powerRearmRequired=false;
+ const servoOn=!!(powered&&!fault&&enableRequested&&!powerRearmRequired);
  let mode=Number(p['P00.01']);if(mode>2)mode=mode===5?1:0;
  let commandRpm=0,commandTorque=0,positionUnits=num(b.positionUnits,h.positionUnits),commandPosition=num(b.commandPosition,h.commandPosition),inputPulseCount=num(b.inputPulseCount),trigger=diHas(p,di,25),stage=stageNo(p,di);
  const pulseHz=Math.max(0,num(input.pulseHz,h.virtualPulse?h.virtualPulseHz:0)),pulseDir=(input.pulseDirection??h.virtualDirection??1)>=0?1:-1;
@@ -86,7 +91,7 @@ function tick(c,input,now=Date.now()){
  const bus=powered?voltage*Math.SQRT2:0,encoderCounts=positionUnits/Math.max(1,p['P00.08'])*motor.encoderCounts,mechanicalAngle=((positionUnits/Math.max(1,p['P00.08'])*360)%360+360)%360;
  const warning=!powered?'AL.084':voltage<190?'AL.080':overload>25?'AL.082':!servoOn?'AL.084':'';
  const status=!powered?'ENERJİ YOK':fault?'FAULT':!servoOn?'S-rdy':mode===0?'Pcrun':mode===1?'Scrun':'tcrun';
- const s={now,powered,servoOn,running:servoOn&&!fault&&Math.abs(rpm)>.01,status,fault,warning,voltageIn:voltage,bus,rpm,commandRpm,torquePercent,torqueNm,current,di,mode,stage,positionUnits,commandPosition,inputPulseCount,encoderCounts,mechanicalAngle,trigger,overload,resetSerial:h.resetSerial,motorConnected:!!input.motorConnected,encoderConnected:!!input.encoderConnected,pulseHz,pulseDirection:pulseDir};
+ const s={now,powered,servoOn,running:servoOn&&!fault&&Math.abs(rpm)>.01,status,fault,warning,voltageIn:voltage,bus,rpm,commandRpm,torquePercent,torqueNm,current,di,mode,stage,positionUnits,commandPosition,inputPulseCount,encoderCounts,mechanicalAngle,trigger,overload,resetSerial:h.resetSerial,motorConnected:!!input.motorConnected,encoderConnected:!!input.encoderConnected,pulseHz,pulseDirection:pulseDir,powerRearmRequired};
  s.monitors=monitorValues(c,s);c._hcfa=s;h.positionUnits=positionUnits;h.commandPosition=commandPosition;return s;
 }
 function clear(c){delete c._hcfa;delete c._hcfaFrame;delete c._motorHz;delete c._motorRPM;delete c._motorDrive;}
