@@ -31,6 +31,7 @@ test('bootstrap removes failed script and succeeds on user retry',async()=>{
  assert.equal(f.scripts.length,0,'failed script must not poison retry');
  const mode=await api.ensure();assert.equal(mode,f.root.DTSTutorialMode);
  assert.equal(f.calls.length,5,'one failed attempt plus four fresh source modules');
+ assert.equal(f.calls[1],'tutorial-lessons.js?v=20261025-illuminated-bell1','retry must load the repaired bell lesson version');
 });
 test('bootstrap rejects stale cache version instead of adopting it',async()=>{
  const f=fixture({stale:true}),ctx={window:f.root,document:f.document};
@@ -52,4 +53,10 @@ test('main curriculum loader rejects mismatched cache and retries failed script'
  assert.equal(f.scripts.length,0);
  await ctx.__loadScript('tutorial-layer.js?v=fresh');
  assert.deepEqual(f.calls,['tutorial-layer.js?v=fresh','tutorial-layer.js?v=fresh']);
+});
+
+test('index entrypoint and teacher loader both invalidate the repaired bell lesson cache',()=>{
+ const html=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
+ assert.match(html,/tutorial-bootstrap\.js\?rev=20261025-bell-cache-v2/);
+ assert.match(read('tutorial-bootstrap.js'),/tutorial-lessons\.js\?v=20261025-illuminated-bell1/);
 });
