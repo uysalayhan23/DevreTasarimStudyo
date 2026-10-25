@@ -12326,4 +12326,72 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC462/463/465/467: targeted virtual sensor observations; keep every actual
+ * graph, independent visual/physical acceptance and SC467 REVIEW unchanged. */
+{
+ const generic='Bu derste ekrandaki malzemeler neden özellikle seçildi?';
+ const rows=[
+  ['sensor-analog-apps-outline-049',5,7,'VIRTUAL_OPTICAL_TARGET_PNP_RELAY',
+   'Optik S1 algılaması, PNP BK çıkışı, K1 bobini ve H1 yükünü ayrı anlamak.',
+   'Sanal plastik hedef 80 mm uzaktayken K1 ve H1 kapalıdır. 40 mm içine gelince optik PNP BK çıkışı K1 bobinini ve K1 NO 13/14 kontağı H1’i çalıştırır. BK veya BN hattı koparsa hedef görülse bile yük çalışmaz. 40 mm yalnız sanal eğitim eşiğidir.',
+   ['S1 BN/BU besleme uçlarıyla BK çıkışını ve K1 A1/A2 bobinini bul.',
+    'Plastik hedefi 80 mm uzağa getir: K1 ve H1 OFF.',
+    'Hedefi 2 mm yaklaştır: K1 ve H1 ON. Yeniden uzaklaştır: OFF.',
+    'BK ya da BN hattını sanal olarak kopar: optik algı yükü çalıştırmaz.',
+    'Bu mesafe gerçek üretici kalibrasyonu veya Windows/3D PASS değildir.'],
+   'Hedef 2 mm içindeyken sensörün BK kablosu K1 bobininden çıkarsa ne olur?',
+   'K1 ve H1 sanal devrede kapanır.','H1, kablo olmadan kesinlikle yanar.','40 mm otomatik fiziksel kalibrasyon olur.',
+   'Sanal PNP çıkış ile bobin arasındaki BK–A1 bağlantısı kopukken yük anahtarlanmaz.'],
+  ['sensor-analog-apps-outline-050',13,19,'SOURCE_WIRED_LDR_DIVIDER_LUX_CALIBRATION_PENDING',
+   'GL5528 LDR ile LM358P karşılaştırıcının karanlıkta sanal ışığı nasıl açtığını gözlemek.',
+   '24 V sanal kaynakta üst koldaki LDR ve alt 10 kΩ R1 sensör gerilimi üretir. LM358P, R2/R3 referansıyla karşılaştırır ve RG–RP üzerinden MOSFET gate’ini kumanda eder. H1, 1 lux karanlıkta ON; 100 lux aydınlıkta OFF olur. Sanal gate, yük veya LM358P besleme bağlantısı kopuksa H1 yanmaz. Ölçülen eşik üretici lux kalibrasyonu değildir.',
+   ['LDR/R1 bölücüsünü, LM358P 2–3 girişlerini ve R2/R3 referansını bul.',
+    'Sanal ortamda 1 lux seç: H1 yanar, U1/1 çıkışı yüksek olur.',
+    '100 lux seç: H1 söner. 1 lux’a dönünce yeniden yanar.',
+    'RG/2–Q1/G, H1/X2–Q1/D veya U1/8 beslemesini tek tek sanal olarak kopar: H1 çalışmaz.',
+    'Sanal 24 V kaynağı ve ölçülen ideal eşik fiziksel/Windows kabulü değildir.'],
+   'LDR karanlıktan 100 lux aydınlığa geçince H1 neden söner?',
+   'LM358P karşılaştırıcısının gate sürmesi düşer.','LDR görünmeden röle kendiliğinden çalışır.','Çıkış gerçek lux kalibrasyon belgesidir.',
+   'Üst LDR/R1 bölücüsü LM358P girişini değiştirir; MOSFET gate kapandığında H1 sönmektedir.'],
+  ['electronic-switching-outline-061',6,7,'SOURCE_WIRED_OPTO_PHOTOTRANSISTOR_DYNAMIC_PENDING',
+   'TLP521-1 içindeki LED ile fototransistörün iki ayrı sanal devre arasında sinyal aktardığını gözlemek.',
+   'Sanal 5 V G1 kaynağının S1 ve RIN ile sürdüğü TLP521-1 LED’i, ayrı 5 V G2 ve ROUT kolektör yükündeki fototransistörü kontrol eder. S1 OFF iken kolektör yaklaşık 5 V, ON iken 0,2 V olur. LED veya kolektör kablosu koparsa doğrulanmış sinyal aktarımı olmaz. Bu optokuplör, ayrık bir fototransistörün ortam ışığı/üretici CTR kalibrasyonu değildir.',
+   ['TLP521-1 üzerinde 1 LED anot, 2 LED katot, 4 kolektör ve 3 emiter uçlarını bul.',
+    'S1 serbestken sanal opto LED söner; G2 kolektör düğümü yaklaşık 5 V kalır.',
+    'S1’e bas: sanal LED yanar, fototransistör iletir; kolektör yaklaşık 0,2 V olur.',
+    'S1’i bırak: yaklaşık 5 V geri gelir. RIN veya kolektör bağlantısını sanal olarak kopar.',
+    'Gerçek optik akı, izolasyon dayanımı, CTR ve 3D kabulü yapılmadan PASS verme.'],
+   'S1 bırakılınca TLP521-1 fototransistörünün sanal kolektörü ne olur?',
+   'G2 üzerinden yaklaşık 5 V seviyesine döner.','Kolektör her zaman 0,2 V kalır.','LED kopuk olsa da galvanik bağlantı kendiliğinden oluşur.',
+   'Sanal LED sönünce iç fototransistör kesime döner; kolektör yük direnci düğümü G2 beslemesine taşır.'],
+  ['sensor-analog-apps-outline-052',5,7,'REVIEW',
+   'LDR bölücüsü, MOSFET gate’i ve 12 V sanal DC lambada kademeli ışık kontrolünü gözlemek.',
+   'Bu devre AC triyak faz dimmeri değildir; 12 V sanal DC LDR/MOSFET güç yoludur. Native sanal taramada 10 lux yaklaşık %12, 100 lux yaklaşık %70 ve 1000 lux yaklaşık %98 bağıl lamba parlaklığı oluşturur. S1/2–Q1/G gate veya H1/X2–Q1/D yük bağlantısı koparsa parlaklık sıfıra iner. Kaynak devre korunur, REVIEW ve fiziksel/Windows/3D kabulü açıktır.',
+   ['G1 12 V, GL5528 LDR, 10 kΩ R1, MOSFET G/D/S ve H1 uçlarını bul.',
+    '10 lux ayarla: sanal lambanın bağıl parlaklığı yaklaşık %12 olur.',
+    '100 lux ayarla: yaklaşık %70; 1000 lux ayarla: yaklaşık %98 olur.',
+    'S1/2–Q1/G veya H1/X2–Q1/D kablosunu sanal olarak kopar: H1 söner.',
+    'Bu sonuç AC faz dimmeri veya kalibre edilmiş gerçek lamba testi değildir; REVIEW/PASS kilidini koru.'],
+   'Sanal LDR/MOSFET devresinde 100 lux ayarında yaklaşık ne beklenir?',
+   'Yaklaşık %70 bağıl DC lamba parlaklığı.','230 V AC faz açısı ölçümü.','Kablo kopsa da fiziksel %100 parlaklık.',
+   'Sanal 12 V DC modelin LDR direnci ve gate gerilimi artan lux ile lamba gücünü değiştirir.']
+ ];
+ for(const [id,partCount,wireCount,status,goal,story,steps,question,right,wrongA,wrongB,why] of rows){
+  const l=L.byId[id],p=l?.project,r=l?.pedagogyReview;
+  if(!l||l.kind!=='wiring'||p?.referenceOnly===true||
+     p.components?.length!==partCount||p.wires?.length!==wireCount||
+     l.steps?.length!==wireCount||r?.titleTopologyStatus!==status||
+     (id==='sensor-analog-apps-outline-052'&&r.titleTopologyIssue!=='LDR_DC_DIMMER_OUTLINE_NATIVE_UNVERIFIED')||
+     l.quiz?.question!==generic||
+     ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>r[k]===true))
+   throw Error('SC462–467 protected source changed: '+id);
+  const original=JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]);
+  l.learningGoal=goal;l.explanation=story;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[right,wrongA,wrongB],answer:0,why};
+  if(original!==JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]))
+   throw Error('SC462–467 source/acceptance modified: '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
