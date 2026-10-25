@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const QA=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
+const Scope=require('../scripts/tutorial-lesson-scope-v11920.cjs');
 const L=QA.curriculum(),defs=QA.catalog();
 const targeted=L.lessons.filter(l=>l.project.wires.length&&l.project.components.some(c=>['bjt-npn','bjt-pnp'].includes(defs[c.typeId]?.kind))&&l.project.components.some(c=>c.typeId==='push-no')&&l.project.components.some(c=>defs[c.typeId]?.kind==='multimeter'));
 test('real 30 BJT circuits switch through base resistor: OFF-ON-OFF, meter returns, canonical immutable',()=>{
@@ -35,9 +36,11 @@ test('BJT without a connected base feed remains off, even with a nearby 24V sour
  assert.ok(s.stable&&!s.shortCircuit&&!s.oscillating);
  assert.equal(!!p.components.find(c=>c.id==='q1')._bjtOn,false);
 });
-test('global real 722 wired lesson three-phase solver stability remains intact',()=>{
+test('all 733 wiring/explore lessons exclude 68 reference quiz boards from three-phase native QA',()=>{
  let phases=0;
- for(const lesson of L.lessons.filter(x=>x.project?.wires?.length)){
+ const circuitLessons=L.lessons.filter(Scope.isCircuitLesson);
+ assert.equal(circuitLessons.length,733);
+ for(const lesson of circuitLessons){
   const p=structuredClone(lesson.project),sw=p.components.find(c=>['push-no','push-nc'].includes(c.typeId));
   for(let i=0;i<3;i++){
    if(sw)sw.state=i===1;
@@ -46,5 +49,5 @@ test('global real 722 wired lesson three-phase solver stability remains intact',
    phases++;
   }
  }
- assert.equal(phases,2166);
+ assert.equal(phases,2199);
 });

@@ -26,7 +26,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
   noControl:0,noControlLessons:[],missingDefinitionLessons:[],unsupportedActuatorLessons:[],passiveLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
-  scope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
+  phaseScope:'Initial → one selected virtual control change or elapsed time → release/elapsed time. Not exhaustive dynamic or visual QA.'};
  for(const lesson of L.lessons){
   const raw=lesson.project;
   if(!raw||!Array.isArray(raw.wires)||!Array.isArray(raw.components)){

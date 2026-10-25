@@ -5,8 +5,15 @@ const Core=require('../scripts/qa-tutorial-1655-simulation-v11920.cjs');
 test('sequenced electrical QA probes genuine curriculum through native simulator',()=>{
  const report=QA.main();
  assert.equal(report.total,1655);
- assert.equal(report.wired,722);
- assert.equal(report.referenceOnly,933);
+ assert.equal(report.wired,733);
+ assert.equal(report.referenceOnly,922);
+ assert.equal(report.scope.wiring,717);
+ assert.equal(report.scope.explore,16);
+ assert.equal(report.scope.referenceWithWires,68);
+ assert.equal(report.scope.rawWireCount,801);
+ assert.equal(report.scope.wiringGoal,722);
+ assert.equal(report.scope.wiringGap,5);
+ assert.equal(report.scope.wiringGoalStatus,'PENDING');
  assert.equal(report.coverage,true);
  assert.ok(report.projectsWithControls>0);
  assert.ok(report.controlsExercised>=report.projectsWithControls);

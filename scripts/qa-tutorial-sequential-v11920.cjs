@@ -4,6 +4,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const Core=require('./qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
+const Scope=require('./tutorial-lesson-scope-v11920.cjs');
 const clone=x=>JSON.parse(JSON.stringify(x));
 const ROOT=path.resolve(__dirname,'..');
 function controlCandidates(project,defs){
@@ -24,13 +25,13 @@ function observable(project,controlled){
 }
 function audit({L=Core.curriculum(),defs=Core.catalog(),engine=Simulation}={}){
  const report={qa:'MQ-12 native virtual sequential-state electrical coverage',
-  expected:1655,total:L.lessons.length,wired:0,referenceOnly:0,
+  expected:1655,total:L.lessons.length,scope:Scope.summarize(L.lessons),wired:0,referenceOnly:0,
   projectsWithControls:0,projectsWithoutControls:0,controlsExercised:0,
   solves:0,observableChanges:0,noObservableChanges:0,
   faults:[],unstable:[],oscillating:[],errors:[],nonresponsiveExamples:[],
   note:'State transitions are source simulator probes. Sensor physical detection, motor dynamics, physical product behavior and every lesson learning outcome need independent tests.'};
  for(const lesson of L.lessons){
-  const source=lesson.project;if(!source?.wires?.length){report.referenceOnly++;continue}
+  const source=lesson.project;if(!Scope.isCircuitLesson(lesson)){report.referenceOnly++;continue}
   report.wired++;
   const p=clone(source),controls=controlCandidates(p,defs),controlled=new Set(controls.map(c=>c.id));
   if(controls.length)report.projectsWithControls++;else report.projectsWithoutControls++;
@@ -76,7 +77,9 @@ function audit({L=Core.curriculum(),defs=Core.catalog(),engine=Simulation}={}){
    if(released!==null)previous=released;
   }
  }
- report.coverage=report.total===report.expected&&report.wired+report.referenceOnly===report.total;
+ report.coverage=report.total===report.expected&&report.wired===report.scope.simulatable&&
+  report.scope.rawWireCount===report.wired+report.scope.referenceWithWires&&
+  report.wired+report.referenceOnly===report.total;
  report.status=report.coverage&&!report.errors.length&&!report.faults.length&&!report.unstable.length&&!report.oscillating.length
    ?'SOURCE_SEQUENCES_CHECKED_BEHAVIOR_ACCEPTANCE_OPEN':'FAIL_OR_INCOMPLETE';
  return report;
