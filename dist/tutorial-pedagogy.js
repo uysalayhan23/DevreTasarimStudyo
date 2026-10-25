@@ -12403,4 +12403,19 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+/* Targeted source identity repair: restore only missing lesson-session metadata.
+   Do not change graph, lesson acceptance or device behavior. */
+{
+ const needsIdentity=["electronic-switching-src-03","electronic-switching-src-06","electronic-switching-src-07","electronic-switching-src-09","electronic-switching-src-10","electronic-switching-src-11","sensor-analog-apps-src-11"];
+ for(const id of needsIdentity){
+  const lesson=L.byId[id],p=lesson?.project;
+  if(!lesson||lesson.kind!=='wiring'||p?.tutorialLesson||
+     p?.projectId!=='tutorial-session-source-'+id||
+     !p.wires?.length||!p.components?.length)
+   throw Error('Source lesson identity baseline changed: '+id);
+  p.tutorialLesson={id,topicId:lesson.topicId,phase:'demo',step:0,
+   level:Number(id.slice(-2))};
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
