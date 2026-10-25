@@ -124,13 +124,14 @@
     ],
     "atlasWidth": 1280,
     "atlasHeight": 1280,
-    "viewBox": "358 328 536 762",
+    "viewBox": "358 394 536 691",
     "bounds": {
       "x": 358,
-      "y": 328,
+      "y": 394,
       "width": 536,
-      "height": 762
+      "height": 691
     },
+    "physicalFrameMm": {"width": 45, "height": 58},
     "nativeTransparency": false,
     "outlinePath": "M408 330 L398 340 L398 370 L386 376 L376 386 L372 392 L374 394 L362 402 L360 408 L360 1038 L364 1044 L364 1052 L376 1062 L476 1072 L502 1078 L568 1086 L690 1086 L824 1078 L882 1062 L890 1048 L888 1042 L892 406 L886 386 L878 374 L878 336 L874 332 L608 330 Z",
     "part": "3RT2016-1BB41"
