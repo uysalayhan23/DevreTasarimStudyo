@@ -663,7 +663,17 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       for(const tc of project.components){const td=definition(byId,tc);if(!['bjt-npn','bjt-pnp'].includes(td?.kind)||tc.mq07StandaloneBjtAstable===true||tc.mq07StandaloneBjtBistable===true||tc.mq07StandaloneBjtMonostable===true)continue;let vb=td.kind==='bjt-npn'?net.dcVoltage(tc,'B','E'):net.dcVoltage(tc,'E','B');if(vb===null){bjtNumeric ||= Numeric.update(project,byId,net,{now,sampleOnly:true});vb=td.kind==='bjt-npn'?bjtNumeric.dc(tc,'B','E'):-bjtNumeric.dc(tc,'B','E')}const on=vb!==null&&vb>=0.62;if(on!==!!tc._bjtOn){tc._bjtOn=on;bjtChanged=true}}
       let semiconductorChanged=false;
       for(const tc of project.components){const td=definition(byId,tc);if(!td)continue;let stateKey=null,on=false,v=null;
-        if(td.kind==='mosfet-n'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');if(tc.mq07FetRcDelay||tc.mq07MosfetHealth||tc.mq07NtcThermalSwitch||tc.mq07PtcThermalSwitch||tc.mq07LdrDarkSwitch){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','S');if(tc.mq07FetRcDelay)tc._mq07GateSampleV=v;if(tc.mq07MosfetHealth)tc._mq07HealthGateV=v;if(tc.mq07NtcThermalSwitch)tc._mq07NtcGateV=v;if(tc.mq07PtcThermalSwitch)tc._mq07PtcGateV=v;if(tc.mq07LdrDarkSwitch)tc._mq07LdrGateV=v}on=v!==null&&v>=4}
+        if(td.kind==='mosfet-n'){
+          stateKey='_mosfetOn';v=net.dcVoltage(tc,'G','S');
+          // SC394/398 only: the potentiometer wiper is a resistive node,
+          // not a directly powered terminal. Read the existing numeric circuit
+          // before deciding whether its catalog IRF540N switch conducts.
+          if(['electronic-switching-outline-028','electronic-switching-outline-032']
+               .includes(project?.tutorialLesson?.id)&&tc.id==='q'&&
+             tc.typeId==='irf540n-mosfet'&&project.components.length===5&&
+             project.components.some(c=>c.id==='pot'&&c.typeId==='potentiometer'))
+            v=Numeric.update(project,byId,net,{now,sampleOnly:true}).dc(tc,'G','S');
+          if(tc.mq07FetRcDelay||tc.mq07MosfetHealth||tc.mq07NtcThermalSwitch||tc.mq07PtcThermalSwitch||tc.mq07LdrDarkSwitch){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','S');if(tc.mq07FetRcDelay)tc._mq07GateSampleV=v;if(tc.mq07MosfetHealth)tc._mq07HealthGateV=v;if(tc.mq07NtcThermalSwitch)tc._mq07NtcGateV=v;if(tc.mq07PtcThermalSwitch)tc._mq07PtcGateV=v;if(tc.mq07LdrDarkSwitch)tc._mq07LdrGateV=v}on=v!==null&&v>=4}
         else if(td.kind==='jfet-n'){stateKey='_jfetOn';v=net.dcVoltage(tc,'G','S');const cutoff=Math.abs(Number(td.gateCutoffVoltage)||3);on=v===null?false:v>-cutoff}
         else if(td.kind==='mosfet-p'){stateKey='_mosfetOn';v=net.dcVoltage(tc,'S','G');on=v!==null&&v>=4}
         else if(td.kind==='igbt-n'){stateKey='_igbtOn';v=net.dcVoltage(tc,'G','E');if(tc.mq07DcPwmDimmer){const sampled=Numeric.update(project,byId,net,{now,sampleOnly:true});v=sampled.dc(tc,'G','E');tc._sc12GateVoltage=v}on=v!==null&&Number.isFinite(v)&&v>=4}
