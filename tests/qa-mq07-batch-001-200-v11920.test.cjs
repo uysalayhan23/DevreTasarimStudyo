@@ -235,7 +235,9 @@ test('SC083–SC125 source quiz questions follow 43 distinct device topics, with
   assert.ok(q&&typeof q.question==='string'&&q.question.length>26,id+' generic quiz question');
   assert.equal(q.answer,0,id+' source evidence answer index');
   assert.ok(Array.isArray(q.options)&&q.options.length===3,id+' choice count');
-  assert.ok(q.options.every(x=>typeof x==='string'&&x.length>2),id+' empty choice');
+  // Binary logic levels 0 and 1 are complete answers, not empty quiz choices.
+  assert.ok(q.options.every(x=>typeof x==='string'&&
+   (x.trim().length>2||/^[01]$/.test(x.trim()))),id+' empty choice');
   assert.ok(typeof q.why==='string'&&q.why.length>45,id+' unexplained answer');
   assert.ok(!questions.has(q.question),id+' duplicate quiz question');
   assert.doesNotMatch(q.question,/Bu derste ekrandaki malzemeler neden özellikle seçildi|Bu derste incelenen eleman türü hangisidir/i,id+' generic topic check');
