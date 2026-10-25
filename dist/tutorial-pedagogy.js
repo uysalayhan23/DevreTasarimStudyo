@@ -11954,4 +11954,67 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
   if(graph!==JSON.stringify([l.project,l.steps,review]))throw Error('SC389–402 circuit or locks changed: '+id);
  }
 }
+
+/* SC395–397/399: teach the real virtual J113/G-S and IRF540N/G control
+ * paths without inventing physical semiconductor-health verification. */
+{
+ const rows=[
+  ['electronic-switching-outline-029','SOURCE_WIRED_NATIVE_FET_COMPARISON',12,19,'JFET ve MOSFET iki farklı kumanda yolu',
+   'Bir masada iki ışık yolu var: H1 tarafında S1 lambanın beslemesini açar, J113 gate’i kaynak ucuna bağlıdır. H2 tarafında S2, IRF540N gate’ine sanal 5 V komutu verir. İkisi aynı anahtarlama biçimi değildir. Önce yalnız S1’i, sonra yalnız S2’yi etkinleştir; lambaların bağımsız değişimini izle. Sanal anahtarlama gerçek parçanın sağlamlık testi değildir.',
+   ['H1 yolunda S1 → H1 → J113 D/S hattını izle; J113 G ucu S ucuna bağlıdır.',
+    'S1 açıkken H1 söner: S1 gate’i değil, yükün beslemesini keser.',
+    'S2 etkinleşince G2’den IRF540N G ucuna sanal 5 V gelir; H2 yanar.',
+    'S2 → Q2/G kablosunu kaldır: S1 açıkken H1 yanabilir ama H2 yanmaz.',
+    'İdeal sanal JFET/MOSFET anahtarlamasını fiziksel sağlamlık kabulü sayma.'],
+   'Bu karşılaştırmada S1 ve S2 hangi iki farklı hattı kumanda eder?',
+   'S1 J113 yük beslemesini, S2 IRF540N gate sürmesini.','İkisi de doğrudan motorun milini sürer.','S1 yalnız J113 gate ucunu, S2 yalnız H2 rengini değiştirir.',
+   'J113 G–S aynı düğümdedir; S1 H1 beslemesini, S2 ise MOSFET G terminalini kumanda eder.'],
+  ['electronic-switching-outline-030','SOURCE_WIRED_NATIVE_FET_COMPARISON',12,19,'J113 ve IRF540N sürme farkını kavramak',
+   'Burada iki farklı FET türünü aynı sahnede karşılaştırıyoruz. J113 sanal modelde G–S sıfır voltken iletime hazırdır; S1 yükün elektrik yolunu açar. IRF540N ise başlangıçta kapalıdır ve S2’nin gate sürmesiyle iletime geçer. Bu sanal karşılaştırma fiziksel cihaz karakteristiği veya üretici kalibrasyonu değildir.',
+   ['Önce J113 G–S kısa bağlantısını ve H1’in S1 üzerinden beslenmesini bul.',
+    'Yalnız S1’i etkinleştir: H1 yanar, H2 kapalı kalır.',
+    'S1’i kapatıp S2’yi etkinleştir: IRF540N gate sürülür, H2 yanar.',
+    'S2–Q2/G bağlantısı kesikse H2 yanmamalıdır; H1 kolu bundan etkilenmez.',
+    'Bu sanal eşikleri gerçek J113/IRF540N sağlamlık ölçümü sanma.'],
+   'Sanal J113 ve IRF540N arasında hangi kumanda farkı gösterilir?',
+   'J113 G–S bağlıyken yük seçicisiyle; IRF540N gate sürmesiyle kontrol edilir.','İki FET doğrudan aynı seçicinin gate hattındadır.','JFET yalnız mekanik kontak, MOSFET yalnız motor rulmanıdır.',
+   'S1 yük beslemesine seri, S2 ise IRF540N gate yolundadır; sanal iki devre bağımsızdır.'],
+  ['electronic-switching-outline-031','SOURCE_WIRED_J113_GDS_LOAD',6,9,'J113 G/D/S uçlarını ve S1’in gerçek görevini tanımak',
+   'J113 üzerinde G gate, D drain, S source uçlarını gör. Bu sanal devrede G ile S birlikte 0 V referansındadır. S1, gate voltajını değiştirmez; H1’in beslemesini açıp kapatır. S1 etkinleştiğinde sanal yük yanar, D–yük kablosu çıkarıldığında ise sönük kalır. Fiziksel JFET eşik/sızma kabulü değildir.',
+   ['J113 G ucundan S ucuna bağlı kısa sanal tel ile 0 V referansını bul.',
+    'S1 serbestken H1 beslemesi açık devredir; yük yanmaz.',
+    'S1’i etkinleştir; H1 → J113 D/S üzerinden dönüş yolunu incele.',
+    'H1–J113 D kablosunu kaldır: S1 açık olsa da H1 yanmaz.',
+    'Sanal iletimi gerçek JFET akım, kesim eşiği veya fiziksel PASS sayma.'],
+   'Bu J113 uygulamasında S1 hangi bağlantıyı kesip birleştirir?',
+   'H1 yükünün besleme kolunu.','J113 gate ile source arasındaki kısa bağlantıyı.','J113’ün mekanik milini.',
+   'S1 besleme hattındadır; J113 gate ile source doğrudan bağlıdır.'],
+  ['electronic-switching-outline-033','SOURCE_WIRED_NATIVE_FET_COMPARISON',12,19,'Sanal FET işlev kontrolü ile fiziksel sağlamlık testini ayırmak',
+   'Başlıkta sağlamlık kontrolü yazsa da bu kart bir üretici test cihazı değildir. S1 ile J113’lü H1 besleme kolunu; S2 ile IRF540N’li H2 gate yolunu çalıştırıp kopuk kablonun etkisini görürüz. İki sanal lambanın yanması gerçek transistörün sağlam olduğunu kanıtlamaz. Fiziksel cihaz, ölçüm toleransları ve Windows/3D kabulü açık kalır.',
+   ['J113 G–S bağı ile S1–H1 yük beslemesini ayrı ayrı göster.',
+    'S1 açık, S2 kapalıyken yalnız H1’in sanal durumunu kontrol et.',
+    'S1 kapalı, S2 açıkken IRF540N gate’inin 5 V komutuyla H2’yi kontrol et.',
+    'S2–Q2/G kablosunu kaldır: H2 sönük kalmalıdır; H1 kendi seçicisiyle çalışır.',
+    'Bu yalnız sanal işlev kontrolüdür; fiziksel sağlamlık PASS değildir.'],
+   'H1 ve H2 sanal modelde doğru yanıp sönüyorsa hangi sonuç çıkar?',
+   'Sanal kablo ve kumanda tepkileri çalışıyor; fiziksel sağlamlık kanıtlanmadı.','İki fiziksel transistörün üretici sertifikası tamamdır.','Her iki gate terminaline aynı gerilim verilmiştir.',
+   'JFET yük anahtarı ve MOSFET gate sürmesi sınanır; gerçek parça ölçümü ve kalibrasyonu yapılmaz.']
+ ];
+ for(const [id,status,parts,wires,goal,explanation,steps,question,right,wrong1,wrong2,why] of rows){
+  const l=L.byId[id],review=l?.pedagogyReview,p=l?.project;
+  if(!l||l.kind!=='wiring'||p?.referenceOnly===true||p?.components?.length!==parts||
+     p?.wires?.length!==wires||l.steps?.length!==wires||
+     review?.titleTopologyStatus!==status||
+     ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>review[k]===true)||
+     (parts===12&&!['sj','qj','hj','sm','qm','hm'].every(k=>p.components.some(c=>c.id===k)))||
+     (parts===6&&!['sj','qj','hj'].every(k=>p.components.some(c=>c.id===k))))
+    throw Error('Protected SC395–399 FET source changed: '+id);
+  const graph=JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]);
+  l.learningGoal=goal;l.explanation=explanation;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[right,wrong1,wrong2],answer:0,why};
+  if(graph!==JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]))
+    throw Error('Protected SC395–399 circuit/locks changed: '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
