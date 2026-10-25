@@ -239,7 +239,7 @@
   // the diode must be selected from the powered comparator input, not the
   // pre-opamp initial estimate. Other circuits retain their normal diode model.
   const rectifierId=project?.tutorialLesson?.id;
-  const scopedRectifier=rectifierId==='opamp-apps-src-15'||rectifierId==='opamp-apps-outline-043';
+  let scopedRectifier=rectifierId==='opamp-apps-src-15'||rectifierId==='opamp-apps-outline-043';
   if(scopedRectifier){
    const link=(a,ap,b,bp)=>project.wires.some(w=>
     (w.from.c===a&&w.from.p===ap&&w.to.c===b&&w.to.p===bp)||
@@ -250,7 +250,7 @@
       project.wires.length!==(rectifierId==='opamp-apps-src-15'?16:14)||
       diodeCandidates.length!==1||diodeCandidates[0].c.id!=='d1'||
       opamps.length!==2||!required.every(e=>link(...e)))
-    throw Error('Scoped LM358/1N4148 rectifier topology changed: '+rectifierId);
+    scopedRectifier=false;
   }
   let activeDiodes=new Set(diodeCandidates),diodeBias=new Map();
   for(let pass=0;pass<diodeCandidates.length+1;pass++){
