@@ -12280,4 +12280,50 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC460–461: piezo pulse and TX11 250-ohm loop are real virtual measurements.
+ * Preserve source graphs, REVIEW, calibration, Windows/3D and hardware locks. */
+{
+ const cases=[
+  ['sensor-analog-apps-outline-047',5,4,'PIEZO_IMPULSE_OUTLINE_NATIVE_UNVERIFIED','sensor-analog-apps-src-08',
+   'Piezo darbesinin sanal 200 mV ölçüm aralığında nasıl sönümlendiğini gözlemek.',
+   'Sanal piezo PZ uçlarına bağlı 1 MΩ yük direnci ve UT33D+ probu ile kısa bir gerilim darbesini gösterir. Darbe ilk anda 100 mV, 150 ms sonra yaklaşık 50,6 mV, 1000 ms sonra yaklaşık 1,06 mV olur; 1600 ms sonrasında ideal model sıfıra iner. Ters prob negatif değer, kopuk prob OL verir. Bu yalnız yazılım modelidir; fiziksel piezo kuvveti, 3D görsel ve üretici kalibrasyonu kabul edilmedi.',
+   ['Önce PZ + ve − uçlarını, R1 1 MΩ yükünü ve UT33D+ kırmızı/siyah probunu bul.',
+    'Sanal darbe uygula: UT33D+ 200 mV DCV kademesinde yaklaşık +100 mV ölç.',
+    '150 ms sonra tekrar ölç: yaklaşık 50,6 mV. 1000 ms sonra yaklaşık 1,06 mV kalır.',
+    'Kırmızı ve siyah probu yer değiştirince işaret ters döner; prob kablosunu kesince OL görünür.',
+    'Gerçek basınç/kuvvet, üretici kalibrasyonu ve Windows/3D kabulü yapılmadan PASS verme.'],
+   'Sanal piezo darbesinden 150 ms sonra UT33D+ yaklaşık ne okur?',
+   'Yaklaşık +50,6 mV; darbe sönümlenmektedir.','100 V sabit kalır.','Kopuk probda bile 50,6 mV kesin okunur.',
+   '220 ms ideal sönüm sabitiyle 100 mV darbe 150 ms sonunda yaklaşık 50,6 mV olur.'],
+  ['sensor-analog-apps-outline-048',4,8,'LOAD_CELL_TX11_OUTLINE_NATIVE_UNVERIFIED','sensor-analog-apps-src-09',
+   'TX11 yük hücresinde milivolt, kilogram, 4–20 mA ve 250 Ω alıcı yükün farkını anlamak.',
+   'Sanal TX11 +/− uçlarından 24 V beslenir, EX+/EX− uçlarından hücreyi 5 V ile uyarır. 1000 kg ve 2 mV/V örnek köprüde 0/500/1000 kg sırasıyla 0/5/10 mV, TX11 göstergesinde 0/500/1000 kg üretir. TX11 I–G akım döngüsüne bağlı 250 Ω RL üzerinde sırasıyla yaklaşık 4/12/20 mA ve 1/3/5 V hesaplanır. EX veya SIG kablosu koparsa gösterge bağlantı hatası verir. Gerçek mekanik kapasite, direnç köprüsü kalibrasyonu ve fiziksel saha kabulü yoktur.',
+   ['G1 24 V besleme uçlarını, TX11 EX+/EX− uyartımını ve LC SIG+/SIG− ölçümünü ayır.',
+    'Sanal yükü 0 kg yap: TX11 0 kg, köprü 0 mV, RL 250 Ω üzerinde yaklaşık 4 mA ve 1 V.',
+    '500 kg yap: köprü 5 mV, TX11 500 kg; RL akımı yaklaşık 12 mA ve gerilim 3 V.',
+    '1000 kg yap: TX11 1000 kg, RL akımı yaklaşık 20 mA ve gerilim 5 V.',
+    'Sanal SIG+ veya EX+ kablosunu kopar: TX11 hata verir. Fiziksel kalibrasyon/Windows kabulü olmadan PASS verme.'],
+   'Sanal TX11 500 kg okurken 250 Ω çıkış direncinde ne beklenir?',
+   'Yaklaşık 12 mA ve 3 V.','500 mA ve 24 V.','Sinyal kablosu kopsa da otomatik 12 mA ölçülür.',
+   'Yarım yükte 4–20 mA aralığının ortası 12 mA’dır; 250 Ω sanal alıcıda yaklaşık 3 V düşer.']
+ ];
+ const generic='Bu derste ekrandaki malzemeler neden özellikle seçildi?';
+ for(const [id,parts,wires,issue,origin,goal,story,steps,question,correct,wrong1,wrong2,why] of cases){
+  const l=L.byId[id],p=l?.project,r=l?.pedagogyReview;
+  if(!l||l.kind!=='wiring'||p?.referenceOnly===true||
+     p.components?.length!==parts||p.wires?.length!==wires||l.steps?.length!==wires||
+     r?.titleTopologyStatus!=='REVIEW'||r.titleTopologyIssue!==issue||
+     r.sourceTopologyReusedFrom!==origin||l.quiz?.question!==generic||
+     ['nativeDynamicAcceptance','sensorCalibrationAcceptance','physicalAcceptance',
+      'windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>r[k]===true))
+   throw Error('SC460–461 locked topology or acceptance changed: '+id);
+  const protect=JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]);
+  l.summary=goal;l.learningGoal=goal;l.explanation=story;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[correct,wrong1,wrong2],answer:0,why};
+  if(protect!==JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]))
+   throw Error('SC460–461 protected graph changed: '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);

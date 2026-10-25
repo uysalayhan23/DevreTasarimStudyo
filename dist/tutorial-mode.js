@@ -906,7 +906,14 @@ function topologyReviewNotice(l){
  return '<div class="tutorial-feedback warn tutorial-review-warning" role="status"><strong>DEVRE İNCELEMEDE · '+esc(issue)+'</strong><p>'+esc(message)+'</p><p>Bu model, doğrulanmış fiziksel devre veya tamamlanmış simülasyon kabulü değildir.</p></div>';
 }
 
-function isPiezoVirtualLesson(l){return l?.id==='sensor-analog-apps-src-08'&&l?.pedagogyReview?.piezoVirtualSource==='TWO_TERMINAL_PASSIVE_TRANSIENT_EMF'}
+function isPiezoVirtualLesson(l){
+ const r=l?.pedagogyReview;
+ return (l?.id==='sensor-analog-apps-src-08'&&r?.piezoVirtualSource==='TWO_TERMINAL_PASSIVE_TRANSIENT_EMF')||
+  (l?.id==='sensor-analog-apps-outline-047'&&
+   r?.sourceTopologyReusedFrom==='sensor-analog-apps-src-08'&&
+   r?.titleTopologyStatus==='REVIEW'&&
+   r?.titleTopologyIssue==='PIEZO_IMPULSE_OUTLINE_NATIVE_UNVERIFIED');
+}
 function piezoVirtualPanel(l,session,project){
  const pz=project?.components?.find(c=>c.id==='pz'),mv=Number(pz?._piezoMv)||0;
  return '<section class="tutorial-piezo-virtual"><h3>Piezo · sanal darbe ve sönüm deneyi</h3>'+
@@ -918,7 +925,7 @@ function piezoVirtualPanel(l,session,project){
 }
 function setPiezoVirtualSample(project,value){
  const lesson=lessonFor(project),sensor=project?.components?.find(c=>c.id==='pz'),now=Number(value);
- if(!isPiezoVirtualLesson(lesson)||!sensor||![0,150,1000].includes(now))return false;
+ if(!isPiezoVirtualLesson(lesson)||sensor?.typeId!=='tutorial-piezo'||sensor.mq07PiezoTapUi!==true||![0,150,1000].includes(now))return false;
  if(now===0)sensor.piezoTapAt=0;
  if(typeof sensor.piezoTapAt!=='number'){project.tutorialLesson.lastFeedback='Önce sanal darbeyi uygula.';sync(project);return false}
  const defs=root.DTSEditor?.byId,solver=root.CCSSimulation?.solve;
