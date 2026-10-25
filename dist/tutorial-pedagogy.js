@@ -11960,7 +11960,7 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
 {
  const rows=[
   ['electronic-switching-outline-029','SOURCE_WIRED_NATIVE_FET_COMPARISON',12,19,'JFET ve MOSFET iki farklı kumanda yolu',
-   'Bir masada iki ışık yolu var: H1 tarafında S1 lambanın beslemesini açar, J113 gate’i kaynak ucuna bağlıdır. H2 tarafında S2, IRF540N gate’ine sanal 5 V komutu verir. İkisi aynı anahtarlama biçimi değildir. Önce yalnız S1’i, sonra yalnız S2’yi etkinleştir; lambaların bağımsız değişimini izle. Sanal anahtarlama gerçek parçanın sağlamlık testi değildir.',
+   'Bir masada iki ışık yolu var: H1 tarafında S1 lambanın beslemesini açar, J113 gate’i kaynak ucuna bağlıdır. H2 tarafında S2, IRF540N gate’ine sanal 5 V komutu verir. İkisi aynı anahtarlama biçimi değildir. Önce yalnız S1’i, sonra yalnız S2’yi etkinleştir; lambaların bağımsız değişimini izle. Sanal anahtarlama fiziksel cihazın sağlamlık testi değildir.',
    ['H1 yolunda S1 → H1 → J113 D/S hattını izle; J113 G ucu S ucuna bağlıdır.',
     'S1 açıkken H1 söner: S1 gate’i değil, yükün beslemesini keser.',
     'S2 etkinleşince G2’den IRF540N G ucuna sanal 5 V gelir; H2 yanar.',
@@ -11975,7 +11975,7 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
     'Yalnız S1’i etkinleştir: H1 yanar, H2 kapalı kalır.',
     'S1’i kapatıp S2’yi etkinleştir: IRF540N gate sürülür, H2 yanar.',
     'S2–Q2/G bağlantısı kesikse H2 yanmamalıdır; H1 kolu bundan etkilenmez.',
-    'Bu sanal eşikleri gerçek J113/IRF540N sağlamlık ölçümü sanma.'],
+    'Bu sanal eşikleri fiziksel J113/IRF540N sağlamlık ölçümü veya PASS sanma.'],
    'Sanal J113 ve IRF540N arasında hangi kumanda farkı gösterilir?',
    'J113 G–S bağlıyken yük seçicisiyle; IRF540N gate sürmesiyle kontrol edilir.','İki FET doğrudan aynı seçicinin gate hattındadır.','JFET yalnız mekanik kontak, MOSFET yalnız motor rulmanıdır.',
    'S1 yük beslemesine seri, S2 ise IRF540N gate yolundadır; sanal iki devre bağımsızdır.'],
