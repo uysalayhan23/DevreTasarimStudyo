@@ -4,6 +4,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const QA=require('./qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
+const Scope=require('./tutorial-lesson-scope-v11920.cjs');
 const ROOT=path.resolve(__dirname,'..');
 const toggles=new Set(['push-no','push-nc','wall-switch','wall-vavien','wall-commutator',
  'wall-intermediate','bell-push','bell-light-push','limit-nc','limit-no','switch-no',
@@ -20,7 +21,8 @@ const state=(p,defs)=>JSON.stringify(p.components.filter(c=>{
  Number(c._currentValue)||0,!!c._lampActive,c._spin||0,
  c._meter?.value??null,c._meter?.display??null,c._voltageValue??null]));
 function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
- const report={qa:'MQ-12 native 722 lesson sequential stability',source:'current repo source',
+ const scope=Scope.summarize(L.lessons);
+ const report={qa:'MQ-12 native electrical candidate sequential stability',source:'current repo source',scope,rawWireCount:scope.rawWireCount,
   lessonCount:L.lessons.length,withWires:0,checkedInitial:0,checkedChanged:0,checkedRestored:0,
   stableInitial:0,stableChanged:0,stableRestored:0,controls:0,observedOutputChanges:0,
   noControl:0,noControlLessons:[],missingDefinitionLessons:[],unsupportedActuatorLessons:[],passiveLessons:[],unresponsiveControls:[],solverFailures:[],restorationChecked:0,restorationFailures:[],missingDefinitions:[],failures:[],
@@ -30,7 +32,7 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
   if(!raw||!Array.isArray(raw.wires)||!Array.isArray(raw.components)){
    report.failures.push({id:lesson.id,phase:'structure',reason:'missing graph'});continue;
   }
-  if(!raw.wires.length)continue;
+  if(!Scope.isCircuitLesson(lesson))continue;
   report.withWires++;
   const missing=[...new Set(raw.components.map(c=>c.typeId).filter(id=>!defs[id]))];
   if(missing.length){
@@ -102,9 +104,9 @@ function audit({L=QA.curriculum(),defs=QA.catalog(),solver=Simulation}={}){
    }
   }catch(e){report.failures.push({id:lesson.id,phase:'exception',message:String(e).slice(0,240)})}
  }
- report.stabilityStatus=report.lessonCount===1655&&report.withWires===722&&
-  report.checkedInitial===722&&report.checkedChanged===722&&report.checkedRestored===722&&
-  report.stableInitial===722&&report.stableChanged===722&&report.stableRestored===722&&
+ report.stabilityStatus=report.lessonCount===1655&&report.withWires===scope.simulatable&&scope.rawWireCount===scope.simulatable+scope.referenceWithWires&&
+  report.checkedInitial===scope.simulatable&&report.checkedChanged===scope.simulatable&&report.checkedRestored===scope.simulatable&&
+  report.stableInitial===scope.simulatable&&report.stableChanged===scope.simulatable&&report.stableRestored===scope.simulatable&&
   !report.missingDefinitions.length&&!report.solverFailures.length&&
   !report.failures.some(f=>f.phase==='structure'||f.phase==='exception')?'PASS':'FAIL';
  report.classificationCoverage=(report.controls+report.noControl+report.missingDefinitionLessons.length)+'/'+report.withWires;

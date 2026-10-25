@@ -4,14 +4,15 @@
 const fs=require('node:fs'),path=require('node:path');
 const StaticQA=require('./qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
+const Scope=require('./tutorial-lesson-scope-v11920.cjs');
 const ROOT=path.resolve(__dirname,'..');
 const clone=v=>JSON.parse(JSON.stringify(v));
 const interactive=new Set(['switch-no','switch-nc','switch-both','switch-multi','sensor','detector']);
 const activeStates=[false,true];
 function run(){
- const L=StaticQA.curriculum(),defs=StaticQA.catalog();
+ const L=StaticQA.curriculum(),defs=StaticQA.catalog(),scope=Scope.summarize(L.lessons);
  const report={qa:'MQ-05 tutorial virtual input-state dynamic smoke audit',total:L.lessons.length,
-  referenceOnly:0,wired:0,initialStates:0,interactiveDevices:0,toggledStates:0,changedOutputs:0,
+  referenceOnly:0,wired:0,scope,rawWireCount:scope.rawWireCount,initialStates:0,interactiveDevices:0,toggledStates:0,changedOutputs:0,
   scenarios:[],missingDefs:[],failures:[],oscillating:[],
   note:'Finite OFF/ON state smoke checks on selected virtual controls. Does not prove physical product behavior, safety compliance or complete teaching quality.'};
  const record=(lesson,project,scenario)=>{
@@ -32,7 +33,7 @@ function run(){
  };
  for(const lesson of L.lessons){
   const p=lesson.project;
-  if(!p?.wires?.length){report.referenceOnly++;continue}
+  if(!Scope.isCircuitLesson(lesson)){report.referenceOnly++;continue}
   report.wired++;
   const absent=[...new Set(p.components.filter(c=>!defs[c.typeId]).map(c=>c.typeId))];
   if(absent.length){report.missingDefs.push({id:lesson.id,types:absent});continue}
@@ -52,7 +53,8 @@ function run(){
   }
   if(report.scenarios.length<40)report.scenarios.push({id:lesson.id,controlCount:controls.length,baseline:baseline.outputs||[],baselineShort:baseline.shortCircuit});
  }
- report.status=report.total===1655&&report.referenceOnly===933&&report.wired===722&&report.missingDefs.length===0&&report.failures.length===0&&report.oscillating.length===0&&report.initialStates===report.wired&&report.interactiveDevices>=500&&report.toggledStates>=1000&&report.changedOutputs>=100?'PASS':'FAIL';
+ report.status=report.total===1655&&report.referenceOnly===scope.referenceWithWires+scope.referenceWithoutWires&&report.wired===scope.simulatable&&
+  scope.rawWireCount===report.wired+scope.referenceWithWires&&report.missingDefs.length===0&&report.failures.length===0&&report.oscillating.length===0&&report.initialStates===report.wired&&report.interactiveDevices>=500&&report.toggledStates>=1000&&report.changedOutputs>=100?'PASS':'FAIL';
  return report;
 }
 function main(){

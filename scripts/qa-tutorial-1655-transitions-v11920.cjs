@@ -4,17 +4,19 @@
 const fs=require('node:fs'),path=require('node:path');
 const Static=require('./qa-tutorial-1655-simulation-v11920.cjs');
 const Simulation=require('../dist/simulation.js');
+const Scope=require('./tutorial-lesson-scope-v11920.cjs');
 const clone=v=>JSON.parse(JSON.stringify(v));
 const inputKinds=new Set(['switch-no','switch-nc','switch-both','switch-multi','sensor','detector']);
 const outputKinds=new Set(['lamp','led','buzzer','coil','contactor3','motor','motor3','relay-protection']);
 function run({L=Static.curriculum(),defs=Static.catalog(),solver=Simulation}={}){
- const report={name:'MQ-05 native virtual stateful transitions OFF-ON-OFF',
+ const scope=Scope.summarize(L.lessons);
+ const report={name:'MQ-05 native virtual stateful transitions OFF-ON-OFF',scope,rawWireCount:scope.rawWireCount,
   lessons:L.lessons.length,referenceOnly:0,wired:0,controls:0,transitions:0,
   changedOutputs:0,returnedOutputs:0,sustainedOutputs:0,failed:[],oscillating:[],
   note:'Stateful virtual engine smoke test; a latched output may legitimately remain ON after releasing the input. No physical/Windows acceptance implied.'};
  for(const lesson of L.lessons){
   const p=lesson.project;
-  if(!p?.wires?.length){report.referenceOnly++;continue}
+  if(!Scope.isCircuitLesson(lesson)){report.referenceOnly++;continue}
   report.wired++;
   const inputs=p.components.filter(c=>inputKinds.has(defs[c.typeId]?.kind)&&typeof c.state==='boolean').slice(0,2);
   for(const component of inputs){
@@ -49,7 +51,7 @@ function run({L=Static.curriculum(),defs=Static.catalog(),solver=Simulation}={})
    }
   }
  }
- report.status=report.lessons===1655&&report.wired===722&&report.referenceOnly===933&&
+ report.status=report.lessons===1655&&report.wired===scope.simulatable&&report.referenceOnly===scope.referenceWithWires+scope.referenceWithoutWires&&
   report.controls>=500&&report.transitions===report.controls*3&&
   report.changedOutputs>=100&&report.failed.length===0&&report.oscillating.length===0?'PASS':'FAIL';
  return report;

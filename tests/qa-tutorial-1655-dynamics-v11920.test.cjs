@@ -5,7 +5,10 @@ test('MQ-05 virtual behavior: every actual wired lesson has native baseline and 
  const result=QA.main();
  assert.equal(result.total,1655);
  assert.equal(result.referenceOnly+result.wired,1655);
- assert.equal(result.wired,722,'Unexpected change in canonical wired-lesson count');
+ assert.equal(result.wired,733,'Current native wiring and exploration scope');
+ assert.equal(result.scope.wiring,717);assert.equal(result.scope.explore,16);
+ assert.equal(result.scope.referenceWithWires,68);assert.equal(result.scope.rawWireCount,801);
+ assert.equal(result.scope.wiringGoalStatus,'PENDING');
  assert.equal(result.initialStates,result.wired);
  assert.ok(result.toggledStates>=1000,'Dynamic OFF/ON coverage is insufficient');
  assert.ok(result.changedOutputs>=100,'Control toggles did not affect at least 100 actual virtual outputs');

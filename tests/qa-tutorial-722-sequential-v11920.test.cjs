@@ -2,21 +2,24 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const {audit,main}=require('../scripts/qa-tutorial-722-sequential-v11920.cjs');
 
-test('native 722 wiring lessons solve all three consecutive phases without faults',()=>{
+test('all 733 current circuit/explore lessons solve three phases; 68 quiz probe boards excluded',()=>{
  const r=audit();
  assert.equal(r.lessonCount,1655);
- assert.equal(r.withWires,722);
+ assert.equal(r.withWires,733);
+ assert.equal(r.scope.wiring,717);assert.equal(r.scope.explore,16);
+ assert.equal(r.scope.referenceWithWires,68);assert.equal(r.rawWireCount,801);
+ assert.equal(r.scope.wiringGoalStatus,'PENDING');
  for(const k of ['checkedInitial','checkedChanged','checkedRestored',
-   'stableInitial','stableChanged','stableRestored'])assert.equal(r[k],722,k);
+   'stableInitial','stableChanged','stableRestored'])assert.equal(r[k],733,k);
  assert.equal(r.stabilityStatus,'PASS');
  assert.equal(r.missingDefinitions.length,0);
  // Electrical solver errors are distinct from unresolved behavior restoration.
  assert.equal(r.solverFailures.length,0);
  assert.equal(r.failures.length,r.restorationFailures.length);
- assert.equal(r.controls+r.noControl+r.missingDefinitionLessons.length,722);
- assert.equal(r.classificationCoverage,'722/722');
+ assert.equal(r.controls+r.noControl+r.missingDefinitionLessons.length,733);
+ assert.equal(r.classificationCoverage,'733/733');
  assert.equal(r.classificationComplete,true);
- assert.equal(r.actuationCoverage,r.controls+'/722');
+ assert.equal(r.actuationCoverage,r.controls+'/733');
  assert.equal(r.restorationChecked,r.controls);
  assert.equal(r.restorationStatus,r.restorationFailures.length?'REVIEW':'PASS');
  assert.equal(r.restorationCoverage,r.restorationChecked+'/'+r.controls);
