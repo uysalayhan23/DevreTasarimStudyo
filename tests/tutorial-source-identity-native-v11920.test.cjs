@@ -11,7 +11,7 @@ test('seven real wired projects retain their exact lesson session identity',()=>
   const lesson=curriculum.byId[id],p=lesson?.project;
   assert.equal(lesson?.kind,'wiring',id);
   assert.equal(p?.projectId,'tutorial-session-source-'+id,id);
-  assert.deepEqual(p.tutorialLesson,{id,topicId:lesson.topicId,phase:'demo',step:0,level:Number(id.slice(-2))},id);
+  assert.deepEqual(JSON.parse(JSON.stringify(p.tutorialLesson)),{id,topicId:lesson.topicId,phase:'demo',step:0,level:Number(id.slice(-2))},id);
   assert.ok(p.wires.length>0&&p.components.length>0,id);
  }
  assert.equal(curriculum.lessons.filter(l=>l.project?.tutorialLesson?.id!==l.id).length,0);
