@@ -200,7 +200,26 @@ startTitles.forEach((x,i)=>addLesson('motor-start-speed',x,i<3?'motor-star-delta
 
 /* PLC */
 const plcTitles=['PLC tanımı ve röleli sistemle karşılaştırma','PLC donanım yapısı','Projeye uygun PLC seçimi','S7-1200 besleme bağlantısı','PLC dijital giriş bağlantısı','PLC transistor çıkış ve kontaktör bobini','LAD ve FBD diyagramı','Kapalı kontak komutu','Buton uygulamaları','Temel mantık fonksiyonları','Ara vaviyen mantığının PLC ile kurulması','PLC ile motora direkt yol verme','PLC ile farklı merkezlerden motor kontrolü','PLC ile ileri-geri elektriksel kilitleme','SET-RESET uygulamaları','Bir butonla çalıştır-durdur','Kenar tetikleme','PLC zamanlayıcı uygulaması','PLC sayıcı uygulaması','PLC analog giriş/çıkış temel bağlantısı','PLC ile motorun zaman ayarlı durdurulması','PLC ile invertör kontrolü'];
-plcTitles.forEach((x,i)=>i>=3&&i<=5||i===11||i===12||i===13||i===20?addCustom('plc-hardware-programming',x,plcMotorProject(),{sourceDocs:['KUMTEK','OTOAT'],quiz:quiz.plc,...motorPower}):addLesson('plc-hardware-programming',x,'button-relay-3',{kind:'quiz',quiz:quiz.plc,sourceDocs:['KUMTEK','OTOAT']}));
+plcTitles.forEach((x,i)=>{
+ const lesson=i>=3&&i<=5||i===11||i===12||i===13||i===20
+  ?addCustom('plc-hardware-programming',x,plcMotorProject(),{sourceDocs:['KUMTEK','OTOAT'],quiz:quiz.plc,...motorPower})
+  :addLesson('plc-hardware-programming',x,'button-relay-3',{kind:'quiz',quiz:quiz.plc,sourceDocs:['KUMTEK','OTOAT']});
+ if(i!==21)return;
+ // SC332: a relay demonstration is not a PLC-to-VFD circuit.
+ // Keep this as an honest reference until real command and power wiring passes native QA.
+ const p=lesson.project;
+ p.components=[
+  C('plc','plc-hw-6es7211-1ae40-0xb0',260,250,'PLC1','PLC · S7-1211C'),
+  C('drive','sinamics-v20-1p',720,250,'VFD1','SINAMICS V20 · invertör'),
+  C('motor','motor-3p',1180,250,'M1','Üç fazlı asenkron motor')
+ ];
+ p.wires=[];p.junctions=[];p.referenceOnly=true;p.tutorialLesson.phase='quiz';
+ lesson.steps=[];lesson.kind='quiz';lesson.powerSteps=[];
+ lesson.summary='PLC, SINAMICS V20 ve motorun görevlerini tanıtır. PLC–VFD bağlantısı bu kartta kurulmamıştır.';
+ lesson.explanation='PLC çalışma komutunu verir; invertör motorun çıkış frekansını yönetir. Bu üç cihaz burada yalnız tanıtılır. Gerçek terminal bağlantıları, çalışma komutları ve hız davranışı ayrı bir kablolu uygulamada doğrulanmalıdır.';
+ lesson.powerExplanation='PLC ile VFD arasındaki komut yolu ve motorun güç bağlantıları kablolanmamıştır; bu karttan RUN, yön veya RPM simülasyonu sonucu çıkarılamaz.';
+ lesson.quiz={question:'PLC ile bir invertör kumanda edildiğinde motor frekansını hangi cihaz yönetir?',options:['Frekans invertörü (VFD)','PLC dijital çıkış kablosu doğrudan motor sargıları','START butonunun yardımcı kontağı'],answer:0,why:'PLC kontrol komutunu verir; invertör uygun güç çıkışını ve frekansını oluşturur.'};
+});
 
 /* VFD/servo */
 ['Frekans invertörünün temel yapısı ve parametreleri','VFD ile start-stop','VFD ile ileri-geri yön','Potansiyometre ile hız kontrolü','Kalıcı tip butonla devir yönü','Butonlarla start-stop-yön + pot hız','PLC ile frekans invertörü kontrolü','Motor etiket parametrelerinin sürücüye girilmesi','PLC ile servo sürücü bağlantısı','Servo sürücü ayarlarının yapılması'].forEach((x,i)=>addLesson('vfd-servo-control',x,'motor-forward-reverse-4',{kind:'quiz',quiz:quiz.plc,sourceDocs:['KUMTEK','KUMKON','OTOAT'],...motorPower}));
