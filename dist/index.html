@@ -198,6 +198,7 @@
         </div>
         <div id="ctSettings" hidden><label>Akım trafosu oranı<select id="propCtRatio"><option>50/5</option><option>100/5</option><option>200/5</option><option>400/5</option><option>600/5</option><option>1000/5</option><option>100/1</option><option>200/1</option><option>400/1</option><option>1000/1</option></select></label><p>RMS akım modeli: direnç, kondansatör ve bobin/reaktör yükleri sayısal modelde hesaba katılır.</p></div>
         <label id="resistanceRow" hidden>Yük direnci (Ω)<input id="propResistance" type="number" min="0.01" max="10000000" value="1000"></label>
+        <label id="resistorToleranceRow" hidden>Direnç toleransı <select id="propResistorTolerance"><option value="1">%1 · kahverengi</option><option value="2">%2 · kırmızı</option><option value="5" selected>%5 · altın</option><option value="10">%10 · gümüş</option></select></label>
         <label id="capacitanceRow" hidden>Kapasite (µF)<input id="propCapacitance" type="number" min="0.001" max="1000000" step="0.001" value="100"></label>
         <label id="inductanceRow" hidden>Endüktans (mH)<input id="propInductance" type="number" min="0.001" max="100000" step="0.001" value="150"></label>
         <div id="reactiveLiveRow" class="property-help" hidden></div>
@@ -371,7 +372,7 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <script src="installation-v118.js?rev=20261004-wp014"></script>
   <script src="design-library.js?rev=20261014-bell-trafo-v1"></script>
   <script src="workspace-space.js?rev=20261007-workspace-space1"></script>
-  <script src="workspaces.js?rev=20261010-real-ics1"></script>
+  <script src="workspaces.js?rev=20261025-bell-catalog1"></script>
   <script src="project-store.js?rev=20261011-collector-legacy-warning1"></script>
   <script src="safety.js?rev=20261004-wp014"></script>
   <script src="design-visuals.js?rev=20261004-wp014"></script>
@@ -404,11 +405,11 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <script src="product-assets.js?rev=20261022-siemens-frame1"></script>
   <script src="hcfa-material-assets.js?rev=20261008-visual-runtime4"></script>
   <script src="plc-assets.js?rev=20261004-wp014"></script>
-  <script src="product-assets-v110.js"></script><script src="photo-plane.js"></script><script src="plc-photo-data.js"></script><script src="plc-front.js?rev=20261008-sim-audit1"></script><script src="materials-v113.js?rev=20261010-bg-clean2"></script><script src="materials-v111.js?rev=20261010-bg-clean2"></script><script src="modern-materials.js"></script><script src="materials-v115.js?rev=20261010-bg-clean3"></script><script src="materials.js?rev=20261010-real-visuals1"></script>
+  <script src="product-assets-v110.js"></script><script src="photo-plane.js"></script><script src="plc-photo-data.js"></script><script src="plc-front.js?rev=20261008-sim-audit1"></script><script src="materials-v113.js?rev=20261010-bg-clean2"></script><script src="materials-v111.js?rev=20261025-resistor-bands1"></script><script src="modern-materials.js"></script><script src="materials-v115.js?rev=20261010-bg-clean3"></script><script src="materials.js?rev=20261010-real-visuals1"></script>
   <script src="book-symbols.js?rev=20261008-terminal-readable1"></script>
   <script src="norms.js?rev=20261004-wp014"></script>
   <script src="labels.js?rev=20261004-wp014"></script>
-  <script src="catalog.js?rev=20261010-real-visuals1"></script>
+  <script src="catalog.js?rev=20261025-bell-catalog1"></script>
   <script src="assemblies.js?rev=20261004-wp014"></script>
   <script src="symbols.js?rev=20261010-real-visuals1"></script>
   <script src="current-model.js?rev=20261010-real-ics1"></script><script src="signed-flow.js?rev=20261004-wp014"></script><script src="plc-runtime.js?rev=20261008-sim-audit1"></script><script src="digital-ic-runtime-v11920.js?rev=20261010-real-ics1"></script><script src="simulation.js?rev=20261014-bell-trafo-v1"></script>
@@ -425,7 +426,7 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <script src="starter-projects.js?rev=20261004-wp014"></script>
   <script src="dold-examples.js?rev=20261004-wp014"></script>
   <script src="hcfa-examples.js?rev=20261004-wp014"></script>
-  <script src="app.js?rev=20261022-terminal-routes1"></script>
+  <script src="app.js?rev=20261025-resistor-bands1"></script>
   <script src="arduino-ide.js?rev=20261004-wp014"></script>
   <script src="panel-editor.js?rev=20261004-wp014"></script>
   <script src="starter-v115.js?rev=20261004-wp014"></script><script src="starter-v113.js"></script><script src="starter-v112.js?rev=20261004-wp014"></script><script src="starter-v111.js"></script><script src="starter-v110.js"></script><script src="starter-v116.js"></script><script src="starter-v117.js"></script><script src="studio.js?rev=20261011-collector-legacy-warning1"></script>

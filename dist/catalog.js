@@ -33,6 +33,8 @@
   function classification(d){
     if(['unit-ut33d-plus','unit-ut61e-plus','unit-ut200a'].includes(d.id))return {group:'measurement',areas:['control','panel','building','automation','measurement','electronics','motor']};
     if(d.arduinoGroup)return {group:d.arduinoGroup,areas:['electronics','automation','control']};
+    // Reuse the isolated secondary-only 12 VAC source, not a second transformer model.
+    if(d.id==='bell-transformer')return {group:'bell-circuits',areas:['building','control','panel']};
     if(['electronics-semiconductors','electronics-ics'].includes(d.catalogGroup))return {group:'semiconductors',areas:['electronics','control']};
     if(d.catalogGroup)return {group:d.catalogGroup,areas:d.diagramOnly?['drawing','panel','building','measurement','automation']:['control','panel','building','automation','measurement']};
     if(d.isPLC)return {group:plcGroup(d),areas:['automation','control','panel']};

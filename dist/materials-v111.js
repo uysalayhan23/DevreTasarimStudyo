@@ -1,5 +1,33 @@
 (function(root){
  'use strict';
+ // Four-band IEC 60062-style code: two significant digits, multiplier, tolerance.
+ // Outside the representable range, omit the bands rather than inventing colors.
+ const resistorDigits=[
+  ['siyah','#1b1b1b'],['kahverengi','#784421'],['kırmızı','#d32f2f'],
+  ['turuncu','#f97316'],['sarı','#facc15'],['yeşil','#168a47'],
+  ['mavi','#2563eb'],['mor','#7c3aed'],['gri','#808080'],['beyaz','#f9fafb']
+ ];
+ const resistorMultipliers={'-2':['gümüş','#c0c0c0'],'-1':['altın','#d4af37']};
+ for(let exponent=0;exponent<=9;exponent++)resistorMultipliers[exponent]=resistorDigits[exponent];
+ const resistorTolerances={
+  '0.05':['gri','#808080'],'0.1':['mor','#7c3aed'],'0.25':['mavi','#2563eb'],
+  '0.5':['yeşil','#168a47'],'1':['kahverengi','#784421'],
+  '2':['kırmızı','#d32f2f'],'5':['altın','#d4af37'],'10':['gümüş','#c0c0c0']
+ };
+ function resistorColorBands(ohms,tolerancePercent=5){
+  const value=Number(ohms),tol=Number(tolerancePercent);
+  if(!Number.isFinite(value)||value<=0||!resistorTolerances[String(tol)])return null;
+  let exponent=Math.floor(Math.log10(value))-1;
+  let digits=Math.round(value/Math.pow(10,exponent));
+  if(digits===100){digits=10;exponent++}
+  const multiplier=resistorMultipliers[String(exponent)];
+  if(!multiplier||digits<10||digits>99)return null;
+  const bands=[resistorDigits[Math.floor(digits/10)],resistorDigits[digits%10],
+   multiplier,resistorTolerances[String(tol)]],encodedOhms=digits*Math.pow(10,exponent);
+  return {names:bands.map(b=>b[0]),colors:bands.map(b=>b[1]),encodedOhms,tolerancePercent:tol,
+   approximate:Math.abs(value-encodedOhms)>Math.max(1e-12,value*1e-9)};
+ }
+
  // Orthographic, code-native assemblies: the moving part is separate from its housing.
  function markup(d,c={}){
   const w=d.w,h=d.h,x=w/2,y=h/2,on=!!c.state;
@@ -57,15 +85,27 @@
    a=rect(12,7,w-24,h-14,'#e8ece9')+rect(19,y-15,w-38,32,'#a5afb5')+rect(22,on?y+4:y-12,w-44,12,'#1c2225')+text(on?'0 OFF':'I ON',x,y-22,9);
   }else if(d.kind==='thermal-magnetic'){
    a=rect(12,10,w-24,h-20,'#414f59')+rect(19,20,w-38,h-40,'#d9dedb')+circle(x,y,Math.min(w,h)*.22,'#6d7677')+`<g transform="rotate(${on?90:0} ${x} ${y})">${rect(x-6,y-21,12,42,'#161c20',4)}<path d="M${x} ${y-17}v10" stroke="white" stroke-width="3"/></g>`;
+  }else if(d.id==='bell-transformer'){
+   // Virtual isolated secondary: no user-wirable mains input.
+   a=rect(8,8,w-16,h-16,'#d8e2eb',8)+rect(16,17,w-45,h-34,'#f5f7f8',5)+
+     text('ZİL TRAFOSU',x-8,y-12,9)+text('SANAL 12 V~',x-8,y+7,10);
   }else if(d.id==='resistor'){
-   const value=Math.max(1,Number(c.resistance)||1000),valueLabel=value>=1000?`${Number((value/1000).toFixed(3))} kΩ`:`${value} Ω`,bands=value===2700?['#d32f2f','#7c3aed','#d32f2f','#d4af37']:value===220?['#d32f2f','#d32f2f','#8b5a2b','#d4af37']:['#754222','#161616','#e03d26','#b89935'];
+   const value=Number(c.resistance??d.resistance??1000),
+     safeValue=Number.isFinite(value)&&value>0?value:1000,
+     valueLabel=safeValue>=1000?`${Number((safeValue/1000).toFixed(3))} kΩ`:`${safeValue} Ω`,
+     code=resistorColorBands(safeValue,c.resistorTolerancePercent??d.resistorTolerancePercent??5),
+     bandLabel=code?(code.approximate?'≈ ':'')+code.names.join('–'):'4 bant ile kodlanamaz';
    if(d._verticalTransform){
     a=`<path d="M${x} 0V20M${x} ${h-20}V${h}" stroke="#a3a9aa" stroke-width="3"/>`+rect(x-12,20,24,h-40,'#d8be89',8);
-    bands.forEach((color,i)=>a+=rect(x-11,27+i*11,22,5,color,0));
+    if(code)a+=`<g class="resistor-bands" data-color-code="${code.names.join(',')}" aria-label="${bandLabel}">`;
+    code?.colors.forEach((color,i)=>a+=rect(x-11,27+i*11,22,5,color,0));
+    if(code)a+='</g>';
     a+=text(valueLabel,x+20,y+3,7);
    }else{
     a=`<path d="M0 ${y}H${w} " stroke="#a3a9aa" stroke-width="3"/>`+rect(x-30,y-12,60,24,'#d8be89',8);
-    bands.forEach((color,i)=>a+=rect(x-22+i*14,y-11,5,22,color,0));
+    if(code)a+=`<g class="resistor-bands" data-color-code="${code.names.join(',')}" aria-label="${bandLabel}">`;
+    code?.colors.forEach((color,i)=>a+=rect(x-22+i*14,y-11,5,22,color,0));
+    if(code)a+='</g>';
     a+=text(valueLabel,x,h-3,9);
    }
   }else if(['reactor','winding'].includes(d.id)){
@@ -88,5 +128,5 @@
   }
   return a?`<g class="material-layer material-v111" data-material="front-${d.id}" stroke-linecap="round">${a}</g>`:'';
  }
- const api={markup};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSMaterials111=api;
+ const api={markup,resistorColorBands};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSMaterials111=api;
 })(typeof window==='undefined'?globalThis:window);

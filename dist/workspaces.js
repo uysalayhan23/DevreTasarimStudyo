@@ -2,7 +2,7 @@
   'use strict';
   const modes=[['control','Kumanda Devreleri Tasarımı'],['building','Tesisat ve Dağıtım Devreleri Tasarımı'],['panel','Pano Tasarımı'],['arduino','Arduino Atölyesi']];
   const normalize=value=>modes.some(([id])=>id===value)?value:'control';
-  const buildingGroups=new Set(['installation','sockets','telephone','antenna','knx','energy-meters']);
+  const buildingGroups=new Set(['installation','sockets','telephone','antenna','knx','energy-meters','bell-circuits']);
   const buildingOnly=new Set(['power-receptacle','wall-light-outlet','blind-motor','surge-arrester','standard-light']);
   const sharedBuilding=new Set(['protection','sources','transformers','terminals','measurement','contactors','auxiliary','relays','timers','lamps','alarms','switches']);
   const arduinoSharedTools=new Set(['unit-ut33d-plus','test-probe-red','test-probe-black','encoder-incremental']);
