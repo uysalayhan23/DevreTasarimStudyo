@@ -12100,4 +12100,110 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC418–423/427/429/432: verified virtual SCR, TRIAC and optocoupler traces.
+ * Guided explanations only; no canonical topology or acceptance mutation. */
+{
+ const rows=[
+  ['electronic-switching-outline-046',5,7,'SOURCE_WIRED_ISOLATED_AC_SCR_WAVE_PENDING',
+   'İzole 12 V sanal AC kaynağında SCR’nin neden yalnız pozitif yarım dalgayı ilettiğini görmek.',
+   'Sanal AC1 kaynağı H1–SCR anot/katot yolunu besler. TRG1 tetik açısı 90° iken pozitif yarım dalgada yük iletir; negatif yarım dalgada SCR kesimdedir. Bu kaynak 230 V şebeke değildir, fiziksel dalga biçimi kabulü yapılmamıştır.',
+   ['Önce AC1/AC–H1–Q1/A–Q1/K–AC1/RET sanal yük yolunu bul.',
+    'TRG1, RG 1 kΩ ve Q1/G tetik hattının yük hattından ayrı olduğunu gör.',
+    '90° civarında sanal pozitif yarım dalga iletir; 270° negatif yarım dalgada çıkış sıfırdır.',
+    'RG–Q1/G kablosu kopunca tetik ve çıkış RMS değeri sıfıra iner.',
+    '12 V izole sanal kaynak testini şebeke veya fiziksel SCR kabulü sayıp PASS verme.'],
+   'SCR bu sanal devrede 90° tetiklenirse hangi yarım dalga H1 üzerinden iletilir?',
+   'Pozitif yarım dalga; negatif yarım dalga kesilir.',
+   'İki yarım dalga da aynı yönde iletilir.','SCR her zaman negatif yarım dalgada açılır.',
+   'SCR tek yönlü iletim gösterir; 90° gate darbesi yalnız uygun anot-katot polaritesinde işe yarar.'],
+  ['electronic-switching-outline-047',5,7,'SOURCE_WIRED_ISOLATED_AC_TRIAC_NATIVE_PENDING',
+   'Triyağın sanal 12 V AC’de iki yarım dalgayı nasıl anahtarladığını ayırt etmek.',
+   'BTA16 sanal modelinin MT1, MT2 ve G uçları 12 V izole AC yük devresine bağlıdır. 90° tetiklemede pozitif, 270° tetiklemede negatif akım görülür; sıfır geçişinde tutma kalkar. Üretici ve fiziksel test sonucu değildir.',
+   ['AC1–H1–Q1/MT2–Q1/MT1 dönüş yolunu izle.',
+    'TRG1/OUT–RG–Q1/G sanal tetik bağlantısını bul.',
+    '90° pozitif ve 270° negatif yarım dalga yük gerilimlerinin işaretlerini karşılaştır.',
+    'Gate kablosu koparsa iki yarım dalgada da sanal çıkış kesilir.',
+    'Gerçek BTA16 paket/şebeke deneyinin yerine geçmez; fiziksel PASS verme.'],
+   'Triyak 90° ve 270° fazlarında tetiklenirse hangi çıktı gözlenir?',
+   'Sırasıyla pozitif ve negatif yük gerilimi.',
+   'Yalnız pozitif SCR yarım dalgası.','Her iki yarım dalga zorunlu olarak sıfırdır.',
+   'Triyak iki yönlü sanal tetiklenebilir; 90° çıkışı pozitif, 270° çıkışı negatiftir.'],
+  ['electronic-switching-outline-050',5,7,'SOURCE_WIRED_TRIAC_BIDIRECTIONAL_MEASUREMENT_PENDING',
+   'Triyak sanal akımının yönünü, gate tetiklemesini ve sıfır geçişini okumak.',
+   'Sanal MT1/MT2 güç yolu, G tetik yolu ve AC fazı ayrıdır. 90° ve 270° örneklerinde zıt işaretli akım oluşur; gate darbesi geçse de aynı yarım dalgada sanal iletim sürer. Bu ölçüm fiziksel akım veya cihaz sağlamlığı kabulü değildir.',
+   ['Q1/MT1, Q1/MT2 ve Q1/G uçlarını sanal katalogda ayırt et.',
+    '90° tetiklenmede H1’in pozitif yük gerilimini izle.',
+    '270° tetiklenmede yük akımı ve gerilimin işaret değiştirdiğini gör.',
+    'Tetikleme kablosunu koparıp çıkışın sıfırlandığını doğrula.',
+    'Sanal iki yönlü modeli gerçek ölçüm veya fiziksel PASS sayma.'],
+   'Sanal 270° triyak tetiklemesinde yük akımının işareti nedir?',
+   'Negatiftir; karşı yarım dalga iletilir.',
+   'Her zaman pozitiftir.','SCR modelinde olduğu gibi hiçbir gate darbesi oluşmaz.',
+   'Triyak sanal negatif yarım dalgada ters işaretli gate ve yük akımına yanıt verir.'],
+  ['electronic-switching-outline-051',5,7,'SOURCE_WIRED_TRIAC_TRIGGER_RUNTIME_PENDING',
+   'Gate tetik açısı değişince sanal yükün iletim süresi ve RMS değerini karşılaştırmak.',
+   'TRG1 sanal 90° açıda pozitif ve negatif yarım dalgada gate darbesi verir. Tetik açısı 45° olduğunda sanal RMS, 135° değerinden büyüktür. RG–Q1/G koparsa tetikleme geçersizdir. Fiziksel sürücü ve şebeke güvenlik kabulü yoktur.',
+   ['TRG1/OUT–RG–Q1/G sanal yolunu ve AC1 dönüşünü incele.',
+    '90° ve 270° fazlarında gate işaretinin ters döndüğünü karşılaştır.',
+    'Sanal tetik açısını 45° ile 135° arasında değiştir; yük RMS değerini gözlemle.',
+    'Gate kablosu kopunca her iki yarım dalganın da kesildiğini doğrula.',
+    'RMS öğretici modeli gerçek ölçüm yerine geçmez; fiziksel PASS verme.'],
+   'Aynı 12 V sanal AC devrede tetik açısı 45° yerine 135° yapılırsa ne olur?',
+   'İletim süresi kısalır ve sanal yük RMS gerilimi düşer.',
+   'Sanal RMS zorunlu olarak artar.','Gate ucu mekanik motor çıkışına dönüşür.',
+   'Daha geç tetikleme, her yarım dalgada iletilen kesiti azaltır.'],
+  ['electronic-switching-outline-055',5,7,'SOURCE_WIRED_ISOLATED_TRIAC_DIMMER_RMS_PENDING',
+   'İzole sanal AC triyak dimmerinde faz açısı ve yük RMS ilişkisini görmek.',
+   '12 V izole sanal AC ve BTA16 ile 45° tetikte yaklaşık 10,63 V, 135° tetikte yaklaşık 3,15 V sanal yük RMS hesaplanır. Bu yalnız ideal 120 Ω sanal yük içindir; fiziksel lamba parlaklığı veya şebeke dimmeri testi değildir.',
+   ['AC1’in 12 V izole sanal kaynak olduğunu doğrula; şebeke devresi değildir.',
+    'TRG1 tetik açısını 45° yap; hesaplanan yük RMS değerini incele.',
+    'Aynı sanal devrede açıyı 135° yap; RMS düşüşünü karşılaştır.',
+    'RG–Q1/G hattı koparsa sanal RMS değeri sıfıra iner.',
+    'Gerçek BTA16 ısısı, fiziksel parlaklık veya şebeke kabulü için PASS verme.'],
+   'Sanal triyak dimmerinde tetikleme 45° yerine 135° yapılırsa yük RMS değeri nasıl değişir?',
+   'Azalır; sanal iletim penceresi daralır.',
+   'Daima iki katına çıkar.','Kablo bağlantısından bağımsız sabit kalır.',
+   'Sanal 120 Ω yükte faz geciktikçe iletilen dalga alanı küçülür ve RMS düşer.'],
+  ['electronic-switching-outline-057',6,7,'SOURCE_WIRED_TLP521_OPTICAL_FUNCTION_PENDING',
+   'TLP521 sanal LED girişini ve ayrı 5 V fototransistör çıkışını anlamak.',
+   'S1 basılınca 5 V sanal LED girişi iletime geçer; ayrı 5 V çıkıştaki fototransistör çekilir ve kolektör yaklaşık 0,2 V olur. S1 bırakılınca kolektör yaklaşık 5 V’a döner. Bu yazılımsal iki alan ayrımı fiziksel izolasyon/CTR sertifikası değildir.',
+   ['G1–S1–RIN–U1/1–U1/2 LED giriş yolunu bul.',
+    'G2–ROUT–U1/4–U1/3 ayrı sanal çıkış yolunu tanı.',
+    'S1’e basınca çıkış kolektörünü yaklaşık 0,2 V; bırakınca 5 V olarak karşılaştır.',
+    'RIN–U1/1 kablosu kopunca LED ve sanal fototransistör kapanır.',
+    'İki kaynak arasındaki sanal ayrımı fiziksel izolasyon testi sayıp PASS verme.'],
+   'TLP521 sanal giriş LED’i söndüğünde çıkış kolektörü neye döner?',
+   'G2 tarafında yaklaşık 5 V’a yükselir.',
+   'G1 ile G2 fiziksel olarak kısa devre olur.','Fototransistör kaynaksız sonsuza dek açık kalır.',
+   'Sanal fototransistör kesime girince G2 tarafındaki 4,7 kΩ çekme direnci kolektörü 5 V’a yükseltir.'],
+  ['electronic-switching-outline-060',10,14,'SOURCE_WIRED_OPTO_TRIAC_FLASHER_PENDING',
+   'MOC3021 sanal LED kumandasıyla iki yönlü triyak flaşörün ON/OFF durumlarını görmek.',
+   '2 Hz ve %50 sanal flaşörde T1 LED’i, MOC3021 optik tetiklemeyi ve BTA16 yük yolunu etkiler. 125 ms’de iki AC yarım dalga iletilebilir, 300 ms’de sanal yük RMS sıfırdır. Galvanik ayrım yalnız modelde denetlenir; fiziksel izolasyon testi değildir.',
+   ['G1–T1–RIN–U1/1/U1/2 sanal LED kumanda yolunu izle.',
+    'AC1–H1–Q1/MT2/MT1 ve U1/6–U1/4 tetik yolunun ayrı olduğunu gör.',
+    'Sanal flaşör 125 ms ON iken H1’i; 300 ms OFF iken sönen yükü karşılaştır.',
+    'U1/4–RG hattını koparınca sanal tetik ve çıkış RMS sıfıra iner.',
+    'Yazılımsal izolasyonu gerçek ürün veya şebeke güvenlik PASS sayma.'],
+   'MOC3021 flaşöründe U1/4–RG bağlantısı koparsa ne olur?',
+   'Sanal triyak tetiklenmez ve H1 çıkışı sıfır olur.',
+   'Sanal optik ayrım devreyi fiziksel olarak onaylar.','T1 çıkışı gerçek motor hızını ölçer.',
+   'İzole sanal opto-triyak tetik yolunda bağlantı kopuksa gate akımı oluşmaz.']
+ ];
+ for(const [id,components,wires,status,goal,story,steps,question,right,wrongA,wrongB,why] of rows){
+  const l=L.byId[id],p=l?.project,review=l?.pedagogyReview;
+  if(!l||l.kind!=='wiring'||p?.referenceOnly===true||p?.components?.length!==components||
+     p?.wires?.length!==wires||l.steps?.length!==wires||
+     review?.titleTopologyStatus!==status||
+     ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>review[k]===true)||
+     l.quiz?.question!=='Bu derste ekrandaki malzemeler neden özellikle seçildi?')
+   throw Error('Protected isolated AC/opto lesson baseline changed: '+id);
+  const locked=JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]);
+  l.summary=goal;l.learningGoal=goal;l.explanation=story;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[right,wrongA,wrongB],answer:0,why};
+  if(locked!==JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]))
+   throw Error('Protected AC circuit or acceptance changed: '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
