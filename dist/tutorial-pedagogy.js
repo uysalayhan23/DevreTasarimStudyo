@@ -11881,4 +11881,77 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC389/394/398/400–402: source-specific, evidence-limited student guidance.
+   Preserve the actual wiring, REVIEW statuses and all physical/visual acceptance locks. */
+{
+ const rows=[
+  ['electronic-switching-outline-025',8,'REVIEW',
+   'S1 ile BD139 sanal anahtarını açıp kapatmayı ve beyz kablosunun görevini anlamak.',
+   ['S1 serbestken Q1 kapalıdır. RB, beyz sürme direncidir.',
+    'S1’e basınca sanal Q1 iletime geçer; bıraktığında kapanır.',
+    'RB–Q1 beyz bağlantısını sanal olarak kaldır: S1’e bassan da Q1 açılmaz.',
+    'Bu test gerçek BD139 doyum ölçümü değildir; fiziksel PASS verme.'],
+   'S1 basılıyken RB ile Q1 beyz arasındaki kablo koparsa ne olur?',
+   'Q1 sanal modelde kapalı kalır.','Q1 daima iletimde kalır.','Beyz hattı olmadan gerçek doyum doğrulanır.',
+   'Beyz sürmesi yoksa NPN sanal anahtar açılmaz; fiziksel akım ve VCE ölçülmemiştir.'],
+  ['electronic-switching-outline-028',8,'SOURCE_REPAIRED_NATIVE_DYNAMIC_PENDING',
+   'Potansiyometreyle sanal IRF540N gate gerilimini değiştirip yükün nasıl anahtarlandığını görmek.',
+   ['Önce RV1 potansiyometresinin sürgüsünü en alta al; Q1 kapalıdır.',
+    'Sürgüyü yükselt: G gate ucu sürülünce sanal Q1 iletime geçer.',
+    'Gate kablosunu sanal olarak çıkar; potansiyometre açık olsa da Q1 kapalı kalır.',
+    'V1 drain gerilimini gözlemle. Bu sanal eşik, gerçek IRF540N kalibrasyonu değildir.'],
+   'RV1 ile Q1 gate arasındaki kablo kesilirse sanal MOSFET nasıl davranır?',
+   'Gate sürmesi kaybolduğu için Q1 kapalı kalır.','Q1 yalnız etiketine bakarak açılır.','Gate kablosu motorun güç beslemesini doğrudan oluşturur.',
+   'Gate iletim komutu için gereklidir; bu ders gerçek eşik veya ısıl kabul testi değildir.'],
+  ['electronic-switching-outline-032',8,'SOURCE_REPAIRED_GDS_WIRED',
+   'IRF540N üzerinde G, D, S uçları ile potansiyometre kontrollü sanal anahtarlamayı ayırt etmek.',
+   ['IRF540N üzerinde G kumanda, D yük ve S dönüş ucunu bul.',
+    'RV1 sıfırken Q1 kapalıdır; sanal sürgüyü artırınca açılabilir.',
+    'Potansiyometrenin gate bağlantısını kaldır: Q1 yeniden kapanmalıdır.',
+    'Bu sanal test fiziksel MOSFET sağlamlığı veya eşik ölçümü değildir.'],
+   'IRF540N üzerindeki G terminali bu devrede ne yapar?',
+   'RV1 sürgüsünden gelen sanal kumanda gerilimini alır.','G terminali yalnız koruma topraklamasıdır.','G terminali motorun mekanik mili yerine geçer.',
+   'Gate kumanda ucudur; D/S sanal yük akım yolunu oluşturur.'],
+  ['electronic-switching-outline-034',12,'SOURCE_WIRED_FET_RC_DELAY_DYNAMIC_PENDING',
+   'RC kondansatörünün MOSFET’i sanal ortamda neden gecikmeli kapattığını gözlemek.',
+   ['S1’e bas: C1 dolar, MOSFET açılır ve H1 yanar.',
+    'S1’i bırak: C1, RD üzerinden boşalırken H1 bir süre daha yanar.',
+    'Sanal C1’i çıkar: bu kez H1, S1 bırakılınca gecikmeden söner.',
+    'Sanal gate kablosu kopuksa H1 yanmaz; gerçek cihaz ve Windows/3D kabulü beklemededir.'],
+   'S1 bırakıldığı hâlde H1’in kısa süre daha yanmasının nedeni nedir?',
+   'C1 kondansatörünün RD üzerinden boşalması.','Yalnız lambanın adının değişmesi.','V1 voltmetresinin motoru beslemesi.',
+   'Sanal RC belleği gate gerilimini kısa süre korur; fiziksel zaman kalibrasyonu yapılmamıştır.'],
+  ['electronic-switching-outline-035',12,'SOURCE_WIRED_MOSFET_FUNCTION_TEST_DYNAMIC_PENDING',
+   'IRF540N’nin sanal gate ve yük ölçülerini ayrı izleyip kopuk kabloyu fark etmek.',
+   ['S1 serbestken VG ve VL yaklaşık sıfırdır; H1 sönüktür.',
+    'S1’e bas: VG yaklaşık 11,9 V, VL yaklaşık 12 V olur ve H1 yanar.',
+    'Gate kablosunu kaldır: VG ve H1 düşer. Yük kablosunu kaldır: VG yüksek kalsa da H1 sönük kalır.',
+    'Bu işlev kontrolü fiziksel MOSFET sağlamlığı veya üretici testi değildir.'],
+   'Gate gerilimi ölçüldüğü hâlde sanal H1 lambası neden yanmayabilir?',
+   'MOSFET ile yük arasındaki bağlantı kopuk olabilir.','Gate voltajı her durumda sağlamlık belgesidir.','VL ölçümü tek başına bütün kabloları onarır.',
+   'Gate komutu ve yük akım yolu ayrıdır; sanal ölçüm fiziksel ürün sağlamlığını kanıtlamaz.'],
+  ['motor-direct-power-outline-021',11,'SOURCE_WIRED_PWM_MOTOR_NATIVE_PENDING',
+   'PWM1, IRF540N ve sanal DC motorun kumanda ile güç yollarını ayırt etmek.',
+   ['PWM1 görev çevrimini %0 yap: sanal motor enerjisiz kalır.',
+    'Görev çevrimini %100 yap: PWM gate’i sürer ve motor sanal olarak enerjilenir.',
+    'PWM1 OUT ya da motor yük kablosu kopuksa motor çalışmaz.',
+    'Sanal hareket ve görev çevrimi gerçek RPM ölçümü veya fiziksel motor kabulü değildir.'],
+   'PWM1 OUT kablosu Q1 gate yolundan çıkarılırsa sanal motorda ne olur?',
+   'Q1 kapalı kalır ve sanal motor enerjilenmez.','PWM kablosu olmadan motor kesin hızlanır.','PWM etiketi her koşulda gerçek RPM üretir.',
+   'Sanal gate komutu kesildiğinde motor yük yolu iletime geçmez; gerçek devir ve güvenlik kabulü yoktur.']
+ ];
+ for(const [id,wires,status,goal,steps,question,right,wrong1,wrong2,why] of rows){
+  const l=L.byId[id],review=l?.pedagogyReview;
+  if(!l||l.kind!=='wiring'||l.project?.referenceOnly===true||
+     l.project?.wires?.length!==wires||l.steps?.length!==wires||
+     review?.titleTopologyStatus!==status||review.nativeDynamicAcceptance===true||
+     ['physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>review[k]===true))
+   throw Error('SC389–402 protected teaching baseline changed: '+id);
+  const graph=JSON.stringify([l.project,l.steps,review]);
+  l.learningGoal=goal;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[right,wrong1,wrong2],answer:0,why};
+  if(graph!==JSON.stringify([l.project,l.steps,review]))throw Error('SC389–402 circuit or locks changed: '+id);
+ }
+}
 })(typeof window==='undefined'?globalThis:window);
