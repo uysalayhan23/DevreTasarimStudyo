@@ -232,5 +232,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC205_V20_START_STOP", "readOnly": true}
 }

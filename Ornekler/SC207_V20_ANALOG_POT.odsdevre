@@ -249,5 +249,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC207_V20_ANALOG_POT", "readOnly": true}
 }

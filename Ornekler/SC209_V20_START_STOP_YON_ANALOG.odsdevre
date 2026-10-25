@@ -321,5 +321,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC209_V20_START_STOP_YON_ANALOG", "readOnly": true}
 }

@@ -285,5 +285,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC206_V20_ILERI_GERI", "readOnly": true}
 }

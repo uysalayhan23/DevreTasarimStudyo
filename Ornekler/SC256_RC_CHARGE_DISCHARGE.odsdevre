@@ -175,5 +175,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC256_RC_CHARGE_DISCHARGE", "readOnly": true}
 }

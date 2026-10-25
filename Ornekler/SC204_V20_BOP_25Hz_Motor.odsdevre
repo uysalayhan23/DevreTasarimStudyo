@@ -147,5 +147,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC204_V20_BOP_25Hz_Motor", "readOnly": true}
 }

@@ -169,5 +169,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC211_V20_MOTOR_PARAMETRELERI", "readOnly": true}
 }

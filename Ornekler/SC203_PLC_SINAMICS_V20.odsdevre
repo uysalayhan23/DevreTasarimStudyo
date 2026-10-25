@@ -366,5 +366,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC203_PLC_SINAMICS_V20", "readOnly": true}
 }

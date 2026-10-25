@@ -389,5 +389,6 @@
   },
   "conductorVersion": 1,
   "workspaceMode": "control",
-  "projectId": "SC251 Motor Ileri Geri Secici"
+  "projectId": "SC251 Motor Ileri Geri Secici",
+  "defaultTemplate": {"id": "file:SC251_MOTOR_ILERI_GERI_SECICI", "readOnly": true}
 }

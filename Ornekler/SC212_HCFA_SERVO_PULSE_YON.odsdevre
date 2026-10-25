@@ -252,5 +252,6 @@
     "#111827": "0V",
     "#43a047": "SIGNAL",
     "#7c3aed": "SIGNAL"
-  }
+  },
+  "defaultTemplate": {"id": "file:SC212_HCFA_SERVO_PULSE_YON", "readOnly": true}
 }

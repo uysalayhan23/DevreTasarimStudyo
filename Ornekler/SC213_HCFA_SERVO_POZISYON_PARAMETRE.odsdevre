@@ -226,5 +226,6 @@
     "#111827": "0V",
     "#43a047": "SIGNAL",
     "#7c3aed": "SIGNAL"
-  }
+  },
+  "defaultTemplate": {"id": "file:SC213_HCFA_SERVO_POZISYON_PARAMETRE", "readOnly": true}
 }

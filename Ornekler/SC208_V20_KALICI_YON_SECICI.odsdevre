@@ -237,5 +237,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC208_V20_KALICI_YON_SECICI", "readOnly": true}
 }

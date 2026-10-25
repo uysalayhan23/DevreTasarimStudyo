@@ -189,5 +189,6 @@
       "points": []
     }
   ],
-  "junctions": []
+  "junctions": [],
+  "defaultTemplate": {"id": "file:SC261_BD139_POT_SWITCH", "readOnly": true}
 }
