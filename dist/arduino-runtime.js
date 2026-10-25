@@ -54,7 +54,23 @@
  const near=clamp(c.reedMagnet,0,100,0)>=65,high=powered&&near;
  c._mq07ReedMagnetNear=near;c._mq07ReedPowered=powered;c._mq07ReedDO=high?1:0;
  return high?1:0;
- }if(r==='digital')return c.state?1:0;if(r==='ne555'&&p==='OUT')return c._ne555Out?1:0;if(r==='pot')return Math.round(clamp(c.potentiometer,0,100,50)*10.23);if(r==='analog'){const input=Object.prototype.hasOwnProperty.call(c,'arduinoValue')?c.arduinoValue:d.arduinoDefault;const valid=(typeof input==='number'||(typeof input==='string'&&input.trim()!==''))&&Number.isFinite(Number(input));if(!valid)return 0;const value=Math.round(Math.max(0,Math.min(1023,Number(input))));if(p==='DO'&&d.dualDigital)return value>=Number(d.arduinoThreshold??512)?1:0;return value}if(r==='temperature'&&d.id==='arduino-lm35'&&c.mq07Lm35Model===true&&p==='AO'&&mode==='analog'){
+ }if(r==='digital')return c.state?1:0;if(r==='ne555'&&p==='OUT')return c._ne555Out?1:0;if(r==='pot')return Math.round(clamp(c.potentiometer,0,100,50)*10.23);if(r==='analog'){
+  // SC471 outline only: without the real 5 V and shared GND path, the sound
+  // module must not drive Arduino D2 from a simulated training value.
+  // Keep all other analog sensor / canonical Arduino behaviors unchanged.
+  if(d.id==='arduino-sound-sensor'&&p==='DO'&&mode==='digital'&&
+     ctx?.project?.tutorialLesson?.id==='sensor-analog-apps-outline-053'){
+    const {project,byId,g,b}=ctx;
+    const connected=(a,ap,z,zp)=>g.find(key(a,ap))===g.find(key(z,zp));
+    const powered=connected(c.id,'VCC',b.id,'5V')&&
+      connected(c.id,'GND',b.id,'GND')&&
+      project.components.some(s=>byId[s.typeId]?.arduinoRole==='bench-supply'&&
+        Math.abs(Number(s.dcVoltage??byId[s.typeId]?.defaultVoltage??5)-5)<.01&&
+        connected(c.id,'VCC',s.id,'P')&&connected(c.id,'GND',s.id,'M'));
+    c._sc471SoundPowered=powered;
+    if(!powered)return 0;
+  }
+  const input=Object.prototype.hasOwnProperty.call(c,'arduinoValue')?c.arduinoValue:d.arduinoDefault;const valid=(typeof input==='number'||(typeof input==='string'&&input.trim()!==''))&&Number.isFinite(Number(input));if(!valid)return 0;const value=Math.round(Math.max(0,Math.min(1023,Number(input))));if(p==='DO'&&d.dualDigital)return value>=Number(d.arduinoThreshold??512)?1:0;return value}if(r==='temperature'&&d.id==='arduino-lm35'&&c.mq07Lm35Model===true&&p==='AO'&&mode==='analog'){
  let powered=false;
  if(ctx){
   const {project,byId,g,b}=ctx,connected=(id1,p1,id2,p2)=>g.find(key(id1,p1))===g.find(key(id2,p2));
