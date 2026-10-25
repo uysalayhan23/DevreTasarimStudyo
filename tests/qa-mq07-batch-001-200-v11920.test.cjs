@@ -54,7 +54,10 @@ test('LDR comparator contains real photo-resistor graph instead of mislabeled po
  assert.ok(p.wires.some(w=>w.from?.c==='r2'&&w.to?.c==='u1'&&w.to?.p==='2'));
  assert.ok(p.wires.some(w=>w.from?.c==='g1'&&w.from.p==='P'&&w.to?.c==='u1'&&w.to.p==='8'));
  assert.ok(p.wires.some(w=>w.from?.c==='g1'&&w.from.p==='M'&&w.to?.c==='u1'&&w.to.p==='4'));
- assert.equal(p.wires.length,12);
+ assert.equal(p.wires.length,14,'LM358 spare-channel safety adds two true wires');
+ assert.match(l.summary,/14 terminal bağlantısı/);
+ assert.ok(p.wires.some(w=>w.from?.c==='u1'&&w.from.p==='5'&&w.to?.c==='g1'&&w.to?.p==='M'));
+ assert.ok(p.wires.some(w=>w.from?.c==='u1'&&w.from.p==='7'&&w.to?.c==='u1'&&w.to?.p==='6'));
  const defs=QA.catalog(),check=Simulation.solve(JSON.parse(JSON.stringify(p)),defs,{now:0});
  assert.equal(check.stable,true);
  assert.ok(!check.blocked&&!check.shortCircuit&&!check.oscillating);

@@ -12418,4 +12418,21 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+/* Focused pedagogical correction: source graph and acceptance flags stay immutable. */
+{
+ const ldr=L.byId['opamp-apps-src-07'],g=L.byId['installation-grounding-src-07'];
+ if(ldr?.kind!=='wiring'||ldr.project?.components?.length!==9||
+    ldr.project?.wires?.length!==14||
+    !ldr.summary?.includes('12 terminal bağlantısı')||
+    !ldr.project.wires.some(w=>w.from?.c==='u1'&&w.from.p==='5'&&w.to?.c==='g1'&&w.to?.p==='M')||
+    !ldr.project.wires.some(w=>w.from?.c==='u1'&&w.from.p==='7'&&w.to?.c==='u1'&&w.to?.p==='6'))
+  throw Error('LDR source exact 14-wire baseline changed');
+ if(g?.kind!=='quiz'||g.project?.wires?.length!==0||
+    !g.explanation?.includes('Ölçerin katalogda bağlantı terminalleri')||
+    g.explanation.includes('Ω'))
+  throw Error('Unwired earth tester baseline changed');
+ ldr.summary=ldr.summary.replace('12 terminal bağlantısı','14 terminal bağlantısı');
+ g.explanation+=' Topraklama direnci ohm (Ω) ile ifade edilir; bu kartta gerçek bir Ω değeri ölçülmez.';
+}
+
 })(typeof window==='undefined'?globalThis:window);
