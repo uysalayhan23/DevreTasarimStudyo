@@ -12206,4 +12206,78 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC441/442/444/449/459: real sensor readings replace generic learner-step/quiz templates.
+ * Read-only model evidence, no hardware instructions or physical calibration claims. */
+{
+ const rows=[
+  ['sensor-analog-apps-outline-029',6,6,'SOURCE_WIRED_THERMOCOUPLE_MV_CALIBRATION_PENDING',
+   'Sanal K tipi termokuplun milivolt değerini ve ET4420 sıcaklık göstergesini karşılaştırmak.',
+   ['Önce TC1 sıcak uç ve 25 °C soğuk uç referansını sanal ekranda ayırt et.',
+    'TC1 25 °C iken fark 0 mV, 100 °C iken yaklaşık 3,096 mV olur; V1 sanal DCV ölçümünü izle.',
+    'ET4420 sanal PV 100 °C gösterirken V1 geriliminin birimi volt/milivolttur: iki sayıyı karıştırma.',
+    'Sanal TC+ ölçüm yolu koparsa ET4420 geçerli sıcaklık yerine hata bildirir.',
+    'Bu yalnız ideal sanal sensör ve gösterge çalışmasıdır; fiziksel kalibrasyon veya şebeke PASS sayma.'],
+   'Sanal K tipi TC1 100 °C, soğuk birleşim 25 °C iken V1 ile ET4420 ne gösterir?',
+   'V1 yaklaşık 3,096 mV; ET4420 yaklaşık 100 °C.','V1 100 V; ET4420 3,096 °C.','İki cihaz da gerçek kalibrasyon belgesi verir.',
+   'Termokupl diferansiyel gerilim üretir; sanal kontrolör bu girdiden ideal sıcaklık gösterir.'],
+  ['electronic-component-basics-outline-025',3,5,'SOURCE_WIRED_PT100_3WIRE_CALIBRATION_PENDING',
+   'Üç telli PT100 sanal ölçümünde sensör uçlarının ve hata uyarısının görevini öğrenmek.',
+   ['PT100 B1 sensörünün A, B1 ve B2 olmak üzere üç ayrı ölçüm ucunu ekranda bul.',
+    'Sanal sıcaklığı 0, 25 ve 100 °C yap; ET4420 PV değerinin sırasıyla 0, 25 ve 100 olduğunu gör.',
+    'İdeal PT100 0 °C için 100 Ω; 100 °C için yaklaşık 138,5 Ω temsil eder.',
+    'Sanal B2 ölçüm kablosunu çıkarınca ET4420 ölçümü geçersiz sayıp hata verir.',
+    'Üçüncü telin gerçek kablo direnci telafisi veya fiziksel ürün kalibrasyonu doğrulanmadı; PASS verme.'],
+   'Sanal üç telli PT100 devresinde B2 ölçüm kablosu koparsa ne beklenir?',
+   'ET4420 geçerli sıcaklık yerine bağlantı hatası verir.','Gösterge üçüncü kabloyu otomatik tamamlar.','Gerçek kablo direnci ölçülmüş sayılır.',
+   'İdeal üç telli sanal model A/B1/B2 uçlarını ayrı denetler; kopuk uçta kalibrasyon tahmin edilmez.'],
+  ['sensor-analog-apps-outline-030',3,5,'SOURCE_WIRED_LM35_ADC_RUNTIME_PENDING',
+   'Sanal LM35 sıcaklığını Arduino A0 girişindeki sayısal ADC karşılığıyla ilişkilendirmek.',
+   ['G1 sanal 5 V beslemeyle LM35 çıkışı ve Arduino A0 girişini birbirinden ayırt et.',
+    'LM35 25 °C olduğunda sanal AO yaklaşık 0,25 V, Arduino ADC 51 okur.',
+    'Sanal sıcaklığı 50 °C yap: AO 0,50 V ve ADC 102 olur.',
+    'AO–A0 sinyal kablosunu sanal olarak koparırsan ADC sıfıra iner.',
+    'ADC basamakları ideal yazılım hesabıdır; gerçek LM35 kalibrasyonu ve fiziksel kabul için PASS verme.'],
+   'LM35 sanal 50 °C iken UNO A0 girişindeki 10 bit ADC yaklaşık kaçtır?',
+   '102.','50 V.','1023; kablo kopukken de değişmez.',
+   '5 V referanslı 10 bit ADC, 0,50 V girişi yaklaşık 102 sayısına dönüştürür.'],
+  ['sensor-analog-apps-outline-036',3,5,'SOURCE_WIRED_REED_ARDUINO_FIELD_PENDING',
+   'Sanal Reed mıknatıs eşiğinin Arduino dijital D2 okumasını nasıl değiştirdiğini gözlemek.',
+   ['KY-021 sanal Reed sürgüsünü 64 düzeyine getir: UNO D2 dijital 0 okur.',
+    'Sürgüyü 65 veya 80 değerine çıkar: sanal D2 dijital 1 olur.',
+    'Dijital D2 değerini sıcaklık sensörünün analog ADC koduyla karıştırma.',
+    'Sanal Reed DO sinyal kablosu koparsa mıknatıs yakın olsa bile D2 sıfır okur.',
+    'Sürgü eşiği model örneğidir; gerçek mıknatıs mesafesi ya da fiziksel kontakt kabulü için PASS verme.'],
+   'Sanal Reed mıknatıs değeri 80 iken DO–D2 bağlantısı koparsa Arduino ne okur?',
+   'D2 dijital 0; sinyal Arduino girişine ulaşmaz.','D2 kesinlikle dijital 1 okur.','UNO fiziksel manyetik alanı kablosuz ölçer.',
+   'Sanal dijital girişte bağlantısı kesilmiş DO sinyali Arduino üzerinde geçerli HIGH oluşturmaz.'],
+  ['sensor-analog-apps-outline-046',3,6,'SOURCE_WIRED_LOAD_CELL_TX11_CALIBRATION_PENDING',
+   'Sanal yük hücresinde EX uyartımını, SIG ölçümünü ve TX11 gösterge ağırlığını ayırmak.',
+   ['TX11 sanal EX+ ve EX− uçlarının köprü uyartımı; SIG+ ve SIG− uçlarının ölçüm olduğunu ayırt et.',
+    'Sanal 1000 kg tam skala modelde 250 kg yük yaklaşık 2,5 mV ve 250 kg okuma verir.',
+    'Sanal yükü 500 kg yap: sinyal 5 mV ve TX11 ağırlık 500 kg olur.',
+    'Sanal SIG+ kablosunu çıkarırsan TX11 geçerli ağırlık üretmez, bağlantı hatası gösterir.',
+    'İdeal ölçüm gerçek kalibrasyon veya bağlı 4–20 mA çıkış devresi değildir; fiziksel PASS verme.'],
+   'Sanal 1000 kg tam skala yük hücresi 500 kg yükte yaklaşık hangi sonucu verir?',
+   'TX11 500 kg, köprü sinyali yaklaşık 5 mV.','TX11 5 kg, köprü 500 V.','SIG+ kablosu kopukken yine kesin 500 kg.',
+   '5 V uyartım ve 2 mV/V tam skala modelinde 500 kg, 10 mV aralığının yarısına karşılık gelir.']
+ ];
+ const expectedQuestion='Bu derste ekrandaki malzemeler neden özellikle seçildi?';
+ for(const [id,partCount,wireCount,status,goal,steps,question,right,wrongA,wrongB,why] of rows){
+  const lesson=L.byId[id],review=lesson?.pedagogyReview,project=lesson?.project;
+  if(!lesson||lesson.kind!=='wiring'||project?.referenceOnly===true||
+     project?.components?.length!==partCount||project?.wires?.length!==wireCount||
+     lesson.steps?.length!==wireCount||review?.titleTopologyStatus!==status||
+     lesson.quiz?.question!==expectedQuestion||
+     ['nativeDynamicAcceptance','physicalAcceptance','sensorCalibrationAcceptance',
+      'windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>review?.[k]===true))
+   throw Error('Protected SC441–459 sensor baseline mismatch: '+id);
+  const lock=JSON.stringify([project,lesson.steps,lesson.materials,review,lesson.explanation]);
+  lesson.learningGoal=goal;lesson.beginnerSteps=[...steps];
+  lesson.quiz={question,options:[right,wrongA,wrongB],answer:0,why};
+  if(lock!==JSON.stringify([lesson.project,lesson.steps,lesson.materials,lesson.pedagogyReview,lesson.explanation]))
+   throw Error('SC441–459 source or acceptance changed: '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
