@@ -5,10 +5,20 @@ let loading=null;
 function load(src){
  return new Promise((resolve,reject)=>{
   const old=[...document.querySelectorAll('script[src]')].find(s=>s.getAttribute('src')?.split('?')[0]===src.split('?')[0]);
-  if(old){if(old.dataset.loaded==='1')return resolve();old.addEventListener('load',resolve,{once:true});old.addEventListener('error',()=>reject(new Error(src+' yüklenemedi')),{once:true});return}
+  if(old){
+   // Never silently reuse the previous cache version of a curriculum layer.
+   if(old.getAttribute('src')!==src)return reject(new Error(src+' önbellek sürümü uyuşmuyor; sayfayı yenileyin'));
+   if(old.dataset.loadFailed==='1')old.remove();
+   else{
+    if(old.dataset.loaded==='1'||old.readyState==='complete')return resolve();
+    old.addEventListener('load',()=>{old.dataset.loaded='1';resolve()},{once:true});
+    old.addEventListener('error',()=>{old.dataset.loadFailed='1';old.remove();reject(new Error(src+' yüklenemedi'))},{once:true});
+    return;
+   }
+  }
   const s=document.createElement('script');s.src=src;s.async=false;s.dataset.tutorialLazy='1';
   s.addEventListener('load',()=>{s.dataset.loaded='1';resolve()},{once:true});
-  s.addEventListener('error',()=>reject(new Error(src+' yüklenemedi')),{once:true});
+  s.addEventListener('error',()=>{s.dataset.loadFailed='1';s.remove();reject(new Error(src+' yüklenemedi'))},{once:true});
   document.head.appendChild(s);
  });
 }

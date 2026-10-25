@@ -30,7 +30,16 @@ function mountCoachChrome(coach,l){
 function loadScript(src){
  return new Promise((resolve,reject)=>{
   const existing=[...root.document.querySelectorAll('script[src]')].find(x=>x.getAttribute('src')?.split('?')[0]===src.split('?')[0]);
-  if(existing){if(existing.dataset.loaded==='1'||existing.readyState==='complete')return resolve();existing.addEventListener('load',()=>resolve(),{once:true});existing.addEventListener('error',()=>reject(new Error(src+' yüklenemedi')),{once:true});return}
+  if(existing){
+   if(existing.getAttribute('src')!==src)return reject(new Error(src+' önbellek sürümü uyuşmuyor; sayfayı yenileyin'));
+   if(existing.dataset.loadFailed==='1')existing.remove();
+   else{
+    if(existing.dataset.loaded==='1'||existing.readyState==='complete')return resolve();
+    existing.addEventListener('load',()=>{existing.dataset.loaded='1';resolve()},{once:true});
+    existing.addEventListener('error',()=>{existing.dataset.loadFailed='1';existing.remove();reject(new Error(src+' yüklenemedi'))},{once:true});
+    return;
+   }
+  }
   const el=root.document.createElement('script');el.src=src;el.async=false;el.dataset.tutorialLazy='1';el.addEventListener('load',()=>{el.dataset.loaded='1';resolve()},{once:true});el.addEventListener('error',()=>{el.dataset.loadFailed='1';el.remove();reject(new Error(src+' yüklenemedi'))},{once:true});root.document.head.appendChild(el);
  });
 }
