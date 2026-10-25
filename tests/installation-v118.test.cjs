@@ -17,9 +17,22 @@ test('commutator operates two independent contacts; intermediate switch crosses 
  assert.deepEqual(C.contactStates({state:true},by['wall-commutator'],true),{a:true,b:true});
  for(const value of [false,true]){const d=by['wall-intermediate'],states=C.contactStates({state:value},d,value);assert.deepEqual(states,{a:!value,b:!value,c:value,d:value});const contacts=d.contacts.filter(g=>states[g.id]);assert.equal(contacts.length,2);assert.equal(new Set(contacts.flatMap(g=>[g.a,g.b])).size,4);}
 });
-function circuit(){const components=[['s','supply-dc-plus'],['b','bell-push-group'],['z','bell-electronic'],['k','door-release']].map(([id,typeId],i)=>({id,typeId,x:100+i*180,y:220,ref:id}));const wires=[['s','P','b','13'],['s','P','b','23'],['b','14','z','1'],['b','24','k','A1'],['z','2','s','M'],['k','A2','s','M']].map(([a,b,c,d],i)=>({id:'w'+i,from:{c:a,p:b},to:{c,p:d}}));return {projectId:'bells-test',name:'Zil deneyi',workspaceMode:'building',components,wires,junctions:[]};}
+function circuit(){const components=[['s','bell-transformer'],['b','bell-push-group'],['z','bell-electronic'],['k','door-release']].map(([id,typeId],i)=>({id,typeId,x:100+i*180,y:220,ref:id}));const wires=[['s','S1','b','13'],['s','S1','b','23'],['b','14','z','1'],['b','24','k','A1'],['z','2','s','S2'],['k','A2','s','S2']].map(([a,b,c,d],i)=>({id:'w'+i,from:{c:a,p:b},to:{c,p:d}}));return {projectId:'bells-test',name:'Zil deneyi',workspaceMode:'building',components,wires,junctions:[]};}
 test('separate bell buttons energize the bell and door release independently with no false common connection',()=>{
  const p=circuit(),b=p.components[1];for(const a of [false,true])for(const value of [false,true]){b.switchStates={a,b:value};const result=Sim.solve(p,by);assert.equal(result.shortCircuit,false);assert.equal(p.components[2]._active,a);assert.equal(p.components[3]._active,value);}
+});
+test('legacy direct-DC bell fixture fails closed instead of bypassing isolated transformer safety',()=>{
+ const p=circuit(),source=p.components.find(c=>c.id==='s');source.typeId='supply-dc-plus';
+ for(const w of p.wires)for(const e of [w.from,w.to])if(e.c==='s'){
+  e.p=e.p==='S1'?'P':e.p==='S2'?'M':e.p;
+ }
+ p.components.find(c=>c.id==='b').switchStates={a:true,b:true};
+ const r=Sim.solve(p,by,{now:1000});
+ assert.equal(r.blocked,true);
+ assert.equal(r.reason,'bell-transformer-required');
+ assert.equal(r.shortCircuit,false);
+ assert.equal(!!p.components.find(c=>c.id==='z')._active,false);
+ assert.equal(!!p.components.find(c=>c.id==='k')._active,false);
 });
 test('real UI operates each gang with pointer and keyboard and releases momentary contacts',()=>{
  const {createApp}=require('./helpers/offline-dom.cjs'),a=createApp({project:circuit(),appearance:'material'}),E=a.window.DTSEditor;const key=k=>a.$('#scene [data-id="b"] [data-installation-contact="'+k+'"]');a.$('#simulateBtn').click();

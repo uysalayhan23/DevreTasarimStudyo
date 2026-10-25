@@ -2813,6 +2813,15 @@ function mq07SeqWire(lesson,mode){
  if(p.wires.length!==count||p.components.filter(c=>c.typeId==='motor-3p').length!==2||
     p.components.filter(c=>c.typeId==='coil-contactor').length!==2)
   throw Error('Unexpected two-motor '+mode+' source graph');
+ if(mode==='conveyor'){
+  // The separately supplied 24 V PNP sensor loop is not wired to the 3-phase
+  // motor/control supply. The two intentional graph islands must NOT be bridged.
+  if(p.components.find(c=>c.id==='psSensor')?.typeId!=='supply-dc-plus'||
+     p.components.find(c=>c.id==='convSensor')?.typeId!=='proximity'||
+     p.wires.length!==25||p.intentionalElectricalIslands!==undefined)
+   throw Error('Conveyor supply isolation baseline changed');
+  p.intentionalElectricalIslands=2;
+ }
 }
 
 /* SC174/177 actual two-motor timer circuits; all additions are confined to

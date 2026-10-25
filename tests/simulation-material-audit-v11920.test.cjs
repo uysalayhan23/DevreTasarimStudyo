@@ -62,13 +62,23 @@ test('PLC lessons: START latches DQ, STOP releases it, contactor and motor follo
   assert.equal(plc._plcRuntime.outputs['X12:3'],false);assert.equal(coil._active,false);assert.equal(motor._active,false);
 });
 
-test('PLC timed-stop lesson turns the first output off after the configured teaching interval',()=>{
+test('SC202 delayed normal STOP begins at STOP press, never at START; no E-STOP claim',()=>{
   const l=Lessons.byId['plc-hardware-programming-src-21'],p=clone(l.project);
-  const plc=p.components.find(c=>c.id==='plc'),start=p.components.find(c=>c.id==='start');
+  const plc=p.components.find(c=>c.id==='plc'),start=p.components.find(c=>c.id==='start'),
+    stop=p.components.find(c=>c.id==='stop'),coil=p.components.find(c=>c.id==='coil');
   start.state=true;Simulation.solve(p,byId,{now:100});
-  assert.equal(plc._plcRuntime?.program,'timed-stop');assert.equal(plc._plcRuntime.outputs['X12:3'],true);
-  start.state=false;Simulation.solve(p,byId,{now:2000});assert.equal(plc._plcRuntime.outputs['X12:3'],true);
-  Simulation.solve(p,byId,{now:3200});assert.equal(plc._plcRuntime.outputs['X12:3'],false);
+  assert.equal(plc._plcRuntime?.program,'delayed-stop-sc202');
+  assert.equal(plc._plcRuntime.outputs['X12:3'],true);
+  start.state=false;Simulation.solve(p,byId,{now:2000});
+  assert.equal(plc._plcRuntime.outputs['X12:3'],true,'start release is not STOP');
+  stop.state=true;Simulation.solve(p,byId,{now:2300});
+  assert.equal(plc._plcRuntime.outputs['X12:3'],true,'normal STOP does not emulate emergency shutdown');
+  Simulation.solve(p,byId,{now:5200});
+  assert.equal(plc._plcRuntime.outputs['X12:3'],true);
+  Simulation.solve(p,byId,{now:5300});
+  assert.equal(plc._plcRuntime.outputs['X12:3'],false);
+  assert.equal(!!coil._active,false);
+  assert.equal(l.pedagogyReview.physicalAcceptance,false);
 });
 
 test('generic PLC runtime covers PNP, NPN, relay and AC-powered relay output families',()=>{
