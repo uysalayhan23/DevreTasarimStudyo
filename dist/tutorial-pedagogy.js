@@ -8356,7 +8356,7 @@ for(const [id,reason,wireCount,expectedParts,concept,limits] of mq07FaultRelayRo
 }
 
 /* MQ07_SC252_SC265_BJT_RC: source-aligned RC topology and no unsupported dynamic acceptance. */
-const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","Eski anlık buton devresi, mevcut 47 kΩ şarj, 10 kΩ deşarj, 1000 µF, BD139 gerçek sanal grafiğine çevrildi; native gecikme ölçümü henüz yapılmadı."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
+const mq07Sc252Scope=[["electronic-switching-outline-021","BJT_SWITCH_RUNTIME_PENDING",8,"Transistör anahtarlama yük ve beyz akımıyla ilişkilidir.","BD139 bağlantısı bulunur; dinamik davranış ayrıca doğrulanmalıdır."],["electronic-switching-outline-022","BJT_CUTOFF_RUNTIME_PENDING",8,"Kesim için beyz sürmesinin olmadığı durum incelenir.","Kesim bölgesi VCE ve kolektör akımıyla ölçülmeden kabul edilemez."],["electronic-switching-outline-023","BJT_SATURATION_RUNTIME_PENDING",8,"Doyum yeterli beyz akımı ve uygun kolektör yükü gerektirir.","Doyum noktası ölçüm ve gerçek model analiziyle doğrulanmamıştır."],["electronic-switching-outline-024","RC_BJT_ON_DELAY_NATIVE_PENDING",12,"RC şarjı ve BD139 eşik davranışı gecikmeye neden olabilir.","47 kΩ şarj, 10 kΩ deşarj, 1000 µF C1 ve BD139 sanal grafiği kuruldu. 250 ms örneklemli native sanal testte Q1 yaklaşık 1500 ms’de açılır; C1 çıkarıldığında gecikme kaybolur. Fiziksel zaman eğrisi ve görsel kabul beklemededir."],["electronic-component-basics-outline-012","RC_CHARGE_DISCHARGE_TRACE_PENDING",6,"10 kΩ×100 µF nominal zaman sabiti 1 saniyedir.","Altı telli RC şarj örneğinde ayrı deşarj devresi ve onaylanmış zaman eğrisi yoktur."],["electronic-component-basics-outline-013","NO_OFF_DELAY_RUNTIME",0,"Gecikmeli bırakma bir zaman sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; kablolu çalışan zaman testi yoktur."],["electronic-component-basics-outline-014","NO_ON_DELAY_RUNTIME",0,"Gecikmeli çekme belirli gecikme sonrası çıkış değişimidir.","Yalnız gecikmeli röle sembolü vardır; dinamik süre ölçümü yoktur."],["electronic-component-basics-outline-015","NO_SCHMITT_HYSTERESIS_NETWORK",0,"Schmitt Trigger için iki eşik ve pozitif geri besleme gereklidir.","LM358/direnç/kondansatör yalnız malzeme kartıdır; histerezis yoktur."],["electronic-switching-outline-025","BJT_SWITCH_PRACTICE_TRACE_PENDING",8,"BD139 anahtarında beyz ve kolektör devresi görevleri farklıdır.","Sanal anahtar vardır; yeni gerçek zaman ölçümü ve fiziksel kabul yoktur."],["electronic-switching-outline-026","NO_POTENTIOMETER_SWITCHING_WIRING",0,"Potansiyometre ayarlı beyz sürmesi kavramsal olarak gösterilir.","Önceki sekiz telli BD139/4,7 kΩ devresi ayar potansiyometresi içermiyordu; yeni kart yalnız BD139+pot+direnç malzeme referansıdır."],["electronic-component-basics-outline-016","NO_ON_DELAY_PRACTICE_RUNTIME",0,"ON-delay temrini süre sonundaki çıkış değişimini gerektirir.","Sadece röle sembolü vardır; uygulama devresi yoktur."],["electronic-component-basics-outline-017","NO_OFF_DELAY_PRACTICE_RUNTIME",0,"OFF-delay temrini komut kaldırıldıktan sonra çıkışı inceler.","Sadece röle sembolü vardır; gecikme devresi yoktur."],["electronic-switching-outline-027","NO_TRANSISTOR_SCHMITT_FEEDBACK",0,"Transistörlü Schmitt için iki durumlu eşik ve geri besleme gerekir.","Eski tek BD139 START şeması histerezis değildi; iki NPN ve direnç artık kablosuz kavram kartıdır."],["electronic-switching-outline-028","NO_FET_MOSFET_DRIVE_WIRING",0,"FET/MOSFET anahtarlamada gate, drain ve source ayrılır.","MOSFET ve direnç referansından gerçek sürme, ölçüm veya JFET karşılaştırması çıkarılamaz."]];
 for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
  const l=L.byId[id],old=l?.project;if(!l||!old)throw Error('MQ07 missing '+id);
  if(id==='electronic-switching-outline-024'){
@@ -8393,6 +8393,37 @@ for(const [id,reason,expectedWires,concept,limit] of mq07Sc252Scope){
   titleTopologyStatus:'REVIEW',titleTopologyIssue:reason,nativeDynamicAcceptance:false,
   physicalAcceptance:false,independentPedagogicalAcceptance:false,windowsVisualAcceptance:false};
  l.safety='Yalnız sanal düşük gerilimli eğitim; fiziksel cihaz, ısı veya elektrik güvenlik kabulü değildir.';
+ if(id==='electronic-switching-outline-022'){
+  l.beginnerSteps=[
+   'S1 serbestken Q1 beyzine akım gitmez: sanal BD139 kesimdedir.',
+   'S1’e bas; Q1’in sanal anahtarlama durumunu ve RB · 4,7 kΩ yolunu karşılaştır.',
+   'Beyz kablosu kopuksa S1 basılı olsa bile Q1 açılmaz. Bunu sanal devrede gözle.',
+   'Kesimde gerçek kaçak akım ve VCE ölçümü yapılmadığı için fiziksel PASS verme.'];
+  l.quiz={question:'S1 basılı olsa da Q1 beyz kablosu kopuksa sanal BD139 ne yapar?',
+   options:['Kesimde kalır; beyz sürmesi yoktur.','Kolektör direnci beyz yerine geçer.','Kablo olmadan doyuma ulaşır.'],
+   answer:0,why:'Beyz yolu açıkken sanal NPN iletime geçmez; fiziksel sızıntı ölçümü bu testin kapsamı dışındadır.'};
+ }
+ if(id==='electronic-switching-outline-023'){
+  l.beginnerSteps=[
+   'S1’e basınca 4,7 kΩ beyz direncinden Q1’e kumanda gider; sanal anahtar açılır.',
+   'S1’i bırakınca Q1 yeniden kapanır. İki durumu karşılaştır.',
+   'Sanal iletim durumunu gerçek VCE(sat), IB veya IC ölçümü sanma.',
+   'Fiziksel doyum noktası ve cihaz kabulü ölçülmeden PASS verme.'];
+  l.quiz={question:'BD139 sanal anahtarının açık görünmesi gerçek doyumun kanıtı mıdır?',
+   options:['Hayır; VCE(sat) ve akımlar ayrıca ölçülmelidir.','Evet; her iletim doyumdur.','Evet; yalnız 4,7 kΩ direncin bulunması yeterlidir.'],
+   answer:0,why:'Beyz kumandasına yanıt anahtarlama kanıtıdır; fiziksel doyum çalışma noktası ayrı bir doğrulama ister.'};
+ }
+ if(id==='electronic-switching-outline-024'){
+  l.beginnerSteps=[
+   'S1’e bas: C1 şarj olurken Q1 ilk anda kesimde kalır.',
+   '250 ms aralıklı sanal ölçümde Q1 yaklaşık 1500 ms’de açılır; bu üretici ölçümü değildir.',
+   'S1’i bırak: C1 deşarj olurken Q1’in bir süre daha açık kalabildiğini gözle.',
+   'Sanal C1 kaldırıldığında gecikme yok olur; beyz hattı koparsa Q1 açılmaz.',
+   'Fiziksel zaman eğrisi ve Windows/3D kabulü yapılmadığı için COMPLETE veya PASS verme.'];
+  l.quiz={question:'RC–BD139 devresindeki açılma gecikmesini hangi eleman ilişkisi oluşturur?',
+   options:['RB/C1 şarj yolu ve Q1 beyz eşiği.','Yalnız kaynak etiketinin değişmesi.','V1 ölçüm aletinin seri motor sürmesi.'],
+   answer:0,why:'Sanal testte kondansatörün gerilimi artar ve belirli eşiğin ardından Q1 açılır; gerçek donanım kalibrasyonu değildir.'};
+ }
 }
 
 
