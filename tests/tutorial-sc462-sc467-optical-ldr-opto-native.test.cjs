@@ -7,7 +7,7 @@ const Native=require('../dist/simulation.js');
 const L=QA.curriculum(),defs=QA.catalog(),copy=x=>structuredClone(x);
 const get=sc=>L.lessons[sc-1],part=(p,id)=>p.components.find(c=>c.id===id);
 const solver=(p,time=1000)=>{const r=Native.solve(p,defs,{now:time});assert.ok(r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating);return r;};
-const cut=(p,a,b)=>{const old=p.wires.length;p.wires=p.wires.filter(w=>w.from.c!==a||w.to.c!==b);assert.equal(p.wires.length,old-1);};
+const cut=(p,a,b)=>{const old=p.wires.length,i=p.wires.findIndex(w=>w.from.c===a&&w.to.c===b);assert.ok(i>=0,a+'>'+b);p.wires.splice(i,1);assert.equal(p.wires.length,old-1);};
 const locks=sc=>{const l=get(sc);assert.equal(l.project.wires.length,l.steps.length);assert.equal(l.quiz.answer,0);
  for(const k of ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'])assert.notEqual(l.pedagogyReview[k],true);};
 test('SC462 PNP through-beam detector: far-near-far, BK/BN negatives',()=>{
