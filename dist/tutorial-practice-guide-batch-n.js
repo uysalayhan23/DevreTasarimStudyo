@@ -114,6 +114,193 @@
   if(lesson?.kind==='wiring'&&lesson.pedagogyReview?.windowsVisualAcceptance===false&&
      lesson.summary==='Sanal op-amp, RC ve karşılaştırıcıyla '+(id.endsWith('033')?'ON':'OFF')+'-delay kontrol bağlantıları.')lesson.summary=summary;
  }
+
+ // SC503–532: topic-specific virtual guidance. Source circuits and acceptance stay untouched.
+ const lessonPrompts503532=[
+ [
+  "electronic-component-basics-outline-035",
+  "r",
+  "Diyot akımı yönlendirir, kondansatör dalgalanmayı azaltabilir. Bu doğrultmaç kartında kablolu deney olmadığını unutma."
+ ],
+ [
+  "opamp-apps-outline-043",
+  "w",
+  "LM358 ve 1N4148 yolunu izle; potu değiştirip diyotlu geri beslemenin sanal çıkışı nasıl etkilediğine bak.",
+  "Giriş değişirken diyot ve sanal voltmetre ilişkisini izle; dalga biçimi varsayma."
+ ],
+ [
+  "electronic-component-basics-outline-036",
+  "w",
+  "İki LM358 paketindeki üç yükselteç katını bul. Giriş potlarını ayrı ayrı değiştirerek farkın çıkışta nasıl göründüğüne bak.",
+  "İki girişi ayrı değiştir; çıkış farkını sanal ölçümle karşılaştır."
+ ],
+ [
+  "opamp-apps-outline-044",
+  "w",
+  "Schmitt devresinde 10 kΩ giriş ve 47 kΩ pozitif geri besleme var. Potu iki yönde değiştirip çıkış geçişini izle.",
+  "İleri ve geri geçişi ayrı karşılaştır; ölçülmemiş eşikleri kesin söyleme."
+ ],
+ [
+  "oscillator-filter-apps-outline-031",
+  "r",
+  "Bobin ve kondansatörün enerji alışverişini düşün. Bu LC kartı çalışan bir osilatör değil."
+ ],
+ [
+  "oscillator-filter-apps-outline-032",
+  "r",
+  "Kuvars kristal frekans kararlılığı için kullanılır. Sürücünün ve yükün rolünü düşün; kablolu devre yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-033",
+  "r",
+  "RC gecikmesinin osilatördeki geri beslemeye nasıl katkı verebileceğini düşün. Burada frekans ölçümü yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-034",
+  "r",
+  "Tek kararlı, çift kararlı ve kararsız multivibratörleri tetiklenme ve durum saklama açısından karşılaştır."
+ ],
+ [
+  "oscillator-filter-apps-outline-035",
+  "r",
+  "Colpitts osilatörde iki kondansatör ve bir bobin nasıl geri beslemeye katılır? Bu bir malzeme kartıdır."
+ ],
+ [
+  "oscillator-filter-apps-outline-036",
+  "r",
+  "Hartley osilatörde bobin sarımları geri beslemeye katkı verir. Kartta bağlı osilatör yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-037",
+  "r",
+  "Kristal tek başına bir osilatör değildir; sürücü ve yük koşullarını da düşün. Burada ölçüm yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-038",
+  "r",
+  "Üç RC kademesi faz kaymasına katkı verir. Devrenin salınması için kazanç koşulu da gerekir; kablolu deney yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-039",
+  "r",
+  "Wien köprüsündeki seri ve paralel RC kollarını ayır; frekans ile kazanç dengesini birlikte düşün."
+ ],
+ [
+  "oscillator-filter-apps-outline-040",
+  "w",
+  "S1'e basınca iki BD139'un durumunu karşılaştır. C1 geçici sürenin oluşmasına yardım eder.",
+  "S1 basılı ve serbestken iki kolektörü karşılaştır; sanal süreyi fiziksel kabul sayma."
+ ],
+ [
+  "oscillator-filter-apps-outline-041",
+  "w",
+  "İki BD139 çapraz geri beslemeli. SET'e, sonra RESET'e basıp son durumun saklanmasını izle.",
+  "SET ve RESET sonrası iki sanal kolektör voltmetresini karşılaştır."
+ ],
+ [
+  "oscillator-filter-apps-outline-042",
+  "w",
+  "Butonsuz iki BD139 ve iki RC kolu dönüşümlü çalışmak üzere bağlı. Kondansatör yollarını izle.",
+  "İki karşılıklı RC kolunu göster; ölçülmeyen frekans değeri verme."
+ ],
+ [
+  "electronic-component-basics-outline-038",
+  "w",
+  "NE555'in RA, RB ve C1 zamanlama yolunu takip et. LED'in sanal davranışını incele.",
+  "555 çıkış ve RC uçlarını kontrol et; sanal LED'i gerçek deney sayma."
+ ],
+ [
+  "electronic-component-basics-outline-039",
+  "w",
+  "Potu değiştir; 1N4148 ile 12 V referansının çıkışı nasıl sınırlayabileceğini araştır.",
+  "Girişin referans altı ve üstü seviyelerini sanal voltmetreyle karşılaştır."
+ ],
+ [
+  "electronic-component-basics-outline-040",
+  "w",
+  "50 Hz sinüsü, C1'i, diyotu ve 100 kΩ yükü sırayla bul. Kenetleme yolunu incele.",
+  "Tek DC anlık okumadan tüm AC dalga biçimini çıkarma."
+ ],
+ [
+  "electronic-component-basics-outline-041",
+  "w",
+  "Pals üretecindeki NE555, RA, RB, C1 ve LED'i sırayla incele. Zamanlama yolunu bul.",
+  "NE555 şarj-deşarj bağlantılarını kontrol et; fiziksel frekans ilan etme."
+ ],
+ [
+  "electronic-component-basics-outline-042",
+  "w",
+  "Kırpıcı temrininde potu yavaşça değiştir. Diyot, referans ve voltmetreyi birlikte oku.",
+  "Sanal girişi ve çıkışı farklı pot konumlarında karşılaştır."
+ ],
+ [
+  "electronic-component-basics-outline-043",
+  "w",
+  "Kenetleyici temrininde sinüs kaynağından C1'e, diyota ve yüke giden yolu izle.",
+  "Bir anlık ölçümü bütün sinüs periyodu sanma."
+ ],
+ [
+  "electronic-component-basics-outline-044",
+  "r",
+  "Miller etkisi geri besleme ve kazançla ilişkilidir. Bu kart çalışan Miller devresi değildir."
+ ],
+ [
+  "electronic-component-basics-outline-045",
+  "r",
+  "Bootstrap için kondansatörün uygun sürme bağlantısı gerekir. Kartta çalışan deney kurulmadı."
+ ],
+ [
+  "electronic-component-basics-outline-046",
+  "w",
+  "Schmitt giriş potunu artırıp azalt; pozitif geri beslemenin geçişlere etkisini düşün.",
+  "İleri ve geri eşikleri ölçmeden kesin histerezis sonucu söyleme."
+ ],
+ [
+  "oscillator-filter-apps-outline-043",
+  "w",
+  "555'li osilatörde RA, RB, C1 ve LED yolunu incele. Sanal zamanlamayı izle.",
+  "NE555 güç ve çıkış pinlerini bul; fiziksel frekans kabulü verme."
+ ],
+ [
+  "oscillator-filter-apps-outline-044",
+  "w",
+  "PWM potunun iki yanındaki ters yönlü diyotlara bak; şarj ve deşarj yollarını ayır.",
+  "Potu değiştirirken görev oranına ölçülmemiş kesin değer verme."
+ ],
+ [
+  "oscillator-filter-apps-outline-045",
+  "r",
+  "Tek kararlı 555 tetikten sonra kısa bir durum değişimi oluşturur. Bu kartta kablolu zaman testi yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-046",
+  "r",
+  "Çift kararlı 555'in SET ve RESET komutlarını ayır. Kartta ölçüm devresi yok."
+ ],
+ [
+  "oscillator-filter-apps-outline-047",
+  "r",
+  "Filtre bazı frekansları geçirir, bazılarını zayıflatır. Bu kart ölçüm devresi değil, malzeme tanıtımıdır."
+ ]
+];
+ for(const [id,kind,intro,observation] of lessonPrompts503532){
+  const lesson=L.byId[id],guide=lesson?.practiceGuide;
+  if(!lesson||lesson.pedagogyReview?.windowsVisualAcceptance!==false||!guide?.steps?.length)continue;
+  if(kind==='w'&&(lesson.kind!=='wiring'||!lesson.project?.wires?.length||
+     guide.method!=='virtual-circuit-check'||!guide.observations?.length))continue;
+  if(kind==='r'&&(lesson.kind!=='quiz'||lesson.project?.wires?.length||
+     guide.method!=='reference-only'))continue;
+  guide.steps[0]=intro;
+  if(kind==='w'){
+   const j=guide.observations.length-1;
+   if(guide.observations[j].startsWith('Sanal simülasyonda varsa '))
+    guide.observations[j]=observation;
+  }else{
+   const j=guide.steps.length-1;
+   if(guide.steps[j].startsWith('Kavramı dersin hedefi '))
+    guide.steps[j]='Bu bir kavram kartıdır; bağlı devre veya ölçüm yapılmış sayılmaz.';
+  }
+ }
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
