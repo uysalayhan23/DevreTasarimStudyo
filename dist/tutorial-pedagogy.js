@@ -12017,4 +12017,87 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
  }
 }
 
+
+/* SC403/408/410/411/416: replace generic questions with circuit-specific,
+ * negative-tested, virtual-only IGBT/PWM and SCR explanations.
+ * Do not alter any wires, terminals, independent or physical acceptance. */
+{
+ const rows=[
+ ['electronic-switching-outline-036','SOURCE_WIRED_DC_IGBT_NATIVE_PENDING',6,9,
+  'PWM1 ile sanal IGBT gate kumandasını, C–E yük yolundan ayırmak.',
+  '12 V sanal PWM1 çıkışı RG üzerinden IGBT G ucuna gider. Q1 C–E yük yolu iletime geçince H1 yanar. 1 kHz %50 PWM bir sabit yarım gerilim değil, ON ve OFF fazlarıdır; gerçek parlaklık veya fiziksel IGBT ölçümü yapılmadı.',
+  ['PWM1 V+, GND, OUT ile Q1 G, C, E uçlarını bul.',
+   'Duty %0 iken H1 sönük, %100 iken sanal H1 yanık olmalıdır.',
+   '%50 görev çevriminin sanal ON ve OFF örneklerini karşılaştır; gerçek parlaklık ölçümü sayma.',
+   'PWM1 OUT–RG veya RG–Q1/G telini sanal olarak kes: H1 yanmamalıdır.',
+   'Bu DC sanal anahtarlamayı fiziksel IGBT, AC dimmer veya Windows/3D PASS kabulü sayma.'],
+  'PWM1 OUT–RG bağlantısı koparsa neden sanal H1 sönük kalır?',
+  'IGBT gate sürmesi kesilir ve C–E yük yolu iletime geçmez.',
+  'Yalnız PWM etiketi C–E yolunu açık tutar.','PWM1 doğrudan motor miline bağlıdır.',
+  'PWM1 OUT gerçek gate komutu taşır; kablo kesildiğinde yük beslemesi tek başına anahtarı açmaz.'],
+ ['electronic-switching-outline-037','SOURCE_WIRED_DC_SCR_NATIVE_PENDING',5,6,
+  'SCR üzerinde gate tetikleme ile A–K yük ve sanal tutma yollarını ayırmak.',
+  'SW ile Q1 G ucuna kısa sanal tetik verilir. Tetikten sonra A–K yük yolu sürerse H1 sanal modelde yanık kalabilir. Gerçek tutma akımı ve güvenlik test edilmedi.',
+  ['Q1 A, K, G ile SW–RG gate ve H1–A–K yük yollarını bul.',
+   'SW serbestken H1 sönüktür; gate tetiklemesinde yanar.',
+   'SW bırakılınca sanal tutma davranışını gözle.',
+   'RG–Q1/G veya H1–Q1/A hattı sanal olarak koparsa H1 yanmamalıdır.',
+   'Gerçek SCR tutma akımı, üretici verisi ve fiziksel PASS henüz yoktur.'],
+  'SW bırakılınca sanal SCR lambası neden yanık kalabilir?',
+  'A–K yük yolu sürdüğünde tetik sonrası sanal tutma görülür.',
+  'Kablo kopuk olsa da her SCR sonsuza dek yanar.','G ucu bir motor milidir.',
+  'Sanal latch, gerçek tutma akımının ölçüldüğünü kanıtlamaz.'],
+ ['electronic-switching-outline-039','SOURCE_WIRED_DC_SCR_LATCH_MEASUREMENT_PENDING',5,6,
+  'SCR gate darbesini sanal tutma durumundan ayırmak.',
+  'SW gate darbesi verir. Q1 tetiklenip A–K yük yolu beslendiğinde model SW serbest bırakıldıktan sonra iletimi koruyabilir; bu gerçek VAK ve tutma akımı ölçümü değildir.',
+  ['12 V kaynak, SW, RG ve Q1 G/A/K yolunu ayırt et.',
+   'SW serbestken sönük H1’e kısa sanal gate darbesi ver.',
+   'SW bırakılınca sanal tutmayı kontrol et.',
+   'Gate ve anot hatlarını ayrı ayrı keserek H1 tepkisini karşılaştır.',
+   'Gerçek akım ve VAK ölçümü olmadığı için fiziksel PASS verme.'],
+  'SW bırakıldığı hâlde sanal H1 yanıyorsa ne gözlenir?',
+  'SCR modelinin tetik sonrası A–K tutma durumu.',
+  'Gate motor hızını ölçüyordur.','Anot kablosu kopukken de yük akımı zorunlu olarak sürer.',
+  'Kumanda darbesi ile yük akımının sürekliliği farklı büyüklüklerdir.'],
+ ['electronic-switching-outline-040','SOURCE_WIRED_SCR_GATE_TRIGGER_PENDING',5,6,
+  'SCR gate tetiklemesinde RG seri direncinin görevini kavramak.',
+  'SW, RG 1 kΩ üzerinden SCR G ucuna sanal tetik sağlar. H1 ise ayrı A–K yük yolundadır. Tetik sonrası sanal tutma, fiziksel akım kabulü değildir.',
+  ['SW–RG 1 kΩ–Q1/G tetik hattını bul.',
+   'SW’ye basınca H1’in sanal yanmasını gözle.',
+   'SW’yi bırakıp sanal tutmanın devam edip etmediğini izle.',
+   'RG–Q1/G bağlantısını açınca tetik başlamamalıdır.',
+   'Bunu gerçek SCR sürücü veya fiziksel PASS sayma.'],
+  'RG 1 kΩ bu devrede hangi yoldadır?',
+  'SW ile Q1/G arasındaki sanal gate tetikleme yolunda.',
+  'H1 lambasının mekanik içinde.','PWM1 motor milinde.',
+  'RG gate sınırlama direncidir, A–K yük yolunun yerini almaz.'],
+ ['electronic-switching-outline-044','SOURCE_WIRED_SCR_DC_PRACTICE_PENDING',5,6,
+  'Sanal SCR DC tetik uygulamasını kopuk gate ile sınamak.',
+  'Temrinde SW ile kısa gate darbesi H1’i tetikler. SW bırakılırsa sanal tutma sürebilir. RG–Q1/G koparsa SW artık SCR’yi tetiklemez.',
+  ['G1–SW–RG–Q1/G sanal tetik hattını bul.',
+   'SW’ye kısa bas; H1’in yanmasını izle.',
+   'SW’yi bırak ve sanal tutma davranışını gözle.',
+   'RG–Q1/G kablosunu koparınca H1 artık tetiklenmemelidir.',
+   'Gerçek tutma akımı ve fiziksel PASS bu sanal temrinde ölçülmedi.'],
+  'RG–Q1/G kablosu koparsa SW basılıyken sanal H1 ne yapar?',
+  'SCR tetiklenmez ve H1 başlangıçta sönük kalır.',
+  'SCR tüm kablolar olmadan kendiliğinden çalışır.','RG mekanik motor şaftıdır.',
+  'Gate komutu Q1/G bağlantısı üzerinden gelir; bu fiziksel sağlamlık kabulü değildir.']
+ ];
+ for(const [id,status,parts,wires,goal,explanation,steps,question,right,wrong1,wrong2,why] of rows){
+  const l=L.byId[id],review=l?.pedagogyReview,p=l?.project;
+  if(!l||l.kind!=='wiring'||p?.referenceOnly===true||p?.components?.length!==parts||
+    p.wires.length!==wires||l.steps?.length!==wires||
+    review?.titleTopologyStatus!==status||
+    ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>review[k]===true)||
+    l.quiz?.question!=='Bu derste ekrandaki malzemeler neden özellikle seçildi?')
+   throw Error('Protected IGBT/SCR teaching baseline changed '+id);
+  const graph=JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]);
+  l.learningGoal=goal;l.explanation=explanation;l.beginnerSteps=[...steps];
+  l.quiz={question,options:[right,wrong1,wrong2],answer:0,why};
+  if(graph!==JSON.stringify([l.project,l.steps,l.materials,l.pedagogyReview]))
+   throw Error('Protected IGBT/SCR circuit or acceptance mutated '+id);
+ }
+}
+
 })(typeof window==='undefined'?globalThis:window);
