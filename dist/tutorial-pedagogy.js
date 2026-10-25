@@ -2345,36 +2345,51 @@ for(const id of ['opamp-apps-src-01','opamp-apps-src-03']){
  const supply=p?.components?.find(c=>c.id==='g1');
  const row=lesson?.materials?.find(m=>m.componentId==='v1');
  if(lesson?.kind==='wiring'&&p?.wires?.length>0&&
-    signal?.typeId==='arduino-signal-generator'&&supply?.typeId==='supply-dc-plus'&&
+    signal?.typeId==='arduino-signal-generator'&&supply?.typeId==='arduino-bench-supply'&&
+    Number(supply.dcVoltage)===24&&
     meter?.typeId==='unit-ut33d-plus'&&meter?.meterPosition===6&&
     row?.typeId===meter.typeId&&lesson?.pedagogyReview?.mq07Batch==='001_200'){
    const limit=' Bu modelde 1 kHz sanal giriş jeneratörü ve 24 V DC op-amp beslemesi birlikte bulunur. UNI-T UT33D+ ACV 600 V konumunda karışık AC/DC kaynak uyarısı ve OL gösterebilir; bu bir ölçülmüş AC kazanç veya çıkış RMS değeri değildir. Op-amp AC transferi ve dalga biçimi dinamik solver kanıtına kadar REVIEW durumundadır.';
+   const originalWires=id==='opamp-apps-src-01'?13:10;
+   const finalWires=id==='opamp-apps-src-01'?15:12;
+   if(p.wires.length!==originalWires||!lesson.summary.includes(originalWires+' terminal bağlantısı'))
+    throw Error('SC36/38 AC meter source drift: '+id);
+   lesson.summary=lesson.summary.replace(originalWires+' terminal bağlantısı',finalWires+' terminal bağlantısı');
    lesson.explanation+=limit;
    lesson.beginnerSteps.push('V1 ACV 600 V göstergesi OL veya AC/DC uyumsuzluğu verirse bunu kazanç ölçümü olarak kabul etme; önce kaynak ve besleme koşullarını ayırt et.');
    lesson.materials=lesson.materials.map(m=>m.componentId==='v1'?{...m,why:'UNI-T UT33D+ çıkış probu ACV 600 V kademesindedir; 24 V DC beslemeli sanal devrede karışık kaynak uyarısı/OL verebilir. Kayıtlı dinamik AC RMS ve kazanç ölçümü olmadığından göstergeyi doğrulanmış sonuç sayma.'}:m);
  }
 }
-/* MQ07_SC10_RCD_REFERENCE_MATERIAL: residual-current protection must not
-   be described as overcurrent/short-circuit protection. This is an unwired
-   conceptual lesson, not a verified trip-time or leakage-current experiment. */
+/* SC10 concept-only RCD: replace the unrelated DC meter reference card.
+   This does not wire, energize, trip or accept a physical protective device. */
 {
- const lesson=L.byId['installation-grounding-src-10'];
- const p=lesson?.project;
- const types=['supply-1p','rcd-2p','socket-power','ground'];
- if(lesson&&p&&lesson.kind==='quiz'&&p.referenceOnly===true&&
-    p.wires.length===0&&p.components.length===types.length&&
-    lesson.materials?.length===types.length&&
-    p.components.every((c,i)=>c.typeId===types[i]&&
-      lesson.materials[i].componentId===c.id&&
-      lesson.materials[i].typeId===c.typeId)){
-   const roles=[
-    'Tek faz besleme kaynağı faz ve nötrün kavramsal başlangıç noktasıdır; bu kartta RCD üzerinden akım dolaşan gerçek bir bağlantı yoktur.',
-    'Kaçak akım koruma düzeni (RCD), faz ile nötrden geçen akımların farkını izleme ilkesini temsil eder; tek başına aşırı akım veya kısa devre koruma cihazı değildir. Burada açma eşiği, süresi veya gerçek akım farkı simüle edilmez.',
-    'Topraklı priz yükün bağlanabileceği tesisat noktasını temsil eder; bu kartta beslenmiş veya RCD çıkışına kablolanmış değildir.',
-    'Koruma toprağı (PE) sembolik güvenlik referansıdır; RCD içinden normal çalışma akımının dönüş yolu olarak gösterilmez, PE sürekliliği ölçülmez.'
-   ];
-   lesson.materials=lesson.materials.map((m,i)=>({...m,why:roles[i]}));
- }
+ const id='installation-grounding-src-10',l=L.byId[id],p=l?.project;
+ const old=['arduino-bench-supply','unit-ut33d-plus','resistor','test-probe-red','test-probe-black'];
+ const path=w=>w.from.c+'.'+w.from.p+'>'+w.to.c+'.'+w.to.p;
+ if(!l||!p||l.kind!=='quiz'||p.referenceOnly!==true||
+    p.projectId!=='tutorial-session-source-'+id||p.components?.length!==5||
+    l.materials?.length!==5||!p.components.every((c,i)=>c.typeId===old[i]&&
+       l.materials[i].typeId===c.typeId&&l.materials[i].componentId===c.id)||
+    p.wires?.length!==2||path(p.wires[0])!=='pg1.V>pg1-red.PLUG'||
+    path(p.wires[1])!=='pg1.COM>pg1-black.PLUG'||l.steps?.length!==0||
+    l.pedagogyReview?.titleTopologyIssue!=='NO_WIRED_CIRCUIT'||
+    ['physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'].some(k=>l.pedagogyReview[k]!==false))
+   throw Error('SC10 RCD conceptual baseline changed');
+ const types=['supply-1p','rcd-2p','socket-power','ground'],roles=[
+  'Tek faz besleme kaynağı faz ve nötrün kavramsal başlangıç noktasıdır; bu kartta RCD üzerinden akım dolaşan gerçek bir bağlantı yoktur.',
+  'Kaçak akım koruma düzeni (RCD), faz ile nötrden geçen akımların farkını izleme ilkesini temsil eder; tek başına aşırı akım veya kısa devre koruma cihazı değildir. Burada açma eşiği, süresi veya gerçek akım farkı simüle edilmez.',
+  'Topraklı priz yükün bağlanabileceği tesisat noktasını temsil eder; bu kartta beslenmiş veya RCD çıkışına kablolanmış değildir.',
+  'Koruma toprağı (PE) sembolik güvenlik referansıdır; RCD içinden normal çalışma akımının dönüş yolu olarak gösterilmez, PE sürekliliği ölçülmez.'
+ ];
+ p.components=[
+  C('pg0',types[0],100,170,'G1','Tek faz besleme'),
+  C('pg1',types[1],330,170,'F1','Kaçak akım koruma cihazı (RCD)'),
+  C('pg2',types[2],560,170,'X1','Topraklı priz'),
+  C('pg3',types[3],790,170,'PE','Koruma toprağı')
+ ];
+ p.wires=[];p.junctions=[];
+ l.materials=p.components.map((c,i)=>({componentId:c.id,typeId:c.typeId,label:c.label,why:roles[i]}));
+ l.pedagogyReview.componentIds=types;
 }
 /* MQ07_GROUNDING_MEASUREMENT_REFERENCE: SC07/SC08 are deliberately unwired
    conceptual cards. Give each real displayed product a grounded material role
@@ -12433,6 +12448,25 @@ L.pedagogy={version:'v1.19.20-pedagogy65-lm358-output',designStandard:'rich-refe
   throw Error('Unwired earth tester baseline changed');
  ldr.summary=ldr.summary.replace('12 terminal bağlantısı','14 terminal bağlantısı');
  g.explanation+=' Topraklama direnci ohm (Ω) ile ifade edilir; bu kartta gerçek bir Ω değeri ölçülmez.';
+}
+
+// SC36/SC38: unused LM358 B-channel preparation rebuilds the materials
+// after the ACV warning above. Preserve the real 15/12-wire source and
+// reapply only the truthful warning to the final displayed meter material.
+for(const [id,count] of [['opamp-apps-src-01',15],['opamp-apps-src-03',12]]){
+ const l=L.byId[id],p=l?.project,m=p?.components.find(c=>c.id==='v1'),
+  row=l?.materials?.find(x=>x.componentId==='v1'),
+  g=p?.components.find(c=>c.id==='g1');
+ if(!l||l.kind!=='wiring'||p.wires.length!==count||
+    g?.typeId!=='arduino-bench-supply'||Number(g.dcVoltage)!==24||
+    m?.typeId!=='unit-ut33d-plus'||m.meterPosition!==6||
+    row?.typeId!=='unit-ut33d-plus'||
+    !l.explanation.includes('karışık AC/DC kaynak uyarısı ve OL gösterebilir')||
+    !l.summary.includes(count+' terminal bağlantısı')||
+    l.pedagogyReview?.physicalAcceptance!==false||
+    l.pedagogyReview?.windowsVisualAcceptance!==false)
+  throw Error('SC36/38 final meter baseline changed: '+id);
+ row.why='UNI-T UT33D+ çıkış probu ACV 600 V kademesindedir; 24 V DC beslemeli sanal devrede karışık kaynak uyarısı/OL verebilir. Kayıtlı dinamik AC RMS ve kazanç ölçümü olmadığından göstergeyi doğrulanmış sonuç sayma.';
 }
 
 })(typeof window==='undefined'?globalThis:window);

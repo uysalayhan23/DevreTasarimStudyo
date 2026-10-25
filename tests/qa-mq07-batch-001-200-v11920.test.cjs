@@ -130,7 +130,9 @@ test('SC36 and SC38 ACV probe descriptions cannot certify mixed-source AC gain',
   assert.equal(lesson.kind,'wiring');
   assert.ok(p.wires.length>0,id+' original graph missing');
   assert.ok(p.components.some(c=>c.id==='in'&&c.typeId==='arduino-signal-generator'),id+' AC signal source missing');
-  assert.ok(p.components.some(c=>c.id==='g1'&&c.typeId==='supply-dc-plus'),id+' DC op-amp supply missing');
+  assert.ok(p.components.some(c=>c.id==='g1'&&c.typeId==='arduino-bench-supply'&&c.dcVoltage===24),id+' real 24 V DC op-amp bench supply missing');
+   assert.equal(p.wires.length,id==='opamp-apps-src-01'?15:12,id+' full source-terminal count');
+   assert.match(lesson.summary,new RegExp((id==='opamp-apps-src-01'?15:12)+' terminal bağlantısı'));
   const m=p.components.find(c=>c.id==='v1');
   assert.ok(m&&m.typeId==='unit-ut33d-plus',id+' actual UT33D+ meter missing');
   assert.deepEqual(Array.from(Meter.setting(m,defs[m.typeId])),['ACV',600]);
@@ -149,6 +151,32 @@ test('SC36 and SC38 ACV probe descriptions cannot certify mixed-source AC gain',
   assert.equal(lesson.pedagogyReview.physicalAcceptance,false);
   assert.equal(lesson.pedagogyReview.windowsVisualAcceptance,false);
   assert.equal(lesson.pedagogyReview.independentPedagogicalAcceptance,false);
+ }
+});
+
+test('SC36/SC38 native ACV connected and disconnected probe scenarios preserve OL safety guard',()=>{
+ const defs=QA.catalog();
+ for(const id of ['opamp-apps-src-01','opamp-apps-src-03']){
+  const l=L.byId[id];
+  assert.equal(l.pedagogyReview.physicalAcceptance,false);
+  const live=JSON.parse(JSON.stringify(l.project));
+  const expected=live.components.find(c=>c.id==='v1');
+  assert.deepEqual(Array.from(require('../dist/multimeter.js').setting(expected,defs[expected.typeId])),['ACV',600]);
+  const good=Simulation.solve(live,defs,{now:0});
+  assert.equal(good.stable,true,id+' initial native solve');
+  assert.equal(good.blocked,false,id+' source blocked');
+  assert.equal(good.shortCircuit,false,id+' false short');
+  const meter=live.components.find(c=>c.id==='v1');
+  assert.equal(meter._meter?.display,'OL',id+' mixed AC/DC is NOT measured gain');
+  assert.match(meter._meter?.warning||'',/AC\/DC/);
+  const broken=JSON.parse(JSON.stringify(l.project));
+  broken.wires=broken.wires.filter(w=>!(w.from.c==='v1'&&w.from.p==='V'));
+  broken.components.find(c=>c.id==='v1-red').probeTarget=null;
+  const negative=Simulation.solve(broken,defs,{now:0});
+  assert.equal(negative.stable,true,id+' disconnected lead must not destabilize solver');
+  assert.equal(broken.components.find(c=>c.id==='v1')._meter?.display,'OL',id+' disconnect is not gain');
+  assert.equal(broken.components.find(c=>c.id==='v1')._meter?.value,null,id+' missing lead must not read voltage');
+  assert.equal(l.project.components.find(c=>c.id==='v1-red').probeTarget.p,'1',id+' original source untouched');
  }
 });
 
