@@ -19,7 +19,7 @@ test('SC418 virtual SCR positive half only, open gate and invalid phase fail clo
  const invalid=clone(l.project);part(invalid,'trg1').triggerAngleDeg=200;
  assert.equal(sample(invalid,method,90).verified,false);
  assert.equal(l.pedagogyReview.titleTopologyStatus,'SOURCE_WIRED_ISOLATED_AC_SCR_WAVE_PENDING');
- assert.match(l.quiz.question,/SCR/);assert.ok(l.beginnerSteps.at(-1).includes('PASS verme'));
+ assert.match(l.quiz.question,/SCR/);assert.match(l.beginnerSteps.at(-1),/PASS (verme|sayma)/);
 });
 test('SC419/422/423/427 TRIAC signed halves, RMS ordering, broken gate and invalid angle',()=>{
  for(const id of isolatedIds){
@@ -37,7 +37,7 @@ test('SC419/422/423/427 TRIAC signed halves, RMS ordering, broken gate and inval
   const invalid=clone(l.project);part(invalid,'trg1').triggerAngleDeg=200;
   assert.equal(sample(invalid,method,90).verified,false);
   assert.equal(JSON.stringify(l.project),original,id+' canonical unchanged');
-  assert.ok(l.beginnerSteps.at(-1).includes('PASS verme'));
+  assert.match(l.beginnerSteps.at(-1),/PASS (verme|sayma)/);
  }
 });
 test('SC429 separate TLP521 input LED controls optically coupled virtual output only',()=>{
@@ -79,7 +79,7 @@ test('1655 protected lesson IDs, REVIEW concepts and unaccepted physical/visual 
  for(const id of ids){
   const l=by(id);assert.equal(l.kind,'wiring');assert.equal(l.quiz.answer,0);
   assert.equal(l.quiz.options.length,3);assert.ok(l.beginnerSteps.length>=5);
-  assert.ok(l.beginnerSteps.at(-1).includes('PASS verme'));
+  assert.match(l.beginnerSteps.at(-1),/PASS (verme|sayma)/);
   for(const k of ['nativeDynamicAcceptance','physicalAcceptance','windowsVisualAcceptance','independentPedagogicalAcceptance'])
    assert.notEqual(l.pedagogyReview[k],true);
  }
