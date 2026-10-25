@@ -15,8 +15,8 @@ test('SC460 same real +/minus piezo/1 MOhm/UT33D+ graph and unchanged REVIEW',()
  assert.equal(p.components.length,5);assert.equal(p.wires.length,4);assert.equal(l.steps.length,4);
  assert.equal(get(p,'pz').typeId,'tutorial-piezo');assert.equal(get(p,'pz').mq07PiezoTapUi,true);
  assert.equal(get(p,'r1').resistance,1000000);assert.equal(get(p,'v1').meterPosition,1);
- assert.deepEqual(get(p,'v1-red').probeTarget,{c:'pz',p:'+'});
- assert.deepEqual(get(p,'v1-black').probeTarget,{c:'pz',p:'−'});
+ assert.deepEqual({...get(p,'v1-red').probeTarget},{c:'pz',p:'+'});
+ assert.deepEqual({...get(p,'v1-black').probeTarget},{c:'pz',p:'−'});
  assert.equal(l.pedagogyReview.sourceTopologyReusedFrom,'sensor-analog-apps-src-08');
  assert.equal(l.pedagogyReview.titleTopologyStatus,'REVIEW');
 });
