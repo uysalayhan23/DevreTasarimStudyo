@@ -56,7 +56,15 @@ function evaluateDelay(t,id,mode){
   chargeAt16s:lastCharge,releaseAt8s:q.release[31],releaseAt16s:lastRelease});
  assert.ok(first.cap>=-.25&&first.cap<2,'Initial RC capacitor must be discharged');
  assert.ok(lastCharge.cap>12,'RC did not charge above 12 V threshold in 16 s');
- assert.ok(lastCharge.cap>q.charge[7].cap+2,'RC charge lacks time dependence');
+ if(mode==='OFF'){
+  // 1 kΩ × 100 µF charging is essentially finished by 2 s; comparing
+  // 16 s to 2 s wrongly demanded an additional 2 V after saturation.
+  assert.ok(q.charge[7].cap>q.charge[0].cap+2,
+   'SC49 rapid RC charge must rise between 0.25 and 2 s');
+  assert.ok(Math.abs(lastCharge.cap-q.charge[7].cap)<1,
+   'SC49 near-rail capacitor must not invent late charging');
+ }else assert.ok(lastCharge.cap>q.charge[7].cap+2,
+   'SC48 slow RC charge lacks time dependence');
  assert.ok(lastRelease.cap<lastCharge.cap-1,'RC failed to discharge after button release');
  assert.ok(lastCharge.v>first.v+5,'LM358 output did not switch ON after charging');
  if(mode==='OFF'){
@@ -220,4 +228,32 @@ test('SC65 history negative control: same 12 V input must retain distinct prior 
   'Native solver discarded Schmitt state at the same input after opposite histories');
  assert.ok(Math.abs(noFeedbackHigh.midpoint.v-noFeedbackLow.midpoint.v)<2,
   'Comparator without positive feedback incorrectly retains hysteresis');
+});
+
+
+test('SC65 real DIP8 Schmitt guard follows the exact source graph, without physical acceptance',()=>{
+ const sweep=(pre,broken=false)=>{
+  const p=acceptedFalse('oscillator-filter-apps-src-13','dynamicHysteresisAccepted');
+  if(broken){
+   const i=p.wires.findIndex(w=>(w.from?.c==='r2'&&w.from?.p==='2'&&
+     w.to?.c==='u1'&&w.to?.p==='3')||(w.to?.c==='r2'&&w.to?.p==='2'&&
+     w.from?.c==='u1'&&w.from?.p==='3'));
+   assert.ok(i>=0);p.wires.splice(i,1);
+  }
+  part(p,'in').potentiometer=pre;measure(p,0);
+  part(p,'in').potentiometer=50;
+  const result=measure(p,250);
+  return {result,evidence:part(p,'u1')._nativeSc65Schmitt};
+ };
+ const low=sweep(100),high=sweep(0),
+       badLow=sweep(100,true),badHigh=sweep(0,true);
+ assert.ok(high.result.v>low.result.v+5,'same input loses prior state');
+ assert.equal(low.evidence?.model,'native-source-exact-ideal-SC65-Schmitt-DC');
+ assert.equal(high.evidence?.model,'native-source-exact-ideal-SC65-Schmitt-DC');
+ assert.ok(low.evidence.idealHysteresisWidthV>0);
+ assert.equal(low.evidence.physicalAcceptance,false);
+ assert.equal(high.evidence.acWaveformAccepted,false);
+ assert.equal(badLow.evidence,undefined,'broken feedback must disable scoped solver');
+ assert.equal(badHigh.evidence,undefined,'no hysteresis without feedback');
+ assert.ok(Math.abs(badHigh.result.v-badLow.result.v)<2);
 });

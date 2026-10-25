@@ -457,6 +457,76 @@
     }
    }
 
+
+   // SC65 only: preserve Schmitt history on its 14-wire physical-pin LM358P
+   // positive-feedback network. This ideal nodal DC state is not calibrated
+   // LM358 hardware, frequency response or physical/Windows acceptance.
+   {
+    if(project?.tutorialLesson?.id==='oscillator-filter-apps-src-13'){
+     const get=id=>project.components.find(c=>c.id===id),
+      op=get('u1'),g=get('g1'),pot=get('in'),meter=get('v1'),
+      amp=opamps.find(x=>x.c===op&&x.channel==='1'),
+      norm=s=>s.split('>').sort().join('~'),
+      expected=[
+       'g1.P>u1.8','g1.M>u1.4','v1.1>u1.1','v1.2>g1.M',
+       'in.1>g1.P','in.3>g1.M','g1.P>ref1.1','ref1.2>ref2.1',
+       'ref2.2>g1.M','ref1.2>u1.2','in.2>r1.1','r1.2>u1.3',
+       'u1.1>r2.1','r2.2>u1.3'].map(norm).sort(),
+      actual=project.wires.map(w=>
+       [w.from.c+'.'+w.from.p,w.to.c+'.'+w.to.p].sort().join('~')).sort(),
+      valid=project.components.length===8&&actual.length===expected.length&&
+       actual.every((edge,i)=>edge===expected[i])&&
+       g?.typeId==='supply-dc-plus'&&op?.typeId==='lm358p-dip8'&&
+       meter?.typeId==='meter-voltmeter'&&pot?.typeId==='potentiometer'&&
+       Number(pot.potMax)===10000&&Number.isFinite(Number(pot.potentiometer))&&
+       Number(pot.potentiometer)>=0&&Number(pot.potentiometer)<=100&&
+       ['r1','ref1','ref2'].every(id=>get(id)?.typeId==='resistor'&&
+        Number(get(id).resistance)===10000)&&
+       get('r2')?.typeId==='resistor'&&Number(get('r2').resistance)===47000&&
+       amp&&opamps.length===2;
+     if(op){delete op._nativeSc65Schmitt;if(options.reset)delete op._nativeSc65SchmittHigh}
+     if(meter)delete meter._nativeSc65Schmitt;
+     if(!valid){if(op)delete op._nativeSc65SchmittHigh}
+     else{
+      const v=(m,n)=>m.get(n)?.[0]??0,zero=v(secondary,amp.vm),
+       top=v(secondary,amp.vp),span=top-zero;
+      if(span>=5&&span<=24.1){
+       const low=zero+.02,high=top-2,wasHigh=op._nativeSc65SchmittHigh===true,
+        withOutput=state=>solveGraph(branches,
+         new Map([...fixed,[amp.out,[state?high:low,0]]]),injected),
+        prev=withOutput(wasHigh),
+        nextHigh=v(prev,amp.ip)>=v(prev,amp.im),
+        next=withOutput(nextHigh),
+        input=v(next,pin(pot,'2'))-zero,ref=v(next,amp.im)-zero,
+        plus=v(next,amp.ip)-zero,output=v(next,amp.out)-zero,
+        ratio=Number(get('r1').resistance)/Number(get('r2').resistance),
+        rising=ref*(1+ratio)-(low-zero)*ratio,
+        falling=ref*(1+ratio)-(high-zero)*ratio;
+       if([input,ref,plus,output,rising,falling].every(Number.isFinite)&&
+          high>low+2&&rising>falling&&falling>0&&rising<span){
+        secondary=next;
+        const evidence={model:'native-source-exact-ideal-SC65-Schmitt-DC',
+         high:nextHigh,outputV:output,inputWiperV:input,
+         nonInvertingV:plus,referenceV:ref,
+         risingInputNodeV:rising,fallingInputNodeV:falling,
+         idealHysteresisWidthV:rising-falling,
+         potWiperLoadingIncluded:true,idealEducationalModel:true,
+         physicalAcceptance:false,manufacturerLimitsAccepted:false,
+         calibratedMeter:false,acWaveformAccepted:false};
+        const channel=op._opampChannels?.['1'];
+        if(channel){channel.output=output;channel.diff=plus-ref}
+        op._opampOutput=output;
+        if(!options.sampleOnly){
+         op._nativeSc65Schmitt=evidence;
+         meter._nativeSc65Schmitt={...evidence};
+         op._nativeSc65SchmittHigh=nextHigh;
+        }
+       }else delete op._nativeSc65SchmittHigh;
+      }else delete op._nativeSc65SchmittHigh;
+     }
+    }
+   }
+
    // Source-exact SC370–373 feedback solve on the EXISTING RC backward-Euler
    // circuit, not a synthetic waveform. No AC/hardware acceptance inferred.
    {
