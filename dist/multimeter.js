@@ -22,6 +22,33 @@
  function measure(c,d,context){
   const {branches,fixed,voltages,solveGraph,acNodes,dcNodes,pin,project}=context,[mode,range]=setting(c,d),red=pin(c,jack(c,d)),black=pin(c,'COM'),wired=p=>project.wires.some(w=>[w.from,w.to].some(e=>e.c===c.id&&e.p===p));
   let value=null,unit='',warning='',beep=false,display='—';
+
+  // Only SC718: a detached TIP or missing supply/feedback is not a 0 V reading.
+  if(project?.tutorialLesson?.id==='opamp-apps-outline-056'&&
+    project.sc718MeasurementGuard==='SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1'&&
+    c.id==='v1'&&d.id==='unit-ut33d-plus'){
+   const part=id=>project.components.find(x=>x.id===id),
+     wire=(a,ap,b,bp)=>project.wires.some(w=>
+       (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+       (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+   const red=part('v1-red'),black=part('v1-black');
+   const contacts=red?.probeTarget?.c==='u1'&&red?.probeTarget?.p==='1'&&
+     black?.probeTarget?.c==='g1'&&black?.probeTarget?.p==='M'&&
+     wire('v1','V','v1-red','PLUG')&&wire('v1','COM','v1-black','PLUG')&&
+     wire('v1-red','TIP','u1','1')&&wire('v1-black','TIP','g1','M');
+   const power=wire('g1','P','u1','8')&&wire('g1','M','u1','4')&&
+     part('g1')?.sourceEnabled!==false;
+   const feedback=wire('u1','1','r2','1')&&wire('r2','2','u1','2')&&
+     wire('r1','2','u1','2')&&wire('ref1','2','u1','3');
+   if(mode!=='DCV'||!contacts||!power||!feedback){
+     c._meter={display:'OL',unit:'V',value:null,beep:false,mode,range,
+       warning:!contacts?'UNI-T kırmızı OUT / siyah COM prob bağlantısı yok.':
+         !power?'LM358 beslemesi eksik.':!feedback?'LM358 geri besleme hattı eksik.':
+         'DCV kademesini seçin.'};
+     return;
+   }
+  }
+
   if(mode==='OFF'){c._meter={display:'',warning:'',beep:false};return}
 
   // SC424–425: strictly scoped unpowered TRIAC model, only after real probe
