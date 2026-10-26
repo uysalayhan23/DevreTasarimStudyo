@@ -584,6 +584,76 @@
   v.sc597598PhysicalRepair='SC597-598-TRUE-XOR-AND-WIRED-V1';
  }
 
+
+ // SC599/604: replace copied LM358 with a physical three-input full adder.
+ for(const [sc,id] of [[599,'opamp-apps-outline-048'],[604,'opamp-apps-outline-053']]){
+  const l=L.lessons[sc-1],p=l?.project,v=l?.pedagogyReview;
+  if(l?.id!==id||l.kind!=='wiring'||!p?.wires?.length||
+   !p.components.some(x=>x.typeId==='lm358p-dip8')||
+   v?.titleTopologyIssue!=='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH'||
+   v.independentPedagogicalAcceptance===true)continue;
+  const C=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const cs=[
+   C('ps','arduino-bench-supply','5 V DC sanal kaynak',30,300,{dcVoltage:5}),
+   C('a','push-no','A giriş biti',245,80),C('b','push-no','B giriş biti',245,295),
+   C('ci','push-no','CIN · gelen elde',245,510),
+   C('ra','resistor','A 10 kΩ pull-down',415,145,{resistance:10000}),
+   C('rb','resistor','B 10 kΩ pull-down',415,340,{resistance:10000}),
+   C('ri','resistor','CIN 10 kΩ pull-down',415,555,{resistance:10000}),
+   C('xor','sn74hc86n','U1 · iki XOR kapısı',680,130),
+   C('and','sn74hc08n','U2 · iki AND kapısı',680,455),
+   C('or','sn74hc32n','U3 · OR elde çıkışı',935,455),
+   C('rs','arduino-resistor-220','SUM LED 220 Ω',985,165),
+   C('rc','arduino-resistor-220','CARRY LED 220 Ω',1130,475),
+   C('sum','arduino-led','SUM · toplam',1200,165),
+   C('carry','arduino-led','COUT · çıkan elde',1335,475)];
+  const pairs=[
+   ['ps','P','a','13'],['ps','P','b','13'],['ps','P','ci','13'],
+   ['a','14','xor','1'],['b','14','xor','2'],
+   ['a','14','and','1'],['b','14','and','2'],
+   ['ci','14','xor','5'],['ci','14','and','5'],
+   ['a','14','ra','1'],['ra','2','ps','M'],
+   ['b','14','rb','1'],['rb','2','ps','M'],
+   ['ci','14','ri','1'],['ri','2','ps','M'],
+   ['xor','3','xor','4'],['xor','3','and','4'],
+   ['and','3','or','1'],['and','6','or','2'],
+   ['ps','P','xor','14'],['ps','M','xor','7'],
+   ['ps','P','and','14'],['ps','M','and','7'],
+   ['ps','P','or','14'],['ps','M','or','7'],
+   ['xor','6','rs','1'],['rs','2','sum','A'],['sum','K','ps','M'],
+   ['or','3','rc','1'],['rc','2','carry','A'],['carry','K','ps','M']];
+  p.components=cs;p.wires=pairs.map(([a,ap,b,bp],i)=>({
+   id:'sc'+sc+'-full-adder-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Tam toplayıcının gerçek DIP lojik kapı bağlantısı.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=cs.map(x=>({id:x.id,label:x.label,
+   why:x.id==='xor'?'İki XOR ardışık çalışarak SUM bitini üretir.':
+   x.id==='and'?'A·B ve CIN·(A XOR B) elde kollarını hesaplar.':
+   x.id==='or'?'İki elde kolunu tek COUT çıkışında birleştirir.':
+   'Sanal devrede gerçek katalog terminaliyle bağlanır.'}));
+  l.summary='A, B ve CIN bitleri iki XOR, iki AND ve bir OR kapısıyla toplanır. SUM ve COUT ayrı LEDlerde görülür. Tam çözücü/Windows/3D kabulü bekler.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',virtualOnly:true,
+   canonicalGraphUnchanged:false,physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   heading:'Üç bitin toplamını ve eldeyi birlikte bulalım',
+   steps:['A, B ve CIN bitlerinin üç ayrı girişini bul.',
+    'İlk XOR A ile B yi, ikinci XOR CIN ile ara sonucu toplar.',
+    'İki AND elde yolunu OR kapısında birleştir.',
+    'Sekiz giriş durumunu dene; kopuk CIN kablosunda farkı gör.'],
+   observations:['SUM=A XOR B XOR CIN; COUT=(A AND B) OR (CIN AND (A XOR B)).',
+    'Tam native çözüm ve gerçek Windows/3D kabulü açık.'],
+   repairModel:'SC599-604-THREE-INPUT-FULL-ADDER'};
+  v.preRepairTitleTopologyIssue='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH';
+  v.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  v.titleTopologyStatus='REVIEW';v.componentIds=cs.map(x=>x.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.sc599604PhysicalRepair='SC599-604-TRUE-FULL-ADDER-V1';
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
