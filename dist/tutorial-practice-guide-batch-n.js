@@ -1916,13 +1916,13 @@
  }
 
 
- // SC792/794/796/797/798/799/802: checked true catalogue-terminal circuits.
+ // Legacy SC792 label: target motor-direct-power-outline-048 by identity; keep its quiz status.
  (() => {
  const part=(id,typeId,label,x,y,ext={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...ext});
  const edge=(a,ap,b,bp)=>[a,ap,b,bp];
  function repair(sc,id,parts,edges,description,steps,marker){
-   const lesson=L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview;
-   if(lesson?.id!==id||lesson.kind!=='wiring'||p?.components?.length!==7||
+   const lesson=sc===792?L.byId[id]:L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview;
+   if(lesson?.id!==id||(sc===792?lesson.kind!=='quiz':lesson.kind!=='wiring')||p?.components?.length!==7||
      p?.wires?.length!==13||!p.components.some(c=>c.typeId==='motor-3p')||
      !p.components.some(c=>c.typeId==='main-contact')||
      r?.independentPedagogicalAcceptance===true)return;
@@ -1933,15 +1933,15 @@
      tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
      tutorialWhy:'Bu hattın gerçek katalog terminalini devrede izleyelim.'
    }));
-   delete p.referenceOnly;
-   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   if(sc===792)p.referenceOnly=true;else delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:sc===792?'quiz':'demo',step:0};
    lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
      hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
    lesson.materials=parts.map(c=>({id:c.id,label:c.label,
      why:c.typeId+' parçasının devredeki giriş, çıkış ve koruma uçlarını bul.'}));
    lesson.summary=description+' Gerçek Windows/3D ve bağımsız pedagojik kabul açık.';
    lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
-     heading:'Devreyi birlikte kurup deneyelim',
+     heading:sc===792?'Motor etiketindeki değerleri birlikte okuyalım':'Devreyi birlikte kurup deneyelim',
      virtualOnly:true,canonicalGraphUnchanged:false,
      physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
      steps,observations:['Normal ve kopuk kablo durumu gerçek native simülasyon çekirdeğiyle sınandı.',
@@ -1950,13 +1950,14 @@
    const review=r||(lesson.pedagogyReview={});
    review.preRepairTitleTopologyIssue=review.titleTopologyIssue||null;
    review.titleTopologyStatus='REVIEW';
-   review.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   review.titleTopologyIssue=sc===792?'NAMEPLATE_CONCEPT_WINDOWS_3D_AND_PEDAGOGICAL_REVIEW_PENDING':'WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
    review.componentIds=parts.map(c=>c.typeId);
-   review.realWiredCircuit=true;review.nativeDynamicAcceptance=false;
+   review.realWiredCircuit=sc!==792;review.nativeDynamicAcceptance=false;
    review.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_WITH_703_CATALOG_PASS';
    review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
    review.independentPedagogicalAcceptance=false;
    review.scActualTopologyRepair=marker;
+   if(sc===792)review.actualCurriculumSequence=L.lessons.indexOf(lesson)+1;
  }
  {
    const g=part('g','supply-3p','G1 üç faz + PE',80,230);
@@ -2421,10 +2422,10 @@
  })();
 
 
- // SC823: true three-pole packet switch motor circuit plus independent
+ // Legacy SC823 label: find motor-direct-power-outline-077 by identity; independent
  // lamp switch. Original Simulation.solve/703 catalogue: 5 positive + 2 negative PASS.
  (() => {
-  const sc=823,l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+  const l=L.byId['motor-direct-power-outline-077'],sc=L.lessons.indexOf(l)+1,p=l?.project,r=l?.pedagogyReview;
   if(l?.id==='motor-direct-power-outline-077'&&l.kind==='wiring'&&
      p?.components?.length===7&&p?.wires?.length===13&&
      p.components.some(c=>c.typeId==='motor-3p')&&
@@ -2481,6 +2482,7 @@
    v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
    v.independentPedagogicalAcceptance=false;
    v.scPacketRepair='SC823-REAL-PACKET-MOTOR-AND-INDEPENDENT-LAMP-V1';
+   v.actualCurriculumSequence=sc;
   }
  })();
 
