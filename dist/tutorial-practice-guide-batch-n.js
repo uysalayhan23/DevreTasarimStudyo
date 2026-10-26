@@ -1690,6 +1690,165 @@
   }
  }
 
+
+ // SC789/790/791 — real motor lessons, no reuse of the unrelated DOL starter.
+ // All are SANAL training circuits: Windows/3D and physical acceptance stay REVIEW.
+ {
+  const mk=(id,typeId,ref,label,x,y,more={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...more
+  });
+  const install=(n,expectedId,parts,edges,summary,guideText,mark)=>{
+   const lesson=L.lessons[n-1],p=lesson?.project,review=lesson?.pedagogyReview;
+   if(lesson?.id!==expectedId||lesson.kind!=='wiring'||
+      p?.components?.length!==7||p?.wires?.length!==13||
+      p.components.filter(x=>x.typeId==='main-contact').length!==1||
+      p.components.find(x=>x.id==='motor')?.typeId!=='motor-3p'||
+      review?.independentPedagogicalAcceptance===true)return;
+   p.components=parts;
+   p.wires=edges.map(([a,ap,b,bp,why],i)=>({
+    id:'sc'+n+'-real-motor-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+   }));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   lesson.materials=parts.map(x=>({id:x.id,label:x.label,
+    why:x.typeId==='sinamics-v20-1p'?'Frekansı ayarlanan üç fazlı sanal motor sürücüsü.':
+    x.typeId==='motor-y-d'?'U1/V1/W1/U2/V2/W2 uçları yıldız veya üçgen topolojisini gösterir.':
+    x.typeId==='selector-3'?'İleri veya geri START yolundan yalnız birini seçer.':
+    x.typeId==='contact-nc'?'Karşı yönün kontaktör bobinine kilit uygular.':
+    'Gerçek katalog uçlarına bağlı yalnız sanal devre elemanı.'}));
+   lesson.summary=summary+' Tam Windows/3D görsel ve bağımsız pedagojik kabul bekleniyor.';
+   lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Sanal motor deneyini birlikte inceleyelim',virtualOnly:true,
+    canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,steps:guideText,
+    observations:['Bütün bağlantılar yalnız uygulamanın sanal modelinde denenir.',
+     'Gerçek elektrik donanımına bağlantı talimatı değildir; Windows/3D kabulü ayrıdır.'],
+    repairModel:mark};
+   const v=review||(lesson.pedagogyReview={});
+   v.preRepairTitleTopologyIssue='THREE_PHASE_DOL_STARTER_UNRELATED_TO_LESSON_TITLE';
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   v.componentIds=parts.map(x=>x.typeId);
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.scRealMotorRepair=mark;
+  };
+  // SC789: slip from the drive frequency and rated motor RPM, not fixed DOL wiring.
+  {
+   const rated={P0700:1,P1000:1,P1040:35,P0304:230,P0305:3.5,
+    P0307:0.75,P0310:50,P0311:1400,P1120:2,P1121:2};
+   const parts=[
+    mk('g','supply-1p','G1','Sanal tek fazlı V20 şebeke kaynağı',65,225),
+    mk('vfd','sinamics-v20-1p','U1','SINAMICS V20 · 35 Hz çıkış',460,170,{
+     v20:{schema:1,macro:'Cn001',params:rated,run:true,reverse:false,
+      reset:0,load:35,temperature:30}}),
+    mk('motor','motor-3p','M1','Üç fazlı sanal asenkron motor',1040,235)
+   ];
+   const edges=[
+    ['g','L','vfd','L1','Sanal sürücünün L girişidir.'],
+    ['g','N','vfd','N','Sürücü girişinin N dönüşüdür.'],
+    ['g','PE','vfd','PE','Sanal koruma hattıdır.'],
+    ['vfd','U','motor','U','Sürücü U çıkışı motor fazına gider.'],
+    ['vfd','V','motor','V','Sürücü V çıkışı motor fazına gider.'],
+    ['vfd','W','motor','W','Sürücü W çıkışı motor fazına gider.'],
+    ['vfd','PE2','motor','PE','Motor koruma hattını gösterir.']
+   ];
+   install(789,'motor-direct-power-outline-045',parts,edges,
+    '35 Hz ve 4 kutup için n_s=120×35/4=1050 dev/dak. V20 P0311=1400/50 Hz modelinde tahmini n_r≈980 dev/dak; kayma yaklaşık %6,7. Bu ölçülmüş fiziksel motor devri değildir.',
+    ['Önce sanal V20 ve M1 motorunu gözlemle.',
+     '35 Hz için dört kutuplu senkron devir olan 1050 dev/dak değerini hesapla.',
+     'V20 modelinin tahmini 980 dev/dak rotor hızını karşılaştır; kaymayı bul.',
+     'Şebeke L veya motor W kablosunu sanal deneyde ayırarak etkiyi gözlemle.'],
+    'SC789-REAL-V20-SLIP-NATIVE-V1');
+   if(L.lessons[788]?.practiceGuide?.repairModel==='SC789-REAL-V20-SLIP-NATIVE-V1')
+    L.lessons[788].project.speedStudy={poleCount:4,supplyHz:35,
+     synchronousRpm:1050,estimatedRotorRpm:980,estimatedSlipPercent:100*(1050-980)/1050,
+     note:'V20 modelinden türetilen eğitim tahmini, kalibre motor ölçümü değildir.'};
+  }
+  // SC790: independent, real six-terminal STAR and DELTA branches.
+  {
+   const parts=[
+    mk('gs','supply-3p','G1','Sanal yıldız deneyi kaynağı',50,160),
+    mk('ms','motor-y-d','M1','Altı uçlu Y motoru',420,145,{motorConnection:'external'}),
+    mk('gd','supply-3p','G2','Sanal üçgen deneyi kaynağı',50,555),
+    mk('md','motor-y-d','M2','Altı uçlu Δ motoru',420,540,{motorConnection:'external'})
+   ];
+   const star=[
+    ['gs','L1','ms','U1','Yıldız modelinin birinci faz yoludur.'],
+    ['gs','L2','ms','V1','Yıldız modelinin ikinci faz yoludur.'],
+    ['gs','L3','ms','W1','Yıldız modelinin üçüncü faz yoludur.'],
+    ['gs','PE','ms','PE','M1 sanal koruma hattıdır.'],
+    ['ms','U2','ms','V2','Yıldızın ilk ortak uç köprüsüdür.'],
+    ['ms','V2','ms','W2','Yıldızın ikinci ortak uç köprüsüdür.']
+   ];
+   const delta=[
+    ['gd','L1','md','U1','Üçgen modelinin birinci faz yoludur.'],
+    ['gd','L2','md','V1','Üçgen modelinin ikinci faz yoludur.'],
+    ['gd','L3','md','W1','Üçgen modelinin üçüncü faz yoludur.'],
+    ['gd','PE','md','PE','M2 sanal koruma hattıdır.'],
+    ['md','U2','md','V1','Üçgenin birinci sanal sargı köprüsüdür.'],
+    ['md','V2','md','W1','Üçgenin ikinci sanal sargı köprüsüdür.'],
+    ['md','W2','md','U1','Üçgenin üçüncü sanal sargı köprüsüdür.']
+   ];
+   install(790,'motor-direct-power-outline-046',parts,[...star,...delta],
+    'İki bağımsız sanal altı uçlu motorda yıldız (U2/V2/W2 ortak) ve üçgen (çapraz uçlar) bağlantılarını karşılaştır. Eksik köprüde yalnız ilgili motor durur.',
+    ['Yıldız M1 ile üçgen M2 devrelerini ayrı olarak incele.',
+     'Motorlardaki altışar gerçek katalog terminalini karşılaştır.',
+     'M1 yıldız köprüsünden birini sanal ortamda kopar: yalnız M1 durmalı.',
+     'M2 üçgen köprüsünden birini kopar: yalnız M2 durmalı.',
+     'Her iki devrede de farklı güç ve koruma hatları bulunduğunu gözlemle.'],
+    'SC790-TWO-INDEPENDENT-STAR-DELTA-MOTOR-V1');
+  }
+  // SC791: two power contactors reverse two phases; electrical NC interlocks.
+  {
+   const parts=[
+    mk('g','supply-3p','G1','Sanal üç fazlı kaynak',50,290),
+    mk('stop','push-nc','S0','Ortak STOP',230,45),
+    mk('sel','selector-3','S3','0 / ileri / geri seçimi',430,250,{position:0}),
+    mk('sf','push-no','S1','İleri START',600,40),
+    mk('sr','push-no','S2','Geri START',600,460),
+    mk('hf','contact-no','K1','İleri mühürleme',530,140),
+    mk('hr','contact-no','K2','Geri mühürleme',530,550),
+    mk('nr','contact-nc','K2','Geri yön kilidi',830,145),
+    mk('nf','contact-nc','K1','İleri yön kilidi',830,550),
+    mk('cf','coil-contactor','K1','İleri kontaktör bobini',1040,145),
+    mk('cr','coil-contactor','K2','Geri kontaktör bobini',1040,550),
+    mk('mf','main-contact','K1','İleri ana kontakları',760,805),
+    mk('mr','main-contact','K2','Geri ana kontakları',1080,805),
+    mk('motor','motor-3p','M1','Sanal üç fazlı motor',1470,805)
+   ];
+   const e=[
+    ['g','L1','stop','21'],['stop','22','sel','11'],
+    ['sel','13','sf','13'],['sel','14','sr','13'],
+    ['stop','22','hf','13'],['stop','22','hr','13'],
+    ['sf','14','nr','21'],['hf','14','nr','21'],
+    ['nr','22','cf','A1'],['cf','A2','g','N'],
+    ['sr','14','nf','21'],['hr','14','nf','21'],
+    ['nf','22','cr','A1'],['cr','A2','g','N'],
+    ['g','L1','mf','1'],['g','L1','mr','1'],
+    ['g','L2','mf','3'],['g','L2','mr','3'],
+    ['g','L3','mf','5'],['g','L3','mr','5'],
+    ['mf','2','motor','U'],['mf','4','motor','V'],['mf','6','motor','W'],
+    ['mr','2','motor','W'],['mr','4','motor','V'],['mr','6','motor','U'],
+    ['g','PE','motor','PE']
+   ];
+   install(791,'motor-direct-power-outline-047',parts,
+    e.map(x=>[...x,'Yalnız sanal ileri/geri kontaktör sinyali.']),
+    'K1 ileri, K2 geri kontaktörlerinin güç çıkışları iki fazın sırasını değiştirir. S3 tek yönden yeni START seçer; K1/K2 NC kilitleme ve ortak STOP iki yönü aynı anda engeller.',
+    ['S3=0 iken iki START butonunun da etkisiz kaldığını kontrol et.',
+     'S3=1 ve S1 ile ileri dönüşü başlat; S1 bırakılınca mühürlemeyi gözlemle.',
+     'Motor ileri çalışırken S3=2 ve S2 isteği karşı yön kilidine takılmalıdır.',
+     'STOP ile durdur, sonra S3=2 ve S2 ile ters dönüşü karşılaştır.',
+     'Bir güç fazını koparıp motorun durmasını sanal ortamda doğrula.'],
+    'SC791-REAL-TWO-CONTACTOR-FWD-REVERSE-NATIVE-V1');
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
