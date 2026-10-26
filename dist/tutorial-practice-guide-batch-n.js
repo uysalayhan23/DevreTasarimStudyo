@@ -798,6 +798,82 @@
  v121Cmp(603,'opamp-apps-outline-052',2);
  v121Cmp(605,'opamp-apps-outline-054',4);
 
+
+ // SC614,615,616,628: physically wired SN74HC393 counters.
+ const coC=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,
+  rotation:0,state:false,address:'',note:'',...extra});
+ function coRepair(sc,id,kind){
+  const l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id!==id||l.kind!=='wiring'||!p?.wires?.length||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    r?.titleTopologyIssue!=='DIGITAL_COUNTER_TITLE_HAS_MOTOR_CONTACTOR_GRAPH'||
+    r.independentPedagogicalAcceptance===true)return;
+  const C=coC,cs=[C('ps','arduino-bench-supply','5 V kaynak',40,270,{dcVoltage:5}),
+    C('clock','push-no','Düşen kenar CLK',235,80),
+    C('reset','push-no','RESET',235,445),
+    C('rclock','resistor','CLK 10kΩ pull-down',405,150,{resistance:10000}),
+    C('rreset','resistor','RESET 10kΩ pull-down',405,510,{resistance:10000}),
+    C('count','sn74hc393n','SN74HC393 sayıcı',720,205)],
+    w=[['ps','P','clock','13'],['ps','P','reset','13'],
+     ['clock','14','count','1'],['clock','14','rclock','1'],
+     ['rclock','2','ps','M'],['reset','14','rreset','1'],
+     ['rreset','2','ps','M'],['ps','P','count','14'],['ps','M','count','7']];
+  if(kind==='four')w.push(['reset','14','count','2']);
+  else{
+   cs.push(C('org','sn74hc32n','74HC32 QD/RESET OR',955,415));
+   w.push(['ps','P','org','14'],['ps','M','org','7'],
+     ['count','6','org','1'],['reset','14','org','2'],['org','3','count','2']);
+  }
+  if(kind==='down'){
+   cs.push(C('inv','sn74hc04n','74HC04 üç bit NOT',955,140));
+   w.push(['ps','P','inv','14'],['ps','M','inv','7'],
+     ['count','3','inv','1'],['count','4','inv','3'],['count','5','inv','5']);
+  }
+  const q=kind==='four'?4:3;
+  for(let i=0;i<q;i++){
+   const x='led'+i,ri='rled'+i;
+   cs.push(C(ri,'arduino-resistor-220','LED'+i+' 220Ω',1120,100+i*150),
+     C(x,'arduino-led','Q'+i+' durum',1310,100+i*150));
+   w.push([kind==='down'?'inv':'count',
+    kind==='down'?['2','4','6'][i]:['3','4','5','6'][i],ri,'1'],
+    [ri,'2',x,'A'],[x,'K','ps','M']);
+  }
+  p.components=cs;
+  p.wires=w.map(([a,ap,b,bp],i)=>({id:'sc'+sc+'-counter-'+i,
+   from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'SIGNAL',
+   size:'1.5',points:[],tutorialHint:a+':'+ap+' → '+b+':'+bp,
+   tutorialWhy:'Gerçek SN74HC393 ve lojik kapı DIP pinlerine bağlı sanal devre.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=cs.map(c=>({id:c.id,label:c.label,why:c.id==='count'?
+   'CLK düşen kenarında ikili sayı bir artar.':c.id==='inv'?
+   'QA QB QC terslenerek 7..0 aşağı görünür.':c.id==='org'?
+   'QD taşması veya RESET bobinsiz CLR girişini sürer.':
+   'Gerçek katalog pinleriyle bağlı sanal malzeme.'}));
+  const heading=kind==='four'?'4 bit asenkron 0–15 sayıcı':
+   kind==='down'?'3 bit asenkron 7–0 aşağı sayıcı':'3 bit asenkron 0–7 yukarı sayıcı';
+  l.summary=heading+'. SN74HC393 saat, CLR ve gerçek çıkış bağlantıları kuruludur; tam native/Windows 3D kabulü açık.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading,virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['5 V, GND, CLK uçlarını kontrol et.','CLK butonuna basıp bırak: her düşen kenarda sayı ilerler.',
+    'LED bitlerini oku ve RESET ile sıfırla.','CLK kablosunu çıkarınca saymanın durduğunu kontrol et.'],
+   observations:['Gerçek entegre üzerinden ikili sayma anlatılır.','Bütünleşik çözücü ve Windows/3D kabulü açık.'],
+   repairModel:'SC'+sc+'-COUNTER-'+kind+'-V124'};
+  r.preRepairTitleTopologyIssue='DIGITAL_COUNTER_TITLE_HAS_MOTOR_CONTACTOR_GRAPH';
+  r.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  r.titleTopologyStatus='REVIEW';r.componentIds=cs.map(c=>c.typeId);
+  r.realWiredCircuit=true;r.nativeDynamicAcceptance=false;r.physicalAcceptance=false;
+  r.windowsVisualAcceptance=false;r.independentPedagogicalAcceptance=false;
+  r.scRealCounterRepair='SC'+sc+'-COUNTER-'+kind+'-V124';
+ }
+ coRepair(614,'motor-direct-power-outline-022','four');
+ coRepair(615,'motor-direct-power-outline-023','up');
+ coRepair(616,'motor-direct-power-outline-024','down');
+ coRepair(628,'motor-direct-power-outline-026','up');
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
