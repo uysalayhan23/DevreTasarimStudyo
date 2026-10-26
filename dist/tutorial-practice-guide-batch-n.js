@@ -3025,6 +3025,80 @@
   v.sc846SinglePushRepair='MOTOR-OUTLINE-084-SINGLE-PUSH-REARM-ISOLATED-V1';
  })();
 
+
+ // motor-direct-power-outline-085: bounded phase-monitor motor demonstration.
+ // It is intentionally hold-to-run; continuous seal-in is not claimed.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-085'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const a=[
+    C('g','supply-3p','G1','Sanal üç faz / N / PE',55,310),
+    C('monitor','motor-protection-relay','PR1','PR1 faz kaybı ve faz sırası izlemesi',375,205),
+    C('start','push-no','S1','S1 basılı tutma START',630,70),
+    C('coil','coil-contactor','K1','K1 motor kontaktörü',965,95),
+    C('main','main-contact','K1','K1 güç kontakları',815,420),
+    C('motor','motor-3p','M1','Sanal üç faz motor',1240,420,{motorConnection:'star'})
+  ];
+  const graph=[
+    ['g','L1','monitor','L1'],['g','L2','monitor','L2'],
+    ['g','L3','monitor','L3'],['g','N','monitor','N'],
+    ['g','L1','monitor','11'],['monitor','14','start','13'],
+    ['start','14','coil','A1'],['coil','A2','g','N'],
+    ['g','L1','main','1'],['main','2','motor','U'],
+    ['g','L2','main','3'],['main','4','motor','V'],
+    ['g','L3','main','5'],['main','6','motor','W'],
+    ['g','PE','motor','PE']
+  ];
+  p.components=a;
+  p.wires=graph.map(([x,xp,y,yp],i)=>({
+    id:'motor-outline-085-'+(i+1),from:{c:x,p:xp},to:{c:y,p:yp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:x+'/'+xp+' → '+y+'/'+yp,
+    tutorialWhy:'Katalog PR1 L1/L2/L3/N ve 11/14 izin kontağına dayalı sanal deney.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.id==='monitor'?'Sanal faz eksikliği veya yanlış sıra varsa izin kontağını açar.':
+     c.id==='start'?'Yalnız basılı tutulduğunda motoru çalıştırır; mühürleme yoktur.':
+     c.id==='coil'?'PR1 izin verirse K1 ana güç kontaklarını sürer.':
+     'Sanal motor deneyinde özgün katalog terminali.'}));
+  l.summary='Sanal PR1 üç fazı ve nötrü izler. Hatlar uygunsa S1 e basılı tuttuğunda kontaktör motoru çalıştırır. Bir faz veya nötr kaybolduğunda PR1 izin kontağı açılır ve motor durur. Bu basılı tutma deneyidir; mühürlemeli sürekli çalıştırma veya gerçek güvenlik sistemi değildir.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Koruma rölesi faz kaybolunca motoru neden durdurur?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal PR1 faz ve nötr girişlerini, ayrıca 11–14 izin kontağını incele.',
+      'Sanal S1 butonunu basılı tutarken motorun çalıştığını gözlemle.',
+      'PR1 in bir faz veya nötr izleme yolunu ayır: sanal motor durmalı.',
+      'PR1 e gelen fazların yerini değiştirerek ters sıra uyarısını karşılaştır.',
+      'S1 bırakılmışken sanal kaynağı düzelt; motor yalnız yeni basışta çalışır.'
+    ],
+    observations:[
+      'Özgün 703 katalog elemanı ve Simulation.solve ile basılı tutma, faz kaybı, ters sıra, nötr ve bağlantı kopukluğu sınandı.',
+      'Mühürlemeli kalıcı çalışma, üretici toleransları, donanım yeniden başlatma güvenliği ve fiziksel koruma kabulü eksik.',
+      'Windows/3D terminal uyumu ve bağımsız pedagojik kabul REVIEW durumunda.'
+    ],
+    repairModel:'MOTOR-OUTLINE-085-PHASE-MONITOR-HOLD-TO-RUN-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='CONTINUOUS_SEAL_IN_PROTECTION_REAL_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_HOLD_TO_RUN_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc847PhaseMonitorRepair='MOTOR-OUTLINE-085-PHASE-MONITOR-HOLD-TO-RUN-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
