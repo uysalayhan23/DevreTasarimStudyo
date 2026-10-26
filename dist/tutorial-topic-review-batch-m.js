@@ -171,5 +171,63 @@ if(physical642?.id==='motor-direct-power-outline-031'&&physical642.kind==='wirin
   physical642.topicReview.sourceCircuitPreserved=false}
 }
 
+
+/* SC644 repair: physical single-phase motor with separately connected main
+   U/N and auxiliary Z1/Z2 winding pins, native-tested in virtual simulator. */
+const repaired644=L.lessons[643];
+if(repaired644?.id==='motor-special-outline-009'&&repaired644.kind==='wiring'&&
+ repaired644.project?.wires?.length===30&&repaired644.project?.components?.length===15&&
+ repaired644.project.components.some(c=>c.id==='motor'&&c.typeId==='motor-3p')&&
+ repaired644.pedagogyReview?.independentPedagogicalAcceptance!==true){
+ const p=repaired644.project;
+ const description={
+ g1:'Yalnız sanal tek faz beslemesidir; gerçek şebeke deneyi değildir.',
+ stop:'STOP basılınca kumanda bırakır.',
+ start:'Bobine ilk komutu verir.',
+ coil:'K1 yardımcı ve yük kontaklarını kumanda eder.',
+ hold:'START bırakılınca K1 bobinini tutan NO kontaktır.',
+ power:'Motor yükü doğrudan butona değil K1 kontağına bağlıdır.',
+ motor:'Ana U/N ve yardımcı Z1/Z2 uçlarının bağlantısını öğretir; gerçek kalkış kondansatörü veya santrifüj anahtarı modellenmemiştir.'
+ };
+ const parts=[["g1","supply-1p","G1","Sanal tek faz + N + PE","90","180"],["stop","push-nc","S0","STOP NC","300","65"],["start","push-no","S1","START NO","470","65"],["coil","coil-contactor","K1","K1 kumanda bobini","660","85"],["hold","contact-no","K1","K1 mühürleme NO","470","260"],["power","contact-no","K1","K1 motor yük NO","660","400"],["motor","motor-1p","M1","Ana/yardımcı sargılı sanal motor","920","365"]];
+ const edges=[["g1","L","stop","21","Sanal kumanda fazı STOP'a gelir"],["stop","22","start","13","STOP sonrası START girişine ulaşır"],["start","14","coil","A1","START bobini besler"],["coil","A2","g1","N","Kumanda bobininin dönüşü"],["stop","22","hold","13","Mühürleme STOP üzerinden çalışır"],["hold","14","coil","A1","K1 kontağı bobini tutar"],["g1","L","power","13","K1 yük kontağına sanal faz"],["power","14","motor","U","Motorun ana sargısına komutlu faz"],["g1","N","motor","N","Motor ana sargı dönüşü"],["motor","U","motor","Z1","Yardımcı sargının sanal faz eşlemesi"],["motor","N","motor","Z2","Yardımcı sargının sanal nötr eşlemesi"],["g1","PE","motor","PE","Koruma PE ayrı kalır"]];
+ p.components=parts.map(([id,typeId,ref,label,x,y])=>({
+ id,typeId,ref,label,x:Number(x),y:Number(y),rotation:0,state:false,
+ address:'',note:'',...(id==='motor'?{windingConnection:'external'}:{})
+ }));
+ p.wires=edges.map(([a,ap,b,bp,why],i)=>({
+  id:'sc644-aux-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:i===11?'#16a34a':[3,8,10].includes(i)?'#1e88e5':'#b45309',
+  role:i===11?'PE':[3,8,10].includes(i)?'N':'L',
+  size:i>=6?'2.5':'1.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+ }));
+ delete p.referenceOnly;
+ if(p.tutorialLesson){p.tutorialLesson.phase='demo';p.tutorialLesson.step=0}
+ repaired644.steps=p.wires.map(w=>({
+ from:backfillClone(w.from),to:backfillClone(w.to),
+ hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+ }));
+ repaired644.materials=p.components.map(c=>({
+ componentId:c.id,typeId:c.typeId,label:c.label,why:description[c.id]
+ }));
+ repaired644.quiz={
+ question:'Sanal yardımcı sargının bir ucu koparsa kalkış modeli ne yapar?',
+ options:['Motor etkinleşmez.','Motor üç fazlı olur.','PE çalışma sargısına dönüşür.'],
+ answer:0,why:'Native model hem U/N hem de Z1/Z2 bağlantısının varlığını arar.'
+ };
+ const review=repaired644.pedagogyReview;
+ review.preRepairTitleTopologyIssue='SINGLE_PHASE_AUX_WINDING_TITLE_HAS_THREE_PHASE_MOTOR';
+ review.titleTopologyStatus='REVIEW';
+ review.titleTopologyIssue='SINGLE_PHASE_HARDWARE_DETAILS_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+ review.nativeDynamicAcceptance=true;
+ review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+ review.independentPedagogicalAcceptance=false;
+ review.componentIds=p.components.map(c=>c.typeId);
+ review.sc644Native='SC644-MOTOR-1P-AUX-WINDING-NATIVE-V1';
+ if(repaired644.topicReview){repaired644.topicReview.simulationAcceptance=true;
+  repaired644.topicReview.sourceCircuitPreserved=false}
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
