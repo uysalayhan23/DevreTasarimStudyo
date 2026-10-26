@@ -24,6 +24,42 @@
   let value=null,unit='',warning='',beep=false,display='—';
   if(mode==='OFF'){c._meter={display:'',warning:'',beep:false};return}
 
+  // SC440: targeted unpowered UT33D+ resistance reading across the actual
+  // NTC probe TIP contacts, not a fake reading from detached probe graphics.
+  if(project?.tutorialLesson?.id==='electronic-component-basics-outline-024'&&
+     project.sc440NtcOhms==='SC440-NTC-OHMMETER-V1'&&
+     c.id==='pg1'&&d.id==='unit-ut33d-plus'){
+    const linked=(a,ap,b,bp)=>project.wires.some(w=>
+      (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+      (w.to?.c===a&&w.to?.p===ap&&w.from?.c===b&&w.from?.p===bp));
+    const sensor=project.components.find(x=>x.id==='pg0'&&x.typeId==='sensor-ntc');
+    const rprobe=project.components.find(x=>x.id==='pg1-red'&&x.typeId==='test-probe-red');
+    const bprobe=project.components.find(x=>x.id==='pg1-black'&&x.typeId==='test-probe-black');
+    const touch=!!sensor&&!!rprobe&&!!bprobe&&
+      linked('pg1','V','pg1-red','PLUG')&&linked('pg1','COM','pg1-black','PLUG')&&
+      linked('pg1-red','TIP','pg0','1')&&linked('pg1-black','TIP','pg0','2')&&
+      rprobe.probeTarget?.c==='pg0'&&rprobe.probeTarget?.p==='1'&&
+      bprobe.probeTarget?.c==='pg0'&&bprobe.probeTarget?.p==='2';
+    if(mode!=='Ω'||!touch){
+      c._meter={display:'OL',unit:'Ω',value:null,
+        warning:mode!=='Ω'?'NTC için enerjisiz direnç (Ω) kademesini seçin.':
+        'Sanal NTC 1/2 uçlarında kırmızı ve siyah prob teması eksik.',
+        beep:false,mode,range};return;
+    }
+    const temp=Number(sensor.temperatureC);
+    if(!Number.isFinite(temp)||temp< -40||temp>125){
+      c._meter={display:'OL',unit:'Ω',value:null,
+        warning:'Sanal NTC sıcaklık değeri geçersiz.',beep:false,mode,range};return;
+    }
+    const resistance=10000*Math.exp(3950*(1/(temp+273.15)-1/298.15));
+    const reading=format(resistance,mode,range);
+    c._meter={display:reading.display,unit:reading.unit,value:resistance,
+      warning:reading.display==='OL'?'Sanal ohmmetre kademesi düşük; Ω kademesini yükseltin.':'',
+      beep:false,mode,range};
+    return;
+  }
+
+
   // SC024 only: floating/detached UNI-T probe tips cannot indicate 0 V.
   if(project?.tutorialLesson?.id==='opamp-apps-outline-024'&&
      c.id==='v1'&&d.id==='unit-ut33d-plus'&&['DCV','ACV'].includes(mode)){
