@@ -686,6 +686,89 @@
      }
     }
    }
+
+   // SC718: solve the LM358P A-channel feedback with the real loaded
+   // potentiometer and 10 kOhm/47 kOhm resistive nodal network, not a
+   // passive-only / finite-iteration zero-output estimate.
+   // Only the exact 18-wire 24 V DIP8 lesson is eligible.
+   {
+    if(project?.tutorialLesson?.id==='opamp-apps-outline-056'){
+     const get=id=>project.components.find(c=>c.id===id),
+      chip=get('u1'),meter=get('v1'),pot=get('in'),
+      amp=opamps.find(o=>o.c===chip&&o.channel==='1'),
+      spare=opamps.find(o=>o.c===chip&&o.channel==='7'),
+      lines=['g1.P>u1.8','g1.M>u1.4','in.1>g1.P','in.3>g1.M',
+       'g1.P>ref1.1','ref1.2>ref2.1','ref2.2>g1.M','ref1.2>u1.3',
+       'in.2>r1.1','r1.2>u1.2','u1.1>r2.1','r2.2>u1.2',
+       'v1.V>v1-red.PLUG','v1.COM>v1-black.PLUG',
+       'g1.M>u1.5','u1.7>u1.6','v1-red.TIP>u1.1','v1-black.TIP>g1.M'],
+      norm=x=>x.split('>').sort().join('~'),
+      expected=lines.map(norm).sort(),
+      actual=project.wires.map(w=>[w.from?.c+'.'+w.from?.p,
+       w.to?.c+'.'+w.to?.p].sort().join('~')).sort(),
+      types=[['g1','arduino-bench-supply'],['u1','lm358p-dip8'],
+       ['in','potentiometer'],['r1','resistor'],['r2','resistor'],
+       ['v1','unit-ut33d-plus'],['ref1','resistor'],['ref2','resistor'],
+       ['v1-red','test-probe-red'],['v1-black','test-probe-black']];
+     if(chip)delete chip._nativeSc718Feedback;
+     if(meter)delete meter._nativeSc718Feedback;
+     const exact=project.components.length===10&&project.wires.length===18&&
+      actual.every((s,i)=>s===expected[i])&&
+      types.every(([id,t])=>get(id)?.typeId===t)&&
+      Number(get('g1')?.dcVoltage)===24&&Number(pot?.potMax)===10000&&
+      Number.isFinite(Number(pot?.potentiometer))&&
+      Number(pot.potentiometer)>=0&&Number(pot.potentiometer)<=100&&
+      ['r1','ref1','ref2'].every(id=>Number(get(id)?.resistance)===10000)&&
+      Number(get('r2')?.resistance)===47000&&meter?.meterPosition===4&&
+      get('v1-red')?.probeTarget?.c==='u1'&&get('v1-red')?.probeTarget?.p==='1'&&
+      get('v1-black')?.probeTarget?.c==='g1'&&get('v1-black')?.probeTarget?.p==='M'&&
+      opamps.length===2&&amp&&spare;
+     if(exact){
+      const val=(m,n)=>m.get(n)?.[0]??0,
+       low=val(secondary,amp.vm),high=val(secondary,amp.vp),
+       drive=t=>{
+        const work=new Map([...injected].map(([n,v])=>[n,[...v]])),
+         add=(a,b,current)=>{
+          const av=work.get(a)||[0,0],bv=work.get(b)||[0,0];
+          work.set(a,[av[0]+current,av[1]]);
+          work.set(b,[bv[0]-current,bv[1]]);
+         };
+        add(amp.out,amp.vm,t/amp.br.r);
+        add(spare.out,spare.vm,(low+.02)/spare.br.r);
+        return solveGraph(branches,fixed,work);
+       },
+       error=m=>val(m,amp.out)-val(m,amp.vm)-
+         amp.gain*(val(m,amp.ip)-val(m,amp.im)),
+       baseline=drive(0),one=drive(1),
+       slope=error(one)-error(baseline);
+      if(high>low+5&&high-low<=24.1&&Number.isFinite(slope)&&Math.abs(slope)>1e-8){
+       const raw=-error(baseline)/slope,
+        target=Math.max(low+.02,Math.min(high-2,raw));
+       if(Number.isFinite(raw)&&Number.isFinite(target)){
+        secondary=drive(target);
+        const reference=val(secondary,amp.ip)-val(secondary,amp.vm),
+         minus=val(secondary,amp.im)-val(secondary,amp.vm),
+         out=val(secondary,amp.out)-val(secondary,amp.vm),
+         input=val(secondary,pin(pot,'2'))-val(secondary,amp.vm),
+         result={model:'SC718-real-wired-LM358P-inverting-DC-feedback',
+          inputV:input,referenceV:reference,minusV:minus,outputV:out,
+          potPercent:Number(pot.potentiometer),resistanceInOhms:10000,
+          resistanceFeedbackOhms:47000,
+          railLimited:raw<low+.02||raw>high-2,
+          idealEducationalModel:true,physicalAcceptance:false,
+          manufacturerLimitsAccepted:false,calibratedMeter:false};
+        const channel=chip._opampChannels?.['1'];
+        if(channel){channel.output=val(secondary,amp.out);
+         channel.diff=reference-minus}
+        chip._opampOutput=val(secondary,amp.out);
+        chip._nativeSc718Feedback=result;
+        meter._nativeSc718Feedback={...result};
+       }
+      }
+     }
+    }
+   }
+
    // These virtual LM358 lessons use a Norton drive (target/Ro) parallel to
    // Ro. The resistor branch current is not the external output/load current.
    // Do not change the accepted solver or readings outside this teaching scope.
