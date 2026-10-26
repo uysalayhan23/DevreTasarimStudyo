@@ -2853,6 +2853,94 @@
   v.sc844OffDelayRepair='MOTOR-OUTLINE-082-OFF-DELAY-TIMED-STOP-V1';
  })();
 
+
+ // motor-direct-power-outline-083: virtual NC end stops and mutually interlocked
+ // forward/reverse; not an automatic reversing or physical safety controller.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-083'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const a=[
+    C('g','supply-3p','G1','Sanal üç faz / N / PE',50,410),
+    C('stop','push-nc','S0','STOP',200,60),
+    C('start','push-no','S1','Anlık START',420,60),
+    C('dir','selector-2','S2','İleri / geri yön seçici',615,60,{position:0}),
+    C('limitF','limit-nc','SQ1','İleri son konum NC',725,185),
+    C('limitR','limit-nc','SQ2','Geri son konum NC',725,395),
+    C('ncR','contact-nc','K2','K2 NC ileri kilidi',905,160),
+    C('ncF','contact-nc','K1','K1 NC geri kilidi',905,385),
+    C('holdF','contact-no','K1','K1 ileri mühürleme',435,260),
+    C('holdR','contact-no','K2','K2 geri mühürleme',445,510),
+    C('coilF','coil-contactor','K1','K1 ileri bobin',1145,155),
+    C('coilR','coil-contactor','K2','K2 geri bobin',1145,395),
+    C('mainF','main-contact','K1','K1 ileri güç',1050,660),
+    C('mainR','main-contact','K2','K2 geri güç',1190,830),
+    C('motor','motor-3p','M1','Sanal üç faz motor',1500,710,{motorConnection:'star'})
+  ];
+  const graph=[
+    ['g','L1','stop','21'],['stop','22','start','13'],
+    ['start','14','dir','11'],
+    ['dir','13','limitF','21'],['limitF','22','ncR','21'],['ncR','22','coilF','A1'],
+    ['dir','14','limitR','21'],['limitR','22','ncF','21'],['ncF','22','coilR','A1'],
+    ['stop','22','holdF','13'],['holdF','14','limitF','21'],
+    ['stop','22','holdR','13'],['holdR','14','limitR','21'],
+    ['coilF','A2','g','N'],['coilR','A2','g','N'],
+    ['g','L1','mainF','1'],['g','L2','mainF','3'],['g','L3','mainF','5'],
+    ['mainF','2','motor','U'],['mainF','4','motor','V'],['mainF','6','motor','W'],
+    ['g','L1','mainR','1'],['g','L2','mainR','3'],['g','L3','mainR','5'],
+    ['mainR','2','motor','W'],['mainR','4','motor','V'],['mainR','6','motor','U'],
+    ['g','PE','motor','PE']
+  ];
+  p.components=a;
+  p.wires=graph.map(([x,xp,y,yp],i)=>({
+    id:'motor-outline-083-'+(i+1),from:{c:x,p:xp},to:{c:y,p:yp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:x+'/'+xp+' → '+y+'/'+yp,
+    tutorialWhy:'Sanal yön seçimi, NC sınır anahtarı ve kontaktör kilidi.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.typeId==='limit-nc'?'Uç konuma gelince seçili yönün sanal bobin yolunu keser.':
+      c.id==='dir'?'Sanal deneyde aynı anda tek yön seçilebilir.':
+      c.typeId==='contact-nc'?'Karşı kontaktör çalışıyorsa bobini engeller.':
+      c.typeId==='contact-no'?'START bırakıldıktan sonra seçili yönü tutar.':
+      'Sanal eğitim devresinin katalog terminali.'}));
+  l.summary='Sanal taşıyıcıyı iki uç arasında gezdirelim. İleride SQ1 sınırına gelince motor durur; S2 ile geri yönü seçip yeniden START vermeden dönmez. SQ2 diğer uçta aynı işi yapar. Bu otomatik tersleme veya gerçek bir makine güvenlik devresi değildir.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Uç konum anahtarı motoru neden durdurur?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal S2 ile ileri yönü seçip START ver; motorun çalışmasını izle.',
+      'START bırakılınca K1 mühürlemenin nasıl çalıştığını gözlemle.',
+      'SQ1 ileri sınırı etkinleşince sanal motor durmalı ve tekrar başlamamalı.',
+      'S2 ile geri yönü seçip yeni START ver; motor ters yönde çalışmalı.',
+      'SQ2 geri sınırı ve STOP ile duruşu, sonra eksik fazı karşılaştır.'
+    ],
+    observations:[
+      'İki özgün katalog limit-nc anahtarı, karşılıklı K1/K2 NC ve 703 katalog elemanlı Simulation.solve ile hedefli kontrol yapıldı.',
+      'Otomatik ileri/geri çevrim, gerçek hareket sensörü, mekanik duruş ve fiziksel emniyet doğrulanmadı.',
+      'Windows/3D kablo ve terminal hizası ile bağımsız kabul REVIEW kalıyor.'
+    ],
+    repairModel:'MOTOR-OUTLINE-083-NC-END-LIMIT-RESTART-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='AUTOMATIC_LIMIT_REVERSE_MECHANICAL_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc845EndLimitRepair='MOTOR-OUTLINE-083-NC-END-LIMIT-RESTART-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
