@@ -2706,6 +2706,84 @@
   v.sc842ReversingPacketRepair='MOTOR-OUTLINE-080-3P-REVERSING-PACKET-V1';
  })();
 
+
+ // motor-direct-power-outline-081: ON-delay timer-controlled virtual motor stop.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-081'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-3p','G1','Sanal üç faz ve N / PE',55,350),
+   C('stop','push-nc','S0','STOP NC',220,80),
+   C('start','push-no','S1','START NO',460,80),
+   C('tNC','contact-nc','KT1','KT1 gecikme sonunda açılan NC',400,250),
+   C('kHold','contact-no','K1','K1 mühürleme NO',665,205),
+   C('kFeed','contact-no','K1','K1 zaman başlatma NO',645,460),
+   C('kCoil','coil-contactor','K1','K1 motor kontaktör bobini',985,80),
+   C('tCoil','coil-delay-on','KT1','KT1 düz zaman rölesi / 2 saniye',960,360,
+     {delayValue:2,delayUnit:'sec'}),
+   C('main','main-contact','K1','K1 üç kutuplu güç',925,650),
+   C('motor','motor-3p','M1','M1 sanal üç faz motor',1330,630,{motorConnection:'star'})
+  ];
+  const graph=[
+   ['g','L1','stop','21'],['stop','22','tNC','21'],
+   ['tNC','22','start','13'],['start','14','kCoil','A1'],
+   ['tNC','22','kHold','13'],['kHold','14','kCoil','A1'],
+   ['kCoil','A2','g','N'],
+   ['stop','22','kFeed','13'],['kFeed','14','tCoil','A1'],
+   ['tCoil','A2','g','N'],
+   ['g','L1','main','1'],['g','L2','main','3'],['g','L3','main','5'],
+   ['main','2','motor','U'],['main','4','motor','V'],['main','6','motor','W'],
+   ['g','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'motor-outline-081-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'K1 mühürleme ve KT1 gecikmeli bırakma için katalog terminali.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='tCoil'?'Sanal iki saniyelik ON-delay sürecini sayar.':
+    c.id==='tNC'?'Süre sonunda kumanda kolunu açar.':
+    c.id==='kHold'?'START bırakılınca motor kontaktörünü tutar.':
+    'Sanal devrede terminali bulunan öğretici eleman.'}));
+  l.summary='START ile motorun sanal çalışması başlar. K1 yardımcı kontağı mühürlerken KT1 düz zaman rölesi 2 saniye sayar. Süre dolunca KT1 NC açılır ve motor durur. Duruş sonrası START basılmadıkça kendiliğinden başlamaz; fiziksel motor durma süresi modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Motor çalışsın, iki saniye sonra kendi kendine dursun',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+     'Sanal START komutu verip hemen bırak; K1 mühürleme etkisini gözlemle.',
+     'Bir saniyeden sonra motor hâlâ çalışmalı; KT1 süreyi sayar.',
+     'İki saniye dolunca KT1 kontağı açılır ve motorun sanal etkinliği sona erer.',
+     'STOP komutunun süre tamamlanmadan da motoru durdurduğunu kontrol et.',
+     'Bir kumanda hattını kopar; motor hiç çalışmazsa nedenini düşün.'
+    ],
+    observations:[
+     '703 katalog elemanı ve özgün Simulation.solve ile zaman, STOP ve kopuk kablo kontrolleri yapıldı.',
+     'Timer kumanda kablosu eksilirse zamanlı durma devre dışı kalabilir: model bir fiziksel güvenlik rölesi değildir.',
+     'Gerçek motorun mekanik duruşu ve Windows/3D kabulü bekliyor.'
+    ],repairModel:'MOTOR-OUTLINE-081-ON-DELAY-TIMED-STOP-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyIssue='PHYSICAL_TIMER_MOTOR_STOP_AND_WINDOWS_3D_REVIEW_PENDING';
+  v.titleTopologyStatus='REVIEW';v.componentIds=parts.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TIMED_POSITIVE_NEGATIVE_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc843TimerStopRepair='MOTOR-OUTLINE-081-ON-DELAY-TIMED-STOP-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
