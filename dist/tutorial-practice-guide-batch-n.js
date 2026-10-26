@@ -946,6 +946,98 @@
  }
  }
 
+
+ // SC674–676: replace unrelated DOL motor-starter graphics with a real
+ // terminalized SINAMICS V20 circuit and executable parameter/macro state.
+ function v20PhysicalLesson(sc,id,hz,macro){
+  const lesson=L.lessons[sc-1],p=lesson?.project,review=lesson?.pedagogyReview;
+  const issue={674:'VFD_TITLE_HAS_DIRECT_ON_LINE_MOTOR_STARTER',
+   675:'VFD_PARAMETER_TITLE_HAS_NO_VFD',
+   676:'VFD_MACRO_TITLE_HAS_DIRECT_ON_LINE_STARTER'}[sc];
+  if(lesson?.id!==id||lesson.kind!=='wiring'||!p?.wires?.length||
+     !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.typeId==='main-contact')||
+     review?.titleTopologyIssue!==issue||review.independentPedagogicalAcceptance===true)return;
+  const make=(id,typeId,label,x,y,extra={})=>({
+   id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra
+  });
+  const v20Params={'P0700':macro?2:1,'P1000':macro?2:1,'P1040':hz,
+   'P0304':230,'P0305':3.5,'P0307':0.75,'P0310':50,'P0311':1400,
+   'P1082':50,'P1120':2,'P1121':2,
+   ...macro?{'P0701':1,'P0702':12,'P0703':9,'P0704':10}:{}};
+  const parts=[
+   make('g1','supply-1p','Yalıtılmış sanal L/N/PE şebeke kaynağı',75,190),
+   make('vfd','sinamics-v20-1p','SINAMICS V20 / 1 faz giriş / 3 faz çıkış',430,170,{
+    v20:{schema:1,macro:macro?'Cn002':'Cn001',params:v20Params,run:!macro,reverse:false,
+     reset:0,load:35,temperature:30}
+   }),
+   make('motor','motor-3p','M1 üç fazlı asenkron motor',1110,225)
+  ];
+  const conn=[
+   ['g1','L','vfd','L1','Şebeke L ucu yalnız sanal V20 girişine gelir.'],
+   ['g1','N','vfd','N','N terminali sürücü giriş dönüşüdür.'],
+   ['g1','PE','vfd','PE','Sanal koruma iletkeni V20 PE terminaline gelir.'],
+   ['vfd','U','motor','U','V20 U motor U besler.'],
+   ['vfd','V','motor','V','V20 V motor V besler.'],
+   ['vfd','W','motor','W','V20 W motor W besler.'],
+   ['vfd','PE2','motor','PE','V20 PE2 ile motor PE korunur.']
+  ];
+  if(macro){
+   parts.push(make('start','push-no','DI1 RUN komut butonu',720,70),
+    make('pot','potentiometer','AI1 0–10 V frekans potu',760,470,{potentiometer:50}));
+   conn.push(
+    ['vfd','13','start','13','V20 dahili 24 V, DI1 start butonuna bağlanır.'],
+    ['start','14','vfd','8','START kapanınca DI1 etkin olur.'],
+    ['vfd','14','vfd','12','DI1 ortak referansı 0 V olur.'],
+    ['vfd','1','pot','1','10 V analog referans potun bir ucuna bağlanır.'],
+    ['vfd','5','pot','3','0 V pot dönüşüdür.'],
+    ['pot','2','vfd','2','AI1 analog ayar sürücüye gelir.']
+   );
+  }
+  p.components=parts;
+  p.wires=conn.map(([a,ap,b,bp,why],i)=>({
+   id:'sc'+sc+'-v20-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:a==='g1'?'#e53935':'#43857f',role:'CONTROL',size:'1.5',
+   points:[],tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+  }));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.materials=parts.map(x=>({id:x.id,label:x.label,why:
+   x.id==='vfd'?'Giriş AC şebekesini üç fazlı değişken frekanslı motor çıkışına dönüştürür.':
+   x.id==='motor'?'Sürücü U/V/W fazlarıyla beslenen yük motordur.':
+   x.id==='pot'?'AI1 frekans referansını 0–10 V aralığında ayarlar.':
+   x.id==='start'?'DI1 terminaline gerçek dijital RUN komutunu verir.':
+   'Sanal elektrik devresi güç kaynağı ve gerçek katalog malzemesi.'}));
+  const explanation=macro?'Cn002 makrosu DI1 start ve AI1 pot girişleriyle çalışır.':
+   sc===675?'P0304, P0310, P0311, P1040 ve rampa parametrelerini sürücünün kendi modelinde karşılaştır.':
+   'Tek fazlı girişten V20 U/V/W çıkış frekansını ve motorun sanal hız değişimini izle.';
+  lesson.summary='Gerçek SINAMICS V20 + motor bağlantısı. '+explanation+
+   ' Fiziksel sürücü kabulü ve Windows/3D testi bekleniyor.';
+  lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'V20 sürücüyle motor kontrolünü deneyelim',
+   virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+   pedagogicalAcceptance:false,fullyRich:false,
+   steps:['Önce sürücünün L/N/PE girişini ve U/V/W motor çıkışını bul.',
+    macro?'DI1 start butonunu, AI1 pot ayarını ve Cn002 makrosunu incele.':
+     'BOP panelinden çalışmayı ve frekans ayarını karşılaştır.',
+    'Frekans değiştiğinde motor hızının tahmini nasıl değişiyor, gözlemle.',
+    'Şebeke veya motor bağlantısı kopunca çalışmayı yeniden değerlendir.'],
+   observations:['Kontrol edilen değer V20 sanal frekans/hız modelidir; gerçek donanım veya SPICE ölçümü değildir.',
+    'Windows/3D kablo hizası ve bağımsız pedagojik kabul açık.'],
+   repairModel:'SC'+sc+'-REAL-SINAMICS-V20-'+(macro?'CN002':'BOP')+'-V1'};
+  review.preRepairTitleTopologyIssue=issue;
+  review.titleTopologyIssue='V20_FULL_NATIVE_SOLVE_AND_WINDOWS_3D_PENDING';
+  review.titleTopologyStatus='REVIEW';review.componentIds=parts.map(c=>c.typeId);
+  review.realWiredCircuit=true;review.nativeDynamicAcceptance=false;
+  review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+  review.independentPedagogicalAcceptance=false;
+  review.scVfdRealCircuitRepair='SC'+sc+'-REAL-SINAMICS-V20-'+(macro?'CN002':'BOP')+'-V1';
+ }
+ v20PhysicalLesson(674,'motor-direct-power-outline-036',35,false);
+ v20PhysicalLesson(675,'motor-direct-power-outline-037',20,false);
+ v20PhysicalLesson(676,'motor-direct-power-outline-038',30,true);
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
