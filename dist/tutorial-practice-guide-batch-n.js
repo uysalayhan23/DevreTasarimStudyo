@@ -2641,6 +2641,71 @@
   v.sc841PushbuttonRepair='MOTOR-OUTLINE-079-PUSHBUTTON-INTERLOCK-V1';
  })();
 
+
+ // motor-direct-power-outline-080: reversible three-pole packet switch,
+ // virtual-only training circuit. Electrical switch position is exclusive.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-080'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',70,230),
+   C('sw','packet-reversing-3p','S1','İleri / 0 / Geri üç kutuplu paket şalter',465,220,{position:0}),
+   C('motor','motor-3p','M1','M1 sanal üç faz motor',1010,220,{motorConnection:'star'})
+  ];
+  const graph=[
+   ['g','L1','sw','L1'],['g','L2','sw','L2'],['g','L3','sw','L3'],
+   ['sw','U','motor','U'],['sw','V','motor','V'],['sw','W','motor','W'],
+   ['g','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'motor-outline-080-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'Sanal devre: '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Katalogdaki üç konumlu paket şalterin sanal güç yolu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='sw'?'İleri, 0 ve geri konumlarını birlikte değiştirir.':
+    c.id==='motor'?'Sanal üç fazlı motorun dönüş yönünü izle.':
+    'Yalnız simülasyon için hazırlanmış sanal kaynak.'}));
+  l.summary='S1 paket şalterin üç konumunu incele: 0 konumunda motor durur, ileri ve geri konumları sanal faz sırasını değiştirerek ters dönme sağlar. Bu devre fiziksel şebeke bağlantı talimatı değildir; PE, güvenli duruş ve mekanik geçişler donanım açısından doğrulanmadı.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Paket şalterin üç konumu motorun yönünü nasıl değiştirir?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+     'Önce S1 konumunu 0 seç; motorun sanal olarak durduğunu gözlemle.',
+     'İleri konumunda simülatörün pozitif dönme işaretini incele.',
+     'Yeniden 0 konumuna dön, ardından geri konumunun ters dönme işaretini karşılaştır.',
+     'Sanal bir faz yolunu çıkar; üç faz koşulu bozulunca motor çalışmamalı.',
+     'Eksik PE veya yanlış geçiş zamanlaması bu yazılımda fiziksel güvenlik doğrulaması sağlamaz.'
+    ],
+    observations:[
+     'Özgün 703 bileşenli katalog ve Simulation.solve ile 0, ileri, geri, faz kopuğu ve motor uç kopuğu sınandı.',
+     'Sanal model PE kopuğunda mekanik motor etkinliğini hâlâ gösterebilir; bu fiziksel güvenliğe dair kanıt DEĞİLDİR.',
+     'Gerçek donanım seçimi, geçiş/duruş süresi ve Windows/3D kabulü bekliyor.'
+    ],
+    repairModel:'MOTOR-OUTLINE-080-3P-REVERSING-PACKET-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='PACKET_MECHANICAL_TRANSITION_PE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_POSITION_AND_OPEN_WIRE_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc842ReversingPacketRepair='MOTOR-OUTLINE-080-3P-REVERSING-PACKET-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
