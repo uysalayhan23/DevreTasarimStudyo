@@ -46,7 +46,15 @@
   const key=(c,p)=>c+'|'+p,jkey=j=>'J|'+j;
   function graph(project,byId){const parent=new Map(),find=x=>{if(!parent.has(x))parent.set(x,x);let y=x;while(parent.get(y)!==y)y=parent.get(y);while(parent.get(x)!==x){const n=parent.get(x);parent.set(x,y);x=n}return y},join=(a,b)=>{a=find(a);b=find(b);if(a!==b)parent.set(a,b)},ep=r=>r?.j?jkey(r.j):key(r?.c,r?.p);for(const c of project.components)for(const p of byId[c.typeId]?.pins||[])find(key(c.id,p.id));for(const j of project.junctions||[])find(jkey(j.id));for(const w of project.wires||[])join(ep(w.from),ep(w.to));for(const c of project.components){for(const p of byId[c.typeId]?.arduinoPassThrough||[])join(key(c.id,p[0]),key(c.id,p[1]));const d=byId[c.typeId];if(d?.arduinoRole==='breadboard-power'){join(key(c.id,'LGND'),key(c.id,'GND'));join(key(c.id,'RGND'),key(c.id,'GND'));if(c.hw131On!==false){const l=String(c.hw131Left??d.hw131Left??'5'),r=String(c.hw131Right??d.hw131Right??'3.3');if(l==='5')join(key(c.id,'L+'),key(c.id,'5V'));else if(l==='3.3')join(key(c.id,'L+'),key(c.id,'3V3'));if(r==='5')join(key(c.id,'R+'),key(c.id,'5V'));else if(r==='3.3')join(key(c.id,'R+'),key(c.id,'3V3'))}}}return {find,ep}}
   function attached(project,byId,g,b,p){const r=g.find(key(b.id,p)),a=[];for(const c of project.components)if(c.id!==b.id){const d=byId[c.typeId];for(const q of d?.pins||[])if(g.find(key(c.id,q.id))===r)a.push({c,d,p:q.id})}return a}
-  function sensor(x,mode,ctx){const {c,d,p}=x,r=d.arduinoRole;if(r==='button')return c._pressed||c.state?1:0;if(r==='digital'&&d.id==='arduino-reed'&&c.mq07ReedDigitalModel===true&&p==='DO'&&mode==='digital'){
+  function sensor(x,mode,ctx){const {c,d,p}=x,r=d.arduinoRole;// SC708: an unpowered push module must not read HIGH on D2.
+ if(r==='button'&&c.id==='button'&&p==='SIG'&&mode==='digital'&&
+    ctx?.project?.tutorialLesson?.id==='motor-direct-power-outline-039'){
+   const {g,b}=ctx,same=(a,ap,z,zp)=>g.find(key(a,ap))===g.find(key(z,zp));
+   const valid=same(c.id,'VCC',b.id,'5V')&&same(c.id,'GND',b.id,'GND');
+   c._sc708ButtonPowered=valid;
+   return valid&&(c._pressed||c.state)?1:0;
+ }
+ if(r==='button')return c._pressed||c.state?1:0;if(r==='digital'&&d.id==='arduino-reed'&&c.mq07ReedDigitalModel===true&&p==='DO'&&mode==='digital'){
  const {project,byId,g,b}=ctx||{},joined=(a,ap,z,zp)=>g.find(key(a,ap))===g.find(key(z,zp));
  const powered=!!(project&&byId&&g&&b&&joined(c.id,'VCC',b.id,'5V')&&joined(c.id,'GND',b.id,'GND')&&
  project.components.some(s=>byId[s.typeId]?.arduinoRole==='bench-supply'&&Math.abs(Number(s.dcVoltage??byId[s.typeId]?.defaultVoltage??5)-5)<.01&&
@@ -467,7 +475,44 @@
     for(const b of project.components.filter(x=>byId[x.typeId]?.arduinoBoard)){const same=(cp,bp)=>g.find(key(c.id,cp))===g.find(key(b.id,bp)),ground=['GND','GND2'].some(p=>same('−',p)),reverse=['GND','GND2'].some(p=>same('+',p))&&same('−','5V');if(reverse){status='reversed';volts=-5;break}if(same('+','5V')&&ground){status='ok';volts=5;break}}
     if(status==='off')for(const s of project.components){const sd=byId[s.typeId];if(sd?.arduinoRole!=='bench-supply')continue;const same=(cp,sp)=>g.find(key(c.id,cp))===g.find(key(s.id,sp)),v=Number(s.dcVoltage??sd.defaultVoltage??5);if(same('+','P')&&same('−','M')&&v>=5&&v<=24){status='ok';volts=v;break}if(same('+','M')&&same('−','P')){status='reversed';volts=-v;break}}
     c._encoderSupply=status;c._encoderSupplyVoltage=volts;c._encoderPowered=status==='ok';IncrementalEncoder.state(c,d,now,true);c._active=c._encoderPowered;
-  }for(const c of project.components){const d=byId[c.typeId];if(d?.arduinoRole!=='breadboard-power')continue;const wired=p=>(project.wires||[]).some(w=>[w.from,w.to].some(e=>e?.c===c.id&&e?.p===p)),source=wired('USB5V')?'USB 5V':wired('VIN')?'VIN 6.5–12 V':'Kaynak yok',l=String(c.hw131Left??d.hw131Left??'5'),r=String(c.hw131Right??d.hw131Right??'3.3'),short=(l!=='OFF'&&g.find(key(c.id,'L+'))===g.find(key(c.id,'LGND')))||(r!=='OFF'&&g.find(key(c.id,'R+'))===g.find(key(c.id,'RGND'))),powered=c.hw131On!==false&&source!=='Kaynak yok'&&!short;c._hw131Source=source;c._hw131Short=short;c._hw131Powered=powered;c._hw131Outputs={left:powered&&l!=='OFF'?Number(l):0,right:powered&&r!=='OFF'?Number(r):0,v5:powered?5:0,v33:powered?3.3:0};c._active=powered}for(const b of project.components.filter(c=>byId[c.typeId]?.arduinoBoard)){const r=runBoard(b,project,byId,g,now);active=active||r.active;if(r.error)errors.push((b.ref||'Arduino')+': '+r.error)}present(project,byId,g);updateArduinoInstruments(project,byId,g,now);return {active,errors,next:20}}
+  }for(const c of project.components){const d=byId[c.typeId];if(d?.arduinoRole!=='breadboard-power')continue;const wired=p=>(project.wires||[]).some(w=>[w.from,w.to].some(e=>e?.c===c.id&&e?.p===p)),source=wired('USB5V')?'USB 5V':wired('VIN')?'VIN 6.5–12 V':'Kaynak yok',l=String(c.hw131Left??d.hw131Left??'5'),r=String(c.hw131Right??d.hw131Right??'3.3'),short=(l!=='OFF'&&g.find(key(c.id,'L+'))===g.find(key(c.id,'LGND')))||(r!=='OFF'&&g.find(key(c.id,'R+'))===g.find(key(c.id,'RGND'))),powered=c.hw131On!==false&&source!=='Kaynak yok'&&!short;c._hw131Source=source;c._hw131Short=short;c._hw131Powered=powered;c._hw131Outputs={left:powered&&l!=='OFF'?Number(l):0,right:powered&&r!=='OFF'?Number(r):0,v5:powered?5:0,v33:powered?3.3:0};c._active=powered}for(const b of project.components.filter(c=>byId[c.typeId]?.arduinoBoard)){const r=runBoard(b,project,byId,g,now);active=active||r.active;if(r.error)errors.push((b.ref||'Arduino')+': '+r.error)}present(project,byId,g);
+  // SC708: bounded 5 V virtual motor driver state, not a winding/current
+  // or physical torque simulation. Every pin must belong to this circuit.
+  if(project?.tutorialLesson?.id==='motor-direct-power-outline-039'){
+   const by=(id)=>project.components.find(c=>c.id===id);
+   const uno=by('uno'),driver=by('driver'),motor=by('motor'),
+    button=by('button'),supply=by('ps');
+   if(uno&&driver&&motor&&button&&supply&&
+      uno.typeId==='arduino-uno'&&driver.typeId==='arduino-l298n'&&
+      motor.typeId==='arduino-dc-motor'&&button.typeId==='arduino-button'&&
+      supply.typeId==='arduino-bench-supply'){
+     const connected=(a,ap,b,bp)=>(project.wires||[]).some(w=>
+       ((w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+        (w.to?.c===a&&w.to?.p===ap&&w.from?.c===b&&w.from?.p===bp)));
+     const circuit=Number(supply.dcVoltage)===5&&
+       connected('ps','P','driver','12V')&&connected('ps','M','driver','GND')&&
+       connected('uno','5V','driver','5V')&&connected('uno','GND','driver','GND')&&
+       connected('uno','GND','ps','M')&&
+       connected('uno','D9','driver','ENA')&&
+       connected('uno','D8','driver','IN1')&&
+       connected('uno','D7','driver','IN2')&&
+       connected('driver','OUT1','motor','+')&&
+       connected('driver','OUT2','motor','-')&&
+       connected('uno','D2','button','SIG')&&
+       connected('uno','5V','button','VCC')&&
+       connected('uno','GND','button','GND');
+     const pins=uno._arduinoRuntime?.outputs||{};
+     const powered=circuit&&Number(pins.D9)>0&&Number(pins.D8)>0&&
+      !Number(pins.D7)&&!uno._arduinoError;
+     driver._sc708WiringValid=circuit;
+     driver._sc708Running=powered;
+     driver._active=powered;
+     motor._sc708Running=powered;
+     motor._active=powered;
+     motor._sc708Simulation='idealized 5 V H-bridge enable only; no measured RPM or torque';
+   }
+  }
+  updateArduinoInstruments(project,byId,g,now);return {active,errors,next:20}}
   function clear(project){for(const c of project.components){delete c._arduinoRuntime;delete c._arduinoPins;delete c._arduinoStatus;delete c._arduinoError;delete c._arduinoConsole;delete c._arduinoSerialBaud;delete c._arduinoOn;delete c._arduinoBrightness;delete c._arduinoRGB;delete c._neopixelPowered;delete c._neopixelDataPin;delete c._oledTextSize;delete c._oledInverted;delete c._arduinoTone;delete c._arduinoServoAngle;delete c._arduinoServoPulseUs;delete c._arduinoStepperAngle;delete c._arduinoCoils;delete c._a4988Microstep;delete c._a4988Enabled;delete c._a4988PowerOk;delete c._a4988Angle;delete c._a4988StepHigh;delete c._a4988AccelPosition;delete c._hw131Source;delete c._hw131Short;delete c._hw131Powered;delete c._hw131Outputs;delete c._ne555Out;delete c._ne555Discharge;delete c._ne555Frequency;delete c._ne555HighMs;delete c._ne555LowMs;delete c._ne555PulseMs;delete c._ne555PulseUntil;delete c._ne555TrigLow;delete c._ne555Epoch;delete c._arduinoDisplay;delete c._arduinoDisplayLines;delete c._arduinoLcdCursor;delete c._arduinoLcdBacklight;delete c._sevenSegments;delete c._arduinoLogicOutputs;delete c._signalVoltage;delete c._signalPhase;delete c._scopeTrace1;delete c._scopeTrace2;delete c._scopeRaw1;delete c._scopeRaw2;delete c._scopeV1;delete c._scopeV2;delete c._scopeFrequency1;delete c._scopeFrequency2;delete c._scopeStats1;delete c._scopeStats2;delete c._scopeGrounded;delete c._scopeTriggered;delete c._scopeTriggerAt;delete c._scopeStart;delete c._scopeSpan;delete c._hc595Shift;delete c._hc595Latch;delete c._cd4017Count;delete c._max7219Shift;delete c._max7219Bits;delete c._max7219Regs;delete c._max7219Digits;delete c._mcpRegs;delete c._encoderPowered;delete c._encoderSupply;delete c._encoderSupplyVoltage;delete c._encoderPullupWarning;delete c._encoderA;delete c._encoderB;delete c._encoderZ;delete c._encoderPulseHz;delete c._encoderOverspeed;delete c._encoderResponseOver;delete c._encoderLastTime}}
   function verify(code){try{const p=compile(code);return {ok:true,message:'Doğrulama başarılı · setup '+p.setup.length+' / loop '+p.loop.length+' komut'}}catch(e){return {ok:false,message:e.message}}}
   const C=(id,typeId,x,y,extra={})=>({id,typeId,x,y,rotation:0,label:Library.components.find(d=>d.id===typeId)?.name||typeId,ref:id.toUpperCase(),address:'',note:'',state:false,...extra});
