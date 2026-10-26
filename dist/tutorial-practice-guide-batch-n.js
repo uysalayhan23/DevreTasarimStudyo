@@ -1080,7 +1080,7 @@
   const C=m130C;
   const motor=C('motor','motor-y-d','M1 · 6 uç U1/V1/W1/U2/V2/W2',565,210,{
    motorConnection:'external',
-   nameplate:{connection:'Y (görsel yıldız köprü)',ratedVoltageV:230,ratedPowerKw:0.75,
+   nameplate:{connection:'Y (görsel yıldız köprü)',ratedVoltageV:400,ratedWindingVoltageV:230,connectionRating:'230 V Δ / 400 V Y',ratedPowerKw:0.75,
      nominalHz:50,nominalRpm:1400,poles:4,note:'Öğretici örnek etiket; fiziksel cihaz datasheeti değil.'}});
   const ps=C('g1','supply-3p','Sanal üç faz L1/L2/L3 + PE',85,210);
   const edges=[
@@ -1094,7 +1094,7 @@
   m130Install(639,'motor-direct-power-outline-029',
    ['motor-3p','main-contact'],'MOTOR_NAMEPLATE_TERMINAL_LESSON_HAS_DIRECT_START_ONLY',
    [ps,motor],edges,
-   'Altı motor klemensini ve 4 kutup/50 Hz/1400 dev-dak örnek etiketi ayır: U2–V2–W2 yıldız köprüleri gerçek kablodur.',
+   'Altı motor klemensini ve örnek 230 V Δ / 400 V Y, 4 kutup/50 Hz/1400 dev-dak etiketini ayır: yıldızda hat 400 V iken sargı yaklaşık 230 V alır; U2–V2–W2 yıldız köprüleri gerçek kablodur.',
    ['Örnek motor etiketindeki gerilim, güç ve 50 Hz bilgisini oku.',
     'U1, V1, W1 üç faz girişini bul; U2, V2, W2 uçlarını yıldız köprüsüyle birleştir.',
     'Bir yıldız köprüsünü ayır ve eksik bağlantının etkisini sanal devrede kontrol et.'],
