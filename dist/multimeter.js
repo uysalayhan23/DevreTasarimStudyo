@@ -51,6 +51,31 @@
    }
   }
 
+
+  // SC779: do not report valid 0 V when collector/COM probe is detached.
+  if(project?.tutorialLesson?.id==='electronic-switching-outline-070'&&
+     project.sc779MeterGuard==='SC779-BD139-REAL-COLLECTOR-PROBE-TIPS-V1'&&
+     c.id==='v1'&&d.id==='unit-ut33d-plus'){
+    const part=id=>project.components.find(x=>x.id===id),
+      link=(a,ap,b,bp)=>project.wires.some(w=>
+       (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+       (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+    const red=part('v1-red'),black=part('v1-black');
+    const tips=red?.probeTarget?.c==='q1'&&red?.probeTarget?.p==='C'&&
+      black?.probeTarget?.c==='g1'&&black?.probeTarget?.p==='M'&&
+      link('v1','V','v1-red','PLUG')&&link('v1','COM','v1-black','PLUG')&&
+      link('v1-red','TIP','q1','C')&&link('v1-black','TIP','g1','M');
+    const output=link('g1','P','rl','1')&&link('rl','2','q1','C')&&
+      link('q1','E','g1','M')&&part('g1')?.sourceEnabled!==false;
+    if(mode!=='DCV'||!tips||!output){
+      c._meter={display:'OL',unit:'V',value:null,beep:false,mode,range,
+       warning:!tips?'Kolektör veya COM ölçüm probu çıkarılmış.':
+          !output?'Transistörün kolektör/besleme devresi eksik.':
+          'DCV kademesini seçin.'};
+      return;
+    }
+  }
+
   // Only SC718: a detached TIP or missing supply/feedback is not a 0 V reading.
   if(project?.tutorialLesson?.id==='opamp-apps-outline-056'&&
     project.sc718MeasurementGuard==='SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1'&&
