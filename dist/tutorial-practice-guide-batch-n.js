@@ -1411,6 +1411,85 @@
  }
  }
 
+
+ // SC725–727: distinct, source-exact two-BD139 RC teaching circuits.
+ // Reuse the existing guarded SC386–388 native ideal timing models. These are
+ // not SPICE or physical hardware acceptance and do not touch Golden scenes.
+ {
+  const circuits=[
+   {n:725,id:'oscillator-filter-apps-outline-065',type:'mono',
+    lines:[['g','P','rc1','1'],['rc1','2','q1','C'],['g','P','rc2','1'],['rc2','2','q2','C'],['q1','E','g','M'],['q2','E','g','M'],['g','P','rb2','1'],['rb2','2','q2','B'],['q2','C','rfb','1'],['rfb','2','q1','B'],['q1','C','c1','1'],['c1','2','q2','B'],['g','P','s1','13'],['s1','14','rtr','1'],['rtr','2','q1','B'],['q1','B','rpd','1'],['rpd','2','g','M']],
+    heading:'Tek kararlı: butona basınca kısa süreli darbe',
+    summary:'SET düğmesi Q1 iletimini yaklaşık 0,693 saniye sürdürür; süre dolunca iki BD139 başlangıç durumuna döner.',
+    steps:['5 V kaynak ve iki BD139 transistörün B/C/E terminallerini bul.','Kollektör dirençlerini, C1 kondansatörünü ve geri besleme kolunu sırayla bağla.','S1 butonuna bas: Q1 etkin, Q2 pasif olur.','Yaklaşık 0,693 saniye sonra Q1 söner, Q2 etkinleşir. Kablo koparsa darbe geçersiz olur.'],
+    quiz:'Tek kararlı devrede tetiklemeden sonra ne olur?',answers:['Kısa süre sonra başlangıç durumuna döner.','Sürekli iki yönde sayar.','Giriş olmadan motoru hızlandırır.']},
+   {n:726,id:'oscillator-filter-apps-outline-066',type:'bistable',
+    lines:[['g','P','rc1','1'],['rc1','2','q1','C'],['g','P','rc2','1'],['rc2','2','q2','C'],['q1','E','g','M'],['q2','E','g','M'],['q1','C','rfb1','1'],['rfb1','2','q2','B'],['q2','C','rfb2','1'],['rfb2','2','q1','B'],['g','P','sset','13'],['sset','14','rset','1'],['rset','2','q1','B'],['g','P','sreset','13'],['sreset','14','rreset','1'],['rreset','2','q2','B']],
+    heading:'Çift kararlı: SET ve RESET ile durumu sakla',
+    summary:'Çapraz kolektör-beyz geri beslemesi iki BD139 ile iki kararlı durumu oluşturur. SET ve RESET ayrı butonlardır.',
+    steps:['5 V beslemeyi ve iki BD139 kollektör direncini bağla.','Kollektörleri çapraz geri besleme dirençleriyle karşı transistörlerin beyzine bağla.','SET tuşuna basıp bırak: Q1 durumu korunur.','RESET tuşuna bas: Q2 etkinleşir. Aynı anda SET ve RESET basılması geçerli komut değildir.'],
+    quiz:'Çift kararlı devre SET butonu bırakılınca ne yapar?',answers:['Son durumu korur.','Her zaman hemen sıfıra döner.','Sürekli frekans üretir.']},
+   {n:727,id:'oscillator-filter-apps-outline-067',type:'astable',
+    lines:[['g','P','rc1','1'],['rc1','2','q1','C'],['g','P','rc2','1'],['rc2','2','q2','C'],['q1','E','g','M'],['q2','E','g','M'],['g','P','rb1','1'],['rb1','2','q1','B'],['g','P','rb2','1'],['rb2','2','q2','B'],['q1','C','c1','1'],['c1','2','q2','B'],['q2','C','c2','1'],['c2','2','q1','B']],
+    heading:'Kararsız: iki transistör sırayla çalışır',
+    summary:'İki çapraz RC kolu BD139 transistörlerini yaklaşık 0,72 Hz ile dönüşümlü sürer; ayrı bir buton gerekmez.',
+    steps:['İki BD139, iki kondansatör ve dört direnci yerleştir.','Q1 kollektöründen C1 ile Q2 beyzine; Q2 kollektöründen C2 ile Q1 beyzine bağla.','Sanal zamanı ilerlet: yaklaşık 0,693 saniyede etkin transistör değişir.','Bir RC kolunu kopar: periyodik geçiş kaybolur.'],
+    quiz:'Kararsız multivibratörde hangi davranış beklenir?',answers:['İki transistör dönüşümlü iletime geçer.','SET olmadan durum değişmez.','Sadece bir kez darbe verir.']}
+  ];
+  const make=(id,typeId,i,extra={})=>({id,typeId,ref:id.toUpperCase(),label:id.toUpperCase(),
+   x:70+(i%4)*285,y:80+Math.floor(i/4)*225,rotation:0,state:false,address:'',note:'',...extra});
+  for(const s of circuits){
+   const lesson=L.lessons[s.n-1],p=lesson?.project,rev=lesson?.pedagogyReview;
+   if(lesson?.id!==s.id||lesson.kind!=='wiring'||p?.wires?.length!==8||
+      p.components.filter(c=>c.typeId==='bd139-npn').length!==1||
+      rev?.independentPedagogicalAcceptance===true)continue;
+   const ids=[...new Set(s.lines.flatMap(w=>[w[0],w[2]]))],parts=ids.map((id,i)=>{
+    const type=id==='g'?'arduino-bench-supply':id==='q1'||id==='q2'?'bd139-npn':
+     id.startsWith('c')?'capacitor':id.startsWith('s')?'push-no':'resistor';
+    const props=id==='g'?{dcVoltage:5}:type==='bd139-npn'?{
+      mq07StandaloneBjtMonostable:s.type==='mono',mq07StandaloneBjtBistable:s.type==='bistable',
+      mq07StandaloneBjtAstable:s.type==='astable'}:type==='capacitor'?{capacitance:0.0001}:
+      type==='resistor'?{resistance:id.startsWith('rc')?1000:10000}:{};
+    return make(id,type,i,props);
+   });
+   p.components=parts;
+   p.wires=s.lines.map(([a,ap,b,bp],i)=>({
+    id:'sc'+s.n+'-rc-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Gerçek katalog B/C/E, direnç ve kondansatör terminallerini birleştirir.'
+   }));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   lesson.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.typeId==='bd139-npn'?'Çapraz RC ağındaki NPN transistör.':
+    c.typeId==='capacitor'?'Gerçek RC zaman sabiti için 100 µF kondansatör.':
+    c.typeId==='resistor'?'Kollektör, tetikleme veya geri besleme direnci.':
+    c.typeId==='arduino-bench-supply'?'Güvenli 5 V sanal DC kaynak.':
+    'Sanal SET/RESET/tetik butonu.'}));
+   lesson.summary=s.summary+' Kaynak doğrulamalı ideal RC zaman modeli; gerçek SPICE veya Windows/3D kabulü değildir.';
+   lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:s.heading,virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:s.steps,observations:[s.summary,
+     'Native model, yalnız doğru 5 V kaynak ve eksiksiz RC grafiğinde davranış üretir.',
+     'Kopuk kablo, gerçek donanım ve 3D görsel kabulü bağımsız takip edilir.'],
+    repairModel:'SC'+s.n+'-TWO-BD139-'+s.type.toUpperCase()+'-RC-V1'};
+   lesson.quiz={question:s.quiz,options:s.answers,answer:0,
+    why:'Bu üç farklı devrede buton tetiklemesi, bellek ve sürekli salınım aynı şey değildir.'};
+   const review=lesson.pedagogyReview||(lesson.pedagogyReview={});
+   review.titleTopologyStatus='REVIEW';
+   review.titleTopologyIssue='WINDOWS_3D_AND_PHYSICAL_RC_ACCEPTANCE_PENDING';
+   review.preRepairIssue='SINGLE_BD139_PUSHBUTTON_GRAPH_NOT_MULTIVIBRATOR';
+   review.realWiredCircuit=true;review.nativeDynamicAcceptance=false;
+   review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+   review.independentPedagogicalAcceptance=false;
+   review.scBjtRcRealCircuitRepair='SC'+s.n+'-TWO-BD139-'+s.type.toUpperCase()+'-RC-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
