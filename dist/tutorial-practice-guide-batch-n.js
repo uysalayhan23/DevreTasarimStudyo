@@ -2565,6 +2565,82 @@
   v.sc840InterlockRepair='MOTOR-OUTLINE-078-DIRECTION-SELECTED-INTERLOCK-V1';
  })();
 
+
+ // motor-direct-power-outline-079: separate NO/NC jog buttons, virtual interlock.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-079'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const a=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',50,360),
+   C('stop','push-nc','S0','STOP',190,80),
+   C('fwd','jog-4pin','S1','İleri NO + NC',370,80),
+   C('rev','jog-4pin','S2','Geri NO + NC',375,360),
+   C('holdF','contact-no','K1','K1 mühürleme',610,170),
+   C('holdR','contact-no','K2','K2 mühürleme',620,455),
+   C('coilF','coil-contactor','K1','K1 ileri bobin',905,110),
+   C('coilR','coil-contactor','K2','K2 geri bobin',920,365),
+   C('mainF','main-contact','K1','K1 ileri güç',1075,560),
+   C('mainR','main-contact','K2','K2 geri güç',1120,770),
+   C('motor','motor-3p','M1','M1 sanal motor',1450,650,{motorConnection:'star'})
+  ];
+  const graph=[
+   ['g','L1','stop','21'],
+   ['stop','22','rev','21'],['rev','22','fwd','13'],
+   ['fwd','14','coilF','A1'],['rev','22','holdF','13'],
+   ['holdF','14','coilF','A1'],['coilF','A2','g','N'],
+   ['stop','22','fwd','21'],['fwd','22','rev','13'],
+   ['rev','14','coilR','A1'],['fwd','22','holdR','13'],
+   ['holdR','14','coilR','A1'],['coilR','A2','g','N'],
+   ['g','L1','mainF','1'],['g','L2','mainF','3'],['g','L3','mainF','5'],
+   ['mainF','2','motor','U'],['mainF','4','motor','V'],['mainF','6','motor','W'],
+   ['g','L1','mainR','1'],['g','L2','mainR','3'],['g','L3','mainR','5'],
+   ['mainR','2','motor','W'],['mainR','4','motor','V'],['mainR','6','motor','U'],
+   ['g','PE','motor','PE']
+  ];
+  p.components=a;
+  p.wires=graph.map(([from,pin,to,out],i)=>({
+    id:'motor-outline-079-'+(i+1),from:{c:from,p:pin},to:{c:to,p:out},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:from+'/'+pin+' → '+to+'/'+out,
+    tutorialWhy:'Yalnız sanal buton kilitleme ve motor kumandası katalog terminali.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.typeId==='jog-4pin'?'NO ve NC uçları aynı basma hareketine bağlıdır.':
+     c.typeId==='contact-no'?'İlgili sanal kontaktörün mühürleme yoludur.':
+     'Sanal devrede katalog terminaliyle bağlanan bileşen.'}));
+  l.summary='İki NO/NC butonun karşılıklı kumanda kilidini dene: iki buton birlikte basılıysa sanal motor durur. İleri ve geri için ayrı kontaktörler faz sırasını değiştirir. Sanal modelde anlık ters geçiş olabilir; bu gerçek motor için güvenli duruş, mekanik kilit veya hız kontrolü kabulü değildir.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'İki buton birbirine nasıl kilit olur?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['Sanal ileri butonunun NO ve NC uçlarını tanı; karşı butonun NC rolünü izle.',
+     'İleri komutu verip bırak. K1 mühürleme ile sanal motorun çalışmasını izle.',
+     'STOP ile motoru durdur ve geri yönde ayrı komut ver.',
+     'İki butonu aynı anda basılı tut: karşı NC uçları iki bobini de kapatmalı.',
+     'Bir karşı NC bağlantısını kopar ve ilgili yönde başlatmanın neden engellendiğini gözlemle.'],
+    observations:['Özgün Simulation.solve ve 703 katalog elemanıyla hedefli pozitif-negatif sanal test yapıldı.',
+     'Gerçekte anlık yön değişimi uygulanmaz: motor duruşu, uygun mekanik/elektriksel kilit ve donanım güvenlik değerlendirmesi ayrıca gereklidir.'],
+    repairModel:'MOTOR-OUTLINE-079-PUSHBUTTON-INTERLOCK-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyIssue='MECHANICAL_STOPPED_MOTOR_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  v.titleTopologyStatus='REVIEW';v.componentIds=a.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc841PushbuttonRepair='MOTOR-OUTLINE-079-PUSHBUTTON-INTERLOCK-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
