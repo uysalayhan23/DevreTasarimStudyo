@@ -289,5 +289,80 @@ if(sc648?.id==='motor-direct-power-outline-034'&&sc648.kind==='wiring'&&
   sc648.topicReview.sourceCircuitPreserved=false}
 }
 
+
+/* SC431: genuine TLP521 input/output and probe-tipped DC measurement,
+   reusing the existing verified isolated virtual SC429 graph. */
+const sc431=L.lessons[430],sc429=L.lessons[428];
+if(sc431?.id==='electronic-switching-outline-059'&&sc431.kind==='quiz'&&
+ sc431.project?.wires?.length===0&&sc431.project?.components?.length===2&&
+ sc431.project.components[0]?.typeId==='arduino-tlp521-1'&&
+ sc431.pedagogyReview?.titleTopologyIssue==='NO_TLP521_HEALTH_PROBE_RESULT'&&
+ sc431.pedagogyReview?.independentPedagogicalAcceptance!==true&&
+ sc429?.id==='electronic-switching-outline-057'&&
+ sc429.project?.wires?.length===7&&sc429.project?.components?.length===6&&
+ sc429.project.components.some(c=>c.id==='u1'&&c.typeId==='arduino-tlp521-1'&&c.mq07OptoVirtual===true)){
+ const old=sc431.project,p=backfillClone(sc429.project);
+ p.projectId=old.projectId;
+ p.tutorialLesson={...old.tutorialLesson,phase:'demo',step:0};
+ p.components.push({
+  id:'v1',typeId:'unit-ut33d-plus',ref:'V1',label:'UNI-T DCV optokuplör çıkışı',
+  x:715,y:430,rotation:0,state:false,address:'',note:'',meterPosition:4
+ },{
+  id:'v1-red',typeId:'test-probe-red',ref:'PRV1',label:'Kırmızı DCV probu',
+  x:665,y:515,rotation:0,state:false,address:'',note:'',
+  probeTarget:{c:'u1',p:'4'}
+ },{
+  id:'v1-black',typeId:'test-probe-black',ref:'PBV1',label:'Siyah DCV probu',
+  x:825,y:515,rotation:0,state:false,address:'',note:'',
+  probeTarget:{c:'u1',p:'3'}
+ });
+ for(const [id,a,ap,b,bp,label] of [
+  ['sc431-vprobe','v1','V','v1-red','PLUG','DCV kırmızı ölçüm ucu bağlanır.'],
+  ['sc431-comprobe','v1','COM','v1-black','PLUG','DCV siyah referans probu bağlanır.']
+ ]){
+  p.wires.push({id,from:{c:a,p:ap},to:{c:b,p:bp},
+   color:id==='sc431-vprobe'?'#c2410c':'#111827',role:'MEASUREMENT',
+   size:'0.75',points:[],tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:label});
+ }
+ sc431.project=p;sc431.kind='wiring';
+ sc431.steps=p.wires.map(w=>({
+  from:backfillClone(w.from),to:backfillClone(w.to),
+  hint:w.tutorialHint||'Sanal ölçüm bağlantısı',why:w.tutorialWhy||
+   'İki elektriksel bölge bağlantı yapılmadan birbirinden yalıtılmıştır.',
+  color:w.color||'#64748b',role:w.role||'SIGNAL',size:w.size||'1'
+ }));
+ sc431.materials=p.components.map(c=>({
+  componentId:c.id,typeId:c.typeId,label:c.label,
+  why:c.id==='g1'?'LED girişini bağımsız 5 V ile besler.':
+    c.id==='g2'?'Fototransistör çıkışının ayrı 5 V sanal kaynağıdır.':
+    c.id==='u1'?'TLP521-1 pin 1/2 LED, pin 4/3 C/E; optik aktarım ve elektriksel yalıtım sağlar.':
+    c.id==='sg'?'Sanal sağlamlık kontrolünde LED girişine komut verir.':
+    c.id==='rin'?'Giriş LED akımını sınırlar.':
+    c.id==='rout'?'Çıkış transistorunun yükünü oluşturur.':
+    c.id==='v1'?'Kollektör-emiter yönünde DCV okuma kademesi için sanal ölçü aleti.':
+    'Probu seçilen fototransistör terminaline yöneltir.'
+ }));
+ sc431.quiz={
+  question:'Sağlam sanal TLP521-1 giriş LED’i tetiklenince kolektörün sanal DCV değeri nasıl değişir?',
+  options:['Yaklaşık 5 V’dan 0,2 V’a düşer.','İki beslemenin eksi uçları birleşir.','Hiç değişmeden 5 V kalır.'],
+  answer:0,why:'Yerel native optik aktarım modelinde çıkış iletime geçer; LED kopukluğu ve izolasyon köprüsü ayrı negatif kontroldür.'
+ };
+ const review=sc431.pedagogyReview;
+ review.preRepairTitleTopologyIssue='NO_TLP521_HEALTH_PROBE_RESULT';
+ review.titleTopologyStatus='REVIEW';
+ review.titleTopologyIssue='TLP521_METER_DISPLAY_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+ review.sourceReusedFrom='electronic-switching-outline-057';
+ review.nativeDynamicAcceptance=true;
+ review.meterDisplayAcceptance=false;
+ review.isolationAcceptance=true;
+ review.physicalAcceptance=false;
+ review.windowsVisualAcceptance=false;
+ review.independentPedagogicalAcceptance=false;
+ review.componentIds=p.components.map(c=>c.typeId);
+ review.sc431OptoNative='SC431-TLP521-DCV-ISOLATION-NATIVE-V1';
+ if(sc431.topicReview){sc431.topicReview.simulationAcceptance=true;
+  sc431.topicReview.sourceCircuitPreserved=false}
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
