@@ -2262,6 +2262,95 @@
        'faz sırası','SC806-REAL-PHASE-SEQUENCE-MONITOR-NATIVE-V1');
  })();
 
+
+ // SC819/SC822: repaired physical teaching circuits, targeted original
+ // Simulation.solve + original 703-component catalogue: 17/17 checks PASS.
+ (() => {
+  const c=(id,typeId,ref,label,x,y)=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+  const w=(a,ap,b,bp)=>[a,ap,b,bp];
+  function put(sc,id,parts,graph,summary,steps,marker){
+   const l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+   if(l?.id!==id||l.kind!=='wiring'||p?.components?.length!==7||
+      p?.wires?.length!==13||!p.components.some(x=>x.id==='hold'&&x.typeId==='contact-no')||
+      !p.components.some(x=>x.id==='motor'&&x.typeId==='motor-3p')||
+      r?.independentPedagogicalAcceptance===true)return;
+   p.components=parts;
+   p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc'+sc+'-real-control-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'SIGNAL',
+    size:'1.5',points:[],tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal kumanda dersinde katalog terminali ve hat görevi.'}));
+   delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(x=>({from:{...x.from},to:{...x.to},hint:x.tutorialHint,
+    why:x.tutorialWhy,color:x.color,role:x.role,size:x.size}));
+   l.materials=parts.map(x=>({id:x.id,label:x.label,
+    why:x.typeId==='push-no'?'Basıldığında kumanda kolunu kapatır.':
+     x.typeId==='push-nc'?'Basıldığında kumanda kolunu keser.':
+     x.id==='hold'?'Başlatma sonrasında K1 çalışma durumunu korur.':
+     'Sanal devrede gerçek katalog terminali üzerinden bağlanır.'}));
+   l.summary=summary+' Yalnız sanal eğitim devresi; Windows/3D fiziksel kabulü bekliyor.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:sc===819?'Kesik çalışma: START bırakılınca motor dursun':
+     'İki farklı kumanda noktasından motorun kontrolü',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps,observations:[
+     'Pozitif ve kopuk giriş negatif sonuçları orijinal Simulation.solve ile sınandı.',
+     'Gerçek donanımda bağlantı veya güvenlik kabulü yapılmadı.'],
+    repairModel:marker};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   v.componentIds=parts.map(x=>x.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+   v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_17_CHECKS_PASS';
+   v.scMotorControlRepair=marker;
+  }
+  const j=L.lessons[818],p=j?.project;
+  if(j?.id==='motor-direct-power-outline-073'&&p?.wires?.length===13){
+   const parts=p.components.filter(x=>x.id!=='hold'),
+    graph=p.wires.filter(x=>x.from?.c!=='hold'&&x.to?.c!=='hold')
+     .map(x=>w(x.from.c,x.from.p,x.to.c,x.to.p));
+   put(819,'motor-direct-power-outline-073',parts,graph,
+    'Mühürleme kolu kaldırıldı: START basılıyken K1 ve motor çalışır, bırakılınca durur.',
+    ['Sanal START düğmesine basıp motorun çalışmasını gözlemle.',
+     'Düğmeyi bırakınca motor durmalıdır.',
+     'STOP düğmesi basılıyken START komutunu dene.',
+     'START bağlantısı kopukken K1 bobininin enerjilenmediğini gör.'],
+    'SC819-MOMENTARY-MOTOR-JOG-NATIVE-V1');
+  }
+  const parts=[
+   c('g1','supply-3p','G1','Sanal üç faz + N + PE',50,315),
+   c('stop1','push-nc','S0','1. nokta STOP',245,70),
+   c('stop2','push-nc','S2','2. nokta STOP',445,70),
+   c('start1','push-no','S1','1. nokta START',685,70),
+   c('start2','push-no','S3','2. nokta START',685,280),
+   c('hold','contact-no','K1','K1 mühürleme',685,485),
+   c('coil','coil-contactor','K1','K1 kontaktör bobini',1010,140),
+   c('main','main-contact','K1','K1 ana güç kontakları',1000,415),
+   c('motor','motor-3p','M1','Sanal üç faz motor',1300,415)
+  ];
+  const graph=[
+   w('g1','L1','stop1','21'),w('stop1','22','stop2','21'),
+   w('stop2','22','start1','13'),w('start1','14','coil','A1'),
+   w('stop2','22','start2','13'),w('start2','14','coil','A1'),
+   w('stop2','22','hold','13'),w('hold','14','coil','A1'),
+   w('coil','A2','g1','N'),
+   w('g1','L1','main','1'),w('main','2','motor','U'),
+   w('g1','L2','main','3'),w('main','4','motor','V'),
+   w('g1','L3','main','5'),w('main','6','motor','W'),
+   w('g1','PE','motor','PE')
+  ];
+  put(822,'motor-direct-power-outline-076',parts,graph,
+   'İki STOP seri, iki START paralel; K1 mühürleme yalnız başlatma sonrasında devreyi tutar.',
+   ['Birinci START ile motoru çalıştırıp düğmeyi bırak.',
+    'İkinci STOP ile motoru durdur.',
+    'İkinci START ile yeniden başlatıp birinci STOP ile durdur.',
+    'İkinci START kablosunu koparınca o istasyondan başlatma engellenir.'],
+   'SC822-DUAL-STATION-MOTOR-CONTROL-NATIVE-V1');
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
