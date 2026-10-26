@@ -59,5 +59,117 @@ for(const lesson of L.lessons){
 }
 if(stats.sourceSpecificPreserved!==sourceSpecificSensorIds.size||stats.sourceSpecificPreserved!==11)
  throw Error('Source-specific sensor topic-review coverage changed: '+stats.sourceSpecificPreserved);
+
+/* SC469 / SC642: source-level physical repairs; not pedagogy-only acceptance. */
+const backfillClone=o=>JSON.parse(JSON.stringify(o));
+const physical469=L.lessons[468];
+if(physical469?.id==='digital-logic-apps-outline-016'&&physical469.kind==='quiz'&&
+ physical469.project?.components?.length===5&&physical469.project?.wires?.length===0&&
+ physical469.pedagogyReview?.titleTopologyIssue==='NO_COMMAND_TEST_CONTROL_WIRING'&&
+ physical469.pedagogyReview?.independentPedagogicalAcceptance!==true){
+ const p=physical469.project,get=id=>p.components.find(c=>c.id===id);
+ if([['pg0','arduino-bench-supply'],['pg1','push-no'],['pg2','push-nc'],
+     ['pg3','coil-relay'],['pg4','lamp-green']].every(([id,type])=>get(id)?.typeId===type)){
+  const prev=physical469.pedagogyReview.titleTopologyIssue;
+  for(const [id,ref] of [['pg0','G1'],['pg1','S1'],['pg2','S0'],['pg3','K1'],['pg4','H1']])get(id).ref=ref;
+  get('pg0').dcVoltage=24;
+  const add=(id,typeId,ref,label,x,y)=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+  p.components.push(add('hold','contact-no','K1','K1 yardımcı mühürleme NO',345,380));
+  p.components.push(add('load','contact-no','K1','K1 lamba yük NO',820,410));
+  const graph=[
+   ['pg0','P','pg2','21','24 V sanal kaynak STOP NC girişine gelir.'],
+   ['pg2','22','pg1','13','STOP sonrası START yolu hazırlanır.'],
+   ['pg2','22','hold','13','Mühürleme STOP üzerinden beslenir.'],
+   ['pg1','14','pg3','A1','START ilk K1 bobin enerjisini verir.'],
+   ['hold','14','pg3','A1','K1 yardımcı kontak START bırakıldığında bobini tutar.'],
+   ['pg3','A2','pg0','M','K1 bobini 0 V referansa döner.'],
+   ['pg0','P','load','13','K1 yük kontağı ayrı pozitif kaynağı alır.'],
+   ['load','14','pg4','X1','K1 yük kontağı çekince lamba beslenir.'],
+   ['pg4','X2','pg0','M','Lamba 0 V hattına döner.']
+  ];
+  p.wires=graph.map(([a,ap,b,bp,why],i)=>({
+    id:'sc469-repair-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:[5,8].includes(i)?'#111827':i===7?'#43a047':'#8b5a2b',
+    role:[5,8].includes(i)?'0V':i===7?'SIGNAL':'DC+',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+  }));
+  delete p.referenceOnly;p.tutorialLesson.phase='demo';p.tutorialLesson.step=0;
+  physical469.kind='wiring';
+  physical469.steps=p.wires.map(w=>({from:backfillClone(w.from),to:backfillClone(w.to),
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  physical469.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label,
+   why:c.id==='pg0'?'Yalnız sanal 24 V DC besleme sağlar.':
+    c.id==='pg1'?'İlk başlatma komutunu veren NO butondur.':
+    c.id==='pg2'?'STOP basılınca kumandayı kesen NC butondur.':
+    c.id==='pg3'?'Röle bobini aynı K1 referansındaki kontakları değiştirir.':
+    c.id==='pg4'?'Yük devresinin durumunu sanal lambayla gösterir.':
+    c.id==='hold'?'START bırakılınca bobini tutan K1 yardımcı NO kontağıdır.':
+    'K1 çektiğinde lambayı besleyen NO güç yolu kontağıdır.'}));
+  physical469.quiz={question:'START bırakıldığında lamba neden yanmaya devam eder?',
+    options:['K1 yardımcı NO kontağı bobini mühürler.','STOP kendiliğinden açılır.','K1 bobini artık enerji istemez.'],
+    answer:0,why:'START sadece ilk enerjiyi verir; K1 NO kontağı tutar. STOP veya kopuk hat ikisini de keser.'};
+  const review=physical469.pedagogyReview;
+  review.preRepairTitleTopologyIssue=prev;
+  review.titleTopologyIssue='WINDOWS_3D_PHYSICAL_ACCEPTANCE_PENDING';
+  review.titleTopologyStatus='REVIEW';
+  review.nativeDynamicAcceptance=true;review.physicalAcceptance=false;
+  review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+  review.componentIds=p.components.map(c=>c.typeId);
+  review.sc469PhysicalRepair='SC469-START-STOP-RELAY-NATIVE-V1';
+  if(physical469.topicReview){physical469.topicReview.simulationAcceptance=true;
+    physical469.topicReview.sourceCircuitPreserved=false}
+ }
+}
+const physical642=L.lessons[641];
+if(physical642?.id==='motor-direct-power-outline-031'&&physical642.kind==='wiring'&&
+ physical642.project?.wires?.length===13&&physical642.project?.components?.length===7&&
+ physical642.project.components.some(c=>c.id==='main'&&c.typeId==='main-contact')&&
+ physical642.pedagogyReview?.independentPedagogicalAcceptance!==true){
+ const p=physical642.project;
+ const make=(id,typeId,ref,label,x,y,extra={})=>({
+  id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra
+ });
+ p.components=[
+  make('g1','supply-3p','G1','Sanal üç faz + PE',80,180),
+  make('sw','packet-reversing-3p','S1','İleri / 0 / Geri paket şalteri',480,220,{position:0}),
+  make('motor','motor-3p','M1','Üç fazlı asenkron motor',860,280)
+ ];
+ const graph=[
+  ['g1','L1','sw','L1','L1 fazı paket şalter girişine gelir.'],
+  ['g1','L2','sw','L2','L2 fazı paket şalter girişine gelir.'],
+  ['g1','L3','sw','L3','L3 fazı paket şalter girişine gelir.'],
+  ['sw','U','motor','U','Seçilen U fazı motora gider.'],
+  ['sw','V','motor','V','Seçilen V fazı motora gider.'],
+  ['sw','W','motor','W','Seçilen W fazı motora gider.'],
+  ['g1','PE','motor','PE','Koruma iletkeni motor gövdesine bağlı kalır.']
+ ];
+ p.wires=graph.map(([a,ap,b,bp,why],i)=>({
+  id:'sc642-repair-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:i===6?'#16a34a':['#e53935','#f97316','#f4c430'][i%3],
+  role:i===6?'PE':['L1','L2','L3'][i%3],size:'2.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+ }));
+ delete p.referenceOnly;p.tutorialLesson.phase='demo';p.tutorialLesson.step=0;
+ physical642.steps=p.wires.map(w=>({from:backfillClone(w.from),to:backfillClone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ physical642.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label,
+  why:c.id==='sw'?'0 kapalı, 1 ileri, 2 geri; faz sırasını sanal modelde değiştirir.':
+  c.id==='motor'?'Faz sırasına göre ileri ve geri sanal dönüşü gözlemle.':
+  'Yalnız sanal üç faz + PE kaynağıdır.'}));
+ physical642.quiz={question:'İleri ve geri paket şalter konumları motoru nasıl ters çevirir?',
+  options:['İki fazın motora geliş sırasını değiştirir.','Koruma iletkenini keser.','Motor hızını rastgele artırır.'],
+  answer:0,why:'Sanal şalter 1 durumunda dönüş +1, 2 durumunda −1, 0 konumunda durma üretir.'};
+ const review=physical642.pedagogyReview;
+ review.preRepairTitleTopologyIssue='REVERSING_TITLE_HAS_ONE_FORWARD_CONTACTOR';
+ review.titleTopologyStatus='REVIEW';
+ review.titleTopologyIssue='WINDOWS_3D_PHYSICAL_ACCEPTANCE_PENDING';
+ review.nativeDynamicAcceptance=true;review.physicalAcceptance=false;
+ review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+ review.componentIds=p.components.map(c=>c.typeId);
+ review.sc642PacketRepairNative='SC642-PACKET-REVERSE-NATIVE-V1';
+ if(physical642.topicReview){physical642.topicReview.simulationAcceptance=true;
+  physical642.topicReview.sourceCircuitPreserved=false}
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
