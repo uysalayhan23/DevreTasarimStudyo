@@ -23,6 +23,34 @@
   const {branches,fixed,voltages,solveGraph,acNodes,dcNodes,pin,project}=context,[mode,range]=setting(c,d),red=pin(c,jack(c,d)),black=pin(c,'COM'),wired=p=>project.wires.some(w=>[w.from,w.to].some(e=>e.c===c.id&&e.p===p));
   let value=null,unit='',warning='',beep=false,display='—';
 
+
+  // SC770: detached ammeter/voltmeter tips must warn OL, not report 0.
+  if(project?.tutorialLesson?.id==='electronic-component-basics-outline-087'&&
+     project.sc770MeterGuard==='SC770-RESISTOR-REAL-UT33D-PROBE-TIPS-V1'&&
+     ['a1','v1'].includes(c.id)&&d.id==='unit-ut33d-plus'){
+   const part=id=>project.components.find(x=>x.id===id);
+   const link=(a,ap,b,bp)=>project.wires.some(w=>
+     (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+     (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+   const target=(id,cid,pin)=>part(id)?.probeTarget?.c===cid&&part(id)?.probeTarget?.p===pin;
+   const series=link('a1','V','a1-red','PLUG')&&
+     link('a1','COM','a1-black','PLUG')&&
+     link('a1-red','TIP','g1','P')&&link('a1-black','TIP','r1','1')&&
+     target('a1-red','g1','P')&&target('a1-black','r1','1');
+   const parallel=link('v1','V','v1-red','PLUG')&&
+     link('v1','COM','v1-black','PLUG')&&
+     link('v1-red','TIP','r1','1')&&link('v1-black','TIP','r1','2')&&
+     target('v1-red','r1','1')&&target('v1-black','r1','2');
+   const source=link('r1','2','g1','M')&&part('g1')?.sourceEnabled!==false;
+   if(!series||!parallel||!source||(c.id==='a1'?mode!=='DCA':mode!=='DCV')){
+     c._meter={display:'OL',unit:c.id==='a1'?'mA':'V',value:null,
+       warning:!series?'Seri akım probu çıkarılmış.':!parallel?
+       'Paralel voltmetre probu çıkarılmış.':!source?'12 V kaynak dönüşü eksik.':
+       'A1 DCA veya V1 DCV kademesi gerekli.',beep:false,mode,range};
+     return;
+   }
+  }
+
   // Only SC718: a detached TIP or missing supply/feedback is not a 0 V reading.
   if(project?.tutorialLesson?.id==='opamp-apps-outline-056'&&
     project.sc718MeasurementGuard==='SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1'&&
