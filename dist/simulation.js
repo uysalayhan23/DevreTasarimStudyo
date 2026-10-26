@@ -553,9 +553,51 @@
       inputV:vin,outputV};
   }
 
+
+  // SC793: strictly opt-in SANAL capacitor-run single-phase topology check.
+  // Not a phase angle, inrush, torque or measured RPM simulation.
+  function solveSc793CapacitorMotor(project,byId){
+    if(project?.tutorialLesson?.id!=='motor-direct-power-outline-049'||
+       project.sc793CapacitorModel!=='SC793-IDEAL-CAPACITOR-RUN-TOPOLOGY-V1')return null;
+    const parts=Object.fromEntries((project.components||[]).map(x=>[x.id,x])),
+      supply=parts.g,motor=parts.motor,cap=parts.cap,
+      componentOk=project.components.length===3&&
+       supply?.typeId==='supply-1p'&&motor?.typeId==='motor-1p'&&
+       motor.windingConnection==='external'&&cap?.typeId==='capacitor'&&
+       Number.isFinite(Number(cap.capacitance))&&
+       Number(cap.capacitance)>=0.000005&&Number(cap.capacitance)<=0.00008;
+    const links=[
+      ['g','L','motor','U'],['g','N','motor','N'],
+      ['g','PE','motor','PE'],['g','L','cap','1'],
+      ['cap','2','motor','Z1'],['motor','Z2','g','N']
+    ],ws=project.wires||[],
+    pair=(a,ap,b,bp)=>ws.some(w=>w.role!=='MECHANICAL'&&
+      !w.mechanical&&((w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+       (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap)));
+    const allConnected=componentOk&&ws.length===links.length&&
+      links.every(([a,ap,b,bp])=>pair(a,ap,b,bp));
+    for(const x of project.components){
+      x._active=false;x._powered=false;x._spin=0;
+      if(x.id==='motor'){delete x._motorRPM;x._sc793CapacitorRunValid=false;}
+    }
+    if(motor){motor._active=motor._powered=!!allConnected;
+      motor._spin=allConnected?1:0;
+      motor._sc793CapacitorRunValid=!!allConnected;
+      motor._sc793PhysicalPhaseShiftSolved=false;}
+    if(cap){cap._active=cap._powered=!!allConnected;}
+    return {blocked:false,stable:true,shortCircuit:false,oscillating:false,
+      nativeModel:'sc793-virtual-capacitor-wiring',
+      idealEducationalModel:true,physicalAcceptance:false,
+      phaseShiftSolved:false,torqueSolved:false,rotorRpmSolved:false,
+      auxiliaryWindingConnected:!!allConnected,
+      reason:allConnected?null:'sc793-open-or-invalid-capacitor-branch'};
+  }
+
   function solve(project,byId,options={}){
     const scopedSchmitt=solveSc712Schmitt(project,byId,options);
     if(scopedSchmitt)return scopedSchmitt;
+    const sc793=solveSc793CapacitorMotor(project,byId);
+    if(sc793)return sc793;
     const scopedMotor=solveSc127Motor(project,byId,options);
     if(scopedMotor)return scopedMotor;
     // BELL_TRANSFORMER_V1: refuse legacy mains-fed bell schematics.
