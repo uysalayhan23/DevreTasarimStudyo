@@ -2191,6 +2191,77 @@
  }
  })();
 
+
+ // SC805/806: real phase-monitor permit contacts, momentary START and K1 load.
+ // No sealing/restart claim; physical safety acceptance remains open.
+ (() => {
+ const make=(id,typeId,ref,label,x,y)=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+ function apply(sc,id,model,topic,mark){
+  const lesson=L.lessons[sc-1],p=lesson?.project,review=lesson?.pedagogyReview;
+  if(lesson?.id!==id||lesson.kind!=='wiring'||p?.components?.length!==7||
+     p?.wires?.length!==13||!p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     review?.independentPedagogicalAcceptance===true)return;
+  const parts=[
+    make('g','supply-3p','G1','G1 üç faz / N / PE',55,265),
+    make('monitor',model,'PR1',topic+' koruma rölesi',380,220),
+    make('start','push-no','S1','S1 anlık START butonu',630,65),
+    make('coil','coil-contactor','K1','K1 bobin',935,75),
+    make('main','main-contact','K1','K1 üç faz güç kontakları',790,405),
+    make('motor','motor-3p','M1','M1 asenkron motor',1200,440)
+  ];
+  const edges=[
+    ['g','L1','monitor','L1'],['g','L2','monitor','L2'],
+    ['g','L3','monitor','L3'],['g','N','monitor','N'],
+    ['g','L1','monitor','11'],['monitor','14','start','13'],
+    ['start','14','coil','A1'],['coil','A2','g','N'],
+    ['g','L1','main','1'],['main','2','motor','U'],
+    ['g','L2','main','3'],['main','4','motor','V'],
+    ['g','L3','main','5'],['main','6','motor','W'],
+    ['g','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=edges.map(([a,ap,b,bp],i)=>({id:'sc'+sc+'-phase-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',
+    role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal faz izleme rölesinin gerçek katalog terminali bağlantısı.'
+  }));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='monitor'?'L1/L2/L3/N izler, yalnız koşullar uygunsa 11–14 izin kontağı kapanır.':
+    c.id==='start'?'Anlık basıldığında, izin varsa K1 bobinini sürer; mühürleme yoktur.':
+    'Gerçek katalog terminaline bağlı sanal güç/kumanda elemanı.'}));
+  lesson.summary='PR1 '+topic+' koşullarını L1/L2/L3/N üzerinde izler. Röle 11–14 izin kontağı faz hatasında açılır ve K1 bobini ile motor durur. S1 anlık olduğu için bıraktığında motor durur; bu bir sanal izleme deneyidir, gerçek güvenlik yeniden başlatma sistemi değildir.';
+  lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:topic+' davranışını koruma rölesiyle görelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:['PR1 L1/L2/L3 ve N terminallerini, 11–14 izin kontağını bul.',
+      'S1 e basılı tutunca K1 çekmeli ve motor sanal olarak çalışmalı.',
+      'PR1 L3 izleme kablosunu ayır; faz eksik uyarısında K1 ve motor durmalı.',
+      'Faz sırası ters olursa PR1 izin vermemeli.',
+      'S1 i bırakıp fazları düzelt: motor durmuş kalır, ancak yeni S1 basışıyla çalışır.'],
+    observations:['Bu devre mühürlemeli otomatik yeniden başlatma veya fiziksel faz koruma cihazı kabulü değildir.',
+      'Gerçek Windows/3D kablo geometrisi ve bağımsız pedagojik kabul bekliyor.'],
+    repairModel:mark};
+  const r=review||(lesson.pedagogyReview={});
+  r.preRepairTitleTopologyIssue=r.titleTopologyIssue||null;
+  r.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+  r.titleTopologyStatus='REVIEW';r.componentIds=parts.map(c=>c.typeId);
+  r.realWiredCircuit=true;r.nativeDynamicAcceptance=false;
+  r.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_WITH_703_CATALOG_PASS';
+  r.physicalAcceptance=false;r.windowsVisualAcceptance=false;
+  r.independentPedagogicalAcceptance=false;r.scActualTopologyRepair=mark;
+ }
+ apply(805,'motor-direct-power-outline-060','motor-protection-relay',
+       'faz kaybı ve faz sırası','SC805-REAL-MOTOR-PHASE-MONITOR-NATIVE-V1');
+ apply(806,'motor-direct-power-outline-061','phase-sequence-relay',
+       'faz sırası','SC806-REAL-PHASE-SEQUENCE-MONITOR-NATIVE-V1');
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
