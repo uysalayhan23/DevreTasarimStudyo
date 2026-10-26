@@ -372,7 +372,36 @@
           seed(c,'−',domain,'0','dc',volts);
         }
       }
-      for(const c of project.components){const d=definition(byId,c);if(d?.digitalIc&&DigitalIC)DigitalIC.evaluate(c,d,{dcVoltage},now)}
+      // SC614–617 / SC628: the asynchronous 74HC393 samples the physical
+      // button edge, not intermediate floating voltages created while the
+      // network's fixed-point iterations are still settling. Unrelated ICs
+      // keep the original dcVoltage reader and timing behavior.
+      const sc393=new Set(['motor-direct-power-outline-022','motor-direct-power-outline-023',
+       'motor-direct-power-outline-024','motor-direct-power-outline-025','motor-direct-power-outline-026']);
+      const stable393Clock=(component,pin,ground)=>{
+       if(!sc393.has(project?.tutorialLesson?.id)||component?.id!=='count'||
+          String(pin)!=='1'||String(ground)!=='7')return null;
+       const by=x=>project.components.find(c=>c.id===x),
+        supply=by('ps'),button=by('clock'),pull=by('rclock'),
+        linked=(a,ap,b,bp)=>(project.wires||[]).some(w=>
+         w.role!=='MECHANICAL'&&!w.mechanical&&
+         ((w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+          (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap)));
+       const valid=component.typeId==='sn74hc393n'&&
+        supply?.typeId==='arduino-bench-supply'&&Number(supply.dcVoltage)===5&&
+        button?.typeId==='push-no'&&pull?.typeId==='resistor'&&
+        Number(pull.resistance)===10000&&
+        linked('ps','P','clock','13')&&linked('clock','14','count','1')&&
+        linked('clock','14','rclock','1')&&linked('rclock','2','ps','M');
+       return valid?(button.state?5:0):0;
+      };
+      for(const c of project.components){const d=definition(byId,c);if(!d?.digitalIc||!DigitalIC)continue;
+       const icVoltage=(x,a,b)=>{
+        const sampled=stable393Clock(x,a,b);
+        return sampled===null?dcVoltage(x,a,b):sampled;
+       };
+       DigitalIC.evaluate(c,d,{dcVoltage:icVoltage},now);
+      }
       for(const c of project.components){const d=definition(byId,c);if(d?.kind!=='electret-mic')continue;
         const db=Number(c.soundLevelDb??d.defaultSoundDb??60),sens=Number(d.sensitivityDbvPa??-44),pa=Math.pow(10,(db-94)/20),vrms=Math.pow(10,sens/20)*pa,phase=((now%10)/10)*Math.PI*2,v=vrms*Math.SQRT2*Math.sin(phase);
         seed(c,'+','mic:'+c.id,'+','dc',Math.max(0,Math.abs(v)));seed(c,'-','mic:'+c.id,'0','dc',Math.max(0,Math.abs(v)));c._microphoneVoltage=v;c._microphoneVrms=vrms;
