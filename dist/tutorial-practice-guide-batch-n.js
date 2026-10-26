@@ -1650,6 +1650,46 @@
  }
  }
 
+
+ // SC779: preserve working BD139 collector switching; finish physical probe tips.
+ {
+  const l=L.lessons[778],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id==='electronic-switching-outline-070'&&l.kind==='wiring'&&
+     p?.components?.length===8&&p.wires?.length===8&&
+     p.components.find(c=>c.id==='q1')?.typeId==='bd139-npn'&&
+     r?.independentPedagogicalAcceptance!==true){
+   for(const [a,ap,b,bp,why] of [
+    ['v1-red','TIP','q1','C','Kırmızı UNI-T TIP doğrudan BD139 kolektör ucundadır.'],
+    ['v1-black','TIP','g1','M','Siyah UNI-T TIP 0 V referansındadır.']]){
+    p.wires.push({id:'sc779-probe-'+p.wires.length,from:{c:a,p:ap},to:{c:b,p:bp},
+      color:'#43857f',role:'MEASURE',size:'1.5',points:[],
+      tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why});
+   }
+   p.sc779MeterGuard='SC779-BD139-REAL-COLLECTOR-PROBE-TIPS-V1';
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+     hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.summary='BD139 anahtar devresinde buton serbestken yaklaşık 24 V kolektör ölçülür, basıldığında kolektör 0 V civarına iner. Kırmızı UNI-T probu gerçek kolektör, siyah prob 0 V ucundadır. B/C/E terminallerini karıştırma. Bu sanal model Windows/3D ve fiziksel kabul yerine geçmez.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'BD139 kolektör gerilimini birlikte ölçelim',virtualOnly:true,
+    canonicalGraphUnchanged:false,physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['G1 sanal 24 V, 1 kΩ kolektör yükü ve BD139 B/C/E uçlarını bul.',
+     'Buton S1 bırakılmışken kolektör yaklaşık 24 V: transistor kesimdedir.',
+     'Butona bas: beyz direncinden sürülen BD139 iletime geçer, kolektör yaklaşık 0 V olur.',
+     'Kırmızı UNI-T TIP Q1/C, siyah TIP G1/M terminaline temas eder; DCV200 seç.',
+     'Kırmızı ölçüm ucunu ayırınca OL uyarısını gözlemle.'],
+    observations:['Kolektör gerilimi transistörün durumunu anlatır; bu doğruluk sertifikası değildir.',
+     'Gerçek Windows/3D terminal ve kalibre ölçüm kabulü bekler.'],
+    repairModel:'SC779-BD139-REAL-COLLECTOR-PROBE-TIPS-V1'};
+   const v=r||(l.pedagogyReview={});v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='WINDOWS_3D_AND_PHYSICAL_BD139_PROBE_ACCEPTANCE_PENDING';
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.sc779ProbeRepair='SC779-BD139-REAL-COLLECTOR-PROBE-TIPS-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
