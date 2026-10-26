@@ -78,6 +78,18 @@
  if(tx){tx._active=transmitting;tx._virtualIrCarrier=transmitting}
  return beam?0:1; // Active-low demodulator, fails closed.
 }
+ // SC709 PIR supply: a simulated sensor without 5 V and shared 0 V
+ // must not assert the Arduino's digital input. Other Arduino scenes
+ // preserve their existing library-model behavior.
+ if(r==='digital'&&d.id==='arduino-pir'&&p==='OUT'&&mode==='digital'&&
+    ctx?.project?.tutorialLesson?.id==='sensor-analog-apps-outline-059'){
+   const {g,b}=ctx;
+   const joined=(a,ap,z,zp)=>g.find(key(a,ap))===g.find(key(z,zp));
+   const powered=joined(c.id,'VCC',b.id,'5V')&&
+      joined(c.id,'GND',b.id,'GND');
+   c._sc709PirPowered=powered;
+   return powered&&!!c.state?1:0;
+ }
  if(r==='digital')return c.state?1:0;if(r==='ne555'&&p==='OUT')return c._ne555Out?1:0;if(r==='pot')return Math.round(clamp(c.potentiometer,0,100,50)*10.23);if(r==='analog'){
   // SC471 outline only: without the real 5 V and shared GND path, the sound
   // module must not drive Arduino D2 from a simulated training value.
