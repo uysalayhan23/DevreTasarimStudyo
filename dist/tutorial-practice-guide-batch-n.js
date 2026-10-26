@@ -716,6 +716,88 @@
   v.sc600601PhysicalRepair='SC600-601-TRUE-HALF-SUBTRACTOR-V1';
  }
 
+
+ // True SC602 full subtractor and SC603/SC605 74HC85 binary comparators.
+ const v121C=(id,typeId,label,x,y,more={})=>({id,typeId,label,ref:id.toUpperCase(),x,y,rotation:0,state:false,address:'',note:'',...more});
+ function v121Install(sc,id,parts,edges,name,summary,lessonSteps,key){
+  const l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id!==id||l.kind!=='wiring'||!p?.wires?.length||
+    !p.components.some(c=>c.typeId==='lm358p-dip8')||
+    r?.titleTopologyIssue!=='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH'||
+    r.independentPedagogicalAcceptance===true)return;
+  p.components=parts;
+  p.wires=edges.map(([a,ap,b,bp],i)=>({id:'sc'+sc+'-digital-v121-'+i,
+   from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+':'+ap+' → '+b+':'+bp,tutorialWhy:'Gerçek katalog terminaline bağlı sayısal devre hattı.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:'Sanal deneyde gerçek katalog terminali bulunan '+c.typeId+' elemanı.'}));
+  l.summary=summary+' Tam çözücü ve Windows/3D kabulü ayrıca bekliyor.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:name,
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,steps:lessonSteps,
+    observations:['Normal girişleri ve kopuk kablo durumlarını karşılaştır.','Windows/3D ve tam çözücü kabulü açık.'],
+    repairModel:key};
+  r.preRepairTitleTopologyIssue='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH';
+  r.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  r.titleTopologyStatus='REVIEW';r.componentIds=parts.map(c=>c.typeId);
+  r.realWiredCircuit=true;r.nativeDynamicAcceptance=false;r.physicalAcceptance=false;
+  r.windowsVisualAcceptance=false;r.independentPedagogicalAcceptance=false;
+  r.scLogicRepairedCircuit=key;
+ }
+ {
+  const C=v121C,p=[C('ps','arduino-bench-supply','5V kaynak',40,280,{dcVoltage:5})],w=[];
+  for(const [i,s] of ['a','b','bi'].entries()){
+   p.push(C(s,'push-no',s+' giriş biti',230,70+i*210),
+    C('r'+s,'resistor',s+' 10kΩ pull-down',415,120+i*210,{resistance:10000}));
+   w.push(['ps','P',s,'13'],[s,'14','r'+s,'1'],['r'+s,'2','ps','M']);
+  }
+  p.push(C('xor','sn74hc86n','U1 XOR×2',700,130),
+   C('inv','sn74hc04n','U2 NOT×2',700,360),
+   C('and','sn74hc08n','U3 AND×2',920,355),C('or','sn74hc32n','U4 OR',1110,430),
+   C('rd','arduino-resistor-220','DIFF 220Ω',1100,145),
+   C('rr','arduino-resistor-220','BOUT 220Ω',1240,455),
+   C('diff','arduino-led','DIFF',1300,155),C('borrow','arduino-led','BOUT',1450,465));
+  w.push(['a','14','xor','1'],['b','14','xor','2'],
+   ['xor','3','xor','4'],['bi','14','xor','5'],
+   ['a','14','inv','1'],['inv','2','and','1'],['b','14','and','2'],
+   ['xor','3','inv','3'],['inv','4','and','4'],['bi','14','and','5'],
+   ['and','3','or','1'],['and','6','or','2']);
+  for(const chip of ['xor','inv','and','or'])w.push(['ps','P',chip,'14'],['ps','M',chip,'7']);
+  w.push(['xor','6','rd','1'],['rd','2','diff','A'],['diff','K','ps','M'],
+   ['or','3','rr','1'],['rr','2','borrow','A'],['borrow','K','ps','M']);
+  v121Install(602,'opamp-apps-outline-051',p,w,'Üç girişli tam çıkarıcı',
+   'DIFF = A XOR B XOR BIN; BOUT = ((NOT A) AND B) OR (NOT(A XOR B) AND BIN).',
+   ['A, B, BIN bitlerini değiştir.','İki XOR ile farkı, NOT/AND/OR ile ödüncü izle.','000–111 durumlarını ve kopuk BIN hattını karşılaştır.'],
+   'SC602-FULL-SUBTRACTOR-WIRED-V121');
+ }
+ function v121Cmp(sc,id,bits){
+  const C=v121C,p=[C('ps','arduino-bench-supply','5V kaynak',35,285,{dcVoltage:5}),
+    C('cmp','cd74hc85e','CD74HC85E büyüklük karşılaştırıcı',770,200)],
+    w=[['ps','P','cmp','16'],['ps','M','cmp','8'],['ps','M','cmp','2'],
+       ['ps','P','cmp','3'],['ps','M','cmp','4']],
+    pa=['10','12','13','15'],pb=['9','11','14','1'];
+  for(let i=0;i<4;i++)for(const k of ['a','b']){
+   const pin=(k==='a'?pa:pb)[i];
+   if(i>=bits){w.push(['ps','M','cmp',pin]);continue}
+   const x=k+i,left=k==='a'?190:420;
+   p.push(C(x,'push-no',x.toUpperCase()+' giriş',left,55+i*150),
+    C('r'+x,'resistor',x+' 10kΩ pull-down',left+140,120+i*150,{resistance:10000}));
+   w.push(['ps','P',x,'13'],[x,'14','cmp',pin],[x,'14','r'+x,'1'],['r'+x,'2','ps','M']);
+  }
+  for(const [k,pin,i] of [['gt','5',0],['eq','6',1],['lt','7',2]]){
+   p.push(C('r'+k,'arduino-resistor-220',k+' 220Ω',1020,95+i*195),
+    C(k,'arduino-led',k.toUpperCase(),1230,95+i*195));
+   w.push(['cmp',pin,'r'+k,'1'],['r'+k,'2',k,'A'],[k,'K','ps','M']);
+  }
+  v121Install(sc,id,p,w,bits+' bit sayısal karşılaştırıcı',
+   'CD74HC85E ile A>B / A=B / A<B sonuçlarını '+bits+' bit üzerinden hesapla.',
+   ['A ve B sayısının bitlerini butonlarla ayarla.','GT/EQ/LT ışıklarını karşılaştır.','Eşitliği, büyük/küçük ve kopuk girişi dene.'],
+   'SC'+sc+'-CMP-'+bits+'BIT-WIRED-V121');
+ }
+ v121Cmp(603,'opamp-apps-outline-052',2);
+ v121Cmp(605,'opamp-apps-outline-054',4);
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
