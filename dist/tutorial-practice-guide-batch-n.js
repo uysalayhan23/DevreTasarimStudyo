@@ -455,6 +455,78 @@
   guide.heading='Bağlantıdan sonuca: sanal devre deneyi';
  }
 
+
+ // SC468, SC470, SC474: reconstruct the actual connected educational boards.
+ const scRepair468470474=[[468,'electronic-component-basics-outline-029',true,false],
+  [470,'electronic-component-basics-outline-030',true,true],
+  [474,'electronic-component-basics-outline-033',false,true]];
+ const mk=(id,typeId,label,x,y,extra={})=>({id,typeId,label,x,y,rotation:0,ref:id.toUpperCase(),state:false,address:'',note:'',...extra});
+ const ln=(a,b,why,i)=>{
+  const end=x=>{const k=x.lastIndexOf(':');return {c:x.slice(0,k),p:x.slice(k+1)}};
+  return{id:'sc-optical-audio-'+i,from:end(a),to:end(b),color:'#43857f',role:'SIGNAL',size:'1.5',points:[],tutorialHint:a+' → '+b,tutorialWhy:why};
+ };
+ for(const [sc,id,ir,relay] of scRepair468470474){
+  const l=L.lessons[sc-1],p=l?.project;
+  if(!l||l.id!==id||l.kind!=='quiz'||p?.wires?.length!==0||l.pedagogyReview?.independentPedagogicalAcceptance===true)continue;
+  const parts=[mk('ps','arduino-bench-supply','5 V sanal DC masa kaynağı',45,180,{dcVoltage:5}),
+   mk('board','arduino-uno','Arduino UNO D2/D9',700,120,
+    {arduinoSketch:ir?"void setup(){pinMode(2,INPUT);pinMode(9,OUTPUT);digitalWrite(9,LOW);} void loop(){digitalWrite(9,digitalRead(2)==LOW?HIGH:LOW);delay(10);}":"void setup(){pinMode(2,INPUT);pinMode(9,OUTPUT);digitalWrite(9,LOW);} void loop(){digitalWrite(9,digitalRead(2)==HIGH?HIGH:LOW);delay(10);}",arduinoProgramName:'SC'+sc+' alıcı → çıkış'})];
+  const wires=[],add=(a,b,t)=>wires.push([a,b,t]);
+  if(ir){
+   parts.push(mk('trigger','push-no','IR gönderme butonu',230,160),
+    mk('irres','arduino-resistor-220','220 Ω verici seri direnci',370,160),
+    mk('tx','arduino-ir-tx-38khz','940 nm 38 kHz sanal IR verici',500,160,{virtualCarrierHz:38000}),
+    mk('rx','arduino-ir-rx-38khz','38 kHz sanal IR alıcı',380,405,{irBeamPresent:true}));
+   add('ps:P','trigger:13','IR vericiye ilk kumanda');
+   add('trigger:14','irres:1','IR verici akım sınırı');
+   add('irres:2','tx:A','IR verici A ucu');
+   add('tx:K','ps:M','IR verici K dönüşü');
+   add('ps:P','rx:VCC','IR alıcı 5 V');
+   add('ps:M','rx:GND','IR alıcı ortak GND');
+   add('rx:OUT','board:D2','Aktif düşük alıcı OUT sinyali');
+  }else{
+   parts.push(mk('sound','arduino-sound-sensor','Mikrofonlu KY-037 ses sensörü',365,400,{arduinoValue:120}));
+   add('ps:P','sound:VCC','KY-037 5 V beslemesi');
+   add('ps:M','sound:GND','KY-037 0 V dönüşü');
+   add('sound:DO','board:D2','Ses eşiği Arduino D2');
+  }
+  add('ps:P','board:5V','UNO sanal 5 V');
+  add('ps:M','board:GND','UNO ortak 0 V');
+  if(relay){
+   parts.push(mk('relay','arduino-relay-1ch','5 V KY-019 röle modülü',985,175),
+    mk('lamp','lamp-green','Sanal yük lambası',1240,260));
+   add('board:D9','relay:SIG','D9 röle komutu');
+   add('ps:P','relay:VCC','Röle modülü 5 V beslemesi');
+   add('ps:M','relay:GND','Röle modülü 0 V');
+   add('ps:P','relay:COM','Yük için 5 V');
+   add('relay:NO','lamp:X1','Kontak kapanınca lamba beslenir');
+   add('lamp:X2','ps:M','Lamba 0 V dönüşü');
+  }else{
+   parts.push(mk('ledres','arduino-resistor-220','220 Ω gösterge direnci',960,160),
+    mk('led','arduino-led','Sanal IR alındı göstergesi',1145,255));
+   add('board:D9','ledres:1','D9 gösterge sürme');
+   add('ledres:2','led:A','Gösterge A ucu');
+   add('led:K','ps:M','Gösterge K dönüşü');
+  }
+  p.components=parts;p.wires=wires.map(([a,b,t],i)=>ln(a,b,t,sc+'-'+(i+1)));
+  delete p.referenceOnly;p.virtualOpticalAcousticModel=ir?'IDEALIZED_38KHZ_IR':'KY037_THRESHOLD_ONLY';
+  l.kind='wiring';
+  l.summary=ir?
+   '5 V IR verici/alıcı, Arduino D2/D9 ve gerçek bağlı sanal çıktı. IR taşıyıcı mesafesi ve fiziksel optik kalibrasyon kapsam dışıdır.':
+   'Mikrofonlu KY-037 ses eşiği Arduino D2/D9 ile KY-019 rölesini ve lambayı çalıştırır; gerçek ses kalibrasyonu yoktur.';
+  l.steps=p.wires.map(w=>({from:w.from,to:w.to,hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='ps'?'Sanal 5 V beslemedir.':c.id==='board'?'Algılanan dijital sinyali çıkışa dönüştürür.':'Gerçek katalog terminaliyle bağlı ders elemanıdır.'}));
+  l.practiceGuide={version:'sc-ir-audio-native-v1',heading:'SC'+sc+' gerçek kablolu sanal deney',
+   method:'virtual-circuit-check',steps:['Önce 5 V besleme ve ortak 0 V bağlantılarını bul.',
+    ir?'IR verici butonuna bas; alıcı OUT ve Arduino D2 değerini karşılaştır.':'KY-037 ses eşiğini değiştir; Arduino D2 girişini izle.',
+    'D9 çıktısı ile '+(relay?'röle kontağı ve lamba':'LED gösterge')+' durumunu karşılaştır.',
+    'Kablo veya beslemeyi kesince yükün söndüğünü kontrol et; fiziksel/3D kabul bekliyor.'],
+   observations:['Normal, tetiklenmiş ve kopuk hat koşullarını sanal ortamda karşılaştır.']};
+  Object.assign(l.pedagogyReview,{componentIds:parts.map(c=>c.typeId),titleTopologyStatus:'REVIEW',
+   titleTopologyIssue:ir?'OPTICAL_DISTANCE_CARRIER_AND_WINDOWS_3D_PENDING':'ACOUSTIC_CALIBRATION_AND_WINDOWS_3D_PENDING',
+   nativeDynamicAcceptance:true,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
+   realWiredCircuit:true,scOpticalAudioRepair:'SC'+sc+'-REAL-WIRED-NATIVE-V1'});
+ }
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
