@@ -3157,6 +3157,83 @@
   v.sc848RightLeftRelayRepair='MOTOR-OUTLINE-086-RIGHT-LEFT-RELAYS-V1';
  })();
 
+
+ // SC854 motor-direct-power-outline-089: two independent ON-delay motor directions.
+ // The fully cloned, pinned SC848 relay model is the validated source template.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-089'],p=l?.project,r=l?.pedagogyReview;
+  const reference=L.byId['motor-direct-power-outline-086'];
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true||
+     reference?.practiceGuide?.repairModel!=='MOTOR-OUTLINE-086-RIGHT-LEFT-RELAYS-V1')return;
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const components=clone(reference.project.components);
+  const timed=[
+    ['timerF','coil-delay-on','KT1','KT1 sanal sağ yönde 2 s gecikme',1100,240],
+    ['timerR','coil-delay-on','KT2','KT2 sanal sol yönde 2 s gecikme',1140,465],
+    ['timedF','contact-no','KT1','KT1 gecikmeli sağ NO',1300,240],
+    ['timedR','contact-no','KT2','KT2 gecikmeli sol NO',1300,470]
+  ];
+  components.push(...timed.map(([id,typeId,ref,label,x,y])=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',
+    ...(typeId==='coil-delay-on'?{delayValue:2,delayUnit:'sec'}:{})})));
+  const graph=reference.project.wires.filter(w=>!(
+     (w.from.c==='enableF'&&w.to.c==='klockR')||
+     (w.from.c==='enableR'&&w.to.c==='klockF')))
+    .map(w=>[w.from.c,w.from.p,w.to.c,w.to.p]);
+  graph.push(
+    ['enableF','14','timerF','A1'],['timerF','A2','g','N'],
+    ['g','L1','timedF','13'],['timedF','14','klockR','21'],
+    ['enableR','14','timerR','A1'],['timerR','A2','g','N'],
+    ['g','L1','timedR','13'],['timedR','14','klockF','21']);
+  p.components=components;
+  p.wires=graph.map(([x,xp,y,yp],i)=>({
+    id:'motor-outline-089-'+(i+1),from:{c:x,p:xp},to:{c:y,p:yp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:x+'/'+xp+' → '+y+'/'+yp,
+    tutorialWhy:'Sanal sağ-sol rölesi ve KT1/KT2 zamanlı kumanda yolu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=components.map(c=>({id:c.id,label:c.label,
+    why:c.typeId==='coil-delay-on'?'Seçilen yönde iki saniyelik sanal gecikmeyi sayar.':
+      ['timedF','timedR'].includes(c.id)?'Gecikme tamamlanmadan ilgili motor kontaktörüne izin vermez.':
+      c.typeId==='contact-nc'?'Karşıt yön çalışırken bu sanal kumanda kolunu kilitler.':
+      'Katalog ucu üzerinden takip edilen sanal eğitim parçası.'}));
+  l.summary='İki yardımcı yön rölesine KT1 ve KT2 zaman rölelerini ekleyelim. START verildiğinde seçilen yönün kontaktörü hemen çekmez; 2 saniye sonunda sanal motor çalışır. Diğer yönün komutu karşılıklı NC kilidinde tutulur. Yön değiştirmeden önce STOP ve ardından yeni START gerekir. Gerçek motorun dönme ataleti ve güvenli duruş süresi modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Motor neden önce bekleyip sonra seçilen yönde çalışıyor?',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal sağ yönü seçip START ver. KA1 hemen etkinleşirken K1 in henüz çekmediğini gözlemle.',
+      'Bir saniye sonra motor hâlâ kapalı olmalı; iki saniye bitince KT1 sağ kontağı izin verir.',
+      'START ı bırak: mühürleme sayesinde seçili yön çalışmayı sürdürür.',
+      'Çalışırken ters yön komutunu dene; karşı NC kilit izin vermemeli.',
+      'STOP ile durdur, sol yönü seçip yeni START ver. KT2 bu kez ayrı iki saniye sayar.',
+      'Sanal zaman kontaklarından birini veya motorun bir fazını kopararak sonucu karşılaştır.'
+    ],
+    observations:[
+      'Özgün Simulation.solve ve 703 bileşenli katalogda 30 pozitif/negatif sanal kontrol PASS.',
+      'Bu süre motorun fiziksel olarak durduğu anlamına gelmez; donanımda dönüş değiştirme güvenliği ve üretici kabulü açık.',
+      'Windows/3D terminal-kablo hizası ile bağımsız pedagojik kabul REVIEW durumunda.'
+    ],repairModel:'MOTOR-OUTLINE-089-TIMED-FORWARD-REVERSE-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_MOTOR_TRANSITION_TIMING_MECHANICAL_INTERLOCK_WINDOWS_3D_AND_PEDAGOGY_PENDING';
+  v.componentIds=components.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_30_TARGETED_CHECKS_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc854TimedDirectionRepair='MOTOR-OUTLINE-089-TIMED-FORWARD-REVERSE-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
