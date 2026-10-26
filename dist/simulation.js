@@ -539,7 +539,9 @@
     q1._sc712LastNow=Number.isFinite(options.now)?options.now:0;
     const outputV=high?4.8:.2;
     q1._bjtOn=high;q2._bjtOn=!high;
-    q1._active=q1._powered=q2._active=q2._powered=true;
+    // _active tracks actual transistor conduction; _powered tracks supply.
+    q1._active=high;q2._active=!high;
+    q1._powered=q2._powered=true;
     q1._sc712Powered=q2._sc712Powered=true;
     q2._sc712OutputV=outputV;q2._sc712InputV=vin;
     v1._meter={mode:'DCV',range:20,display:outputV.toFixed(2),value:outputV,
