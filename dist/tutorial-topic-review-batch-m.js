@@ -420,5 +420,63 @@ if(sc440?.id==='electronic-component-basics-outline-024'&&
  }
 }
 
+
+// SC424–425: real probe-to-triac terminal links and a bounded, unpowered
+// virtual continuity/diode study. Neither reading certifies a physical TRIAC.
+for(const [sc,oldIssue,redPin,blackPin,position,tag] of [
+ [424,'NO_TRIAC_MULTIMETER_HEALTH_MEASUREMENT','MT1','MT2',14,'SC424-TRIAC-UNPOWERED-AVO-V1'],
+ [425,'NO_TRIAC_MULTIMETER_PIN_IDENTIFICATION','G','MT1',13,'SC425-TRIAC-UNPOWERED-PINS-V1']
+]){
+ const l=L.lessons[sc-1],p=l?.project;
+ if(l?.id!=='electronic-switching-outline-'+String(sc-372).padStart(3,'0')||
+    l.kind!=='quiz'||p?.wires?.length!==0||p.components?.length!==2||
+    p.components[0].typeId!=='bta16-600b-triac'||
+    p.components[1].typeId!=='unit-ut33d-plus'||
+    l.pedagogyReview?.titleTopologyIssue!==oldIssue||
+    l.pedagogyReview?.independentPedagogicalAcceptance===true)continue;
+ const meter=p.components[1];meter.meterPosition=position;
+ const red={id:'pg1-red',typeId:'test-probe-red',x:170,y:340,rotation:0,ref:'PRX2',
+  label:'Kırmızı sanal AVOmetre ölçüm probu',probeTarget:{c:'pg0',p:redPin}};
+ const black={id:'pg1-black',typeId:'test-probe-black',x:470,y:340,rotation:0,ref:'PBX2',
+  label:'Siyah sanal AVOmetre ölçüm probu',probeTarget:{c:'pg0',p:blackPin}};
+ p.components.push(red,black);
+ p.virtualTriacAvo=tag;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo'};
+ for(const [id,a,ap,b,bp,why] of [
+  ['sc42-avo-red-plug','pg1','V','pg1-red','PLUG','Kırmızı probu VΩ yuvasına tak.'],
+  ['sc42-avo-black-plug','pg1','COM','pg1-black','PLUG','Siyah probu COM yuvasına tak.'],
+  ['sc42-avo-red-tip','pg1-red','TIP','pg0',redPin,'Kırmızı prob '+redPin+' terminaline temas eder.'],
+  ['sc42-avo-black-tip','pg1-black','TIP','pg0',blackPin,'Siyah prob '+blackPin+' terminaline temas eder.']
+ ]){
+  p.wires.push({id,from:{c:a,p:ap},to:{c:b,p:bp},
+   color:id.includes('red')?'#dc2626':'#111827',role:'MEASUREMENT',size:'0.75',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why});
+ }
+ l.kind='wiring';
+ l.steps=p.wires.map(w=>({from:JSON.parse(JSON.stringify(w.from)),to:JSON.parse(JSON.stringify(w.to)),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label,
+  why:c.id==='pg0'?'BTA16-600B gerçek katalog MT1/MT2/G terminal kimlikleri.':
+      c.id==='pg1'?'Enerjisiz sanal direnç/diyot ölçüm kademesi.':
+      'Sanal ölçüm cihazından eleman terminaline fiziksel temas bağlantısı.'}));
+ l.quiz=sc===424?
+  {question:'Enerjisiz sanal MT1–MT2 ölçümünde OL görülmesi tek başına neyi kanıtlamaz?',
+   options:['Triyakın bütün çalışma koşullarında sağlam olduğunu.','MT1 ile MT2 arasında bu ölçümde düşük direnç bulunmadığını.','Prob uçlarının kabloyla bağlı olduğunu.'],
+   answer:0,why:'Bu sanal test yalnız belirgin MT1–MT2 kısa devresini ayırt eder; kapı tetiklemesi ayrıca sınanmalıdır.'}:
+  {question:'BTA16-600B ön görünüşünde üretici pin sırası hangi işlevlerdir?',
+   options:['MT1 – MT2 – G','G – MT2 – MT1','MT1 – G – MT2'],
+   answer:0,why:'Üretici katalog pin sırası kullanılır. Sanal diyot kademesi G–MT1 temasını öğretir; gerçek 3D geometrisi ayrıca bekler.'};
+ l.pedagogyReview.preRepairTitleTopologyIssue=oldIssue;
+ l.pedagogyReview.titleTopologyIssue=sc===424?'SC424_VIRTUAL_SHORT_SCREEN_ONLY_WINDOWS_3D_PENDING':
+  'SC425_VIRTUAL_GATE_PIN_MODEL_WINDOWS_3D_PENDING';
+ l.pedagogyReview.titleTopologyStatus='REVIEW';
+ l.pedagogyReview.nativeDynamicAcceptance=true;
+ l.pedagogyReview.physicalAcceptance=false;
+ l.pedagogyReview.windowsVisualAcceptance=false;
+ l.pedagogyReview.independentPedagogicalAcceptance=false;
+ l.pedagogyReview.manufacturerGeometryAccepted=false;
+ l.pedagogyReview.componentIds=p.components.map(c=>c.typeId);
+ l.pedagogyReview.virtualTriacAvo=tag;
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
