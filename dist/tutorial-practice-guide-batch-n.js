@@ -654,6 +654,68 @@
   v.sc599604PhysicalRepair='SC599-604-TRUE-FULL-ADDER-V1';
  }
 
+
+ // SC600/601: replace analog LM358 with the real half-subtractor gates.
+ for(const [sc,id] of [[600,'opamp-apps-outline-049'],[601,'opamp-apps-outline-050']]){
+  const l=L.lessons[sc-1],p=l?.project,v=l?.pedagogyReview;
+  if(l?.id!==id||l.kind!=='wiring'||!p?.wires?.length||
+   !p.components.some(x=>x.typeId==='lm358p-dip8')||
+   v?.titleTopologyIssue!=='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH'||
+   v.independentPedagogicalAcceptance===true)continue;
+  const C=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const cs=[C('ps','arduino-bench-supply','Sanal 5 V DC besleme',30,255,{dcVoltage:5}),
+   C('a','push-no','A / eksilen biti',255,100),C('b','push-no','B / çıkan biti',255,415),
+   C('ra','resistor','A 10 kΩ pull-down',445,170,{resistance:10000}),
+   C('rb','resistor','B 10 kΩ pull-down',445,480,{resistance:10000}),
+   C('xor','sn74hc86n','74HC86 XOR · DIFF',705,115),
+   C('inv','sn74hc04n','74HC04 NOT · A tersleme',705,350),
+   C('and','sn74hc08n','74HC08 AND · BORROW',925,450),
+   C('rd','arduino-resistor-220','DIFF LED 220 Ω',955,145),
+   C('rr','arduino-resistor-220','BORROW LED 220 Ω',1115,465),
+   C('diff','arduino-led','DIFF / Fark',1190,150),
+   C('borrow','arduino-led','BORROW / Ödünç',1330,475)];
+  const links=[['ps','P','a','13'],['ps','P','b','13'],
+   ['a','14','xor','1'],['b','14','xor','2'],
+   ['a','14','inv','1'],['inv','2','and','1'],['b','14','and','2'],
+   ['a','14','ra','1'],['ra','2','ps','M'],
+   ['b','14','rb','1'],['rb','2','ps','M'],
+   ['ps','P','xor','14'],['ps','M','xor','7'],
+   ['ps','P','inv','14'],['ps','M','inv','7'],
+   ['ps','P','and','14'],['ps','M','and','7'],
+   ['xor','3','rd','1'],['rd','2','diff','A'],['diff','K','ps','M'],
+   ['and','3','rr','1'],['rr','2','borrow','A'],['borrow','K','ps','M']];
+  p.components=cs;p.wires=links.map(([a,ap,b,bp],i)=>({
+   id:'sc'+sc+'-subtractor-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Yarım çıkarıcının 74HC lojik bacağıyla bağlı sanal hattı.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=cs.map(x=>({id:x.id,label:x.label,
+   why:x.id==='xor'?'DIFF = A XOR B.':
+   x.id==='inv'?'A bitinin mantıksal tersini üretir.':
+   x.id==='and'?'BORROW = NOT A AND B.':
+   'Gerçek katalog pinleriyle kablolanmış sanal deney elemanı.'}));
+  l.summary='A bitinden B bitini çıkaralım. XOR farkı, NOT A ile B nin AND işlemi ödüncü gösterir. Tam çözücü ve Windows/3D kabulü bekliyor.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'İki bit çıkarınca ne zaman ödünç gerekir?',virtualOnly:true,
+   canonicalGraphUnchanged:false,physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['İki butonla A ve B bitlerini seç.','XOR kapısının fark ışığını izle.',
+    'A tersleme (NOT) ve AND kapısının ödünç ışığını karşılaştır.',
+    '01 durumunda BORROW yanar; ödünç kolunu kesince sonuç değişir.'],
+   observations:['00 → DIFF 0/BORROW 0; 01 → 1/1; 10 → 1/0; 11 → 0/0.',
+    'Tam çözücü ve gerçek Windows/3D kabulü yapılmadı.'],
+   repairModel:'SC600-601-XOR-NOT-AND-HALF-SUBTRACTOR'};
+  v.preRepairTitleTopologyIssue='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH';
+  v.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  v.titleTopologyStatus='REVIEW';v.componentIds=cs.map(x=>x.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.sc600601PhysicalRepair='SC600-601-TRUE-HALF-SUBTRACTOR-V1';
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
