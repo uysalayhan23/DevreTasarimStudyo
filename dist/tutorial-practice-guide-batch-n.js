@@ -1490,6 +1490,79 @@
   }
  }
 
+
+ // SC712: two genuine BD139 pin-connected common-emitter Schmitt stages.
+ {
+ const sc=712,lesson=L.lessons[sc-1],p=lesson?.project;
+ if(lesson?.id==='electronic-switching-outline-062'&&lesson.kind==='wiring'&&
+ p?.components?.filter(c=>c.typeId==='bd139-npn').length===1&&
+ p.wires?.length===8&&lesson.pedagogyReview?.independentPedagogicalAcceptance!==true){
+  const item=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,
+   x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   item('g1','arduino-bench-supply','G1 · 5 V sanal DC',35,290,{dcVoltage:5}),
+   item('rv','potentiometer','RV1 · Vin 0–5 V',250,80,{potMax:10000,potentiometer:0}),
+   item('rin','resistor','RIN · 10 kΩ',470,95,{resistance:10000}),
+   item('q1','bd139-npn','Q1 · giriş transistörü',735,160),
+   item('q2','bd139-npn','Q2 · çıkış transistörü',1035,410),
+   item('rc1','resistor','RC1 · 2.2 kΩ',660,50,{resistance:2200}),
+   item('rc2','resistor','RC2 · 2.2 kΩ',1050,260,{resistance:2200}),
+   item('re','resistor','RE · 330 Ω ortak emiter',860,580,{resistance:330}),
+   item('rfb','resistor','RFB · 4.7 kΩ pozitif geri besleme',850,280,{resistance:4700}),
+   item('rpd','resistor','RPD · 10 kΩ ikinci baz dönüşü',1190,540,{resistance:10000}),
+   item('v1','unit-ut33d-plus','V1 · sanal DCV 20 V',1310,60,{meterPosition:3}),
+   item('v1-red','test-probe-red','V1 kırmızı ölçüm probu',1350,245),
+   item('v1-black','test-probe-black','V1 siyah COM probu',1350,650)
+  ];
+  const edges=[
+   ['g1','P','rv','1'],['rv','3','g1','M'],
+   ['rv','2','rin','1'],['rin','2','q1','B'],
+   ['g1','P','rc1','1'],['rc1','2','q1','C'],
+   ['g1','P','rc2','1'],['rc2','2','q2','C'],
+   ['q1','E','q2','E'],['q1','E','re','1'],['re','2','g1','M'],
+   ['q1','C','rfb','1'],['rfb','2','q2','B'],
+   ['q2','B','rpd','1'],['rpd','2','g1','M'],
+   ['v1','V','v1-red','PLUG'],['v1','COM','v1-black','PLUG'],
+   ['v1-red','TIP','q2','C'],['v1-black','TIP','g1','M']
+  ];
+  p.components=parts;
+  p.wires=edges.map(([a,ap,b,bp],i)=>({
+   id:'sc712-two-bd139-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'İki BD139 ve ortak emiter/geri besleme ağının gerçek katalog terminali.'}));
+  p.sc712SchmittModel='SC712-TWO-BD139-SCHMITT-HYSTERESIS-V1';
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='rfb'?
+    'Kolektör geri beslemesi ve ortak emiter direnci Schmitt hafızasını oluşturur.':
+    c.id==='rv'?'Girişi yavaşça artırıp azaltmak için 0–5 V ayar.':
+    c.typeId==='bd139-npn'?'Gerçek BD139 B/C/E pinlerini kullanır.':
+    'Sanal 5 V devresinin katalog terminaliyle bağlı elemanı.'}));
+  lesson.summary='Girişi artırırken ve azaltırken aynı 2,5 V noktasında farklı çıkış durumunu izle. İki BD139, ortak emiter direnci ve geri besleme gerçek kabloludur. Eşikler ideal eğitim yaklaşımıdır; donanım/SPICE kalibrasyonu ve Windows/3D kabulü bekler.';
+  lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:'Schmitt devresinde iki ayrı eşiği keşfet',
+   virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+   pedagogicalAcceptance:false,fullyRich:false,
+   steps:['5 V ile iki BD139 kolektör direncini ve ortak emiter RE hattını besle.',
+    'RV1 değerini %0 → %50 → %80 → %50 → %0 olarak sırayla ayarla.',
+    '2,5 V noktasındaki çıkışın giriş geçmişine göre neden değiştiğini izle.',
+    'RFB kablosunu çıkarınca modelin histerezis kabulünü reddettiğini gözlemle.'],
+   observations:['Sanal eşikler yukarıda 3,2 V, aşağıda 1,8 V; üretici datasheet eşiği değildir.',
+    'Gerçek multimetre ölçüm kalibrasyonu ve 3D terminal hizası ayrıca kabul edilir.'],
+   repairModel:'SC712-TWO-BD139-SCHMITT-HYSTERESIS-V1'};
+  const v=lesson.pedagogyReview||(lesson.pedagogyReview={});
+  v.preRepairIssue='SINGLE_BD139_BUTTON_SWITCH_HAS_NO_HYSTERESIS';
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='WINDOWS_3D_AND_PHYSICAL_BJT_HYSTERESIS_ACCEPTANCE_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.sc712SchmittRepair='SC712-TWO-BD139-SCHMITT-HYSTERESIS-V1';
+ }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
