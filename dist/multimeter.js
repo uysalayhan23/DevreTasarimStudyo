@@ -24,6 +24,47 @@
   let value=null,unit='',warning='',beep=false,display='—';
   if(mode==='OFF'){c._meter={display:'',warning:'',beep:false};return}
 
+  // SC424–425: strictly scoped unpowered TRIAC model, only after real probe
+  // wiring validation. A diode/ohm reading is not a physical health certificate.
+  if(['electronic-switching-outline-052','electronic-switching-outline-053'].includes(project?.tutorialLesson?.id)&&
+     ['SC424-TRIAC-UNPOWERED-AVO-V1','SC425-TRIAC-UNPOWERED-PINS-V1'].includes(project.virtualTriacAvo)&&
+     c.id==='pg1'&&d.id==='unit-ut33d-plus'){
+    const isHealth=project.virtualTriacAvo==='SC424-TRIAC-UNPOWERED-AVO-V1';
+    const rp=isHealth?'MT1':'G',bp=isHealth?'MT2':'MT1',needed=isHealth?'Ω':'diode';
+    const part=project.components.find(x=>x.id==='pg0'&&x.typeId==='bta16-600b-triac');
+    const redProbe=project.components.find(x=>x.id==='pg1-red'&&x.typeId==='test-probe-red');
+    const blackProbe=project.components.find(x=>x.id==='pg1-black'&&x.typeId==='test-probe-black');
+    const linked=(a,ap,b,bp)=>project.wires.some(w=>
+     (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+     (w.to?.c===a&&w.to?.p===ap&&w.from?.c===b&&w.from?.p===bp));
+    const touched=!!part&&!!redProbe&&!!blackProbe&&
+      linked('pg1','V','pg1-red','PLUG')&&linked('pg1','COM','pg1-black','PLUG')&&
+      linked('pg1-red','TIP','pg0',rp)&&linked('pg1-black','TIP','pg0',bp)&&
+      redProbe.probeTarget?.c==='pg0'&&redProbe.probeTarget?.p===rp&&
+      blackProbe.probeTarget?.c==='pg0'&&blackProbe.probeTarget?.p===bp;
+    if(!touched||mode!==needed){
+      c._meter={display:'OL',unit:isHealth?'Ω':'V',value:null,
+        warning:!touched?'Ölçüm uçları sanal triyak MT1/MT2/G terminallerine bağlı değil.':
+        'Sanal ölçüm için uygun enerjisiz '+(isHealth?'Ω':'diyot')+' kademesini seçin.',
+        beep:false,mode,range};return;
+    }
+    const fault=String(part.virtualFault||'normal');
+    if(fault==='open'||fault==='open-gate'){
+      c._meter={display:'OL',unit:isHealth?'Ω':'V',value:null,
+       warning:isHealth?'Bu ölçüm tek başına açık arızayı ayırt edemez.':'Sanal kapı bileşkesinde iletim yok.',
+       beep:false,mode,range};return;
+    }
+    const resistance=isHealth?(fault==='mt-shorted'?1.5:Infinity):null;
+    const value=isHealth?resistance:(fault==='gate-shorted'?0:.72);
+    const formatted=format(value,mode,range,c.meterContinuity);
+    c._meter={display:formatted.display,unit:formatted.unit,value,
+      warning:isHealth&&formatted.display==='OL'?
+       'MT1–MT2 kapalı konumda OL: kısa devre görülmedi; çalışır durum kanıtı değildir.':'',
+      beep:false,mode,range};
+    return;
+  }
+
+
   // SC440: targeted unpowered UT33D+ resistance reading across the actual
   // NTC probe TIP contacts, not a fake reading from detached probe graphics.
   if(project?.tutorialLesson?.id==='electronic-component-basics-outline-024'&&
