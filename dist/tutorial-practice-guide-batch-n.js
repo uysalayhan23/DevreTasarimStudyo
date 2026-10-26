@@ -3234,6 +3234,107 @@
   v.sc854TimedDirectionRepair='MOTOR-OUTLINE-089-TIMED-FORWARD-REVERSE-V1';
  })();
 
+
+ // SC865 motor-start-speed-outline-020: preserve the real star/delta packet graph,
+ // replace generic comparisons with this circuit's observable virtual lesson.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-020'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+     !p.components.some(c=>c.id==='sw'&&c.typeId==='packet-star-delta')||
+     !p.components.some(c=>c.id==='motor'&&c.typeId==='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  l.summary='Bu sanal örnekte üç konumlu yıldız–üçgen paket şalterinin 0, Y ve Δ durumlarını karşılaştır. Motorun altı terminali üzerinden yıldız köprülerinin ve üçgen bağlantısının farkını gör. Simülasyon elektriksel sürekliliği gösterir; kalkış akımı, moment, yük altında geçiş veya mekanik güvenlik ölçümü değildir.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Önce yıldız, sonra üçgen: sanal şalterde neler değişir?',
+    virtualOnly:true,canonicalGraphUnchanged:true,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:['Şalter 0 konumunda olsun: sanal motor etkin değil.',
+      'Şalteri Y konumuna getir; motor bağlantısının yıldız olduğunu simülasyonda gör.',
+      'Sanal şalteri önce 0 konumuna döndür, ardından Δ konumunda üçgen bağlantısını karşılaştır.',
+      'Bir sanal faz hattını ayırarak Y ve Δ konumlarında motorun etkinleşmediğini gözlemle.',
+      'Altı motor terminali ile şalter uçlarını adım adım eşleştir; gerçek motor kalkış akımı veya torku ölçtüğünü varsayma.'],
+    observations:['Özgün 703 bileşenli katalogda 0/Y/Δ konumları ve pozitif/negatif bağlantı senaryoları Simulation.solve ile doğrulandı.',
+      'Bu ders otomatik yıldız–üçgen rölesi veya soft starter devresi değildir.',
+      'Gerçek motor geçiş süresi, koruma ve Windows/3D terminal-kablo kabulü açıktır.'],
+    repairModel:'MOTOR-START-SPEED-020-STAR-DELTA-PACKET-TEACHING-V1'};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint||w.from.c+'/'+w.from.p+' → '+w.to.c+'/'+w.to.p,
+    why:w.tutorialWhy||'Bu hattı yalnız sanal motor ve paket şalter terminalinde izle.',
+    color:w.color||'#43857f',role:w.role||'SIGNAL',size:w.size||'1.5'}));
+  l.materials=p.components.map(c=>({id:c.id,label:c.label,
+    why:c.id==='sw'?'0, yıldız ve üçgen için üç konumlu sanal anahtar.':
+      c.id==='motor'?'Altı sargı ucunu Y ve Δ konumlarında karşılaştır.':
+      'Sanal üç faz kaynağının terminal kimliğini takip et.'}));
+  const v=r||(l.pedagogyReview={});
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='CURRENT_TORQUE_MECHANICAL_TRANSITION_WINDOWS_3D_AND_PEDAGOGY_PENDING';
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc865TeachingRepair='MOTOR-START-SPEED-020-STAR-DELTA-PACKET-TEACHING-V1';
+ })();
+
+ // SC868 motor-start-speed-outline-023: replace incorrect star/delta
+ // selector/motor with real catalog softstarter + three-phase motor terminals.
+ // Model covers conduction only, not soft-start current/torque ramp.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-023'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+     !p.components.some(c=>c.id==='sw'&&c.typeId==='packet-star-delta')||
+     !p.components.some(c=>c.id==='motor'&&c.typeId==='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+    C('g','supply-3p','G1','Sanal üç faz ve PE',70,245),
+    C('ss','softstarter','SS1','Sanal üç faz yumuşak yol verici',475,250),
+    C('motor','motor-3p','M1','M1 sanal üç fazlı motor',905,260,{motorConnection:'star'})
+  ];
+  const graph=[
+    ['g','L1','ss','L1'],['g','L2','ss','L2'],['g','L3','ss','L3'],
+    ['ss','T1','motor','U'],['ss','T2','motor','V'],['ss','T3','motor','W'],
+    ['g','PE','motor','PE']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'motor-softstarter-023-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Üç fazın güç yolu; bu modelde akım veya moment rampası ölçülmez.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='ss'?'Üç faz girişini üç çıkışa bağlayan sanal soft starter; rampa modeli yok.':
+      c.id==='motor'?'Sanal motorun U/V/W besleme uçları.':'Sanal faz kaynağı.'}));
+  l.summary='Bu devrede yıldız–üçgen paket şalteri değil soft starter bulunur. Sanal besleme, SS1 üzerinden M1 motoruna ulaşır. Faz ya da çıkış hattını kesince motor etkinliği kaybolur. Yazılımın bu modeli gerçek akım/gerilim rampası, tork sınırı veya kalkış süresi çözmez; gerçek soft start kabulü bekliyor.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Soft starter devresinde sanal güç yolunu izle',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['Sanal SS1 bileşeninin girişleri ile üç motor çıkışını ayrı ayrı incele.',
+      'Tüm sanal faz yolları bağlıyken motorun etkinliğini kontrol et.',
+      'Bir giriş fazını kaldırıp motorun çalışmadığını gözlemle.',
+      'Bir sanal motor çıkışı ayrıldığında motorun üç faz koşulunu kaybettiğini gör.',
+      'Yumuşak kalkış akımı veya tork eğrisinin ölçülmediğini not et; bu yalnız bağlantı deneyi.'],
+    observations:['703 bileşenli gerçek katalog ve özgün Simulation.solve ile güç yolu ve faz kopuklukları sınandı.',
+      'Soft starter için rampa/koruma davranışı gerçek native modelde doğrulanmadı, açık REVIEW.',
+      'Gerçek donanım/Windows/3D fiziksel kabulü yapılmadı.'],
+    repairModel:'MOTOR-START-SPEED-023-SOFTSTARTER-TERMINALS-BOUNDED-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='SOFTSTARTER_CURRENT_TORQUE_RAMP_AND_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_CONDUCTION_ONLY_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc868BoundedTerminalRepair='MOTOR-START-SPEED-023-SOFTSTARTER-TERMINALS-BOUNDED-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
