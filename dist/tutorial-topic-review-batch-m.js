@@ -229,5 +229,65 @@ if(repaired644?.id==='motor-special-outline-009'&&repaired644.kind==='wiring'&&
   repaired644.topicReview.sourceCircuitPreserved=false}
 }
 
+
+/* SC648: replace misleading contactor-only graph with independently actuated
+   auxiliary relay/lamp and power contactor/motor, native verified. */
+const sc648=L.lessons[647];
+if(sc648?.id==='motor-direct-power-outline-034'&&sc648.kind==='wiring'&&
+ sc648.project?.wires?.length===13&&sc648.project?.components?.length===7&&
+ sc648.project.components.some(c=>c.id==='motor'&&c.typeId==='motor-3p')&&
+ sc648.pedagogyReview?.independentPedagogicalAcceptance!==true){
+ const p=sc648.project,parts=[["g1","supply-3p","G1","Sanal üç faz + N + PE",80,190],["stopR","push-nc","SR","Röle STOP NC",270,65],["startR","push-no","S1","Röle START NO",440,65],["coilR","coil-relay","K2","Yardımcı röle bobini",650,65],["holdR","contact-no","K2","Röle mühürleme NO",440,220],["loadR","contact-no","K2","Röle lamba kontağı",650,215],["lamp","lamp-green","H1","K2 kontrol lambası",870,215],["stopK","push-nc","SK","Kontaktör STOP NC",270,370],["startK","push-no","S2","Kontaktör START NO",440,370],["coilK","coil-contactor","K1","Kontaktör bobini",650,370],["holdK","contact-no","K1","Kontaktör mühürleme NO",440,510],["mainK","main-contact","K1","K1 üç kutuplu ana kontak",740,550],["motor","motor-y-d","M1","Sanal üç fazlı motor (yıldız uçları)",980,550]],links=[["g1","L1","stopR","21","Röle STOP giriş fazı"],["stopR","22","startR","13","Röle START hattı"],["startR","14","coilR","A1","K2 bobinine ilk komut"],["coilR","A2","g1","N","K2 bobin dönüşü"],["stopR","22","holdR","13","K2 mühürleme girişi"],["holdR","14","coilR","A1","K2 mühürleme dönüşü"],["g1","L1","loadR","13","Röle lamba kontak beslemesi"],["loadR","14","lamp","X1","K2 çektiğinde lamba beslenir"],["lamp","X2","g1","N","Lamba nötr dönüşü"],["g1","L1","stopK","21","Kontaktör STOP giriş fazı"],["stopK","22","startK","13","Kontaktör START hattı"],["startK","14","coilK","A1","K1 bobinine ilk komut"],["coilK","A2","g1","N","K1 bobin dönüşü"],["stopK","22","holdK","13","K1 mühürleme girişi"],["holdK","14","coilK","A1","K1 mühürleme dönüşü"],["g1","L1","mainK","1","K1 birinci güç fazı"],["g1","L2","mainK","3","K1 ikinci güç fazı"],["g1","L3","mainK","5","K1 üçüncü güç fazı"],["mainK","2","motor","U1","K1 ana kontak birinci motor ucu"],["mainK","4","motor","V1","K1 ana kontak ikinci motor ucu"],["mainK","6","motor","W1","K1 ana kontak üçüncü motor ucu"],["g1","PE","motor","PE","Motor gövdesinin koruma iletkeni"]];
+ p.components=parts.map(([id,typeId,ref,label,x,y])=>({
+  id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',
+  ...(id==='motor'?{motorConnection:'star'}:{})
+ }));
+ p.wires=links.map(([a,ap,b,bp,why],i)=>({
+  id:'sc648-compare-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:i===21?'#16a34a':[3,8,12].includes(i)?'#1e88e5':'#a16207',
+  role:i===21?'PE':[3,8,12].includes(i)?'N':i>=15?'POWER':'CONTROL',
+  size:i>=15?'2.5':'1.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+ }));
+ delete p.referenceOnly;
+ if(p.tutorialLesson){p.tutorialLesson.phase='demo';p.tutorialLesson.step=0}
+ sc648.steps=p.wires.map(w=>({
+  from:backfillClone(w.from),to:backfillClone(w.to),
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+ }));
+ const roles={
+ g1:'Yalnız sanal üç faz ve nötr kaynağıdır; fiziksel kurulum değildir.',
+ stopR:'Sanal röle kumandasını keser.',startR:'Yardımcı röleye başlangıç komutu verir.',
+ coilR:'K2 bobini yalnız H1 lamba kolundaki yardımcı kontakları kumanda eder.',
+ holdR:'K2 rölesinin yardımcı mühürleme kontağıdır.',
+ loadR:'H1 lambasını açıp kapatan K2 yardımcı kontağıdır.',
+ lamp:'Röle kumandasının durumunu gösterir.',
+ stopK:'Kontaktör kumandasını keser.',startK:'K1 bobinine başlangıç komutu verir.',
+ coilK:'K1 ana kontaklarını çektiren bobindir.',
+ holdK:'K1 yardımcı mühürleme kontağıdır.',
+ mainK:'Motorun üç ayrı güç fazını anahtarlayan üç kutuplu kontaktördür.',
+ motor:'K1 kontaktörü ile kumanda edilen sanal üç fazlı motordur.'
+ };
+ sc648.materials=p.components.map(c=>({
+  componentId:c.id,typeId:c.typeId,label:c.label,why:roles[c.id]
+ }));
+ sc648.quiz={
+ question:'Yalnız K2 röle START komutu etkinleşirse hangi sanal yük çalışır?',
+ options:['H1 lambası çalışır, M1 motoru çalışmaz.','M1 motoru çalışır.','PE kontağı kapanır.'],
+ answer:0,
+ why:'K2 bobini sadece lamba kontağını; ayrı K1 kontaktörü motorun güç kontaklarını kontrol eder.'
+ };
+ const review=sc648.pedagogyReview;
+ review.preRepairTitleTopologyIssue='RELAY_CONTACTOR_COMPARISON_HAS_ONLY_CONTACTOR';
+ review.titleTopologyStatus='REVIEW';
+ review.titleTopologyIssue='RELAY_CONTACTOR_3D_PHYSICAL_ACCEPTANCE_PENDING';
+ review.nativeDynamicAcceptance=true;review.physicalAcceptance=false;
+ review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+ review.componentIds=p.components.map(c=>c.typeId);
+ review.sc648ComparisonNative='SC648-INDEPENDENT-RELAY-CONTACTOR-NATIVE-V1';
+ if(sc648.topicReview){sc648.topicReview.simulationAcceptance=true;
+  sc648.topicReview.sourceCircuitPreserved=false}
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
