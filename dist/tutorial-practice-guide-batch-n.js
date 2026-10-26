@@ -441,6 +441,20 @@
   merged.pedagogyReview.title=mergedTitle;
   merged.title=mergedTitle;
  }
+
+ // Targeted stories for genuinely rewired lessons; no old QA overwritten.
+ for(const [sc,marker,intro,observation] of [[431,"sc431OptoNative","İki ayrı 5 V kaynağı düşün: soldaki LED, sağdaki fototransistör. Arada elektrik kablosu değil ışık var. SG'ye basıp kolektör DCV değerinin yaklaşık 5 V'tan 0,2 V'a düşmesini sanal çözücüde karşılaştır.","LED yolunu çıkarınca optik aktarım kaybolmalı; iki kaynağın ortaklanması ise yalıtım testini geçmemeli."],[644,"sc644Native","Bu kez iki farklı motoru karıştırma: M1'in U–N ana sargısı ve Z1–Z2 yardımcı sargısı aynı tek fazlı motorun uçları. Sanal START ile K1'i çalıştır, sonra yardımcı sargı bağlantısını koparıp motorun durduğunu gözlemle.","Gerçek kalkış kondansatörü ve anahtar ayrıntıları modellenmediğinden fiziksel kurulum kabulü bekliyor."],[648,"sc648ComparisonNative","Yan yana iki ayrı kumanda görevi var: K2 yardımcı rölesi H1 lambasını, K1 kontaktörü M1 motorunu çalıştırır. Önce yalnız röle START'a, sonra yalnız kontaktör START'a basarak farkı sanal simülasyonda gör.","Röle kolu motoru beslememeli; kontaktör kolunda faz eksildiğinde motor çalışmamalı."]]){
+  const lesson=L.lessons[Number(sc)-1],guide=lesson?.practiceGuide;
+  if(lesson?.kind!=='wiring'||!lesson.pedagogyReview?.[marker]||
+     !lesson.project?.wires?.length||guide?.method!=='virtual-circuit-check'||
+     !Array.isArray(guide.steps)||!guide.steps.length||
+     lesson.pedagogyReview.independentPedagogicalAcceptance===true)continue;
+  guide.steps[0]=intro;
+  if(!Array.isArray(guide.observations))guide.observations=[];
+  guide.observations.unshift(observation);
+  guide.heading='Bağlantıdan sonuca: sanal devre deneyi';
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
