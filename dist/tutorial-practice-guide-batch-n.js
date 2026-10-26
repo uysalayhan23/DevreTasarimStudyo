@@ -1607,6 +1607,49 @@
   }
  }
 
+
+ // SC770: Ohm's law is measured with a series ammeter and parallel voltmeter.
+ // The original 5-wire project left all four probe TIP terminals floating.
+ {
+ const lesson=L.lessons[769],p=lesson?.project;
+ if(lesson?.id==='electronic-component-basics-outline-087'&&lesson.kind==='wiring'&&
+    p?.components?.length===8&&p.wires?.length===5&&
+    p.components.find(c=>c.id==='r1')?.typeId==='resistor'&&
+    lesson.pedagogyReview?.independentPedagogicalAcceptance!==true){
+  for(const [a,ap,b,bp,why] of [
+   ['a1-red','TIP','g1','P','Seri akım ölçerin kırmızı probu +12 V kaynaktadır.'],
+   ['a1-black','TIP','r1','1','Seri akım ölçerin COM probu direnç girişindedir.'],
+   ['v1-red','TIP','r1','1','Paralel voltmetrenin kırmızı probu direnç girişindedir.'],
+   ['v1-black','TIP','r1','2','Paralel voltmetrenin siyah probu direnç çıkışındadır.']]){
+    p.wires.push({id:'sc770-meter-'+p.wires.length,from:{c:a,p:ap},to:{c:b,p:bp},
+      color:'#43857f',role:'MEASURE',size:'1.5',points:[],
+      tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why});
+  }
+  p.sc770MeterGuard='SC770-RESISTOR-REAL-UT33D-PROBE-TIPS-V1';
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.summary='12 V ve 1 kΩ dirençle küçük bir deney: UNI-T A1 seri koldan yaklaşık 12 mA, V1 direnç uçlarından yaklaşık 12 V okur. I=V/R bağlantısını bu iki okumayla anlamlandır; enerjili devrede doğrudan ohmmetre ölçümü yapılmaz. Windows/3D kabulü ve gerçek cihaz kalibrasyonu açık.';
+  lesson.practiceGuide={version:'practice-n1',heading:'Dirençte gerilim ve akım nerede ölçülür?',
+    method:'virtual-circuit-check',virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['G1 kaynağını 12 V, R1 direncini 1 kΩ olarak oku.',
+     'A1 kırmızı TIP kaynağın + ucuna, siyah TIP R1 girişine bağlanır: akım ölçeri seri olur.',
+     'V1 kırmızı TIP R1 girişine, siyah TIP çıkışına bağlanır: voltmetre paralel olur.',
+     'A1 yaklaşık 12 mA, V1 yaklaşık 12 V olmalı. I=V/R hesabıyla karşılaştır.',
+     'A1 seri probunu ve V1 probunu sırayla çıkar; OL uyarısıyla kablo kopuğunu ayır.'],
+    observations:['Ohmmetre (Ω) ile direnç doğrudan ölçümü yalnız enerjisiz ayrı deneyde yapılır.',
+     'Bu sonuçlar sanal ölçümdür; gerçek donanım ve 3D kabul kanıtı değildir.'],
+    repairModel:'SC770-RESISTOR-REAL-UT33D-PROBE-TIPS-V1'};
+  const rev=lesson.pedagogyReview||(lesson.pedagogyReview={});
+  rev.titleTopologyStatus='REVIEW';rev.titleTopologyIssue='WINDOWS_3D_AND_FULL_METER_ACCEPTANCE_PENDING';
+  rev.realWiredCircuit=true;rev.nativeDynamicAcceptance=false;
+  rev.physicalAcceptance=false;rev.windowsVisualAcceptance=false;
+  rev.independentPedagogicalAcceptance=false;
+  rev.sc770MeterRealRepair='SC770-RESISTOR-REAL-UT33D-PROBE-TIPS-V1';
+ }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
