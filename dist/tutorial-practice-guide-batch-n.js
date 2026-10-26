@@ -3335,6 +3335,84 @@
   v.sc868BoundedTerminalRepair='MOTOR-START-SPEED-023-SOFTSTARTER-TERMINALS-BOUNDED-V1';
  })();
 
+
+ // SC869 motor-start-speed-outline-024: bounded Dahlander low/high
+ // virtual electrical model, not a real RPM/torque/transition model.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-024'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+     !p.components.some(c=>c.id==='sw'&&c.typeId==='packet-star-delta')||
+     !p.components.some(c=>c.id==='motor'&&c.typeId==='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',55,340),
+   C('sel','selector-2','S1','0 / Düşük / Yüksek seçici',220,60,{position:0}),
+   C('lockL','contact-nc','KH','KH NC düşük kademe kilidi',465,65),
+   C('lockH','contact-nc','KL','KL NC yüksek kademe kilidi',465,300),
+   C('coilL','coil-contactor','KL','KL düşük kademe bobini',750,75),
+   C('coilH','coil-contactor','KH','KH yüksek kademe bobini',750,325),
+   C('mainL','main-contact','KL','KL düşük kademe üç faz yolu',925,350),
+   C('mainH','main-contact','KH','KH yüksek kademe üç faz yolu',980,630),
+   C('bridge','main-contact','KH','KH yüksek kademe üç uç köprüsü',1240,290),
+   C('motor','motor-dahlender','M1','M1 sanal altı uçlu Dahlander motor',1460,515)
+  ];
+  const graph=[
+   ['g','L1','sel','11'],['sel','13','lockL','21'],
+   ['lockL','22','coilL','A1'],['sel','14','lockH','21'],
+   ['lockH','22','coilH','A1'],['coilL','A2','g','N'],
+   ['coilH','A2','g','N'],
+   ['g','L1','mainL','1'],['g','L2','mainL','3'],['g','L3','mainL','5'],
+   ['mainL','2','motor','U'],['mainL','4','motor','V'],['mainL','6','motor','W'],
+   ['g','L1','mainH','1'],['g','L2','mainH','3'],['g','L3','mainH','5'],
+   ['mainH','2','motor','X'],['mainH','4','motor','Y'],['mainH','6','motor','Z'],
+   ['motor','U','bridge','1'],['motor','V','bridge','3'],
+   ['motor','W','bridge','5'],['bridge','2','bridge','4'],
+   ['bridge','4','bridge','6'],['g','PE','motor','PE']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+   id:'motor-dahlander-024-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Dahlander düşük/yüksek kademe ve KH kilitli köprü terminali.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='motor'?'Düşükte U/V/W, yüksekte X/Y/Z uçlarını ayırt et.':
+   c.id==='sel'?'Karşılıklı iki kademeden yalnız biri seçilebilir.':
+   c.id==='bridge'?'Yüksek kademe için sanal U/V/W ortak bağlantısı.':
+   c.typeId==='contact-nc'?'Sanal karşılıklı kontaktör kilidi.':
+   'Sanal dersin katalog terminali.'}));
+  l.summary='Dahlander motorunda aynı üç faz iki farklı sanal uç grubuyla kullanılır. Düşük devir kademesinde KL, yüksek kademede KH ve KH ortak köprüsü çalışır. Seçici 0 konumunda iki kademe de durur. Gerçek devir/darbe momenti, güvenli geçiş süresi ve mekanik kilit doğrulanmadı.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Dahlander motorda iki farklı kademe nasıl seçilir?',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['S1 konumunu 0 seçip motorun durduğunu sanal simülasyonda gör.',
+    'Düşük kademe seçildiğinde KL kontaktörünün U/V/W grubunu etkinleştirdiğini izle.',
+    'S1 ile 0 konumuna dön; yüksek konumda KH, X/Y/Z beslemesi ve ayrı ortak köprüyü karşılaştır.',
+    'Bir sanal fazı veya yüksek kademe köprüsünü çıkar; motor etkinliği yok olmalı.',
+    'Bu yazılımda hız oranı ve güvenli geçiş süresi ölçülmez; gerçek motor için kabul olarak kullanma.'],
+   observations:['Özgün 703 katalog elemanı ve Simulation.solve ile 0/düşük/yüksek, faz kopukluğu ve köprü kopukluğu sınandı.',
+    'Sanal düşük/yüksek hız yalnız kademe etiketidir, ölçülmüş fiziksel RPM değildir.',
+    'Gerçek güvenlik/Windows/3D terminal ve bağımsız pedagojik kabul açık.'],
+   repairModel:'MOTOR-START-SPEED-024-DAHLANDER-LOW-HIGH-NATIVE-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='DAHLANDER_RPM_TORQUE_SAFE_TRANSITION_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_LOWHIGH_BREAKS_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc869DahlanderRepair='MOTOR-START-SPEED-024-DAHLANDER-LOW-HIGH-NATIVE-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
