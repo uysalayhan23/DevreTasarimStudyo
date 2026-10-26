@@ -957,10 +957,70 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
 
   // SC12: phase sample the real IGBT gate and DC load path.
   // The output is a normalized education-only duty response (NOT lumens or watts).
+
+  // SC402 only: measure a PWM-driven MOSFET/DC motor over one virtual cycle.
+  // The percentage is idealized drive duty, NOT measured RPM, torque or 3D acceptance.
+  // Do not infer wiring merely from matching pin positions or catalog component names.
+  function solveSc11MotorPwmCycle(project,byId,options={}){
+    const scene=project?.tutorialLesson?.id==='motor-direct-power-outline-021'||
+      project?.projectId==='tutorial-session-source-motor-direct-power-outline-021';
+    if(!scene)return {result:solve(project,byId,options),sampled:false,verified:false};
+    const part=id=>project?.components?.find(c=>c.id===id);
+    const source=part('g1'),pwm=part('pwm1'),gateR=part('rg'),
+      pullDown=part('rp'),mosfet=part('q1'),motor=part('m1');
+    const partsOk=source?.typeId==='arduino-bench-supply'&&
+      pwm?.typeId==='virtual-pwm-generator-v1'&&
+      gateR?.typeId==='resistor'&&pullDown?.typeId==='resistor'&&
+      mosfet?.typeId==='irf540n-mosfet'&&motor?.typeId==='motor-dc'&&
+      byId?.[pwm.typeId]?.kind==='pwm-generator'&&
+      byId?.[mosfet.typeId]?.kind==='mosfet-n';
+    const linked=(a,ap,b,bp)=>(project.wires||[]).some(w=>
+      !w.mechanical&&w.role!=='MECHANICAL'&&
+      ((w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+       (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap)));
+    const wired=!!(partsOk&&
+      linked('g1','P','pwm1','V+')&&linked('pwm1','GND','g1','M')&&
+      linked('pwm1','OUT','rg','1')&&linked('rg','2','q1','G')&&
+      linked('q1','G','rp','1')&&linked('rp','2','g1','M')&&
+      linked('q1','S','g1','M')&&linked('g1','P','m1','+')&&
+      linked('m1','−','q1','D')&&
+      !linked('g1','P','g1','M')&&!linked('q1','D','q1','S'));
+    const duty=pwm?.dutyPercent,hz=pwm?.frequencyHz,
+      now=Number.isFinite(options.now)?options.now:0;
+    const valid=!!(wired&&typeof duty==='number'&&Number.isFinite(duty)&&
+      duty>=0&&duty<=100&&typeof hz==='number'&&Number.isFinite(hz)&&
+      hz>0&&hz<=100000&&Number.isFinite(now)&&now>=0&&
+      Number.isFinite(source?.dcVoltage)&&source.dcVoltage>0&&
+      source.dcVoltage<=24);
+    const period=valid?1000/hz:0;
+    const sample=at=>{
+      const r=solve(project,byId,{...options,now:at});
+      return {valid:!!(r.stable&&!r.blocked&&!r.shortCircuit&&!r.oscillating),
+        supply:!!pwm?._pwmSupplyValid,high:!!pwm?._pwmHigh,
+        switchOn:!!mosfet?._mosfetOn,loadOn:!!motor?._active};
+    };
+    const hi=valid?sample(period*duty/200):null,
+      lo=valid?sample(period*(duty/100+(1-duty/100)/2)):null;
+    const result=solve(project,byId,options);
+    const verified=!!(valid&&hi?.valid&&lo?.valid&&hi.supply&&lo.supply);
+    const highDrive=!!(verified&&hi.high&&hi.switchOn&&hi.loadOn),
+      lowDrive=!!(verified&&lo.high&&lo.switchOn&&lo.loadOn);
+    const normalizedDrivePct=verified?
+      (highDrive?duty:0)+(lowDrive?100-duty:0):0;
+    if(motor){
+      motor._sc11VirtualDriveDutyPct=normalizedDrivePct;
+      motor._sc11PwmCycleVerified=verified;
+    }
+    return {result,sampled:valid,verified,highDrive,lowDrive,
+      normalizedDrivePct};
+  }
+
   function solveSc12DimmerCycle(project,byId,options={}){
-    const scene=['electronic-switching-src-12','electronic-switching-outline-036'].includes(project?.tutorialLesson?.id)||
+    const scene=['electronic-switching-src-12','electronic-switching-outline-036',
+      'electronic-component-basics-outline-021'].includes(project?.tutorialLesson?.id)||
       ['tutorial-session-source-electronic-switching-src-12',
-       'tutorial-session-source-electronic-switching-outline-036'].includes(project?.projectId);
+       'tutorial-session-source-electronic-switching-outline-036',
+       'tutorial-session-source-electronic-component-basics-outline-021'].includes(project?.projectId);
     if(!scene)return {result:solve(project,byId,options),sampled:false};
     const part=id=>project.components.find(c=>c.id===id);
     const pwm=part('pwm1'),igbt=part('q1'),lamp=part('h1');
@@ -1399,7 +1459,7 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       conductionPct:count,peakCurrentA:peakCurrent,zeroCrossing:phase%180<.5};
   }
 
-  const api={solve,solveSc11Cycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,solveSc17TriacDimmerCycle,solveSc18OptocouplerCycle,solveSc19OptoTriacCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
+  const api={solve,solveSc11Cycle,solveSc11MotorPwmCycle,solveSc12DimmerCycle,solveSc15AcCycle,solveSc16DcCycle,solveSc17TriacDimmerCycle,solveSc18OptocouplerCycle,solveSc19OptoTriacCycle,clear,normalizeRef,contactState,conductingPairs,coils,followers,breakers};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSimulation=api;
 })(typeof window==='undefined'?globalThis:window);
