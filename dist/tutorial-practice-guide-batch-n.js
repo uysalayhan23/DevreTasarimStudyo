@@ -2486,6 +2486,85 @@
   }
  })();
 
+
+ // motor-direct-power-outline-078: simulated direction-select interlock.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-078'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const a=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',50,360),
+   C('stop','push-nc','S0','STOP NC',195,60),
+   C('start','push-no','S1','Anlık START',395,60),
+   C('dir','selector-2','S2','İleri / geri seçici',600,60,{position:0}),
+   C('ncR','contact-nc','K2','K2 NC ileri kilidi',790,65),
+   C('ncF','contact-nc','K1','K1 NC geri kilidi',790,310),
+   C('holdF','contact-no','K1','K1 ileri mühürleme',490,180),
+   C('holdR','contact-no','K2','K2 geri mühürleme',500,400),
+   C('coilF','coil-contactor','K1','K1 ileri bobin',1040,65),
+   C('coilR','coil-contactor','K2','K2 geri bobin',1040,340),
+   C('mainF','main-contact','K1','K1 ileri üç kutuplu güç',1030,565),
+   C('mainR','main-contact','K2','K2 geri üç kutuplu güç',1170,750),
+   C('motor','motor-3p','M1','M1 sanal motor',1440,620,{motorConnection:'star'})
+  ];
+  const graph=[
+   ['g','L1','stop','21'],
+   ['stop','22','start','13'],['start','14','dir','11'],
+   ['dir','13','ncR','21'],['ncR','22','coilF','A1'],
+   ['dir','14','ncF','21'],['ncF','22','coilR','A1'],
+   ['stop','22','holdF','13'],['holdF','14','ncR','21'],
+   ['stop','22','holdR','13'],['holdR','14','ncF','21'],
+   ['coilF','A2','g','N'],['coilR','A2','g','N'],
+   ['g','L1','mainF','1'],['g','L2','mainF','3'],['g','L3','mainF','5'],
+   ['mainF','2','motor','U'],['mainF','4','motor','V'],['mainF','6','motor','W'],
+   ['g','L1','mainR','1'],['g','L2','mainR','3'],['g','L3','mainR','5'],
+   ['mainR','2','motor','W'],['mainR','4','motor','V'],['mainR','6','motor','U'],
+   ['g','PE','motor','PE']
+  ];
+  p.components=a;p.wires=graph.map(([from,pin,to,out],i)=>({
+   id:'motor-outline-078-'+(i+1),from:{c:from,p:pin},to:{c:to,p:out},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:from+'/'+pin+' → '+to+'/'+out,
+   tutorialWhy:'Sanal kontaktör ve karşılıklı NC kilit devresindeki gerçek katalog ucu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.id==='dir'?'Tek bir yön seçerek karşıt komutları ayırır.':
+     c.typeId==='contact-nc'?'Diğer kontaktör çalışırken bu yolu keser.':
+     c.typeId==='contact-no'?'Sanal START bırakılınca seçili kontaktörü tutar.':
+     'Sanal devrede katalog terminaliyle bağlı parça.'}));
+  l.summary='Sanal motorda önce ileri, STOP sonrasında geri hareketi dene. K1 ve K2 NC kontakları elektriksel kilitleme yapar; S2 aynı anda iki yön seçilmesini önler. Fiziksel mekanik kilit ve Windows/3D kabulü bekleniyor.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Motor önce ileri, sonra geri: STOP neden gerekli?',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['S2 ile ileri yönü seçip sanal START komutu ver; motorun yönünü izle.',
+    'START bırakıldığında K1 mühürleme kontağı motoru çalışır tutar.',
+    'Geri yönünü seçip START dene; K1 NC kilidi K2 yi engeller.',
+    'STOP ile motoru durdur; START serbestken kendiliğinden çalışmamalı.',
+    'Sanal START ile geri yönü dene, motorun ters dönmesini gözlemle.',
+    'Bir fazı veya NC kilit bağlantısını çıkar ve sonucu karşılaştır.'],
+   observations:['Orijinal Simulation.solve ve 703 katalog elemanıyla hedefli pozitif-negatif kontroller yapıldı.',
+    'Bu bir sanal eğitim modelidir; gerçek şebeke veya güvenlik kabulü değildir.'],
+   repairModel:'MOTOR-OUTLINE-078-DIRECTION-SELECTED-INTERLOCK-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyIssue='MECHANICAL_INTERLOCK_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.titleTopologyStatus='REVIEW';
+  v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc840InterlockRepair='MOTOR-OUTLINE-078-DIRECTION-SELECTED-INTERLOCK-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
