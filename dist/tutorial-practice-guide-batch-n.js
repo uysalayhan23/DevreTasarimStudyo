@@ -527,6 +527,63 @@
    nativeDynamicAcceptance:true,physicalAcceptance:false,windowsVisualAcceptance:false,independentPedagogicalAcceptance:false,
    realWiredCircuit:true,scOpticalAudioRepair:'SC'+sc+'-REAL-WIRED-NATIVE-V1'});
  }
+
+ // SC597/SC598: actual 74HC86 XOR + 74HC08 AND half-adder, not LM358.
+ for(const [sc,id] of [[597,'opamp-apps-outline-046'],[598,'opamp-apps-outline-047']]){
+  const lesson=L.lessons[sc-1],p=lesson?.project,v=lesson?.pedagogyReview;
+  if(lesson?.id!==id||lesson.kind!=='wiring'||!p?.wires?.length||
+    !p.components.some(x=>x.typeId==='lm358p-dip8')||
+    v?.titleTopologyIssue!=='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH'||
+    v.independentPedagogicalAcceptance===true)continue;
+  const C=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[C('ps','arduino-bench-supply','5 V DC sanal besleme',40,240,{dcVoltage:5}),
+   C('a','push-no','A bitini seç',260,80),C('b','push-no','B bitini seç',260,380),
+   C('ra','resistor','A 10 kΩ pull-down',460,170,{resistance:10000}),
+   C('rb','resistor','B 10 kΩ pull-down',460,490,{resistance:10000}),
+   C('xor','sn74hc86n','74HC86 XOR: SUM',700,80),
+   C('and','sn74hc08n','74HC08 AND: CARRY',700,410),
+   C('rs','arduino-resistor-220','SUM LED 220 Ω',945,135),
+   C('rc','arduino-resistor-220','CARRY LED 220 Ω',945,465),
+   C('sum','arduino-led','SUM · toplam',1160,140),
+   C('carry','arduino-led','CARRY · elde',1160,470)];
+  const lines=[
+   ['ps','P','a','13'],['ps','P','b','13'],['a','14','xor','1'],
+   ['b','14','xor','2'],['a','14','and','1'],['b','14','and','2'],
+   ['a','14','ra','1'],['ra','2','ps','M'],['b','14','rb','1'],
+   ['rb','2','ps','M'],['ps','P','xor','14'],['ps','M','xor','7'],
+   ['ps','P','and','14'],['ps','M','and','7'],['xor','3','rs','1'],
+   ['rs','2','sum','A'],['sum','K','ps','M'],['and','3','rc','1'],
+   ['rc','2','carry','A'],['carry','K','ps','M']];
+  p.components=parts;p.wires=lines.map(([a,ap,b,bp],i)=>({
+   id:'sc'+sc+'-adder-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Gerçek 74HC kapısına bağlanan sanal yarım toplayıcı hattı.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.materials=parts.map(x=>({id:x.id,label:x.label,
+   why:x.id==='xor'?'A ve B farklıysa SUM=1.':x.id==='and'?'A ve B birlikte 1 ise CARRY=1.':'Gerçek katalog terminaline bağlı sanal devre parçası.'}));
+  lesson.summary='İki buton A ve B bitlerini seçer. 74HC86 XOR toplamı, 74HC08 AND elde bitini üretir. Windows/3D ve tam çözücü kabulü ayrıca bekler.';
+  lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'A ve B bitlerini toplayalım',virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['İki entegreyi ortak 5 V ve 0 V kaynağa bağla.',
+    'A ve B butonlarını 00, 01, 10, 11 olarak sırayla dene.',
+    'SUM yalnız bir bit 1 iken; CARRY ikisi de 1 iken yanmalı.',
+    'XOR çıkış kablosunu koparınca SUM ışığının söndüğünü gözlemle.'],
+   observations:['00 → 0/0; 01 → 1/0; 10 → 1/0; 11 → 0/1.',
+    'Tam native ve gerçek Windows/3D kabulü açık.'],
+   repairModel:'SC597-598-XOR-AND-HALF-ADDER'};
+  v.preRepairTitleTopologyIssue='DIGITAL_ARITHMETIC_TITLE_HAS_ANALOG_LM358_GRAPH';
+  v.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  v.titleTopologyStatus='REVIEW';v.componentIds=parts.map(x=>x.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.sc597598PhysicalRepair='SC597-598-TRUE-XOR-AND-WIRED-V1';
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
