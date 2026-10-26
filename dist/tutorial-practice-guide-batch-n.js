@@ -2941,6 +2941,90 @@
   v.sc845EndLimitRepair='MOTOR-OUTLINE-083-NC-END-LIMIT-RESTART-V1';
  })();
 
+
+ // motor-direct-power-outline-084: one momentary button, isolated trigger
+ // contacts, impulse relay, and an undervoltage-release rearm relay.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-084'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+    C('g','supply-3p','G1','Sanal üç faz / N / PE',60,370),
+    C('button','push-no','S1','Tek anlık START / STOP butonu',265,70),
+    C('trig','coil-relay','KB','KB buton kumanda rölesi',505,70),
+    C('pulseDrive','contact-no','KB','KB darbe yolunu yalıtma',515,245),
+    C('armDrive','contact-no','KB','KB çalıştırma izni yolu',510,450),
+    C('pulse','coil-pulse','KP1','KP1 darbeli sanal röle',795,105),
+    C('pulseContact','contact-no','KP1','KP1 NO çalışma hafızası',1020,265),
+    C('arm','coil-contactor','K0','K0 enerji dönüşü izin rölesi',795,450),
+    C('armHold','contact-no','K0','K0 izin mühürleme',595,610),
+    C('armGate','contact-no','K0','K0 yeniden başlama önleme',1010,465),
+    C('coil','coil-contactor','K1','K1 motor kontaktörü',1300,260),
+    C('main','main-contact','K1','K1 güç kontakları',1230,615),
+    C('motor','motor-3p','M1','Sanal üç faz motor',1570,640,{motorConnection:'star'})
+  ];
+  const graph=[
+    ['g','L1','button','13'],['button','14','trig','A1'],['trig','A2','g','N'],
+    ['g','L1','pulseDrive','13'],['pulseDrive','14','pulse','A1'],['pulse','A2','g','N'],
+    ['g','L1','armDrive','13'],['armDrive','14','arm','A1'],
+    ['g','L1','armHold','13'],['armHold','14','arm','A1'],['arm','A2','g','N'],
+    ['g','L1','armGate','13'],['armGate','14','pulseContact','13'],
+    ['pulseContact','14','coil','A1'],['coil','A2','g','N'],
+    ['g','L1','main','1'],['g','L2','main','3'],['g','L3','main','5'],
+    ['main','2','motor','U'],['main','4','motor','V'],['main','6','motor','W'],
+    ['g','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'motor-outline-084-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Tek sanal buton, birbirinden yalıtılmış röle kontakları ve enerji dönüşü izin yolu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='button'?'Sanal devreye tek komut gönderen anlık buton.':
+     c.id==='trig'?'Butondan gelen komutu iki ayrı, yalıtılmış kontağa dağıtır.':
+     c.id==='pulse'?'Ardışık darbelerde sanal açma ve kapama durumunu değiştirir.':
+     c.id==='arm'?'Enerji kesilince bırakıp yeni basış gelmeden motor iznini kapalı tutar.':
+     c.id==='motor'?'Gerçek motor değil, sanal üç fazlı yük.':
+     'Özgün katalog terminaliyle bağlanmış öğretici eleman.'}));
+  l.summary='Bir düğme iki işi yapsın: ilk basışta sanal motor çalışsın, ikinci basışta dursun. KB komutu ayrı röle kontaklarıyla dağıtır; KP1 aç/kapa durumunu hatırlar. Güç kesilince K0 bırakır ve enerji geri geldiğinde motor kendiliğinden başlamaz; yeniden basış gerekir. Fiziksel güvenlik kabulü yapılmadı.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Tek düğmeyle başlat, yine aynı düğmeyle durdur',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal S1 butonuna bir kez bas ve bırak: KP1 ve K0 sayesinde motor çalışmayı sürdürür.',
+      'Aynı butona ikinci basışta motor durur; üçüncü basışta yeniden çalışır.',
+      'Sanal beslemeyi kesip geri getir. K0 izni düşmüşken motor kendiliğinden başlamamalı.',
+      'Güç dönüşünden sonra yeni buton komutlarıyla güvenli yeniden çalıştırma sırasını incele.',
+      'Bir fazı veya yalıtılmış kumanda bağlantısını açarak sanal davranışı karşılaştır.'
+    ],
+    observations:[
+      'Özgün 703 katalog elemanı ve Simulation.solve ile ardışık darbeler, kaynak kesilmesi/dönüşü ve negatif bağlantılar sınandı.',
+      'Gerçek panoda acil duruş, koruma koordinasyonu, kontak yapışması ve bağımsız güvenlik kabulü modellenmedi.',
+      'Windows/3D ve bağımsız pedagojik kabul bekliyor.'
+    ],
+    repairModel:'MOTOR-OUTLINE-084-SINGLE-PUSH-REARM-ISOLATED-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_POWER_FAILURE_HARDWARE_SAFETY_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_PULSE_REARM_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc846SinglePushRepair='MOTOR-OUTLINE-084-SINGLE-PUSH-REARM-ISOLATED-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
