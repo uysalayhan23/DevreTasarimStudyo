@@ -1330,6 +1330,87 @@
   }
  }
 
+
+ // SC708: actual Arduino input, sketch and H-bridge controlled low-voltage motor.
+ {
+ const sc=708,l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview||{};
+ if(l?.id==='motor-direct-power-outline-039'&&l.kind==='wiring'&&
+  p?.components?.some(c=>c.typeId==='motor-3p')&&
+  p.components.some(c=>c.typeId==='main-contact')&&p.wires?.length===13&&
+  !p.components.some(c=>c.typeId==='arduino-uno')&&
+  r.independentPedagogicalAcceptance!==true){
+  const C=(id,typeId,label,x,y,extra={})=>({
+   id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const code=['void setup(){',' pinMode(2, INPUT);',' pinMode(7, OUTPUT);',
+    ' pinMode(8, OUTPUT);',' pinMode(9, OUTPUT);','}',
+    'void loop(){',' if(digitalRead(2)==HIGH){',
+    '  digitalWrite(8,HIGH);','  digitalWrite(7,LOW);','  digitalWrite(9,HIGH);',
+    ' }else{','  digitalWrite(8,LOW);','  digitalWrite(7,LOW);',
+    '  digitalWrite(9,LOW);',' }','}'].join('\n');
+  const parts=[
+   C('uno','arduino-uno','Arduino UNO / dijital giriş ve motor sürme',55,240,{
+    arduinoSketch:code,arduinoProgramName:'SC708 sanal 5V motor kontrolü'}),
+   C('button','arduino-button','START düğmesi · D2',460,65),
+   C('driver','arduino-l298n','L298N · sanal H-köprü',735,200),
+   C('ps','arduino-bench-supply','Yalnız sanal 5 V motor beslemesi',485,515,{dcVoltage:5}),
+   C('motor','arduino-dc-motor','M1 3–6 V DC hobi motoru',1100,250)
+  ];
+  const wire=[
+   ['uno','5V','button','VCC','Arduino 5 V buton modülü beslemesi.'],
+   ['uno','GND','button','GND','Buton 0 V referansı.'],
+   ['button','SIG','uno','D2','START bilgisini Arduino D2 okur.'],
+   ['uno','5V','driver','5V','L298N lojik 5 V beslemesi.'],
+   ['uno','GND','driver','GND','Sürücü lojik GND ortak.'],
+   ['uno','D9','driver','ENA','Sürücü etkinleştirme.'],
+   ['uno','D8','driver','IN1','İleri yön sinyali.'],
+   ['uno','D7','driver','IN2','Geri sinyali LOW tutulur.'],
+   ['ps','P','driver','12V','Modelde Vmotor=5 V, 12V terminal adı nominal giriş adıdır.'],
+   ['ps','M','driver','GND','Motor besleme dönüşü.'],
+   ['uno','GND','ps','M','Ortak 0 V referansı.'],
+   ['driver','OUT1','motor','+','Sanal H-köprü motorun + terminalini sürer.'],
+   ['driver','OUT2','motor','-','Sanal H-köprü motorun − terminalini sürer.']
+  ];
+  p.components=parts;p.wires=wire.map(([a,ap,b,bp,why],i)=>({
+   id:'sc708-arduino-motor-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+  }));
+  p.workspaceMode='arduino';p.preferredAppearance='material';
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(x=>({id:x.id,label:x.label,why:
+   x.id==='uno'?'Sketch D2 butonunu okur; D7/D8/D9 ile sürücü komutlarını üretir.':
+   x.id==='driver'?'Motoru Arduino pininden değil, sanal ayrı güç çıkışından besler.':
+   x.id==='ps'?'Yalnız uygulama içindeki 5 V motor besleme modelidir.':
+   x.id==='motor'?'Sanal DC motorda sadece çalışıyor/duruyor durumu modellenir.':
+   'D2 kontrol girişini sanal uygulamada değiştirir.'}));
+  l.summary='Arduino D2 START butonunu okur, D8/D9 üzerinden sanal L298N sürücüyü etkinleştirir; DC motorun sanal çalışma durumunu değiştirir. Akım, gerçek devir ve mekanik hareket modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Arduino ile sanal motoru açıp kapatalım',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['Arduino D2 buton, D8–D9 motor sürücü girişlerini bul.',
+    'START bırakılmışken motorun sanal durumunu kontrol et.',
+    'START basılınca Arduino sketch ve L298N modeliyle motor etkinleşmeli.',
+    'Besleme, ENA, buton sinyali veya motor çıkış kablosunu çıkar: motor durmalı.'],
+   observations:['Burada gösterilen yalnızca idealize sanal 5 V H-köprü etkinlik modelidir.',
+    'Gerçek elektronik akım/ısı, motor hızı ve Windows/3D kabulü ayrıca açık.'],
+   repairModel:'SC708-ARDUINO-L298N-DC-MOTOR-V1'};
+  l.pedagogyReview=l.pedagogyReview||{};
+  l.pedagogyReview.titleTopologyStatus='REVIEW';
+  l.pedagogyReview.titleTopologyIssue='FULL_ELECTRICAL_SOLVE_WINDOWS_3D_PENDING';
+  l.pedagogyReview.componentIds=parts.map(x=>x.typeId);
+  l.pedagogyReview.realWiredCircuit=true;
+  l.pedagogyReview.nativeDynamicAcceptance=false;
+  l.pedagogyReview.physicalAcceptance=false;
+  l.pedagogyReview.windowsVisualAcceptance=false;
+  l.pedagogyReview.independentPedagogicalAcceptance=false;
+  l.pedagogyReview.sc708NativeRepair='SC708-ARDUINO-L298N-DC-MOTOR-V1';
+ }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
