@@ -364,5 +364,61 @@ if(sc431?.id==='electronic-switching-outline-059'&&sc431.kind==='quiz'&&
   sc431.topicReview.sourceCircuitPreserved=false}
 }
 
+
+/* SC440 actual virtual unpowered NTC resistance check: connect both
+   UT33D+ ohmmeter probe tips to canonical sensor 1/2 terminals. */
+const sc440=L.lessons[439];
+if(sc440?.id==='electronic-component-basics-outline-024'&&
+ sc440.kind==='quiz'&&sc440.project?.wires?.length===2&&
+ sc440.project.components?.length===4&&
+ sc440.project.components[0]?.typeId==='sensor-ntc'&&
+ sc440.project.components[1]?.typeId==='unit-ut33d-plus'&&
+ sc440.pedagogyReview?.titleTopologyIssue==='NO_THERMISTOR_PROBE_SENSOR_CONTACT'&&
+ sc440.pedagogyReview?.independentPedagogicalAcceptance!==true){
+ const p=sc440.project,read=c=>p.components.find(x=>x.id===c);
+ if(read('pg0')&&read('pg1')&&read('pg1-red')&&read('pg1-black')){
+  read('pg0').temperatureC=25;
+  read('pg1').meterPosition=16; // UT33D+ 20 kΩ range
+  read('pg1-red').probeTarget={c:'pg0',p:'1'};
+  read('pg1-black').probeTarget={c:'pg0',p:'2'};
+  p.sc440NtcOhms='SC440-NTC-OHMMETER-V1';
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:sc440.id};
+  p.wires.push(
+   {id:'sc440-ntc-red',from:{c:'pg1-red',p:'TIP'},to:{c:'pg0',p:'1'},
+    color:'#d32f2f',role:'MEASUREMENT',size:'0.75',points:[],
+    tutorialHint:'Kırmızı prob TIP → NTC 1',
+    tutorialWhy:'Enerjisiz NTC sensörünün ilk ucuna temas eden gerçek ölçüm bağlantısı.'},
+   {id:'sc440-ntc-black',from:{c:'pg1-black',p:'TIP'},to:{c:'pg0',p:'2'},
+    color:'#111827',role:'MEASUREMENT',size:'0.75',points:[],
+    tutorialHint:'Siyah prob TIP → NTC 2',
+    tutorialWhy:'İkinci NTC ucu ile ohmmetre COM dönüşünü tamamlar.'}
+  );
+  sc440.kind='wiring';
+  sc440.steps=p.wires.map(w=>({
+    from:JSON.parse(JSON.stringify(w.from)),to:JSON.parse(JSON.stringify(w.to)),
+    hint:w.tutorialHint||'Sanal NTC ölçüm bağlantısı',
+    why:w.tutorialWhy||'Enerjisiz sensörün direnci ölçülür.',
+    color:w.color||'#64748b',role:w.role||'SIGNAL',size:w.size||'1'
+  }));
+  sc440.materials=p.components.map(c=>({componentId:c.id,typeId:c.typeId,label:c.label,
+    why:c.id==='pg0'?'Sıcaklık artınca direnci düşen 10 kΩ (25 °C) NTC modeli.':
+     c.id==='pg1'?'Yalnız enerjisiz NTC üzerinde 20 kΩ ohmmetre kademesi.':
+     'Fiziksel ölçüm temasını temsil eden sanal prob.'}));
+  sc440.quiz={question:'Sanal NTC 25 °C’den 45 °C’ye ısıtıldığında ohmmetrede ne olur?',
+    options:['Direnç azalır.','Direnç artar.','Ölçüm hep 10 kΩ kalır.'],
+    answer:0,why:'Beta modelinde sıcaklık artışı NTC direncini düşürür; probu sökme ve yanlış kademe ayrı negatif testtir.'};
+  const review=sc440.pedagogyReview;
+  review.preRepairTitleTopologyIssue='NO_THERMISTOR_PROBE_SENSOR_CONTACT';
+  review.titleTopologyStatus='REVIEW';
+  review.titleTopologyIssue='SC440_NTC_NATIVE_OK_WINDOWS_3D_PENDING';
+  review.nativeDynamicAcceptance=true;
+  review.sensorCalibrationAcceptance=false;
+  review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+  review.independentPedagogicalAcceptance=false;
+  review.componentIds=p.components.map(c=>c.typeId);
+  review.sc440NtcNative='SC440-NTC-OHMMETER-V1';
+ }
+}
+
 L.topicReviewBatchM=stats;L._topicReviewBatchM=true;
 })(typeof window==='undefined'?globalThis:window);
