@@ -874,6 +874,78 @@
  coRepair(616,'motor-direct-power-outline-024','down');
  coRepair(628,'motor-direct-power-outline-026','up');
 
+
+ // SC617: physical selectable MOD-6 / MOD-8 counter with SN74HC393,
+ // two SN74HC08 AND stages and cascaded SN74HC32 OR reset stages.
+ {
+ const sc=617,l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+ if(l?.id==='motor-direct-power-outline-025'&&l.kind==='wiring'&&
+ p?.components?.some(c=>c.typeId==='motor-3p')&&p.wires?.length&&
+ r?.titleTopologyIssue==='DIGITAL_COUNTER_TITLE_HAS_MOTOR_CONTACTOR_GRAPH'&&
+ r.independentPedagogicalAcceptance!==true){
+  const C=(id,typeId,label,x,y,more={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,
+   rotation:0,state:false,address:'',note:'',...more});
+  const parts=[C('ps','arduino-bench-supply','5 V sanal DC kaynak',35,290,{dcVoltage:5}),
+   C('clock','push-no','CLK düşen kenar',230,80),
+   C('reset','push-no','RESET',230,425),
+   C('mod','selector-no','MODE açık MOD8 / kapalı MOD6',230,635),
+   C('rclock','resistor','CLK 10 kΩ pull-down',410,135,{resistance:10000}),
+   C('rreset','resistor','RESET 10 kΩ pull-down',410,475,{resistance:10000}),
+   C('rmod','resistor','MODE 10 kΩ pull-down',410,685,{resistance:10000}),
+   C('count','sn74hc393n','U1 74HC393 sayıcı',660,190),
+   C('and','sn74hc08n','U2 MOD6 algılama AND ×2',900,205),
+   C('org','sn74hc32n','U3 MOD/reset OR ×2',1080,380)];
+  const W=[['ps','P','clock','13'],['ps','P','reset','13'],['ps','P','mod','13'],
+   ['clock','14','count','1'],['clock','14','rclock','1'],['rclock','2','ps','M'],
+   ['reset','14','rreset','1'],['rreset','2','ps','M'],
+   ['mod','14','rmod','1'],['rmod','2','ps','M'],
+   ['ps','P','count','14'],['ps','M','count','7'],
+   ['ps','P','and','14'],['ps','M','and','7'],
+   ['ps','P','org','14'],['ps','M','org','7'],
+   ['count','4','and','1'],['count','5','and','2'],
+   ['and','3','and','4'],['mod','14','and','5'],
+   ['count','6','org','1'],['and','6','org','2'],
+   ['org','3','org','4'],['reset','14','org','5'],
+   ['org','6','count','2']];
+  for(let i=0;i<3;i++){
+   const id='led'+i,ri='rled'+i;
+   parts.push(C(ri,'arduino-resistor-220','Q'+i+' LED 220 Ω',1170,120+i*170),
+    C(id,'arduino-led','Q'+i+' bit çıkışı',1370,120+i*170));
+   W.push(['count',['3','4','5'][i],ri,'1'],
+    [ri,'2',id,'A'],[id,'K','ps','M']);
+  }
+  p.components=parts;p.wires=W.map(([a,ap,b,bp],i)=>({
+   id:'sc617-mod-counter-'+i,from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:a+':'+ap+' → '+b+':'+bp,
+   tutorialWhy:'Gerçek SN74HC393/08/32 entegre pinleri arasında mod ve reset sinyali.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='count'?
+   'Saatin düşen kenarında ikili sayacı artırır.':c.id==='and'?
+   'QB ve QC birlikte 1 iken MOD anahtarıyla 6 sınırını algılar.':c.id==='org'?
+   '8 sınırındaki QD veya seçilmiş MOD6 koşulunu RESET ile birleştirir.':
+   'Gerçek katalog pinli sanal sayıcı elemanı.'}));
+  l.summary='MODE açık: 0–7 MOD8. MODE kapalı: 0–5 MOD6. Gerçek 74HC393/74HC08/74HC32 ve reset geri beslemesi bağlı; tam çözücü ve Windows 3D kabulü açık.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Mod seçimiyle saymanın sınırını değiştirelim',virtualOnly:true,
+   canonicalGraphUnchanged:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   fullyRich:false,steps:['5 V, GND ve düşen CLK kenarı bağlantılarını incele.',
+    'MODE bırakılmışken 0–7 aralığını say.','MODE anahtarını kapat, RESET ile başla ve 0–5 say.',
+    'MODE veya CLK kablosunu kopar; sayma ve reset tepkisini karşılaştır.'],
+   observations:['QB ve QC birlikte 1, MODE kapalı iken 6 durumunda sıfırlama oluşur.',
+    'QD=1 olduğunda MOD8 reset gerçekleşir. Windows/3D kabulü ayrı bekler.'],
+   repairModel:'SC617-REAL-SELECTABLE-MOD6-MOD8-V125'};
+  r.preRepairTitleTopologyIssue='DIGITAL_COUNTER_TITLE_HAS_MOTOR_CONTACTOR_GRAPH';
+  r.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  r.titleTopologyStatus='REVIEW';r.componentIds=parts.map(x=>x.typeId);
+  r.realWiredCircuit=true;r.nativeDynamicAcceptance=false;r.physicalAcceptance=false;
+  r.windowsVisualAcceptance=false;r.independentPedagogicalAcceptance=false;
+  r.scPhysicalCounterRepair='SC617-REAL-SELECTABLE-MOD6-MOD8-V125';
+ }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
