@@ -1158,6 +1158,104 @@
  speedMotorLesson(640,false);
  speedMotorLesson(643,true);
 
+
+ // SC711 · Relay / contactor motor direction: a true mutually interlocked
+ // 3-phase reversing simulation with exclusive 0/F/R start selection.
+ // Strict lesson/source guard; no real-hardware wiring acceptance is asserted.
+ {
+  const sc=711,lesson=L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview;
+  if(lesson?.id==='motor-direct-power-outline-040'&&lesson.kind==='wiring'&&
+     p?.components?.length===7&&p.wires?.length===13&&
+     p.components.some(c=>c.typeId==='motor-3p')&&
+     p.components.filter(c=>c.typeId==='main-contact').length===1&&
+     !p.components.some(c=>c.typeId==='selector-3')&&
+     r?.independentPedagogicalAcceptance!==true){
+   const c=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra
+   });
+   const components=[
+    c('g','supply-3p','G1','Üç fazlı SANAL kaynak',50,270),
+    c('stop','push-nc','S0','İki yön için ortak STOP',240,40),
+    c('sel','selector-3','S3','0: seçim yok · 1: ileri · 2: geri',430,255,{position:0}),
+    c('sf','push-no','S1','İleri START',600,40),
+    c('sr','push-no','S2','Geri START',600,440),
+    c('hf','contact-no','K1','İleri mühürleme kontağı',535,145),
+    c('hr','contact-no','K2','Geri mühürleme kontağı',535,545),
+    c('nr','contact-nc','K2','Geri kontaktörün ileri kilidi',810,145),
+    c('nf','contact-nc','K1','İleri kontaktörün geri kilidi',810,545),
+    c('cf','coil-contactor','K1','K1 ileri kontaktör bobini',1035,145),
+    c('cr','coil-contactor','K2','K2 geri kontaktör bobini',1035,545),
+    c('mf','main-contact','K1','K1 ileri güç kontakları',750,800),
+    c('mr','main-contact','K2','K2 geri güç kontakları',1100,800),
+    c('motor','motor-3p','M1','Sanal üç faz motor',1480,800)
+   ];
+   const pairs=[
+    ['g','L1','stop','21'],
+    ['stop','22','sel','11'],
+    ['sel','13','sf','13'],['sel','14','sr','13'],
+    ['stop','22','hf','13'],['stop','22','hr','13'],
+    ['sf','14','nr','21'],['hf','14','nr','21'],
+    ['nr','22','cf','A1'],['cf','A2','g','N'],
+    ['sr','14','nf','21'],['hr','14','nf','21'],
+    ['nf','22','cr','A1'],['cr','A2','g','N'],
+    ['g','L1','mf','1'],['g','L1','mr','1'],
+    ['g','L2','mf','3'],['g','L2','mr','3'],
+    ['g','L3','mf','5'],['g','L3','mr','5'],
+    ['mf','2','motor','U'],['mf','4','motor','V'],['mf','6','motor','W'],
+    ['mr','2','motor','W'],['mr','4','motor','V'],['mr','6','motor','U'],
+    ['g','PE','motor','PE']
+   ];
+   p.components=components;
+   p.wires=pairs.map(([a,ap,b,bp],i)=>({
+    id:'sc711-true-reversing-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},
+    color:ap==='PE'||bp==='PE'?'#2b8a3e':'#43857f',
+    role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Yalnız sanal devrede ileri/geri röle ve kontaktör bağlantısı.'
+   }));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   lesson.steps=p.wires.map(w=>({
+    from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+   }));
+   lesson.materials=components.map(x=>({id:x.id,label:x.label,
+    why:x.id==='sel'?'Aynı anda yalnız bir yönde yeni START komutu seçer.':
+    x.id==='nr'||x.id==='nf'?'Karşı yön çalışırken diğer bobini engeller.':
+    x.id==='mf'||x.id==='mr'?'Motorun sanal faz sırasını seçer.':
+    'Gerçek katalog uçlarıyla bağlı sanal deney bileşeni.'}));
+   lesson.summary='Motorun dönüş yönü, iki kontaktörde faz sırasının değişmesiyle farklılaşır. '+
+    'S3 seçicisi aynı anda iki START yolunu açmaz; K1/K2 NC kontakları ikinci kilittir. '+
+    'STOP mühürlemeyi kaldırır. S3=0 yalnız yeni START seçimini kapatır, çalışan motoru durdurmaz. '+
+    'Bu yalnız eğitim simülasyonudur; gerçek 3 fazlı donanım kurulum talimatı değildir.';
+   lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Sanal motora ileri ve geri yön komutunu verelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+     'S3=0 iken iki START butonunun da motoru çalıştırmadığını gör.',
+     'S3=1 seç; S1 START ile ileri hareketi başlat, S1 bırakılınca mühürlemeyi izle.',
+     'İleri çalışırken S3=2 ve S2 komutunun K2 NC kilidine takıldığını gözlemle.',
+     'Önce STOP ile dur; ardından S3=2 ve S2 START ile geri hareketi dene.',
+     'İki START birlikte basılıyken seçicinin yalnız tek komut yolunu açtığını kontrol et.'
+    ],
+    observations:[
+     'İleri durumda K1 aktif ve motor spin=+1; geri durumda K2 aktif ve spin=-1.',
+     'Karşılıklı NC kilitler ve STOP ile iki yön aynı anda çalışmaz.',
+     'Gerçek Windows/3D görsel ve fiziksel güvenlik kabulü yapılmadı.'
+    ],
+    repairModel:'SC711-TRUE-CONTACTOR-REVERSE-SELECTOR-INTERLOCK-V1'};
+   r.preRepairTitleTopologyIssue='REVERSE_TITLE_HAD_SINGLE_FORWARD_STARTER';
+   r.titleTopologyIssue='WINDOWS_3D_PHYSICAL_ACCEPTANCE_PENDING';
+   r.titleTopologyStatus='REVIEW';r.componentIds=components.map(x=>x.typeId);
+   r.realWiredCircuit=true;r.nativeDynamicAcceptance=true;
+   r.physicalAcceptance=false;r.windowsVisualAcceptance=false;
+   r.independentPedagogicalAcceptance=false;
+   r.sc711ReversingNative='SC711-TRUE-CONTACTOR-REVERSE-SELECTOR-INTERLOCK-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
