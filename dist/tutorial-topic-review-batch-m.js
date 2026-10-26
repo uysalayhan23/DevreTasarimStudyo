@@ -382,6 +382,7 @@ if(sc440?.id==='electronic-component-basics-outline-024'&&
   read('pg1-red').probeTarget={c:'pg0',p:'1'};
   read('pg1-black').probeTarget={c:'pg0',p:'2'};
   p.sc440NtcOhms='SC440-NTC-OHMMETER-V1';
+  p.referenceOnly=false;
   p.tutorialLesson={...(p.tutorialLesson||{}),id:sc440.id};
   p.wires.push(
    {id:'sc440-ntc-red',from:{c:'pg1-red',p:'TIP'},to:{c:'pg0',p:'1'},
@@ -440,7 +441,7 @@ for(const [sc,oldIssue,redPin,blackPin,position,tag] of [
  const black={id:'pg1-black',typeId:'test-probe-black',x:470,y:340,rotation:0,ref:'PBX2',
   label:'Siyah sanal AVOmetre ölçüm probu',probeTarget:{c:'pg0',p:blackPin}};
  p.components.push(red,black);
- p.virtualTriacAvo=tag;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo'};
+ p.virtualTriacAvo=tag;p.referenceOnly=false;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo'};
  for(const [id,a,ap,b,bp,why] of [
   ['sc42-avo-red-plug','pg1','V','pg1-red','PLUG','Kırmızı probu VΩ yuvasına tak.'],
   ['sc42-avo-black-plug','pg1','COM','pg1-black','PLUG','Siyah probu COM yuvasına tak.'],
