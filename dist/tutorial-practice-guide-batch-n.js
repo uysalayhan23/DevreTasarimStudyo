@@ -1038,6 +1038,126 @@
  v20PhysicalLesson(675,'motor-direct-power-outline-037',20,false);
  v20PhysicalLesson(676,'motor-direct-power-outline-038',30,true);
 
+
+ // SC639: true six-terminal motor label/star bridge exercise, not START/STOP.
+ // SC640: synchronous speed and V20 estimated rotor speed are separate.
+ // SC643: V20 OFF3 fast-deceleration example, not a star/delta starter.
+ const m130C=(id,typeId,label,x,y,more={})=>({
+  id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...more
+ });
+ function m130Install(sc,id,expectedParts,expectedIssue,parts,links,text,steps,tag){
+  const lesson=L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview;
+  if(lesson?.id!==id||lesson.kind!=='wiring'||!p?.wires?.length||
+   !expectedParts.every(t=>p.components.some(c=>c.typeId===t))||
+   r?.titleTopologyIssue!==expectedIssue||r.independentPedagogicalAcceptance===true)return;
+  p.components=parts;p.wires=links.map(([a,ap,b,bp,why],i)=>({
+   id:'sc'+sc+'-motor-'+i,from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+  }));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+  lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  lesson.materials=parts.map(c=>({id:c.id,label:c.label,
+   why:c.id==='motor'?'Motorun gerçek katalog güç ve koruma uçlarıdır.':
+   c.id==='vfd'?'Gerçek SINAMICS V20 sanal sürücü modeli ve parametreleridir.':
+   'Kabloyla bağlanmış sanal ders elemanıdır.'}));
+  lesson.summary=text+' Tam Simulation.solve ve Windows/3D fiziksel kabulü açık.';
+  lesson.practiceGuide={version:'practice-n1',heading:'Motor dersini gerçek devrede inceleyelim',
+   method:'virtual-circuit-check',virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps,observations:['Gösterilen sonuç eğitim simülasyonuna aittir, donanım ölçümü değildir.',
+    'Gerçek Windows/3D terminal kabulü ve bütünleşik native kontrol ayrıca bekliyor.'],
+   repairModel:tag};
+  r.preRepairTitleTopologyIssue=expectedIssue;r.titleTopologyStatus='REVIEW';
+  r.titleTopologyIssue='FULL_NATIVE_SOLVE_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+  r.componentIds=parts.map(c=>c.typeId);r.realWiredCircuit=true;
+  r.nativeDynamicAcceptance=false;r.physicalAcceptance=false;
+  r.windowsVisualAcceptance=false;r.independentPedagogicalAcceptance=false;
+  r.scMotorSourceRepair=tag;
+ }
+ {
+  const C=m130C;
+  const motor=C('motor','motor-y-d','M1 · 6 uç U1/V1/W1/U2/V2/W2',565,210,{
+   motorConnection:'external',
+   nameplate:{connection:'Y (görsel yıldız köprü)',ratedVoltageV:230,ratedPowerKw:0.75,
+     nominalHz:50,nominalRpm:1400,poles:4,note:'Öğretici örnek etiket; fiziksel cihaz datasheeti değil.'}});
+  const ps=C('g1','supply-3p','Sanal üç faz L1/L2/L3 + PE',85,210);
+  const edges=[
+   ['g1','L1','motor','U1','L1 → U1'],
+   ['g1','L2','motor','V1','L2 → V1'],
+   ['g1','L3','motor','W1','L3 → W1'],
+   ['g1','PE','motor','PE','PE koruma ucu'],
+   ['motor','U2','motor','V2','İlk yıldız köprüsü U2–V2'],
+   ['motor','V2','motor','W2','İkinci yıldız köprüsü V2–W2']
+  ];
+  m130Install(639,'motor-direct-power-outline-029',
+   ['motor-3p','main-contact'],'MOTOR_NAMEPLATE_TERMINAL_LESSON_HAS_DIRECT_START_ONLY',
+   [ps,motor],edges,
+   'Altı motor klemensini ve 4 kutup/50 Hz/1400 dev-dak örnek etiketi ayır: U2–V2–W2 yıldız köprüleri gerçek kablodur.',
+   ['Örnek motor etiketindeki gerilim, güç ve 50 Hz bilgisini oku.',
+    'U1, V1, W1 üç faz girişini bul; U2, V2, W2 uçlarını yıldız köprüsüyle birleştir.',
+    'Bir yıldız köprüsünü ayır ve eksik bağlantının etkisini sanal devrede kontrol et.'],
+   'SC639-6-TERMINAL-NAMEPLATE-STAR-WIRED-V130');
+ }
+ function speedMotorLesson(sc,brake){
+  const C=m130C,motor=C('motor','motor-3p','M1 üç fazlı asenkron motor',1080,230),
+   vfd=C('vfd','sinamics-v20-1p','SINAMICS V20 frekans sürücü',470,185,{
+    v20:{schema:1,macro:brake?'Özel':'Cn001',
+     params:{'P0304':230,'P0305':3.5,'P0307':0.75,'P0310':50,'P0311':1400,
+      'P0700':brake?2:1,'P1000':1,'P1040':35,'P1082':50,
+      'P1120':2,'P1121':10,'P1135':1,
+      ...(brake?{'P0701':1,'P0702':12,'P0703':4,'P0704':9}:{})},
+     run:!brake,reverse:false,reset:0,load:35,temperature:30}
+   }),
+   ps=C('g1','supply-1p','Sanal tek faz L/N/PE',55,205),
+   parts=[ps,vfd,motor],edges=[
+    ['g1','L','vfd','L1','V20 tek faz giriş L'],
+    ['g1','N','vfd','N','V20 tek faz giriş N'],
+    ['g1','PE','vfd','PE','Koruma hattı PE'],
+    ['vfd','U','motor','U','Motor U fazı'],
+    ['vfd','V','motor','V','Motor V fazı'],
+    ['vfd','W','motor','W','Motor W fazı'],
+    ['vfd','PE2','motor','PE','Motor PE koruma bağlantısı']
+   ];
+  if(brake){
+   parts.push(C('start','push-no','RUN komutu · DI1',765,80),
+    C('stop3','push-nc','OFF3 hızlı duruş NC · DI3',765,470));
+   edges.push(
+    ['vfd','13','start','13','24 V RUN kaynak ucu'],
+    ['start','14','vfd','8','DI1 = RUN'],
+    ['vfd','13','stop3','21','Normalde kapalı OFF3 komut beslemesi'],
+    ['stop3','22','vfd','10','DI3 OFF3 girişini besler'],
+    ['vfd','14','vfd','12','DI ortak 0 V referansı']
+   );
+   m130Install(643,'motor-braking-outline-009',
+    ['motor-y-d','coil-delay-on'],'BRAKING_TITLE_HAS_STARTER_NO_BRAKING_EVIDENCE',
+    parts,edges,
+    'V20 OFF3 kontrollü hızlı duruş örneği: P1135=1 s, normal P1121=10 s. Bu DC enjeksiyon ya da mekanik fren modeli değildir.',
+    ['RUN komutunu ver, sanal frekansın yükselmesini izle.',
+     'OFF3 NC butonunu açınca hızlı frekans azaltmayı P1135 üzerinden karşılaştır.',
+     'Motor veya STOP hattını ayırınca güvenli durma koşullarını incele.'],
+    'SC643-REAL-V20-OFF3-BRAKING-WIRED-V130');
+  }else{
+   const l=L.lessons[sc-1];
+   m130Install(640,'motor-direct-power-outline-030',
+    ['motor-3p','main-contact'],'SYNCHRONOUS_SPEED_SLIP_TITLE_HAS_NO_RPM_MODEL',
+    parts,edges,
+    'Dört kutuplu örnek motorda n_s=120·f/4; V20 35 Hz için senkron hız 1050 dev/dak ve P0311=1400/50 modeliyle tahmini rotor hızı 980 dev/dak (kayma yaklaşık %6,7).',
+    ['V20 BOP frekansını 35 Hz seç, motor U/V/W kablolarını incele.',
+     'n_s=120·f/4 hesabıyla senkron hızı bul.',
+     'V20 tahmini rotor devrini senkron hızdan ayır, kaymayı karşılaştır.',
+     'Frekansı düşür veya sürücü beslemesini kes, sonucu izle.'],
+    'SC640-V20-SPEED-SLIP-WIRED-V130');
+   if(l?.practiceGuide?.repairModel==='SC640-V20-SPEED-SLIP-WIRED-V130')
+     l.project.speedStudy={poleCount:4,supplyHz:35,synchronousRpm:1050,
+       estimatedRotorRpm:980,estimatedSlipPercent:100*(1050-980)/1050,
+       derivedFrom:'V20 educational P0310=50 Hz P0311=1400 rpm, not direct tachometer measurement'};
+  }
+ }
+ speedMotorLesson(640,false);
+ speedMotorLesson(643,true);
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
