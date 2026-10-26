@@ -483,7 +483,77 @@
       reason:fault?'sc127-reversed-flyback-diode':null,nativeModel:'sc127-low-voltage-bd139',motorPowered:on};
   }
 
+
+  // SC712 opt-in ideal low-voltage *educational* two-BD139 hysteresis.
+  // Terminal/feedback guards prevent a disconnected circuit from faking PASS.
+  // Not a physical transistor parameter solver or an instrument calibration.
+  function solveSc712Schmitt(project,byId,options={}){
+    if(project?.tutorialLesson?.id!=='electronic-switching-outline-062'||
+       project.sc712SchmittModel!=='SC712-TWO-BD139-SCHMITT-HYSTERESIS-V1')return null;
+    const parts=Object.fromEntries(project.components.map(c=>[c.id,c])),
+      {g1,rv,rin,q1,q2,rc1,rc2,re,rfb,rpd,v1}=parts;
+    const wire=(a,ap,b,bp)=>(project.wires||[]).some(w=>
+      (w.from?.c===a&&w.from?.p===ap&&w.to?.c===b&&w.to?.p===bp)||
+      (w.from?.c===b&&w.from?.p===bp&&w.to?.c===a&&w.to?.p===ap));
+    const required=[
+      ['g1','P','rv','1'],['rv','3','g1','M'],['rv','2','rin','1'],['rin','2','q1','B'],
+      ['g1','P','rc1','1'],['rc1','2','q1','C'],
+      ['g1','P','rc2','1'],['rc2','2','q2','C'],
+      ['q1','E','q2','E'],['q1','E','re','1'],['re','2','g1','M'],
+      ['q1','C','rfb','1'],['rfb','2','q2','B'],
+      ['q2','B','rpd','1'],['rpd','2','g1','M'],
+      ['v1','V','v1-red','PLUG'],['v1','COM','v1-black','PLUG'],
+      ['v1-red','TIP','q2','C'],['v1-black','TIP','g1','M']];
+    const params=[['rin',10000],['rc1',2200],['rc2',2200],
+      ['re',330],['rfb',4700],['rpd',10000]];
+    const valid=!!(project.components.length===13&&project.wires.length===19&&
+      g1?.typeId==='arduino-bench-supply'&&g1.sourceEnabled!==false&&
+      Number(g1.dcVoltage)===5&&rv?.typeId==='potentiometer'&&
+      Number(rv.potMax)===10000&&Number.isFinite(Number(rv.potentiometer))&&
+      Number(rv.potentiometer)>=0&&Number(rv.potentiometer)<=100&&
+      q1?.typeId==='bd139-npn'&&q2?.typeId==='bd139-npn'&&
+      definition(byId,q1)?.kind==='bjt-npn'&&definition(byId,q2)?.kind==='bjt-npn'&&
+      params.every(([id,r])=>parts[id]?.typeId==='resistor'&&
+        definition(byId,parts[id])?.kind==='resistor'&&Number(parts[id].resistance)===r)&&
+      parts['v1-red']?.typeId==='test-probe-red'&&
+      parts['v1-black']?.typeId==='test-probe-black'&&
+      v1?.typeId==='unit-ut33d-plus'&&v1.meterPosition===3&&
+      required.every(args=>wire(...args)));
+    if(!valid||options.reset||!Number.isFinite(q1?._sc712LastNow)||
+       Number(options.now)<q1._sc712LastNow){if(q1)delete q1._sc712High;}
+    for(const c of project.components){c._active=false;c._powered=false;}
+    if(!valid){
+      if(q1){q1._bjtOn=false;q1._sc712Powered=false;delete q1._sc712High;}
+      if(q2){q2._bjtOn=false;q2._sc712Powered=false;delete q2._sc712OutputV;}
+      if(v1)v1._meter={mode:'DCV',range:20,display:'OL',value:null,unit:'V',
+        warning:'Geri besleme/besleme/prob uçları eksik.',beep:false};
+      return {blocked:true,stable:false,shortCircuit:false,oscillating:false,
+        reason:'sc712-incomplete-bjt-schmitt-graph',nativeModel:'sc712-ideal-hysteresis'};
+    }
+    const vin=5*Number(rv.potentiometer)/100,upper=3.2,lower=1.8,
+      previous=q1._sc712High===true;
+    let high=previous;
+    if(vin>=upper)high=true;
+    else if(vin<=lower)high=false;
+    q1._sc712High=high;
+    q1._sc712LastNow=Number.isFinite(options.now)?options.now:0;
+    const outputV=high?4.8:.2;
+    q1._bjtOn=high;q2._bjtOn=!high;
+    q1._active=q1._powered=q2._active=q2._powered=true;
+    q1._sc712Powered=q2._sc712Powered=true;
+    q2._sc712OutputV=outputV;q2._sc712InputV=vin;
+    v1._meter={mode:'DCV',range:20,display:outputV.toFixed(2),value:outputV,
+      unit:'V',warning:'',beep:false};
+    v1._sc712VirtualInstrument=true;
+    return {blocked:false,stable:true,shortCircuit:false,oscillating:false,
+      nativeModel:'sc712-ideal-hysteresis',idealEducationalModel:true,
+      physicalAcceptance:false,upperThresholdV:upper,lowerThresholdV:lower,
+      inputV:vin,outputV};
+  }
+
   function solve(project,byId,options={}){
+    const scopedSchmitt=solveSc712Schmitt(project,byId,options);
+    if(scopedSchmitt)return scopedSchmitt;
     const scopedMotor=solveSc127Motor(project,byId,options);
     if(scopedMotor)return scopedMotor;
     // BELL_TRANSFORMER_V1: refuse legacy mains-fed bell schematics.
