@@ -2420,6 +2420,70 @@
   }
  })();
 
+
+ // SC823: true three-pole packet switch motor circuit plus independent
+ // lamp switch. Original Simulation.solve/703 catalogue: 5 positive + 2 negative PASS.
+ (() => {
+  const sc=823,l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id==='motor-direct-power-outline-077'&&l.kind==='wiring'&&
+     p?.components?.length===7&&p?.wires?.length===13&&
+     p.components.some(c=>c.typeId==='motor-3p')&&
+     p.components.some(c=>c.typeId==='main-contact')&&
+     r?.independentPedagogicalAcceptance!==true){
+   const make=(id,typeId,ref,label,x,y)=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+   const parts=[
+    make('g1','supply-3p','G1','Sanal üç faz / N / PE',70,260),
+    make('packet','packet-switch-3p','S1','S1 üç kutuplu aç-kapa paket şalter',405,265),
+    make('lampSwitch','selector-no','S2','S2 lamba aç-kapa seçici',430,50),
+    make('lamp','lamp-green','H1','H1 lamba',760,55),
+    make('motor','motor-3p','M1','M1 sanal üç faz motor',1100,290)
+   ];
+   const graph=[
+    ['g1','L1','packet','1'],['g1','L2','packet','3'],
+    ['g1','L3','packet','5'],
+    ['packet','2','motor','U'],['packet','4','motor','V'],
+    ['packet','6','motor','W'],['g1','PE','motor','PE'],
+    ['g1','L1','lampSwitch','13'],
+    ['lampSwitch','14','lamp','X1'],['lamp','X2','g1','N']
+   ];
+   p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'sc823-packet-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal motor veya lambanın gerçek katalog terminali.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='packet'?
+     'Üç faz motoru birlikte açıp kapatan üç kutuplu paket şalter.':
+     c.id==='lampSwitch'?'Motor şalterinden bağımsız lamba seçici anahtar.':
+     'Sanal motor ve lamba yükünün katalog terminali.'}));
+   l.summary='S1 üç kutuplu paket şalter motorun üç fazını, S2 ayrı seçici ise H1 lambayı açıp kapatır. İki yük bağımsız denenir. Windows/3D kabulü bekliyor.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Paket şalter motoru, seçici anahtar lambayı kontrol etsin',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:['S1 kapalı, S2 açıkken sadece motorun çalışmasını gözlemle.',
+     'S1 açık, S2 kapalıyken yalnız H1 lambasının yandığını gör.',
+     'İki şalter birlikte kapatılınca iki yükün de çalıştığını izle.',
+     'Bir motor fazı veya lamba anahtarının çıkış kablosu kopunca ilgili yük devre dışı kalmalı.'],
+    observations:['5 normal ve 2 kopuk kablo testi native çözücüde PASS.',
+     'Gerçek şebeke bağlantısı, Windows/3D ve fiziksel güvenlik kabulü yapılmadı.'],
+    repairModel:'SC823-REAL-PACKET-MOTOR-AND-INDEPENDENT-LAMP-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   v.titleTopologyStatus='REVIEW';v.componentIds=parts.map(c=>c.typeId);
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_7_CHECKS_PASS';
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.scPacketRepair='SC823-REAL-PACKET-MOTOR-AND-INDEPENDENT-LAMP-V1';
+  }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
