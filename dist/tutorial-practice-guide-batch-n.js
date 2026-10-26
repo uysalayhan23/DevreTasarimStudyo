@@ -2351,6 +2351,75 @@
    'SC822-DUAL-STATION-MOTOR-CONTROL-NATIVE-V1');
  })();
 
+
+ // SC821: real selectable momentary/sustained motor control. Native 703-catalog
+ // Simulation.solve: ten operating states + disconnected HOLD negative PASS.
+ (() => {
+  const sc=821,l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id==='motor-direct-power-outline-075'&&l.kind==='wiring'&&
+     p?.components?.length===7&&p?.wires?.length===13&&
+     p.components.some(c=>c.id==='hold'&&c.typeId==='contact-no')&&
+     p.components.some(c=>c.id==='motor'&&c.typeId==='motor-3p')&&
+     r?.independentPedagogicalAcceptance!==true){
+   const c=(id,typeId,ref,label,x,y)=>({
+     id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+   const parts=[
+    c('g1','supply-3p','G1','Sanal 3 faz + N + PE',50,295),
+    c('stop','push-nc','S0','STOP · ortak durdurma',255,65),
+    c('start','push-no','S1','START · anlık çalışma',475,65),
+    c('mode','selector-no','S2','MODE · açık sürekli / kapalı kesik',525,385),
+    c('hold','contact-no','K1','K1 yardımcı tutma kontağı',790,375),
+    c('coil','coil-contactor','K1','K1 bobin',1040,130),
+    c('main','main-contact','K1','K1 motor güç kontakları',1000,435),
+    c('motor','motor-3p','M1','Sanal asenkron motor',1320,435)
+   ];
+   const graph=[
+    ['g1','L1','stop','21'],['stop','22','start','13'],
+    ['start','14','coil','A1'],['coil','A2','g1','N'],
+    ['stop','22','mode','13'],['mode','14','hold','13'],
+    ['hold','14','coil','A1'],
+    ['g1','L1','main','1'],['main','2','motor','U'],
+    ['g1','L2','main','3'],['main','4','motor','V'],
+    ['g1','L3','main','5'],['main','6','motor','W'],
+    ['g1','PE','motor','PE']
+   ];
+   p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+     id:'sc821-mode-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+     color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+     tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+     tutorialWhy:'Sanal kesik/sürekli kumanda devresindeki katalog terminali.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+     hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(x=>({id:x.id,label:x.label,why:x.id==='mode'?
+     'Açıkken K1 yardımcı kontağının mühürleme kolunu etkinleştirir.':
+     x.id==='hold'?'Yalnız MODE seçilmişse START sonrası motoru çalışır tutar.':
+     'Sanal motor kumandasının gerçek katalog parçası.'}));
+   l.summary='MODE kapalı: START basılıyken kesik çalışma. MODE açık: START sonrasında mühürleme, STOP ile durdurma. Sanal çalışma; Windows/3D kabulü bekliyor.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+     heading:'Aynı motoru kesik ve sürekli modda deneyelim',
+     virtualOnly:true,canonicalGraphUnchanged:false,
+     physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+     steps:['MODE kapalıyken START basıp bırak; motor durmalıdır.',
+       'MODE açıkken START basıp bırak; K1 motoru çalışır tutmalıdır.',
+       'MODE kapatılınca veya STOP basılınca motor durur.',
+       'MODE–K1 mühürleme kablosunu koparıp sürekli modun çalışmadığını gör.'],
+     observations:['Orijinal Simulation.solve ile 10 normal adım + 1 negatif kontrol PASS.',
+       'Gerçek pano/Windows/3D fiziksel kabulü bu testin parçası değildir.'],
+     repairModel:'SC821-SELECTABLE-JOG-AND-LATCH-NATIVE-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   v.titleTopologyStatus='REVIEW';v.componentIds=parts.map(x=>x.typeId);
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_11_CHECKS_PASS';
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.scControlRepair='SC821-SELECTABLE-JOG-AND-LATCH-NATIVE-V1';
+  }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
