@@ -1915,6 +1915,180 @@
   }
  }
 
+
+ // SC792/794/796/797/798/799/802: checked true catalogue-terminal circuits.
+ (() => {
+ const part=(id,typeId,label,x,y,ext={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+ const edge=(a,ap,b,bp)=>[a,ap,b,bp];
+ function repair(sc,id,parts,edges,description,steps,marker){
+   const lesson=L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview;
+   if(lesson?.id!==id||lesson.kind!=='wiring'||p?.components?.length!==7||
+     p?.wires?.length!==13||!p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+   p.components=parts;
+   p.wires=edges.map(([a,ap,b,bp],i)=>({
+     id:'sc'+sc+'-real-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+     color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+     tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+     tutorialWhy:'Bu hattın gerçek katalog terminalini devrede izleyelim.'
+   }));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+     hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   lesson.materials=parts.map(c=>({id:c.id,label:c.label,
+     why:c.typeId+' parçasının devredeki giriş, çıkış ve koruma uçlarını bul.'}));
+   lesson.summary=description+' Gerçek Windows/3D ve bağımsız pedagojik kabul açık.';
+   lesson.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+     heading:'Devreyi birlikte kurup deneyelim',
+     virtualOnly:true,canonicalGraphUnchanged:false,
+     physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+     steps,observations:['Normal ve kopuk kablo durumu gerçek native simülasyon çekirdeğiyle sınandı.',
+       'Bu sanal deney, gerçek elektrik panosunda çalışma veya Windows/3D kabulü değildir.'],
+     repairModel:marker};
+   const review=r||(lesson.pedagogyReview={});
+   review.preRepairTitleTopologyIssue=review.titleTopologyIssue||null;
+   review.titleTopologyStatus='REVIEW';
+   review.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   review.componentIds=parts.map(c=>c.typeId);
+   review.realWiredCircuit=true;review.nativeDynamicAcceptance=false;
+   review.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_WITH_703_CATALOG_PASS';
+   review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+   review.independentPedagogicalAcceptance=false;
+   review.scActualTopologyRepair=marker;
+ }
+ {
+   const g=part('g','supply-3p','G1 üç faz + PE',80,230);
+   const m=part('motor','motor-y-d','M1 altı uçlu motor',670,230,{
+     motorConnection:'external',
+     nameplate:{connectionRating:'230 V Δ / 400 V Y',ratedLineVoltageStarV:400,
+       ratedWindingVoltageV:230,ratedFrequencyHz:50,ratedPowerKw:0.75,
+       ratedRotorRpm:1400,poleCount:4,synchronousRpm:1500,
+       slipPercent:(1500-1400)/1500*100,
+       note:'Örnek eğitim etiketi; gerçek motor ölçümü değildir.'}
+   });
+   repair(792,'motor-direct-power-outline-048',[g,m],[
+     edge('g','L1','motor','U1'),edge('g','L2','motor','V1'),
+     edge('g','L3','motor','W1'),edge('g','PE','motor','PE'),
+     edge('motor','U2','motor','V2'),edge('motor','V2','motor','W2')
+   ],'Etiketteki 230 V üçgen / 400 V yıldız, 50 Hz, 0,75 kW, 4 kutup ve 1400 dev/dak örneğini inceleyelim. 1500 dev/dak senkron hıza göre örnek kayma yaklaşık %6,67. Sargı uçları U1/V1/W1, yıldız köprüleri U2/V2/W2 dir.',[
+     'Etiketteki 230 V Δ / 400 V Y bilgisiyle U1/V1/W1 girişlerini eşleştir.',
+     'Yıldız için U2–V2 ve V2–W2 köprülerini bağla.',
+     'Üç fazdan L2 kablosunu kes; motor etkinliğinin kalktığını gör.',
+     '50 Hz ve dört kutuptan senkron hızı, örnek 1400 dev/dak ile kaymayı hesapla.'
+   ],'SC792-REAL-MOTOR-NAMEPLATE-TERMINALS-V1');
+ }
+ {
+  const p=[
+   part('g','supply-3p','G1 üç faz güç ve kumanda',40,280),
+   part('stop','push-nc','STOP NC',220,70),
+   part('start','push-no','START NO',395,70),
+   part('f1','fuse','L1 faz sigortası',355,330),
+   part('f2','fuse','L2 faz sigortası',355,475),
+   part('f3','fuse','L3 faz sigortası',355,620),
+   part('over','overload','FR1 üç kutuplu aşırı akım',910,360),
+   part('coil','coil-contactor','K1 kontaktör bobini',760,70,{ref:'K1'}),
+   part('hold','contact-no','K1 NO mühürleme',540,165,{ref:'K1'}),
+   part('main','main-contact','K1 ana güç kontağı',680,430,{ref:'K1'}),
+   part('motor','motor-3p','M1 asenkron motor',1200,435,{ref:'M1'})
+  ];
+  const w=[
+   edge('g','L1','stop','21'),edge('stop','22','over','95'),
+   edge('over','96','start','13'),edge('start','14','coil','A1'),
+   edge('coil','A2','g','N'),edge('over','96','hold','13'),
+   edge('hold','14','coil','A1'),
+   edge('g','L1','f1','1'),edge('f1','2','main','1'),
+   edge('main','2','over','1'),edge('over','2','motor','U'),
+   edge('g','L2','f2','1'),edge('f2','2','main','3'),
+   edge('main','4','over','3'),edge('over','4','motor','V'),
+   edge('g','L3','f3','1'),edge('f3','2','main','5'),
+   edge('main','6','over','5'),edge('over','6','motor','W'),
+   edge('g','PE','motor','PE')
+  ];
+  repair(794,'motor-direct-power-outline-050',p,w,
+    'Kumanda hattında STOP, START, FR1 NC ve K1 bobini var. Güç hattında üç faz sigortası, K1 ana kontakları, FR1 ve motor bulunur. START mühürler; STOP bırakır; bir faz koparsa motor durur.',[
+      'Önce STOP → FR1 95/96 → START → K1 bobinini takip et.',
+      'START basıp bırak; K1 mühürleme kontağı sayesinde motor çalışmaya devam etmeli.',
+      'STOP a basınca hem bobin hem motor durmalı.',
+      'L2 sigortası girişini çıkar: bobin hâlâ çekebilir, üç fazlı motor etkinliği kaybolmalı.'
+    ],'SC794-REAL-CONTROL-POWER-PROTECTION-V1');
+ }
+ {
+  const p=[part('g','supply-3p','G1 üç faz kaynak',60,260),
+    part('sw','packet-switch-3p','Q1 üç kutuplu pako',460,270),
+    part('motor','motor-3p','M1 üç fazlı motor',980,275)];
+  repair(796,'motor-direct-power-outline-051',p,[
+   edge('g','L1','sw','1'),edge('g','L2','sw','3'),edge('g','L3','sw','5'),
+   edge('sw','2','motor','U'),edge('sw','4','motor','V'),edge('sw','6','motor','W'),
+   edge('g','PE','motor','PE')
+  ],'Q1 pako şalterinin 1–2, 3–4 ve 5–6 kutupları aynı mekanik konumla açılıp kapanır. Kontaktör bobini kullanılmaz.',[
+    'Q1 in üç ayrı faz giriş ve çıkış terminalini bul.',
+    'Pako açıkken üç faz kesilir, kapalıyken üç faz motora geçer.',
+    'Tek bir faz çıkışını ayır; motorun üç fazlı etkinliği kalkmalı.'
+  ],'SC796-REAL-THREE-POLE-PACKET-SWITCH-V1');
+ }
+ {
+  const p=[part('g','supply-1p','Sanal L/N kaynak',60,270),
+    part('nc','limit-nc','SQ1 21/22 NC sınır anahtarı',345,105),
+    part('no','limit-no','SQ1 13/14 NO sınır anahtarı',345,440),
+    part('h1','lamp-green','H1 serbest konum',815,135),
+    part('h2','lamp-red','H2 limitte uyarı',815,470)];
+  repair(797,'motor-direct-power-outline-052',p,[
+    edge('g','L','nc','21'),edge('nc','22','h1','X1'),edge('h1','X2','g','N'),
+    edge('g','L','no','13'),edge('no','14','h2','X1'),edge('h2','X2','g','N')
+  ],'SQ1 sınır anahtarının NO ve NC uçlarını karşılaştıralım. Normalde yeşil yanar, tetiklenince kırmızı yanar. İki kontak aynı sanal tetikleme durumunu temsil eder.',[
+    'NC 21/22 ve NO 13/14 terminallerini bul.',
+    'İki SQ1 temasını birlikte tetikle: yeşil sönüp kırmızı yanmalı.',
+    'NC çıkış kablosunu kopar, yeşil lambanın devreden çıktığını gör.'
+  ],'SC797-REAL-LIMIT-NC-NO-SIGNAL-V1');
+ }
+ {
+  const p=[part('g','supply-1p','Sanal L/N kaynak',65,260),
+    part('bn','push-no','S1 NO kontrol',340,115),
+    part('bc','push-nc','S1 NC kontrol',340,455),
+    part('green','lamp-green','H1 çalışma göstergesi',835,130),
+    part('red','lamp-red','H2 bekleme göstergesi',835,480)];
+  repair(798,'motor-direct-power-outline-053',p,[
+   edge('g','L','bn','13'),edge('bn','14','green','X1'),edge('green','X2','g','N'),
+   edge('g','L','bc','21'),edge('bc','22','red','X1'),edge('red','X2','g','N')
+  ],'NO ve NC üzerinden sinyal lambalarını karşılaştıralım. Bekleme sırasında kırmızı, kontrol etkinleşince yeşil görünür. İki kontak birlikte hareket eden sanal S1 i temsil eder.',[
+    'İki lambanın N dönüşünü ve kontrol kontaklarını ayrı izle.',
+    'NO/NC temaslarını birlikte tetikle, kırmızıdan yeşile geçişi gözlemle.',
+    'H1 girişini kopar ve lambanın yanmadığını doğrula.'
+  ],'SC798-REAL-RED-GREEN-SIGNAL-LAMPS-V1');
+ }
+ {
+  const p=[part('g','supply-1p','Sanal L/N kaynak',60,285),
+    part('b','push-no','S1 NO buton',305,80),
+    part('coil','coil-relay','K1 yardımcı röle bobini',615,100,{ref:'K1'}),
+    part('contact','contact-no','K1 bağımsız NO kontak',655,425,{ref:'K1'}),
+    part('h','lamp-green','H1 yük göstergesi',1000,440)];
+  repair(799,'motor-direct-power-outline-054',p,[
+    edge('g','L','b','13'),edge('b','14','coil','A1'),edge('coil','A2','g','N'),
+    edge('g','L','contact','13'),edge('contact','14','h','X1'),edge('h','X2','g','N')
+  ],'S1 röle bobinini enerjiler, K1 NO kontağı ayrı lamba yükünü açıp kapatır. Bobin ile yük hattının görevi farklıdır.',[
+    'K1 bobininin A1/A2 ve kontağın 13/14 uçlarını ayrı izle.',
+    'S1 e bas; bobin çekmeli, NO kapanmalı, H1 yanmalı.',
+    'Bobin A1 kablosunu çıkar; S1 basılsa da lamba yanmamalı.'
+  ],'SC799-REAL-COIL-RELAY-CONTACT-NATIVE-V1');
+ }
+ {
+  const p=[part('g','supply-1p','Sanal L/N kaynak',55,250),
+    part('f','fuse','F1 seri sigorta',325,170),
+    part('b','push-no','S1 NO açma butonu',545,170),
+    part('h','lamp-green','H1 korunan yük',865,200)];
+  repair(802,'motor-direct-power-outline-057',p,[
+    edge('g','L','f','1'),edge('f','2','b','13'),
+    edge('b','14','h','X1'),edge('h','X2','g','N')
+  ],'F1 yük hattına seri bağlıdır. Hat tam ve S1 kapalıysa H1 yanar; F1 çıkış kablosu kopuksa yanmaz. Bu sanal deney gerçek sigorta erime karakteristiğini hesaplamaz.',[
+    'L → F1 → S1 → H1 → N yolunu takip et.',
+    'F1 hattı bağlıyken S1 e bas: H1 yanmalı.',
+    'F1 çıkışını ayır; S1 basılı olsa bile H1 sönmeli.'
+  ],'SC802-REAL-FUSE-IN-SERIES-LOAD-V1');
+ }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
