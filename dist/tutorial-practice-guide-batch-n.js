@@ -1563,6 +1563,50 @@
  }
  }
 
+
+ // SC718 · real LM358P A measurement / stable unused B channel.
+ {
+  const l=L.lessons[717],p=l?.project,review=l?.pedagogyReview;
+  if(l?.id==='opamp-apps-outline-056'&&l.kind==='wiring'&&
+     p?.components?.length===10&&p.wires?.length===14&&
+     p.components.find(c=>c.id==='u1')?.typeId==='lm358p-dip8'&&
+     review?.independentPedagogicalAcceptance!==true){
+    p.components.find(c=>c.id==='in').potentiometer=50;
+    for(const [a,ap,b,bp,why] of [
+      ['g1','M','u1','5','Boş B kanalı pin 5, 0 V referansa gider.'],
+      ['u1','7','u1','6','Boş B kanalı pin 7, pin 6 geri beslemesine döner.'],
+      ['v1-red','TIP','u1','1','UNI-T kırmızı TIP, A kanalının OUT pin 1 ucundadır.'],
+      ['v1-black','TIP','g1','M','UNI-T siyah TIP 0 V ölçüm referansına bağlıdır.']]){
+       p.wires.push({id:'sc718-measure-'+p.wires.length,from:{c:a,p:ap},to:{c:b,p:bp},
+         role:'MEASURE',color:'#43857f',size:'1.5',points:[],
+         tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why});
+    }
+    p.sc718MeasurementGuard='SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1';
+    p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+    l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+      hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+    l.summary='LM358P A kanalı 24 V beslenir; 10 kΩ giriş ve 47 kΩ negatif geri besleme bulunur. Potun %45/%50/%55 ayarlarında UNI-T DCV200 ile çıkışı izle. Kullanılmayan B kanalı ve gerçek ölçüm uçları bağlıdır. Kalibre cihaz veya Windows/3D kabulü değildir.';
+    l.practiceGuide={version:'practice-n1',heading:'LM358P pinleriyle ölçmeyi öğrenelim',
+      method:'virtual-circuit-check',virtualOnly:true,canonicalGraphUnchanged:false,
+      physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+      steps:['Pin 8 +24 V ve pin 4 0 V beslemelerini gözden geçir.',
+        '12 V R3/R4 orta referansı pin 3, giriş R1 üzerinden pin 2, R2 çıkıştan pin 2 üzerindedir.',
+        'B kanalı pin 5 → 0 V ve pin 7 → pin 6 ile boşta kalmaz.',
+        'UNI-T kırmızı probu OUT pin 1, siyah probu 0 V üzerine koy ve DCV200 kullan.',
+        'Potu %45, %50 ve %55 yap; ölçülen çıkış değişimini karşılaştır.',
+        'Çıkış probunu ve R2 geri beslemesini ayrı ayrı koparıp sonucu incele.'],
+      observations:['Prob kopuğunda OL, gerçek geri besleme yoksa deneyin durumu geçersizdir.',
+        'Bu ölçüm ideal/numeric eğitim simülasyonudur; Windows/3D kabulü açık.'],
+      repairModel:'SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1'};
+    review.titleTopologyStatus='REVIEW';
+    review.titleTopologyIssue='WINDOWS_3D_AND_FULL_PHYSICAL_OPAMP_ACCEPTANCE_PENDING';
+    review.realWiredCircuit=true;review.nativeDynamicAcceptance=false;
+    review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+    review.independentPedagogicalAcceptance=false;
+    review.sc718MeasurementRepair='SC718-LM358-DIP8-INPUT-OUTPUT-UT33D-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
