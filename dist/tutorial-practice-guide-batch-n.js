@@ -1849,6 +1849,72 @@
   }
  }
 
+
+ // SC793: 1-phase induction motor's main + auxiliary branch with run capacitor.
+ // Only bounded virtual topology validation; physical start torque/RPM not claimed.
+ {
+  const n=793,l=L.lessons[n-1],p=l?.project,r=l?.pedagogyReview;
+  if(l?.id==='motor-direct-power-outline-049'&&l.kind==='wiring'&&
+     p?.components?.length===7&&p?.wires?.length===13&&
+     p.components.find(x=>x.id==='motor')?.typeId==='motor-3p'&&
+     p.components.filter(x=>x.typeId==='main-contact').length===1&&
+     r?.independentPedagogicalAcceptance!==true){
+   const make=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra
+   });
+   const parts=[
+    make('g','supply-1p','G1','Sanal bir faz L/N/PE',90,210),
+    make('motor','motor-1p','M1','Ana U/N ve yardımcı Z1/Z2 sargıları',655,220,
+     {windingConnection:'external'}),
+    make('cap','capacitor','C1','Yalnız sanal 20 µF yardımcı kondansatör',400,430,
+     {capacitance:0.00002})
+   ];
+   const edges=[
+    ['g','L','motor','U','Sanal ana sargının L bağlantısı.'],
+    ['g','N','motor','N','Sanal ana sargının N dönüşü.'],
+    ['g','PE','motor','PE','Sanal koruma bağlantısı.'],
+    ['g','L','cap','1','Sanal yardımcı sargı kolu kondansatör girişi.'],
+    ['cap','2','motor','Z1','Kondansatörün yardımcı Z1 ucuna uzanan sanal kolu.'],
+    ['motor','Z2','g','N','Yardımcı Z2 sanal dönüş bağlantısı.']
+   ];
+   p.components=parts;
+   p.wires=edges.map(([a,ap,b,bp,why],i)=>({
+    id:'sc793-cap-motor-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    role:'SIGNAL',color:'#43857f',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+   }));
+   p.sc793CapacitorModel='SC793-IDEAL-CAPACITOR-RUN-TOPOLOGY-V1';
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(x=>({id:x.id,label:x.label,
+    why:x.id==='motor'?'Ana ve yardımcı sargı terminalleri ayrı gösterilir.':
+    x.id==='cap'?'Sanal yardımcı sargı kolunun sürekliliğini denetler; gerçek kondansatör seçimi değildir.':
+    'Sadece uygulama içi örnek tek fazlı AC kaynağı.'}));
+   l.summary='Tek fazlı motorun ana U/N sargısı ile kondansatörlü yardımcı Z1/Z2 kolu ayrı kablolanmıştır. Sanal model, bu bağlantı tam ise etkinliği gösterir; gerçek faz kayması, tork, akım ve RPM hesaplamaz. Fiziksel/Windows 3D kabulü açık.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Tek fazlı motorda iki ayrı sargı kolunu ayıralım',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:['Sanal M1 üzerinde ana U/N ve yardımcı Z1/Z2 uçlarını incele.',
+     'C1 kondansatörünün yalnız yardımcı kolun süreklilik şartı olduğunu gör.',
+     'Sanal C1 veya Z1 bağlantısını kes: eğitim modelinde motor etkinliği kalkmalıdır.',
+     'Faz kayması veya tork ölçülmediği için görünen etkinliği gerçek motor davranışıyla karıştırma.'],
+    observations:['20 µF yalnız sanal öğretim örneğidir, donanım kondansatörü seçimi değildir.',
+     'Bu model kablo bütünlüğünü sınar; gerçek elektriksel faz açısı çözümü değildir.'],
+    repairModel:'SC793-SINGLE-PHASE-CAPACITOR-WIRING-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue='SINGLE_PHASE_MOTOR_TITLE_HAD_THREE_PHASE_DOL_GRAPH';
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='PHYSICAL_PHASE_SHIFT_AND_WINDOWS_3D_ACCEPTANCE_PENDING';
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.sc793BoundedTopologyRepair='SC793-SINGLE-PHASE-CAPACITOR-WIRING-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
