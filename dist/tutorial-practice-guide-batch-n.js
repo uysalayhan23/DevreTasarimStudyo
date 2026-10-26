@@ -3099,6 +3099,64 @@
   v.sc847PhaseMonitorRepair='MOTOR-OUTLINE-085-PHASE-MONITOR-HOLD-TO-RUN-V1';
  })();
 
+
+ // SC848: real catalog KA1/KA2 right-left virtual interlock and K1/K2 motor contactors.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-086'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const rawParts=[["g","supply-3p","G1","Sanal üç faz / N / PE",50,400],["stop","push-nc","S0","STOP",240,90],["start","push-no","S1","START",420,90],["dir","selector-2","S2","Sağ / 0 / Sol seçici",595,90,{"position":0}],["rf","coil-relay","KA1","KA1 sağ yön rölesi",1060,80],["rr","coil-relay","KA2","KA2 sol yön rölesi",1060,325],["holdF","contact-no","KA1","KA1 mühürleme NO",520,235],["holdR","contact-no","KA2","KA2 mühürleme NO",520,455],["lockR","contact-nc","KA2","KA2 NC sağ kilit",810,90],["lockF","contact-nc","KA1","KA1 NC sol kilit",810,325],["enableF","contact-no","KA1","KA1 sağ çıkış NO",1100,525],["enableR","contact-no","KA2","KA2 sol çıkış NO",1100,760],["klockR","contact-nc","K2","K2 NC kontaktör kilidi",1250,530],["klockF","contact-nc","K1","K1 NC kontaktör kilidi",1250,770],["kf","coil-contactor","K1","K1 sağ motor kontaktör bobini",1440,530],["kr","coil-contactor","K2","K2 sol motor kontaktör bobini",1440,770],["mf","main-contact","K1","K1 sağ güç kontakları",1020,1030],["mr","main-contact","K2","K2 sol güç kontakları",1210,1180],["motor","motor-3p","M1","M1 sanal üç faz motor",1600,1060,{"motorConnection":"star"}]];
+  const graph=[["g","L1","stop","21"],["stop","22","start","13"],["start","14","dir","11"],["dir","13","lockR","21"],["lockR","22","rf","A1"],["dir","14","lockF","21"],["lockF","22","rr","A1"],["stop","22","holdF","13"],["holdF","14","lockR","21"],["stop","22","holdR","13"],["holdR","14","lockF","21"],["rf","A2","g","N"],["rr","A2","g","N"],["g","L1","enableF","13"],["enableF","14","klockR","21"],["klockR","22","kf","A1"],["kf","A2","g","N"],["g","L1","enableR","13"],["enableR","14","klockF","21"],["klockF","22","kr","A1"],["kr","A2","g","N"],["g","L1","mf","1"],["g","L2","mf","3"],["g","L3","mf","5"],["mf","2","motor","U"],["mf","4","motor","V"],["mf","6","motor","W"],["g","L1","mr","1"],["g","L2","mr","3"],["g","L3","mr","5"],["mr","2","motor","W"],["mr","4","motor","V"],["mr","6","motor","U"],["g","PE","motor","PE"]];
+  const a=rawParts.map(([id,typeId,ref,label,x,y,ext])=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...(ext||{})}));
+  p.components=a;
+  p.wires=graph.map(([x,xp,y,yp],i)=>({
+    id:'motor-outline-086-'+(i+1),from:{c:x,p:xp},to:{c:y,p:yp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:x+'/'+xp+' → '+y+'/'+yp,
+    tutorialWhy:'Sanal KA1/KA2 yön rölesi ve K1/K2 kontaktörün katalog terminali.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:['rf','rr'].includes(c.id)?'Yön komutunu kontaklarla ileten sanal yardımcı röle.':
+      c.typeId==='contact-nc'?'Diğer yönün aynı anda çalışmasını önleyen NC kilit.':
+      c.typeId==='contact-no'?'Kumanda ve mühürleme yolunun NO kontağı.':
+      'Sanal eğitime ait katalog terminali.'}));
+  l.summary='Sağ ve sol yönü iki yardımcı röleyle kontrol edelim. KA1 sağ, KA2 sol komutunu motor kontaktörüne aktarır. START bırakılınca röle mühürlemesi sürer; karşıt yön komutu NC kilidine takılır. Önce STOP, sonra yeni START gerekir. Bu sanal deneyde gerçek motorun durma süresi ve mekanik güvenlik doğrulanmaz.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'İki yardımcı röleyle yön değiştirmeyi öğrenelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+    pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal seçiciyle sağ yönü seç. START ile KA1 ve K1 etkinliğini izle.',
+      'START bırakılınca KA1 mühürleme kontağının neden gerekli olduğunu keşfet.',
+      'Sol yönü seçerek yeni START dene; NC kilidi çalışan yönü değiştirmemeli.',
+      'STOP komutunu ver. Yeni START olmadan motor kendiliğinden başlamamalı.',
+      'Şimdi sol yönü başlat ve dönüş işaretinin tersine döndüğünü gör.',
+      'Sanal röle komut hattını veya bir fazı kopar. Beklenen çalışmanın neden kaybolduğunu düşün.'
+    ],
+    observations:[
+      'Özgün 703 bileşenli katalog ve Simulation.solve ile 21 hedefli pozitif-negatif senaryo PASS.',
+      'Yalnız sanal eğitim modelidir; gerçek donanımda mekanik kilit, güvenli duruş ve üretici onayı yerine geçmez.',
+      'Windows/3D terminal-kablo uyumu ve bağımsız pedagojik kabul REVIEW durumundadır.'
+    ],repairModel:'MOTOR-OUTLINE-086-RIGHT-LEFT-RELAYS-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='MECHANICAL_MOTOR_STOP_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=a.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_21_CHECKS_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc848RightLeftRelayRepair='MOTOR-OUTLINE-086-RIGHT-LEFT-RELAYS-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
