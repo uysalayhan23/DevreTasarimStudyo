@@ -1256,6 +1256,80 @@
   }
  }
 
+
+ // SC709: Arduino actually reads the PIR signal on D2 and drives an LED on D9.
+ // No unsupported mains/motor circuit is represented as microcontroller code.
+ {
+  const sc=709,lesson=L.lessons[sc-1],p=lesson?.project,r=lesson?.pedagogyReview||{};
+  if(lesson?.id==='sensor-analog-apps-outline-059'&&lesson.kind==='wiring'&&
+   p?.components?.some(c=>c.typeId==='proximity')&&p?.wires?.length===7&&
+   !p.components.some(c=>c.typeId==='arduino-uno')&&
+   r.independentPedagogicalAcceptance!==true){
+   const mk=(id,typeId,label,x,y,extra={})=>({
+    id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra
+   });
+   const sketch=[
+    'void setup(){','  pinMode(2, INPUT);','  pinMode(9, OUTPUT);','}',
+    'void loop(){','  if(digitalRead(2)==HIGH){',
+    '    digitalWrite(9,HIGH);','  }else{',
+    '    digitalWrite(9,LOW);','  }','}'
+   ].join('\n');
+   const components=[
+    mk('uno','arduino-uno','Arduino UNO R3 · D2 sensör, D9 gösterge',85,230,{
+     arduinoSketch:sketch,arduinoProgramName:'SC709 · PIR hareketi ve LED'}),
+    mk('pir','arduino-pir','PIR hareket algılama sensörü',585,100),
+    mk('limit','arduino-resistor-220','LED akım sınırlandırma 220 Ω',635,385),
+    mk('led','arduino-led','D9 hareket LED göstergesi',930,390)
+   ];
+   const edges=[
+    ['uno','5V','pir','VCC','Arduino 5 V, PIR sensör beslemesidir.'],
+    ['uno','GND','pir','GND','PIR ve Arduino aynı 0 V referansını paylaşır.'],
+    ['pir','OUT','uno','D2','Hareket algılama bilgisi dijital D2 pinine gelir.'],
+    ['uno','D9','limit','1','Sketch D9 çıkışını 220 Ω LED serisine gönderir.'],
+    ['limit','2','led','A','LED anodu akım sınırlayıcı üzerinden bağlanır.'],
+    ['led','K','uno','GND','LED katodu 0 V dönüşünü tamamlar.']
+   ];
+   p.components=components;p.wires=edges.map(([a,ap,b,bp,why],i)=>({
+    id:'sc709-arduino-pir-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:why
+   }));
+   p.workspaceMode='arduino';p.preferredAppearance='material';
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:lesson.id,phase:'demo',step:0};
+   lesson.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   lesson.materials=components.map(x=>({id:x.id,label:x.label,
+    why:x.id==='uno'?'Gerçek sketch sensör D2 durumunu okuyup D9 çıkışını değiştirir.':
+    x.id==='pir'?'Sanal PIR hareket durumunu kullanıcı değiştirebilir.':
+    x.id==='limit'?'Sanal LED çıkışına 220 Ω seri direnç bağlanır.':
+    'Yalnız D9 etkinleştiğinde yanacak sanal göstergedir.'}));
+   lesson.summary='Arduino UNO D2 girişinden PIR hareketini okur; D9 çıkışı 220 Ω üzerinden LED yakar. PIR 5 V/GND veya OUT hattı koparsa LED sönmelidir. Bu 5 V sanal ders gerçek donanım kabulü değildir.';
+   lesson.practiceGuide={
+    version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Hareket algılandığında Arduino ne yapıyor?',
+    virtualOnly:true,physicalTestAccepted:false,pedagogicalAcceptance:false,
+    canonicalGraphUnchanged:false,fullyRich:false,
+    steps:['Önce Arduino 5 V, GND ve PIR OUT → D2 kablolarını bul.',
+     'PIR hareket düğmesini kapalı tut: D9 LED sönük olmalı.',
+     'Hareketi aç: sketch D2 okur ve D9 LED yanar.',
+     'PIR OUT, 5 V veya GND kablosunu tek tek çıkar: LED tekrar sönmeli.'],
+    observations:['Arduino kodu gerçekten sanal yorumlayıcıda çalışır; yalnız sembol değildir.',
+     'Windows/3D terminal hizası ve bağımsız pedagojik kabul açık.'],
+    repairModel:'SC709-PIR-POWERED-ARDUINO-LED-V1'};
+   lesson.pedagogyReview=lesson.pedagogyReview||{};
+   lesson.pedagogyReview.titleTopologyIssue='WINDOWS_3D_PHYSICAL_ACCEPTANCE_PENDING';
+   lesson.pedagogyReview.titleTopologyStatus='REVIEW';
+   lesson.pedagogyReview.componentIds=components.map(x=>x.typeId);
+   lesson.pedagogyReview.realWiredCircuit=true;
+   lesson.pedagogyReview.nativeDynamicAcceptance=false;
+   lesson.pedagogyReview.physicalAcceptance=false;
+   lesson.pedagogyReview.windowsVisualAcceptance=false;
+   lesson.pedagogyReview.independentPedagogicalAcceptance=false;
+   lesson.pedagogyReview.sc709NativeRepair='SC709-PIR-POWERED-ARDUINO-LED-V1';
+  }
+ }
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
