@@ -2089,6 +2089,108 @@
  }
  })();
 
+
+ // SC801/803/804: time relay double-delay correction, overload protection,
+ // and real three-pole motor protection breaker. Native targeted PASS.
+ (() => {
+ const P=(id,typeId,label,x,y,extra={})=>({id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+ const E=(a,ap,b,bp)=>[a,ap,b,bp];
+ function replace(sc,id,parts,graph,summary,steps,mark){
+   const l=L.lessons[sc-1],p=l?.project,r=l?.pedagogyReview;
+   if(l?.id!==id||l.kind!=='wiring'||p?.components?.length!==7||
+     p?.wires?.length!==13||!p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+   p.components=parts;
+   p.wires=graph.map(([a,ap,b,bp],i)=>({
+     id:'sc'+sc+'-real-'+(i+1),
+     from:{c:a,p:ap},to:{c:b,p:bp},
+     color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+     tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+     tutorialWhy:'Bu elemanın gerçek katalog giriş/çıkış uçlarını takip edelim.'
+   }));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+     hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,
+     why:c.typeId+' parçasının kendi terminal ve kontrol işlevi bu devrede gösterilir.'}));
+   l.summary=summary+' Tam Windows/3D ve bağımsız pedagojik kabul bekliyor.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+     heading:'Gerçek çalışma ile arızalı bağlantıyı karşılaştıralım',
+     virtualOnly:true,canonicalGraphUnchanged:false,
+     physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+     steps,observations:['Normal ve kopuk/kontrol durumu native Simulation.solve ile doğrulandı.',
+       'Bu sanal ders gerçek pano güvenliği, sigorta karakteristiği ya da Windows/3D kabul kanıtı değildir.'],
+     repairModel:mark};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyIssue='WINDOWS_3D_AND_INDEPENDENT_PEDAGOGICAL_ACCEPTANCE_PENDING';
+   v.titleTopologyStatus='REVIEW';v.componentIds=parts.map(c=>c.typeId);
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_WITH_703_CATALOG_PASS';
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;v.scActualTopologyRepair=mark;
+ }
+ {
+   const g=P('g','supply-1p','G1 sanal L/N',65,270),
+     b=P('b','push-no','S1 zaman rölesi başlat',300,85),
+     timer=P('timer','coil-delay-on','KT1 · 2 s ON-delay',630,110,{
+       ref:'KT1',delayValue:2,delayUnit:'sec'}),
+     contact=P('contact','contact-no','KT1 NO çıkış kontağı',670,405,{ref:'KT1'}),
+     h=P('h','lamp-green','H1 gecikmeli yük',1010,435);
+   replace(801,'motor-direct-power-outline-056',[g,b,timer,contact,h],[
+     E('g','L','b','13'),E('b','14','timer','A1'),E('timer','A2','g','N'),
+     E('g','L','contact','13'),E('contact','14','h','X1'),E('h','X2','g','N')
+   ],'KT1 bobini iki saniyelik ON-delay üretir. Ayrı KT1 NO kontağı gecikme sonunda H1 lambasını yakar; buton bırakılınca hemen söner. Gecikme hem bobine hem kontağa ikinci kez uygulanmaz.',[
+     'S1 butonuna basmadan H1 söner; bobin KT1 A1/A2 uçlarını bul.',
+     'S1 e basıp 1 saniye sonra bak: H1 hâlâ sönük olmalı.',
+     '2 saniye dolduktan sonra H1 yanmalı; S1 bırakılınca sönmeli.',
+     'S1–KT1 A1 hattını kopar; süre dolsa da H1 yanmamalı.'
+   ],'SC801-REAL-ON-DELAY-RELAY-NATIVE-V1');
+ }
+ {
+   const p=[P('g','supply-3p','G1 üç faz L1/L2/L3/N/PE',55,265),
+     P('start','push-no','START NO',360,75),
+     P('stop','push-nc','STOP NC',200,75),
+     P('over','overload','FR1 3 faz aşırı akım rölesi',850,355,{ref:'FR1'}),
+     P('coil','coil-contactor','K1 bobin',835,90,{ref:'K1'}),
+     P('main','main-contact','K1 ana güç kontakları',620,395,{ref:'K1'}),
+     P('hold','contact-no','K1 mühürleme',560,165,{ref:'K1'}),
+     P('motor','motor-3p','M1 asenkron motor',1130,385,{ref:'M1'})];
+   replace(803,'motor-direct-power-outline-058',p,[
+     E('g','L1','stop','21'),E('stop','22','over','95'),
+     E('over','96','start','13'),E('start','14','coil','A1'),
+     E('coil','A2','g','N'),E('over','96','hold','13'),
+     E('hold','14','coil','A1'),
+     E('g','L1','main','1'),E('main','2','over','1'),E('over','2','motor','U'),
+     E('g','L2','main','3'),E('main','4','over','3'),E('over','4','motor','V'),
+     E('g','L3','main','5'),E('main','6','over','5'),E('over','6','motor','W'),
+     E('g','PE','motor','PE')
+   ],'Aşırı akım rölesi FR1 üç fazın güç hattındadır; 95/96 NC koruma kontağı kumanda bobinini keser. START ile mühürleme çalışır, FR1 sanal trip durumunda K1 bırakır ve motor durur.',[
+     'FR1 in 1–2/3–4/5–6 güç uçlarını ve 95–96 koruma kontağını bul.',
+     'START basıp bırak; K1 mühürlemesi motoru çalıştırmaya devam etmeli.',
+     'FR1 i sanal trip durumuna getir; K1 bobini ve motor durmalı.',
+     'Bir fazın FR1 girişini kopar; üç fazlı motor etkinliği kaybolmalı.'
+   ],'SC803-REAL-OVERLOAD-POWER-AND-95-96-NATIVE-V1');
+ }
+ {
+   const p=[P('g','supply-3p','G1 üç faz kaynak',60,250),
+     P('q','thermal-magnetic','Q1 üç kutuplu motor koruma şalteri',515,270,{ref:'Q1'}),
+     P('motor','motor-3p','M1 motor',1010,270,{ref:'M1'})];
+   replace(804,'motor-direct-power-outline-059',p,[
+     E('g','L1','q','1'),E('g','L2','q','3'),E('g','L3','q','5'),
+     E('q','2','motor','U'),E('q','4','motor','V'),E('q','6','motor','W'),
+     E('g','PE','motor','PE')
+   ],'Q1 termik-manyetik motor koruma şalterinin üç ana kutbu bütün fazlarda seri bulunur. Sanal kapalı konumda motor beslenir, şalter açma/trip konumunda üç fazı birden keser. Bu ideal kontak modeli gerçek açma eğrisini çözmez.',[
+     'Q1 in 1–2, 3–4 ve 5–6 ana kutuplarını izle.',
+     'Sanal Q1 kapalıyken motor üç faz alır.',
+     'Q1 i açma/trip konumuna getir; motor durmalı.',
+     'Q1 çıkışında tek fazı kopar; üç fazlı motor etkinliğinin kalktığını doğrula.'
+   ],'SC804-REAL-THREE-POLE-MOTOR-PROTECTION-V1');
+ }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
