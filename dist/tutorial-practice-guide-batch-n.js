@@ -6018,6 +6018,228 @@
  }
  })();
 
+
+ // Native source corrections: SC1048 V20 Cn004, SC1053 V20 AI1 + direction,
+ // SC1077 three-phase DOL with the actual motor star terminal junction.
+ (() => {
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const intro=[
+   ['ps','L','vfd','L1'],['ps','N','vfd','N'],['ps','PE','vfd','PE'],
+   ['vfd','U','m','U'],['vfd','V','m','V'],['vfd','W','m','W'],
+   ['m','U2','m','V2'],['m','V2','m','W2'],['vfd','PE2','m','PE'],
+   ['vfd','14','vfd','12']
+  ];
+  const defs=[
+   {seq:1048,id:'motor-direct-power-outline-160',kind:'binary',
+    title:'V20 Cn004 ikili kodla dört sabit hız seçimi',
+    summary:'Sanal SINAMICS V20 Cn004 makrosu: DI1/DI2 iki bitli sabit hız kodunu belirler. 00=durma, 01=10 Hz, 10=20 Hz, 11=30 Hz. Motor sürücü rampasıyla hedefi izler. Bu örnek yalnız V20 simülasyonudur; saha güvenliği, üretici devre kabulü ve STO değildir.',
+    explanation:'İki anahtarın iki bitlik hız kodu oluşturduğunu düşün. İlkini açınca 10 Hz, ikincisini açınca 20 Hz seçilir. İkisini açtığında 30 Hz hedeflenir. Her seçimden sonra sürücü motoru bir anda hızlandırmaz, kendi rampasını izler.',
+    quiz:'Cn004 ikili hız seçiminde DI1=1 ve DI2=1 ise hedef nedir?',options:['30 Hz','İki motor aynı anda çalışır','0 Hz'],
+    why:'İki bitin oluşturduğu 11 kodu üçüncü sabit frekansı seçer.',
+    pending:'REAL_Cn004_HARDWARE_VFD_EMC_STO_WINDOWS_3D_PEDAGOGY_PENDING'},
+   {seq:1053,id:'motor-direct-power-outline-164',kind:'analog-direction',
+    title:'V20 üzerinde ileri/geri ve potansiyometreyle hız',
+    summary:'Sanal V20 Cn002: DI1 kalıcı RUN, DI2 REVERSE; katalog uçlarına bağlı 10 kΩ potansiyometre AI1 analog hız referansını 0–50 Hz aralığında değiştirir. İleri/geri geçişini V20 rampa ile gerçekleştirir. Gerçek tesisat veya güvenlik sertifikası değildir.',
+    explanation:'Bir fanın yönünü ve hızını ayarladığını hayal et. Önce RUN ver, potansiyometreyi orta konuma al: yaklaşık 25 Hz hedefle. Geri anahtarını açınca sürücü hızını düşürüp sıfırdan geçerek ters yöne ilerler. RUN kapanınca yavaşlayarak durur.',
+    quiz:'RUN açık ve potansiyometre orta konumdayken REVERSE verilirse ne beklenir?',options:['Hızın işareti tersine döner ve rampa sıfırdan geçer.','Motor uçları elle çapraz bağlanır.','Motor ani bir anda tam hıza çıkar.'],
+    why:'V20 modelinde yön komutu frekans hedefinin işaretini değiştirir.',
+    pending:'REAL_VFD_AI1_DIRECTION_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING'}
+  ];
+  for(const info of defs){
+   const l=L.byId[info.id],p=l?.project,review=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(x=>x.typeId==='motor-3p')||!p.components.some(x=>x.typeId==='main-contact')||
+     review?.independentPedagogicalAcceptance===true)continue;
+   const binary=info.kind==='binary';
+   const vp={P0700:2,P1000:binary?3:2,P1016:binary?2:1,P0727:0,
+     P1040:0,P1082:50,P1120:10,P1121:10,P2000:50,
+     'P0756.0':0,'P0757.0':0,'P0758.0':0,'P0759.0':10,'P0760.0':100};
+   if(binary){
+    vp.P0701=15;vp.P0702=16;vp.P0703=17;vp.P0704=18;
+    vp.P1001=10;vp.P1002=20;vp.P1003=30;
+   }else{
+    vp.P0701=1;vp.P0702=12;vp.P0703=9;vp.P0704=10;
+   }
+   const parts=[
+    C('ps','supply-1p','G1','Sanal 230 V L/N/PE',75,230),
+    C('vfd','sinamics-v20-1p','V20','SINAMICS V20 '+(binary?'Cn004':'Cn002'),675,330,
+      {driveControl:'terminals',v20:{schema:1,macro:binary?'Cn004':'Cn002',params:vp,run:false,reverse:false,reset:0,load:50,temperature:30}}),
+    C('m','motor-3p','M1','Sanal yıldız asenkron motor',1170,320)
+   ];
+   const graph=intro.map(x=>x.slice());
+   const sw=(id,label,pin,y)=>{
+    parts.push(C(id,'selector-no',id.toUpperCase(),label,270,y));
+    graph.push(['vfd','13',id,'13'],[id,'14','vfd',pin]);
+   };
+   if(binary){
+    sw('b0','Hız kodunun düşük biti DI1','8',580);
+    sw('b1','Hız kodunun yüksek biti DI2','9',785);
+   }else{
+    sw('run','Kalıcı RUN DI1','8',550);
+    sw('reverse','Kalıcı yön REVERSE DI2','9',770);
+    parts.push(C('pot','potentiometer','RV1','AI1 için 10 kΩ potansiyometre',280,970,
+      {potentiometer:50,potMax:10000}));
+    graph.push(['vfd','1','pot','3'],['pot','1','vfd','5'],['pot','2','vfd','2']);
+   }
+   p.components=parts;
+   p.wires=graph.map(([aa,ap,bb,bp],j)=>({id:'sc'+info.seq+'-v20-'+(j+1),
+     from:{c:aa,p:ap},to:{c:bb,p:bp},color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+     tutorialHint:'Sanal '+aa+'/'+ap+' → '+bb+'/'+bp,
+     tutorialWhy:'V20 veya motorun gerçek katalog terminalini izle.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:info.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+      hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(x=>({id:x.id,label:x.label,why:x.id==='ps'?'Sanal V20 giriş beslemesi.':
+     x.id==='vfd'?'Özgün V20.tick frekans/rampa ve motor modeli.':
+     x.id==='m'?'V20 çıkışıyla beslenen yıldız motor.':
+     x.id==='pot'?'AI1 analog hız için üç uçlu 10 kΩ bölücü.':'Gerçek V20 dijital girişini kumanda eder.'}));
+   l.summary=info.summary;l.explanation=info.explanation;
+   l.quiz={question:info.quiz,options:info.options,answer:0,why:info.why};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:info.title,
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:binary?[
+     'Cn004 sanal V20 ile motorun katalog giriş/çıkış uçlarını kontrol et.',
+     '00 girişinde durma; yalnız DI1 açıksa 10 Hz hedefle.',
+     'Yalnız DI2 açıksa 20 Hz; iki giriş açıksa 30 Hz hedefle.',
+     'Bir motor fazını, DI girişini veya V20 beslemesini koparıp sonucu karşılaştır.'
+    ]:[
+     'V20 Cn002 ve sanal motor U/V/W yıldız bağlantısını kontrol et.',
+     'RUN açıp potansiyometreyi yüzde 50 seç; yaklaşık 25 Hz hedefle.',
+     'Potansiyometreyi değiştir; AI1 ve sanal motor hızı üzerindeki etkiyi incele.',
+     'REVERSE aç; frekansın negatif yöne rampasını izle.',
+     'RUN, güç, motor fazı ve AI1 kopukluklarında negatif sonuçları karşılaştır.'
+    ],
+    observations:['Özgün V20.tick/Simulation.solve ve 703 bileşenli katalogla hedefli pozitif-negatif test.',
+     'Sanal sürücü gerçek motor mekanik torku, donanım, emniyet, Windows/3D veya bağımsız pedagojik kabul değildir.'],
+    repairModel:'SC'+info.seq+'-NATIVE-V20-TARGETED-V1'};
+   const v=review||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';v.titleTopologyIssue=info.pending;
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_V20_SC'+info.seq+'_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v['sc'+info.seq+'V20Repair']='SC'+info.seq+'-NATIVE-V20-TARGETED-V1';
+  }
+  // SC1077: the existing three-phase direct-on-line lesson omitted both star links.
+  // Repair just the true missing motor terminal junction and real steps.
+  (() => {
+   const l=L.byId['motor-direct-power-outline-169'],p=l?.project,r=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+      !p.components.some(c=>c.typeId==='motor-3p')||
+      r?.independentPedagogicalAcceptance===true)return;
+   const links=[['motor','U2','motor','V2'],['motor','V2','motor','W2']];
+   for(const [aa,ap,bb,bp] of links){p.wires.push({id:'sc1077-star-'+ap,
+     from:{c:aa,p:ap},to:{c:bb,p:bp},color:'#43857f',role:'POWER',size:'1.5',points:[],
+     tutorialHint:'Sanal yıldız köprüsü '+ap+' → '+bp,
+     tutorialWhy:'Üç fazlı motor sargılarının yıldız uçlarını birleştirir.'});}
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+     hint:w.tutorialHint||'Katalog terminali '+w.from.c+'/'+w.from.p+' → '+w.to.c+'/'+w.to.p,
+     why:w.tutorialWhy||'Özgün doğrudan yol verme devresinin katalog terminalidir.',
+     color:w.color||'#43857f',role:w.role||'CONTROL',size:w.size||'1.5'}));
+   l.materials=p.components.map(c=>({id:c.id,label:c.label||c.ref,
+     why:c.id==='main'?'Kontaktör ana güç kontakları motor fazlarını anahtarlıyor.':
+     c.id==='hold'?'START bırakıldıktan sonra kontaktörün kumandasını tutar.':
+     c.id==='motor'?'Yıldız U2/V2/W2 köprüleriyle üç fazda döner.':
+     'Sanal katalog devresinin kumanda veya güç elemanı.'}));
+   l.summary='Üç fazlı motorun isteğe bağlı sanal START/STOP çalıştırması: NC STOP, NO START, K1 kontaktör bobini, K1 mühürleme kontağı ve üç kutuplu güç kontağı. Eksik U2/V2/W2 yıldız köprüleri tamamlandı. Motor fazları kontaktörden geçer; gerçek saha aşırı akım/emniyet kabulü değildir.';
+   l.explanation='Bir fanın çalıştırılmasını düşün. START a kısa basınca kontaktör çekerek motorun güç yolunu açar. Yardımcı kontak bu komutu tutar; START ı bıraktığında motor çalışmaya devam eder. STOP a basınca mühürleme bırakır ve motor durur. Motorun diğer üç sargı ucu sanal yıldız bağlantısıyla birleştirilmiştir.';
+   l.quiz={question:'START bırakıldıktan sonra kontaktörün çalışmaya devam etmesini hangi eleman sağlar?',
+     options:['K1 yardımcı mühürleme kontağı','PE koruma iletkeni','Yıldız motor köprüsü'],
+     answer:0,why:'K1 yardımcı NO kontak STOP sonrası izinli durumda kendi bobinini beslemeye devam eder.'};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+     heading:'START, mühürleme ve STOP ile sanal üç faz motoru',virtualOnly:true,
+     canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+     steps:['K1 bobini ve yardımcı mühürleme devresini gözlemle.',
+       'K1 ana üç kutuplu güç kontağı ile motor U/V/W bağlantısını kontrol et.',
+       'Yıldız U2/V2/W2 köprülerini kur.',
+       'START a bas; kontaktör ve motor durumlarını izle.',
+       'START ı bırak; mühürleme durumunu denetle.',
+       'STOP a bas; ardından güç fazını veya bobin kablosunu çıkarıp sonucu karşılaştır.'],
+     observations:['Özgün Simulation.solve/703 katalog ile hedefli motor, kumanda ve kopuk faz kontrolleri doğrulanır.',
+       'Termik aşırı yük veya gerçek risk analizi bu kaynakta yoktur; donanım, Windows/3D ve pedagojik kabul bekliyor.'],
+     repairModel:'SC1077-NATIVE-DOL-MOTOR-STAR-V1'};
+   const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='REAL_OVERLOAD_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=p.components.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_SC1077_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v.sc1077StarMotorRepair='SC1077-NATIVE-DOL-MOTOR-STAR-V1';
+  })();
+ })();
+
+
+ // SC1078: the original star/delta switch can select Y/Delta but cannot reverse.
+ // Use the catalogue's actual 3-pole reversing packet ahead of the Y/Delta packet.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-039'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+     p.components.some(x=>x.typeId!=='supply-3p'&&x.typeId!=='packet-star-delta'&&x.typeId!=='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,position=0)=>({id,typeId,ref,label,x,y,rotation:0,state:false,position,address:'',note:''});
+  const parts=[
+   C('g1','supply-3p','G1','Sanal üç faz ve PE',60,350),
+   C('rev','packet-reversing-3p','S0','İleri / 0 / Geri paket şalter',320,365),
+   C('sw','packet-star-delta','S1','0 / Y / Δ paket şalter',685,365),
+   C('motor','motor-y-d','M1','Altı sargı uçlu sanal motor',1130,355)
+  ];
+  const graph=[
+   ['g1','L1','rev','L1'],['g1','L2','rev','L2'],['g1','L3','rev','L3'],
+   ['rev','U','sw','L1'],['rev','V','sw','L2'],['rev','W','sw','L3'],
+   ['sw','U1','motor','U1'],['sw','V1','motor','V1'],['sw','W1','motor','W1'],
+   ['sw','U2','motor','U2'],['sw','V2','motor','V2'],['sw','W2','motor','W2'],
+   ['g1','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc1078-y-d-rev-'+(i+1),
+   from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'POWER',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Gerçek katalogdaki yön ve yıldız/üçgen şalter terminali.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(x=>({id:x.id,label:x.label,why:
+    x.id==='rev'?'0/ileri/geri konumlu üç kutuplu katalog paketi iki fazı değiştirir.':
+    x.id==='sw'?'0/Y/Δ konumlu gerçek MT031 eğitim kontağı motor bağlantısını seçer.':
+    x.id==='motor'?'U1/V1/W1 ve U2/V2/W2 uçları paket şalterden beslenir.':
+    'Üç fazlı sanal enerji ve PE referansı.'}));
+  l.summary='İleri/geri ve Y/Δ sanal motor uygulaması: gerçek katalogdaki üç kutuplu tersleme paket şalteri ile MT031 yıldız/üçgen paket şalteri art arda kullanıldı. 0 konumu motoru durdurur; Y ve Δ bağlantıları yalnız izin verilen sanal fazlarda aktiftir. Gerçek ileri/geri anahtarlama emniyeti, geçiş kilidi, yıldız/üçgen motor kalkış akımı ve üretici kurulumu bu modelde doğrulanmamıştır.';
+  l.explanation='Bir motorun iki ayrı seçimi var: önce hangi yöne döneceğini seçen şalter, sonra sargı bağlantısını Y ya da Δ yapan şalter. İki şalterden biri 0 dayken enerji yolu kapalı kalır. İleri veya geri seçildiğinde faz sıralaması değişir; Y/Δ paketi ise sargıların nasıl bağlandığını belirler. Gerçek makinelerde yön ve yıldız/üçgen geçişi mutlaka ayrı güvenlik ve zamanlama koşullarıyla değerlendirilir.';
+  l.quiz={question:'Sanal devrede ileri/geri şalteri 0 konumundayken Y/Δ paketi Δ konumunda olsa ne beklenir?',
+   options:['Motor çalışmaz; üç faz enerji yolu kesiktir.','Motor mutlaka geri döner.','PE motoru döndürür.'],answer:0,
+   why:'Yön şalteri faz beslemesini keserse Y/Δ paketi tek başına motoru besleyemez.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Yönü ve Y/Δ konumunu ayrı ayrı gözlemle',
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Girişten üç fazın önce ileri/geri paketine, sonra Y/Δ paketine geldiğini kontrol et.',
+     'İki şalter 0 konumundayken sanal motorun durduğunu gör.',
+     'Yön ileri (1) ve Y/Δ yıldız (1) seçildiğinde motor enerjilenir.',
+     'Yön geri (2) ve Y/Δ yıldız (1) seçildiğinde faz bağlantısının terslemesini gözlemle.',
+     'İleri/geri veya Y/Δ şalterini 0 yap: motor durur.',
+     'Bir giriş fazı ya da Y/Δ U/V/W kablosunu kopar; negatif durumu karşılaştır.'],
+    observations:['703 katalog ve özgün Simulation.solve ile paket kamları, faz gücü ve kopuk kablo hedefli doğrulanır.',
+     'Üretici Y/Δ geçiş zamanlaması, faz dönüş yönü mekanik kanıtı, gerçek interlock, Windows/3D ve pedagojik kabul açık.'],
+    repairModel:'SC1078-NATIVE-REV-STAR-DELTA-PACKET-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_REVERSAL_INTERLOCK_STAR_DELTA_TRANSITION_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_SC1078_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc1078ReverseYDRepair='SC1078-NATIVE-REV-STAR-DELTA-PACKET-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
