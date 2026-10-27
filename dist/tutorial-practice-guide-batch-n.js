@@ -4269,6 +4269,141 @@
   v.sc914DualMotorRepair='SC914-VIRTUAL-DUAL-MOTOR-INDEPENDENT-START-STOP-V1';
  })();
 
+
+ // SC939-944: identity-grounded sensor demonstrations. Only virtual circuitry.
+ (() => {
+  const C=(id,typeId,label,x,y,extra={})=>({
+   id,typeId,ref:id.toUpperCase(),label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const A=[
+   ['081','proximity','Endüktif metal sensörü','metal',4,2,'Metal','Plastik'],
+   ['082','capacitive-switch','Kapasitif yaklaşım sensörü','plastic',10,2,'Plastik','Metal olmayan nesneler'],
+   ['083','sensor-hall','Hall manyetik sensörü','magnet',4,2,'Mıknatıs','Sıradan metal'],
+   ['084','sensor-diffuse','Cisimden yansımalı optik sensör','wood',40,15,'Ahşap cisim','Sıvı']
+  ];
+  function finalize(l,parts,graph,tag,heading,summary,steps,observations,question,answers){
+   const p=l.project;
+   p.components=parts;
+   p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'sensor-'+tag+'-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal sensör deneyinde ilgili katalog terminalini izle.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:'Sanal algılama, ölçüm veya gösterge görevini incele.'}));
+   l.learningGoal=heading;l.summary=summary+' Windows/3D ve bağımsız pedagojik kabul bekliyor.';
+   l.explanation='Yalnız sanal eğitim devresi; enerjili donanım bağlantısı yapılmaz.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading,virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps,observations,repairModel:'SC-'+tag+'-SENSOR-V1'};
+   l.quiz={question,options:answers,answer:0,why:summary};
+   const v=l.pedagogyReview||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='SENSOR_MODEL_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+   v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_703_CATALOG_SIMULATION_SOLVE_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v.scSensorRepair='SC-'+tag+'-SENSOR-V1';
+  }
+  for(const [suffix,type,label,target,range,near,yes,no] of A){
+   const l=L.byId['sensor-analog-apps-outline-'+suffix],p=l?.project;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+     p.components.find(c=>c.id==='s')?.typeId!=='proximity'||
+     l.pedagogyReview?.independentPedagogicalAcceptance===true)continue;
+   const sensor=p.components.find(c=>c.id==='s');
+   sensor.typeId=type;sensor.label=label;
+   sensor.sensing={target,range,distance:range*1.5,offset:0,auto:false};
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.learningGoal=label+' ile sanal hedef algılama';
+   l.summary=label+' BN (+), BU (0 V) ve BK (PNP çıkış) uçlarıyla sanal H1 göstergesini çalıştırır. Algılama hedef ve mesafeye bağlıdır; fiziksel kabul bekliyor.';
+   l.explanation='Önce sanal hedefi yaklaştır, sonra uzaklaştır. H1 değişimini BK çıkışı üzerinden izle; bir terminali kopardığında ne değiştiğini incele.';
+   l.materials=p.components.map(c=>({id:c.id,label:c.label,why:c.id==='s'?'Sanal hedefe duyarlı sensör.':'Sanal besleme veya gösterge.'}));
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:label+' ile hedefi tanı',virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['BN/BU beslemeyi ve BK–H1 sinyal yolunu bul.',
+     yes+' hedefini sanal olarak yaklaştır, H1 yansın.',
+     'Hedefi algılama aralığından çıkar; H1 sönmeli.',
+     'BN, BU ve BK hatlarını ayrı ayrı kopararak sonucu karşılaştır.'],
+    observations:['Sanal hedef algılama; üretici performansı ve gerçek güvenlik kabulü değildir.',
+     'Windows/3D terminal geometrisi ve bağımsız pedagojik kabul açık.'],
+    repairModel:'SC'+(858+Number(suffix))+'-TARGET-'+type+'-V1'};
+   l.quiz={question:'Bu sanal '+label+' uygulamasında uygun hedef hangisi?',
+    options:[yes,no,'PE terminali'],answer:0,why:'Sensör tipi ve hedef uygunluğu katalog/simülasyon modeliyle belirlenir.'};
+   const v=l.pedagogyReview||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='SENSOR_TARGET_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=p.components.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+   v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v.targetedNativePositiveNegative='ORIGINAL_703_CATALOG_SIMULATION_SOLVE_PASS';
+   v.scSensorRepair='SC'+(858+Number(suffix))+'-TARGET-'+type+'-V1';
+  }
+  {
+   const l=L.byId['sensor-analog-apps-outline-085'],p=l?.project;
+   if(l?.kind==='wiring'&&p?.components?.length===3&&p?.wires?.length===4&&
+     p.components.find(c=>c.id==='s')?.typeId==='proximity'&&
+     l.pedagogyReview?.independentPedagogicalAcceptance!==true){
+    finalize(l,[
+     C('g','supply-dc-plus','G1 · sanal 24 VDC',80,200),
+     C('r','resistor','R1 · 10 kΩ',370,110,{resistance:10000}),
+     C('s','sensor-ntc','NTC sıcaklık direnci',590,280,{temperature:25}),
+     C('v','meter-voltmeter','V1 sanal voltmetre',930,130)
+    ],[
+     ['g','P','r','1'],['r','2','s','1'],['s','2','g','M'],
+     ['v','1','r','2'],['v','2','g','M']
+    ],'943-NTC','NTC ısınınca sanal gerilim nasıl değişir?',
+    'Sanal R1–NTC gerilim bölücüsü: sıcaklık artınca NTC direnci ve V1 gerilimi azalır.',
+    ['NTC sıcaklığını 5, 25 ve 45 °C olarak ayrı ayrı dene.',
+     'R1 ile NTC arasındaki V1 değerini karşılaştır.',
+     'NTC girişini çıkar; kopuk okumayı sıcaklık değeri sayma.'],
+    ['Özgün 703 katalog ve Simulation.solve sayısal NTC direnç/gerilim değişimini hesaplar.',
+     'Gerçek kalibrasyon, donanım güvenliği ve Windows/3D kabulü yapılmadı.'],
+    'NTC ısındığında sanal devrede ne olur?',
+    ['NTC direnci ve V1 gerilimi düşer','Motor zorunlu çalışır','PE sinyal olur']);
+   }
+  }
+  {
+   const l=L.byId['sensor-analog-apps-outline-086'],p=l?.project;
+   if(l?.kind==='wiring'&&p?.components?.length===3&&p?.wires?.length===4&&
+     p.components.find(c=>c.id==='s')?.typeId==='proximity'&&
+     l.pedagogyReview?.independentPedagogicalAcceptance!==true){
+    const reed=(id,label,x,y)=>C(id,'reed-no',label,x,y,{
+      sensing:{target:'magnet',distance:30,range:10,offset:0,auto:false}});
+    finalize(l,[
+     C('g','supply-dc-plus','G1 · sanal DC',75,295),
+     reed('r1','Seri S1',285,80),reed('r2','Seri S2',540,80),
+     reed('r3','Paralel S3',285,430),reed('r4','Paralel S4',540,430),
+     C('hand','lamp-green','H1 · seri AND',900,80),
+     C('hor','lamp-red','H2 · paralel OR',900,430)
+    ],[
+     ['g','P','r1','13'],['r1','14','r2','13'],['r2','14','hand','X1'],
+     ['hand','X2','g','M'],['g','P','r3','13'],['r3','14','hor','X1'],
+     ['g','P','r4','13'],['r4','14','hor','X1'],['hor','X2','g','M']
+    ],'944-AND-OR','İki sensör birlikte mi, biri mi yeterli?',
+    'Sanal reed NO kontaklarıyla seri AND ve paralel OR gösterimi; elektronik sensör beslemeleri birbirine seri bağlanmaz.',
+    ['S1 ve S2 hedeflerini birlikte yaklaştırınca H1 yansın.',
+     'S3 veya S4 hedefi tek başına yaklaşınca H2 yansın.',
+     'Bir hedefi uzaklaştır, ardından her kolda kopuk hatları dene.'],
+    ['Seri kolda iki kontak da kapalı olmalı; paralelde bir kontak yeterli.',
+     'Bu sanal kontak gösterimidir; aktif üç telli sensör beslemesi/topolojisi değildir.'],
+    'Seri AND ile paralel OR farkı nedir?',
+    ['Seride ikisi, paralelde biri yeterlidir','İkisi de tek kontakla çalışır','PE ortak veri hattıdır']);
+   }
+  }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
