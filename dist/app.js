@@ -192,7 +192,7 @@
       const d=byId[c.typeId];if(d?.visualOnly)return true;
       if(!d?.isPLC)return false;
       // Unproven PLC runtime configurations remain guarded; only validated DTS Ladder may run.
-      return c.plcProgram!=='dts-ladder-v1'||!window.DTSLadderRuntime?.validate?.(c.ladderProgram,{
+      return c.plcProgram!=='dts-ladder-v1'||!window.DTSLadderRuntime?.supportedPLC?.(d)||!window.DTSLadderRuntime?.validate?.(c.ladderProgram,{
         inputCount:(d.pins||[]).filter(p=>p.signalType==='DI').length,
         outputCount:(d.pins||[]).filter(p=>p.signalType==='DO').length
       })?.ok;

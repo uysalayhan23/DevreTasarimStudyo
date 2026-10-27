@@ -5,7 +5,7 @@
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
- const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>editor.byId?.[c.typeId]?.isPLC&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
+ const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
  const starter=()=>({version:1,rungs:[
   {id:'R1',paths:[[{type:'NO',ref:'I1'},{type:'NC',ref:'I2'}],[{type:'NO',ref:'Q1'},{type:'NC',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}
  ]});
@@ -82,7 +82,7 @@
   function close(){overlay.hidden=true;active=null;if(monitorTimer){root.clearInterval(monitorTimer);monitorTimer=null}btn.focus();}
   function open(which){
    const items=available();
-   if(!items.length){editor.toast?.('Bu projede programlanabilir giriş/çıkışlı PLC bulunamadı.');return false}
+   if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
    const target=items.find(c=>c.id===which)||items[0];
    active=stateFor(target,editor);
    overlay.hidden=false;render();overlay.querySelector('.dts-ladder-dialog')?.focus();

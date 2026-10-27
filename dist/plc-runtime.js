@@ -399,7 +399,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   else if(volts<=off)c._sc999Cooling=false;
  }
  if(!powered&&c.plcProgram==='dts-ladder-v1')delete c._dtsLadderMemory;
- const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
+ const outputPins=pins(d,'DO');
+ const allowed=c.plcProgram!=='dts-ladder-v1'||Ladder?.supportedPLC?.(d)===true;
+ const prg=allowed?program(c,inputs,outputPins,now,options.program):
+  {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(p=>[p.id,false]))};
+ if(!allowed){
+  c._dtsLadderError='PLC terminali ve simülasyonu henüz doğrulanmadı.';
+  delete c._dtsLadderMemory;c._dtsLadderTraces=[];
+ }
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
  if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;

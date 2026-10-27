@@ -76,6 +76,13 @@
   return {ok:true,outputs:physical,memory:mem,traces};
  }
  function blank(){return {version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};}
- const api=Object.freeze({version:1,validate,scan,blank});
+ function supportedPLC(d){
+  return !!d&&d.id==='plc-hw-6es7211-1ae40-0xb0'&&d.isPLC===true&&
+   (d.pins||[]).filter(p=>p.signalType==='DI').length===6&&
+   (d.pins||[]).filter(p=>p.signalType==='DO').length===4&&
+   (d.pins||[]).some(p=>p.id==='X10:6'&&p.label==='1M'&&p.signalType==='POWER')&&
+   (d.pins||[]).some(p=>p.id==='X12:1'&&p.label==='3L+'&&p.signalType==='POWER');
+ }
+ const api=Object.freeze({version:1,validate,scan,blank,supportedPLC});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSLadderRuntime=api;
 })(typeof window==='undefined'?globalThis:window);

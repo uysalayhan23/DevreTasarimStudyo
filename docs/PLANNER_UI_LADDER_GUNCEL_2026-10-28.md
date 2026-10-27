@@ -22,3 +22,7 @@ Ders arşivi için önce [DERS_GUNCEL_DURUM_VE_DEVAM_PROTOKOLU.md](DERS_GUNCEL_D
 ## Kesin koruma kuralları
 
 Golden/complete dersler ve SC1194 HOLD; mevcut 703 katalog; `BASLAT.bat`, `file:///...` Edge, gerçek terminal/kablo 3D ölçeği, `Simulation.solve`, hazır şablonların readonly/Farklı Kaydet özelliği. Geçerli olmayan Ladder programları simülasyon izni alamaz. Siemens LOGO'ya cihaz bağlantısı, Siemens .lsc içe aktarma, endüstriyel güvenlik/yetkilendirme **YOK**.
+
+### 28 Ekim 2026 — Native doğrulama ve model sınırı
+
+Özgün `CCSSimulation.solve` + gerçek 703 katalog ile **kullanıcı kütüphanesinde seçilebilir** Siemens `plc-hw-6es7211-1ae40-0xb0` (CPU 1211C DC/DC/DC) modelinde 7/7 hedefli sanal fiziksel çıkış doğrulandı: tam kablolu ON; I1 kopuk, CPU +24V kopuk, CPU M kopuk, çıkış bankı güç kopuk, Q1→lamba kopuk ve lamba 0V dönüş kopuk durumlarında lamba OFF. Kesik yük kablosu durumunda PLC mantığı Q1=1 kalabilir ancak lamba enerjilenemez; farklı ölçümler birbirine karıştırılmaz. Diğer katalog PLC cihazlarının Ladder simülasyonu `supportedPLC` kapısıyla kanıt bekler; eski programlara dokunulmaz. Gerçek donanım/Edge/3D ayrıca REVIEW.
