@@ -4997,6 +4997,47 @@
   v.scMotorTimingRepair=s.kind;
  }
 })();
+
+// SC981: tested catalogue star/delta circuit already correct; repair only
+// the source's incorrect quiz phase and the generic non-teaching guide.
+(()=>{
+ const l=L.byId['motor-start-speed-outline-035'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+    p.tutorialLesson?.phase!=='quiz'||p.components.find(c=>c.id==='sw')?.typeId!=='packet-star-delta'||
+    p.components.find(c=>c.id==='motor')?.typeId!=='motor-y-d'||
+    r?.independentPedagogicalAcceptance===true)return;
+ p.tutorialLesson={...p.tutorialLesson,id:l.id,phase:'demo',step:0};
+ l.summary='Sanal S1 paket şalterinde önce 0, sonra yıldız (Y), ardından üçgen (Δ) konumlarını karşılaştır. Yıldızda U2/V2/W2 uçları ortaklaşır; üçgende sargı uçları çapraz bağlanır. Bu devrede geçiş otomatik yapılmaz; motorun gerçek kalkış akımı, yükü ve mekanik duruşu modellenmez.';
+ l.explanation='Altı uçlu motoru iki farklı bağlantıyla düşün. Yıldızda üç sargının uçları ortak bir noktada buluşur. Üçgende uçlar kapalı bir halka oluşturur. Sanal şalterin Y ve Δ konumlarında motor simgesinin bağlantı durumunu izle; gerçek motorda güvenli kalkış için bu çizim tek başına yeterli değildir.';
+ l.quiz={question:'Bu sanal paket şalter Y konumuna alındığında motorun alt sargı uçlarında hangi bağlantı görülür?',
+  options:['U2, V2 ve W2 ortak yıldız noktası olur','Her sargı ayrı kalır','Şalter motoru otomatik ters yönde çalıştırır'],
+  answer:0,why:'Simülasyondaki yıldız köprüleri U2, V2 ve W2 uçlarını ortak düğümde birleştirir.'};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'Aynı motor, yıldız ve üçgen arasında nasıl değişir?',
+  virtualOnly:true,canonicalGraphUnchanged:true,
+  physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+  steps:[
+   'Önce yalnız sanal S1 şalteri 0 konumundayken motor etkin olmamalı.',
+   'S1 sanal Y konumunda U2, V2 ve W2 uçlarının birleşmesini izle.',
+   'S1 sanal Δ konumundayken köprü düzeninin değiştiğini ve üçgen bağlantıyı gör.',
+   'Sanal L2 kablosunu ayırınca hem Y hem Δ konumunda motor etkinliği kalkmalı.',
+   'Sanal U2/V2/W2 ucunun kablosunu çıkarıp eksik bağlantının etkisini incele.'
+  ],
+  observations:[
+   'Özgün Simulation.solve ve 703 katalog bileşeniyle 0/Y/Δ, kopuk faz ve kopuk sargı uçları doğrulandı.',
+   'Kalkış akımı, motor yükü, fiziksel geçiş süresi, PE güvenliği veya Windows/3D kabulü gösterilmez.'
+  ],repairModel:'SC981-STAR-DELTA-CANONICAL-TEACHING-PHASE-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='REAL_MOTOR_TRANSITION_AND_WINDOWS_3D_PEDAGOGICAL_ACCEPTANCE_PENDING';
+ v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+ v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+ v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_STAR_DELTA_POSITIVE_NEGATIVE_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc981TeachingRepair='SC981-STAR-DELTA-CANONICAL-TEACHING-PHASE-V1';
+})();
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
