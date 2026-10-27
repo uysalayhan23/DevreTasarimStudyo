@@ -4622,6 +4622,77 @@
   v.sc972SetResetRepair='SC972-PLC-SET-RESET-LATCH-V1';
  })();
 
+
+ // SC973: two-station virtual SET/RESET with both normally-closed resets.
+ // Source names this as application #2; the station scenario is illustrative.
+ (() => {
+  const l=L.byId['plc-hardware-programming-outline-057'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+    !p.components.some(c=>c.typeId==='coil-contactor')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+    C('g','supply-dc-plus','G1','Sanal 24 VDC / 0V',70,310),
+    C('cpu','plc-0-0-documented','PLC1','CPU1211C iki istasyonlu bellek',790,285,
+      {plcProgram:'two-station-start-stop'}),
+    C('set1','push-no','S1','1. istasyon SET (NO)',300,65),
+    C('reset1','push-nc','S0','1. istasyon RESET (NC)',290,230),
+    C('set2','push-no','S3','2. istasyon SET (NO)',360,445),
+    C('reset2','push-nc','S2','2. istasyon RESET (NC)',355,610),
+    C('lamp','lamp-green','H1','Q0 sanal bellek göstergesi',1220,270)
+  ];
+  const graph=[
+    ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+    ['g','P','set1','13'],['set1','14','cpu','X10:7'],
+    ['g','P','reset1','21'],['reset1','22','cpu','X10:8'],
+    ['g','P','set2','13'],['set2','14','cpu','X10:9'],
+    ['g','P','reset2','21'],['reset2','22','cpu','X10:10'],
+    ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+    ['cpu','X12:3','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'sc973-set-reset-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'PLC SET/RESET istasyonu, 1M girişi veya Q0 gösterge bağlantısı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='cpu'?'DI0/DI2 SET, DI1/DI3 RESET mantığı ve Q0 belleği.':
+      c.typeId==='push-no'?'Kısa bir basışla SET komutu verir.':
+      c.typeId==='push-nc'?'Basıldığında sağlıklı RESET girişini keser.':
+      'Sanal besleme veya çıkış göstergesidir.'}));
+  l.summary='Bu sanal SET–RESET uygulamasında iki ayrı istasyondan SET verilebilir, iki RESET düğmesinden biri belleği sıfırlar. Q0 lambası SET bırakılınca yanık kalır; RESET komutu her zaman önceliklidir. Özgün kaynakta istasyon ayrıntıları bulunmadığından bu bir örnekleme senaryosudur, gerçek PLC güvenliği değildir.';
+  l.explanation='İki odada birer başlatma ve durdurma düğmesi olduğunu düşün. Hangi SET düğmesine basarsan bas ortak H1 göstergesi yanar. RESET düğmelerinden birine basınca söner. Bu örnek bir PLC bellek kuralını gösterir; donanımsal güvenlik veya yeniden başlatma garantisi vermez.';
+  l.quiz={question:'İki istasyonlu sanal SET–RESET belleğinde H1 yanarken ikinci istasyonun RESET düğmesine basılırsa ne olur?',
+    options:['H1 söner; RESET önceliklidir','H1 sürekli yanar','Yalnız birinci istasyon RESET edebilir'],
+    answer:0,why:'Her iki NC RESET girişi ortak PLC belleğini sıfırlayacak şekilde sanal programlanmıştır.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'İki farklı yerden aynı belleği yönetelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Birinci istasyondan SET komutu verip H1 göstergesini gözlemle.',
+      'Düğmeyi bırak. H1 neden yanık kalıyor?',
+      'İkinci istasyonun RESET düğmesine bas: H1 sönmeli.',
+      'İkinci istasyondan yeniden SET yap; bu kez birinci RESET düğmesini kullan.',
+      'SET ile RESET aynı anda basılırsa önceliği karşılaştır.',
+      'Bir giriş veya Q0 kablosu kopunca sanal sonuç nasıl değişiyor, gözlemle.'],
+    observations:['Özgün Simulation.solve ve 703 elemanlı katalogda normal ve kopuk bağlantı koşulları sınanır.',
+      'Güç geri dönüşü ve fiziksel PLC davranışı ayrıca değerlendirilecektir. Emniyet kontağı kabulü yoktur.'],
+    repairModel:'SC973-PLC-TWO-STATION-SET-RESET-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='ORIGINAL_EXERCISE_DETAILS_POWER_RESTART_PLC_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(x=>x.typeId);v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC973_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc973SetResetRepair='SC973-PLC-TWO-STATION-SET-RESET-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
