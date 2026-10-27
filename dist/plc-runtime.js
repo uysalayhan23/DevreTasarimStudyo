@@ -60,6 +60,30 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   c._sc977LastStart=start;
   q0=!!c._sc977Latch&&stop;
  }
+ else if(mode==='shift-rotate-2bit-sc995'){
+  // 2-bit virtual word only: bit0=X10:7, bit1=X10:8; control conflict suppresses both outputs.
+  const bit0=!!values[0],bit1=!!values[1],shl=!!values[2],rol=!!values[3];
+  q0=shl&&rol?false:shl?false:rol?bit1:bit0;
+ }
+ else if(mode==='move-timer-preset-sc996'){
+  // Virtual MOVE copies a 1s/2s preset into a TON-like memory on fresh START.
+  // A subsequent selector change cannot alter the running timer's copied value.
+  const startInput=!!values[0],healthy=!!values[1],selectLong=!!values[2];
+  if(typeof c._sc996RequireRelease!=='boolean')c._sc996RequireRelease=true;
+  if(!healthy||c._sc996PowerBlocked){
+    c._sc996RequireRelease=true;
+    delete c._sc996StartAt;delete c._sc996PresetMs;
+  }else if(c._sc996RequireRelease){
+    delete c._sc996StartAt;delete c._sc996PresetMs;
+    if(!startInput)c._sc996RequireRelease=false;
+  }else if(startInput&&!c._sc996LastStart&&c._sc996StartAt===undefined){
+    c._sc996StartAt=now;
+    c._sc996PresetMs=selectLong?2000:1000;
+  }
+  c._sc996LastStart=startInput;
+  q0=healthy&&!c._sc996PowerBlocked&&Number.isFinite(c._sc996StartAt)&&
+    now-c._sc996StartAt>=c._sc996PresetMs;
+ }
  else if(mode==='binary-add-1bit-sc992'){
   // Only a documented 1+1 binary arithmetic demonstration; no WORD/INT support.
   q0=!!(start!==stop);
@@ -188,6 +212,13 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else if(mode==='set-reset-exclusive-sc974')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
+   else if(mode==='shift-rotate-2bit-sc995'){
+     const bit0=!!values[0],bit1=!!values[1],shl=!!values[2],rol=!!values[3];
+     out[p.id]=i===0?q0:i===1?(shl&&rol?false:shl||rol?bit0:bit1):false;
+   }
+   else if(mode==='move-timer-preset-sc996')
+     out[p.id]=i===0?q0:i===1?!!values[1]&&!c._sc996PowerBlocked&&
+       Number.isFinite(c._sc996StartAt):false;
    else if(mode==='binary-add-1bit-sc992')
      out[p.id]=i===0?!!(start!==stop):i===1?!!(start&&stop):false;
    else if(mode==='compare-bits-sc988')
@@ -223,6 +254,13 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  if(c.plcProgram==='set-reset-exclusive-sc974'&&(!powered||
    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2')))){
   c._plcSrChoice=null;c._plcSrRequireRelease=true;
+ }
+ if(c.plcProgram==='move-timer-preset-sc996'){
+  c._sc996PowerBlocked=!powered||
+    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+  if(c._sc996PowerBlocked){
+    c._sc996RequireRelease=true;delete c._sc996StartAt;delete c._sc996PresetMs;
+  }
  }
  if(c.plcProgram==='compare-two-motors-sc990'){
   c._sc990PowerBlocked=!powered||
@@ -277,7 +315,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);

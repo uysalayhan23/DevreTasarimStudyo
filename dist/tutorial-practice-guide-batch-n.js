@@ -5560,6 +5560,151 @@
   v.sc993SeriesOhmRepair='SC993-NATIVE-SERIES-RESISTANCE-OHM-V1';
  })();
 
+
+ // SC995 — MOVE, SHL and ROL for a documented, deliberately two-bit virtual word.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-125'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V / 0 V',55,335),
+   C('cpu','plc-0-0-documented','PLC1','2 bit MOVE / SHL / ROL',795,365,{plcProgram:'shift-rotate-2bit-sc995'}),
+   C('bit0','selector-no','S1','Giriş bit0 (birler)',330,75),
+   C('bit1','selector-no','S2','Giriş bit1 (ikiler)',330,245),
+   C('shift','selector-no','S3','SHL · sola kaydırma',330,425),
+   C('rotate','selector-no','S4','ROL · sola döndürme',330,600),
+   C('out0','lamp-green','H1','Çıkış bit0 (birler)',1240,195),
+   C('out1','lamp-red','H2','Çıkış bit1 (ikiler)',1240,505)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['g','P','bit0','13'],['bit0','14','cpu','X10:7'],
+   ['g','P','bit1','13'],['bit1','14','cpu','X10:8'],
+   ['g','P','shift','13'],['shift','14','cpu','X10:9'],
+   ['g','P','rotate','13'],['rotate','14','cpu','X10:10'],
+   ['cpu','X12:3','out0','X1'],['out0','X2','g','M'],
+   ['cpu','X12:4','out1','X1'],['out1','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc995-word-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'PLC giriş veya çıkışını gerçek katalog terminali üzerinden izle.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'İki bit için MOVE kopyası, SHL ve ROL sonuçlarını hesaplar.':
+   c.id==='bit0'||c.id==='bit1'?'İki bitlik başlangıç sayısını oluşturur.':
+   c.id==='shift'||c.id==='rotate'?'İşlemi seçer; ikisi aynı anda seçilmez.':
+   c.id==='out0'||c.id==='out1'?'İşlenen sonucun bir bitini gösterir.':
+   'CPU ve çıkış bankının sanal 24 V beslemesi.'}));
+  l.summary='Sanal 2 bitlik sayı için normal durumda MOVE (kopyala), SHL (bir kez sola kaydır, üst biti at) veya ROL (bir kez sola döndür, üst biti alta taşı) seç. Bit0/bit1 çıkış lambalarında sonucu karşılaştır. Bu örnek gerçek PLC nin tam WORD, SHIFT ve ROTATE komut seti değildir.';
+  l.explanation='İki lambayı küçük bir ikili sayı gibi düşün: sağdaki bit0, soldaki bit1. 01 sayısını MOVE edersen 01 kalır. Bir kez sola kaydırırsan 10 olur. 10 sayısını sola döndürürsen üstteki 1 başa gelir ve 01 olur. SHL ile ROL aynı şey değildir: kaydırmada taşan bit kaybolur, döndürmede geri gelir.';
+  l.quiz={question:'İki bitlik 10 sayısına sola döndürme (ROL 1) yaparsan sonuç nedir?',
+   options:['01','00','10'],answer:0,
+   why:'Üstteki 1 bit0 konumuna geri döner, alttaki 0 bit1 konumuna çıkar.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'İki bitlik sayıyı taşı, kaydır, döndür',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['S1 açık, S2 kapalı: bit1 bit0 = 01; SHL ve ROL kapalıyken MOVE sonucu 01.',
+    'S3 SHL açıkken aynı 01 girişinin çıkışı 10 olur.',
+    'S3 kapat, S4 ROL aç: aynı 01 sayısının döndürme sonucu da 10.',
+    'Giriş 10 yap: SHL sonucunu 00, ROL sonucunu 01 olarak karşılaştır.',
+    'SHL ve ROL anahtarlarını birlikte aç: çakışma nedeniyle iki çıkış da sönük.',
+    'PLC çıkışı, giriş biti veya çıkış bankı beslemesini koparıp negatif sonucu izle.'],
+   observations:['Sadece iki bitlik simülasyon; üst bit SHL işleminde atılır, ROL işleminde yeniden alt bite döner.',
+    'Özgün Simulation.solve ve 703 katalog ile iki bitin bütün değerleri ve bağlantı kopuklukları sınanır.',
+    'Gerçek PLC veri tipleri, güvenlik, Windows/3D ve bağımsız kabul bekliyor.'],
+   repairModel:'SC995-VIRTUAL-2BIT-MOVE-SHIFT-ROTATE-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='WORD_REGISTER_FULL_INSTRUCTION_SET_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC995_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc995TwoBitWords='SC995-VIRTUAL-2BIT-MOVE-SHIFT-ROTATE-V1';
+ })();
+
+ // SC996 — preset switch is copied at START into a virtual TON's 1s or 2s preset.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-126'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V / 0 V',55,335),
+   C('cpu','plc-0-0-documented','PLC1','MOVE → TON sanal süre kopyası',780,330,{plcProgram:'move-timer-preset-sc996'}),
+   C('start','push-no','S1','START · yeni sanal çevrim',325,90),
+   C('stop','push-nc','S0','STOP · NC durdurma',325,320),
+   C('preset','selector-no','S2','MOVE süresi · 1 sn / 2 sn',325,555),
+   C('done','lamp-green','H1','Ayarlanan süre tamamlandı',1250,225),
+   C('timing','lamp-red','H2','Sanal zamanlayıcı etkin',1250,495)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['g','P','start','13'],['start','14','cpu','X10:7'],
+   ['g','P','stop','21'],['stop','22','cpu','X10:8'],
+   ['g','P','preset','13'],['preset','14','cpu','X10:9'],
+   ['cpu','X12:3','done','X1'],['done','X2','g','M'],
+   ['cpu','X12:4','timing','X1'],['timing','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc996-ton-'+(i+1),
+   from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Zaman seçimi, STOP ve çıkışların gerçek katalog bağlantısı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'START anında seçilen süreyi sanal zamanlayıcı belleğine MOVE ile kopyalar.':
+   c.id==='start'?'Yeni zaman sayımı başlatmak için basılır.':
+   c.id==='stop'?'STOP basılınca sanal çevrimi sıfırlar; tekrar START gerekir.':
+   c.id==='preset'?'Başlamadan önce 1 veya 2 saniyelik süreyi seçtirir.':
+   c.id==='done'?'Kopyalanmış süre dolunca yanar.':
+   c.id==='timing'?'Başlayan sanal zaman çevriminin etkin olduğunu gösterir.':
+   'PLC ve çıkış bankının sanal beslemesi.'}));
+  l.summary='MOVE ile 1 saniyelik veya 2 saniyelik sanal TON ayarını START anında kopyala. Sayaç çalışırken anahtarı değiştirmek mevcut çevrimi etkilemez. H2 çevrim başlayınca, H1 seçilmiş süre dolunca yanar. STOP ve güç kaybı sayımı sıfırlar; bu üretici PLC zamanlama hassasiyeti değildir.';
+  l.explanation='Bir mutfak zamanlayıcısını düşün. Önce 1 ya da 2 saniyeyi seçiyorsun. START deyince PLC seçilen süreyi kendi sayacına kopyalıyor. Bu arada seçme anahtarına dokunsan bile devam eden sayım değişmiyor: yeni ayar bir sonraki START ile alınacak. STOP ise sayımı sıfırlıyor.';
+  l.quiz={question:'START ile 2 saniye kopyalanıp sayım başlatıldıktan sonra seçim 1 saniyeye çevrilirse ne olur?',
+   options:['Mevcut çevrim yine 2 saniyeyi tamamlar.','Mevcut çevrim hemen 1 saniyeye düşer.','PLC güç bankı kapanır.'],
+   answer:0,why:'MOVE ayarı START anında kopyalar; sonraki anahtar değişimi ancak yeni çevrimde geçerlidir.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'MOVE ile süreyi kopyala ve say',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Önce 1 saniye seç; START a bas. H2 etkin, H1 başlangıçta sönük.',
+    'START ı bırak; 1 saniye dolunca H1 yanar.',
+    'STOP a bas; iki lamba da söner. STOP ve START bırakılınca yeniden hazır.',
+    '2 saniyeyi seçip START a bas; 1 saniyede H1 hâlâ sönük, 2 saniyede yanık.',
+    'Sayım sürerken süre seçimini değiştir: devam eden kopyalanmış süre değişmez.',
+    'START basılıyken STOP a bas veya PLC beslemesini kes; kendiliğinden yeniden başlamayı kontrol et.'],
+   observations:['Özgün Simulation.solve/703 katalogla iki süre, START kenarı, durdurma, kopuk kablo ve güç kaybı sınanır.',
+    'Bu, tarama zamanı, gerçek üretici TON ve emniyet durdurma donanımı için kabul değildir.',
+    'Windows/3D ve bağımsız pedagojik kabul bekliyor.'],
+   repairModel:'SC996-VIRTUAL-MOVE-TON-PRESET-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='HARDWARE_REAL_TON_TIMING_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC996_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc996MoveTonPreset='SC996-VIRTUAL-MOVE-TON-PRESET-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
