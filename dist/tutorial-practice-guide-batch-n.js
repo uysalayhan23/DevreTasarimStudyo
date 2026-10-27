@@ -5038,6 +5038,82 @@
  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
  v.sc981TeachingRepair='SC981-STAR-DELTA-CANONICAL-TEACHING-PHASE-V1';
 })();
+
+ // SC983 (motor-direct-power-outline-115): virtual clock memory + permission.
+ // Replaces unrelated three-phase contactor template without touching other lessons.
+ (() => {
+  const id='motor-direct-power-outline-115',l=L.byId[id],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V DC / 0 V',65,305),
+   C('cpu','plc-0-0-documented','PLC1','CPU1211C sanal sistem/saat bellek örneği',680,310,
+    {plcProgram:'clock-memory-sc983',plcClockPeriodMs:1000}),
+   C('enable','selector-no','S1','Sanal saat belleği etkinleştir',340,75),
+   C('reset','push-nc','S0','Sanal bellek sıfırlama NC',350,480),
+   C('pulse','lamp-green','H1','Q0 · sanal 1 Hz saat işareti',1150,220),
+   C('ready','lamp-red','H2','Q1 · sanal çalışma izni',1150,450)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],
+   ['g','M','cpu','X10:6'],
+   ['g','P','enable','13'],['enable','14','cpu','X10:7'],
+   ['g','P','reset','21'],['reset','22','cpu','X10:8'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['cpu','X12:3','pulse','X1'],['pulse','X2','g','M'],
+   ['cpu','X12:4','ready','X1'],['ready','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+   id:'sc983-clock-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Özgün katalogda CPU güç, DI veya DQ bağlantısı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'Sanal saat biti ve çalışma iznini iki ayrı PLC çıkışında gösterir.':
+   c.id==='enable'?'İzni açıp kapatır; saat başlangıcını sıfırlar.':
+   c.id==='reset'?'Bellek çıkışını durdurup izin verilince yeniden başlatır.':
+   c.id==='pulse'?'Sanal 1 Hz saat bitinin açık ve kapalı yarı periyotlarını gösterir.':
+   c.id==='ready'?'Saat izninin etkin kaldığını gösterir.':
+   'Sanal PLC deneyinin katalog terminali.'}));
+  l.summary='Bu sanal PLC örneğinde S1 açılınca Q0 saat biti bir saniyelik çevrimde yanıp söner. Q1 iznin açık olduğunu gösterir. RESET, CPU/çıkış besleme kaybı ve kablo kesintisinin etkisini ayrı ayrı izle. Bunlar donanımdaki gerçek M bellek adresleri veya üretici tarama süresi ölçümü değildir.';
+  l.explanation='Bir okul zili gibi düşün: izin anahtarını açınca küçük bir işaret düzenli yanıp söner. H1 saat ritmini, H2 ise iznin açık kaldığını anlatır. RESET bu ritmi durdurur. Gerçek PLC bellek adresleri, LAD ve tarama süreleri ayrıca öğretilip doğrulanmalıdır.';
+  l.quiz={question:'Bu sanal PLC saat örneğinde Q1 sabit yanarken Q0 neden aralıklı yanar?',
+   options:['Q0 periyodik saat bitini, Q1 çalışma iznini temsil eder.',
+    'Q0 motorun gerçek hızını ölçer.','PE kablosu her saniye yer değiştirir.'],
+   answer:0,why:'Saat biti periyodiktir; izin biti etkinlik sürdükçe açık kalır.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Sabit izin, yanıp sönen saat biti',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Önce CPU X10 beslemesi, X10:6 giriş ortak ucu ve X12 çıkış bankını incele.',
+    'S1 sanal izin seçicisini aç. H1 ritimle yanıp sönerken H2 açık kalır.',
+    '0,5 saniye arayla H1 durumlarını; sabit H2 durumunu karşılaştır.',
+    'S0 RESET butonunu kullan: iki gösterge de sönmeli.',
+    'PLC bank beslemesini veya Q0 hattını kopar. Göstergeyi tekrar incele.',
+    'Besleme yeniden geldiğinde yeni izin seçimi gerektiğini gözlemle.'],
+   observations:['Özgün 703 katalog elemanlı Simulation.solve ile dönem, RESET, besleme kaybı ve kablo kopması sınanır.',
+    'Üretici sistem bellek adresi, gerçek PLC scan, Windows/3D, fiziksel ve bağımsız kabul açık.'],
+   repairModel:'SC983-PLC-VIRTUAL-CLOCK-MEMORY-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='ORIGINAL_CLOCK_MEMORY_ADDRESS_PLC_SCAN_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(x=>x.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC983_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc983ClockRepair='SC983-PLC-VIRTUAL-CLOCK-MEMORY-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

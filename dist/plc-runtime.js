@@ -60,6 +60,20 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   c._sc977LastStart=start;
   q0=!!c._sc977Latch&&stop;
  }
+ else if(mode==='clock-memory-sc983'){
+  // Opt-in virtual PLC memory clock, not actual PLC firmware or measured scan time.
+  // Q0 is the clock bit (1 s period, 50% duty); Q1 reports run permission.
+  const enable=!!start,healthy=!!stop;
+  const period=Math.max(200,Math.min(10000,num(c.plcClockPeriodMs,1000)));
+  if(!enable||!healthy){
+    delete c._sc983Epoch;
+    if(!enable&&!c._sc983PowerBlocked)c._sc983RequireRelease=false;
+  }else if(!c._sc983RequireRelease&&(!Number.isFinite(c._sc983Epoch)||now<c._sc983Epoch)){
+    c._sc983Epoch=now;
+  }
+  c._sc983Enabled=enable&&healthy&&!c._sc983RequireRelease;
+  q0=!!c._sc983Enabled&&Number.isFinite(c._sc983Epoch)&&((now-c._sc983Epoch)%period)<period/2;
+ }
  else if(mode==='edge-rise-sc975'){
   const input=!!values[0];
   // Stable for all solver iterations in the same virtual scan timestamp.
@@ -143,6 +157,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else if(mode==='set-reset-exclusive-sc974')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
+   else if(mode==='clock-memory-sc983')
+     out[p.id]=i===0?q0:i===1?!!c._sc983Enabled:false;
    else out[p.id]=i===0?q0:false;
  });
  return {mode,outputs:out};
@@ -168,6 +184,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  if(c.plcProgram==='set-reset-exclusive-sc974'&&(!powered||
    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2')))){
   c._plcSrChoice=null;c._plcSrRequireRelease=true;
+ }
+ if(c.plcProgram==='clock-memory-sc983'){
+  c._sc983PowerBlocked=!powered||
+    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+  if(c._sc983PowerBlocked){
+    c._sc983RequireRelease=true;c._sc983Enabled=false;
+    delete c._sc983Epoch;
+  }
  }
  if(c.plcProgram==='edge-rise-sc975'){
   c._plcEdgePowerBlocked=!powered||
@@ -201,7 +225,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
