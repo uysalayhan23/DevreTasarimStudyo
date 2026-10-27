@@ -7571,6 +7571,109 @@
   v.sc827ContactOhmmeterRepair='SC827-NATIVE-UNPOWERED-NO-NC-UT33D-CONTINUITY-V1';
  })();
 
+
+ // SC439, SC450 and SC464: catalog-grounded examples, NOT physical sensor calibration.
+ // Only replace their untouched generic placeholders; retain quiz and acceptance locks.
+ (() => {
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const W=(edges,tag)=>edges.map(([a,ap,b,bp],i)=>({id:tag+'-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Gerçek katalog terminali ve güvenli sanal davranışı izle.'}));
+  function apply(l,parts,edges,tag,summary,explanation,quiz,steps,limitations){
+    const p=l.project,v=l.pedagogyReview||(l.pedagogyReview={});
+    p.components=parts;p.wires=W(edges,tag);delete p.referenceOnly;
+    p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+    l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,
+      color:w.color,role:w.role,size:w.size}));
+    l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+      c.id==='g'?'Sanal DC besleme.':
+      c.typeId==='meter-ammeter'?'Seri akımı gösterir.':
+      c.typeId==='meter-voltmeter'?'Sensör gerilimini gösterir.':
+      c.typeId==='resistor'?'Akımı sınırlayan sabit direnç.':
+      c.typeId==='sensor-ntc'?'Sıcaklıkla değişen katalog NTC modeli.':
+      c.typeId==='sensor-hall'?'Manuel sanal manyetik algılama çıkışı.':
+      c.typeId==='photoeye'?'Manuel sanal optik algılama çıkışı.':
+      'Çıkışın elektriksel durumunu gösterir.'}));
+    l.summary=summary;l.explanation=explanation;l.quiz=quiz;
+    l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+      heading:steps[0],virtualOnly:true,canonicalGraphUnchanged:false,
+      fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+      steps:steps.slice(1),observations:limitations,repairModel:tag};
+    v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+    v.titleTopologyStatus='REVIEW';
+    v.titleTopologyIssue='PHYSICAL_SENSOR_CALIBRATION_WINDOWS_3D_INDEPENDENT_PEDAGOGY_PENDING';
+    v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+    v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+    v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+    v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_'+tag+'_TARGETED_PASS';
+    v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v.sensorExampleRepair=tag;
+  }
+  const t=L.byId['sensor-analog-apps-outline-028'],tp=t?.project;
+  if(t?.kind==='wiring'&&tp?.components?.length===3&&tp?.wires?.length===4&&
+     tp.components.some(c=>c.typeId==='proximity')&&
+     t.pedagogyReview?.independentPedagogicalAcceptance!==true){
+    const parts=[
+     C('g','supply-dc-plus','G1','Sanal 24 V DC',80,300),
+     C('am','meter-ammeter','A1','Seri akım (mA)',300,150),
+     C('r','resistor','R1','Sabit 10 kΩ',560,150,{resistance:10000}),
+     C('ntc','sensor-ntc','B1','NTC sıcaklık sensörü',850,150,{temperature:25}),
+     C('vm','meter-voltmeter','V1','NTC üzerindeki gerilim',860,460)];
+    const edges=[['g','P','am','1'],['am','2','r','1'],['r','2','ntc','1'],
+      ['ntc','2','g','M'],['vm','1','ntc','1'],['vm','2','ntc','2']];
+    apply(t,parts,edges,'SC439-NATIVE-NTC-DIVIDER-V1',
+      'Sıcaklık sensörleri konusuna ait gerçek katalog NTC örneği: 24 V DC, 10 kΩ seri direnç, NTC ve iki ölçü aleti. NTC ısındıkça direnci ve NTC uçlarındaki gerilim azalır; seri akım artar. Diğer sıcaklık sensörleri veya fiziksel kontrol sistemi burada doğrulanmaz.',
+      'Sıcaklığı bir termometre gibi okuduğunu düşün. Bu örnekte NTC ısınınca elektriksel direnci küçülür. Akım yoluna seri bağlı ölçer daha yüksek akım okur; NTC üzerine paralel ölçer daha düşük gerilim görür. Üç sıcaklık denemesinde farkı birlikte keşfet.',
+      {question:'Sanal NTC 0 °C den 50 °C ye ısıtılırsa seri akım nasıl değişir?',
+        options:['Artar','Azalır','Sabit kalır'],answer:0,
+        why:'NTC direnci azaldığı için aynı DC kaynakta toplam seri direnç küçülür.'},
+      ['Sıcaklıkla NTC ölçüm devresi','NTC sıcaklığını 0 °C, 25 °C ve 50 °C yap.',
+       'Seri ampermetrede akımı, paralel voltmetrede NTC gerilimini karşılaştır.',
+       'NTC hattını koparıp açık devredeki akımı gözle.',
+       'Voltmeter probunu ayırdığında ölçümün geçersiz oluşunu incele.'],
+      ['Özgün Simulation.solve ile sıcaklığa bağlı NTC direnç modeli sınanır.',
+       'Bu yalnız bir NTC örneğidir, tüm sıcaklık sensörlerinin otomatik termostat çözümü değildir.',
+       'Gerçek termal kalibrasyon, Windows/3D, donanım ve bağımsız kabul açık.']);
+  }
+  const examples=[
+   {id:'sensor-analog-apps-outline-035',tag:'SC450-NATIVE-HALL-SWITCH-V1',
+    sensor:'sensor-hall',label:'Hall sensörü · sanal mıknatıs algısı',
+    title:'Manyetik sensörler: Hall çıkışının sanal algılama tepkisi',
+    summary:'Manyetik sensör başlığına uygun Hall sensörünün BN (+24 V), BU (0 V) ve BK çıkış uçları gerçek katalog terminaliyle bağlandı. Manuel algılama state açıkken lamba yanar, kapalıyken söner. Gerçek manyetik alan veya mesafe eşik modeli değildir.',
+    explanation:'Bir mıknatıs yaklaştığını düşün. Bu sanal örnekte Hall sensörünün algıladı komutunu elle değiştiriyorsun. Sensörün beslemesi tam ve çıkış kablosu bağlıysa lamba durumu izler. Kablo koparsa doğru bilgiyi alamazsın.',
+    quiz:{question:'Sanal Hall algılaması açıkken BK çıkış teli koparsa lamba ne olur?',options:['Söner','Yanık kalır','Hızlanır'],answer:0,why:'Çıkıştan lambaya elektriksel yol kalmaz.'},
+    steps:['Hall sensörü BN/BU/BK terminallerini tanı','state kapalıyken lambanın sönük olmasını izle.',
+      'state açıkken lambanın yandığını doğrula.',
+      'BK çıkışını veya BN beslemesini ayırıp ışığı karşılaştır.'],
+    limits:['Algılama manuel bir sanal durumdur; Gauss, manyetik mesafe veya gerçek sensör duyarlılığı hesaplanmaz.',
+      'Katalogdaki bağlantı ile özgün Simulation.solve pozitif-negatif doğrulandı.',
+      'Donanım, Windows/3D ve bağımsız pedagojik kabul açık.']},
+   {id:'sensor-analog-apps-outline-049',tag:'SC464-NATIVE-OPTICAL-SWITCH-V1',
+    sensor:'photoeye',label:'Fotosel sensör · sanal ışık algısı',
+    title:'Optik sensörler: fotosel çıkışının sanal algılama tepkisi',
+    summary:'Optik sensör konusuna ait gerçek katalog fotoselinin BN (+24 V), BU (0 V), BK (çıkış) uçları ve lamba bağlandı. Sanal algılamayı elle açıp kapatınca lamba tepki verir; optik mesafe, ışık şiddeti veya kirlenme modellenmez.',
+    explanation:'Bir konveyörden geçen kutu düşün. Fotoselin algılama durumunu elle değiştirince çıkış lambasını izlersin. Sensöre besleme gelmiyorsa veya BK çıkışı kopuksa sinyal ulaşmaz. Gerçek ışık fiziği ve üretici ayarları ayrı konudur.',
+    quiz:{question:'Fotoselde BK çıkışı koparsa sanal algılama açıkken lamba ne olur?',options:['Söner','Yanık kalır','Titremeye başlar'],answer:0,why:'Sinyal çıkışı artık lambaya bağlı değildir.'},
+    steps:['Fotoselin BN, BU ve BK terminallerini tanı.',
+      'Algılama state kapalıyken lambanın sönük olduğunu izle.',
+      'Algılama state açıkken lambanın yandığını doğrula.',
+      'Sensörün beslemesini, BK çıkışını veya lambanın dönüşünü ayırıp test et.'],
+    limits:['State elle seçilen sanal sensör olayıdır; gerçek optik ışın, mesafe, yansıma ve güvenlik hesabı yapılmaz.',
+      'Katalogdaki bağlantı ve özgün Simulation.solve ile negatif kablo testleri sınanır.',
+      'Donanım, Windows/3D ve bağımsız pedagojik kabul açık.']}
+  ];
+  for(const e of examples){
+   const l=L.byId[e.id],p=l?.project;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+      !p.components.some(c=>c.typeId==='proximity')||
+      l.pedagogyReview?.independentPedagogicalAcceptance===true)continue;
+   const parts=[C('g','supply-dc-plus','G1','Sanal 24 V DC',80,300),
+     C('s',e.sensor,'B1',e.label,535,250),C('h','lamp-green','H1','Sanal algılama lambası',995,250)];
+   const edges=[['g','P','s','BN'],['g','M','s','BU'],['s','BK','h','X1'],['h','X2','g','M']];
+   apply(l,parts,edges,e.tag,e.summary,e.explanation,e.quiz,e.steps,e.limits);
+  }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
