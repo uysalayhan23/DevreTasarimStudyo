@@ -42,6 +42,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  const mode=String(c.plcProgram||defaultMode||'start-stop-latch');
  let q0=false;
  if(mode==='mirror')q0=start;
+ // Virtual PLC ladder normally-closed instruction: Q0 := NOT DI0.
+ else if(mode==='not-input')q0=!start;
  else if(mode==='direct')q0=start&&stop;
  else if(mode==='two-station-start-stop'){
    // SC194 only: X10:7 / X10:9 are independent START commands (OR).
