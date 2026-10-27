@@ -6787,6 +6787,105 @@
   }
  })();
 
+
+ // Targeted native motor control lessons; never alter protected or accepted scenes.
+ (() => {
+ const profiles=[
+  {n:835,id:'motor-direct-power-outline-073',mode:'jog',
+   model:'SC835-NATIVE-MOTOR-JOG-V1',
+   summary:'Kesik çalışma: START basılıyken sanal motor çalışır; START bırakıldığında mühürleme olmadığından durur. STOP ayrıca kumandayı keser. Gerçek üç fazlı kurulum ve güvenlik kontrolü değildir.',
+   explain:'Kısa süreli bir motor hareketini düşün. START düğmesine bastığında motor çalışır, elini çektiğinde durur. Bu derste motorun kendi kendine çalışmaya devam etmesini sağlayan yardımcı kontak yoktur; kesik çalışma ile sürekli çalışmayı karşılaştır.',
+   question:'Kesik çalışmada START bırakılınca sanal motor ne yapar?',
+   options:['Durur; mühürleme yoktur.','Sürekli çalışır.','Yön değiştirir.'],
+   steps:['START basılıyken K1 ve M1 durumunu gözle.','START bırakılınca K1 ve M1 durmalı.','START ile STOP birlikteyken STOP önceliklidir.','Bir fazı veya bobin bağlantısını keserek karşılaştır.']},
+  {n:836,id:'motor-direct-power-outline-074',mode:'seal',
+   model:'SC836-NATIVE-MOTOR-SEAL-V1',
+   summary:'Sürekli çalışma: START kısa basıldıktan sonra K1 yardımcı NO kontağı mühürler ve motor çalışmayı sürdürür; STOP basıldığında ya da bobin enerjisi kaybolduğunda durur. Fiziksel devre güvenlik kabulü değildir.',
+   explain:'START düğmesine yalnızca bir an bas. K1 çekince yardımcı kontağı da kapanır ve butonu bırakınca devre çalışmayı sürdürür. STOP basıldığında bobin düşer, mühürleme açılır. Böylece kesik ve sürekli çalışmayı ayırt edebilirsin.',
+   question:'Sürekli çalışma devresinde START bırakılınca motor neden çalışmaya devam eder?',
+   options:['K1 yardımcı NO kontağı mühürlediği için.','Motorun PE bağlantısı hızı artırdığı için.','STOP kontağı kısa devre olduğu için.'],
+   steps:['Önce START a bas, K1 ve M1 etkinleşsin.','START ı bırak; mühürleme motoru çalıştırmaya devam eder.','STOP a bas; motor durur.','Mühürleme kablosunu kopar; START bırakılınca çalışmanın kesildiğini gözle.']},
+  {n:837,id:'motor-direct-power-outline-075',mode:'jog-seal',
+   model:'SC837-NATIVE-MOTOR-JOG-SEAL-SELECTOR-V1',
+   summary:'Kesik/sürekli çalışma seçimi: S2 kapalıyken START sadece basılı kaldığı sürece çalıştırır. S2 açıldığında K1 yardımcı NO kontağı mühürlemeyi devreye alır ve START bırakıldıktan sonra motor çalışır; STOP ikisini de durdurur. İki mod tek sanal örnekte karşılaştırılır.',
+   explain:'Aynı motoru iki çalışma biçiminde düşün. Seçici kapalıyken kısa hareket için START a basılı tutman gerekir. Seçici açıldığında START sonrası yardımcı kontak devreyi tutar. STOP her iki durumda da bobini bırakır; bu bir emniyet sistemi değildir.',
+   question:'S2 kesik moda getirildiğinde START bırakılırsa ne olur?',
+   options:['Mühürleme yolu kesilir ve motor durur.','Motor kendi kendine hızlanır.','K1 enerjisizken kontak kapalı kalır.'],
+   steps:['S2 kapalı: START basılıyken çalıştır, bırakınca durdur.','S2 açık: START a basıp bırak, mühürlemeyi gör.','S2 yi kapatıp K1 in düştüğünü kontrol et.','Her iki modda STOP ve kopuk bobin durumunu sınar.']},
+  {n:838,id:'motor-direct-power-outline-076',mode:'two-station',
+   model:'SC838-NATIVE-TWO-STATION-MOTOR-SEAL-V1',
+   summary:'İki merkezden kontrol: S1 ve S2 START düğmeleri paralel; S0 ve S00 STOP düğmeleri seri çalışır. Herhangi bir START motoru mühürlemeyle başlatır, herhangi bir STOP durdurur. Bu örnek sanal kontak modelidir, sertifikalı durdurma değildir.',
+   explain:'Bir motoru atölyenin iki noktasından başlatmak istediğini düşün. İki START yolu paraleldir; hangisine basarsan K1 çeker. İki STOP kontağı ise seridir: biri açıldığında kumanda kesilir. Mühürleme yardımcı NO kontağı START bırakılınca çalışmayı tutar.',
+   question:'İki merkezli kumandada STOP düğmeleri nasıl davranmalıdır?',
+   options:['İkisi de seri olmalı, herhangi biri motoru durdurmalı.','İkisi paralel olduğu için ikisine de basılmalı.','STOP yalnızca ikinci merkezde çalışmalı.'],
+   steps:['Birinci START ile çalıştır, bırakınca mühürlemeyi gör.','Birinci STOP ile durdur.','İkinci START ile çalıştır, bırakınca mühürlemeyi gör.','İkinci STOP ile durdur; iki START birlikteyken bir STOP her zaman üstün olsun.','İkinci STOP veya START kablosunu kopararak sonucu karşılaştır.']}
+ ];
+ const canonicalTypes='supply-3p,push-nc,push-no,coil-contactor,main-contact,motor-3p,contact-no';
+ const addWire=(p,id,a,ap,b,bp)=>p.wires.push({
+  id,from:{c:a,p:ap},to:{c:b,p:bp},color:'#4c8a88',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+  tutorialWhy:'İki katalog terminali arasında sanal kumanda bağlantısı.'
+ });
+ const addPart=(id,typeId,ref,label,x,y)=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:''});
+ for(const s of profiles){
+  const l=L.byId[s.id],p=l?.project,v=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.map(c=>c.typeId).join(',')!==canonicalTypes||
+     p.wires?.length!==13||p.tutorialLesson?.phase!=='quiz'||
+     v?.independentPedagogicalAcceptance===true||
+     v?.titleTopologyStatus==='PASS'||v?.titleTopologyStatus==='HOLD')continue;
+  if(s.mode==='jog'){
+   p.components=p.components.filter(c=>c.id!=='hold');
+   p.wires=p.wires.filter(w=>w.from?.c!=='hold'&&w.to?.c!=='hold');
+  }else if(s.mode==='jog-seal'){
+   p.components.push(addPart('mode','selector-no','S2','Kesik / Sürekli seçimi',295,490));
+   p.wires=p.wires.filter(w=>!(w.from?.c==='stop'&&w.from?.p==='22'&&w.to?.c==='hold'&&w.to?.p==='13'));
+   addWire(p,'sc837-mode-in','stop','22','mode','13');
+   addWire(p,'sc837-mode-out','mode','14','hold','13');
+  }else if(s.mode==='two-station'){
+   p.components.push(addPart('stop2','push-nc','S00','İkinci merkez STOP',100,495));
+   p.components.push(addPart('start2','push-no','S2','İkinci merkez START',335,495));
+   p.wires=p.wires.filter(w=>!(w.from?.c==='g1'&&w.from?.p==='L1'&&w.to?.c==='stop'&&w.to?.p==='21'));
+   addWire(p,'sc838-stop-supply','g1','L1','stop2','21');
+   addWire(p,'sc838-stop-series','stop2','22','stop','21');
+   addWire(p,'sc838-start2-feed','stop','22','start2','13');
+   addWire(p,'sc838-start2-return','start2','14','coil','A1');
+  }
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint||'Katalog uçlarını bağla.',why:w.tutorialWhy||'Motor kumandasındaki terminali tanı.',
+   color:w.color,role:w.role||'CONTROL',size:w.size||'1.5'}));
+  l.materials=p.components.map(c=>({id:c.id,label:c.label||c.ref||c.typeId,why:
+   c.id==='g1'?'Motor için sanal güç ve bobin kumanda kaynağı.':
+   c.id==='motor'?'Üç faz bağlantısı varsa sanal motor çalışmasını gösterir.':
+   c.id==='coil'?'K1 kontaktörünü çeker.':
+   c.id==='main'?'K1 güç yolunu motor fazlarına bağlar.':
+   c.id==='hold'?'Yalnız izin verilen modda START bırakılınca mühürleme yapar.':
+   c.id==='stop'||c.id==='stop2'?'Basıldığında NC kumanda yolunu açar.':
+   c.id==='mode'?'Kesik ve sürekli mühürleme yolunu seçer.':
+   'START basılınca kumandaya izin verir.'}));
+  l.summary=s.summary;l.explanation=s.explain;
+  l.quiz={question:s.question,options:s.options,answer:0,why:s.explain};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:s.n+' · '+l.title,virtualOnly:true,canonicalGraphUnchanged:s.mode==='seal',
+   fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:s.steps,
+   observations:['703 kayıtlı gerçek eleman katalog pinleriyle özgün Simulation.solve testine dayanan sınırlı sanal kumanda örneği.',
+    'Kontaktör bobini, üç faz motor ve yardımcı kontaklar fiziksel sahada sertifikalı bir güvenlik düzeni değildir.',
+    'Üretici, termik aşırı yük koruması, Windows/3D ve bağımsız pedagojik kabul açık.'],
+   repairModel:s.model};
+  const review=v||(l.pedagogyReview={});
+  review.preRepairTitleTopologyIssue=review.titleTopologyIssue||null;
+  review.titleTopologyStatus='REVIEW';
+  review.titleTopologyIssue='PHYSICAL_PROTECTION_WINDOWS_3D_INDEPENDENT_PEDAGOGY_PENDING';
+  review.componentIds=p.components.map(c=>c.typeId);review.realWiredCircuit=true;
+  review.nativeDynamicAcceptance=false;review.physicalAcceptance=false;
+  review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+  review.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC835_838_TARGETED_PASS';
+  review.actualCurriculumSequence=s.n;
+  review.targetedMotorControlRepair=s.model;
+ }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
