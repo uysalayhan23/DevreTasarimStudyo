@@ -3568,6 +3568,89 @@
   v.sc867AutoStarDeltaRepair='MOTOR-START-SPEED-022-AUTO-STAR-DELTA-V1';
  })();
 
+
+ // SC870: virtual automatic low-to-high Dahlander contact sequence, not hardware RPM.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-025'],reference=L.byId['motor-start-speed-outline-024'];
+  const p=l?.project,r=l?.pedagogyReview,donor=reference?.project;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+   !p.components.some(c=>c.typeId==='packet-star-delta')||
+   !p.components.some(c=>c.typeId==='motor-y-d')||
+   reference?.practiceGuide?.repairModel!=='MOTOR-START-SPEED-024-DAHLANDER-LOW-HIGH-NATIVE-V1'||
+   donor?.components?.length!==10||r?.independentPedagogicalAcceptance===true)return;
+  const copy=x=>JSON.parse(JSON.stringify(x));
+  const C=(id,typeId,ref,label,x,y,props={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...props});
+  const add=[
+   C('stop','push-nc','S0','STOP NC',225,65),
+   C('start','push-no','S1','START NO',400,65),
+   C('hold','contact-no','KM','KM mühürleme',510,180),
+   C('coilMain','coil-contactor','KM','KM kumanda bobini',825,65),
+   C('timer','coil-delay-on','KT','KT1 sanal iki saniye',940,195,
+     {delayValue:2,delayUnit:'sec'}),
+   C('timerNC','contact-nc','KT','KT1 zaman öncesi NC',380,330),
+   C('timerNO','contact-no','KT','KT1 zaman sonrası NO',380,475)
+  ];
+  const parts=[...copy(donor.components.filter(c=>c.id!=='sel')),...add];
+  const additions=[
+   ['g','L1','stop','21'],['stop','22','start','13'],
+   ['start','14','coilMain','A1'],['stop','22','hold','13'],
+   ['hold','14','coilMain','A1'],['coilMain','A2','g','N'],
+   ['coilMain','A1','timer','A1'],['timer','A2','g','N'],
+   ['coilMain','A1','timerNC','21'],['timerNC','22','lockL','21'],
+   ['coilMain','A1','timerNO','13'],['timerNO','14','lockH','21']
+  ];
+  const wires=copy(donor.wires.filter(w=>
+    w.from?.c!=='sel'&&w.to?.c!=='sel')).map((w,i)=>({
+    ...w,id:'motor-outline-025-auto-donor-'+(i+1)}));
+  p.components=parts;
+  p.wires=[...wires,...additions.map(([a,ap,b,bp],i)=>({
+    id:'motor-outline-025-auto-control-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal zaman, START/STOP veya kademe kilidi.'}))];
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint||'Sanal terminal',
+    why:w.tutorialWhy||'Bu katalog terminalindeki sanal bağlantıyı incele.',
+    color:w.color||'#43857f',role:w.role||'CONTROL',size:w.size||'1.5'}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='timer'?'Başlangıçtaki düşük kademeden yüksek kademeye süreli geçişi tetikler.':
+      c.id==='bridge'?'Yüksek kademe U/V/W ortak bağlantısıdır.':
+      c.id==='motor'?'Düşükte U/V/W, yüksekte X/Y/Z sanal sargı uçları.':
+      c.typeId==='contact-nc'?'Karşı kademe kilitlemesi veya zamanın NC durumudur.':
+      'Sanal devre katalog terminali.'}));
+  l.summary='START ile Dahlander motor önce düşük kademe KL üzerinden çalışır. KT1 sanal süresi iki saniyeyi doldurunca KL kapanır, KH yüksek kademe ve ortak köprü etkinleşir. STOP tüm kumandayı sıfırlar. Gerçek devir, akım, moment veya mekanik geçiş süresi modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Dahlander motor önce düşük, sonra yüksek kademeye geçsin',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal START komutunu verip bırak; düşük KL kademesini izle.',
+      'KT1 iki saniye boyunca sayarken düşük kademe etkin kalmalı.',
+      'Süre dolunca düşük kademe bırakır, yüksek KH ve U/V/W ortak köprüye geçer.',
+      'STOP komutunda iki kademenin de durduğunu, tekrar START olmadan dönmediğini gör.',
+      'Bir sanal faz, NC kilit veya yüksek kademe köprüsünü koparıp sonucu karşılaştır.'
+    ],
+    observations:[
+      'Özgün 703 katalog ve Simulation.solve ile kademe süresi, STOP ve kopuk bağlantılar hedefli sınandı.',
+      'Bu modelin düşük/yüksek etiketi gerçek RPM veya güç aktarımı güvenlik kabulü değildir.',
+      'Fiziksel geçiş, 3D terminaller ve bağımsız pedagojik kabul bekliyor.'
+    ],repairModel:'MOTOR-START-SPEED-025-TIMED-DAHLANDER-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='DAHLANDER_REAL_RPM_TORQUE_TRANSITION_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TIMED_POS_NEG_PASS';
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc870TimedDahlanderRepair='MOTOR-START-SPEED-025-TIMED-DAHLANDER-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
