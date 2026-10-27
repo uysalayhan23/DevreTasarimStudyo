@@ -3805,6 +3805,87 @@
   v.sc880LimitedBrakeCommand='SC880-TIMED-DC-BRAKE-COMMAND-V1';
  })();
 
+
+ // SC881: independent forward/reverse virtual contactors plus bounded DC brake command.
+ (() => {
+ const l=L.byId['motor-braking-outline-019'],ref=L.byId['motor-braking-outline-018'],p=l?.project,v=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==18||p?.wires?.length!==38||
+    ref?.practiceGuide?.repairModel!=='SC880-TIMED-DC-BRAKE-COMMAND-V1'||
+    v?.independentPedagogicalAcceptance===true)return;
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const C=(id,typeId,reference,label,x,y,ex={})=>({
+   id,typeId,ref:reference,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+ const a=clone(ref.project.components);
+ const sel=a.find(c=>c.id==='sel');sel.typeId='selector-3';sel.label='S1 sanal ileri / geri / DC komut';sel.position=0;
+ a.push(
+ C('ncK2','contact-nc','K2','K2 NC ileri kilidi',470,100),
+ C('ncK1','contact-nc','K1','K1 NC geri kilidi',480,210),
+ C('ncKB2','contact-nc','KB','KB NC geri kilidi',340,245),
+ C('ncK2Brake','contact-nc','K2','K2 NC fren kilidi',570,380),
+ C('reverseCoil','coil-contactor','K2','K2 sanal geri bobini',870,260),
+ C('reverseMain','main-contact','K2','K2 geri güç kontakları',1020,740)
+ );
+ const graph=[
+ ['g','L1','sel','11'],
+ ['sel','13','ncB','21'],['ncB','22','ncK2','21'],
+ ['ncK2','22','runCoil','A1'],['runCoil','A2','g','N'],
+ ['sel','14','ncKB2','21'],['ncKB2','22','ncK1','21'],
+ ['ncK1','22','reverseCoil','A1'],['reverseCoil','A2','g','N'],
+ ['sel','15','tCoil','A1'],['tCoil','A2','g','N'],
+ ['sel','15','ncR','21'],['ncR','22','ncK2Brake','21'],
+ ['ncK2Brake','22','tNC','21'],['tNC','22','brakeCoil','A1'],
+ ['brakeCoil','A2','g','N'],
+ ['g','L1','runMain','1'],['g','L2','runMain','3'],['g','L3','runMain','5'],
+ ['runMain','2','motor','U'],['runMain','4','motor','V'],['runMain','6','motor','W'],
+ ['g','L1','reverseMain','1'],['g','L2','reverseMain','3'],['g','L3','reverseMain','5'],
+ ['reverseMain','2','motor','W'],['reverseMain','4','motor','V'],['reverseMain','6','motor','U'],
+ ['g','PE','motor','PE'],
+ ['g','L1','smps','L'],['g','N','smps','N'],
+ ['smps','P','brakeMain','1'],['brakeMain','2','motor','U'],
+ ['smps','M','brakeMain','3'],['brakeMain','4','motor','V']
+ ];
+ p.components=a;p.wires=graph.map(([ac,ap,bc,bp],i)=>({
+ id:'motor-braking-outline-019-'+(i+1),
+ from:{c:ac,p:ap},to:{c:bc,p:bp},
+ color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+ tutorialHint:'Sanal '+ac+'/'+ap+' → '+bc+'/'+bp,
+ tutorialWhy:'İleri, geri veya süreli DC komut yolunun ayrı katalog ucu.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+ why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=a.map(c=>({id:c.id,label:c.label,
+ why:c.id==='sel'?'Tek konum seçer: ileri, geri veya sanal fren.':
+ c.typeId==='contact-nc'?'Karşı kontaktörün eşzamanlı çalışmasını önleyen sanal kilit.':
+ c.id==='tCoil'?'Sanal DC fren komutunu iki saniye ile sınırlar.':
+ 'Özgün katalogdaki sanal terminal davranışı.'}));
+ l.summary='İleri ve geri yön ayrı kontaktörlerle, karşılıklı NC kilitleme ile seçilir. Üçüncü konumda AC motor etkinliği kesilir ve 24 VDC sanal komut KT1 düz zaman rölesiyle iki saniye sonra kapanır. Motor fren momenti ve fiziksel durma süresi modellenmez.';
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+ heading:'İleri, geri ve zaman sınırlı fren komutunu ayıralım',
+ virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+ pedagogicalAcceptance:false,fullyRich:false,
+ steps:['Sanal seçiciyi ileri yap; motorun dönme yönünü gözlemle.',
+ 'Önce 0 konumuna dönüp ardından geri yönü karşılaştır.',
+ 'Tek seçici ve K1/K2 NC kilitleri, iki yön kontaktörünü aynı anda çalıştırmamalı.',
+ '0 sonrasında fren konumuna geç; iki saniyelik DC uygulama komutunu izle.',
+ 'KT1 süresi bitince KB komutunun kapanmasını ve motor AC yolunun hâlâ açık olmadığını doğrula.',
+ 'Faz, motor ucu veya fren kumanda hattını sanal olarak ayır.'],
+ observations:['Özgün 703 katalog ve Simulation.solve elektriksel yol ve zaman testleri için kullanıldı.',
+ 'Sanal 24 VDC komut, gerçek DC enjeksiyon akımı veya mekanik frenleme kabulü değildir.',
+ 'Gerçek güvenlik kilidi, rotor dinamiği, Windows/3D ve bağımsız kabul açık.'],
+ repairModel:'SC881-FORWARD-REVERSE-TIMED-DC-COMMAND-V1'};
+ const review=v||(l.pedagogyReview={});
+ review.preRepairTitleTopologyIssue=review.titleTopologyIssue||null;
+ review.titleTopologyStatus='REVIEW';
+ review.titleTopologyIssue='MECHANICAL_TORQUE_REAL_INJECTION_AND_WINDOWS_3D_PENDING';
+ review.componentIds=a.map(c=>c.typeId);review.realWiredCircuit=true;
+ review.nativeDynamicAcceptance=false;review.physicalAcceptance=false;
+ review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+ review.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_VIRTUAL_ELECTRICAL_PASS';
+ review.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ review.sc881LimitedBrakeCommand='SC881-FORWARD-REVERSE-TIMED-DC-COMMAND-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
