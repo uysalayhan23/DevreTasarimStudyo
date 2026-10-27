@@ -4187,6 +4187,88 @@
   v.sc913ElectricalInterlock='SC913-VIRTUAL-FWD-REV-ELECTRICAL-INTERLOCK-V1';
  })();
 
+
+ // SC914: two independently operated virtual three-phase motor branches.
+ // One educational example only; panel safety and sequencing requirements REVIEW.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-099'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,more={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...more});
+  const a=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',45,425),
+   C('stop1','push-nc','S0A','M1 STOP NC',200,60),
+   C('start1','push-no','S1A','M1 START NO',410,60),
+   C('seal1','contact-no','K1','K1 mühürleme NO',600,155),
+   C('coil1','coil-contactor','K1','K1 bobin M1',820,70),
+   C('main1','main-contact','K1','K1 M1 güç kontakları',985,295),
+   C('motor1','motor-3p','M1','M1 sanal motor',1350,310,{motorConnection:'star'}),
+   C('stop2','push-nc','S0B','M2 STOP NC',200,520),
+   C('start2','push-no','S1B','M2 START NO',410,520),
+   C('seal2','contact-no','K2','K2 mühürleme NO',600,640),
+   C('coil2','coil-contactor','K2','K2 bobin M2',820,520),
+   C('main2','main-contact','K2','K2 M2 güç kontakları',985,770),
+   C('motor2','motor-3p','M2','M2 sanal motor',1350,790,{motorConnection:'star'})
+  ];
+  const edges=[];
+  for(const s of ['1','2']){
+    const stop='stop'+s,start='start'+s,seal='seal'+s,coil='coil'+s,main='main'+s,motor='motor'+s;
+    edges.push(
+     ['g','L1',stop,'21'],[stop,'22',start,'13'],[start,'14',coil,'A1'],
+     [stop,'22',seal,'13'],[seal,'14',coil,'A1'],[coil,'A2','g','N'],
+     ['g','L1',main,'1'],['g','L2',main,'3'],['g','L3',main,'5'],
+     [main,'2',motor,'U'],[main,'4',motor,'V'],[main,'6',motor,'W'],
+     ['g','PE',motor,'PE']);
+  }
+  p.components=a;
+  p.wires=edges.map(([ac,ap,bc,bp],i)=>({
+    id:'motor-outline-099-'+(i+1),
+    from:{c:ac,p:ap},to:{c:bc,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:ac+'/'+ap+' → '+bc+'/'+bp,
+    tutorialWhy:'Sanal M1 veya M2 kumanda/güç kolunun katalog terminali.'
+  }));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.id.startsWith('stop')?'Yalnız kendi sanal motor kolunu durdurur.':
+     c.id.startsWith('start')?'Yalnız kendi motorunun sanal START komutudur.':
+     c.id.startsWith('seal')?'START bırakıldıktan sonra ilgili motorun mühürlemesini korur.':
+     'Sanal pano devresinin katalog terminaliyle yer alan parçası.'}));
+  l.summary='İki motorlu pano için bağımsız kumanda örneği: K1 ve K2 ayrı sanal güç kolları, M1 ve M2 ayrı START/STOP ve mühürleme kontakları kullanır. Bir motor dururken diğeri çalışabilir. Bu, tüm olası iki motorlu pano şartnamelerini karşılamaz; sıra kilidi, yük koruması, fiziksel güvenlik ve Windows/3D kabulü bekler.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'İki motor, iki ayrı kumanda: birbirini nasıl etkiler?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Önce M1 sanal START komutunu ver, M2 nin kapalı kaldığını izle.',
+      'START düğmesini bırak; K1 yardımcı mühürleme kontağı M1 i çalışır tutar.',
+      'M2 START komutunu ver; şimdi iki sanal motor birlikte çalışır.',
+      'M1 STOP komutuyla yalnız M1 i durdur. M2 çalışmayı sürdürmeli.',
+      'M2 STOP sonrasında düğmeler serbestken hiçbir motor kendiliğinden başlamamalı.',
+      'Bir motorun faz veya mühürleme kolunu kopar; diğer motorun devresinden bağımsız sonucu incele.'
+    ],observations:[
+      'Özgün 703 bileşenli katalog ve Simulation.solve ile iki sanal motorun bağımsız pozitif/negatif davranışı sınandı.',
+      'Gerçek pano koruması, mekanik terminal geometrisi ve işletme senaryosu onaylanmadı.'
+    ],repairModel:'SC914-VIRTUAL-DUAL-MOTOR-INDEPENDENT-START-STOP-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='PANEL_SEQUENCE_PROTECTION_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=a.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TWO_MOTOR_INDEPENDENCE_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc914DualMotorRepair='SC914-VIRTUAL-DUAL-MOTOR-INDEPENDENT-START-STOP-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
