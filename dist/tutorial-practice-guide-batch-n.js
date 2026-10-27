@@ -5430,6 +5430,136 @@
  v.sc990TwoMotorRepair='SC990-TWO-MOTOR-VIRTUAL-BIT-COMPARE-V1';
  })();
 
+
+ // SC992: 1-bit binary addition, replacing an unrelated motor source topology.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-122'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V / 0 V',60,325),
+   C('cpu','plc-0-0-documented','PLC1','PLC · 1 bitlik ikili toplama',715,330,{plcProgram:'binary-add-1bit-sc992'}),
+   C('a','selector-no','S1','A sayısı · 0 veya 1',345,100),
+   C('b','selector-no','S2','B sayısı · 0 veya 1',340,515),
+   C('sum','lamp-green','H1','Toplamın birler biti',1180,170),
+   C('carry','lamp-red','H2','Elde · ikiler biti',1180,485)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['g','P','a','13'],['a','14','cpu','X10:7'],
+   ['g','P','b','13'],['b','14','cpu','X10:8'],
+   ['cpu','X12:3','sum','X1'],['sum','X2','g','M'],
+   ['cpu','X12:4','carry','X1'],['carry','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc992-binary-'+(i+1),
+   from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Toplama girişi veya sonucu; gerçek katalogdaki PLC terminalidir.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'İki 0/1 bitini toplar, sonuç ve elde bitini ayırır.':
+   c.id==='a'||c.id==='b'?'Toplanacak sayıyı 0 veya 1 yapar.':
+   c.id==='sum'?'Toplamın birler bitini gösterir.':
+   c.id==='carry'?'1+1 sonucundaki elde bitini gösterir.':
+   'Sanal PLC nin giriş ve çıkış bankını besler.'}));
+  l.summary='İki sanal 0/1 sayısını topla. H1 birler bitini, H2 elde bitini gösterir. 1+1 sonucu ikili 10 yani onluk 2 olur. Bu, PLC nin yalnız bir bitlik sanal toplama örneğidir; WORD/INT, çıkarma, çarpma ve gerçek üretici yazılımı değildir.';
+  l.explanation='İki anahtarın küçük birer sayı olduğunu düşün: kapalıysa sıfır, açıksa bir. Önce 0+1 deneyip H1 i izle. Ardından ikisini de aç: 1+1=2 olur, birler lambası söner ve elde lambası yanar. İki lambayı birlikte okuyunca ikili sayıyı görürsün.';
+  l.quiz={question:'İki sanal giriş de 1 iken ikili toplamın bitleri nedir?',
+   options:['H1=0, H2=1 (ikili 10)','H1=1, H2=0','H1=1, H2=1'],answer:0,
+   why:'1+1 ikili 10 eder: birler sıfır, elde bir.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Bir artı bir, ikili sayı olarak iki',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['İki anahtar kapalı: 0+0 için iki lamba da sönük.', 
+    'Yalnız A açık: 1+0 için birler H1 yanık.',
+    'Yalnız B açık: 0+1 için H1 yanık.',
+    'Her iki anahtar açık: 1+1 için yalnız elde H2 yanık.',
+    'PLC çıkış bankının beslemesini, bir çıkışı veya B girişini ayırıp sonucu gözle.'],
+   observations:['Özgün 703 bileşenli katalog ve Simulation.solve ile dört ikili toplama durumu ve negatif bağlantı sınanır.',
+    'Kopuk giriş 0 gibi algılanabilir; güvenli algılama ve gerçek PLC veri tipi işlevleri bu sanal örnekte yoktur.',
+    'Gerçek PLC, Windows/3D ve bağımsız pedagojik kabul bekliyor.'],
+   repairModel:'SC992-VIRTUAL-ONE-BIT-BINARY-ADDER-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='FULL_MATH_OPERATIONS_PLC_DATA_TYPES_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC992_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc992BinaryArithmetic='SC992-VIRTUAL-ONE-BIT-BINARY-ADDER-V1';
+ })();
+
+ // SC993: two real catalogue resistors in series, an ammeter and parallel voltmeter.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-123'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V DC kaynak',60,335),
+   C('r1','resistor','R1','R1 · 1 kΩ',550,215,{resistance:1000}),
+   C('r2','resistor','R2','R2 · 1 kΩ',860,215,{resistance:1000}),
+   C('am','meter-ammeter','A1','Seri akım ölçümü',310,225),
+   C('vm','meter-voltmeter','V1','R1 üzerindeki gerilim',600,485)
+  ];
+  const graph=[
+   ['g','P','am','1'],['am','2','r1','1'],['r1','2','r2','1'],
+   ['r2','2','g','M'],['vm','1','r1','1'],['vm','2','r1','2']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc993-ohm-'+(i+1),
+   from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Ampermetre seri, voltmetre paralel bağlanır; katalog uçlarını karşılaştır.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='g'?'Sanal 24 V kaynak; iki seri dirence gerilim verir.':
+   c.id==='r1'||c.id==='r2'?'Toplam dirence 1000 ohm ekler.':
+   c.id==='am'?'Aynı seri koldan geçen akımı ölçer.':
+   'R1 üzerindeki gerilim düşümünü paralel ölçer.'}));
+  l.summary='24 V sanal DC kaynakta R1=1 kΩ ve R2=1 kΩ seri bağlandı: toplam 2 kΩ; beklenen akım 12 mA, R1 üzerinde yaklaşık 12 V. Akımı seri ampermetre, gerilimi paralel voltmetreyle karşılaştır. Ölçüm sanaldır, gerçek donanım testi değildir.';
+  l.explanation='İki dirençten oluşan bir akım yolunu düşün. Birincisi 1000, ikincisi 1000 ohm: toplam 2000 ohm. 24 volt bölü 2000 ohm bize 0,012 amper, yani 12 mA verir. Akımı ölçen aleti yola seri koy; R1 gerilimini ölçen aleti iki ucuna paralel bağla. R2 değerini büyütürsen akım azalır; kabloyu koparırsan seri akım kesilir.';
+  l.quiz={question:'Sanal 24 V ve iki adet seri 1 kΩ dirençte akım yaklaşık kaçtır?',
+   options:['12 mA','24 A','2 A'],answer:0,
+   why:'Toplam direnç 2 kΩ, 24/2000 = 0,012 A.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Dirençler toplansın, akım hesaplansın',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Sanal R1 ve R2 yi seri, ampermetreyi aynı akım yoluna bağla.',
+    'Voltmetreyi yalnız R1 uçlarına paralel bağla.',
+    '24 V / (1000+1000) Ω hesabıyla yaklaşık 12 mA bekle.',
+    'R2 yi 2 kΩ yap: toplam 3 kΩ olduğunda akımın yaklaşık 8 mA a düştüğünü gözle.',
+    'R2 çıkışını kopar: akım sıfıra yaklaşır; ölçü aletini yanlışlıkla kaynağa paralel bağlama.'],
+   observations:['Gerçek katalog terminal ve özgün Simulation.solve sayısal akım modeli pozitif/negatif kontrol edilir.',
+    'İdeal kaynak ve sanal ölçüm; fiziksel direnç toleransı, ısınma, Windows/3D ve bağımsız kabul bekliyor.'],
+   repairModel:'SC993-NATIVE-SERIES-RESISTANCE-OHM-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_MEASUREMENT_TOLERANCE_POWER_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC993_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc993SeriesOhmRepair='SC993-NATIVE-SERIES-RESISTANCE-OHM-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
