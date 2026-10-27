@@ -7447,6 +7447,130 @@
   v.sc463LoadCellRepair='SC463-NATIVE-LOADCELL-10V-MILLIVOLT-V1';
  })();
 
+
+ // SC597 — real 38 mm incremental encoder A/B/Z open-collector wiring.
+ (() => {
+  const l=L.byId['sensor-analog-apps-outline-057'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+     !p.components.some(c=>c.typeId==='proximity')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 V DC kaynak',80,330),
+   C('enc','encoder-incremental','B1','38 mm artımlı enkoder · 100 PPR',600,335,
+     {encoderPPR:100,encoderAuto:false,encoderMechanicalAngle:0,encoderRPM:0}),
+   C('ha','lamp-green','H1','A · NPN açık kollektör, aktif-düşük',1120,85),
+   C('hb','lamp-red','H2','B · 90° faz farkı',1120,300),
+   C('hz','lamp-green','H3','Z · tur referansı',1120,510)
+  ];
+  const graph=[
+   ['g','P','enc','+'],['g','M','enc','−'],
+   ['g','P','ha','X1'],['ha','X2','enc','A'],
+   ['g','P','hb','X1'],['hb','X2','enc','B'],
+   ['g','P','hz','X1'],['hz','X2','enc','Z']
+  ];
+  p.components=parts;p.wires=graph.map(([src,sp,dst,dp],i)=>({
+   id:'sc597-encoder-'+(i+1),from:{c:src,p:sp},to:{c:dst,p:dp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+src+'/'+sp+' → '+dst+'/'+dp,
+   tutorialWhy:'Gerçek katalogda +/− beslemesi ve ayrı A, B, Z NPN çıkış uçları.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='enc'?'100 PPR artımlı enkoderin A/B fazlarını ve tur referansı Z darbesini üretir.':
+   c.id==='g'?'Sanal 24 V ve 0 V referansı sağlar.':
+   c.id==='ha'?'A çıkışı 0 olduğunda akım yolunu görselleştirir.':
+   c.id==='hb'?'B çıkışının A ile farklı fazını gösterir.':
+   'Z çıkışının tur referansını gösterir.'}));
+  l.summary='Gerçek katalogdaki 38 mm artımlı enkoderin +/− beslemesi, A/B/Z NPN açık kollektör çıkışlarına üç göstergeyle bağlandı. 100 PPR seçildi: mil 0,9° döndüğünde A, sonra B durum değiştirir; 3,6° bir çevrimdir. H1/H2/H3 düşük seviyede yanar; bu gerçek yüksek hızlı PLC sayıcı veya motor mil eşleşmesi değildir.';
+  l.explanation='Enkoderi dönen bir düğme gibi düşün. Önce A ve B ikisi de yüksek, sonra A düşer, ardından B düşer, sonra A yükselir. Böylece hangi yönde döndüğümüzü iki sinyalden anlayabiliriz. Z ise her turdaki referans işaretini gösterir. Buradaki lambalar NPN uç akım çektiği anda yanar; yani ışık sinyal 0 iken görünür.';
+  l.quiz={question:'A ve B kanalları neden aynı anda değişmez?',
+   options:['Dönüş yönünü saptamaya yarayan faz farkı oluştururlar.','Enkoder 24 V gerilimi ikiye bölüyor.','Z sürekli 1 kalıyor.'],
+   answer:0,why:'Kademeli A/B sinyallerinin sırası dönüş yönünü ayırmaya yarar.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Artımlı enkoderin üç gerçek sinyalini izle',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['24 V ve 0 V uçlarını gerçek enkoder beslemesine bağla.',
+    'A, B ve Z çıkışlarının NPN aktif-düşük göstergelerine ayrı ayrı bağla.',
+    '100 PPR ve 0° mil açısında yalnız Z göstergesi yanar.',
+    '0,9°: A yanar; 1,8°: A ve B yanar; 2,7°: yalnız B yanar.',
+    '3,6°: A ve B tekrar yükselir; 360° çevresinde Z işaretini gözle.',
+    'Enkoder +, −, A veya B kablosunu ayırıp doğal negatif sonuçları kontrol et.'],
+   observations:['Özgün Simulation.solve ve 703 katalog ile quadrature evreleri, Z, gerçek pinler ve kablo kopmaları sınanır.',
+    'Zaman çözünürlüğü, motor mekanik kaplini, saha kablolaması, fiziksel donanım ve Windows/3D bağımsız kabul açık.'],
+   repairModel:'SC597-NATIVE-INCREMENTAL-ENCODER-ABZ-OPEN-COLLECTOR-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='HIGH_SPEED_COUNTER_MOTOR_COUPLING_WINDOWS_3D_PHYSICAL_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC597_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc597EncoderABZRepair='SC597-NATIVE-INCREMENTAL-ENCODER-ABZ-OPEN-COLLECTOR-V1';
+ })();
+
+ // SC827 — unenergized push-NO/NC contact identification using two actual UT33D+ meters.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-065'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('no','push-no','S1','Normalde açık START kontağı · 13/14',390,170),
+   C('nc','push-nc','S0','Normalde kapalı STOP kontağı · 21/22',400,460),
+   C('meterNO','unit-ut33d-plus','A1','UNI-T UT33D+ · NO temas ölçümü',890,155,{meterPosition:14}),
+   C('meterNC','unit-ut33d-plus','A2','UNI-T UT33D+ · NC temas ölçümü',890,455,{meterPosition:14})
+  ];
+  const graph=[
+   ['meterNO','V','no','13'],['meterNO','COM','no','14'],
+   ['meterNC','V','nc','21'],['meterNC','COM','nc','22']
+  ];
+  p.components=parts;p.wires=graph.map(([src,sp,dst,dp],i)=>({
+   id:'sc827-ohmmeter-'+(i+1),from:{c:src,p:sp},to:{c:dst,p:dp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+src+'/'+sp+' → '+dst+'/'+dp,
+   tutorialWhy:'UNI-T VΩ ve COM probları, enerjisiz ölçülen kontağın iki ucuna temas eder.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='no'?'Basılmadığında açık, basıldığında kapalı kontağı örnekler.':
+   c.id==='nc'?'Basılmadığında kapalı, basıldığında açık kontağı örnekler.':
+   'Ω kademesinde kontak sürekliliğini ölçen UNI-T UT33D+ sanal multimetresi.'}));
+  l.summary='Sanal enerjisiz NO START (13/14) ve NC STOP (21/22) kontakları iki gerçek UNI-T UT33D+ ölçü aletiyle Ω kademesinde sınanır. Serbestken NO OL, NC yaklaşık 0 Ω; basınca NO yaklaşık 0 Ω, NC OL olur. Bu, başka kontaktörlerin iç kontaklarını veya fiziksel güvenlik kabulünü kapsamaz.';
+  l.explanation='İki butonun kontağını test edelim. START normalde açıktır; ölçü aletinde OL görürüz, basınca yol kapanır ve yaklaşık sıfır ohm okunur. STOP ise bunun tersidir: serbestken yol açık değildir, basınca açılır. Ölçümü sadece enerjisiz sanal kontak üzerinde düşün; gerçek devrelerde direnç ölçümü öncesinde enerjinin güvenle kesildiği ayrıca doğrulanmalıdır.';
+  l.quiz={question:'Enerjisiz NC STOP kontağına basıldığında Ω göstergesi ne olur?',
+   options:['OL (açık devre)','Yaklaşık 0 Ω','24 V'],answer:0,
+   why:'Normalde kapalı kontak STOP basılınca açılır ve süreklilik kesilir.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'NO ve NC kontakları Ω kademesinde ayırt et',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Her iki UNI-T UT33D+ ölçü aletini 200 Ω kademesine al.',
+    'Birini NO 13/14, diğerini NC 21/22 kontak uçlarına bağla.',
+    'İki buton serbest: NO OL, NC yaklaşık 0 Ω göstermeli.',
+    'START a bas: NO yaklaşık 0 Ω; bırakınca OL.',
+    'STOP a bas: NC OL; bırakınca yaklaşık 0 Ω.',
+    'COM kablosunu ayır veya kademeyi OFF yap; ölçümü geçerli 0 Ω gibi yorumlama.'],
+   observations:['703 katalogda gerçek NO/NC kontakları ve iki gerçek UNI-T multimetresi özgün Simulation.solve ile test edilir.',
+    'Kontak testlerinde gerçek saha gerilimi, diğer kontak çeşitleri, ölçü aleti kalibrasyonu ve Windows/3D fiziksel kabul açık.'],
+   repairModel:'SC827-NATIVE-UNPOWERED-NO-NC-UT33D-CONTINUITY-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='ADDITIONAL_CONTACTOR_CONTACT_TEST_WINDOWS_3D_PHYSICAL_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC827_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc827ContactOhmmeterRepair='SC827-NATIVE-UNPOWERED-NO-NC-UT33D-CONTINUITY-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
