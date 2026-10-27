@@ -9,6 +9,18 @@
  const starter=()=>({version:1,rungs:[
   {id:'R1',paths:[[{type:'NO',ref:'I1'},{type:'NC',ref:'I2'}],[{type:'NO',ref:'Q1'},{type:'NC',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}
  ]});
+ // Only saved, currently running programs may display live signals.
+ function monitorRows(draft,saved,traces,running,mode){
+  const rows=Array.isArray(draft?.rungs)?draft.rungs:[];
+  const live=!!running&&mode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
+  const byId=new Map((live&&Array.isArray(traces)?traces:[]).map(t=>[t.id,t]));
+  return rows.map(r=>{
+   const t=live?byId.get(r.id):null;
+   return {active:!!t?.active,value:t?!!t.value:null,count:Number.isInteger(t?.count)?t.count:null,
+    status:!running?'Simülasyon kapalı':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
+  });
+ }
+ function signalText(row){return row.value===null?'—':(row.value?'1':'0')+(row.count===null?'':' · Sayaç '+row.count);}
  function stateFor(c,editor){
   const d=editor.byId[c.typeId];
   return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),
@@ -46,7 +58,7 @@
   };
   function render(){
    if(!active)return;
-   const cp=available(),valid=L.validate(active.draft,limits());
+   const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
@@ -57,8 +69,8 @@
     '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button></div>'+
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
-      const monitored=active.c._dtsLadderTraces?.find(t=>t.id===r.id);
-      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><span>'+(monitored?'Simülasyon: '+(monitored.active?'AKTİF':'Pasif'):'')+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
+      const monitored=views[ri];
+      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
@@ -73,7 +85,7 @@
        select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"')+
        (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
        (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
-       (monitored?'<strong class="dts-ladder-signal">'+(monitored.value?'1':'0')+'</strong>':'')+
+       '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
        '</div></article>';
      }).join('')+'</main>'+
      '<footer class="dts-ladder-footer"><span id="dtsLadderValidation" role="status">'+(valid.ok?'Program kontrolü: uygun.':escape(valid.error))+'</span><button type="button" data-action="close">Kapat</button></footer>'+
@@ -86,7 +98,17 @@
    const target=items.find(c=>c.id===which)||items[0];
    active=stateFor(target,editor);
    overlay.hidden=false;render();overlay.querySelector('.dts-ladder-dialog')?.focus();
-   if(!monitorTimer)monitorTimer=root.setInterval(()=>{if(!overlay.hidden&&editor.running){const traces=active?.c._dtsLadderTraces||[];for(const el of overlay.querySelectorAll('.dts-ladder-rung')){const i=Array.from(el.parentNode.children).indexOf(el);el.classList.toggle('active',!!traces[i]?.active)}}},300);
+   if(!monitorTimer)monitorTimer=root.setInterval(()=>{
+    if(overlay.hidden||!active)return;
+    const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
+    overlay.querySelectorAll('.dts-ladder-rung').forEach((el,i)=>{
+     const row=views[i];if(!row)return;
+     el.classList.toggle('active',row.active);
+     const status=el.querySelector('[data-monitor="status"]'),value=el.querySelector('[data-monitor="value"]');
+     if(status)status.textContent=row.status;
+     if(value)value.textContent=signalText(row);
+    });
+   },300);
    return true;
   }
   function save(){
@@ -150,7 +172,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor};
+ const api={init,supported,starter,stateFor,monitorRows,signalText};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
