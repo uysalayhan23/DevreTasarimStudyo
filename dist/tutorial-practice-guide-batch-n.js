@@ -7220,6 +7220,135 @@
   'MECHANICAL_INTERLOCK_PROTECTION_WINDOWS_3D_PEDAGOGY_PENDING');
  })();
 
+
+ // Four real 703-catalog electronics repairs; all restricted to source generic templates.
+ (() => {
+  const specs=[
+   {n:445,id:'sensor-analog-apps-outline-031',type:'sensor-ntc',ref:'NTC1',
+    title:'NTC ile sıcaklık değişince akım nasıl değişir?',
+    summary:'Sanal 24 V DC ile 1 kΩ sabit direnç ve gerçek katalog NTC termistörü seri bağlandı. NTC ısındıkça direnci düşer ve akım yükselir; örnek sayım 0 °C civarında 0,70 mA, 25 °C de 2,18 mA, 50 °C de 5,23 mA. Tam sıcaklık anahtarı veya emniyet kontrolü değildir.',
+    explanation:'Bir sıcaklık sensörü düşün: hava ısınınca NTC akıma daha az direnç gösterir. Ampermetreyi seri akım yolunda, voltmetreyi sensör uçlarında izle. Sıcaklığı 0, 25 ve 50 derece yapınca akımın adım adım arttığını gör.',
+    quiz:'Sanal NTC 25 °C den 50 °C ye ısınınca seri akım ne yapar?',answers:['Artar','Azalır','Sıfıra iner'],correct:0,why:'NTC nin direnci sıcaklık arttıkça azalır.'},
+   {n:446,id:'sensor-analog-apps-outline-032',type:'sensor-ptc',ref:'PTC1',
+    title:'PTC ile ısındığında daha az akım geçen devre',
+    summary:'Sanal 24 V DC, 1 kΩ direnç ve katalog PTC termistörü seri bağlıdır. PTC ısındıkça direnci yükselir ve akım azalır; örnek 0 °C de 15,63 mA, 25 °C de 12,00 mA, 50 °C de 8,37 mA. Fiziksel aşırı sıcaklık rölesi ya da motor koruması değildir.',
+    explanation:'PTC, NTC nin tersine davranır. Isınınca akımı azaltan bir yol oluşturur. Ampermetrede sıcaklığı yükselttikçe akımın düştüğünü, voltmetrede PTC üzerindeki gerilimin büyüdüğünü karşılaştır.',
+    quiz:'PTC sıcaklığı artarsa sabit DC ve seri dirençte akım ne olur?',answers:['Azalır','Artar','Hep aynı kalır'],correct:0,why:'Isınan PTC nin direnci artar, dolayısıyla seri akım azalır.'},
+   {n:448,id:'sensor-analog-apps-outline-034',type:'sensor-pt100-2wire',ref:'PT100',
+    title:'PT100 ile sıcaklık ve direnç ölçümü',
+    summary:'Sanal 24 V DC, 1 kΩ sabit direnç ve katalogdaki iki uçlu PT100 modeli seri bağlıdır. PT100 0 °C de yaklaşık 100 Ω, 50 °C de yaklaşık 119,4 Ω olur. Voltmetre PT100 gerilim düşümünü, ampermetre seri akımı gösterir; gerçek 3/4 telli RTD ölçüm cihazı değildir.',
+    explanation:'PT100 adını sıfır derecede yaklaşık 100 ohm olmasından alır. Sensörü biraz ısıttığında direnç yükselir. Akım çok az düşer, PT100 üzerindeki gerilim biraz artar. İki ölçümü birlikte okuyarak farkı tanı.',
+    quiz:'PT100 modeli 0 °C den 50 °C ye ısınınca direnç ne yapar?',answers:['Artar','Azalır','Tam sıfır olur'],correct:0,why:'PT100 pozitif sıcaklık katsayılı platin direnç sensörüdür.'}
+  ];
+  for(const s of specs){
+   const l=L.byId[s.id],p=l?.project,r=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+     !p.components.some(c=>c.typeId==='proximity')||r?.independentPedagogicalAcceptance===true)continue;
+   const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+   const pin0=s.type==='sensor-pt100-2wire'?'A':'1',pin1=s.type==='sensor-pt100-2wire'?'B1':'2';
+   const parts=[
+    C('g','supply-dc-plus','G1','Sanal 24 V DC',85,340),
+    C('am','meter-ammeter','A1','Seri akım',315,195),
+    C('sensor',s.type,s.ref,'Sıcaklığa bağlı direnç',660,195,{temperature:25}),
+    C('r1','resistor','R1','Sabit 1 kΩ',1020,195,{resistance:1000}),
+    C('vm','meter-voltmeter','V1','Sensör gerilimi',730,500)
+   ];
+   const lines=[
+    ['g','P','am','1'],['am','2','sensor',pin0],
+    ['sensor',pin1,'r1','1'],['r1','2','g','M'],
+    ['vm','1','sensor',pin0],['vm','2','sensor',pin1]
+   ];
+   p.components=parts;
+   p.wires=lines.map(([from,fp,to,tp],i)=>({id:'sc'+s.n+'-thermal-'+(i+1),
+    from:{c:from,p:fp},to:{c:to,p:tp},color:'#43857f',
+    role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:from+'/'+fp+' → '+to+'/'+tp,
+    tutorialWhy:'Akım ölçer seri, gerilim ölçer yalnız sıcaklık sensörüne paraleldir.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='g'?'Sanal DC kaynaktır.':c.id==='sensor'?'Değeri sıcaklığa göre değişir.':
+    c.id==='r1'?'Akımı sınırlayan seri dirençtir.':
+    c.id==='am'?'Gerçek akım yolunu ölçer.':'Sensör uçlarındaki gerilim düşümünü ölçer.'}));
+   l.summary=s.summary;l.explanation=s.explanation;
+   l.quiz={question:s.quiz,options:s.answers,answer:s.correct,why:s.why};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:s.title,virtualOnly:true,
+    canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Sanal sensörü seri 1 kΩ direnç ve ampermetreyle devreye bağla.',
+     'Voltmetreyi sensörün iki ucuna paralel bağla.',
+     'Sensör sıcaklığını sırayla 0, 25 ve 50 °C yap; akım ve gerilim değişimini izle.',
+     'Seri akım yolu kablosunu ayırınca akımın kesildiğini kontrol et.',
+     'Voltmetrenin bir probunu çıkar; kopuk probu güvenilir sıfır volt ölçümü sanma.'],
+    observations:['Gerçek 703 katalog termal direnç modeli özgün Simulation.solve üzerinde hedefli ölçüldü.',
+     'Sanal ölçüm, üretici toleransı, termal ataleti, saha montajı ve Windows/3D kabulü kapsamaz.'],
+    repairModel:'SC'+s.n+'-NATIVE-THERMAL-RESISTOR-MEASUREMENT-V1'};
+   const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='ACTUAL_THERMAL_THRESHOLD_CONTROLLER_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC'+s.n+'_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v['sc'+s.n+'ThermalRepair']='SC'+s.n+'-NATIVE-THERMAL-RESISTOR-MEASUREMENT-V1';
+  }
+ })();
+
+ // SC454 real Hall PNP with magnetic target and disconnected sensor/output negatives.
+ (() => {
+  const l=L.byId['sensor-analog-apps-outline-039'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+    !p.components.some(c=>c.typeId==='proximity')||r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ex={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal +24 V / 0 V',75,325),
+   C('hall','sensor-hall','B1','Manyetik PNP Hall sensörü',500,310,
+    {sensing:{target:'magnet',distance:40,range:10,offset:0}}),
+   C('lamp','lamp-green','H1','Mıknatıs yakınken yanan lamba',1050,325)
+  ];
+  const lines=[
+   ['g','P','hall','BN'],['hall','BU','g','M'],
+   ['hall','BK','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=lines.map(([from,fp,to,tp],i)=>({id:'sc454-hall-'+(i+1),from:{c:from,p:fp},
+   to:{c:to,p:tp},color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:from+'/'+fp+' → '+to+'/'+tp,
+   tutorialWhy:'Hall sensörünün BN besleme, BU 0 V ve BK PNP sinyal ucu.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='g'?'24 V sanal besleme.':
+   c.id==='hall'?'Yakındaki mıknatısı PNP BK sinyali ile algılar.':
+   'Çıkış aktif olduğunda sanal sinyali gösterir.'}));
+  l.summary='Katalogdaki Hall etkili PNP sensör, sanal 24 V besleme ve yeşil sinyal lambasıyla bağlandı. Mıknatıs 10 mm algılama alanının dışındayken lamba söner, yaklaştığında yanar. Bu gerçek alan kalibrasyonu veya saha güvenliği değildir.';
+  l.explanation='Hall sensörünü bir kapının yanında düşün. Mıknatıs uzaktaysa bir şey algılamaz. Yaklaştırınca BK çıkışından gelen sinyal yeşil lambayı yakar. Mıknatıs uzaklaşınca lamba yeniden söner. BK kablosu koparsa, mıknatıs yaklaşsa bile lamba yanmaz.';
+  l.quiz={question:'Sanal Hall sensörünün BK çıkışı hangi durumda lambayı yakar?',
+   options:['Mıknatıs algılama alanına girdiğinde','Yalnız sensörün 0 V kablosu kopunca','Mıknatıs hep uzaktayken'],answer:0,
+   why:'PNP Hall sensörü uyumlu mıknatısın yakınlığında BK çıkışını aktif eder.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Hall sensörü ile mıknatısı algıla',virtualOnly:true,
+   canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['BN pozitif, BU sıfır volt, BK lamba girişine bağlı olmalı.',
+    'Mıknatısı 40 mm uzakta tut; sinyal lambası söner.',
+    'Mıknatısı 2 mm yaklaştır; yeşil sinyal lambası yanar.',
+    'Mıknatısı yeniden uzaklaştır; lamba söner.',
+    'BK veya BN kablosunu ayır; yakında mıknatıs olsa bile lamba yanmamalı.'],
+   observations:['Gerçek Hall sensörü katalog terminali ve özgün Simulation.solve ile pozitif-negatif durumlar test edilir.',
+    'Sanal manyetik mesafe, gerçek sensör hassasiyeti ve Windows/3D testleri değildir.'],
+   repairModel:'SC454-NATIVE-HALL-PNP-MAGNET-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_HALL_FIELD_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC454_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc454HallRepair='SC454-NATIVE-HALL-PNP-MAGNET-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
