@@ -265,3 +265,12 @@ body.label-dragging,body.label-dragging *{cursor:grabbing!important;user-select:
 
 /* v1.19 · document-backed product help */
 .device-guide{margin:10px 12px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font-size:12px;line-height:1.45}.device-guide>strong{display:block;font-size:13px;color:#172033;margin-bottom:5px}.device-guide p{margin:6px 0}.device-guide details{margin:7px 0}.device-guide summary{cursor:pointer;font-weight:700}.device-guide table{width:100%;border-collapse:collapse;margin-top:5px}.device-guide th,.device-guide td{padding:4px 5px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.device-guide th{width:38%;font-family:monospace;font-size:11px}.device-guide ul{margin:5px 0 4px 17px;padding:0}.device-guide small{display:block;margin-top:7px;color:#64748b}.dold-settings{margin:0 12px 8px;padding:9px;border:1px solid #f0b35e;border-radius:7px;background:#fffaf1}.dold-settings .property-help{display:block;margin-top:5px}.dold-device image,.dold-schematic-exact image,.encoder-schematic-exact image{image-rendering:auto}
+
+/* UI-only improvement: searchable catalog with discoverable shortcut. */
+.library-filter-scroll .search{transition:border-color .16s ease,box-shadow .16s ease}
+.library-filter-scroll .search:focus-within{border-color:#1888bd;box-shadow:0 0 0 3px rgba(24,136,189,.17)}
+.library-filter-scroll .search input{min-width:0;flex:1}
+.library-filter-scroll .search input::-webkit-search-cancel-button{cursor:pointer}
+.search-key-hint{flex:none;padding:2px 5px;border:1px solid #d2dce5;border-radius:4px;background:#f4f7fa;color:#66788a;font:600 10px/1.35 "Segoe UI",sans-serif;pointer-events:none;white-space:nowrap}
+@media(max-width:720px){.search-key-hint{display:none}}
+@media(prefers-reduced-motion:reduce){.library-filter-scroll .search{transition:none}}
