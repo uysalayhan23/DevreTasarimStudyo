@@ -4557,6 +4557,71 @@
   v.sc963NcLadRepair='SC963-PLC-LAD-NOT-DI0-V1';
  })();
 
+
+ // SC972: 24V CPU1211 DI0 SET, DI1 NC RESET, Q0 latch, virtual-only.
+ (() => {
+  const l=L.byId['plc-hardware-programming-outline-056'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+    !p.components.some(c=>c.typeId==='coil-contactor')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 VDC / 0V',70,280),
+   C('cpu','plc-0-0-documented','PLC1','CPU1211C · sanal SET-RESET',620,255,{plcProgram:'start-stop-latch'}),
+   C('set','push-no','S1','SET anlık butonu',320,75),
+   C('reset','push-nc','S0','RESET NC butonu',320,470),
+   C('lamp','lamp-green','H1','Q0 sanal gösterge',1130,255)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','set','13'],['set','14','cpu','X10:7'],
+   ['g','P','reset','21'],['reset','22','cpu','X10:8'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['cpu','X12:3','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+   id:'sc972-plc-set-reset-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'CPU1211 sanal besleme, DI/DO veya kumanda yolu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='cpu'?
+   'Sanal SET/RESET programı DI0, DI1 ve Q0 uçlarını ilişkilendirir.':
+   c.id==='reset'?'NC buton serbestken DI1 sağlıklıdır; basılınca sıfırlama sağlar.':
+   c.id==='set'?'Bir anlık DI0 komutu sanal belleği SET yapar.':
+   'Sanal DC kaynak veya Q0 gösterge bileşeni.'}));
+  l.summary='Bir düğmeyle sanal Q0/H1 çıkışını yak, düğmeyi bıraksan da çıkış kalsın. RESET düğmesi hafızayı temizleyip lambayı söndürür. SET ve RESET aynı anda verilirse bu eğitim modelinde RESET önceliklidir. Gerçek PLC programı/elektrik güvenliği doğrulanmadı.';
+  l.explanation='Sanal başlangıç düğmesine bir kez basınca H1 yanık kalır. Neden? PLC bellek değişkeni SET edilmiştir. RESET ile tekrar 0 olur. Bu örnek gerçek sahadaki mühürleme ve güvenlik değerlendirmesinin yerini tutmaz.';
+  l.quiz={question:'Bu sanal PLC SET-RESET örneğinde START bırakıldıktan sonra Q0 neden açık kalır?',
+   options:['Bellek biti SET edilmiştir','PE hattı akım sağlar','Buton mekanik olarak takılı kalmıştır'],
+   answer:0,why:'Kumanda düğmesi bırakılır ama sanal PLC belleği RESET gelene kadar durumu tutar.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Bir kez başlat, RESET ile söndür',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['Önce CPU besleme, X10:6 1M ve X12:1/2 çıkış beslemesini incele.',
+    'SET düğmesine sanal olarak bas, H1 ışığının yandığını izle.',
+    'SET düğmesini bırak: H1 yanmaya devam eder çünkü bellek SET edilmiştir.',
+    'RESET düğmesini kullan ve H1 lambasının söndüğünü izle.',
+    'SET ile RESET aynı anda basılırsa RESET öncelikli olmalı.',
+    'CPU veya Q0 kablosunu çıkar ve sonucunu yalnız sanal devrede değerlendir.'],
+   observations:['Özgün Simulation.solve ile SET, tutma, RESET, eşzamanlı komut ve besleme kaybı davranışı hedefli sınandı.',
+    'Fiziksel PLC belleği, yeniden başlatma güvenliği ve Windows/3D kabulü burada kanıtlanmamıştır.'],
+   repairModel:'SC972-PLC-SET-RESET-LATCH-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='PLC_HARDWARE_LAD_EDITOR_WINDOWS_3D_AND_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SET_RESET_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc972SetResetRepair='SC972-PLC-SET-RESET-LATCH-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
