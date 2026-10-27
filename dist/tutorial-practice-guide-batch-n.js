@@ -5940,6 +5940,84 @@
   }
  })();
 
+
+ // SC1018–1021: V20 focused real catalogue topology; never edit accepted/quiz records.
+ (() => {
+ const definitions=[{"seq":1018,"id":"motor-direct-power-outline-135","mode":"external","macro":"Cn006","title":"Harici START/STOP ve iki MOP hız butonu","summary":"Cn006 sanal üç telli kumanda: NC STOP DI1, START DI2, MOP artır DI3 ve azalt DI4. START hafızası ve sürücünün gerçek V20 frekans rampası izlenir. Donanım güvenlik kontrolü değildir.","desc":"Bir atölye fanını düşün. STOP serbestken START'a kısa basarsın. Hızı yükseltmek için artır butonunu, azaltmak için azalt butonunu kullanırsın. STOP'a basınca sürücü yavaşlayıp durur; yeniden çalışması için yeni START gerekir.","quiz":"Cn006'da STOP bırakıldıktan sonra motorun yeniden başlaması için ne gerekir?","answers":["Yeni START basışı","STOP'u bırakmak yeterlidir","Yalnız hız artırma"],"why":"Üç telli START komutu yeni bir kenarla yeniden tetiklenir.","pending":"REAL_Cn006_HARDWARE_MOP_3WIRE_WINDOWS_3D_PEDAGOGY_PENDING"},{"seq":1019,"id":"motor-direct-power-outline-136","mode":"analog","macro":"Cn002","title":"Potansiyometre ile gerçek V20 AI1 sanal hız referansı","summary":"Cn002 V20 AI1 girişine gerçek katalog uçlarından bağlı 10 kΩ sanal potansiyometre; DI1 RUN, analog 0–10 V girişini 0–50 Hz frekansa ölçekler. Özgün V20 rampası kullanılır; gerçek üretici kablo/EMC ve güvenlik kabulü değildir.","desc":"Bir fanın hız düğmesini düşün. Potansiyometre orta konumdayken sanal sürücü yaklaşık 25 Hz ister. Biraz daha açarsan AI1 gerilimi ve hedef hız artar. RUN kapanınca sürücü rampayla durur.","quiz":"Sanal AI1 yaklaşık 5 V iken 0–10 V / 0–50 Hz ayarıyla hedef kaç Hz?","answers":["25 Hz","50 Hz","5 Hz"],"why":"5 V, 10 V tam ölçeğin yarısıdır.","pending":"REAL_ANALOG_EMC_PHYSICAL_WINDOWS_3D_PEDAGOGY_PENDING"},{"seq":1020,"id":"motor-direct-power-outline-137","mode":"direction","macro":"Cn002","title":"Kalıcı RUN ve yön anahtarıyla V20 ileri/geri","summary":"Kalıcı iki konumlu sanal anahtar ile V20 DI2 REVERSE; DI1 RUN, sabit 25 Hz MOP referansı. İleri/geri hedefinin işareti ve özgün sürücünün sıfırdan geçişli rampası sınanır; faz kabloları elle çaprazlanmaz.","desc":"Motor çalışırken yön anahtarını geri konuma almayı düşün. Sürücü önce hızı azaltır, sıfırdan geçer, sonra diğer yönde hızlanır. Bu çalışma sanal sürücü dinamiğidir; mekanik yük ve güvenlik onayı değildir.","quiz":"V20 yön anahtarı terslenince sanal frekans hedefi nasıl değişir?","answers":["İşareti terslenir; rampa sıfırdan geçer.","Motor faz kablosu elle değiştirilir.","Gerilim kesilir."],"why":"Yerleşik V20 sürücüsü ileri ve geri referansları rampayla uygular.","pending":"REAL_DIRECTION_SWITCH_INTERLOCK_MECHANICS_WINDOWS_3D_PEDAGOGY_PENDING"},{"seq":1021,"id":"motor-direct-power-outline-138","mode":"combined","macro":"Cn007","title":"Cn007 üç telli START/STOP + geri komutu + AI1 hız","summary":"Cn007 sanal kontrol: NC STOP DI1, START ileri DI2, geri START DI3 ve 10 kΩ potansiyometre V20 AI1 hız girişinde. Her komut gerçek V20 rampasıyla uygulanır; bu gerçek saha emniyet kilidi değildir.","desc":"Bir taşıma bandını düşün. STOP serbestken ileri butonuna bas, potansiyometreyle hızını ayarla. Geri komutu verirsen sürücü önce yavaşlar ve diğer yönde hızlanır. STOP her iki yönü durdurur; buton basılı tutularak otomatik yeniden başlatma beklenmez.","quiz":"Cn007'de sanal STOP verildiğinde ne olur?","answers":["Çalışma hafızası sıfırlanır ve hız sıfıra iner.","Hız artar.","Geri komutu otomatik başlar."],"why":"Üç telli V20 kumandasında STOP girişinin izni kesilir.","pending":"REAL_3WIRE_ANALOG_DIRECTION_INTERLOCK_WINDOWS_3D_PEDAGOGY_PENDING"}];
+ const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:"",note:"",...extra});
+ const build=function build(i){
+ const base={P0700:2,P1000:i.mode==="external"||i.mode==="direction"?1:2,P0727:i.mode==="external"?3:i.mode==="combined"?2:0,
+ P1016:1,P1040:i.mode==="direction"?25:0,P1047:10,P1048:10,P1082:50,P1120:10,P1121:10,P2000:50,
+ "P0756.0":0,"P0757.0":0,"P0758.0":0,"P0759.0":10,"P0760.0":100};
+ const pins=i.mode==="external"?[2,1,13,14]:i.mode==="combined"?[1,2,12,9]:[1,12,9,10];
+ pins.forEach((f,j)=>base["P070"+(j+1)]=f);
+ const pieces=[
+ C("ps","supply-1p","G1","Sanal tek faz giriş L/N/PE",70,215),
+ C("vfd","sinamics-v20-1p","V20","SINAMICS V20 "+i.macro,690,365,{driveControl:"terminals",v20:{schema:1,macro:i.macro,params:base,run:false,reverse:false,reset:0,load:50,temperature:30}}),
+ C("m","motor-3p","M1","Yıldız bağlantılı sanal motor",1230,330)
+ ];
+ const graph=[
+ ["ps","L","vfd","L1"],["ps","N","vfd","N"],["ps","PE","vfd","PE"],
+ ["vfd","U","m","U"],["vfd","V","m","V"],["vfd","W","m","W"],
+ ["m","U2","m","V2"],["m","V2","m","W2"],["vfd","PE2","m","PE"],
+ ["vfd","14","vfd","12"]
+ ];
+ const extra=[];
+ const control=(id,type,ref,label,pin,y)=>{pieces.push(C(id,type,ref,label,245,y));graph.push(["vfd","13",id,type==="push-nc"?"21":"13"],[id,type==="push-nc"?"22":"14","vfd",pin]);extra.push(label)};
+ if(i.mode==="external"){control("stop","push-nc","S0","STOP NC → DI1","8",520);control("start","push-no","S1","START anlık → DI2","9",655);control("up","push-no","S2","MOP HIZ + → DI3","10",800);control("down","push-no","S3","MOP HIZ − → DI4","11",930);}
+ else if(i.mode==="analog"){control("run","selector-no","S1","Kalıcı RUN → DI1","8",610);}
+ else if(i.mode==="direction"){control("run","selector-no","S1","Kalıcı RUN → DI1","8",600);control("reverse","selector-no","S2","Kalıcı REVERSE → DI2","9",780);}
+ else if(i.mode==="combined"){control("stop","push-nc","S0","STOP NC → DI1","8",540);control("start","push-no","S1","START ileri → DI2","9",665);control("reverse","push-no","S2","START geri → DI3","10",795);}
+ if(i.mode==="analog"||i.mode==="combined"){
+ pieces.push(C("pot","potentiometer","RV1","AI1 potansiyometresi · 10 kΩ",300,990,{potentiometer:50,potMax:10000}));
+ graph.push(["vfd","1","pot","3"],["pot","1","vfd","5"],["pot","2","vfd","2"]);
+ }
+ return{parts:pieces,graph};
+};
+ for(const info of definitions){
+ const l=L.byId[info.id],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+ !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.typeId==='main-contact')||
+ r?.independentPedagogicalAcceptance===true)continue;
+ const {parts,graph}=build(info);
+ p.components=parts;
+ p.wires=graph.map(([a,ap,b,bp],j)=>({id:'sc'+info.seq+'-v20-'+(j+1),from:{c:a,p:ap},to:{c:b,p:bp},
+ color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+ tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+ tutorialWhy:'Gerçek V20 katalog terminalini ve izin verilen sanal kumanda yolunu izle.'}));
+ delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:info.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+ c.id==='ps'?'V20 L/N/PE sanal giriş beslemesi.':
+ c.id==='vfd'?'Özgün V20.tick hız, yön, DI ve AI mantığı.':
+ c.id==='m'?'V20 U/V/W çıkışına yıldız bağlanan motor.':
+ c.id==='pot'?'V20 +10V/0V ve AI1 arasındaki gerçek potansiyometre bölücüsü.':
+ 'Dijital girişin buton veya kalıcı kontak anahtarı.'}));
+ l.summary=info.summary;l.explanation=info.desc;
+ l.quiz={question:info.quiz,options:info.answers,answer:0,why:info.why};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+ heading:info.title,virtualOnly:true,canonicalGraphUnchanged:false,
+ fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+ steps:[
+ 'V20 ve motorun L/N/PE/U/V/W katalog uçlarını kontrol et.',
+ ...[...parts.filter(x=>!['ps','vfd','m'].includes(x.id)).map(c=>c.label+' terminalini gözlemle.')],
+ 'Sanal RUN ve hız/yön durumlarının V20 Hz ve motor devrine etkisini incele.',
+ 'STOP, giriş kablosu, V20 besleme veya motor fazı kopukluğunda davranışı karşılaştır.'
+ ],observations:['Özgün Simulation.solve, V20.tick ve 703 bileşenli katalog ile hedefli pozitif ve negatif kontrol yapılır.',
+ 'Sürücü sanaldır; üretici tesisat kabulü, STO, EMC, gerçek 3D ve bağımsız pedagojik kabul değildir.'],
+ repairModel:'SC'+info.seq+'-V20-NATIVE-DI-AI-CONTROL-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';v.titleTopologyIssue=info.pending;
+ v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_V20_NATIVE_SC'+info.seq+'_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v['sc'+info.seq+'NativeV20Repair']='SC'+info.seq+'-V20-NATIVE-DI-AI-CONTROL-V1';
+ }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
