@@ -7349,6 +7349,104 @@
   v.sc454HallRepair='SC454-NATIVE-HALL-PNP-MAGNET-V1';
  })();
 
+
+ // SC447 — real passive Type-K thermocouple, a milli-volt measurement rather than fake PNP sensor.
+ (() => {
+  const l=L.byId['sensor-analog-apps-outline-033'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+     !p.components.some(c=>c.typeId==='proximity')||r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+   C('tc','thermocouple','TC1','K tipi sanal termokupl',400,210,
+    {temperature:25,coldJunction:25,thermocoupleType:'K'}),
+   C('vm','meter-voltmeter','V1','Termokupl mV ölçümü',825,310)
+  ];
+  const lines=[['tc','+','vm','1'],['tc','−','vm','2']];
+  p.components=parts;
+  p.wires=lines.map(([from,fp,to,tp],i)=>({id:'sc447-thermocouple-'+(i+1),
+   from:{c:from,p:fp},to:{c:to,p:tp},color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:from+'/'+fp+' → '+to+'/'+tp,
+   tutorialWhy:'Termokupl kendi milivolt gerilimini üretir; 24 V kaynak eklenmez.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='tc'?
+   'Sıcak uç ile referans uç sıcaklık farkından çok küçük gerilim üretir.':
+   'Mili-volt seviyesindeki sanal gerilim değişimini gösterir.'}));
+  l.summary='K tipi pasif termokuplun kendi ürettiği milivolt, katalogdaki iki uçla sanal voltmetreye bağlandı. Soğuk uç 25 °C iken sıcak uç 25 °C de 0 mV, 50 °C de yaklaşık +1,02 mV, 100 °C de +3,10 mV olur. Bu, üretici toleransı veya kalibre saha dönüştürücüsü değildir.';
+  l.explanation='Termokuplu ufak bir sıcaklık habercisi gibi düşün: bir taraftaki metal birleşim daha sıcak olduğunda çok az bir gerilim doğar. İki uç da 25 derecedeyken fark sıfıra yakındır. Sıcak ucu 50 dereceye çıkarınca voltmetrede yaklaşık 0,001 volt görürsün. Bu yüzden 24 voltla değil, milivolt ölçümüyle çalışırız.';
+  l.quiz={question:'Sanal termokuplun sıcak ve soğuk ucu ikisi de 25 °C ise yaklaşık gerilim nedir?',
+   options:['0 mV','24 V','100 V'],answer:0,why:'Termoelektrik gerilim iki birleşimin sıcaklık farkıyla oluşur.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:'Termokupl küçük gerilim üretir',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Termokupl + ve − uçlarını sanal voltmetreye bağla; ayrı 24 V besleme ekleme.',
+    'Soğuk uç 25 °C iken sıcak ucu 0, 25, 50 ve 100 °C yap.',
+    '25 °C de sıfır; 50 °C de yaklaşık +1 mV ve 100 °C de +3 mV bekle.',
+    'İki uçtan birini kopar; ölçüm bağlantısının kaybolduğunu doğrula.'],
+   observations:['Özgün Simulation.solve 703 katalog termokupl EMF modelinin çıkışını doğrular.',
+    'Gerçek soğuk uç kompanzasyonu, sensör kalibrasyonu, Windows/3D ve bağımsız kabul bekliyor.'],
+   repairModel:'SC447-NATIVE-THERMOCOUPLE-EMF-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='THERMOCOUPLE_INSTRUMENT_CALIBRATION_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC447_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc447ThermocoupleRepair='SC447-NATIVE-THERMOCOUPLE-EMF-V1';
+ })();
+
+ // SC463 — true four-pin 10 V load-cell excitation and millivolt output.
+ (() => {
+  const l=L.byId['sensor-analog-apps-outline-048'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+     !p.components.some(c=>c.typeId==='proximity')||r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+   C('g','load-cell-excitation','G1','Yük hücresi için sanal 10 V DC',100,310),
+   C('lc','load-cell','LC1','1 000 kg sanal yük hücresi',550,265,
+    {loadCapacity:1000,loadWeight:0}),
+   C('vm','meter-voltmeter','V1','Yük hücresi mV sinyal ölçümü',1030,355)
+  ];
+  const lines=[
+   ['g','P','lc','EX+'],['g','M','lc','EX−'],
+   ['lc','SIG+','vm','1'],['lc','SIG−','vm','2']
+  ];
+  p.components=parts;
+  p.wires=lines.map(([from,fp,to,tp],i)=>({id:'sc463-load-cell-'+(i+1),
+   from:{c:from,p:fp},to:{c:to,p:tp},color:'#43857f',role:'SIGNAL',size:'1.5',points:[],
+   tutorialHint:from+'/'+fp+' → '+to+'/'+tp,
+   tutorialWhy:'10 V uyartım EX+ / EX−, ölçüm SIG+ / SIG− üzerinden yapılır.'}));
+  delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='g'?
+   'Yük hücresine uygun sanal 10 V uyartım sağlar.':c.id==='lc'?
+   'Yük miktarına göre orantılı 0–20 mV sinyal oluşturur.':
+   'SIG+ ve SIG− uçlarının küçük gerilim farkını okur.'}));
+  l.summary='Gerçek katalogdaki 10 V yük hücresi uyartımı EX+ / EX− uçlarına, SIG+ / SIG− sanal voltmetreye bağlandı. 1 000 kg kapasitede 250 kg ≈ 5 mV, 500 kg ≈ 10 mV, tam yük ≈ 20 mV. Bunlar kalibre endüstriyel tartı, mekanik aşırı yük güvenliği veya fiziksel kabul değildir.';
+  l.explanation='Bir tartının içindeki yük hücresini düşün. Sensörü 10 voltla besleriz; ama bize verdiği sinyal çok daha küçüktür. Üzerinde yük yokken gerilim sıfıra yakındır. 500 kg sanal yük eklersen yaklaşık 10 milivolt okursun; 1 000 kg olduğunda yaklaşık 20 milivolt. Uyartım kablosu koparsa düzgün ölçüm yapılamaz.';
+  l.quiz={question:'Sanal 1 000 kg kapasiteli yük hücresinde 10 V uyartımla 500 kg yaklaşık kaç mV üretir?',
+   options:['10 mV','500 V','24 V'],answer:0,why:'2 mV/V duyarlılık ve 10 V uyartımla tam yük 20 mV, yarım yük 10 mV üretir.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:'Yük hücresi ile ağırlığı mV olarak oku',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Sanal 10 V kaynağı yük hücresinin EX+ ve EX− uçlarına bağla.',
+    'Voltmetreyi SIG+ ve SIG− sinyal uçlarına bağla.',
+    'Sanal yükü 0, 250, 500 ve 1 000 kg yap; sinyali karşılaştır.',
+    'EX+ veya SIG+ kablosunu açıp gerçekte geçerli sinyal olmadığını kontrol et.'],
+   observations:['Özgün 703 katalog ve Simulation.solve sinyali 0–20 mV aralığında çözümler.',
+    'Bu, gerçek mekanik gerinim, sıcaklık kayması, ADC filtreleme ve fiziksel tartı kalibrasyonu değildir.'],
+   repairModel:'SC463-NATIVE-LOADCELL-10V-MILLIVOLT-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='REAL_STRAIN_GAUGE_ADC_CALIBRATION_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC463_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc463LoadCellRepair='SC463-NATIVE-LOADCELL-10V-MILLIVOLT-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
