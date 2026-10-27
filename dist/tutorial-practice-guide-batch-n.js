@@ -5797,6 +5797,44 @@
  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC1002_TARGETED_PASS';
  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v['sc1002Repair']=d.code;
  })();
+
+ // SC999 targeted physical polarity fix: align true NTC/10k divider with analog proxy.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-129'],p=l?.project,rv=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==10||p?.wires?.length!==21||
+     p.components.find(c=>c.id==='ntc')?.typeId!=='sensor-ntc'||
+     p.components.find(c=>c.id==='rtemp')?.typeId!=='resistor'||
+     rv?.independentPedagogicalAcceptance===true)return;
+  const edits=[
+   [['g10','P','rtemp','1'],['g10','P','ntc','1']],
+   [['rtemp','2','ntc','1'],['ntc','2','rtemp','1']],
+   [['ntc','2','g10','M'],['rtemp','2','g10','M']],
+   [['rtemp','2','cpu','X11:2'],['rtemp','1','cpu','X11:2']]
+  ];
+  const find=e=>p.wires.filter(w=>w.from?.c===e[0]&&w.from?.p===e[1]&&w.to?.c===e[2]&&w.to?.p===e[3]);
+  if(!edits.every(([old])=>find(old).length===1))return;
+  for(const [old,to] of edits){
+   const w=find(old)[0];w.from={c:to[0],p:to[1]};w.to={c:to[2],p:to[3]};
+   w.tutorialHint='Sanal '+to[0]+'/'+to[1]+' → '+to[2]+'/'+to[3];
+   w.tutorialWhy='NTC üst kolda, 10 kΩ altta: analog düğüm sıcaklık arttıkça yükselir.';
+  }
+  l.steps=p.wires.map((w,i)=>({...l.steps[i],from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy}));
+  l.summary='10 V ölçüm bölücüsünde NTC üst kol, 10 kΩ alt kol olarak bağlanır; X11:2 gerilimi ortam ısındıkça yükselir. PLC 36 °C üstünde fanı açar, 30 °C altında kapatır. STOP veya kopuk ölçümde fan kapalı kalır. Saha emniyeti ve gerçek ADC kalibrasyonu REVIEW.';
+  l.explanation='Sıcaklık yükseldikçe NTC nin direnci azalır. Üstte NTC, altta 10 kΩ sabit direnç olduğunda ikisinin birleştiği ölçüm noktasının gerilimi yükselir. PLC bu gerilime göre 36 derecede fanı açar; 30 dereceye düşünce durdurur. Böylece gerçek bağlantının yönü ile ekrandaki sanal ölçüm aynı fiziksel fikri anlatır.';
+  if(l.practiceGuide){
+   l.practiceGuide.repairModel='SC999-NTC-DIVIDER-POLARITY-V2';
+   l.practiceGuide.observations=[...(l.practiceGuide.observations||[]),
+    'NTC besleme tarafına, sabit 10 kΩ direnç dönüş tarafına taşındı; analog gerilim yönü ideal bölücü hesabıyla eşleşir.',
+    'İdeal sıcaklık->gerilim hesabı gerçek üretici ADC taramasının ve fiziksel güvenliğin yerine geçmez.'];
+  }
+  const v=rv||(l.pedagogyReview={});v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_ADC_CALIBRATION_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.sc999NtcPolarityRepair='SC999-NTC-DIVIDER-POLARITY-V2';
+  v.independentPedagogicalAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;
+  v.targetedNativePositiveNegative='SC999_DIVIDER_POLARITY_ORIGINAL_SIMULATION_SOLVE_703_PASS';
+ })();
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

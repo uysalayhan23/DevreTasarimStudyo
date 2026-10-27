@@ -358,8 +358,9 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    g?.typeId==='load-cell-excitation'&&r?.typeId==='resistor'&&
    t?.typeId==='sensor-ntc'&&Number(r.resistance)===10000&&
    Number.isFinite(Number(t.temperature))&&
-   tied('g10','P','rtemp','1')&&tied('rtemp','2','ntc','1')&&
-   tied('rtemp','2',c.id,'X11:2')&&tied('ntc','2','g10','M')&&
+   // NTC high side, fixed 10k low side: ADC node rises with temperature.
+   tied('g10','P','ntc','1')&&tied('ntc','2','rtemp','1')&&
+   tied('rtemp','1',c.id,'X11:2')&&tied('rtemp','2','g10','M')&&
    tied('g10','M',c.id,'X11:1')&&
    !tied('rtemp','1','rtemp','2')&&!tied('ntc','1','ntc','2')&&
    !!net.voltage(g,'P','M');
