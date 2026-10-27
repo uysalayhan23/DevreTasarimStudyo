@@ -5346,6 +5346,90 @@
  v.sc989VirtualParkingRepair='SC989-PLC-VIRTUAL-CARPARK-COUNTER-V1';
  })();
 
+
+ // SC990 limited two-motor comparison: a single-bit comparison, NOT real safety control.
+ (() => {
+ const l=L.byId['motor-direct-power-outline-120'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,
+  rotation:0,state:false,address:'',note:'',...extra});
+ const parts=[
+  C('g','supply-dc-plus','G1','Sanal 24 V kumanda beslemesi',65,340),
+  C('power','supply-3p','G2','Sanal üç faz ve koruma hattı',75,825),
+  C('cpu','plc-0-0-documented','PLC1','İki motor sanal karşılaştırma PLC',710,350,
+   {plcProgram:'compare-two-motors-sc990'}),
+  C('a','selector-no','S1','Sanal A komutu / 0 veya 1',305,85),
+  C('b','selector-no','S2','Sanal B komutu / 0 veya 1',330,330),
+  C('stop','push-nc','S0','Sanal STOP / iki motor kapat',330,545),
+  C('coil1','coil-contactor','K1','K1 motor-1 bobini',1170,100),
+  C('main1','main-contact','K1','K1 motor-1 güç kontağı',1120,665),
+  C('motor1','motor-3p','M1','M1 sanal üç faz motor',1440,665,{motorConnection:'star'}),
+  C('coil2','coil-contactor','K2','K2 motor-2 bobini',1170,330),
+  C('main2','main-contact','K2','K2 motor-2 güç kontağı',1120,945),
+  C('motor2','motor-3p','M2','M2 sanal üç faz motor',1440,945,{motorConnection:'star'})
+ ];
+ const graph=[
+  ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+  ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+  ['g','P','a','13'],['a','14','cpu','X10:7'],
+  ['g','P','b','13'],['b','14','cpu','X10:8'],
+  ['g','P','stop','21'],['stop','22','cpu','X10:9'],
+  ['cpu','X12:3','coil1','A1'],['coil1','A2','g','M'],
+  ['cpu','X12:4','coil2','A1'],['coil2','A2','g','M'],
+  ...['1','2'].flatMap(n=>[
+   ['power','L1','main'+n,'1'],['main'+n,'2','motor'+n,'U'],
+   ['power','L2','main'+n,'3'],['main'+n,'4','motor'+n,'V'],
+   ['power','L3','main'+n,'5'],['main'+n,'6','motor'+n,'W'],
+   ['power','PE','motor'+n,'PE']])
+ ];
+ p.components=parts;
+ p.wires=graph.map(([src,sp,dst,dp],i)=>({
+  id:'sc990-motor-'+(i+1),from:{c:src,p:sp},to:{c:dst,p:dp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+src+'/'+sp+' → '+dst+'/'+dp,
+  tutorialWhy:'PLC karşılaştırma ve kontaktörün gerçek katalog uçları.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+  c.id==='cpu'?'İki sanal bit değerini karşılaştırarak yalnız tek kontaktöre izin verir.':
+  c.id==='stop'?'Her iki motoru durdurup yeni komut için sıfırlama ister.':
+  c.id.startsWith('motor')?'Üç fazın tamamı ve kontaktör izni varsa çalışır.':
+  c.id.startsWith('main')?'Bağlı bobinle üç fazı motora aktarır.':
+  'Motoru seçen sanal komut, kumanda veya besleme parçası.'}));
+ l.summary='Sanal A ve B bitlerini karşılaştır: A>B iken K1 ve M1, A<B iken K2 ve M2 çalışır; A=B iken iki motor da durur. STOP, çakışan komut ve besleme kaybı iki motoru durdurur. Gerçek endüstriyel karşılaştırma, mekanik kilitleme veya motor güvenliği değildir.';
+ l.explanation='İki motorun sırayla seçildiği küçük bir örnek düşün. A 1, B 0 ise birinci motoru; A 0, B 1 ise ikinci motoru seçersin. İki komut aynıysa hiçbir motor çalışmaz. Bir çakışma ya da STOP sonrası anahtarları önce kapatıp yeni komut vermelisin. İki motorun aynı anda çalışmamasının nedenini böyle görebilirsin.';
+ l.quiz={question:'Sanal A=1, B=1 olduğunda hangi motor çalışmalıdır?',
+  options:['Hiçbiri','Yalnız M1','İki motor birden'],answer:0,
+  why:'Eşit iki bit için ne A>B ne de A<B koşulu doğrudur.'};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'Bir koşul, bir motor',virtualOnly:true,canonicalGraphUnchanged:false,
+  fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:['İki komut kapalıyken iki motorun da durduğunu gör.',
+   'Yalnız A açılınca M1 çalışır, M2 durur.',
+   'A yı kapat, sonra yalnız B yi aç; bu kez M2 çalışır.',
+   'İki komutu birlikte aç: çakışma iki motoru da durdurur.',
+   'Komutları sıfırlayıp STOP bas; durma ve yeniden kurma davranışını incele.',
+   'K1 veya K2 bobin kablosu, üç faz veya PLC bank beslemesini kopar.'],
+  observations:['Özgün Simulation.solve ve 703 elemanlı katalogla iki motor, STOP, kilit ve negatif hat kopması sınanır.',
+   'Üretici PLC kodu, gerçek aşırı akım koruması, mekanik kilit, endüstriyel motor güvenliği ve Windows/3D kabulü yoktur.'],
+  repairModel:'SC990-TWO-MOTOR-VIRTUAL-BIT-COMPARE-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='PHYSICAL_CONTACTOR_INTERLOCK_MOTOR_PROTECTION_PLC_WORD_WINDOWS_3D_PEDAGOGY_PENDING';
+ v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC990_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc990TwoMotorRepair='SC990-TWO-MOTOR-VIRTUAL-BIT-COMPARE-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
