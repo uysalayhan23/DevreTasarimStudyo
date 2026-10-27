@@ -4766,6 +4766,72 @@
   v.sc974SetResetRepair='SC974-PLC-EXCLUSIVE-SET-RESET-TWO-OUTPUTS-V1';
  })();
 
+
+ // SC975 · One rising-edge virtual output pulse per distinct solver scan.
+ (() => {
+  const l=L.byId['plc-hardware-programming-outline-059'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+     !p.components.some(c=>c.typeId==='coil-contactor')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+    C('g','supply-dc-plus','G1','Sanal 24 VDC / 0 V',70,270),
+    C('cpu','plc-0-0-documented','PLC1','CPU1211C sanal P_TRIG yükselen kenar',655,270,
+      {plcProgram:'edge-rise-sc975'}),
+    C('trigger','push-no','S1','Yükselen kenar için anlık buton',330,85),
+    C('lamp','lamp-green','H1','Q0 tek çözüm adımı göstergesi',1140,275)
+  ];
+  const graph=[
+    ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+    ['g','P','trigger','13'],['trigger','14','cpu','X10:7'],
+    ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+    ['cpu','X12:3','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'sc975-virtual-edge-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal PLC DI0 ve Q0 sinyal yolu.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='cpu'?'DI0 0→1 geçişini sanal çözüm adımlarıyla algılar.':
+      c.id==='trigger'?'Yeni basışla bir yükselen kenar üretir.':
+      c.id==='lamp'?'Sanal Q0 darbesini bir çözüm adımı boyunca gösterir.':
+      'Sanal 24 VDC besleme.'}));
+  l.summary='Sanal S1 düğmesine ilk kez basıldığında PLC DI0 girişi 0→1 değişir ve H1/Q0 yalnız bir çözüm adımı için etkinleşir. Basılı tutmak yeni kenar değildir; yeniden basmak için önce bırakmak gerekir. Besleme kesilip dönünce basılı düğme yeni kenar sayılmaz. Bu gerçek PLC tarama zamanı veya fiziksel donanım modeli değildir.';
+  l.explanation='Zil düğmesini basılı tutmak, her an yeniden bastığımız anlamına gelmez. Sanal PLC yalnız ilk 0→1 geçişini görür ve Q0 göstergesine kısa bir darbe verir. Düğmeyi bırakıp tekrar basınca yeni bir olay oluşur. Gerçek PLC taraması ve lambanın görülebilirliği ayrı kontrol edilmelidir.';
+  l.quiz={question:'Sanal yükselen kenar örneğinde S1 basılı kalırken bir sonraki PLC adımında Q0 durumu ne olur?',
+    options:['Yeni kenar oluşmadığından kapanır','Her adımda yeniden yanar','RESET hattı kopar'],
+    answer:0,why:'Yükselen kenar bir durum değişimidir; giriş 1 olarak kaldıkça yeni kenar oluşmaz.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Bir basıştan yalnız bir darbe üretelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Buton serbestken DI0=0; Q0 göstergesi sönük olmalı.',
+      'Sanal butona bas: birinci yeni çözüm adımında Q0 darbe verir.',
+      'Butonu basılı tutup bir sonraki adımı incele; tekrar darbe olmamalı.',
+      'Butonu bırakıp yeniden bas: ikinci yükselen kenarı gözlemle.',
+      'Giriş kablosunu veya Q0 gösterge hattını ayırıp farkı karşılaştır.',
+      'Besleme kesildikten sonra düğmeyi basılı tut: geri gelen besleme yeni basış sayılmamalı.'],
+    observations:['Orijinal Simulation.solve ile zaman damgalı pozitif ve negatif sanal testler yapılır.',
+      'Tek adımlık darbe fiziksel LED parlaması, gerçek PLC tarama periyodu veya donanım güvenliği kabulü değildir.'],
+    repairModel:'SC975-PLC-VIRTUAL-RISING-EDGE-PULSE-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_SCAN_PERIOD_ORIGINAL_LAD_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(x=>x.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC975_TIMED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc975EdgeRepair='SC975-PLC-VIRTUAL-RISING-EDGE-PULSE-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

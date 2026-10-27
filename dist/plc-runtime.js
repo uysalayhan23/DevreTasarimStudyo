@@ -45,6 +45,18 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Virtual PLC ladder normally-closed instruction: Q0 := NOT DI0.
  else if(mode==='not-input')q0=!start;
  else if(mode==='direct')q0=start&&stop;
+ else if(mode==='edge-rise-sc975'){
+  const input=!!values[0];
+  // Stable for all solver iterations in the same virtual scan timestamp.
+  if(c._plcEdgeTick!==now){
+   if(c._plcEdgeRequireRelease){
+    c._plcEdgePulse=false;
+    if(!input&&!c._plcEdgePowerBlocked)c._plcEdgeRequireRelease=false;
+   }else c._plcEdgePulse=input&&!c._plcEdgePrev;
+   c._plcEdgePrev=input;c._plcEdgeTick=now;
+  }
+  q0=!!c._plcEdgePulse;
+ }
  else if(mode==='set-reset-exclusive-sc974'){
   const a=!!values[0],healthy=!!values[1],b=!!values[2];
   if(!healthy||(a&&b)){
@@ -142,6 +154,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2')))){
   c._plcSrChoice=null;c._plcSrRequireRelease=true;
  }
+ if(c.plcProgram==='edge-rise-sc975'){
+  c._plcEdgePowerBlocked=!powered||
+    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+  if(c._plcEdgePowerBlocked){
+   c._plcEdgeRequireRelease=true;c._plcEdgePulse=false;
+   c._plcEdgePrev=false;delete c._plcEdgeTick;
+  }
+ }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
@@ -158,7 +178,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
