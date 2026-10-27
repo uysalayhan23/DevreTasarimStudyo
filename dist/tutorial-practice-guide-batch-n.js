@@ -5197,6 +5197,79 @@
  v.sc986TimedWindowRepair='SC986-TWO-TON-TIMED-MOTOR-WINDOW-V1';
  })();
 
+
+ // SC988 single-bit PLC comparison; narrow opt-in replaces an unrelated motor template.
+ (() => {
+ const l=L.byId['motor-direct-power-outline-118'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,extra={})=>({
+  id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+ const parts=[
+  C('g','supply-dc-plus','G1','Sanal 24 V DC / 0 V',65,310),
+  C('cpu','plc-0-0-documented','PLC1','Sanal 1 bit karşılaştırması',700,300,
+   {plcProgram:'compare-bits-sc988'}),
+  C('a','selector-no','S1','A giriş biti 0/1',335,90),
+  C('b','selector-no','S2','B giriş biti 0/1',330,485),
+  C('gt','lamp-green','H1','A büyük B',1160,110),
+  C('eq','lamp-red','H2','A eşit B',1160,330),
+  C('lt','lamp-red','H3','A küçük B',1160,550)
+ ];
+ const graph=[
+  ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],
+  ['g','M','cpu','X10:6'],['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+  ['g','P','a','13'],['a','14','cpu','X10:7'],
+  ['g','P','b','13'],['b','14','cpu','X10:8'],
+  ['cpu','X12:3','gt','X1'],['gt','X2','g','M'],
+  ['cpu','X12:4','eq','X1'],['eq','X2','g','M'],
+  ['cpu','X12:5','lt','X1'],['lt','X2','g','M']
+ ];
+ p.components=parts;
+ p.wires=graph.map(([a,ap,b,bp],i)=>({
+  id:'sc988-bit-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+  tutorialWhy:'PLC giriş veya çıkışının katalog terminalini tanı.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+  c.id==='cpu'?'A ve B sanal bitlerini karşılaştırır.':
+  c.id==='a'||c.id==='b'?'0 veya 1 girişini değiştirir.':
+  c.id==='g'?'PLC ve çıkış bankını besler.':'Karşılaştırmanın bir sonucunu gösterir.'}));
+ l.summary='Sanal A ve B girişlerini 0 veya 1 yapıp büyük, eşit, küçük karşılaştırmasını gör. Bu sadece tek bitlik karşılaştırmadır; çok bitli PLC sayı işlemleri veya analog karşılaştırma değildir.';
+ l.explanation='İki anahtarı küçük birer sayı gibi düşün. İkisi de kapalıysa 0=0, ikisi de açıksa 1=1. Yalnız A açıkken A>B, yalnız B açıkken A<B ışığı yanar. Böylece PLC nin nasıl karar verdiğini üç ayrı lambada izle.';
+ l.quiz={question:'Sanal A=0 ve B=1 iken hangisi doğrudur?',
+  options:['A < B','A = B','A > B'],answer:0,
+  why:'Bir bitlik sayı karşılaştırmasında sıfır birden küçüktür.'};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'İki sanal biti karşılaştır',virtualOnly:true,
+  canonicalGraphUnchanged:false,fullyRich:false,
+  physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:['İki anahtar kapalıyken sadece eşitlik ışığını izle.',
+   'Yalnız A girişini aç: büyük işareti yanar.',
+   'Yalnız B girişini aç: küçük işareti yanar.',
+   'Her ikisini aç: yeniden eşitlik ışığı yanar.',
+   'A/B girişi, PLC beslemesi veya bir lamba kablosunu koparıp sonucu karşılaştır.'],
+  observations:['703 bileşenli gerçek katalog ve özgün Simulation.solve ile dört giriş ve kablo kesintisi sınandı.',
+   'Giriş kablosu kopunca bit 0 görünebilir; bu bir emniyet kontrolü değildir.',
+   'WORD/INT sayısal işlemleri, donanım, Windows/3D ve bağımsız kabul açık.'],
+  repairModel:'SC988-PLC-VIRTUAL-BIT-COMPARE-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='MULTIBIT_NUMERIC_COMPARISON_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+ v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC988_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc988BitCompareRepair='SC988-PLC-VIRTUAL-BIT-COMPARE-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

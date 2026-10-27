@@ -60,6 +60,10 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   c._sc977LastStart=start;
   q0=!!c._sc977Latch&&stop;
  }
+ else if(mode==='compare-bits-sc988'){
+  // SC988 opt-in: one-bit comparison only, not a general numeric PLC comparator.
+  q0=Number(start)>Number(stop);
+ }
  else if(mode==='clock-memory-sc983'){
   // Opt-in virtual PLC memory clock, not actual PLC firmware or measured scan time.
   // Q0 is the clock bit (1 s period, 50% duty); Q1 reports run permission.
@@ -157,6 +161,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else if(mode==='set-reset-exclusive-sc974')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
+   else if(mode==='compare-bits-sc988')
+     out[p.id]=i===0?Number(start)>Number(stop):i===1?start===stop:i===2?Number(start)<Number(stop):false;
    else if(mode==='clock-memory-sc983')
      out[p.id]=i===0?q0:i===1?!!c._sc983Enabled:false;
    else out[p.id]=i===0?q0:false;
