@@ -5114,6 +5114,89 @@
   v.sc983ClockRepair='SC983-PLC-VIRTUAL-CLOCK-MEMORY-V1';
  })();
 
+
+ // SC986 limited virtual time window: KT1 starts at 1s, KT2 ends at 3s.
+ (() => {
+ const l=L.byId['motor-direct-power-outline-116'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,ext={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+ const parts=[
+  C('g','supply-3p','G1','Sanal üç faz ve N',65,370),
+  C('stop','push-nc','S0','Sanal STOP / sıfırlama',220,70),
+  C('start','push-no','S1','Anlık START',420,70),
+  C('arm','coil-relay','KA1','Çevrim izni KA1',670,90),
+  C('hold','contact-no','KA1','KA1 mühürleme',460,250),
+  C('feed','contact-no','KA1','KA1 zamanlayıcı beslemesi',470,460),
+  C('tDelay','coil-delay-on','KT1','KT1 1 s gecikmeli başlatma',780,490,{delayValue:1,delayUnit:'sec'}),
+  C('tStop','coil-delay-on','KT2','KT2 3 s sonunda durdurma',950,500,{delayValue:3,delayUnit:'sec'}),
+  C('t1NO','contact-no','KT1','KT1 gecikmeli NO',875,150),
+  C('t2NC','contact-nc','KT2','KT2 gecikmeli NC',1090,160),
+  C('coil','coil-contactor','K1','K1 sanal motor bobini',1200,160),
+  C('main','main-contact','K1','K1 sanal motor güç',1140,680),
+  C('motor','motor-3p','M1','Sanal üç faz motor',1450,690,{motorConnection:'star'})
+ ];
+ const graph=[
+  ['g','L1','stop','21'],['stop','22','start','13'],['start','14','arm','A1'],
+  ['stop','22','hold','13'],['hold','14','arm','A1'],['arm','A2','g','N'],
+  ['stop','22','feed','13'],['feed','14','tDelay','A1'],['feed','14','tStop','A1'],
+  ['tDelay','A2','g','N'],['tStop','A2','g','N'],
+  ['stop','22','t1NO','13'],['t1NO','14','t2NC','21'],
+  ['t2NC','22','coil','A1'],['coil','A2','g','N'],
+  ['g','L1','main','1'],['main','2','motor','U'],
+  ['g','L2','main','3'],['main','4','motor','V'],
+  ['g','L3','main','5'],['main','6','motor','W'],['g','PE','motor','PE']
+ ];
+ p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+  id:'sc986-window-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+  tutorialWhy:'İki zaman rölesinin gerçek katalog terminali.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+  c.id==='tDelay'?'Başlangıçtan ilk saniyeyi sayar.':
+  c.id==='tStop'?'Üç saniyelik toplam sanal süreyi sayar.':
+  c.id==='t1NO'?'İlk gecikme sonrası motor izni.':
+  c.id==='t2NC'?'Üç saniye sonunda motor iznini keser.':
+  c.id==='hold'?'START bırakıldığında zaman çevrimini tutar.':
+  'Sanal derste kullanılan katalog bileşeni.'}));
+ l.summary='START ardından 1 saniye beklensin, sonra motor 2 saniye çalışsın ve üçüncü saniyede dursun. STOP sıfırlar; bırakılınca motor kendiliğinden başlamaz. Bu özgün kaynak devrenin aynısı değil, sınırlı bir sanal zaman penceresi örneğidir.';
+ l.explanation='Bir makinenin hazırlanmasını düşün: START ile önce ilk saniye sayılır, motor bekler. İkinci saniyede çalışır. Üçüncü saniye sonunda durur. Yeni çalıştırma için önce sıfırla, sonra tekrar START ver.';
+ l.quiz={question:'Bu sanal zaman penceresinde START sonrası ikinci saniyede motor ne yapar?',
+  options:['Çalışır; KT1 süresi dolmuştur fakat KT2 henüz dolmamıştır.',
+   'STOP girişini otomatik değiştirir.','PE motor hızını artırır.'],
+  answer:0,why:'Birinci saniyeden sonra KT1 izin verir, üçüncü saniyede KT2 keser.'};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'Bir saniye bekle, iki saniye çalış, sonra dur',
+  virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+  physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:['START verip bırak, KA1 mühürleme durumunu gözlemle.',
+   'İlk saniye boyunca motor sanal olarak durmalı.',
+   'İkinci saniyede motor çalışır; KT2 hâlâ sayar.',
+   'Üçüncü saniyede motor durmalı, tekrar kendi kendine başlamamalı.',
+   'STOP ile çevrimi sıfırla; yeni START gereksinimini kontrol et.',
+   'Bir sanal motor fazını ya da KT1 çıkışını koparıp karşılaştır.'],
+  observations:['Özgün Simulation.solve ve 703 elemanlı katalogla zaman çizelgesi ve negatif durumlar sınandı.',
+   'KT2 beslemesi koparsa sanal motor durmayabilir; bu bir güvenlik devresi değildir.',
+   'Gerçek motor dinamiği, üretici devresi, Windows/3D ve bağımsız kabul açık.'],
+  repairModel:'SC986-TWO-TON-TIMED-MOTOR-WINDOW-V1'};
+ const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='ORIGINAL_EXERCISE_TIMER_PHYSICAL_WINDOWS_3D_PEDAGOGY_PENDING';
+ v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC986_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc986TimedWindowRepair='SC986-TWO-TON-TIMED-MOTOR-WINDOW-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
