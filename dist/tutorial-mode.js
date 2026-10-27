@@ -83,6 +83,44 @@ function stepsFromWires(l){
 // Only REVIEW concept exercises whose source still contains an unrelated placeholder
 // may be opened without that circuit. Source graph/Golden/PASS files stay immutable.
 // SC1194 has no solar panel, battery, charging controller or charge behavior.
+
+ // Exact-source triage: these 24 unrepaired outline lessons have a single
+ // generic PNP sensor / push-contactor template, NOT their titled circuit.
+ // Never substitute that placeholder as a verified wired experiment.
+ const outlinePlaceholderConcepts={"sensor-analog-apps-outline-028":["Sıcaklık sensörleri ısı değişimini elektriksel ölçüme çevirir.","NTC ile sıcaklık artarsa çoğunlukla ne azalır?","NTC direnci","Motor faz sayısı","PE iletkeninin varlığı","NTC sıcaklık yükseldikçe tipik olarak daha düşük direnç gösterir."],"sensor-analog-apps-outline-031":["NTC sıcaklığa bağlı bir dirençtir; tek başına PNP yaklaşım sensörü değildir.","NTC ısındığında tipik olarak hangi büyüklük azalır?","Direnci","Besleme frekansı","Kablo uzunluğu","NTC'nin direnci sıcaklık arttığında düşer."],"sensor-analog-apps-outline-032":["PTC ısındıkça tipik olarak direnci artan bir sıcaklık elemanıdır.","PTC ısındığında tipik olarak ne olur?","Direnci artar","Direnci sıfırlanır","DC kaynağı AC olur","PTC için sıcaklık yükseldikçe direnç artışı beklenir."],"sensor-analog-apps-outline-033":["Termokupl, iki farklı metalin birleşimindeki sıcaklık farkından küçük gerilim üretir.","Termokupl sıcaklık farkını temel olarak neye dönüştürür?","Küçük bir gerilime","Üç fazlı motor dönüşüne","Kontak sayısına","Termokupl sinyali küçük bir gerilimdir; uygun ölçüm gerektirir."],"sensor-analog-apps-outline-034":["PT100, yaklaşık 0 °C'de 100 ohm olan direnç termometresidir.","PT100 adı yaklaşık hangi referans direncini belirtir?","0 °C'de 100 Ω","25 °C'de 10 kΩ","0 °C'de 100 kΩ","PT100 sıcaklıkla değişen direnç üzerinden ölçüm yapar."],"sensor-analog-apps-outline-035":["Manyetik sensörler mıknatıs veya manyetik alan değişimini algılar.","Reed kontak ile Hall sensörünün ortak algıladığı etki nedir?","Manyetik alan","Işık şiddeti","Şebeke frekansı","Her ikisi de manyetik etkiyi algılar; çıkış yapıları farklıdır."],"sensor-analog-apps-outline-038":["Reed kontak, manyetik alanla mekanik temas durumunu değiştirebilir.","Reed kontak hangi etkiyle anahtarlanır?","Mıknatısın alanıyla","Isıtıcı gerilimiyle","LED parlaklığıyla","Dil kontak, manyetik etkiyle açılıp kapanabilir."],"sensor-analog-apps-outline-039":["Hall sensörü manyetik alan etkisini elektriksel sinyale dönüştürür.","Hall sensörü neyi algılamak için kullanılır?","Manyetik alanı","Direncin bant rengini","PE sürekliliğini","Hall etkisi manyetik alan bilgisi sağlar."],"sensor-analog-apps-outline-040":["Basınç algılayıcıları basıncı elektriksel işarete veya kontağa dönüştürebilir.","Basınç sensörü öncelikle hangi fiziksel büyüklüğü algılar?","Basıncı","Renk kodunu","Manyetik kutbu","Çıkış türü, sensör modeline göre analog veya anahtarlamalı olabilir."],"sensor-analog-apps-outline-047":["Piezoelektrik eleman, mekanik değişimle elektriksel tepki üretebilir.","Piezo sensör hangi etkiye tepki verebilir?","Basınç veya titreşim","Kablo rengi","Ağ frekans adı","Piezoelektrik etki dinamik mekanik zorlamalara duyarlıdır."],"sensor-analog-apps-outline-048":["Yük hücresi kuvvet veya ağırlık etkisini küçük elektriksel ölçüm sinyaline çevirir.","Yük hücresi temelde hangi büyüklüğü ölçmeye yarar?","Kuvvet veya ağırlık","Kontaktör kutup sayısı","Motor devir yönü","Tipik yük hücresi köprü ölçümü uygun yükseltme gerektirir."],"sensor-analog-apps-outline-049":["Optik sensörler ışık demeti veya yansımadaki değişimi algılar.","Bir optik sensör genellikle hangi fiziksel olayı algılar?","Işığın değişimini","NTC direnç bandını","Şebeke nötrünü","Işık vericisi ve alıcısının yapısı modele göre değişir."],"sensor-analog-apps-outline-051":["LDR'nin direnci aydınlatma düzeyine göre değişir; tek PNP sensörle aynı değildir.","Ortam karardıkça çoğu LDR'nin direnci nasıl değişir?","Artar","Sıfıra düşer","Frekansa dönüşür","Karanlıkta LDR direnci genellikle büyür."],"sensor-analog-apps-outline-052":["LDR'li dimmer için algılama ve gücü ayarlayan ayrı sürücü gerekir.","LDR kontrollü dimmerde parlaklığı değiştiren işlev hangisidir?","Kontrollü güç sürücüsü","PE bağlantısını kesmek","Rastgele fazları değiştirmek","LDR bilgi üretir; sürücü yükün gücünü ayarlar."],"sensor-analog-apps-outline-053":["Ses sensörleri mikrofon işaretini eşik veya seviye bilgisine dönüştürür.","Ses sensöründe örneklenen temel büyüklük nedir?","Ses kaynaklı elektriksel işaret","Üç faz yön sırası","Motor sargı direnci","Mikrofon ses dalgası değişimlerinden işaret üretir."],"sensor-analog-apps-outline-054":["LDR ve karşılaştırıcı, ışık seviyesinin bir eşikle kıyaslandığı devredir.","LDR karşılaştırıcı çıkışı neye bağlıdır?","Algılanan ışık seviyesinin eşikle ilişkisine","Motor yıldız bağlantısına","Şebeke faz sayısına","Karşılaştırıcı ölçülen seviyeyi bir referansla kıyaslar."],"sensor-analog-apps-outline-055":["NTC ve karşılaştırıcı, sıcaklıkla değişen işareti referans eşikle kıyaslar.","NTC karşılaştırıcı devresinde ana karar nedir?","Sıcaklık işaretinin eşiği geçmesi","Fazların yer değiştirmesi","LED kablosunun rengi","Direnç değişimi uygun bir gerilim işareti olarak eşikle kıyaslanır."],"sensor-analog-apps-outline-057":["Encoder hareketi darbeler veya kodlanmış konum bilgisiyle temsil edebilir.","Artımlı encoder hız veya hareket için genellikle ne üretir?","Darbe dizisi","Sabit 24 V güç çıkışı","Isı akışı","Darbe sayısı veya frekansı hareket bilgisini taşır."],"sensor-analog-apps-outline-058":["Sensör uygulaması seçilirken algılanacak büyüklük ile çıkış biçimi uyumlu olmalıdır.","Bir sensör seçerken ilk hangi özellik belirlenir?","Algılanacak fiziksel büyüklük ve çıkış tipi","Devre çiziminin rengi","Motor plaka rengi","Ölçme görevi ve arayüz birlikte seçilmelidir."],"sensor-analog-apps-outline-059":["Mikrodenetleyici, sensörün elektriksel işaretini uygun girişte işler.","Mikrodenetleyici sensör çıkışıyla eşleşirken ne kontrol edilir?","Gerilim seviyesi ve giriş türü","Güç PE hattını veri ucu yapmak","Ölçümü motorsuz başlatmak","Analog/dijital giriş ve izin verilen gerilim aralıkları uyumlu olmalıdır."],"sensor-analog-apps-outline-060":["Transdüser fiziksel büyüklüğü başka bir enerji veya işaret biçimine dönüştürür.","Sensör ve transdüser kavramındaki temel işlev hangisidir?","Fiziksel büyüklüğü algılamak veya dönüştürmek","Yalnız motor gücü üretmek","Şebeke korumasını atlamak","Dönüştürme ve algılama görevleri çıkış türüne göre farklıdır."],"plc-hardware-programming-outline-047":["PLC analog sinyal kartı, analog giriş/çıkış için uygun terminal ve aralık ister.","Analog PLC girişinde önce ne uyumlu olmalıdır?","Sinyal türü, aralık ve ortak referans","Kontaktör bobin rengi","Üç fazlı motor yönü","0–10 V ve 4–20 mA sinyalleri rastgele aynı uçlara bağlanmaz."],"plc-hardware-programming-outline-048":["PLC seçimi yapılırken giriş/çıkış sayısı, sinyal türleri ve besleme dikkate alınır.","PLC donanımı seçerken hangi bilgiler gereklidir?","I/O sayısı, sinyal türü ve besleme","Butonların estetik rengi","Şebeke frekansını rastgele değiştirmek","Uygulamaya uygun gerçek terminal, besleme ve kapasite doğrulanmalıdır."],"plc-hardware-programming-outline-051":["LAD ve FBD birer PLC programlama gösterimidir; tek buton-bobin devresi ikisini öğretmez.","LAD ve FBD temel olarak neyi temsil eder?","Kontrol mantığını farklı gösterimlerde","Motorun fiziksel sargılarını","PE hattının renklerini","LAD merdiven, FBD fonksiyon blokları ile aynı denetim mantığını gösterebilir."]};
+ function isUnverifiedOutlineConcept(l){
+  const p=l?.project,r=l?.pedagogyReview,profile=outlinePlaceholderConcepts[l?.id];
+  if(!profile||!p||!l.quiz||!['wiring','quiz'].includes(l.kind)||p.tutorialLesson?.phase!=='quiz')return false;
+  const isSensor=l.id.startsWith('sensor-analog-apps-outline-');
+  const expected=isSensor?'supply-dc-plus,proximity,lamp-green':'supply-dc-plus,push-no,coil-contactor';
+  if(p.components?.map(c=>c.typeId).join(',')!==expected||p.wires?.length!==(isSensor?4:3))return false;
+  // Do not touch any previously accepted, native repaired or explicitly held lesson.
+  if(r?.independentPedagogicalAcceptance===true||r?.titleTopologyStatus==='PASS'||r?.titleTopologyStatus==='HOLD')return false;
+  if(r?.titleTopologyIssue&&r?.outlineConceptGuard!=='OUTLINE_PLACEHOLDER_CONCEPT_ONLY_V1')return false;
+  return true;
+ }
+ function applyOutlineConceptGuard(l){
+  const facts=outlinePlaceholderConcepts[l.id],r=l.pedagogyReview||(l.pedagogyReview={});
+  l.kind='quiz';l.steps=[];l.materials=[];
+  l.summary=facts[0]+' Bu başlıktaki gerçek devre henüz bulunmadı: eski şablon yalnızca ilgisiz bir örnektir.';
+  l.explanation=facts[0]+' Önce bu temel işlevi ayırt edelim. Kaynak başlığına uygun bileşenler, uçlar ve simülasyon doğrulanana kadar bu ders kablolu uygulama değildir.';
+  l.quiz={question:facts[1],options:[facts[2],facts[3],facts[4]],answer:0,why:facts[5]};
+  l.practiceGuide={version:'concept-review-v1',method:'concept-precheck',
+   heading:'Kaynak devre doğrulanana kadar konu kontrolü',virtualOnly:true,
+   canonicalGraphUnchanged:true,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Başlıktaki algılama ya da programlama görevinin ne olduğunu düşün.',
+    'İlgisiz eski şablonu deney olarak kablolama; konu sorusunu çöz.'],
+   observations:['Bu başlığın gerçek fiziksel ve/veya üretici devresi bulunmadı.',
+    'Windows/3D, özgün kaynak topolojisi, native uygulama ve bağımsız pedagojik kabul açık.'],
+   repairModel:'OUTLINE_PLACEHOLDER_CONCEPT_ONLY_V1'};
+  r.titleTopologyStatus='REVIEW';
+  r.titleTopologyIssue=l.id.startsWith('sensor-')?'SENSOR_TOPIC_REUSED_PNP_PLACEHOLDER':'PLC_TOPIC_REUSED_CONTACTOR_PLACEHOLDER';
+  r.outlineConceptGuard='OUTLINE_PLACEHOLDER_CONCEPT_ONLY_V1';
+  r.independentPedagogicalAcceptance=false;r.physicalAcceptance=false;r.windowsVisualAcceptance=false;
+  r.nativeDynamicAcceptance=false;
+  return l;
+ }
+
 function isUnverifiedPhysicalConcept(l){
  const p=l?.project,r=l?.pedagogyReview;
  if(!p||!l?.quiz||p.tutorialLesson?.phase!=='quiz'||!['wiring','quiz'].includes(l.kind))return false;
@@ -103,6 +141,7 @@ function isUnverifiedPhysicalConcept(l){
      p.components?.map(c=>c.typeId).join(',')==='supply-3p,push-nc,push-no,coil-contactor,main-contact,motor-3p,contact-no'&&p.wires?.length===13));
 }
 function ensureGuidedLesson(l){
+ if(isUnverifiedOutlineConcept(l))return applyOutlineConceptGuard(l);
  if(isUnverifiedPhysicalConcept(l)){
   // Never promote a question-only REVIEW into a working wiring lesson.
   l.kind='quiz';l.steps=[];l.materials=[];
@@ -1447,7 +1486,7 @@ function sync(project=root.DTSEditor?.getProject?.()){
 }
 function cleanProject(l){
  // A source placeholder is not a solar charger or an installation exercise.
- const conceptOnly=isUnverifiedPhysicalConcept(l);
+ const conceptOnly=isUnverifiedPhysicalConcept(l)||isUnverifiedOutlineConcept(l);
  const p=clone(l.project);
  if(conceptOnly){p.components=[];p.wires=[];p.junctions=[];}
 p.defaultTemplate=undefined;p.projectId='tutorial-session-'+l.id;const initialPhase=l.kind==='quiz'?'quiz':l.kind==='explore'?'explore':'demo';p.tutorialLesson={id:l.id,topicId:l.topicId,phase:initialPhase,step:0,level:l.variant,lastFeedback:''};return p;
@@ -1478,7 +1517,11 @@ function startRebuild(project=root.DTSEditor?.getProject?.()){
  root.DTSEditor.stop();project.wires=clone((l.project.wires||[]).filter(w=>isProbeLeadWire(l,w)));project.junctions=[];restoreMeasurementTargets(project,l);project.tutorialLesson.phase='rebuild';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Hazırsınız. İlk iki terminal yanıp sönüyor.';hintOpen=l.variant===1;root.DTSEditor.render();sync(project);
 }
 function showExample(project=root.DTSEditor?.getProject?.()){
- const l=lessonFor(project);if(!l)return;root.DTSEditor.stop();project.wires=clone(l.project.wires);project.junctions=clone(l.project.junctions||[]);for(const source of l.project.components){const live=project.components.find(c=>c.id===source.id);if(!live)continue;if(source.probeTarget)live.probeTarget=clone(source.probeTarget);else delete live.probeTarget;if(source.clampedWireId){live.clampedWireId=source.clampedWireId;live.clampT=source.clampT??.5}else if(source.typeId==='unit-ut200a'){delete live.clampedWireId;delete live.clampT}}project.tutorialLesson.phase='demo';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Tam bağlantı tekrar gösterildi.';root.DTSEditor.render();sync(project);
+ const l=lessonFor(project);if(!l)return;
+ if(isUnverifiedOutlineConcept(l)){
+  project.tutorialLesson.lastFeedback='Konu başlığına uygun gerçek devre henüz doğrulanmadı. Sahte örnek açılmadı.';
+  sync(project);return;
+ }root.DTSEditor.stop();project.wires=clone(l.project.wires);project.junctions=clone(l.project.junctions||[]);for(const source of l.project.components){const live=project.components.find(c=>c.id===source.id);if(!live)continue;if(source.probeTarget)live.probeTarget=clone(source.probeTarget);else delete live.probeTarget;if(source.clampedWireId){live.clampedWireId=source.clampedWireId;live.clampT=source.clampT??.5}else if(source.typeId==='unit-ut200a'){delete live.clampedWireId;delete live.clampT}}project.tutorialLesson.phase='demo';project.tutorialLesson.step=0;project.tutorialLesson.lastFeedback='Tam bağlantı tekrar gösterildi.';root.DTSEditor.render();sync(project);
 }
 function restart(project=root.DTSEditor?.getProject?.()){showExample(project);startRebuild(project)}
 function next(project=root.DTSEditor?.getProject?.()){
