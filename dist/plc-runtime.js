@@ -45,6 +45,20 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Virtual PLC ladder normally-closed instruction: Q0 := NOT DI0.
  else if(mode==='not-input')q0=!start;
  else if(mode==='direct')q0=start&&stop;
+ else if(mode==='set-reset-exclusive-sc974'){
+  const a=!!values[0],healthy=!!values[1],b=!!values[2];
+  if(!healthy||(a&&b)){
+   c._plcSrChoice=null;c._plcSrRequireRelease=true;
+  }else if(c._plcSrRequireRelease){
+   c._plcSrChoice=null;
+   if(!a&&!b)c._plcSrRequireRelease=false;
+  }else if((c._plcSrChoice==='A'&&b)||(c._plcSrChoice==='B'&&a)){
+   c._plcSrChoice=null;c._plcSrRequireRelease=true;
+  }else if(!c._plcSrChoice){
+   if(a&&!b)c._plcSrChoice='A';else if(b&&!a)c._plcSrChoice='B';
+  }
+  q0=healthy&&c._plcSrChoice==='A';
+ }
  else if(mode==='two-station-start-stop'){
    // SC194 only: X10:7 / X10:9 are independent START commands (OR).
    // X10:8 / X10:10 are independently wired NC STOP inputs (AND).
@@ -100,6 +114,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
    else if(explicit&&Object.prototype.hasOwnProperty.call(explicit,i))out[p.id]=!!explicit[i];
    else if(mode==='forward-reverse-interlocked')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
+   else if(mode==='set-reset-exclusive-sc974')
+     out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
    else out[p.id]=i===0?q0:false;
  });
  return {mode,outputs:out};
@@ -120,6 +136,12 @@ function evaluate(c,d,net,now=Date.now(),options={}){
      c._plcLatch=false;delete c._plcStopSince;c._sc331RequireFreshStart=true;
    }else if(c._sc331RequireFreshStart&&!inputs[0]?.value)c._sc331RequireFreshStart=false;
  }
+ // SC974 opt-in only: powered loss clears both demonstration memory choices.
+ // This is not an industrial emergency stop or certified restart prevention.
+ if(c.plcProgram==='set-reset-exclusive-sc974'&&(!powered||
+   (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2')))){
+  c._plcSrChoice=null;c._plcSrRequireRelease=true;
+ }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
@@ -136,7 +158,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);

@@ -4693,6 +4693,79 @@
   v.sc973SetResetRepair='SC973-PLC-TWO-STATION-SET-RESET-V1';
  })();
 
+
+ // SC974: illustrative two-choice virtual SET/RESET with two Q outputs.
+ // Lesson source names application 3 but does not specify its original circuit.
+ (() => {
+  const l=L.byId['plc-hardware-programming-outline-058'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+     !p.components.some(c=>c.typeId==='coil-contactor')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 VDC / 0 V',60,310),
+   C('cpu','plc-0-0-documented','PLC1','CPU1211C · iki seçimli SET/RESET',760,290,
+     {plcProgram:'set-reset-exclusive-sc974'}),
+   C('setA','push-no','S1','A durumu SET',335,70),
+   C('reset','push-nc','S0','Ortak RESET NC',330,315),
+   C('setB','push-no','S2','B durumu SET',340,585),
+   C('lampA','lamp-green','H1','Q0 · A göstergesi',1230,140),
+   C('lampB','lamp-red','H2','Q1 · B göstergesi',1230,510)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','setA','13'],['setA','14','cpu','X10:7'],
+   ['g','P','reset','21'],['reset','22','cpu','X10:8'],
+   ['g','P','setB','13'],['setB','14','cpu','X10:9'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['cpu','X12:3','lampA','X1'],['lampA','X2','g','M'],
+   ['cpu','X12:4','lampB','X1'],['lampB','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+   id:'sc974-plc-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Sanal SET/RESET PLC DI ve ayrı Q0/Q1 gösterge bağlantısı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'Sanal A/B bellek seçimini ve ortak RESET önceliğini gösterir.':
+   c.id==='reset'?'Basıldığında ortak belleği temizleyen NC giriş.':
+   c.id==='setA'||c.id==='setB'?'Sanal seçimi SET eden anlık giriş.':
+   c.id==='lampA'||c.id==='lampB'?'Sanal Q0 veya Q1 çıkışını gösterir.':
+   'Sanal 24 VDC kaynak.'}));
+  l.summary='İki farklı SET komutu bu sanal PLC örneğinde iki ayrı bellek durumunu gösterir. A seçilince H1/Q0, B seçilince H2/Q1 yanar. Karşıt SET veya iki SET birlikte verilirse seçim iptal edilir; RESET her iki çıkışı sıfırlar. Besleme kesilirse eski seçim otomatik dönmez. Bu özgün ders şemasının birebir kopyası değil, başlık için örnek bir eğitim modelidir.';
+  l.explanation='İki farklı işi tek seferde seçemediğimizi düşün. SET A komutu H1 ışığını, SET B komutu H2 ışığını tutar. Karşıt komut geldiğinde bellek temizlenir; yeniden SET için düğmeleri serbest bırakmak gerekir. Ortak RESET her ikisini kapatır. Bu gerçek PLC güvenlik devresi değildir.';
+  l.quiz={question:'Sanal iki durumlu SET/RESET örneğinde A çıkışı açıkken karşıt SET B verilirse ne olur?',
+   options:['İki çıkış da kapanır ve yeni komut bekler','H1 ve H2 aynı anda yanar','RESET etkisiz kalır'],
+   answer:0,why:'Sanal program karşıt SET girişinde seçim belleğini temizler; eşzamanlı iki çıkışa izin vermez.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'İki SET, iki gösterge, ortak RESET',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['Önce SET A düğmesine basıp bırak. Yalnız H1 yanmalı.',
+    'Karşıt SET B komutunu dene: iki gösterge de söner.',
+    'İki düğmeyi bırakıp yeniden SET B ver; yalnız H2 yanmalı.',
+    'Ortak RESET girişini kullan ve H1/H2 çıkışlarını sıfırla.',
+    'SET A ve SET B aynı anda basılırsa iki gösterge de sönük kalmalı.',
+    'Sanal CPU veya çıkış beslemesini kes; geri verdiğinde yeni SET gerekmesini incele.'],
+   observations:['Özgün 703 elemanlı katalog ve Simulation.solve ile bellek, reset, besleme ve kopuk hatlar hedefli sınanır.',
+    'Bu örnek donanım/TIA Portal, fiziksel güvenlik, Windows/3D veya bağımsız pedagogik kabul yerine geçmez.'],
+   repairModel:'SC974-PLC-EXCLUSIVE-SET-RESET-TWO-OUTPUTS-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='ORIGINAL_EXERCISE_DETAILS_REAL_PLC_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC974_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc974SetResetRepair='SC974-PLC-EXCLUSIVE-SET-RESET-TWO-OUTPUTS-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
