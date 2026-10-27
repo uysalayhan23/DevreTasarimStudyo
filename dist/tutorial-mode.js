@@ -80,7 +80,55 @@ function stepsFromWires(l){
  const wires=Array.isArray(l?.project?.wires)?l.project.wires:[];
  return wires.filter(w=>!isProbeLeadWire(l,w)).map(w=>({from:clone(w.from),to:clone(w.to),hint:w.tutorialHint||'İşaretlenen terminalleri bağlayın.',why:w.tutorialWhy||'Bu bağlantı dersin gerçek devre yolunu tamamlar.',color:w.color,role:w.role,size:w.size}));
 }
+// Only REVIEW concept exercises whose source still contains an unrelated placeholder
+// may be opened without that circuit. Source graph/Golden/PASS files stay immutable.
+// SC1194 has no solar panel, battery, charging controller or charge behavior.
+function isUnverifiedPhysicalConcept(l){
+ const p=l?.project,r=l?.pedagogyReview;
+ if(!p||!l?.quiz||p.tutorialLesson?.phase!=='quiz'||!['wiring','quiz'].includes(l.kind))return false;
+ if(l.id==='installation-systems-outline-029')
+  return !r?.independentPedagogicalAcceptance&&
+    p.components?.map(c=>c.typeId).join(',')==='supply-dc-plus,push-nc,resistor,led'&&
+    p.wires?.length===4;
+ return r?.titleTopologyStatus==='REVIEW'&&r?.independentPedagogicalAcceptance===false&&
+   r?.physicalAcceptance===false&&r?.windowsVisualAcceptance===false&&
+   ['PHYSICAL_INSTALLATION_AND_TUTORIAL_TOPOLOGY_NOT_VERIFIED',
+    'PHYSICAL_PRACTICE_TOPOLOGY_AND_SAFETY_ACCEPTANCE_NOT_VERIFIED'].includes(r?.titleTopologyIssue)&&
+   /^SC(?:1506_1555|1556_1605|1606_1655)_TOPIC_MATCHED_CONCEPT_V1$/.test(l.practiceGuide?.repairModel||'')&&
+   r?.titleMatchedQuizRepair===l.practiceGuide.repairModel&&
+   (l.id.startsWith('installation-systems-outline-')||
+    ['motor-direct-power-outline-220','motor-direct-power-outline-230'].includes(l.id))&&
+   ((p.components?.map(c=>c.typeId).join(',')==='supply-dc-plus,push-nc,resistor,led'&&p.wires?.length===4)||
+    (['motor-direct-power-outline-220','motor-direct-power-outline-230'].includes(l.id)&&
+     p.components?.map(c=>c.typeId).join(',')==='supply-3p,push-nc,push-no,coil-contactor,main-contact,motor-3p,contact-no'&&p.wires?.length===13));
+}
 function ensureGuidedLesson(l){
+ if(isUnverifiedPhysicalConcept(l)){
+  // Never promote a question-only REVIEW into a working wiring lesson.
+  l.kind='quiz';l.steps=[];l.materials=[];
+  if(l.id==='installation-systems-outline-029'){
+   l.summary='Güneş piliyle aydınlatma ve şarj konusu: gerçek panel, batarya ve şarj denetleyicisi devresi henüz doğrulanmadı.';
+   l.explanation='Bahçe aydınlatmasında güneş paneli, enerji depolama ve gece aydınlatma ayrı görevler üstlenir. Bu derste yalnız kavramları ayırt et; eski DC-LED şeması güneş paneli veya güvenli batarya şarjı olarak kullanılmaz.';
+   l.quiz={question:'Bir güneş pilli bahçe aydınlatma sisteminde akünün temel görevi nedir?',
+    options:['Gündüz toplanan enerjiyi daha sonra kullanılmak üzere depolamak',
+     'Güneş ışığını elektrik enerjisine çevirmek',
+     'Şarj akımını güvenli aralıkta düzenlemek'],answer:0,
+    why:'Enerjiyi depolayan aküdür; panel üretir, uygun şarj denetleyicisi şarjı düzenler.'};
+   l.practiceGuide={version:'concept-review-v1',heading:'Güneş enerjisi ve şarj: yalnız kavram kontrolü',
+    virtualOnly:true,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Panel, akü ve şarj denetleyicisinin görevlerini sözlü ayırt et.',
+     'Gerçek panel/akü/denetleyici devresi doğrulanmadığından kablo çalışması veya şarj simülasyonu başlatma.'],
+    observations:['Eski DC-LED şablonu bu uygulamanın güç veya şarj devresi değildir.',
+     'Gerçek malzeme, güvenlik, üretici verileri, Windows/3D ve bağımsız kabul eksik.']};
+   const review=l.pedagogyReview||(l.pedagogyReview={});
+   review.titleTopologyStatus='HOLD';
+   review.titleTopologyIssue='SOLAR_PANEL_BATTERY_CHARGE_TOPOLOGY_UNVERIFIED';
+   review.independentPedagogicalAcceptance=false;
+   review.physicalAcceptance=false;review.windowsVisualAcceptance=false;
+  }
+  return l;
+ }
+
  if(!l?.project)return l;
  // Runtime normalization only: do not rewrite canonical source files or topology.
  if(!l._dcSupplyWireColorsApplied&&root.CCSConductors&&root.DTSEditor?.byId){
@@ -1398,9 +1446,14 @@ function sync(project=root.DTSEditor?.getProject?.()){
  root.document.body.classList.toggle('tutorial-active',true);root.DTSTutorialEnhancements?.enforce?.();
 }
 function cleanProject(l){
- const p=clone(l.project);p.defaultTemplate=undefined;p.projectId='tutorial-session-'+l.id;const initialPhase=l.kind==='quiz'?'quiz':l.kind==='explore'?'explore':'demo';p.tutorialLesson={id:l.id,topicId:l.topicId,phase:initialPhase,step:0,level:l.variant,lastFeedback:''};return p;
+ // A source placeholder is not a solar charger or an installation exercise.
+ const conceptOnly=isUnverifiedPhysicalConcept(l);
+ const p=clone(l.project);
+ if(conceptOnly){p.components=[];p.wires=[];p.junctions=[];}
+p.defaultTemplate=undefined;p.projectId='tutorial-session-'+l.id;const initialPhase=l.kind==='quiz'?'quiz':l.kind==='explore'?'explore':'demo';p.tutorialLesson={id:l.id,topicId:l.topicId,phase:initialPhase,step:0,level:l.variant,lastFeedback:''};return p;
 }
 function checkedLessonProject(l){
+ ensureGuidedLesson(l);
  const p=cleanProject(l),id=l.id,parts=p.components||[];
  const has=t=>parts.some(c=>c.typeId===t);
  if((id==='opamp-apps-src-13'||id==='opamp-apps-src-14')&&
