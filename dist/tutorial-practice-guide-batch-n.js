@@ -4057,6 +4057,84 @@
  v.sc883AutomaticBrakeRepair='SC883-AUTOMATIC-VIRTUAL-OFF-DELAY-REARM-V1';
  })();
 
+
+ // SC912 motor-direct-power-outline-097: virtual delayed-start motor command.
+ // No actual mains wiring, motor acceleration, or hardware safety certification.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-097'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,more={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...more});
+  const a=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',50,340),
+   C('stop','push-nc','S0','STOP NC',210,60),
+   C('start','push-no','S1','START NO',420,60),
+   C('arm','coil-relay','KA','KA sanal izin rölesi',755,80),
+   C('seal','contact-no','KA','KA NO mühürleme',540,220),
+   C('timer','coil-delay-on','KT1','KT1 iki saniye gecikme',820,330,{delayValue:2,delayUnit:'sec'}),
+   C('timeNO','contact-no','KT1','KT1 süre sonunda kapanan NO',1060,60),
+   C('coil','coil-contactor','K1','K1 motor kontaktör bobini',1300,80),
+   C('main','main-contact','K1','K1 sanal motor güç kontakları',1090,535),
+   C('motor','motor-3p','M1','M1 sanal motor',1420,510,{motorConnection:'star'})
+  ];
+  const edges=[
+   ['g','L1','stop','21'],['stop','22','start','13'],
+   ['start','14','arm','A1'],['stop','22','seal','13'],
+   ['seal','14','arm','A1'],['arm','A2','g','N'],
+   ['seal','14','timer','A1'],['timer','A2','g','N'],
+   ['stop','22','timeNO','13'],['timeNO','14','coil','A1'],
+   ['coil','A2','g','N'],
+   ['g','L1','main','1'],['g','L2','main','3'],['g','L3','main','5'],
+   ['main','2','motor','U'],['main','4','motor','V'],['main','6','motor','W'],
+   ['g','PE','motor','PE']
+  ];
+  p.components=a;
+  p.wires=edges.map(([ac,ap,bc,bp],i)=>({
+   id:'motor-outline-097-'+(i+1),
+   from:{c:ac,p:ap},to:{c:bc,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:ac+'/'+ap+' → '+bc+'/'+bp,
+   tutorialWhy:'Sanal gecikmeli çalışma için katalog terminalini takip edelim.'
+  }));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+   why:c.id==='timer'?'START mühürlendikten sonra sanal iki saniyeyi sayar.':
+    c.id==='timeNO'?'Süre dolana dek motor bobinini bekletir.':
+    c.id==='stop'?'Gecikmeyi ve kumandayı sıfırlamayı gösterir.':
+    'Yalnız sanal devrede katalog terminaliyle yer alır.'}));
+  l.summary='Bu zaman ayarlı çalışma örneğinde START bir kez basılıp bırakılır; KA izin kontağı mühürler. KT1 iki saniye sayar ve ancak sonunda K1 sanal motoru çalıştırır. STOP hem izin rölesini hem sayacı sıfırlar; yeni START olmadan kendi kendine başlamaz. Gerçek motor kalkış akımı ve güvenlik modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'START sonrası gecikmeli çalışma deneyelim',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:[
+    'START düğmesine kısa basıp bırak; KA sanal izin rölesinin durumunu izle.',
+    'Birinci saniyede motor hâlâ durmuş olmalı; KT1 saymaya devam eder.',
+    'İki saniyenin sonunda K1 kontaktörü ve sanal motor etkinleşmeli.',
+    'STOP komutuyla motoru ve KT1 sayacını sıfırla; STOP bırakıldığında kendiliğinden yeniden çalışmamalı.',
+    'KT1 veya K1 motor yolu kopukluğunda farklı sonuçları karşılaştır.'
+   ],observations:[
+    'Gerçek 703 bileşenli katalog ve özgün Simulation.solve ile zaman ilerlemesi ve kopuk kablo durumları sınandı.',
+    'İki saniye yalnız simülasyon süresidir; fiziksel yol verme donanımı ve Windows/3D kabulü yapılmadı.'
+   ],repairModel:'SC912-VIRTUAL-MOTOR-ON-DELAY-START-WITH-SEAL-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='DELAYED_START_INTERPRETATION_REAL_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TARGETED_TIMED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc912TimedStart='SC912-VIRTUAL-MOTOR-ON-DELAY-START-WITH-SEAL-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
