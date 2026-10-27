@@ -22,6 +22,8 @@ Bu depo Ayhan Uysal'ın oğlu Yakub için geliştirdiği Türkçe, çevrimdış�
 
 **Ders çalışmalarına dönülecekse zorunlu ilk başvuru:** [DTS Ders Devam Rehberi](docs/DERS_GUNCEL_DURUM_VE_DEVAM_PROTOKOLU.md). Kullanıcı 27 Ekim 2026 itibarıyla arayüz/kullanım deneyimini yeni öncelik yaptı. Yeni ders talebinde önce bu tarihli belgeyi, ardından güncel kabul kanıtlarını ve gerçek kaynağı incele; tamamlanmış dersleri yeniden test etme.
 
+**Yeni UI/Ladder döneminde zorunlu yapılacaklar:** [24 Maddelik DTS Ürün Yol Haritası](docs/DTS_UX_PLC_24_ADIMLIK_YOL_HARITASI.md). Yalnız kanıtlı hedefli testleri ve canlı repo HEAD'i kullan; önceki teslimatı tekrarlama.
+
 ## Yeni oturumda
 
 1. `git status` ile mevcut kullanıcı değişikliklerini görün; silmeyin veya üzerine yazmayın.
