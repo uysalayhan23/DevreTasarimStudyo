@@ -3727,6 +3727,84 @@
   v.sc871DahlanderDirectionRepair='MOTOR-START-SPEED-026-DAHLANDER-DIRECTION-SPEED-V1';
  })();
 
+
+ // SC880: bounded virtual DC-brake command study; rotor torque is NOT simulated.
+ (() => {
+  const l=L.byId['motor-braking-outline-018'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==18||p?.wires?.length!==38||
+     !p.components.some(c=>c.typeId==='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,
+    rotation:0,state:false,address:'',note:'',...extra});
+  const a=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',50,330),
+   C('sel','selector-2','S1','Sanal Çalış / 0 / Fren seçicisi',250,70,{position:0}),
+   C('ncB','contact-nc','KB','KB NC motor kilidi',450,90),
+   C('ncR','contact-nc','K1','K1 NC fren kilidi',460,335),
+   C('runCoil','coil-contactor','K1','K1 motor çalışma bobini',755,80),
+   C('runMain','main-contact','K1','K1 üç faz güç kontağı',710,525),
+   C('tCoil','coil-delay-on','KT1','KT1 2 sn düz zaman bobini',745,330,{delayValue:2,delayUnit:'sec'}),
+   C('tNC','contact-nc','KT1','KT1 süre dolunca açılan NC',655,430),
+   C('brakeCoil','coil-contactor','KB','KB yalnız sanal DC uygulama bobini',970,340),
+   C('brakeMain','main-contact','KB','KB sanal DC ana kontak',1020,530),
+   C('smps','smps','G2','G2 sanal 24 VDC kaynak',700,750),
+   C('motor','motor-3p','M1','M1 üç faz motor / sanal DC uçları',1350,550,{motorConnection:'star'})
+  ];
+  const edges=[
+   ['g','L1','sel','11'],['sel','13','ncB','21'],
+   ['ncB','22','runCoil','A1'],['runCoil','A2','g','N'],
+   ['sel','14','tCoil','A1'],['tCoil','A2','g','N'],
+   ['sel','14','ncR','21'],['ncR','22','tNC','21'],
+   ['tNC','22','brakeCoil','A1'],['brakeCoil','A2','g','N'],
+   ['g','L1','runMain','1'],['g','L2','runMain','3'],
+   ['g','L3','runMain','5'],['runMain','2','motor','U'],
+   ['runMain','4','motor','V'],['runMain','6','motor','W'],
+   ['g','PE','motor','PE'],['g','L1','smps','L'],['g','N','smps','N'],
+   ['smps','P','brakeMain','1'],['brakeMain','2','motor','U'],
+   ['smps','M','brakeMain','3'],['brakeMain','4','motor','V']
+  ];
+  p.components=a;p.wires=edges.map(([ac,ap,bc,bp],i)=>({
+    id:'motor-braking-outline-018-'+(i+1),
+    from:{c:ac,p:ap},to:{c:bc,p:bp},points:[],
+    color:'#43857f',role:'CONTROL',size:'1.5',
+    tutorialHint:'Sanal '+ac+'/'+ap+' → '+bc+'/'+bp,
+    tutorialWhy:'Üç faz çalışma ve zaman sınırlı DC komut yollarının ayrı katalog uçları.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=a.map(c=>({id:c.id,label:c.label,
+    why:c.id==='sel'?'Tek seçici ile çalışma, 0 ve sanal fren komutlarını ayırır.':
+      c.id==='tCoil'?'Sanal fren komutuna iki saniye sınır koyar.':
+      c.id==='smps'?'Yalnız simüle edilen düşük gerilim DC kaynağıdır.':
+      'Devrede gerçek katalog kimliği ve uçları olan elemandır.'}));
+  l.summary='Sanal çalışma konumunda üç fazlı motor etkinleşir. Sanal fren seçildiğinde K1 üç fazı keser ve KB ile düşük gerilimli DC uç yolu en fazla iki saniye etkinleşir. Düz zaman rölesi KT1 NC hattını açar. Gerçek akım/ısı, rotor fren momenti, mekanik durma ve donanım güvenliği hesaplanmaz.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Motoru bırak, sanal fren komutunu iki saniye izle',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:['Sanal S1 seçicisini 0 konumunda başlat. Motor etkinliği yoktur.',
+      'Çalışma konumunda motorun sanal üç faz etkinliğini izle.',
+      '0 konumunu kullanıp sanal fren komutuna geç; K1 kapanmış olmamalı.',
+      'KT1 süresi tamamlanmadan KB çıkışının sanal DC hattını etkinleştirdiğini gözlemle.',
+      'İki saniye sonra KT1 NC açılır; KB DC komutu kapanır.',
+      'Bir sanal fazı veya fren kumanda hattını koparıp tepkileri karşılaştır.'],
+    observations:['Pozitif ve kopuk bağlantı native kontrolleri elektriksel durumlar içindir, rotor fren momenti testi değildir.',
+      'Sanal 24 VDC örneği gerçek motor fren gerilimi seçimi veya cihaz montaj talimatı değildir.',
+      'Mekanik/fiziksel model, Windows/3D ve bağımsız pedagojik kabul açık.'],
+    repairModel:'SC880-TIMED-DC-BRAKE-COMMAND-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='DC_BRAKE_TORQUE_MOTOR_STOP_REAL_HARDWARE_AND_WINDOWS_3D_PENDING';
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.componentIds=a.map(c=>c.typeId);
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_VIRTUAL_ELECTRICAL_PASS';
+  v.sc880LimitedBrakeCommand='SC880-TIMED-DC-BRAKE-COMMAND-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
