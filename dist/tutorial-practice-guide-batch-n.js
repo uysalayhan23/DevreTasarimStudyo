@@ -3651,6 +3651,82 @@
   v.sc870TimedDahlanderRepair='MOTOR-START-SPEED-025-TIMED-DAHLANDER-V1';
  })();
 
+
+ // SC871: virtual 2-speed forward-reverse Dahlander, contact continuity only.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-026'],reference=L.byId['motor-start-speed-outline-024'];
+  const p=l?.project,r=l?.pedagogyReview,donor=reference?.project;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+   !p.components.some(c=>c.typeId==='packet-star-delta')||
+   !p.components.some(c=>c.typeId==='motor-y-d')||
+   reference?.practiceGuide?.repairModel!=='MOTOR-START-SPEED-024-DAHLANDER-LOW-HIGH-NATIVE-V1'||
+   donor?.components?.length!==10||donor?.wires?.length!==25||
+   r?.independentPedagogicalAcceptance===true)return;
+  const copy=x=>JSON.parse(JSON.stringify(x));
+  const parts=[...copy(donor.components),{
+    id:'rev',typeId:'packet-reversing-3p',ref:'Q1',label:'Sanal ileri / 0 / geri şalter',
+    x:170,y:550,rotation:0,state:false,position:0,address:'',note:''}];
+  const original=copy(donor.wires).filter(w=>
+    !(w.from.c==='g'&&['mainL','mainH'].includes(w.to.c)&&
+      ['L1','L2','L3'].includes(w.from.p)));
+  const graph=[
+    ['g','L1','rev','L1'],['g','L2','rev','L2'],['g','L3','rev','L3'],
+    ['rev','U','mainL','1'],['rev','V','mainL','3'],['rev','W','mainL','5'],
+    ['rev','U','mainH','1'],['rev','V','mainH','3'],['rev','W','mainH','5']
+  ];
+  p.components=parts;
+  p.wires=[
+   ...original.map((w,i)=>({...w,id:'motor-outline-026-speed-'+(i+1)})),
+   ...graph.map(([a,ap,b,bp],i)=>({
+     id:'motor-outline-026-direction-'+(i+1),
+     from:{c:a,p:ap},to:{c:b,p:bp},points:[],
+     color:'#43857f',role:'CONTROL',size:'1.5',
+     tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+     tutorialWhy:'Sanal yön seçicinin üç faz güç yolu.'}))
+  ];
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint||'Sanal katalog terminali',
+    why:w.tutorialWhy||'Motor hız/yön eğitim devresinde sanal bağlantı.',
+    color:w.color||'#43857f',role:w.role||'CONTROL',size:w.size||'1.5'}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='rev'?'Sanal ileri, 0 ve geri faz sırası seçimi.':
+    c.id==='sel'?'Düşük/yüksek kademe komutunu birbirinden ayırır.':
+    c.id==='bridge'?'Yüksek kademe için U/V/W ortak bağlantısı.':
+    c.typeId==='contact-nc'?'Karşı kademe bobininin kilidi.':
+    c.id==='motor'?'Dahlander modelinin U/V/W ve X/Y/Z uçlarını ayır.':
+    'Özgün katalog terminaline bağlı sanal parça.'}));
+  l.summary='İki bağımsız sanal seçimle motoru dört durumda incele: ileri-düşük, geri-düşük, ileri-yüksek ve geri-yüksek. Hız seçicisi 0 iken motor durur; yön seçicisi 0 iken güç kesilir. Bu ideal süreklilik modelinde yön veya kademe değişiminin mekanik güvenliği, gerçek hız ve tork ölçülmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Dahlander motorun hem yönünü hem kademesini karşılaştır',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal yön seçicisini ileri, hız seçicisini düşük konuma getir; düşük kademe durumunu izle.',
+      'Sanal simülasyonu durdurup geri/düşük durumunu ayrı bir senaryo olarak karşılaştır.',
+      'Aynı iki yönü yüksek kademede de dene; KH ortak köprü yolunu gözlemle.',
+      'Yön veya kademe seçicisi 0 konumundayken motorun etkinliğinin kaybolduğunu gör.',
+      'Bir sanal faz veya yüksek kademe köprüsü kopuğunda neden motorun çalışmadığını incele.'
+    ],
+    observations:[
+      'Özgün Simulation.solve ve 703 elemanlı katalogla dört yön/hız birleşimi ve negatif kablo senaryoları sınandı.',
+      'Simülatör hız değiştirirken gerçek motorun durmasını ve güvenli yön geçişini doğrulamaz.',
+      'Gerçek fiziksel kilitleme, donanım, Windows/3D ve bağımsız pedagojik kabul açıktır.'
+    ],repairModel:'MOTOR-START-SPEED-026-DAHLANDER-DIRECTION-SPEED-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_SAFE_DIRECTION_SPEED_CHANGE_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_FOUR_MODES_POS_NEG_PASS';
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc871DahlanderDirectionRepair='MOTOR-START-SPEED-026-DAHLANDER-DIRECTION-SPEED-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
