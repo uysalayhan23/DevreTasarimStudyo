@@ -1266,6 +1266,8 @@
   $('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const p=window.DTSProjects.parse(rd.result);if(!snapshot())return;project=migrateProject(p);resetDraft();selectedWire=null;hideWireMenu();setSelection([]);running=false;$('#sheetName').textContent=project.name;populateWireMenu();renderLibrary();render();const scaleAudit=materialLayoutWarning();if(!scaleAudit?.overlapCount)toast('Proje açıldı')}catch{toast('Geçersiz proje dosyası')}};rd.readAsText(f);e.target.value=''};
   $('#renameSheet').onclick=()=>{if(!guardEdit())return;modal('Sayfayı yeniden adlandır',`<label>Sayfa adı<input id="modalName" value="${esc(project.name)}" style="width:100%;margin-top:7px;padding:8px"></label>`,()=>{project.name=$('#modalName')?.value||project.name;$('#sheetName').textContent=project.name;render()})};
   $('#collapseLibrary').onclick=()=>document.body.classList.toggle('library-collapsed');
+  // Presentation-only bridge: preserves the user's actual panel preferences.
+  window.DTSWorkspacePanelUI={getState:()=>({libraryCollapsed:document.body.classList.contains('library-collapsed'),propertiesVisible}),setState:s=>{if(!s)return;document.body.classList.toggle('library-collapsed',!!s.libraryCollapsed);applyPropertiesVisibility(!!s.propertiesVisible)}};
   $('#closeProperties').onclick=()=>applyPropertiesVisibility(false);
   propertiesReopen.onclick=()=>applyPropertiesVisibility(true);
   window.addEventListener('resize',()=>applyPropertiesVisibility());
