@@ -21,11 +21,14 @@ function supplyPair(d){
 }
 function inputAnchor(d,p){
  const ps=blockPins(d,p);
+ // Documented CPU 1211C DI uses dedicated X10:6 (1M), not CPU power M.
+ if(d?.id==='plc-0-0-documented'&&p?.block==='X10')return ps.find(x=>x.id==='X10:6')||ps.find(isCommon)||null;
  return ps.find(isCommon)||ps.find(isAcNeutral)||ps[0]||null;
 }
 function outputAnchor(d,p){
  const ps=blockPins(d,p),type=String(d?.outputType||'').toUpperCase();
- if(type==='PNP')return ps.find(isPlus)||ps.find(isCommon)||ps[0]||null;
+ // CPU 1211C DC/DC/DC documented PNP outputs source from X12:1 (3L+).
+ if(type==='PNP'||d?.id==='plc-0-0-documented')return ps.find(isPlus)||ps.find(isCommon)||ps[0]||null;
  if(type==='NPN'||type==='RELAY')return ps.find(isCommon)||ps.find(isPlus)||ps[0]||null;
  return ps.find(isCommon)||ps.find(isPlus)||ps[0]||null;
 }
@@ -116,7 +119,9 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    }else if(c._sc331RequireFreshStart&&!inputs[0]?.value)c._sc331RequireFreshStart=false;
  }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
- if(!powered)for(const p of outputPins)prg.outputs[p.id]=false;
+ // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
+ const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
+ if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;
  const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
  c._plcRuntime=state;c._active=powered;return state;
 }
