@@ -81,7 +81,10 @@
    (d.pins||[]).filter(p=>p.signalType==='DI').length===6&&
    (d.pins||[]).filter(p=>p.signalType==='DO').length===4&&
    (d.pins||[]).some(p=>p.id==='X10:6'&&p.label==='1M'&&p.signalType==='POWER')&&
-   (d.pins||[]).some(p=>p.id==='X12:1'&&p.label==='3L+'&&p.signalType==='POWER');
+   (d.pins||[]).some(p=>p.id==='X12:1'&&p.label==='3L+'&&p.signalType==='POWER')&&
+   (d.pins||[]).some(p=>p.id==='X12:2'&&p.label==='3M'&&p.signalType==='POWER')&&
+   (d.pins||[]).some(p=>p.id==='X10:7'&&p.signalType==='DI')&&
+   (d.pins||[]).some(p=>p.id==='X12:3'&&p.signalType==='DO');
  }
  const api=Object.freeze({version:1,validate,scan,blank,supportedPLC});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSLadderRuntime=api;
