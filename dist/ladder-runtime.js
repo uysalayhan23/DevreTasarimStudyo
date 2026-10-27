@@ -1,0 +1,81 @@
+(function(root){
+ 'use strict';
+ // Original DTS virtual PLC Ladder V1. This is NOT a Siemens LOGO file parser or a safety PLC.
+ const address=/^(?:I(?:[1-9]|1[0-6])|Q(?:[1-9]|1[0-6])|M(?:[1-9]|[12][0-9]|3[0-2])|T(?:[1-9]|1[0-6])|C(?:[1-9]|1[0-6]))$/;
+ const output=/^(?:Q(?:[1-9]|1[0-6])|M(?:[1-9]|[12][0-9]|3[0-2])|T(?:[1-9]|1[0-6])|C(?:[1-9]|1[0-6]))$/;
+ const kinds=['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
+ function validate(source,limits={}){
+  if(!source||typeof source!=='object'||source.version!==1||!Array.isArray(source.rungs)||source.rungs.length<1||source.rungs.length>32)return {ok:false,error:'Program V1 için 1–32 rung gerekir.'};
+  const inputs=Number.isInteger(limits.inputCount)?limits.inputCount:16,outputs=Number.isInteger(limits.outputCount)?limits.outputCount:16;
+  const seen=new Set();
+  for(let i=0;i<source.rungs.length;i++){
+   const r=source.rungs[i];if(!r||typeof r!=='object'||typeof r.id!=='string'||r.id.length<1||r.id.length>40||seen.has(r.id))return {ok:false,error:'Tekrarlanan/geçersiz rung kimliği: '+(i+1)};
+   seen.add(r.id);
+   if(!Array.isArray(r.paths)||r.paths.length<1||r.paths.length>8)return {ok:false,error:'Rung '+r.id+' için 1–8 paralel yol gerekir.'};
+   for(const path of r.paths){
+    if(!Array.isArray(path)||path.length<1||path.length>12)return {ok:false,error:'Seri yol 1–12 kontak içermeli.'};
+    for(const c of path){
+     if(!c||!['NO','NC'].includes(c.type)||!address.test(c.ref))return {ok:false,error:'Geçersiz kontak/operand.'};
+     if(c.ref[0]==='I'&&Number(c.ref.slice(1))>inputs)return {ok:false,error:'PLC giriş sınırı aşıldı: '+c.ref};
+     if(c.ref[0]==='Q'&&Number(c.ref.slice(1))>outputs)return {ok:false,error:'PLC çıkış sınırı aşıldı: '+c.ref};
+    }
+   }
+   if(!r.coil||!kinds.includes(r.coil.type)||!output.test(r.coil.ref))return {ok:false,error:'Geçersiz bobin/komut.'};
+   if(r.coil.ref[0]==='Q'&&Number(r.coil.ref.slice(1))>outputs)return {ok:false,error:'PLC çıkış sınırı aşıldı: '+r.coil.ref};
+   if(['TON','TOF','TP'].includes(r.coil.type)&&(!/^T/.test(r.coil.ref)||!Number.isInteger(r.coil.presetMs)||r.coil.presetMs<1||r.coil.presetMs>600000))return {ok:false,error:'Zamanlayıcı adresi veya süresi geçersiz.'};
+   if(['CTU','CTD'].includes(r.coil.type)&&(!/^C/.test(r.coil.ref)||!Number.isInteger(r.coil.preset)||r.coil.preset<1||r.coil.preset>65535))return {ok:false,error:'Sayaç adresi veya hedefi geçersiz.'};
+   if(['OUT','SET','RESET'].includes(r.coil.type)&&!/[QMT C]/.test(r.coil.ref[0]))return {ok:false,error:'Geçersiz kontrol.'};
+  }
+  return {ok:true,error:null};
+ }
+ function scan(source,inputValues,memory={},now=0,limits={}){
+  const check=validate(source,limits);
+  if(!check.ok)return {ok:false,error:check.error,outputs:{},memory,traces:[]};
+  if(!Number.isFinite(now))return {ok:false,error:'Simülasyon zamanı geçersiz.',outputs:{},memory,traces:[]};
+  const mem=memory&&typeof memory==='object'?memory:{};
+  const values=mem.values&&typeof mem.values==='object'?mem.values:{};
+  const states=mem.blocks&&typeof mem.blocks==='object'?mem.blocks:{};
+  const bits=Object.assign(Object.create(null),values);
+  for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
+  // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
+  const written=new Set(),traces=[];
+  for(const rung of source.rungs){
+   const active=rung.paths.some(path=>path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
+   const coil=rung.coil,ref=coil.ref;
+   let next=false;
+   if(coil.type==='OUT'){next=active;bits[ref]=next;written.add(ref);}
+   else if(coil.type==='SET'){if(active)bits[ref]=true;next=!!bits[ref];written.add(ref);}
+   else if(coil.type==='RESET'){if(active){bits[ref]=false;delete states[ref];}next=!!bits[ref];written.add(ref);}
+   else if(['TON','TOF','TP'].includes(coil.type)){
+    const s=states[ref]||(states[ref]={});
+    if(coil.type==='TON'){
+     if(!active){delete s.start;next=false;}
+     else{if(!Number.isFinite(s.start)||now<s.start)s.start=now;next=(now-s.start)>=coil.presetMs;}
+    }else if(coil.type==='TOF'){
+     if(active){delete s.offStart;next=true;}
+     else if(bits[ref]&&s.offStart===undefined){s.offStart=now;next=true;}
+     else next=Number.isFinite(s.offStart)&&(now-s.offStart)<coil.presetMs;
+    }else{
+     if(active&&!s.prev){s.pulseStart=now;}
+     next=Number.isFinite(s.pulseStart)&&now-s.pulseStart<coil.presetMs&&now>=s.pulseStart;
+     s.prev=active;
+    }
+    bits[ref]=next;written.add(ref);
+   }else if(coil.type==='CTU'||coil.type==='CTD'){
+    const s=states[ref]||(states[ref]={count:0});
+    if(!Number.isInteger(s.count))s.count=0;
+    if(active&&!s.prev&&s.tick!==now)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
+    s.prev=active;s.tick=now;
+    next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
+    bits[ref]=next;written.add(ref);
+   }
+   traces.push({id:rung.id,active,coil:ref,value:!!bits[ref],count:states[ref]?.count??null});
+  }
+  const physical={};for(let i=1;i<=(Number.isInteger(limits.outputCount)?limits.outputCount:16);i++)physical['Q'+i]=!!bits['Q'+i];
+  mem.values=bits;mem.blocks=states;mem.lastTime=now;
+  return {ok:true,outputs:physical,memory:mem,traces};
+ }
+ function blank(){return {version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};}
+ const api=Object.freeze({version:1,validate,scan,blank});
+ if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSLadderRuntime=api;
+})(typeof window==='undefined'?globalThis:window);

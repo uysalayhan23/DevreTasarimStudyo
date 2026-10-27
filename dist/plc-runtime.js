@@ -1,6 +1,7 @@
 (function(root){
 'use strict';
 const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root.DTSLadderRuntime;
 const norm=s=>String(s||'').trim().toUpperCase();
 const pins=(d,type)=>(d?.pins||[]).filter(p=>p.signalType===type);
 const powerPins=d=>pins(d,'POWER');
@@ -37,6 +38,17 @@ function inputState(c,d,net,p){
  return !!net.voltage(c,p.id,anchor.id);
 }
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
+ // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
+ if(c.plcProgram==='dts-ladder-v1'){
+  const result=Ladder?.scan?.(c.ladderProgram,Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value])),c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length});
+  if(result?.ok){
+   c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
+   return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map((x,i)=>[x.id,!!result.outputs['Q'+(i+1)]]))};
+  }
+  c._dtsLadderError=result?.error||'Geçersiz Ladder programı';
+  c._dtsLadderTraces=[];delete c._dtsLadderMemory;
+  return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(x=>[x.id,false]))};
+ }
  const explicit=c.plcOutputs&&typeof c.plcOutputs==='object'?c.plcOutputs:null,out={};
  const values=inputValues.map(x=>!!x.value),start=values[0]||false,stop=values.length>1?values[1]:true;
  const mode=String(c.plcProgram||defaultMode||'start-stop-latch');
@@ -386,6 +398,7 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   }else if(volts>=on)c._sc999Cooling=true;
   else if(volts<=off)c._sc999Cooling=false;
  }
+ if(!powered&&c.plcProgram==='dts-ladder-v1')delete c._dtsLadderMemory;
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
@@ -402,7 +415,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid;delete c._sc1001PowerBlocked;delete c._sc1001Direction;delete c._sc1001Rearm;delete c._sc1002PowerBlocked;delete c._sc1002Latch;delete c._sc1002Rearm;delete c._sc1002LastStart}
+function clear(c){delete c._dtsLadderMemory;delete c._dtsLadderTraces;delete c._dtsLadderError;delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid;delete c._sc1001PowerBlocked;delete c._sc1001Direction;delete c._sc1001Rearm;delete c._sc1002PowerBlocked;delete c._sc1002Latch;delete c._sc1002Rearm;delete c._sc1002LastStart}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
