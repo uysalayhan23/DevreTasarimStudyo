@@ -4404,6 +4404,93 @@
   }
  })();
 
+
+ // SC950/951: Siemens documented CPU, real catalog terminal names,
+ // educational mirror/direct program, NOT a commissioned PLC installation.
+ (() => {
+  const component=(id,typeId,ref,label,x,y,extra={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const wire=(a,ap,b,bp)=>[a,ap,b,bp];
+  const base=(program)=>[
+   component('g','supply-dc-plus','G1','Sanal 24 VDC / 0 V',65,275),
+   component('cpu','plc-0-0-documented','PLC1','CPU 1211C · sanal DI/DO',570,230,{plcProgram:program}),
+   component('start','push-no','S1','S1 anlık giriş butonu',340,80),
+   component('lamp','lamp-green','H1','H1 PLC Q0 gösterge lambası',1030,230)
+  ];
+  const edges=[
+   wire('g','P','cpu','X10:1'),wire('g','M','cpu','X10:2'),
+   wire('g','M','cpu','X10:6'),
+   wire('g','P','start','13'),wire('start','14','cpu','X10:7'),
+   wire('g','P','cpu','X12:1'),wire('g','M','cpu','X12:2'),
+   wire('cpu','X12:3','lamp','X1'),wire('lamp','X2','g','M')
+  ];
+  function install(id,parts,connections,method,summary,steps,repair){
+   const l=L.byId[id],p=l?.project,r=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+      !p.components.some(c=>c.typeId==='coil-contactor')||
+      r?.independentPedagogicalAcceptance===true)return;
+   p.components=parts;
+   p.wires=connections.map(([a,ap,b,bp],i)=>({
+    id:'plc-'+id.slice(-3)+'-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal CPU 1211C besleme, giriş veya çıkışının belgeli katalog ucu.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:c.id==='cpu'?
+    'X10:1 / X10:2 CPU beslemesi, X10:6 giriş ortak ucu, X12:1 / X12:2 çıkış beslemesi ve X12:3 Q0 çıkışını ayırt eder.':
+    c.id==='g'?'Sanal 24 VDC ve 0 V referansı.':
+    c.id==='lamp'?'PLC çıkışının sanal sonuç göstergesi.':
+    'Sanal giriş butonunun aç/kapa işlevini gösterir.'}));
+   l.summary=summary;
+   l.explanation='Burada gerçek bir PLC programını yüklemiyoruz; uygulamanın '+method+
+     ' sanal programı ile terminal bağının devre davranışını görüyoruz. Giriş ve çıkış beslemeleri ayrı doğrulanır. Gerçek donanım, mühendislik ve güvenlik kabulü yapılmadı.';
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'PLC girişini ve çıkışını birlikte izleyelim',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps,observations:[
+     'CPU 24 V ve M, giriş 1M, çıkış 3L+ / 3M bağlantılarının sanal modeldeki etkisi ayrı ayrı doğrulandı.',
+     'Dijital çıkış Q0 gerçek donanım akımını, saha güvenliğini veya PLC derleme davranışını temsil etmez.',
+     'Gerçek donanım terminal geometrisi, Windows/3D ve bağımsız pedagojik kabulü bekliyor.'
+    ],repairModel:repair};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='PLC_REAL_HARDWARE_AND_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=parts.map(c=>c.typeId);
+   v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SCOPED_PLC_RUNTIME_PASS';
+   v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v.scPlcPhysicalRepair=repair;
+  }
+  install('plc-hardware-programming-outline-044',base('mirror'),edges,
+   'girişin Q0 çıkışına yansıtılması',
+   'S1 butonu sanal PLC DI0 girişini etkinleştirince Q0/H1 yanar; bırakılınca söner. CPU, giriş ortak ucu ve çıkış bankası ayrı beslemelere bağlıdır. Bu bir sanal eğitim örneğidir.',
+   ['Önce CPU L+ / M ile girişin 1M uçlarını bul.',
+    'S1 butonuna sanal olarak bas; DI0 girişini ve Q0/H1 sonucunu karşılaştır.',
+    'Bıraktığında çıkışın söndüğünü gör.',
+    'X10:6 (1M) veya X12:1 (3L+) bağlantısını tek tek kopar ve sonucu karşılaştır.',
+    'Gerçek PLC programı veya 24 VDC cihaz bağlantısı yapmadan sanal devrede kal.'],
+   'SC950-REAL-CPU1211-DI0-Q0-MIRROR-V1');
+  const p=base('direct');
+  p.splice(3,0,component('stop','push-nc','S0','S0 NC durdurma girişi',340,435));
+  install('plc-hardware-programming-outline-045',p,[
+    ...edges,wire('g','P','stop','21'),wire('stop','22','cpu','X10:8')],
+   'DI0 START ve DI1 sağlıklı STOP girişleriyle doğrudan AND',
+   'CPU 1211C sanal DI0 START ve DI1 NC STOP girişini okuyarak yalnız iki koşul da sağlandığında Q0/H1 çıkışını açar. Bu kilitleme veya emniyet fonksiyonu değil, sanal doğrudan mantık örneğidir.',
+   ['X10:1/M, X10:6 1M ve X12:1/3M besleme dönüşlerini ayırt et.',
+    'S1 START basılı, S0 STOP serbestken sanal Q0/H1 yansın.',
+    'START bırakınca H1 söner; bu ders mühürleme yapmaz.',
+    'START basılıyken STOP bas veya STOP girişini kopar; H1 sönmeli.',
+    'Kopuk Q0 kablosu ve çıkış beslemesiyle farkı gözlemle.'],
+   'SC951-CPU1211-DI0-DI1-DIRECT-Q0-V1');
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
