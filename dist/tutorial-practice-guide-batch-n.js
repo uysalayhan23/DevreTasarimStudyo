@@ -4832,6 +4832,71 @@
   v.sc975EdgeRepair='SC975-PLC-VIRTUAL-RISING-EDGE-PULSE-V1';
  })();
 
+
+ // SC977: bounded virtual two-second PLC timer, starts once per press.
+ (() => {
+  const l=L.byId['plc-hardware-programming-outline-061'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==3||
+     !p.components.some(c=>c.typeId==='coil-contactor')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,ext={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+  const parts=[
+    C('g','supply-dc-plus','G1','Sanal 24 VDC / 0V',65,295),
+    C('cpu','plc-0-0-documented','PLC1','CPU1211C · sanal 2 s süreli Q0',660,275,
+      {plcProgram:'timed-stop-once-sc977',plcTimerMs:2000}),
+    C('start','push-no','S1','Anlık zaman başlatma',340,85),
+    C('stop','push-nc','S0','Zaman iptal RESET NC',340,490),
+    C('lamp','lamp-green','H1','Q0 sanal süre göstergesi',1180,280)
+  ];
+  const graph=[
+    ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+    ['g','P','start','13'],['start','14','cpu','X10:7'],
+    ['g','P','stop','21'],['stop','22','cpu','X10:8'],
+    ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+    ['cpu','X12:3','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'sc977-timer-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+    color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'PLC zamanlı Q0 çıkışı ve sanal kumanda girişi.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='cpu'?'Sanal süreyi 2 saniye sayar ve tekrar için yeni basma bekler.':
+    c.id==='start'?'Sanal zamanlayıcıyı tek basışla başlatır.':
+    c.id==='stop'?'Sanal NC iptal/RESET komutudur.':
+    'Sanal besleme veya Q0 çıkış göstergesi.'}));
+  l.summary='Anlık START ile sanal PLC iki saniyelik Q0 süresi başlatır. START bırakıldığında H1 yanmaya devam eder, süre bitince söner. START basılı kalsa bile kendiliğinden tekrar başlamaz; yeni başlatma için düğmeyi bırakmak gerekir. RESET erken durdurur. Bu kaynak dersinin birebir PLC şeması değil, süreyi öğretmek için sanal bir örnektir.';
+  l.explanation='Koridor ışığını iki saniyeliğine yakmak istediğini düşün. START düğmesine bir kez basınca zaman başlar ve ışık kısa süre yanar. Basılı tutmak yeni komut sayılmaz. RESET zaman bitmeden de ışığı söndürür. Gerçek PLC zamanlayıcı tarama ve donanım güvenliği ayrıca doğrulanmalıdır.';
+  l.quiz={question:'Sanal PLC zamanlayıcıda iki saniye dolduğunda START hâlâ basılıysa ne olur?',
+    options:['Q0 kapanır; yeniden başlatmak için START bırakılıp tekrar basılır','Q0 her taramada otomatik yeniden açılır','PE hattı çıkış olur'],
+    answer:0,why:'Bu örneğin zamanlayıcısı bir basış için yalnız bir süre üretir.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Bir basış, iki saniyelik ışık',
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['START komutunu verip bırak, Q0 çıkışını izle.',
+      'Bir saniye sonra H1 hâlâ yanmalı.',
+      'İki saniyeyi geçince H1 sönmeli; düğme basılı tutulursa yeniden başlamamalı.',
+      'Süre dolmadan RESET ile lambayı söndür.',
+      'Giriş/çıkış bağlantısı kopukken sanal zaman davranışını karşılaştır.',
+      'Beslemeyi geri verdiğinde yeni START gereksinimini gözlemle.'],
+    observations:['703 elemanlı özgün katalog ve Simulation.solve ile zaman damgalı pozitif/negatif sınama yapılır.',
+      'Gerçek PLC taraması, donanım güvenliği, Windows/3D ve bağımsız pedagojik kabul henüz doğrulanmadı.'],
+    repairModel:'SC977-PLC-VIRTUAL-ONESHOT-TIMER-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='ORIGINAL_TIMER_LAD_REAL_SCAN_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(x=>x.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC977_TIMED_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v.sc977TimerRepair='SC977-PLC-VIRTUAL-ONESHOT-TIMER-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

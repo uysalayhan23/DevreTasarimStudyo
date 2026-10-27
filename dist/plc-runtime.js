@@ -45,6 +45,21 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Virtual PLC ladder normally-closed instruction: Q0 := NOT DI0.
  else if(mode==='not-input')q0=!start;
  else if(mode==='direct')q0=start&&stop;
+ else if(mode==='timed-stop-once-sc977'){
+  const duration=Math.max(100,num(c.plcTimerMs,2000));
+  if(!stop){c._sc977Latch=false;c._sc977RequireRelease=true;delete c._sc977StartAt;}
+  else if(c._sc977RequireRelease){
+   c._sc977Latch=false;
+   if(!start&&!c._sc977PowerBlocked)c._sc977RequireRelease=false;
+  }else if(!c._sc977Latch&&start&&!c._sc977LastStart&&c._sc977StartAt===undefined){
+   c._sc977StartAt=now;c._sc977Latch=true;
+  }
+  if(c._sc977Latch&&now-num(c._sc977StartAt,now)>=duration){
+   c._sc977Latch=false;c._sc977RequireRelease=true;delete c._sc977StartAt;
+  }
+  c._sc977LastStart=start;
+  q0=!!c._sc977Latch&&stop;
+ }
  else if(mode==='edge-rise-sc975'){
   const input=!!values[0];
   // Stable for all solver iterations in the same virtual scan timestamp.
@@ -162,6 +177,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    c._plcEdgePrev=false;delete c._plcEdgeTick;
   }
  }
+ if(c.plcProgram==='timed-stop-once-sc977'){
+  c._sc977PowerBlocked=!powered||
+   (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+  if(c._sc977PowerBlocked){
+   c._sc977Latch=false;c._sc977RequireRelease=true;
+   delete c._sc977StartAt;c._sc977LastStart=false;
+  }
+ }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
@@ -178,7 +201,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
