@@ -38,3 +38,7 @@ GitHub `main` üzerinde `dist/index.html`, `dist/app.js`, `dist/styles.css`, `di
 `dist/library-search-ux.js`: Editör açıkken **Ctrl+K / Cmd+K** kütüphane aramasına odaklanır, yazı seçer. Arama alanında **Esc** sorguyu temizler ve mevcut filtreleme `input` olayını çalıştırır; boşken alanı bırakır. Dashboard, güvenlik ekranı, açık modal ve başka metin düzenleyicileri korunur. Bu iş yalnız UI'dır; elektriksel model, ders kimliği, fiziksel ölçüm, Golden, kabul manifestoları ve `BASLAT.bat` değişmez. Test dosyası: `tests/library-search-ux.test.cjs`. Windows/Edge gerçek görsel kabulü ayrıca gereklidir.
 
 Sıradaki adım: mevcut topbar için yerleşim haritası ve 2D/3D ayrımını koruyan, dar ekranda alan kazandıran panel ergonomisi prototipi; yalnız hedefli UI test + görsel REVIEW, kesinlikle ders veya simülasyon PASS beyanı yok.
+
+## PLC Ladder için yeni teknik referans
+
+27 Ekim 2026'da yüklenen **LOGO! Soft Comfort V7 + V8.2.1** kurulumlarının statik incelemesi, dosya parmak izleri, 51 `.lsc` + 47 PDF örneği, özgün DTS Ladder mimarisi ve kabul senaryoları [LOGO! statik inceleme ve Ladder planında](LOGO_SOFT_COMFORT_STATIK_INCELEME_2026-10-27.md) kayıtlıdır. Ladder geliştirmesine başlamadan bu belge okunmalı; henüz gerçek PLC/Siemens dosya uyumluluğu varmış gibi davranılmamalıdır.
