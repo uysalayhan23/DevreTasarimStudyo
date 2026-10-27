@@ -4491,6 +4491,72 @@
    'SC951-CPU1211-DI0-DI1-DIRECT-Q0-V1');
  })();
 
+
+ // SC963: PLC LAD normally-closed instruction (NOT DI0), not a physical NC pushbutton.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-105'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-dc-plus','G1','Sanal 24 VDC ve 0 V',70,295),
+   C('cpu','plc-0-0-documented','PLC1','CPU1211C · DI0 / Q0',570,220,{plcProgram:'not-input'}),
+   C('input','push-no','S1','S1 fiziksel NO dijital giriş',330,85),
+   C('lamp','lamp-green','H1','Q0 sanal çıkış lambası',1070,250)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],
+   ['g','M','cpu','X10:6'],['g','P','input','13'],
+   ['input','14','cpu','X10:7'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['cpu','X12:3','lamp','X1'],['lamp','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+   id:'sc963-plc-nc-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Yalnız sanal PLC giriş / çıkış ve ortak uç bağlantısı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+   why:c.id==='cpu'?'Yalnız sanal NOT DI0 PLC mantığını değerlendirir.':
+   c.id==='input'?'Fiziksel NO buton; LAD NC komutuyla aynı şey değildir.':
+   'Sanal 24 VDC / PLC Q0 gösterge devresindeki katalog bileşeni.'}));
+  l.summary='Bu örnekte fiziksel S1 butonu normalde açıktır. Sanal PLC içindeki LAD normalde kapalı mantık komutu DI0=0 iken Q0/H1 çıkışını açar; butona basınca DI0=1 olur ve H1 söner. Giriş kopuğunda da DI0=0 görülebileceği için bu davranış güvenlik kontağı değildir.';
+  l.explanation='Gündelik örnek: Kapının açık olduğunu algılamayan bir giriş düşün. PLC programındaki tersleme komutu 0 değerini doğru kabul eder; ancak kablo kopukluğu da 0 görünebilir. Fiziksel NC butonla yazılımdaki NC mantığını birbirine karıştırma. Gerçek PLC ve TIA Portal doğrulaması yapılmadı.';
+  l.quiz={question:'Sanal PLC LAD normalde kapalı (NOT DI0) komutu hangi durumda doğru olur?',
+   options:['DI0 girişi 0 iken','DI0 girişi 1 iken','PE hattı kopunca güvenli kapanır'],
+   answer:0,why:'Bu, fiziksel kontak tipi değil, programda DI0 mantıksal terslemesidir; giriş kopukluğu güvenli kabul edilmez.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Kapalı kontak: buton mu, PLC mantığı mı?',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+   steps:['Önce CPU 24 V, giriş 1M ve çıkış bankası 3L+ / 3M uçlarını incele.',
+    'S1 butonu serbestken DI0=0; sanal NOT DI0 sonucu H1 yanmalı.',
+    'S1 butonuna basınca DI0=1; sanal NC komutu yanlış olur ve H1 söner.',
+    'Giriş kablosunu çıkar: H1 yine yanabilir. Bunun neden güvenli bir arıza sonucu olmadığını açıkla.',
+    'CPU veya çıkış beslemesini kes: simülatör Q0/H1 çıkışını durdurmalı.'],
+   observations:['703 temel katalog bileşeni ve özgün Simulation.solve ile 9 hedefli pozitif/negatif senaryo doğrulandı.',
+    'Fiziksel NC bağlantı, donanım güvenliği, gerçek LAD editörü ve Windows/3D kabulü bu test kapsamında değildir.'],
+   repairModel:'SC963-PLC-LAD-NOT-DI0-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REAL_LAD_EDITOR_HARDWARE_AND_WINDOWS_3D_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_9_CHECKS_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc963NcLadRepair='SC963-PLC-LAD-NOT-DI0-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
