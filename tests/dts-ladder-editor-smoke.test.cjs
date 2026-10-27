@@ -19,3 +19,24 @@ test('Starter has two seal-in paths and NC STOP in both paths',()=>{
  assert.ok(r.paths.every(path=>path.some(c=>c.type==='NC'&&c.ref==='I2')));
  assert.equal(L.validate(p,{inputCount:6,outputCount:4}).ok,true);
 });
+
+test('Live Ladder monitor shows actual saved rung trace and counter',()=>{
+ const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',active:true,value:true,count:3}],true,'dts-ladder-v1');
+ assert.equal(rows[0].status,'AKTİF');assert.equal(rows[0].active,true);
+ assert.equal(E.signalText(rows[0]),'1 · Sayaç 3');
+});
+test('Unsaved Ladder draft never shows misleading saved-program trace',()=>{
+ const p=L.blank(),draft=JSON.parse(JSON.stringify(p));draft.rungs[0].paths[0][0].type='NC';
+ const rows=E.monitorRows(draft,p,[{id:'R1',active:true,value:true}],true,'dts-ladder-v1');
+ assert.equal(rows[0].value,null);assert.equal(rows[0].active,false);
+ assert.match(rows[0].status,/Taslak izlenmiyor/);
+});
+test('Stopped simulation hides stale Ladder signal and count',()=>{
+ const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',active:true,value:true,count:9}],false,'dts-ladder-v1');
+ assert.equal(rows[0].status,'Simülasyon kapalı');
+ assert.equal(rows[0].count,null);assert.equal(E.signalText(rows[0]),'—');
+});
+test('Live Ladder monitor does not invent signals before solver trace',()=>{
+ const p=L.blank(),rows=E.monitorRows(p,p,[],true,'dts-ladder-v1');
+ assert.equal(rows[0].status,'Sinyal bekleniyor');assert.equal(rows[0].value,null);
+});
