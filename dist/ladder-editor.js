@@ -1,7 +1,7 @@
 (function(root){
  'use strict';
  // Original DTS Ladder editor. Only edits the user's virtual PLC program; never imports Siemens code.
- const L=root?.DTSLadderRuntime;
+ const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
