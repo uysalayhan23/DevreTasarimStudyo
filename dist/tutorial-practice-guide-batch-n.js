@@ -5270,6 +5270,82 @@
  v.sc988BitCompareRepair='SC988-PLC-VIRTUAL-BIT-COMPARE-V1';
  })();
 
+
+ // SC989: limited virtual carpark, capacity 2, edge-counted in/out.
+ (() => {
+ const l=L.byId['motor-direct-power-outline-119'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,ext={})=>({
+  id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+ const parts=[
+  C('g','supply-dc-plus','G1','Sanal 24 V ve 0 V',70,320),
+  C('cpu','plc-0-0-documented','PLC1','Otopark iki araçlık sanal sayaç',740,350,
+   {plcProgram:'parking-counter-sc989',plcParkingCapacity:2}),
+  C('entry','push-no','S1','Giriş algılandı / anlık',325,70),
+  C('exit','push-no','S2','Çıkış algılandı / anlık',325,300),
+  C('reset','push-nc','S0','Sayaç STOP/RESET NC',325,530),
+  C('free','lamp-green','H1','Boş yer var',1250,240),
+  C('full','lamp-red','H2','Otopark dolu',1250,510)
+ ];
+ const graph=[
+  ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+  ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+  ['g','P','entry','13'],['entry','14','cpu','X10:7'],
+  ['g','P','exit','13'],['exit','14','cpu','X10:8'],
+  ['g','P','reset','21'],['reset','22','cpu','X10:9'],
+  ['cpu','X12:3','free','X1'],['free','X2','g','M'],
+  ['cpu','X12:4','full','X1'],['full','X2','g','M']
+ ];
+ p.components=parts;
+ p.wires=graph.map(([src,sp,dst,dp],i)=>({
+  id:'sc989-park-'+(i+1),from:{c:src,p:sp},to:{c:dst,p:dp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+src+'/'+sp+' → '+dst+'/'+dp,
+  tutorialWhy:'Katalogdaki giriş, çıkış ve besleme terminali.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+  hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+  c.id==='cpu'?'Giriş ve çıkış olaylarını ayrı ayrı sayar; en fazla iki araç tutar.':
+  c.id==='entry'?'Her yeni basış bir araç girişini anlatır.':
+  c.id==='exit'?'Her yeni basış bir araç çıkışını anlatır.':
+  c.id==='reset'?'Sayacı sıfırlar ve yeni basışa hazırlanır.':
+  'Sanal otopark durumunu gösterir veya devreyi besler.'}));
+ l.summary='Sanal iki araçlık otopark: giriş düğmesi yeni araçları sayar; çıkış düğmesi azaltır. İki araçta dolu ışığı yanar; üçüncü giriş sayacı büyütmez. RESET ve besleme kaybı sayacı sıfırlar. Bu gerçek bariyer güvenlik kontrolü veya saha sensörü modeli değildir.';
+ l.explanation='İki araçlık küçük bir otopark düşün. Bir araç girince bir yer kalır. İkinci araç girince dolu tabelası yanar. Üçüncüye yer açılmaz. Araç çıkınca yeniden boş yer oluşur. Düğmeyi basılı tutmak birden fazla araç saymaz; her yeni basış bir olaydır.';
+ l.quiz={question:'İki araç doluyken yeni giriş olayı sanal sayacı kaça çıkarır?',
+  options:['2 de kalır','3 olur','Sıfırlanır'],answer:0,
+  why:'Sanal sayaç en fazla iki yer tutar; gerçek bariyer kilidi ayrıca gerekir.'};
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'İki yerlik sanal otopark sayacı',virtualOnly:true,
+  canonicalGraphUnchanged:false,fullyRich:false,
+  physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:['Başlangıçta boş yer H1 ışığını gör.',
+   'Giriş butonuna bas ve bırak; bir araç sayılır.',
+   'Yeniden basıp bırak; ikinci araçta dolu H2 yanar.',
+   'Üçüncü girişte kapasiteyi aşmadığını doğrula.',
+   'Çıkış butonuna basıp bırak; bir yer açılır.',
+   'RESET ve kablo kopmalarıyla değişen durumu karşılaştır.'],
+  observations:['Özgün 703 katalog tanımı ve Simulation.solve ile kapasite, tek olay, RESET ve kopuk bağlantı sınanır.',
+   'Giriş/çıkış algılayıcısının gerçek donanımı, bariyer hareketi, saha güvenliği ve gerçek PLC programı modellenmez.',
+   'Windows/3D ve bağımsız pedagojik kabul açık.'],
+  repairModel:'SC989-PLC-VIRTUAL-CARPARK-COUNTER-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='REAL_PARKING_BARRIER_SENSOR_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+ v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC989_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc989VirtualParkingRepair='SC989-PLC-VIRTUAL-CARPARK-COUNTER-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

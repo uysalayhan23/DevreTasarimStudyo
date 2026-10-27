@@ -64,6 +64,21 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   // SC988 opt-in: one-bit comparison only, not a general numeric PLC comparator.
   q0=Number(start)>Number(stop);
  }
+ else if(mode==='parking-counter-sc989'){
+  // Two-space virtual carpark counter; edge-counting is educational, not a safety controller.
+  const enter=!!values[0],leave=!!values[1],healthy=!!values[2];
+  const capacity=Math.max(1,Math.min(20,Math.trunc(num(c.plcParkingCapacity,2))));
+  if(!Number.isFinite(c._sc989Count))c._sc989Count=0;
+  if(!healthy){c._sc989Count=0;c._sc989Rearm=true;}
+  else if(c._sc989Rearm){
+    if(!enter&&!leave&&!c._sc989PowerBlocked)c._sc989Rearm=false;
+  }else if(c._sc989Tick!==now){
+    if(enter&&!c._sc989PrevIn&&!leave)c._sc989Count=Math.min(capacity,c._sc989Count+1);
+    else if(leave&&!c._sc989PrevOut&&!enter)c._sc989Count=Math.max(0,c._sc989Count-1);
+  }
+  c._sc989PrevIn=enter;c._sc989PrevOut=leave;c._sc989Tick=now;
+  q0=healthy&&!c._sc989PowerBlocked&&c._sc989Count<capacity;
+ }
  else if(mode==='clock-memory-sc983'){
   // Opt-in virtual PLC memory clock, not actual PLC firmware or measured scan time.
   // Q0 is the clock bit (1 s period, 50% duty); Q1 reports run permission.
@@ -163,6 +178,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
    else if(mode==='compare-bits-sc988')
      out[p.id]=i===0?Number(start)>Number(stop):i===1?start===stop:i===2?Number(start)<Number(stop):false;
+   else if(mode==='parking-counter-sc989')
+     out[p.id]=i===0?q0:i===1?!!values[2]&&!c._sc989PowerBlocked&&c._sc989Count>=Math.max(1,Math.min(20,Math.trunc(num(c.plcParkingCapacity,2)))):false;
    else if(mode==='clock-memory-sc983')
      out[p.id]=i===0?q0:i===1?!!c._sc983Enabled:false;
    else out[p.id]=i===0?q0:false;
@@ -190,6 +207,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  if(c.plcProgram==='set-reset-exclusive-sc974'&&(!powered||
    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2')))){
   c._plcSrChoice=null;c._plcSrRequireRelease=true;
+ }
+ if(c.plcProgram==='parking-counter-sc989'){
+  c._sc989PowerBlocked=!powered||
+    (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+  if(c._sc989PowerBlocked){
+    c._sc989Count=0;c._sc989Rearm=true;
+    c._sc989PrevIn=false;c._sc989PrevOut=false;delete c._sc989Tick;
+  }
  }
  if(c.plcProgram==='clock-memory-sc983'){
   c._sc983PowerBlocked=!powered||
@@ -231,7 +256,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
