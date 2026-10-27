@@ -3470,6 +3470,104 @@
  v.sc866RelayRepair='SC866-BOUNDED-VIRTUAL-RELAY-STAR-DELTA-V1';
  })();
 
+
+ // SC867 · Automatically timed star-to-delta, virtual continuity model only.
+ // Native interlocking is observable; hardware transfer timing is not validated.
+ (() => {
+  const l=L.byId['motor-start-speed-outline-022'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+     !p.components.some(c=>c.typeId==='packet-star-delta')||
+     !p.components.some(c=>c.typeId==='motor-y-d')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,more={})=>({
+    id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...more});
+  const parts=[
+   C('g','supply-3p','G1','Sanal üç faz / N / PE',55,365),
+   C('stop','push-nc','S0','STOP NC',230,70),
+   C('start','push-no','S1','START NO',420,70),
+   C('hold','contact-no','KM','KM mühürleme',540,195),
+   C('coilMain','coil-contactor','KM','KM ana kontaktör bobini',890,65),
+   C('main','main-contact','KM','KM ana güç kontaktörü',890,575),
+   C('timer','coil-delay-on','KT','KT1 sanal ON-delay 2 saniye',1020,225,
+     {delayValue:2,delayUnit:'sec'}),
+   C('timerNC','contact-nc','KT','KT1 başlangıçta kapalı NC',440,350),
+   C('timerNO','contact-no','KT','KT1 gecikmeli NO',440,490),
+   C('lockD','contact-nc','KD','KD NC yıldız kilidi',680,350),
+   C('lockY','contact-nc','KY','KY NC üçgen kilidi',680,490),
+   C('coilY','coil-contactor','KY','KY yıldız bobin',1010,360),
+   C('coilD','coil-contactor','KD','KD üçgen bobin',1010,505),
+   C('star','main-contact','KY','KY yıldız köprüleri',1205,550),
+   C('delta','main-contact','KD','KD üçgen bağlantı',1210,760),
+   C('motor','motor-y-d','M1','M1 altı uçlu sanal motor',1515,655,
+     {motorConnection:'external'})
+  ];
+  const graph=[
+   ['g','L1','stop','21'],['stop','22','start','13'],
+   ['start','14','coilMain','A1'],['stop','22','hold','13'],
+   ['hold','14','coilMain','A1'],['coilMain','A2','g','N'],
+   ['coilMain','A1','timer','A1'],['timer','A2','g','N'],
+   ['coilMain','A1','timerNC','21'],['timerNC','22','lockD','21'],
+   ['lockD','22','coilY','A1'],['coilY','A2','g','N'],
+   ['coilMain','A1','timerNO','13'],['timerNO','14','lockY','21'],
+   ['lockY','22','coilD','A1'],['coilD','A2','g','N'],
+   ['g','L1','main','1'],['g','L2','main','3'],['g','L3','main','5'],
+   ['main','2','motor','U1'],['main','4','motor','V1'],
+   ['main','6','motor','W1'],
+   ['motor','U2','star','1'],['motor','V2','star','3'],
+   ['motor','W2','star','5'],['star','2','star','4'],
+   ['star','4','star','6'],
+   ['main','2','delta','1'],['main','4','delta','3'],
+   ['main','6','delta','5'],
+   ['delta','2','motor','W2'],['delta','4','motor','U2'],
+   ['delta','6','motor','V2'],['g','PE','motor','PE']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([a,ap,b,bp],i)=>({
+    id:'motor-outline-022-auto-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},points:[],
+    color:'#43857f',role:'CONTROL',size:'1.5',
+    tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'Sanal süreklilik, yıldız / üçgen kilidi veya zaman kontağı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({
+    from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,
+    why:c.id==='timer'?'Sanal yıldız süresi tamamlandığında çıkışı değişir.':
+      c.id==='lockY'||c.id==='lockD'?'Karşı kontaktör etkinken bu kumanda yolunu kapatır.':
+      c.id==='motor'?'Altı uçlu sanal yıldız / üçgen bağlantısı.':
+      'Simülatörde katalog pinine bağlı öğretim elemanı.'}));
+  l.summary='START ile önce sanal yıldız kademesi çalışır. KT1 iki saniye sayınca yıldız kontaktörü bırakır ve üçgen kontaktörü devreye girer. STOP her iki kademeyi de kapatır. Bu ders yalnız ideal elektriksel durumları gösterir; gerçek motor hızlanması, mekanik geçiş aralığı, ark, akım ve tork modellenmez.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'Otomatik yıldızdan üçgene geçişi izle',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+      'Sanal START komutu ver, ardından bırak; ana kontaktörün mühürlendiğini gözlemle.',
+      'İlk saniyede motorun yıldız bağlantısı etkin olmalı.',
+      'İki saniye tamamlanınca KT1 NC bırakıp KT1 NO devreye girer; yıldızdan üçgene geçişi gör.',
+      'STOP komutunda üç kontaktörün de bırakıldığını doğrula.',
+      'Sanal faz veya zaman kontağı kablosunu çıkarınca neden bağlantının etkinleşmediğini karşılaştır.'
+    ],
+    observations:[
+      'Özgün Simulation.solve ve 703 bileşenli katalogla zamanlı geçiş, STOP, yeniden başlatma ve kopuk hat senaryoları sınandı.',
+      'Sanal model iki kontaktör arasında fiziksel geçiş boşluğu veya motor kalkış ölçümü sağlamaz.',
+      'Gerçek güç ekipmanı, koruma, Windows/3D terminal-kablo ve bağımsız pedagoji kabulü açık.'
+    ],repairModel:'MOTOR-START-SPEED-022-AUTO-STAR-DELTA-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='STAR_DELTA_HARDWARE_TRANSFER_TIMING_AND_WINDOWS_3D_PENDING';
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.componentIds=parts.map(c=>c.typeId);
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TIMED_PASS';
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc867AutoStarDeltaRepair='MOTOR-START-SPEED-022-AUTO-STAR-DELTA-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
