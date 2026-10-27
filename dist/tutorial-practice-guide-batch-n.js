@@ -4135,6 +4135,58 @@
   v.sc912TimedStart='SC912-VIRTUAL-MOTOR-ON-DELAY-START-WITH-SEAL-V1';
  })();
 
+
+ // SC913: electrical interlock direction exercise, separate from accepted SC840.
+ // Reuse SC840's authenticated catalogue-pin graph; preserve both original lessons.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-098'],
+        reference=L.byId['motor-direct-power-outline-078'],
+        p=l?.project,r=l?.pedagogyReview,source=reference?.project;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     source?.components?.length!==13||source?.wires?.length!==26||
+     reference?.practiceGuide?.repairModel!=='MOTOR-OUTLINE-078-DIRECTION-SELECTED-INTERLOCK-V1'||
+     r?.independentPedagogicalAcceptance===true)return;
+  const copy=x=>JSON.parse(JSON.stringify(x));
+  p.components=copy(source.components);
+  p.wires=source.wires.map((w,i)=>({...copy(w),id:'motor-outline-098-'+(i+1)}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=p.components.map(c=>({id:c.id,label:c.label,
+    why:c.typeId==='contact-nc'?'Diğer kontaktörün aktif olmasını önleyen karşılıklı elektriksel kilit.':
+     c.typeId==='contact-no'?'START düğmesi bırakıldıktan sonra seçili kontaktörün sanal mührü.':
+     c.id==='dir'?'Tek seferde yalnız ileri veya geri komutu seçilir.':
+     'Sanal güç ve kumanda devresindeki katalog terminali.'}));
+  l.summary='İleri K1 ve geri K2 kontaktörlerinin sanal güç yolları birbirine karşılıklı NC kontaklarla kilitlenir. S2 yalnız bir yön seçtirir. Yön değiştirmeden önce STOP gerekir; motor STOP sonrası START verilmeden kendiliğinden çalışmaz. Fiziksel mekanik kilit, gerçek durma süresi, Windows/3D kabulü açık.';
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'İleri ve geri komutları aynı anda neden çalışamaz?',
+    virtualOnly:true,canonicalGraphUnchanged:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+    steps:[
+     'Sanal S2 seçicisini ileri yap, START bas ve motorun ileri çalışmasını gözlemle.',
+     'START bırak; K1 mühürleme kontağının neden çalışmayı koruduğunu incele.',
+     'Motor ileri çalışırken geri yönünü seç ve START dene; K2 bobini aktif olmamalı.',
+     'STOP ile dur, sonra geri yönde yeniden START ver.',
+     'Geri çalışırken ileri komutunun engellendiğini ve kopuk NC kilitte çalışmanın durduğunu sınayalım.'
+    ],observations:[
+     'SC913 devresi özgün Simulation.solve ve 703 katalog bileşeniyle pozitif ve negatif durumlarda sınandı.',
+     'Gerçek donanımda fiziksel/mekanik kilit, güvenli durma ve kablo/terminal geometrisi ayrıca doğrulanmalıdır.'
+    ],repairModel:'SC913-VIRTUAL-FWD-REV-ELECTRICAL-INTERLOCK-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='HARDWARE_MECHANICAL_INTERLOCK_MOTOR_STOP_WINDOWS_3D_PENDING';
+  v.componentIds=p.components.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC913_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc913ElectricalInterlock='SC913-VIRTUAL-FWD-REV-ELECTRICAL-INTERLOCK-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
