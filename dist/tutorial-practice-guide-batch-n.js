@@ -7674,6 +7674,94 @@
   }
  })();
 
+
+ // SC453: replace only the untouched PNP placeholder with genuine reed NO/NC.
+ // This is a virtual magnet/switch experiment, not physical calibration.
+ (() => {
+  const l=L.byId['sensor-analog-apps-outline-038'],p=l?.project;
+  if(l?.kind!=='wiring'||!p||p.components?.map(c=>c.typeId).join(',')!==
+     'supply-dc-plus,proximity,lamp-green'||p.wires?.length!==4||
+     p.tutorialLesson?.phase!=='quiz'||
+     l.pedagogyReview?.independentPedagogicalAcceptance===true||
+     ['PASS','HOLD'].includes(l.pedagogyReview?.titleTopologyStatus))return;
+  const C=(id,typeId,label,x,y,extra={})=>({
+   id,typeId,ref:id,label,x,y,rotation:0,state:false,address:'',note:'',...extra
+  });
+  const W=(a,ap,b,bp,i)=>({
+   id:'SC453-REED-'+i,from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Sanal reed kontaklarını ve lamba dönüşlerini karşılaştır.'
+  });
+  const edges=[
+   ['g','P','no','13'],['no','14','green','X1'],['green','X2','g','M'],
+   ['g','P','nc','21'],['nc','22','red','X1'],['red','X2','g','M']
+  ];
+  p.components=[
+   C('g','supply-dc-plus','24 V sanal DC',80,270),
+   C('no','reed-no','Normalde açık reed',420,110,
+     {sensing:{target:'magnet',distance:20,range:8}}),
+   C('green','lamp-green','NO algılama',790,110),
+   C('nc','reed-nc','Normalde kapalı eğitim varyantı',420,450,
+     {sensing:{target:'magnet',distance:20,range:8}}),
+   C('red','lamp-red','NC algılama',790,450)
+  ];
+  p.wires=edges.map((e,i)=>W(...e,i+1));
+  p.junctions=[];
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({
+   from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+   why:w.tutorialWhy,color:w.color,role:w.role,size:w.size
+  }));
+  l.materials=[
+   {id:'g',label:'Sanal 24 V DC',why:'Yalnız sanal devreyi besler.'},
+   {id:'no',label:'NO reed',why:'Mıknatıs yaklaşınca kontağı kapanır.'},
+   {id:'nc',label:'NC reed',why:'Eğitim varyantında mıknatıs yaklaşınca kontağı açılır.'},
+   {id:'green',label:'NO gösterge',why:'NO kolunun durumunu gösterir.'},
+   {id:'red',label:'NC gösterge',why:'NC kolunun durumunu gösterir.'}
+  ];
+  l.summary='Reed rölenin iki sanal kontak davranışı: NO mıknatıs uzaktayken açık, NC ise kapalıdır. İki bağımsız mıknatıs göstergesini ayrı ayrı hareket ettirerek lambaların ters tepkisini izle.';
+  l.explanation='Bir kapıya manyetik kontak yerleştirdiğini düşün. Kapı mıknatısı yaklaştığında NO kontak kapanır ve yeşil gösterge yanar; NC eğitim varyantı ise açılır ve kırmızı gösterge söner. Uzaklaştırınca sonuç tersine döner. İki sanal mıknatıs ayrı hareket ettirilir. Kablo koparsa ilgili lamba güvenilir durum bilgisi vermez.';
+  l.quiz={
+   question:'Mıknatıs NO reed kontağına yaklaşınca, kablolar sağlamsa yeşil lamba ne yapar?',
+   options:['Yanar','Söner','Besleme frekansını artırır'],answer:0,
+   why:'NO manyetik kontak sanal algılamada kapanır; tamamlanan devre lambayı besler.'
+  };
+  l.practiceGuide={
+   version:'practice-n1',method:'virtual-circuit-check',
+   heading:'Reed NO ve NC: sanal mıknatısla kontak kontrolü',
+   virtualOnly:true,canonicalGraphUnchanged:false,
+   fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+   repairModel:'SC453-NATIVE-REED-NO-NC-V1',
+   steps:[
+    'Sanal devrede iki reed kontak ve iki göstergeyi tanı.',
+    'Önce iki mıknatıs uzaktayken NO lambasının sönük, NC lambasının yanık olduğunu izle.',
+    'NO reed mıknatısını yaklaştır: yalnız yeşil gösterge yanmalı.',
+    'NC reed mıknatısını yaklaştır: kırmızı gösterge sönmeli.',
+    'Mıknatısları uzaklaştırınca önceki duruma dönüşü incele.',
+    'Sanal kablolardan birini kopardığında hangi kolun göstergesi söndüğünü gözle.'
+   ],
+   observations:[
+    'Reed NO 13/14 ve reed NC 21/22, gerçek katalog terminal isimleridir.',
+    'Her iki reed için ayrı sanal mıknatıs kullanılır; ortak mekanik bağ modellenmez.',
+    'NO ve NC farkı simülasyonda gösterilir; gerçek ürünün NC varyantı üreticiyle doğrulanmış sayılmaz.',
+    'Sanal native test 9/9; fiziksel alan/mesafe, Windows/3D ve bağımsız pedagojik kabul açık.'
+   ]
+  };
+  const v=l.pedagogyReview||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='REED_PHYSICAL_MAGNET_CALIBRATION_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=p.components.map(c=>c.typeId);
+  v.realWiredCircuit=true;v.nativeDynamicAcceptance=false;
+  v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC453_9_OF_9_TARGETED_PASS';
+  v.reedExampleRepair='SC453-NATIVE-REED-NO-NC-V1';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
