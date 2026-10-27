@@ -3965,6 +3965,98 @@
  v.sc882BoundedBrakeRepair='SC882-STAR-DELTA-VIRTUAL-TIMED-DC-COMMAND-V1';
  })();
 
+
+ // SC883: 2-second automatic OFF-delay DC *command* and fresh-START rearm.
+ // No mechanical RPM, braking torque, DC winding current or hardware-safety model.
+ (() => {
+ const l=L.byId['motor-braking-outline-020'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==18||p?.wires?.length!==38||
+    !p.components.some(c=>c.typeId==='motor-y-d')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,
+ rotation:0,state:false,address:'',note:'',...extra});
+ const a=[
+ C('g','supply-3p','G1','Sanal üç faz / N / PE',45,355),
+ C('stop','push-nc','S0','S0 anlık STOP',190,85),
+ C('start','jog-4pin','S1','S1 START NO ve yeniden-kurulma NC',360,75),
+ C('hold','contact-no','K1','K1 mühürleme',510,210),
+ C('lockKB','contact-nc','KB','KB fren açıkken motor kilidi',680,150),
+ C('coilRun','coil-contactor','K1','K1 sanal motor bobini',930,85),
+ C('mainRun','main-contact','K1','K1 ana üç faz kontak',920,540),
+ C('feedTimer','contact-no','K1','K1 zaman başlatma NO',515,415),
+ C('timer','coil-delay-off','KT1','KT1 iki saniye bırakmada gecikme',880,405,{delayValue:2,delayUnit:'sec'}),
+ C('timeNO','contact-no','KT1','KT1 süresince açık NO',1070,415),
+ C('lockRun','contact-nc','K1','K1 NC fren kilidi',1000,315),
+ C('coilBrake','coil-contactor','KB','KB yalnız sanal DC bobini',1300,375),
+ C('mainBrake','main-contact','KB','KB sanal DC kontak',1260,755),
+ C('smps','smps','G2','G2 sanal 24 VDC kaynağı',870,840),
+ C('motor','motor-3p','M1','M1 sanal üç faz motor',1570,610,{motorConnection:'star'}),
+ C('armBrakeNC','contact-nc','KB','KB NC yeniden-kurulma kilidi',375,520),
+ C('armCoil','coil-relay','KA','KA yeni START bekleme bobini',550,620),
+ C('armHold','contact-no','KA','KA yeniden-kurulma mühürleme',550,715),
+ C('armStart','contact-no','KA','KA yeni START izni',670,85)
+ ];
+ const e=[
+ ['g','L1','armBrakeNC','21'],['armBrakeNC','22','start','21'],
+ ['start','22','armCoil','A1'],['armBrakeNC','22','armHold','13'],
+ ['armHold','14','armCoil','A1'],['armCoil','A2','g','N'],
+ ['g','L1','stop','21'],['stop','22','start','13'],
+ ['start','14','armStart','13'],['armStart','14','lockKB','21'],
+ ['stop','22','hold','13'],['hold','14','lockKB','21'],
+ ['lockKB','22','coilRun','A1'],['coilRun','A2','g','N'],
+ ['g','L1','feedTimer','13'],['feedTimer','14','timer','A1'],
+ ['timer','A2','g','N'],
+ ['g','L1','lockRun','21'],['lockRun','22','timeNO','13'],
+ ['timeNO','14','coilBrake','A1'],['coilBrake','A2','g','N'],
+ ['g','L1','mainRun','1'],['g','L2','mainRun','3'],
+ ['g','L3','mainRun','5'],['mainRun','2','motor','U'],
+ ['mainRun','4','motor','V'],['mainRun','6','motor','W'],
+ ['g','PE','motor','PE'],
+ ['g','L1','smps','L'],['g','N','smps','N'],
+ ['smps','P','mainBrake','1'],['mainBrake','2','motor','U'],
+ ['smps','M','mainBrake','3'],['mainBrake','4','motor','V']
+ ];
+ p.components=a;p.wires=e.map(([ac,ap,bc,bp],i)=>({
+ id:'motor-braking-outline-020-'+(i+1),from:{c:ac,p:ap},to:{c:bc,p:bp},
+ color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+ tutorialHint:'Sanal '+ac+'/'+ap+' → '+bc+'/'+bp,
+ tutorialWhy:'Otomatik DC kumanda süresi ve START yeniden-kurulma sanal bağlantısı.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+ why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=a.map(c=>({id:c.id,label:c.label,
+ why:c.id==='timer'?'K1 ayrılınca iki saniye daha sanal fren sinyali sağlar.':
+ c.id==='armCoil'?'Süre dolarken START basılı kalsa bile kendiliğinden yeniden çalıştırmaz.':
+ c.id==='start'?'Yeni çalışmaya izin için düğme serbest bırakılmalıdır.':
+ 'Katalog terminaliyle modellenmiş sanal parça.'}));
+ l.summary='START motoru mühürlemeyle çalıştırır. STOP, K1 ana üç faz kontaklarını açar ve KT1 OFF-delay iki saniye boyunca KB sanal DC komutunu verir. START bu sırada basılı tutulursa KA yeniden-kurulma rölesi süre bitince de otomatik yeniden çalışmayı engeller. Gerçek fren akımı, moment ve rotor duruşu bu simülatörde hesaplanmaz.';
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+ heading:'STOP sonrası sanal fren ve yeni START izni',
+ virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+ pedagogicalAcceptance:false,fullyRich:false,
+ steps:['START serbestken sanal KA yeniden-kurulma iznini gözlemle.',
+ 'START basıp bırak; motor mühürlemeli çalışır.',
+ 'STOP ile motoru durdur: iki saniyelik KB komutu sanal olarak başlar.',
+ 'Fren sırasında START basılı tutulsa da motor yeniden çalışmamalıdır.',
+ 'Süre dolduktan sonra START bırakıp yeniden basınca yeni çalışmanın başladığını gözlemle.',
+ 'Faz, START izni ve KB sanal kumanda yolu kopukluklarını karşılaştır.'],
+ observations:['Özgün 703 katalog elemanı ve Simulation.solve ile zaman, kilit ve kopuk kablo kontrolleri yapıldı.',
+ 'Sanal KA bir donanım emniyet rölesi değildir; fiziksel fren torku, DC akımı ve gerçek duruş ölçülmedi.',
+ 'Windows/3D ve bağımsız pedagojik kabul bekliyor.'],
+ repairModel:'SC883-AUTOMATIC-VIRTUAL-OFF-DELAY-REARM-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='BRAKE_TORQUE_CURRENT_REAL_HARDWARE_WINDOWS_3D_AND_PEDAGOGY_PENDING';
+ v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+ v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_VIRTUAL_BRAKE_AND_REARM_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc883AutomaticBrakeRepair='SC883-AUTOMATIC-VIRTUAL-OFF-DELAY-REARM-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
