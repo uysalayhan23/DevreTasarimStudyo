@@ -60,6 +60,35 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   c._sc977LastStart=start;
   q0=!!c._sc977Latch&&stop;
  }
+ else if(mode==='bus-door-virtual-sc1001'){
+   // SC1001 educational open/close contactors, not certified bus-door logic.
+   const open=!!values[0],close=!!values[1],healthy=!!values[2],
+     openTravelOK=!!values[3],closeTravelOK=!!values[4],obstacleClear=!!values[5];
+   if(typeof c._sc1001Rearm!=='boolean')c._sc1001Rearm=true;
+   if(!healthy||!obstacleClear||(open&&close)||
+       (c._sc1001Direction==='OPEN'&&(!openTravelOK||close))||
+       (c._sc1001Direction==='CLOSE'&&(!closeTravelOK||open))){
+     c._sc1001Direction=null;c._sc1001Rearm=true;
+   }else if(c._sc1001Rearm){
+     c._sc1001Direction=null;
+     if(!open&&!close&&!c._sc1001PowerBlocked)c._sc1001Rearm=false;
+   }else if(!c._sc1001Direction){
+     if(open&&openTravelOK)c._sc1001Direction='OPEN';
+     else if(close&&closeTravelOK)c._sc1001Direction='CLOSE';
+   }
+   q0=healthy&&obstacleClear&&!c._sc1001PowerBlocked&&c._sc1001Direction==='OPEN';
+ }
+ else if(mode==='plc-basic-latch-sc1002'){
+   // SC1002 opt-in START/STOP with fresh START required after stop/power loss.
+   if(typeof c._sc1002Rearm!=='boolean')c._sc1002Rearm=true;
+   if(!stop||c._sc1002PowerBlocked){c._sc1002Latch=false;c._sc1002Rearm=true;}
+   else if(c._sc1002Rearm){
+     c._sc1002Latch=false;
+     if(!start)c._sc1002Rearm=false;
+   }else if(start&&!c._sc1002LastStart)c._sc1002Latch=true;
+   c._sc1002LastStart=start;
+   q0=!!stop&&!c._sc1002PowerBlocked&&!!c._sc1002Latch;
+ }
  else if(mode==='temperature-ntc-sc999'){q0=!!c._sc999Cooling;}
  else if(mode==='shift-rotate-2bit-sc995'){
   // 2-bit virtual word only: bit0=X10:7, bit1=X10:8; control conflict suppresses both outputs.
@@ -213,6 +242,11 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else if(mode==='set-reset-exclusive-sc974')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
+   else if(mode==='bus-door-virtual-sc1001')
+     out[p.id]=i===0?q0:i===1?!!values[2]&&!!values[5]&&
+       !c._sc1001PowerBlocked&&c._sc1001Direction==='CLOSE':false;
+   else if(mode==='plc-basic-latch-sc1002')
+     out[p.id]=i===0?q0:i===1?!!stop&&!c._sc1002PowerBlocked&&!c._sc1002Latch:false;
    else if(mode==='temperature-ntc-sc999')out[p.id]=i===0?q0:false;
    else if(mode==='shift-rotate-2bit-sc995'){
      const bit0=!!values[0],bit1=!!values[1],shl=!!values[2],rol=!!values[3];
@@ -304,6 +338,17 @@ function evaluate(c,d,net,now=Date.now(),options={}){
 
  // SC999 opt-in only. Sensor resistance from canonical thermal model, contingent
  // on an intact 10 V divider wired to the documented PLC analog pins.
+
+ if(c.plcProgram==='bus-door-virtual-sc1001'){
+   c._sc1001PowerBlocked=!powered||
+     (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+   if(c._sc1001PowerBlocked){c._sc1001Direction=null;c._sc1001Rearm=true;}
+ }
+ if(c.plcProgram==='plc-basic-latch-sc1002'){
+   c._sc1002PowerBlocked=!powered||
+     (d?.id==='plc-0-0-documented'&&!net.voltage(c,'X12:1','X12:2'));
+   if(c._sc1002PowerBlocked){c._sc1002Latch=false;c._sc1002Rearm=true;}
+ }
  if(c.plcProgram==='temperature-ntc-sc999'){
   const items=options.project?.components||[],find=id=>items.find(x=>x.id===id);
   const g=find('g10'),r=find('rtemp'),t=find('ntc');
@@ -350,7 +395,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid;delete c._sc1001PowerBlocked;delete c._sc1001Direction;delete c._sc1001Rearm;delete c._sc1002PowerBlocked;delete c._sc1002Latch;delete c._sc1002Rearm;delete c._sc1002LastStart}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);
