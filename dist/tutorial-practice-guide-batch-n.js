@@ -3413,6 +3413,63 @@
   v.sc869DahlanderRepair='MOTOR-START-SPEED-024-DAHLANDER-LOW-HIGH-NATIVE-V1';
  })();
 
+
+ // SC866: bounded virtual star/delta relay wiring, physical isolation REVIEW.
+ (() => {
+ const l=L.byId['motor-start-speed-outline-021'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+ !p.components.some(c=>c.typeId==='packet-star-delta')||r?.independentPedagogicalAcceptance===true)return;
+ const make=(id,typeId,ref,extra={})=>({id,typeId,ref,label:id,x:100,y:100,rotation:0,state:false,address:'',note:'',...extra});
+ const items=[
+  make('g','supply-3p','G1'),make('sel','selector-2','S1',{position:0}),
+  make('ncY','contact-nc','KD'),make('ncD','contact-nc','KY'),
+  make('coilY','coil-contactor','KY'),make('coilD','coil-contactor','KD'),
+  make('star','main-contact','KY'),make('delta','main-contact','KD'),
+  make('motor','motor-y-d','M1',{motorConnection:'external'})];
+ const links=[
+ ['g','L1','sel','11'],['sel','13','ncY','21'],['ncY','22','coilY','A1'],
+ ['sel','14','ncD','21'],['ncD','22','coilD','A1'],
+ ['coilY','A2','g','N'],['coilD','A2','g','N'],
+ ['g','L1','motor','U1'],['g','L2','motor','V1'],['g','L3','motor','W1'],
+ ['motor','U2','star','1'],['motor','V2','star','3'],['motor','W2','star','5'],
+ ['star','2','star','4'],['star','4','star','6'],
+ ['motor','U2','delta','1'],['motor','V2','delta','3'],['motor','W2','delta','5'],
+ ['delta','2','motor','V1'],['delta','4','motor','W1'],['delta','6','motor','U1'],
+ ['g','PE','motor','PE']];
+ p.components=items;p.wires=links.map(([a,ap,b,bp],i)=>({
+  id:'motor-outline-021-relay-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  role:'CONTROL',color:'#43857f',size:'1.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+  tutorialWhy:'Sanal röle veya motor terminali; gerçek pano bağlantısı değildir.'}));
+ delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=items.map(c=>({id:c.id,label:c.label,why:
+  c.typeId==='contact-nc'?'Karşıt röle çalışırken komut yolunu keser.':
+  c.typeId==='main-contact'?'Sanal yıldız veya üçgen sargı köprülerini kurar.':
+  'Katalogdaki sanal öğretici bileşen.'}));
+ l.summary='Yıldız ve üçgen kontaktörleri karşılıklı NC kontaklarla kilitlenir. Seçici 0/Y/Δ durumunda motor sargı bağlantısı değişir. Ana güç izolasyonu ve otomatik geçiş yoktur; 0 konumu gerçek gerilimsizliği göstermez. Motor kalkış akımı, mekanik kilit ve Windows/3D kabulü REVIEW.';
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+  heading:'Yıldız ve üçgen röleleri sargı bağlantısını nasıl değiştirir?',
+  virtualOnly:true,canonicalGraphUnchanged:false,physicalTestAccepted:false,
+  pedagogicalAcceptance:false,fullyRich:false,
+  steps:['Sanal seçicide 0 seç ve motorun durduğunu gözlemle.',
+   'Yıldız durumunda KY alt uçları birleştirir.',
+   '0 konumuna döndükten sonra üçgeni seç; KD diğer sargı bağlantısını kurar.',
+   'NC kilit veya sargı bağlantısını kopar ve motorun etkinliğini yeniden incele.'],
+  observations:['Özgün 703 kataloglu Simulation.solve ile 13 sanal pozitif/negatif durum PASS.',
+   'Ana enerji izolasyonu, otomatik zamanlama, kalkış akımı ve Windows/3D doğrulanmadı.'],
+  repairModel:'SC866-BOUNDED-VIRTUAL-RELAY-STAR-DELTA-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='ISOLATION_AUTOMATIC_TIMING_PHYSICAL_3D_PENDING';
+ v.componentIds=items.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_13_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc866RelayRepair='SC866-BOUNDED-VIRTUAL-RELAY-STAR-DELTA-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
