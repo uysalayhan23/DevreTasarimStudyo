@@ -60,6 +60,7 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   c._sc977LastStart=start;
   q0=!!c._sc977Latch&&stop;
  }
+ else if(mode==='temperature-ntc-sc999'){q0=!!c._sc999Cooling;}
  else if(mode==='shift-rotate-2bit-sc995'){
   // 2-bit virtual word only: bit0=X10:7, bit1=X10:8; control conflict suppresses both outputs.
   const bit0=!!values[0],bit1=!!values[1],shl=!!values[2],rol=!!values[3];
@@ -212,6 +213,7 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcDirection==='R'):false;
    else if(mode==='set-reset-exclusive-sc974')
      out[p.id]=i===0?q0:i===1?!!(stop&&c._plcSrChoice==='B'):false;
+   else if(mode==='temperature-ntc-sc999')out[p.id]=i===0?q0:false;
    else if(mode==='shift-rotate-2bit-sc995'){
      const bit0=!!values[0],bit1=!!values[1],shl=!!values[2],rol=!!values[3];
      out[p.id]=i===0?q0:i===1?(shl&&rol?false:shl||rol?bit0:bit1):false;
@@ -299,6 +301,39 @@ function evaluate(c,d,net,now=Date.now(),options={}){
    delete c._sc977StartAt;c._sc977LastStart=false;
   }
  }
+
+ // SC999 opt-in only. Sensor resistance from canonical thermal model, contingent
+ // on an intact 10 V divider wired to the documented PLC analog pins.
+ if(c.plcProgram==='temperature-ntc-sc999'){
+  const items=options.project?.components||[],find=id=>items.find(x=>x.id===id);
+  const g=find('g10'),r=find('rtemp'),t=find('ntc');
+  const pin=(id,p)=>JSON.stringify([id,p]);
+  const tied=(a,ap,b,bp)=>net.find(pin(a,ap))===net.find(pin(b,bp));
+  const proper=options.project?.tutorialLesson?.id==='motor-direct-power-outline-129'&&
+   g?.typeId==='load-cell-excitation'&&r?.typeId==='resistor'&&
+   t?.typeId==='sensor-ntc'&&Number(r.resistance)===10000&&
+   Number.isFinite(Number(t.temperature))&&
+   tied('g10','P','rtemp','1')&&tied('rtemp','2','ntc','1')&&
+   tied('rtemp','2',c.id,'X11:2')&&tied('ntc','2','g10','M')&&
+   tied('g10','M',c.id,'X11:1')&&
+   !tied('rtemp','1','rtemp','2')&&!tied('ntc','1','ntc','2')&&
+   !!net.voltage(g,'P','M');
+  const td=(root.COMPONENT_LIBRARY||[]).find(d=>d.id==='sensor-ntc');
+  const tr=proper&&td?Number(root.DTSDeviceBehavior.output(t,td).value):NaN;
+  const volts=Number.isFinite(tr)&&tr>0?100000/(10000+tr):NaN;
+  const nAt=temp=>10000*Math.exp(3950*(1/(temp+273.15)-1/298.15));
+  const on=100000/(10000+nAt(36)),off=100000/(10000+nAt(30));
+  const healthy=powered&&!!inputs[0]?.value&&
+   !!net.voltage(c,'X12:1','X12:2')&&Number.isFinite(volts)&&volts>0&&volts<10;
+  c._sc999BridgeVoltage=healthy?volts:null;
+  c._sc999SensorValid=!!proper&&Number.isFinite(volts);
+  if(!healthy){c._sc999Cooling=false;c._sc999RequireCoolReset=true;}
+  else if(c._sc999RequireCoolReset){
+   c._sc999Cooling=false;
+   if(volts<=off)c._sc999RequireCoolReset=false;
+  }else if(volts>=on)c._sc999Cooling=true;
+  else if(volts<=off)c._sc999Cooling=false;
+ }
  const outputPins=pins(d,'DO'),prg=program(c,inputs,outputPins,now,options.program);
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
@@ -315,7 +350,7 @@ function links(c,d){
  }
  return out;
 }
-function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart}
+function clear(c){delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid}
 const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);

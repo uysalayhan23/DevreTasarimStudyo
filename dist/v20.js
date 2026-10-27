@@ -112,7 +112,7 @@
     if(key==='jog-release')v.jog=false;
     return {ok:true};
   }
-  function clear(c){delete c._v20;delete c._v20Frame;delete c._driveFrequency;delete c._driveIO;delete c._v20Numeric;delete c._v20MotorHz;}
+  function clear(c){delete c._v20;delete c._v20Frame;delete c._driveFrequency;delete c._driveIO;delete c._v20Numeric;delete c._v20MotorHz;delete c._sc1000Epoch;delete c._sc1000TargetHz;}
   const lerp=(x,x1,y1,x2,y2)=>Math.abs(x2-x1)<1e-12?0:y1+(x-x1)*(y2-y1)/(x2-x1);
   function move(from,to,rate,dt){if(!Number.isFinite(rate))return to;return from+Math.sign(to-from)*Math.min(Math.abs(to-from),rate*dt);}
   function ramp(from,to,up,down,max,dt){
@@ -124,6 +124,14 @@
     const v=config(c),p=v.params;
     if(c._v20Frame?.now!==now)c._v20Frame={now,base:c._v20?JSON.parse(JSON.stringify(c._v20)):null};
     const b=c._v20Frame.base||{now,hz:0,di:[false,false,false,false],integral:0,overload:0,reset:v.reset,stopSerial:v.stopSerial||0},dt=Math.max(0,(now-b.now)/1000);
+    // SC1000 scoped time-profile MOP; V20.tick retains native ramp and motor model.
+    if(c.timedSpeedDemo==='sc1000'){
+      if(input.voltage>0){
+       if(!Number.isFinite(c._sc1000Epoch)||now<c._sc1000Epoch)c._sc1000Epoch=now;
+       p.P1040=now-c._sc1000Epoch<5000?15:35;
+       c._sc1000TargetHz=p.P1040;
+      }else{delete c._sc1000Epoch;c._sc1000TargetHz=0;}
+    }
     const power=input.voltage>0,di=input.di||[false,false,false,false],ai=(input.ai||[0,0]).map((volts,i)=>{
       const raw=[2,3].includes(p['P0756.'+i])?volts/235*1000:volts;
       const scaled=lerp(raw,p['P0757.'+i],p['P0758.'+i],p['P0759.'+i],p['P0760.'+i]);

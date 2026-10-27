@@ -5705,6 +5705,56 @@
   v.sc996MoveTonPreset='SC996-VIRTUAL-MOVE-TON-PRESET-V1';
  })();
 
+
+ (()=>{const l=L.byId['motor-direct-power-outline-129'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+ !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.typeId==='main-contact')||
+ r?.independentPedagogicalAcceptance===true)return;
+ const info={"heading":"NTC ile sıcaklığa bağlı sanal fan","repairModel":"SC999-NATIVE-NTC-BRIDGE-PLC-FAN-V1","pending":"CALIBRATED_PLC_ADC_THERMAL_PROTECTION_WINDOWS_3D_PEDAGOGY_PENDING","summary":"NTC sıcaklık sensörünü 10 V / 10 kΩ bölücü ve PLC analog girişine bağla. Sanal fan 36°C üstünde çalışır, 30°C altında durur. STOP, sensör kopması ve PLC besleme kaybında durur. Bu analog karşılaştırıcı gerçek PLC ADC veya sertifikalı termal emniyet değildir.","explanation":"Bir odadaki fanı düşün: NTC ısındıkça direnci azalır ve köprü gerilimi yükselir. 36 dereceye ulaşınca K1 fanı çalıştırır. 30 dereceye soğuyana kadar çalışmayı sürdürür; böylece eşikte sürekli açılıp kapanmaz. Kopan sensör veya STOP da fanı durdurur.","quiz":{"question":"NTC hattı koparsa sanal fan nasıl davranır?","options":["Durur","Daima çalışır","Hızını artırır"],"answer":0,"why":"Sanal sensörün köprü bağlantısı geçerli değilse PLC motoru bırakır."},"steps":["25°C'de fan kapalıdır.","36–40°C'de motor kontaktörü çalışır.","34°C'de histerezis nedeniyle çalışmayı sürdürür.","30°C'de durur.","STOP ve sensör kablosunu kopararak güvenli sanal duruşu gözle."],"observations":["NTC'nin direnç modeli özgün katalog ve DTSDeviceBehavior üzerinden kullanılır.","Bağlantısı doğrulanan 10 V köprü sanal analog eşiğe çevrilir; gerçek PLC ADC, fiziksel emniyet veya donanım testi değildir.","Windows/3D ve bağımsız kabul REVIEW."],"purpose":{"ntc":"Sıcaklığa göre direnci değişir.","rtemp":"10 kΩ gerilim bölücü.","cpu":"Sanal sıcaklık eşik kontrolü.","stop":"Sanal durdurma.","coil":"K1 motor bobini.","main":"K1 üç faz kontağı.","motor":"Fan motoru."}};const components=[{"id":"g","typeId":"supply-dc-plus","ref":"G1","label":"PLC kumanda 24 V","x":70,"y":280,"rotation":0,"state":false,"address":"","note":""},{"id":"g10","typeId":"load-cell-excitation","ref":"G2","label":"NTC 10 V köprü","x":70,"y":600,"rotation":0,"state":false,"address":"","note":""},{"id":"rtemp","typeId":"resistor","ref":"R1","label":"Köprü sabit 10 kΩ","x":360,"y":560,"rotation":0,"state":false,"address":"","note":"","resistance":10000},{"id":"ntc","typeId":"sensor-ntc","ref":"B1","label":"NTC ortam sıcaklığı","x":500,"y":730,"rotation":0,"state":false,"address":"","note":"","temperature":25},{"id":"cpu","typeId":"plc-0-0-documented","ref":"PLC1","label":"Sanal NTC soğutma PLC","x":740,"y":360,"rotation":0,"state":false,"address":"","note":"","plcProgram":"temperature-ntc-sc999"},{"id":"stop","typeId":"push-nc","ref":"S0","label":"STOP NC","x":350,"y":90,"rotation":0,"state":false,"address":"","note":""},{"id":"coil","typeId":"coil-contactor","ref":"K1","label":"K1 fan bobini","x":1170,"y":180,"rotation":0,"state":false,"address":"","note":""},{"id":"main","typeId":"main-contact","ref":"K1","label":"K1 güç kontağı","x":1150,"y":780,"rotation":0,"state":false,"address":"","note":""},{"id":"power","typeId":"supply-3p","ref":"G3","label":"Sanal üç faz besleme","x":70,"y":970,"rotation":0,"state":false,"address":"","note":""},{"id":"motor","typeId":"motor-3p","ref":"M1","label":"Sanal soğutma fanı","x":1450,"y":810,"rotation":0,"state":false,"address":"","note":"","motorConnection":"star"}];const graph=[["g","P","cpu","X10:1"],["g","M","cpu","X10:2"],["g","M","cpu","X10:6"],["g","P","cpu","X12:1"],["g","M","cpu","X12:2"],["g","P","stop","21"],["stop","22","cpu","X10:7"],["g10","P","rtemp","1"],["rtemp","2","ntc","1"],["ntc","2","g10","M"],["rtemp","2","cpu","X11:2"],["g10","M","cpu","X11:1"],["cpu","X12:3","coil","A1"],["coil","A2","g","M"],["power","L1","main","1"],["main","2","motor","U"],["power","L2","main","3"],["main","4","motor","V"],["power","L3","main","5"],["main","6","motor","W"],["power","PE","motor","PE"]];
+ p.components=components;
+ p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc999-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:'Gerçek katalogdaki devre terminalini izle.'}));
+ delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=components.map(c=>({id:c.id,label:c.label,why:info.purpose[c.id]||'Sanal besleme, sinyal veya motor bağlantısı.'}));
+ l.summary=info.summary;l.explanation=info.explanation;l.quiz=info.quiz;
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:info.heading,
+  virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:info.steps,observations:info.observations,repairModel:info.repairModel};
+ const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';v.titleTopologyIssue=info.pending;
+ v.componentIds=components.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+ v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC999_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v['sc999Repair']=info.repairModel;
+ })();
+
+ (()=>{const l=L.byId['motor-direct-power-outline-130'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+ !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.typeId==='main-contact')||
+ r?.independentPedagogicalAcceptance===true)return;
+ const info={"heading":"V20 ile zaman kontrollü sanal motor hızı","repairModel":"SC1000-NATIVE-V20-TIMED-RAMP-V1","pending":"EXTERNAL_PLC_TIMED_PROFILE_PHYSICAL_SPEED_FEEDBACK_WINDOWS_3D_PENDING","summary":"SINAMICS V20 yerleşik simülasyonunda ilk beş saniye hedef 15 Hz, ardından 35 Hz olarak ayarlanır. Native V20 kalkış rampası, üç faz çıkışı ve motor devri birlikte hesaplanır. Bu sanal MOP profili gerçek PLC zamanlayıcı veya fiziksel hız ölçümü değildir.","explanation":"Bir fanın hızını yavaşça değiştirdiğimizi düşün. Önce V20'ye 15 Hz hedef veriyoruz. Beşinci saniyeden sonra 35 Hz hedef geliyor. Motor aniden hızlanmaz; sürücünün kendi rampasıyla yeni frekansa ve devir hızına yaklaşır.","quiz":{"question":"Beşinci saniyeden sonraki sanal hedef frekans nedir?","options":["35 Hz","15 Hz","0 Hz"],"answer":0,"why":"Zaman profili 5. saniyede ikinci hedefe geçer."},"steps":["Giriş ile sürücünün sanal motor güç bağlantılarını incele.","15 Hz hedefi ve motorun rampasını izle.","Beşinci saniyede hedefin 35 Hz oluşunu kontrol et.","Motor frekansı ile hesaplanan RPM artışını karşılaştır.","Giriş gücünü veya motor fazını kopararak sonuçları sınayarak karşılaştır."],"observations":["V20.tick ve özgün Simulation.solve motor Hz/RPM aynı devrede hesaplanır.","Bu gerçek sürücü PWM modeli, saha emniyeti veya fiziksel motor kabulü değildir.","Windows/3D ve bağımsız kabul REVIEW."],"purpose":{"drive":"V20 MOP referansı, native sürücü rampası.","motor":"Sanal asenkron motorun Hz ve devrini gösterir.","power":"Sanal tek faz besleme ve PE."}};const components=[{"id":"power","typeId":"supply-1p","ref":"G1","label":"Sanal AC sürücü beslemesi","x":80,"y":180,"rotation":0,"state":false,"address":"","note":""},{"id":"drive","typeId":"sinamics-v20-1p","ref":"U1","label":"V20 zaman kontrollü MOP","x":580,"y":300,"rotation":0,"state":false,"address":"","note":"","timedSpeedDemo":"sc1000","v20":{"params":{"P0700":1,"P1000":1,"P1040":15,"P1120":2,"P1121":2},"run":true,"reverse":false,"load":50,"temperature":30}},{"id":"motor","typeId":"motor-3p","ref":"M1","label":"V20 çıkışında sanal motor","x":1110,"y":500,"rotation":0,"state":false,"address":"","note":"","motorConnection":"star"}];const graph=[["power","L","drive","L1"],["power","N","drive","N"],["power","PE","drive","PE"],["power","PE","drive","PE2"],["drive","U","motor","U"],["drive","V","motor","V"],["drive","W","motor","W"],["motor","U2","motor","V2"],["motor","V2","motor","W2"],["power","PE","motor","PE"]];
+ p.components=components;
+ p.wires=graph.map(([a,ap,b,bp],i)=>({id:'sc1000-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,tutorialWhy:'Gerçek katalogdaki devre terminalini izle.'}));
+ delete p.referenceOnly;p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=components.map(c=>({id:c.id,label:c.label,why:info.purpose[c.id]||'Sanal besleme, sinyal veya motor bağlantısı.'}));
+ l.summary=info.summary;l.explanation=info.explanation;l.quiz=info.quiz;
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:info.heading,
+  virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+  steps:info.steps,observations:info.observations,repairModel:info.repairModel};
+ const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';v.titleTopologyIssue=info.pending;
+ v.componentIds=components.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+ v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC1000_TARGETED_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v['sc1000Repair']=info.repairModel;
+ })();
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
