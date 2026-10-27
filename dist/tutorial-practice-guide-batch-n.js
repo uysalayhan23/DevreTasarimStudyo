@@ -3886,6 +3886,85 @@
  review.sc881LimitedBrakeCommand='SC881-FORWARD-REVERSE-TIMED-DC-COMMAND-V1';
  })();
 
+
+ // SC882: six-terminal star/delta packet, distinct AC power and bounded DC command.
+ (() => {
+ const l=L.byId['motor-start-speed-outline-027'],p=l?.project,r=l?.pedagogyReview;
+ if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==10||
+    !p.components.some(c=>c.typeId==='packet-star-delta')||
+    r?.independentPedagogicalAcceptance===true)return;
+ const C=(id,typeId,ref,label,x,y,ex={})=>({
+ id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ex});
+ const a=[
+ C('g','supply-3p','G1','Sanal üç faz / N / PE',45,330),
+ C('sel','selector-2','S2','Sanal çalış / 0 / fren seçimi',225,70,{position:0}),
+ C('ncBrake','contact-nc','KB','KB NC AC kilidi',420,90),
+ C('ncRun','contact-nc','K1','K1 NC fren kilidi',490,345),
+ C('coilRun','coil-contactor','K1','K1 üç faz bobini',740,90),
+ C('mainRun','main-contact','K1','K1 üç faz ayırıcı',740,510),
+ C('sw','packet-star-delta','S1','S1 Y/0/Δ paket şalter',980,520,{position:0}),
+ C('motor','motor-y-d','M1','M1 altı uçlu asenkron motor',1330,530,{motorConnection:'external'}),
+ C('timer','coil-delay-on','KT1','KT1 iki saniyelik zamanlayıcı',680,300,{delayValue:2,delayUnit:'sec'}),
+ C('timerNC','contact-nc','KT1','KT1 gecikmeli açma kontağı',670,400),
+ C('coilBrake','coil-contactor','KB','KB sanal DC bobini',990,300),
+ C('mainBrake','main-contact','KB','KB sanal DC kontak',990,760),
+ C('smps','smps','G2','G2 sanal 24 VDC kaynak',650,790)
+ ];
+ const edges=[
+ ['g','L1','sel','11'],['sel','13','ncBrake','21'],
+ ['ncBrake','22','coilRun','A1'],['coilRun','A2','g','N'],
+ ['sel','14','timer','A1'],['timer','A2','g','N'],
+ ['sel','14','ncRun','21'],['ncRun','22','timerNC','21'],
+ ['timerNC','22','coilBrake','A1'],['coilBrake','A2','g','N'],
+ ['g','L1','mainRun','1'],['g','L2','mainRun','3'],['g','L3','mainRun','5'],
+ ['mainRun','2','sw','L1'],['mainRun','4','sw','L2'],['mainRun','6','sw','L3'],
+ ['sw','U1','motor','U1'],['sw','V1','motor','V1'],['sw','W1','motor','W1'],
+ ['sw','U2','motor','U2'],['sw','V2','motor','V2'],['sw','W2','motor','W2'],
+ ['g','PE','motor','PE'],
+ ['g','L1','smps','L'],['g','N','smps','N'],
+ ['smps','P','mainBrake','1'],['mainBrake','2','motor','U1'],
+ ['smps','M','mainBrake','3'],['mainBrake','4','motor','V1']
+ ];
+ p.components=a;p.wires=edges.map(([ac,ap,bc,bp],i)=>({
+ id:'motor-start-speed-outline-027-'+(i+1),from:{c:ac,p:ap},to:{c:bc,p:bp},
+ color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+ tutorialHint:'Sanal '+ac+'/'+ap+' → '+bc+'/'+bp,
+ tutorialWhy:'Yıldız/üçgen veya sınırlı sanal DC komutu katalog bağlantısı.'}));
+ delete p.referenceOnly;
+ p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+ l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+ hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+ l.materials=a.map(c=>({id:c.id,label:c.label,
+ why:c.id==='sw'?'Altı sargı ucunu yıldız/üçgen olarak bağlayan sanal şalter.':
+ c.id==='mainRun'?'Fren komutundan önce üç fazı ayırır.':
+ c.id==='timer'?'Sanal fren komutunun en uzun süresini belirler.':
+ 'Özgün katalogdaki bağlanabilir sanal devre parçası.'}));
+ l.summary='S1 yıldız/0/üçgen konumunu değiştirir; S2 sanal çalışma ve fren komutunu birbirinden ayırır. K1 kesildiğinde KT1 iki saniyelik düşük gerilim DC kumanda aralığını açar. Motorun gerçek sargı akımı, fren momenti, rotor hızı ve güvenli duruşu simüle edilmez.';
+ l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+ heading:'Yıldız ve üçgeni gör, sanal fren komutunu ayır',
+ virtualOnly:true,canonicalGraphUnchanged:false,
+ physicalTestAccepted:false,pedagogicalAcceptance:false,fullyRich:false,
+ steps:['S2 çalışma seçiliyken S1 yıldız konumunun sargı köprülerini gözlemle.',
+ 'Önce sanal 0 durumuna dön, ardından üçgen bağlantısını karşılaştır.',
+ 'S2 ile çalışma yolunu ayır; motor AC etkinliği kalkmalıdır.',
+ 'Sanal fren konumunu seç; KT1 süresi dolana dek KB DC kontağı etkin olur.',
+ 'İki saniye sonunda KB hattı kapanır; gerçek mekanik frenleme ölçümü değildir.',
+ 'Sanal bir fazı veya fren kumanda kablosunu çıkarıp durumu karşılaştır.'],
+ observations:['Orijinal 703 katalog elemanı ve Simulation.solve ile yıldız, üçgen, süre ve negatif durumlar sınandı.',
+ 'Gerçek motor gerilim/akım seçimi, termik/fren momenti, şalter geçiş güvenliği ve Windows/3D kabulü açık.'],
+ repairModel:'SC882-STAR-DELTA-VIRTUAL-TIMED-DC-COMMAND-V1'};
+ const v=r||(l.pedagogyReview={});
+ v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+ v.titleTopologyStatus='REVIEW';
+ v.titleTopologyIssue='STAR_DELTA_DC_MOTOR_TORQUE_REAL_HARDWARE_WINDOWS_3D_PENDING';
+ v.componentIds=a.map(c=>c.typeId);v.realWiredCircuit=true;
+ v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+ v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+ v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_VIRTUAL_ELECTRICAL_PASS';
+ v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+ v.sc882BoundedBrakeRepair='SC882-STAR-DELTA-VIRTUAL-TIMED-DC-COMMAND-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
