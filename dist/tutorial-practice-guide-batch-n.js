@@ -5835,6 +5835,111 @@
   v.windowsVisualAcceptance=false;
   v.targetedNativePositiveNegative='SC999_DIVIDER_POLARITY_ORIGINAL_SIMULATION_SOLVE_703_PASS';
  })();
+
+ // Targeted V20 native applications SC1016/SC1017. No other lesson is rewritten.
+ (() => {
+  const definitions=[
+   {id:'motor-direct-power-outline-133',seq:1016,mode:'bop',
+    model:'SC1016-NATIVE-V20-CN001-BOP-V1',
+    heading:'SINAMICS V20 ile BOP panelinden sanal kontrol',
+    summary:'SINAMICS V20 Cn001 (BOP) sanal uygulaması: 230 V tek faz giriş, V20 U/V/W üç faz çıkış, yıldız bağlanmış motor ve PE hattı. V20 panelindeki RUN/STOP ve 20 Hz referansı ile özgün sürücü rampası ve motor devri gözlemlenir. Fiziksel bağlantı veya güvenlik kabulü değildir.',
+    explanation:'Sürücü panelini bir kumanda ekranı gibi düşün. Önce 20 Hz hız değerini ayarla, sonra panelden RUN ver. Motor aniden tam hıza çıkmaz; sürücü kendi rampasıyla ilerler. STOP seçince yine kontrollü biçimde yavaşlar. Burada butonlar sürücü panelinin sanal komutlarıdır.',
+    quiz:{question:'V20 BOP paneli 20 Hz hedefliyken RUN komutu verildiğinde motor hızına ne olur?',
+     options:['Sürücünün rampasıyla zaman içinde 20 Hz hedefine yaklaşır.','Bir anda mekanik olarak 50 Hz olur.','STOP otomatik RUN üretir.'],answer:0,
+     why:'Yerleşik V20 modeli frekansı P1120 ve P1121 rampalarına göre değiştirir.'},
+    steps:['Sanal V20 panelinde Cn001 ve 20 Hz MOP referansını kontrol et.',
+     'V20 nin tek faz güç ve üç faz motor terminal bağlantılarını gör.',
+     'Sürücünün sanal BOP RUN komutunu aç; hedef 20 Hz ve yükselen motor frekansını karşılaştır.',
+     'Birkaç saniye sonra motor hızının hedefe yaklaşmasını izle.',
+     'BOP STOP komutunu ver; motor hızı sıfıra iner.',
+     'Bir motor fazını veya V20 güç bağlantısını koparıp geçersiz bağlantıyı gözle.'],
+    observations:['Özgün V20.tick, Simulation.solve ve 703 katalog ile sınırlı native sanal test yapılır.',
+     '230 V fiziksel kurulum, sürücü parametreleme cihaz QA ve Windows/3D bağımsız kabul değildir.'],
+    pending:'REAL_BOP_HARDWARE_STO_WINDOWS_3D_PEDAGOGY_PENDING'},
+   {id:'motor-direct-power-outline-134',seq:1017,mode:'fixed',
+    model:'SC1017-NATIVE-V20-CN003-FIXED-SPEED-V1',
+    heading:'SINAMICS V20 Cn003 sabit frekans seçimi',
+    summary:'V20 Cn003 sabit frekans makrosuyla sanal kumanda: DI1 RUN, DI2 10 Hz, DI3 15 Hz, DI4 25 Hz. Dijital girişlerin kombinasyonu seçili sabit frekansları toplar; yerleşik V20 rampası motor devrine uygulanır. Bu gerçek üretici devre/kablolama kabulü değildir.',
+    explanation:'Üç hız tuşu olan bir fanı düşün. RUN açıkken ilk tuş 10 Hz, ikincisi 15 Hz, üçüncüsü 25 Hz seçer. İki hız tuşunu aynı anda açarsan Cn003 doğrudan toplama mantığı seçilen referansları toplar, fakat sürücünün izin verdiği üst sınıra uyar. Her değişimi sanal sürücünün rampasıyla izle.',
+    quiz:{question:'V20 Cn003 doğrudan sabit hız seçimi kullanırken DI2 ve DI3 birlikte etkinse hedef frekans kaç Hz olur?',
+     options:['25 Hz','15 Hz','10 Hz'],answer:0,
+     why:'P1001=10 Hz ve P1002=15 Hz birlikte seçildiğinde toplanır.'},
+    steps:['V20 Cn003 makrosunda DI1=RUN, DI2/3/4 sabit frekans girişlerini gör.',
+     'RUN ve birinci hız anahtarını aç: 10 Hz hedefini bekle.',
+     'Birinci hızı bırakıp ikinciyi seç: 15 Hz hedefini izle.',
+     'DI2 ve DI3 birlikte etkinse referans 25 Hz olur.',
+     'RUN kapat: motor rampayla durmalı.',
+     'DI kablosunu, motor fazını veya güç girişini koparıp olumsuz örneği karşılaştır.'],
+    observations:['Özgün V20 sürücü modeli Cn003 makrosunun DI ve P1000 sabit hız hesabı ile kullanılır.',
+     'Sanal çıkış frekansı motor torku veya üretici donanım güvenlik kabulü değildir.'],
+    pending:'REAL_DI_CONTROL_HARDWARE_STO_WINDOWS_3D_PEDAGOGY_PENDING'}
+  ];
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const common=[
+   ['ps','L','vfd','L1'],['ps','N','vfd','N'],['ps','PE','vfd','PE'],
+   ['vfd','U','m','U'],['vfd','V','m','V'],['vfd','W','m','W'],
+   ['m','U2','m','V2'],['m','V2','m','W2'],['vfd','PE2','m','PE']
+  ];
+  for(const info of definitions){
+   const l=L.byId[info.id],p=l?.project,review=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||!p.components.some(c=>c.typeId==='main-contact')||
+    review?.independentPedagogicalAcceptance===true)continue;
+   const v20=info.mode==='bop'?
+    {driveControl:'local',driveFrequency:20,driveRun:false}:
+    {driveControl:'terminals',v20:{schema:1,macro:'Cn003',params:{
+      P0700:2,P1000:3,P1016:1,'P0701':1,'P0702':15,'P0703':16,'P0704':17,
+      P1001:10,P1002:15,P1003:25,P1004:50,P1120:10,P1121:10
+     },run:false,reverse:false,reset:0,load:50,temperature:30}};
+   const parts=[
+    C('ps','supply-1p','G1','Sanal 230 V giriş, L/N/PE',70,210),
+    C('vfd','sinamics-v20-1p','V20','SINAMICS V20 · '+(info.mode==='bop'?'Cn001 BOP':'Cn003 sabit hız'),640,340,v20),
+    C('m','motor-3p','M1','V20 çıkışlı yıldız motor',1170,305)
+   ];
+   const connections=common.slice();
+   if(info.mode==='fixed'){
+    parts.push(
+     C('run','selector-no','S1','DI1 RUN izin anahtarı',210,530),
+     C('s1','selector-no','S2','DI2: 10 Hz seçimi',210,660),
+     C('s2','selector-no','S3','DI3: 15 Hz seçimi',210,790),
+     C('s3','selector-no','S4','DI4: 25 Hz seçimi',210,920)
+    );
+    connections.push(['vfd','14','vfd','12']);
+    for(const [id,pin] of [['run','8'],['s1','9'],['s2','10'],['s3','11']]){
+     connections.push(['vfd','13',id,'13'],[id,'14','vfd',pin]);
+    }
+   }
+   p.components=parts;
+   p.wires=connections.map(([a,ap,b,bp],i)=>({id:'sc'+info.seq+'-v20-'+(i+1),
+    from:{c:a,p:ap},to:{c:b,p:bp},color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+    tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+    tutorialWhy:'V20 ve motor bağlantısını katalog uçlarıyla eşleştir.'}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:info.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='ps'?'Sürücünün sanal tek faz besleme uçları.':
+    c.id==='vfd'?'Yerleşik V20 sürücü modeli frekans ve motor hızını hesaplar.':
+    c.id==='m'?'Sanal sürücünün üç faz çıkışıyla beslenen motor.':
+    'Cn003 dijital giriş komutunu seçer.'}));
+   l.summary=info.summary;l.explanation=info.explanation;l.quiz=info.quiz;
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:info.heading,virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:info.steps,observations:info.observations,repairModel:info.model};
+   const v=review||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';v.titleTopologyIssue=info.pending;
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_V20_NATIVE_SC'+info.seq+'_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v['sc'+info.seq+'NativeV20Repair']=info.model;
+  }
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
