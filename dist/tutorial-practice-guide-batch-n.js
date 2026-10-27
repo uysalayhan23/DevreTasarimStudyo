@@ -4897,6 +4897,106 @@
   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;v.sc977TimerRepair='SC977-PLC-VIRTUAL-ONESHOT-TIMER-V1';
  })();
 
+
+// SC978–980 virtual-only source repairs: timed stop, delayed start, cycling motor.
+(()=>{
+ const c=(id,typeId,ref,label,x,y,ext={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...ext});
+ const w=(a,p,b,q)=>[a,p,b,q];
+ const power=(s)=>[w(s,'L1','main','1'),w('main','2','motor','U'),w(s,'L2','main','3'),
+  w('main','4','motor','V'),w(s,'L3','main','5'),w('main','6','motor','W'),w(s,'PE','motor','PE')];
+ const supply=(id='g',x=50,y=410)=>c(id,'supply-3p','G1','Sanal üç faz / N / PE',x,y);
+ const motor=()=>c('motor','motor-3p','M1','M1 sanal üç faz motor',1410,665,{motorConnection:'star'});
+ const main=()=>c('main','main-contact','K1','K1 üç kutuplu güç',1085,665);
+ const coil=()=>c('coil','coil-contactor','K1','K1 kontaktör bobini',1085,255);
+ const stop=()=>c('stop','push-nc','S0','STOP / RESET NC',200,75);
+ const start=()=>c('start','push-no','S1','Anlık START',425,75);
+ const specs=[
+ {n:978,id:'motor-direct-power-outline-111',kind:'PLC_Q0_2S_TIMED_STOP',
+  parts:[c('g','supply-dc-plus','GDC','Sanal 24 V DC / 0 V',55,320),supply('power',55,670),
+   c('cpu','plc-0-0-documented','PLC1','Sanal 2 saniyelik Q0',715,280,
+    {plcProgram:'timed-stop-once-sc977',plcTimerMs:2000}),start(),stop(),coil(),main(),motor()],
+  lines:[w('g','P','cpu','X10:1'),w('g','M','cpu','X10:2'),w('g','M','cpu','X10:6'),
+   w('g','P','start','13'),w('start','14','cpu','X10:7'),
+   w('g','P','stop','21'),w('stop','22','cpu','X10:8'),
+   w('g','P','cpu','X12:1'),w('g','M','cpu','X12:2'),
+   w('cpu','X12:3','coil','A1'),w('coil','A2','g','M'),...power('power')],
+  heading:'Bir START, iki saniyelik motor çalışması',
+  story:'Sanal START düğmesine basınca PLC Q0 iki saniye etkin kalır. K1 kontaktörü motoru çalıştırır; süre dolunca durur. START basılı tutulsa bile tekrar başlamaz. RESET erken durdurur. Bu örnek SC977 sanal PLC zamanlayıcısını motorla birleştirir; özgün fiziksel ders şemasının kopyası değildir.',
+  steps:['START verip bırak: sanal motor etkinleşsin.','Birinci saniyede motoru gözlemle.',
+   'İki saniye bitince K1 düşer; yeni START olmadan çalışmaz.','Süre bitmeden RESET dene.',
+   'PLC Q0 veya motor fazı kopunca sonucu gözlemle.']},
+ {n:979,id:'motor-direct-power-outline-112',kind:'TON_2S_DELAYED_START',
+  parts:[supply(),stop(),start(),c('arm','coil-relay','KA1','KA1 başlatma rölesi',700,80),
+   c('hold','contact-no','KA1','KA1 mühürleme',485,210),
+   c('feed','contact-no','KA1','KA1 süre başlatma',490,460),
+   c('timer','coil-delay-on','KT1','KT1 TON 2 saniye',790,440,{delayValue:2,delayUnit:'sec'}),
+   c('ton','contact-no','KT1','KT1 gecikmeli NO',860,190),coil(),main(),motor()],
+  lines:[w('g','L1','stop','21'),w('stop','22','start','13'),w('start','14','arm','A1'),
+   w('stop','22','hold','13'),w('hold','14','arm','A1'),w('arm','A2','g','N'),
+   w('stop','22','feed','13'),w('feed','14','timer','A1'),w('timer','A2','g','N'),
+   w('stop','22','ton','13'),w('ton','14','coil','A1'),w('coil','A2','g','N'),...power('g')],
+  heading:'İki saniye bekle, sonra sanal motor çalışsın',
+  story:'START komutu KA1 rölesini mühürler ve KT1 düz zaman saymaya başlar. İki saniye boyunca motor durur; süre bittiğinde KT1 NO kapanır ve K1 motoru çalıştırır. STOP tüm sanal kumandayı sıfırlar. Bırakıldığında kendiliğinden yeniden başlama yoktur.',
+  steps:['START verip bırak; KA1 mühürlemesi sürsün.','Birinci saniyede motor çalışmamalı.',
+   'İki saniye tamamlanınca K1 ve motor etkinleşir.','STOP ile durdurup tekrar START gerekip gerekmediğini gör.',
+   'KT1 çıkışını veya bir motor fazını çıkararak sonucu incele.']},
+ {n:980,id:'motor-direct-power-outline-113',kind:'FLASH_1S_ONOFF_NO_AUTORESTART',
+  parts:[supply(),stop(),start(),c('arm','coil-relay','KA1','KA1 periyodik izin',680,80),
+   c('hold','contact-no','KA1','KA1 mühürleme',470,200),
+   c('feed','contact-no','KA1','KA1 flasher beslemesi',490,435),
+   c('pulse','coil-flasher','KT1','KT1 bir saniye açık / bir saniye kapalı',775,430,
+     {flashOn:1,flashOff:1,delayValue:1}),
+   c('out','contact-no','KT1','KT1 periyodik NO',890,200),coil(),main(),motor()],
+  lines:[w('g','L1','stop','21'),w('stop','22','start','13'),w('start','14','arm','A1'),
+   w('stop','22','hold','13'),w('hold','14','arm','A1'),w('arm','A2','g','N'),
+   w('stop','22','feed','13'),w('feed','14','pulse','A1'),w('pulse','A2','g','N'),
+   w('stop','22','out','13'),w('out','14','coil','A1'),w('coil','A2','g','N'),...power('g')],
+  heading:'Bir saniye çalış, bir saniye dur',
+  story:'Anlık START, KA1 mühürleme rölesini etkinleştirir. KT1 flasher sanal motoru bir saniye çalıştırıp bir saniye durdurur; döngü sürer. STOP izni keser ve bırakıldığında yeniden START gerektirir. Gerçek motor için bu tekrar sıklığı uygun olmayabilir; yalnız sanal eğitim davranışıdır.',
+  steps:['START verip bırak: KA1 mühürlesin.','İlk saniye motor sanal olarak çalışır.',
+   'İkinci saniyede durur; üçüncü saniyede yeniden çalışır.','STOP a basıp bırak: otomatik yeniden başlamamalı.',
+   'Flasher çıkışını veya motor fazını koparıp karşılaştır.']}
+ ];
+ for(const s of specs){
+  const l=L.byId[s.id],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     !p.components.some(c=>c.typeId==='motor-3p')||
+     !p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)continue;
+  p.components=s.parts;
+  p.wires=s.lines.map(([a,ap,b,bp],i)=>({
+   id:'sc'+s.n+'-motor-timing-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:'Sanal '+a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Zamanlama sinyalini gerçek katalog terminalinde izle.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=s.parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'||c.id==='timer'||c.id==='pulse'?'Sanal zaman davranışını oluşturur.':
+   c.id==='stop'?'Sanal kumanda durdurma deneyini gösterir.':
+   c.id==='motor'?'Sanal K1 üzerinden üç faz alır.':'Katalog terminaliyle bağlı bir kumanda parçasıdır.'}));
+  l.summary=s.story+' Fiziksel güvenlik, gerçek motor duruşu ve Windows/3D kabulü bekliyor.';
+  l.explanation=s.story;
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:s.heading,
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,
+   pedagogicalAcceptance:false,steps:s.steps,observations:[
+   'Özgün Simulation.solve ve 703 bileşenli katalogla zaman, STOP ve hat kopmaları hedefli sınandı.',
+   'Fiziksel şebekeye uygulanmaz; termik güvenlik, gerçek motor duruşu ve Windows/3D kabulü yapılmadı.'],
+   repairModel:'MOTOR-'+s.id.toUpperCase()+'-'+s.kind+'-V1'};
+  const v=r||(l.pedagogyReview={});
+  v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';
+  v.titleTopologyIssue='VIRTUAL_MOTOR_TIMING_PHYSICAL_WINDOWS_3D_AND_PEDAGOGICAL_ACCEPTANCE_PENDING';
+  v.componentIds=s.parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+  v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_TIMED_CHECKS_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.scMotorTimingRepair=s.kind;
+ }
+})();
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
