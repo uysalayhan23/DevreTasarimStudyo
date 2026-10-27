@@ -7051,6 +7051,175 @@
   v.sc966BooleanWiringRepair='SC966-TWO-BIT-LOGIC-AND-OR-NOT-V1';
  })();
 
+
+ // Targeted native source repairs for SC833, SC834, SC969, SC970.
+ // Preserve headers, installation/solar locks and all prior accepted lessons.
+ (() => {
+ const C=(id,typeId,ref,label,x,y,extra={})=>({
+   id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra
+ });
+ const wireGraph=(sc,graph)=>graph.map(([a,ap,b,bp],i)=>({
+  id:'sc'+sc+'-native-'+(i+1),
+  from:{c:a,p:ap},to:{c:b,p:bp},
+  color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+  tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+  tutorialWhy:'Sanal kumanda veya güç yolunda gerçek katalog terminali'
+ }));
+ const materialFor=c=>({
+  id:c.id,label:c.label,why:
+   c.typeId==='supply-3p'?'Sanal üç faz ve kumanda devresinin kaynağı':
+   c.typeId==='motor-3p'?'Üç fazın bağlantı ve dönüş yönü gözlenir':
+   c.typeId==='coil-contactor'?'Aynı referanslı güç ve yardımcı kontakları çalıştırır':
+   c.typeId==='main-contact'?'İlgili bobin enerjilenince motorun güç yolunu kapatır':
+   c.typeId==='contact-nc'?'Karşı yöndeki kontaktör çalışırken bu yolu keser':
+   c.typeId==='contact-no'?'START bırakılınca aynı kontaktörün mühürlemesini sürdürür':
+   c.typeId==='push-nc'?'Basıldığında kumanda yolunu keser':
+   c.typeId==='push-no'?'Basıldığında çalıştırma isteği gönderir':
+   'Katalogda tanımlı sanal devre bileşeni'
+ });
+ function put(sc,id,parts,graph,summary,explanation,quiz,heading,steps,obs,model,issue,replace=true){
+  const l=L.lessons[sc-1],p=l?.project,v=l?.pedagogyReview;
+  if(l?.id!==id||l.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+    !p.components.some(c=>c.typeId==='motor-3p')||
+    !p.components.some(c=>c.typeId==='main-contact')||
+    v?.independentPedagogicalAcceptance===true||v?.scTitleWiringRepair===model)return;
+  if(replace){p.components=parts;p.wires=wireGraph(sc,graph);delete p.referenceOnly;}
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint||'Katalog terminalini izle',
+   why:w.tutorialWhy||'Sanal kumanda ve güç yolu',color:w.color||'#43857f',
+   role:w.role||'CONTROL',size:w.size||'1.5'}));
+  l.materials=p.components.map(materialFor);
+  l.summary=summary;l.explanation=explanation;l.quiz=quiz;
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading,virtualOnly:true,canonicalGraphUnchanged:!replace,fullyRich:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,steps,
+   observations:obs,repairModel:model};
+  const review=v||(l.pedagogyReview={});
+  review.preRepairTitleTopologyIssue=review.titleTopologyIssue||null;
+  review.titleTopologyStatus='REVIEW';review.titleTopologyIssue=issue;
+  review.componentIds=p.components.map(c=>c.typeId);
+  review.realWiredCircuit=true;
+  review.nativeDynamicAcceptance=false;review.physicalAcceptance=false;
+  review.windowsVisualAcceptance=false;review.independentPedagogicalAcceptance=false;
+  review.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC'+sc+'_TARGETED_PASS';
+  review.actualCurriculumSequence=sc;review.scTitleWiringRepair=model;
+ }
+ const supply=()=>C('g','supply-3p','G1','Sanal üç faz ve kumanda kaynağı',85,390);
+ const motor=()=>C('motor','motor-3p','M1','Sanal üç faz motoru',1250,800,{motorConnection:'star'});
+ const p833=L.lessons[832]?.project;
+ put(833,'motor-direct-power-outline-071',p833?.components,p833?.wires,
+  'Sanal sürekli çalışma devresi: START K1 kontaktörünü enerjiler, K1 yardımcı NO kontağı bırakılan START yerine mühürleme sağlar, STOP motoru durdurur. Başlıkta geçen farklı çizim normları ve fiziksel güvenlik ayrıca incelenmelidir.',
+  'START a bir kez basınca K1 devreye giriyor. Parmağını çeksen de kendi yardımcı kontağı motorun çalışmasına izin veriyor. STOP ise bu yolu kesiyor. Katalogdaki kontak adlarını öğren; farklı çizim normlarını bu tek şemayla doğrulamış sayma.',
+  {question:'Sanal sürekli çalışma devresinde START bırakılınca K1 neden açık kalmaz?',
+   options:['K1 yardımcı NO kontağı bobine yeni yol oluşturur','Motorun PE bağlantısı bobini besler','STOP düğmesi otomatik sürekli kapanır'],
+   answer:0,why:'K1 mühürleme kontağı START düğmesine paraleldir.'},
+  'START, mühürleme ve STOP davranışını gör',
+  ['START a basıp motorun sanal olarak çalıştığını gör','START ı bırak: yardımcı kontak motoru açık tutar',
+   'STOP a bas: K1 ve motor durmalı','Bobin veya motor faz kablosunu koparıp sonucu karşılaştır'],
+  ['Özgün 703 katalog ve Simulation.solve ile START, mühürleme, STOP ve kopuk bağlantı doğrulanır.',
+   'Farklı IEC/DIN/ANSI şema varyantları, donanım, Windows/3D ve bağımsız kabul bekler.'],
+  'SC833-NATIVE-START-HOLD-STOP-PEDAGOGY-V1',
+  'VARIOUS_DRAWING_STANDARDS_PHYSICAL_WINDOWS_3D_PEDAGOGY_PENDING',false);
+ const stationParts=()=>[
+  supply(),
+  C('stop1','push-nc','S0','1. noktadan STOP',305,90),
+  C('stop2','push-nc','S2','2. noktadan STOP',470,115),
+  C('start1','push-no','S1','1. noktadan START',650,85),
+  C('start2','push-no','S3','2. noktadan START',650,265),
+  C('hold','contact-no','K1','K1 mühürleme NO',650,445),
+  C('coil','coil-contactor','K1','K1 kumanda bobini',930,225),
+  C('main','main-contact','K1','K1 güç kontakları',1040,800),
+  motor()
+ ];
+ const stationGraph=[
+  ['g','L1','stop1','21'],['stop1','22','stop2','21'],
+  ['stop2','22','start1','13'],['stop2','22','start2','13'],
+  ['stop2','22','hold','13'],['start1','14','coil','A1'],
+  ['start2','14','coil','A1'],['hold','14','coil','A1'],
+  ['coil','A2','g','N'],
+  ['g','L1','main','1'],['main','2','motor','U'],
+  ['g','L2','main','3'],['main','4','motor','V'],
+  ['g','L3','main','5'],['main','6','motor','W'],
+  ['g','PE','motor','PE']
+ ];
+ put(834,'motor-direct-power-outline-072',stationParts(),stationGraph,
+  'İki START NO ve iki STOP NC butonuyla aynı K1 kontaktörünün sanal kumandası: START butonları paralel, STOP butonları seri, K1 mühürleme kontağı START lara paralel. Bu iki istasyonlu örnek bütün buton çeşitlerini kapsamaz.',
+  'İki ayrı yerden aynı motoru çalıştırmak istediğini düşün. Hangi START a bassan da K1 devreye girer. Bırakınca yardımcı kontak çalışmayı sürdürür. Her iki STOP tan biri bu yolu kesip motoru durdurur.',
+  {question:'İki merkezli sanal devrede STOP butonları neden seri bağlanır?',
+   options:['Hangisine basılırsa basılsın motoru durdurmak için','Motor hızını artırmak için','Kumanda bobininin gerilimini iki katına çıkarmak için'],
+   answer:0,why:'Seri NC zincirindeki herhangi bir açık kontak tüm bobin yolunu keser.'},
+  'İki START, iki STOP ve mühürleme',
+  ['Birinci START ile motoru çalıştır, düğmeyi bırak','STOP1 ile durdur',
+   'İkinci START ile çalıştır, düğmeyi bırak','STOP2 ile durdur',
+   'START veya güç fazını kopar ve gözlemle'],
+  ['İki seri NC, iki paralel NO ve gerçek K1 kontakları özgün simülatörle test edilir.',
+   'STOP bırakılırken START basılı tutulursa tekrar çalışma ihtimali vardır; fiziksel emniyet kabulü değildir.'],
+  'SC834-NATIVE-TWO-STATION-BUTTONS-V1',
+  'OTHER_BUTTON_TYPES_PHYSICAL_WINDOWS_3D_PEDAGOGY_PENDING');
+ put(969,'motor-direct-power-outline-109',stationParts(),stationGraph,
+  'Üç fazlı asenkron motoru iki istasyondan sanal kontrol: iki START paralel, iki STOP seri, K1 yardımcı NO mühürleme, üç faz K1 güç kontağı üzerinden motora bağlanır.',
+  'Makinenin iki yanında birer kontrol noktası düşün. İki START tan biri motoru başlatır. Hangisini bırakırsan bırak mühürleme devreyi tutar; iki STOP düğmesinden herhangi biri motoru durdurur.',
+  {question:'İkinci istasyondaki STOP basılırsa mühürlenmiş K1 için ne olur?',
+   options:['Bobin enerjisi kesilir ve motor durur','Motor devir yönü değişir','İlk START devre dışı kalmaz'],
+   answer:0,why:'İki STOP kontağı aynı seri kumanda yolundadır.'},
+  'İki noktadan tek motor kumandası',
+  ['İlk START ile K1 i çalıştır; bırakınca mühürlemeyi incele',
+   'İkinci STOP ile motoru durdur','İkinci START ile çalıştır; ilk STOP ile durdur',
+   'Kumanda bobini, yardımcı kontak ve üç fazdan birini ayrı ayrı kopar'],
+  ['Özgün Simulation.solve ve 703 katalog üzerinden her iki istasyon sınanır.',
+   'STOP bırakılırken START basılı tutulursa kendiliğinden çalışma riski; üretici güvenlik donanımı ve Windows/3D bekliyor.'],
+  'SC969-NATIVE-MULTISTATION-MOTOR-V1',
+  'ACTUAL_MULTISTATION_MACHINE_SAFETY_WINDOWS_3D_PEDAGOGY_PENDING');
+ const reverseParts=[
+  supply(),C('stop','push-nc','S0','Ortak STOP',285,90),
+  C('forward','push-no','S1','İleri START',475,90),
+  C('reverse','push-no','S2','Geri START',470,330),
+  C('holdF','contact-no','K1','İleri mühürleme NO',665,90),
+  C('holdR','contact-no','K2','Geri mühürleme NO',670,330),
+  C('lockR','contact-nc','K2','Geri çalışırken ileri engeli NC',845,170),
+  C('lockF','contact-nc','K1','İleri çalışırken geri engeli NC',845,405),
+  C('coilF','coil-contactor','K1','İleri kontaktörü K1',1080,175),
+  C('coilR','coil-contactor','K2','Geri kontaktörü K2',1080,410),
+  C('mainF','main-contact','K1','İleri üç faz kontaktörü',910,725),
+  C('mainR','main-contact','K2','Geri fazları çaprazlar',910,1045),
+  motor()
+ ];
+ const reverseGraph=[
+  ['g','L1','stop','21'],
+  ['stop','22','forward','13'],['stop','22','holdF','13'],
+  ['stop','22','reverse','13'],['stop','22','holdR','13'],
+  ['forward','14','lockR','21'],['holdF','14','lockR','21'],
+  ['lockR','22','coilF','A1'],['coilF','A2','g','N'],
+  ['reverse','14','lockF','21'],['holdR','14','lockF','21'],
+  ['lockF','22','coilR','A1'],['coilR','A2','g','N'],
+  ['g','L1','mainF','1'],['mainF','2','motor','U'],
+  ['g','L2','mainF','3'],['mainF','4','motor','V'],
+  ['g','L3','mainF','5'],['mainF','6','motor','W'],
+  ['g','L3','mainR','1'],['mainR','2','motor','U'],
+  ['g','L2','mainR','3'],['mainR','4','motor','V'],
+  ['g','L1','mainR','5'],['mainR','6','motor','W'],
+  ['g','PE','motor','PE']
+ ];
+ put(970,'motor-direct-power-outline-110',reverseParts,reverseGraph,
+  'Sanal motor yön değiştirme: K1 ileri, K2 iki fazı çaprazlayarak geri besler. K2 NC kontağı ileri bobini, K1 NC kontağı geri bobini kilitler. STOP mühürlemeyi keser. Fiziksel mekanik kilit, aşırı akım koruması ve emniyet doğrulanmadı.',
+  'Önce ileri START a bas: K1 kapanır, motor ileri döner. Geri START a bassan bile K1 in NC kilidi K2 nin çalışmasını engeller. STOP ile durdur; ardından geri START yeni bir yön seçer. Geri devrede iki fazın yerini değiştirmek sanal dönüş yönünü tersine çevirir.',
+  {question:'K1 ileri kontaktörü çalışırken geri START a basılırsa hangi devre engeller?',
+   options:['K1 referanslı NC elektriksel kilit kontağı','Motorun PE bağlantısı','Şebeke N iletkeninin yönü'],
+   answer:0,why:'K1 enerjiliyken K1 NC kontağı K2 bobin yolunu açar.'},
+  'İleri-geri kontaktörleri elektriksel olarak kilitle',
+  ['İleri START ile K1 in ve ileri motor yönünün etkinliğini gör',
+   'İleri mühürleme sürerken geri START a bas, K2 nin kilitli kaldığını gör',
+   'STOP a bas; yön değiştirmek için önceki yönün durmasını bekle',
+   'Geri START ile K2 nin ve geri dönüş yönünün etkinliğini izle',
+   'Bobin, NC kilit veya güç fazı bağlantısını kopar; sanal güvenlik sınırını gözlemle'],
+  ['K1/K2 çapraz NC elektriksel kilitleme ve iki faz yer değiştirmesi özgün simülatörle hedefli sınanır.',
+   'Bu sanal elektriksel kilit mekanik kilit, termik ve kısa devre koruması veya sertifikalı fiziksel güvenlik değildir.',
+   'STOP bırakılırken START basılı tutulursa otomatik yeniden çalışma görülebilir; Windows/3D ve bağımsız kabul bekler.'],
+  'SC970-NATIVE-CROSS-INTERLOCKED-REVERSE-V1',
+  'MECHANICAL_INTERLOCK_PROTECTION_WINDOWS_3D_PEDAGOGY_PENDING');
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
