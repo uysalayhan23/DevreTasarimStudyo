@@ -24,7 +24,7 @@
    if(r.coil.ref[0]==='Q'&&Number(r.coil.ref.slice(1))>outputs)return {ok:false,error:'PLC çıkış sınırı aşıldı: '+r.coil.ref};
    if(['TON','TOF','TP'].includes(r.coil.type)&&(!/^T/.test(r.coil.ref)||!Number.isInteger(r.coil.presetMs)||r.coil.presetMs<1||r.coil.presetMs>600000))return {ok:false,error:'Zamanlayıcı adresi veya süresi geçersiz.'};
    if(['CTU','CTD'].includes(r.coil.type)&&(!/^C/.test(r.coil.ref)||!Number.isInteger(r.coil.preset)||r.coil.preset<1||r.coil.preset>65535))return {ok:false,error:'Sayaç adresi veya hedefi geçersiz.'};
-   if(['OUT','SET','RESET'].includes(r.coil.type)&&!/[QMT C]/.test(r.coil.ref[0]))return {ok:false,error:'Geçersiz kontrol.'};
+   if(['OUT','SET'].includes(r.coil.type)&&!/^[QM]/.test(r.coil.ref))return {ok:false,error:'OUT/SET yalnız Q veya M adresine yazabilir.'};
   }
   return {ok:true,error:null};
  }
@@ -62,8 +62,9 @@
     }
     bits[ref]=next;written.add(ref);
    }else if(coil.type==='CTU'||coil.type==='CTD'){
-    const s=states[ref]||(states[ref]={count:0});
-    if(!Number.isInteger(s.count))s.count=0;
+    const initial=coil.type==='CTD'?coil.preset:0;
+    const s=states[ref]||(states[ref]={count:initial});
+    if(!Number.isInteger(s.count))s.count=initial;
     if(active&&!s.prev&&s.tick!==now)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
