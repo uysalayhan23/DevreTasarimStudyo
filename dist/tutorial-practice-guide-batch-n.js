@@ -6240,6 +6240,147 @@
   v.sc1078ReverseYDRepair='SC1078-NATIVE-REV-STAR-DELTA-PACKET-V1';
  })();
 
+
+ // SC1166, SC1183–1185, SC1193, SC1195 — real 703-catalog sensor topologies.
+ (() => {
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const createGraph=(edges,tag)=>edges.map(([a,ap,b,bp],i)=>({
+   id:tag+'-'+(i+1),from:{c:a,p:ap},to:{c:b,p:bp},
+   color:bp==='M'?'#111827':'#43857f',role:bp==='M'?'0V':'CONTROL',size:'1.5',points:[],
+   tutorialHint:a+'/'+ap+' → '+b+'/'+bp,
+   tutorialWhy:'Gerçek katalog terminalinden eğitim amaçlı sanal bağlantı.'}));
+  const probes=[
+   {seq:1166,id:'sensor-analog-apps-outline-089',type:'ultrasonic-switch',label:'Ultrasonik algılayıcı · 30–400 mm',ref:'B1',
+    target:'wood',range:400,distance:50,load:'buzzer',loadLabel:'Buzzer · hedef algılama sesi',title:'Ultrasonik sensör ve buzzer',
+    summary:'Sanal ultrasonik sensör, 30–400 mm algılama sınırları içindeki uygun hedefte buzzeri çalıştırır. Kaynak beslemesi veya sensör çıkış kablosu koparsa buzzer susar. Bu gerçek ölçüm kalibrasyonu ya da saha alarm güvenliği değildir.',
+    explanation:'Bir cisim sensörün önüne yaklaşsın. Yakın ama ölçülebilir aralıktaysa sensör çıkışı çalışır, buzzer haber verir. Çok yakın (ölü bölge) veya çok uzaktaysa ses çıkmaz. Kabloyu ayırırsan buzzer da susar.',
+    quiz:'50 mm uzaktaki uygun hedef algılanırsa ne olur?',opts:['Buzzer çalışır','Sensör fiziksel hızı artırır','Kaynak kapanır'],answer:0},
+   {seq:1183,id:'sensor-analog-apps-outline-103',type:'photoeye',label:'Optik fotoelektrik sensör',ref:'B1',
+    target:'plastic',range:40,distance:12,load:'lamp-green',loadLabel:'Algılandı · yeşil gösterge',title:'Sensörlerde dönüşüm: optik etki → elektrik çıkışı',
+    summary:'Fotoelektrik sensörün cisim algılama durumu 24 V sanal PNP çıkışa aktarılır; gösterge ışığı değişir. Bu yalnız optik algılamadan dijital sinyal oluşumunu gösterir, gerçek enerji üretimi hesabı değildir.',
+    explanation:'Cisim ışık yolunda algılandığında sensörün elektrik çıkışı bir işaret verir. Bu işaret de göstergeyi yakar. Cisim uzaklaşınca gösterge söner. Burada ışığı elektriğe üreten bir güç kaynağı değil, algılama üzerinden kontrol eden anahtar var.',
+    quiz:'Cisim sensör alanından çıkarıldığında gösterge ne yapar?',opts:['Söner','Sürekli yanar','Motor hızlanır'],answer:0},
+   {seq:1184,id:'sensor-analog-apps-outline-104',type:'sensor-hall',label:'Hall etkili manyetik algılayıcı (sanal)',ref:'B1',
+    target:'magnet',range:12,distance:4,load:'lamp-green',loadLabel:'Mıknatıs algılandı',title:'Otomotivde kullanılan sensör türüne örnek: Hall',
+    summary:'Hall algılayıcının mıknatıs algılama durumu ve PNP çıkışı sanal 24 V göstergeyle incelenir. Bu bir otomotiv ECU, araç kablolaması, motor konum algısı veya 12 V otomotiv donanımı modeli değildir.',
+    explanation:'Bazı araçlarda mıknatıs değişimini algılayan Hall sensörleri bulunur. Buradaki sanal örnekte mıknatıs yaklaştığında gösterge yanar, uzaklaşınca söner. Araç elektroniğinin tamamını değil yalnız algılama mantığını görürsün.',
+    quiz:'Bu sanal Hall örneğinde hangi hedef algılanır?',opts:['Mıknatıs','Plastik parça','Ses'],answer:0},
+   {seq:1193,id:'sensor-analog-apps-outline-112',type:'sensor-hall',label:'Hall algılayıcı · deneysel PNP bağlantı',ref:'B1',
+    target:'magnet',range:12,distance:5,load:'lamp-green',loadLabel:'Hall çıkışı · gösterge',title:'Hall algılayıcı çıkışının sanal deneyi',
+    summary:'Katalog Hall algılayıcısı, 24 V eğitim beslemesi ve göstergeyle gerçek terminal bazında simüle edilir. Sensör imalatı, yarı iletken Hall gerilimi, manyetik alan kalibrasyonu veya fiziksel devre kabulü değildir.',
+    explanation:'Önce Hall sensörünün üç ucunu tanı: besleme, ortak uç ve sinyal. Mıknatıs yaklaştığında sinyal göstergesinin yandığını, uzaklaşınca söndüğünü izle. Burada sensörü üretmiyoruz; hazır algılayıcının çıkış mantığını öğreniyoruz.',
+    quiz:'Sanal Hall sensörü beslemesi koparsa gösterge ne yapar?',opts:['Söner','Yanıp sönmeye devam eder','Şebeke gerilimi üretir'],answer:0},
+   {seq:1195,id:'sensor-analog-apps-outline-113',type:'sensor-retroreflective',label:'Reflektörlü optik sensör',ref:'B1',
+    target:'reflector',range:40,distance:15,load:'lamp-green',loadLabel:'Optik hedef algılandı',title:'Optik sensörün sanal algılama deneyi',
+    summary:'Reflektörlü optik sensörün PNP çıkışı, hedef varlığı, algılama mesafesi, 24 V besleme ve yük dönüşüyle test edilir. Gerçek ışık şiddeti, optik modül imalatı ve sertifikalı algılama kapsam dışıdır.',
+    explanation:'Sensörün karşısına reflektörü getirip çıkar. Uygun mesafedeyken gösterge yanar; reflektör uzaklaşınca söner. Sinyal kablosunu ayırmak da göstergeyi kapatır. Böylece algılama ile bağlantı hatasını ayırt edersin.',
+    quiz:'Reflektör algılama sınırının dışına çıkarsa ne olur?',opts:['Gösterge söner','Kaynak gerilimi artar','Sensör otomatik imal olur'],answer:0}
+  ];
+  for(const k of probes){
+   const l=L.byId[k.id],p=l?.project,r=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+      p.components[1]?.typeId!=='proximity'||r?.independentPedagogicalAcceptance===true)continue;
+   const bp=k.load==='buzzer'?'1':'X1',bm=k.load==='buzzer'?'2':'X2';
+   const parts=[
+    C('g','supply-dc-plus','G1','Eğitim 24 V DC',65,310),
+    C('s',k.type,k.ref,k.label,420,255,
+     {sensing:{target:k.target,range:k.range,distance:k.distance,offset:0}}),
+    C('h',k.load,'H1',k.loadLabel,880,270)
+   ];
+   p.components=parts;
+   p.wires=createGraph([
+    ['g','P','s','BN'],['s','BU','g','M'],['s','BK','h',bp],['h',bm,'g','M']
+   ],'sc'+k.seq+'-sensor');
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},hint:w.tutorialHint,
+    why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='s'?'Katalogdaki algılama türü ve BN/BU/BK terminalleri.':
+    c.id==='h'?'PNP çıkışı etkinse gösterir.':'Sanal sensör beslemesi.'}));
+   l.summary=k.summary;l.explanation=k.explanation;
+   l.quiz={question:k.quiz,options:k.opts,answer:k.answer,why:k.explanation};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:k.title,
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['Sanal 24 V ve sensörün BN, BU, BK terminallerini bağla.',
+     'Yükün girişini BK ye, dönüşünü 0 V a bağla.',
+     'Hedefi algılama alanına getir; gösterge veya buzzer durumunu izle.',
+     'Hedefi algılama alanından uzaklaştır; çıkışın söndüğünü doğrula.',
+     'Sinyal kablosunu veya beslemeyi koparıp sonucu karşılaştır.'],
+    observations:['Özgün Simulation.solve ve 703 katalog terminalinde hedef, mesafe ve negatif kablo koşulları doğrulanır.',
+     'Bu sadece dar bir sanal eğitim alt örneğidir; gerçek sensör yapımı, saha/Windows/3D ve bağımsız kabul açık.'],
+    repairModel:'SC'+k.seq+'-NATIVE-CATALOG-SENSOR-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='REAL_SENSOR_HARDWARE_CONSTRUCTION_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC'+k.seq+'_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v['sc'+k.seq+'SensorNativeRepair']='SC'+k.seq+'-NATIVE-CATALOG-SENSOR-V1';
+  }
+  // SC1185 — NTC/PTC real passive thermal behavior in two 24 V divider branches.
+  (() => {
+   const l=L.byId['sensor-analog-apps-outline-105'],p=l?.project,r=l?.pedagogyReview;
+   if(l?.kind!=='wiring'||p?.components?.length!==3||p?.wires?.length!==4||
+      p.components[1]?.typeId!=='proximity'||r?.independentPedagogicalAcceptance===true)return;
+   const parts=[
+    C('g','supply-dc-plus','G1','Sanal 24 V DC',55,330),
+    C('rN','resistor','R1','NTC ölçümü için 10 kΩ seri direnç',320,125,{resistance:10000}),
+    C('ntc','sensor-ntc','B1','NTC termistör · 25 °C',570,125,{temperature:25}),
+    C('vN','meter-voltmeter','V1','NTC üzerindeki gerilim',755,125),
+    C('rP','resistor','R2','PTC ölçümü için 10 kΩ seri direnç',320,510,{resistance:10000}),
+    C('ptc','sensor-ptc','B2','PTC termistör · 25 °C',570,510,{temperature:25}),
+    C('vP','meter-voltmeter','V2','PTC üzerindeki gerilim',755,510)
+   ];
+   const edges=[
+    ['g','P','rN','1'],['rN','2','ntc','1'],['ntc','2','g','M'],
+    ['vN','1','ntc','1'],['vN','2','ntc','2'],
+    ['g','P','rP','1'],['rP','2','ptc','1'],['ptc','2','g','M'],
+    ['vP','1','ptc','1'],['vP','2','ptc','2']
+   ];
+   p.components=parts;p.wires=createGraph(edges,'sc1185-temp');
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+    c.id==='ntc'?'Isındıkça direnci düşen sanal NTC.':
+    c.id==='ptc'?'Isındıkça direnci artan sanal PTC.':
+    c.id==='rN'||c.id==='rP'?'Termistör gerilimini karşılaştırmak için seri direnç.':
+    c.id==='vN'||c.id==='vP'?'Termistör uçlarında paralel ölçüm.':
+    'Her iki pasif devre koluna DC eğitim kaynağı.'}));
+   l.summary='Gerçek katalog NTC ve PTC sensörleri, iki 10 kΩ seri direnç ve iki paralel voltmetreyle sanal 24 V bölücülerde karşılaştırılır. Isındıkça NTC gerilimi azalır, PTC gerilimi artar. Isıl atalet, ölçüm toleransı ve üretici kalibrasyonu modellenmez.';
+   l.explanation='İki sıcaklık sensörü düşün. NTC ısındıkça direncini azaltır; PTC ise artırır. İkisini ayrı ayrı aynı seri dirençle bağla. Voltmetrelerde NTC geriliminin düştüğünü, PTC geriliminin yükseldiğini gör. Böylece hangi amaç için hangi sensörü seçebileceğini düşünmeye başlarsın.';
+   l.quiz={question:'25 °C den 60 °C ye ısıtılan bu sanal NTC bölücüsünde NTC üzerindeki gerilim nasıl değişir?',
+    options:['Azalır','Artar','Daima sabit 24 V kalır'],answer:0,
+    why:'NTC direnci azalınca seri bölücüdeki NTC gerilim payı da azalır.'};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+    heading:'NTC ve PTC sıcaklığı farklı anlatır',virtualOnly:true,
+    canonicalGraphUnchanged:false,fullyRich:false,physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:['NTC ve PTC için ayrı 10 kΩ seri bölücü kur; her termistörün uçlarına voltmetre bağla.',
+     'İki sensörü 25 °C de karşılaştır; NTC yaklaşık 12 V, PTC yaklaşık 2,18 V.',
+     'İki sensörü 60 °C yap; NTC gerilimi azalırken PTC yükselir.',
+     'Her bir sensörün dönüş kablosunu ayırarak bağlıyken ve kopukken farkı gör.',
+     'Voltmetre probunu ayır: kopuk prob ölçüm değildir.'],
+    observations:['Özgün Simulation.solve ve 703 katalog ile gerçek NTC/PTC bağıntıları üzerinden sıcaklık/gerilim doğrulanır.',
+     'Fiziksel ölçüm, kalibrasyon, Windows/3D ve bağımsız pedagojik kabul açık.'],
+    repairModel:'SC1185-NATIVE-NTC-PTC-VOLTAGE-DIVIDERS-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;v.titleTopologyStatus='REVIEW';
+   v.titleTopologyIssue='THERMAL_CALIBRATION_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+   v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;v.windowsVisualAcceptance=false;
+   v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC1185_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v.sc1185ThermalNativeRepair='SC1185-NATIVE-NTC-PTC-VOLTAGE-DIVIDERS-V1';
+  })();
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);
