@@ -6886,6 +6886,171 @@
  }
  })();
 
+
+ // Targeted wiring-vs-quiz repairs: reuse canonical native-tested source graphs,
+ // never modify the original donors or promote Windows/3D/physical acceptance.
+ (() => {
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const specs=[
+   {n:379,id:'motor-direct-power-outline-019',donor:836,slug:'relay-hold',
+    heading:'K1 yardımcı kontağı ile mühürleme',
+    summary:'START K1 bobinini çeker; aynı K1 in NO yardımcı kontağı paralel tutulduğu için buton bırakılınca sanal motor çalışır. STOP açılınca K1 bırakır. Bu, röle mühürleme prensibinin kontaktörlü sanal eğitim örneğidir, fiziksel koruma tasarımı değildir.',
+    explanation:'START a bir kez basıp bırak. K1 bobini çekince yanındaki yardımcı NO kontak kapanır; düğmeyi bıraksan da enerjinin yolu sürer. STOP a basınca bu yol kesilir, hem bobin hem motor durur. Yeniden hareket için yeni START gerekir.',
+    question:'K1 mühürleme kontağı sağlam ve START bırakılmışken motor niçin çalışır?',
+    answers:['K1 in kendi NO yardımcı kontağı akım yolunu tamamlar.','STOP kontağı açık kalır.','Motor fazı otomatik artar.'],
+    reason:'START sadece ilk çekmeyi sağlar; tutma yolu K1 yardımcı NO kontağıdır.',
+    actions:['START ile motoru çalıştırıp düğmeyi bırak: K1 mühürlü kalır.','STOP a bas: K1 ve motor durur.','Mühürleme NO ya da bobin dönüş kablosunu koparıp karşılaştır.']},
+   {n:380,id:'motor-direct-power-outline-020',donor:840,slug:'relay-direction',
+    heading:'Elektriksel kilitli iki yön seçimi',
+    summary:'Sanal K1 ileri ve K2 geri kontaktörleri iki fazın sırasını değiştirir. Karşılıklı NC yardımcı röle kontakları eşzamanlı çekmeyi engeller. S2 yön seçimi 0/1/2, START ve STOP ile sınanır. Bu gerçek mekanik kilit veya saha emniyet tasarımı değildir.',
+    explanation:'Bir motorun yönünü değiştirmek için fazların ikisinin sırasını değiştirmek gerekir. Burada K1 birinci, K2 ters faz sırasını kuruyor. Aradaki NC yardımcı kontaklar iki kontaktörün birlikte çekmesini önler. STOP ile sıfırla, sonra diğer yönü başlat.',
+    question:'Sanal ileri/geri devrede K1 çalışırken K2 niçin çekmez?',
+    answers:['K1 in NC yardımcı kontağı K2 yolunu keser.','K2 nin hızı sıfırlanır.','PE farklı bir faz sağlar.'],
+    reason:'Elektriksel kilitleme iki karşıt güç yolunun aynı anda kapanmasını engeller.',
+    actions:['S2=1 seçip START ver, ileri K1 i izle.','STOP ile bırak; S2=2 seçip START ver, ters K2 yi izle.','Karşı kilidi veya faz yolunu koparıp sonucu karşılaştır.']},
+   {n:727,id:'motor-direct-power-outline-040',donor:848,slug:'relay-assisted-reversal',
+    heading:'KA1/KA2 röleleri ile yön değiştirme',
+    summary:'Sanal KA1 ve KA2 yardımcı yön röleleri ayrı K1/K2 motor kontaktörlerini etkinleştirir. Karşılıklı NC kilit ve farklı faz sıraları doğrulanabilir. Elektriksel röle örneğidir; mekanik interlock, termik koruma ve fiziksel güvenlik ayrı REVIEW.',
+    explanation:'Bu sefer seçimi önce KA1 ya da KA2 rölesi alıyor. Röle kendi yardımcı kontağıyla seçimi tutuyor; sonra ilgili motor kontaktörüne izin veriyor. Tek yönden diğerine geçerken STOP ile devreyi bıraktırıp yeniden başlat.',
+    question:'KA2 geri yön rölesi çektiğinde hangi güç kontaktörü seçilir?',
+    answers:['K2 geri kontaktörü','K1 ileri kontaktörü','İkisi aynı anda'],
+    reason:'KA2 geri yön kolu, karşılıklı kilit açıkken K2 yi etkinleştirir.',
+    actions:['S2=1 iken START ile KA1/K1 ve ileri hareketi gözle.','STOP, ardından S2=2 ve START ile KA2/K2 geri yönü gözle.','Röle ve motor kontaktörü izin yolu kopunca motorun durduğunu doğrula.']},
+   {n:964,id:'motor-direct-power-outline-106',donor:838,slug:'two-station-buttons',
+    heading:'İki istasyondan START / STOP',
+    summary:'Buton uygulamaları için iki farklı START, seri bağlı iki STOP ve K1 mühürleme yolu bulunan sanal motor kumandası. Her START motoru başlatabilir; herhangi bir STOP durdurur. Bu bütün buton çeşitlerinin veya gerçek saha güvenliğinin modeli değildir.',
+    explanation:'İki farklı noktaya START koyduğunu düşün. Hangi taraftan basarsan bas K1 çekiyor ve mühürleme sayesinde çalışmaya devam ediyor. Ancak iki ayrı STOP seri: birine basılınca tutma yolu da kesiliyor.',
+    question:'Motor mühürlü çalışırken ikinci istasyondaki STOP a basılırsa ne olur?',
+    answers:['K1 bırakır ve motor durur.','Motor yeniden başlar.','Yalnız ilk istasyon etkilenir.'],
+    reason:'STOP butonları seri olduğundan herhangi biri devreyi keser.',
+    actions:['İlk START tan başlatıp bırak; motor mühürlü çalışsın.','STOP ile durdur; ikinci START tan yeniden çalıştır.','İkinci STOP veya buton kablosunu ayırıp davranışı karşılaştır.']},
+   {n:965,id:'motor-direct-power-outline-107',donor:837,slug:'jog-vs-continuous',
+    heading:'Kesik çalıştırma ve mühürlemeli çalışma',
+    summary:'Buton uygulaması için kesik (jog) ve sürekli çalışma seçicisi ile K1 motor kumandası kuruldu. S2 mühürleme izni kapalıysa START bırakıldığında motor durur; açıkken kendi yardımcı kontağı üzerinden tutar. Bu sınırlı sanal buton örneğidir.',
+    explanation:'Kesik çalışmada START a bastığın sürece motor çalışır, bıraktığında durur. Sürekli çalışmayı seçince aynı START kısa süre basılsa da K1 yardımcı kontağı devreyi tutar. STOP her ikisinde de motoru durdurur.',
+    question:'Kesik (jog) konumunda START bırakıldığında ne olması beklenir?',
+    answers:['Motor durur.','Motor mührünü otomatik korur.','Ters yönde döner.'],
+    reason:'Kesik çalışmada yardımcı mühürleme kolu seçilmediği için bobin bırakır.',
+    actions:['S2 kapalıyken START a basıp bırak; kesik çalışmayı izle.','S2 mühürleme izni açıkken START ver ve bırak.','STOP ve yardımcı kontak kopmasıyla sonucun değişimini gözle.']},
+   {n:968,id:'motor-start-speed-outline-034',donor:836,slug:'direct-on-line',
+    heading:'Kontaktör ile doğrudan yol verme',
+    summary:'Yanlış yıldız-üçgen paket şalter şablonu yerine doğrudan yol vermeye uygun K1 kontaktör, K1 mühürleme, üç faz motor ve STOP/START sanal güç-kumanda yolu kullanılır. Gerçek ilk kalkış akımı, termik aşırı yük ve fiziksel koruma kanıtı yoktur.',
+    explanation:'Bu derste yıldız-üçgen geçişi yok. START a bastığında K1 kontaktörü çekip üç fazı motor uçlarına veriyor. Yardımcı mühürleme kontağı kısa START basışından sonra çalışmayı tutuyor; STOP ise motoru bırakıyor.',
+    question:'Bu sanal devrede motora doğrudan yol veren eleman hangisidir?',
+    answers:['K1 ana güç kontakları','Yıldız-üçgen paket şalter','Sadece PE bağlantısı'],
+    reason:'K1 ana kontakları kapandığında üç faz doğrudan motor yoluna bağlanır.',
+    actions:['START ile K1 kontaktörünü çek, butonu bırakınca mühürlemeyi izle.','STOP ile motorun ayrıldığını doğrula.','Güç fazını veya tutma kolunu ayırarak farkı gör.']}
+  ];
+  for(const s of specs){
+   const l=L.byId[s.id],source=L.lessons[s.donor-1],
+    p=l?.project,r=l?.pedagogyReview,d=source?.project;
+   if(!l||l.kind!=='wiring'||p?.tutorialLesson?.phase!=='quiz'||
+      p?.components?.length!==(s.n===968?3:7)||
+      p?.wires?.length!==(s.n===968?10:13)||
+      !p.components.some(c=>c.typeId===(s.n===968?'packet-star-delta':'main-contact'))||
+      source?.kind!=='wiring'||source?.pedagogyReview?.titleTopologyStatus!=='REVIEW'||
+      !source?.pedagogyReview?.targetedNativePositiveNegative?.includes('PASS')||
+      r?.independentPedagogicalAcceptance===true)continue;
+   p.components=clone(d.components);
+   p.wires=d.wires.map((w,i)=>({...clone(w),id:'sc'+s.n+'-native-'+(i+1)}));
+   delete p.referenceOnly;
+   p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+   l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+    hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+   l.materials=p.components.map(c=>({id:c.id,label:c.label,
+    why:c.typeId==='push-nc'?'Basıldığında kumanda devresini durdurur.':
+     c.typeId==='contact-nc'?'Karşıt röle veya kontaktörün çekmesini engeller.':
+     c.typeId==='contact-no'?'Çekmiş rölenin mühürleme ya da izin kolunu gösterir.':
+     c.typeId==='main-contact'?'K1/K2 güç yolundaki gerçek katalog kontakları.':
+     c.typeId==='motor-3p'?'Sanal üç faz motor ve faz sırası.':
+     'Devredeki gerçek katalog bağlantısını temsil eder.'}));
+   l.summary=s.summary;l.explanation=s.explanation;
+   l.quiz={question:s.question,options:s.answers,answer:0,why:s.reason};
+   l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',heading:s.heading,
+    virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+    physicalTestAccepted:false,pedagogicalAcceptance:false,
+    steps:s.actions,
+    observations:['Kaynak grafiği katalogdaki gerçek terminal kimlikleriyle ve özgün Simulation.solve üzerinden hedefli pozitif-negatif testlerden geçirildi.',
+     'Mekanik interlock, üretici uygulaması, güç kesme güvenliği, termik koruma, Windows/3D ve bağımsız pedagojik kabul açık kalır.'],
+    repairModel:'SC'+s.n.toString()+'-TARGETED-CATALOG-MOTOR-'+s.slug.toUpperCase()+'-V1'};
+   const v=r||(l.pedagogyReview={});
+   v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+   v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='HARDWARE_PROTECTION_WINDOWS_3D_INDEPENDENT_PEDAGOGY_PENDING';
+   v.componentIds=p.components.map(c=>c.typeId);v.realWiredCircuit=true;
+   v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+   v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+   v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC'+s.n+'_TARGETED_PASS';
+   v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+   v['sc'+s.n+'WiringRepair']=l.practiceGuide.repairModel;
+  }
+ })();
+
+ // SC966: replace false motor circuit with 2-input digital AND/OR/NOT PLC exercise.
+ (() => {
+  const l=L.byId['motor-direct-power-outline-108'],p=l?.project,r=l?.pedagogyReview;
+  if(l?.kind!=='wiring'||p?.components?.length!==7||p?.wires?.length!==13||
+     p?.tutorialLesson?.phase!=='quiz'||!p.components.some(c=>c.typeId==='main-contact')||
+     r?.independentPedagogicalAcceptance===true)return;
+  const C=(id,typeId,ref,label,x,y,extra={})=>({id,typeId,ref,label,x,y,rotation:0,state:false,address:'',note:'',...extra});
+  const parts=[
+   C('g','supply-dc-plus','G1','24 V / 0 V sanal kaynak',70,300),
+   C('cpu','plc-0-0-documented','PLC1','A/B temel mantık kapıları',750,300,{plcProgram:'boolean-logic-3out-sc966'}),
+   C('a','selector-no','S1','A biti · 0/1',300,100),
+   C('b','selector-no','S2','B biti · 0/1',300,470),
+   C('and','lamp-green','H1','A VE B (AND)',1250,100),
+   C('or','lamp-red','H2','A VEYA B (OR)',1250,315),
+   C('not','lamp-green','H3','DEĞİL A (NOT)',1250,530)
+  ];
+  const graph=[
+   ['g','P','cpu','X10:1'],['g','M','cpu','X10:2'],['g','M','cpu','X10:6'],
+   ['g','P','cpu','X12:1'],['g','M','cpu','X12:2'],
+   ['g','P','a','13'],['a','14','cpu','X10:7'],
+   ['g','P','b','13'],['b','14','cpu','X10:8'],
+   ['cpu','X12:3','and','X1'],['and','X2','g','M'],
+   ['cpu','X12:4','or','X1'],['or','X2','g','M'],
+   ['cpu','X12:5','not','X1'],['not','X2','g','M']
+  ];
+  p.components=parts;
+  p.wires=graph.map(([from,fp,to,tp],i)=>({
+   id:'sc966-logic-'+(i+1),from:{c:from,p:fp},to:{c:to,p:tp},
+   color:'#43857f',role:'CONTROL',size:'1.5',points:[],
+   tutorialHint:from+'/'+fp+' → '+to+'/'+tp,
+   tutorialWhy:'PLC 1211C katalog besleme, giriş veya çıkış terminalini tanı.'}));
+  delete p.referenceOnly;
+  p.tutorialLesson={...(p.tutorialLesson||{}),id:l.id,phase:'demo',step:0};
+  l.steps=p.wires.map(w=>({from:{...w.from},to:{...w.to},
+   hint:w.tutorialHint,why:w.tutorialWhy,color:w.color,role:w.role,size:w.size}));
+  l.materials=parts.map(c=>({id:c.id,label:c.label,why:
+   c.id==='cpu'?'İki girişin VE, VEYA ve DEĞİL A değerlerini ayrı dijital çıkışta gösterir.':
+   c.id==='a'||c.id==='b'?'Sanal mantık girişini 0 ya da 1 yapar.':
+   c.id==='g'?'PLC CPU ve çıkış bankını besler.':'Bir mantık işleminin sonucunu lamba ile gösterir.'}));
+  l.summary='İki sanal 0/1 girişini kullanarak AND, OR ve NOT A doğruluk tablosunu üç dijital çıkış ve lambada gözle. PLC 1211C terminali kullanılır; gerçek emniyet PLC si veya üç faz motor devresi değildir.';
+  l.explanation='İki anahtarı küçük birer doğru-yanlış ifadesi gibi düşün. VE lambası yalnız ikisi de açıkken yanar. VEYA lambası birinin açık olmasıyla yanar. DEĞİL A lambası ise A kapalıyken yanar. Anahtarları dört olasılıkta deneyerek neyin neden yandığını gör.';
+  l.quiz={question:'A=0 ve B=1 iken hangi iki gösterge yanar?',
+   options:['VEYA ve DEĞİL A','VE ve VEYA','Yalnız VE'],answer:0,
+   why:'0 VEYA 1 = 1, DEĞİL 0 = 1, 0 VE 1 = 0.'};
+  l.practiceGuide={version:'practice-n1',method:'virtual-circuit-check',
+   heading:'İki bitin VE, VEYA ve DEĞİL sonucunu oku',
+   virtualOnly:true,canonicalGraphUnchanged:false,fullyRich:false,
+   physicalTestAccepted:false,pedagogicalAcceptance:false,
+   steps:['A ve B kapalıyken yalnız DEĞİL A yanar.',
+    'Yalnız A açıkken VEYA yanar, DEĞİL A söner.',
+    'Yalnız B açıkken VEYA ve DEĞİL A yanar.',
+    'A ve B açıkken VE ve VEYA yanar.',
+    'A/B, bir lamba veya çıkış beslemesini koparıp sonucunu karşılaştır.'],
+   observations:['Üç çıkışın tüm 0/1 giriş kombinasyonları ve açık devreler özgün Simulation.solve/703 katalogla test edildi.',
+    'Kopuk giriş 0 gibi okunabilir; bu model emniyet kilidi, fiziksel PLC veya Windows/3D kabulü değildir.'],
+   repairModel:'SC966-TWO-BIT-LOGIC-AND-OR-NOT-V1'};
+  const v=r||(l.pedagogyReview={});v.preRepairTitleTopologyIssue=v.titleTopologyIssue||null;
+  v.titleTopologyStatus='REVIEW';v.titleTopologyIssue='FULL_PLC_PROGRAM_HARDWARE_WINDOWS_3D_PEDAGOGY_PENDING';
+  v.componentIds=parts.map(c=>c.typeId);v.realWiredCircuit=true;
+  v.nativeDynamicAcceptance=false;v.physicalAcceptance=false;
+  v.windowsVisualAcceptance=false;v.independentPedagogicalAcceptance=false;
+  v.targetedNativePositiveNegative='ORIGINAL_SIMULATION_SOLVE_703_CATALOG_SC966_TARGETED_PASS';
+  v.actualCurriculumSequence=L.lessons.indexOf(l)+1;
+  v.sc966BooleanWiringRepair='SC966-TWO-BIT-LOGIC-AND-OR-NOT-V1';
+ })();
+
  L.practiceGuideBatchN=stats;
  L._practiceGuideBatchN=true;
 })(typeof window==='undefined'?globalThis:window);

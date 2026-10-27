@@ -118,6 +118,10 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   // Only a documented 1+1 binary arithmetic demonstration; no WORD/INT support.
   q0=!!(start!==stop);
  }
+ else if(mode==='boolean-logic-3out-sc966'){
+  // Isolated two-bit boolean truth table: AND, OR and NOT A; no motor safety model.
+  q0=start&&stop;
+ }
  else if(mode==='compare-bits-sc988'){
   // SC988 opt-in: one-bit comparison only, not a general numeric PLC comparator.
   q0=Number(start)>Number(stop);
@@ -257,6 +261,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
        Number.isFinite(c._sc996StartAt):false;
    else if(mode==='binary-add-1bit-sc992')
      out[p.id]=i===0?!!(start!==stop):i===1?!!(start&&stop):false;
+   else if(mode==='boolean-logic-3out-sc966')
+     out[p.id]=i===0?start&&stop:i===1?start||stop:i===2?!start:false;
    else if(mode==='compare-bits-sc988')
      out[p.id]=i===0?Number(start)>Number(stop):i===1?start===stop:i===2?Number(start)<Number(stop):false;
    else if(mode==='compare-two-motors-sc990')
