@@ -20,7 +20,9 @@ Bu depo Ayhan Uysal'ın oğlu Yakub için geliştirdiği Türkçe, çevrimdış�
 - Son satırda yanlış anlaşılmayacak şekilde **“Şu anda beklemedeyim; Devam et dediğinde [somut sıradaki iş] ile devam edeceğim.”** veya araç çağrısı gerçekten sürüyorsa **“Şu anda [somut iş] üzerinde çalışıyorum; senden [istek/yok]”** bildirilir.
 - 200'er derslik geliştirmede kullanıcıdan her küçük commit için Windows CMD çıktısı istenmez. Yalnızca paket bitiminde tek toplu komut ve gerektiğinde kısa görsel kontrol sorulur; kritik engel bunun istisnasıdır. **İş gerçekten yürütülmüyorsa “200 dersi düzeltiyorum” diye sürekli çalışma izlenimi verilmez.** Teknik kilitler, `main`, `[skip ci]`, Actions yasağı ve kanıtsız kabul etmeme politikası aynen korunur.
 
-**Ders çalışmalarına dönülecekse zorunlu ilk başvuru:** [DTS Ders Devam Rehberi](docs/DERS_GUNCEL_DURUM_VE_DEVAM_PROTOKOLU.md). Kullanıcı 27 Ekim 2026 itibarıyla arayüz/kullanım deneyimini yeni öncelik yaptı. Yeni ders talebinde önce bu tarihli belgeyi, ardından güncel kabul kanıtlarını ve gerçek kaynağı incele; tamamlanmış dersleri yeniden test etme.\n\n## Yeni oturumda
+**Ders çalışmalarına dönülecekse zorunlu ilk başvuru:** [DTS Ders Devam Rehberi](docs/DERS_GUNCEL_DURUM_VE_DEVAM_PROTOKOLU.md). Kullanıcı 27 Ekim 2026 itibarıyla arayüz/kullanım deneyimini yeni öncelik yaptı. Yeni ders talebinde önce bu tarihli belgeyi, ardından güncel kabul kanıtlarını ve gerçek kaynağı incele; tamamlanmış dersleri yeniden test etme.
+
+## Yeni oturumda
 
 1. `git status` ile mevcut kullanıcı değişikliklerini görün; silmeyin veya üzerine yazmayın.
 2. `docs/DURUM_VE_SINIRLAR.md` ve `docs/KURALLAR_VE_KILITLER.md` okuyun.
