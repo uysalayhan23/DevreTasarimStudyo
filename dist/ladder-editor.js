@@ -105,8 +105,9 @@
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
  // Never apply an async import to a different component or a replaced project instance.
- function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible){
-  return !!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible;
+ function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null){
+  return !!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible&&
+   (requestId===null||(Number.isSafeInteger(requestId)&&requestId===currentRequestId));
  }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
@@ -174,7 +175,7 @@
   const overlay=doc.createElement('div');
   overlay.id='dtsLadderOverlay';overlay.className='dts-ladder-overlay';overlay.hidden=true;
   overlay.setAttribute('role','presentation');doc.body.appendChild(overlay);
-  let active=null,monitorTimer=null,returnFocus=null,diagramMode='ladder',selectedTool=null,focusedNetwork=null;
+  let active=null,monitorTimer=null,returnFocus=null,diagramMode='ladder',selectedTool=null,focusedNetwork=null,importSerial=0;
   const closedNetworks=new Set();
   const sessions=createDraftSessions();
   const available=()=>supported(editor);
@@ -252,7 +253,7 @@
    }
   }
   function close(){
-   overlay.hidden=true;active=null;
+   importSerial++;overlay.hidden=true;active=null;
    if(monitorTimer){root.clearInterval(monitorTimer);monitorTimer=null}
    const target=returnFocus?.isConnected&&typeof returnFocus.focus==='function'?returnFocus:btn;
    returnFocus=null;target.focus?.();
@@ -335,6 +336,9 @@
   function action(button){
    if(!active)return;
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
+   if(editor.running&&['undo','redo','starter','load-example','add-rung','remove-rung','add-path','remove-path','add-contact','remove-contact'].includes(type)){
+    editor.toast?.('Önce simülasyonu durdurun.');return;
+   }
    if(type==='close'){close();return}
    if(type==='save'){save();return}
    if(type==='toggle-diagram'){diagramMode=diagramMode==='fbd'?'ladder':'fbd';selectedTool=null;render();return}
@@ -475,12 +479,14 @@
    if(e.target.id==='dtsLadderImport'){
     const file=e.target.files?.[0],target=active,originalProject=editor.getProject();
     if(file&&target){
+     const requestId=++importSerial;
      try{
+      if(editor.running)throw Error('İçe aktarmadan önce simülasyonu durdurun.');
       if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
       // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
       const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
       const raw=await file.text();
-      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden)){
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial)||editor.running){
        editor.toast?.('İçe aktarma iptal: PLC veya proje değişti. Program değiştirilmedi.');
       }else{
        const draft=ProgramIO.parse(raw,originalLimits);
@@ -492,6 +498,7 @@
     e.target.value='';return;
    }
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
+   if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');render();return}
    const {field,r,p,c,fbdCoilField}=e.target.dataset;
    if(fbdCoilField){
     if(diagramMode!=='fbd'||!active)return;
@@ -523,7 +530,7 @@
    if(e.key==='Tab'){trapModalTab(e,overlay.querySelector('.dts-ladder-dialog'),doc);e.stopPropagation();return}
    const key=String(e.key).toLowerCase(),modifier=(e.ctrlKey||e.metaKey)&&!e.altKey;
    const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName||'');
-   if(modifier&&!editing&&(key==='z'||key==='y')){
+   if(modifier&&!editing&&!editor.running&&(key==='z'||key==='y')){
     const redo=key==='y'||(key==='z'&&e.shiftKey);
     const next=redo?active?.history.redo():active?.history.undo();
     if(next){active.draft=next;render()}

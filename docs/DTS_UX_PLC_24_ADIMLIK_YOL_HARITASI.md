@@ -67,6 +67,10 @@ LAD ve FBD açılır menülerindeki daha önce düzeltilmiş adres sahipliği ku
 
 Network sil/yeniden ekle teslimatı sonrası bir regresyon bulundu: ilk sürüm, yazarı olmayan bütün M bitlerini sıfırlayarak bağımsız M değerlerini de silebiliyordu. Artık yalnız **önceki taramada OUT/SET yazarı bulunan ve kaldırılmış M bitleri** sıfırlanır; diğer M bellek ve geçerli SET latch korunur. FBD boş yol artık `AÇIK` gösterir; FBD yapısal düzenleme ve polarite değişimi simülasyon çalışırken engellenir. Boş yol/NOP `.dtsladder` roundtrip ve olumsuz dosya testleri `tests/dts-ladder-empty-path-memory-and-io.test.cjs` içinde hedefli V8 PASS. Native fiziksel `Simulation.solve`, 703 katalog ve ders kabulü değiştirilmedi. Windows/Edge ve 3D **REVIEW**.
 
+### 28 Ekim — .dtsladder içe aktarma yarış durumu ve canlı düzenleme kilidi
+
+Aynı PLC'de iki `File.text()` okuması ters sırada tamamlanırsa eski dosya yeni taslağın üzerine yazılabiliyordu. Her seçim artık artan istek kimliği taşır; eski okuma, kapanmış modal, farklı PLC/proje veya simülasyon sırasında tamamlanan dosya taslağı değiştirmez. LAD/FBD alanları, yapısal ekle/sil, Undo/Redo ve örnek yükleme simülasyon çalışırken düzenlenemez; simülasyonu durdurma erişimi korunur. `tests/dts-ladder-import-race-and-edit-lock.test.cjs`: 7 hedefli V8 test PASS (bağımsız Edge dosya seçici **REVIEW**). Önceki 703 katalog, `Simulation.solve`, 1686 ders ve fiziksel kabul değiştirilmedi.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
