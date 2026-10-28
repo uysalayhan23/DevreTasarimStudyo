@@ -9,7 +9,8 @@
    return doc.body?.classList?.contains('dashboard-open')||
     env.DTSStudio?.isHome||env.DTSStudio?.safety?.visible||
     doc.getElementById('modal')?.hidden===false||
-    doc.getElementById('dtsLadderOverlay')?.hidden===false;
+    doc.getElementById('dtsLadderOverlay')?.hidden===false||
+    doc.getElementById('dtsTerminalDraftOverlay')?.hidden===false;
   }
   doc.addEventListener('keydown',function(e){
    if(!(e.ctrlKey||e.metaKey)||e.altKey||String(e.key).toLowerCase()!=='k'||blocked())return;
@@ -23,7 +24,7 @@
    if(input.value)input.select();
   });
   input.addEventListener('keydown',function(e){
-   if(e.key!=='Escape')return;
+   if(e.key!=='Escape'||e.isComposing||e.keyCode===229)return;
    e.preventDefault();e.stopPropagation();
    if(input.value){
     input.value='';
