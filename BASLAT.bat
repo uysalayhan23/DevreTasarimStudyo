@@ -39,11 +39,8 @@ rem Tek uygulama hedefi dogrudan dist/index.html dosyasidir.
 rem Ornek: file:///C:/Users/.../Devre-Tasarim-Studyo-1.19.20/dist/index.html
 set "FILEURL=file:///%INDEX:\=/%"
 
-rem Windows .html handler (normally Edge) handles spaces and '#' in local paths.
-rem Try the actual local file first; raw file URLs can mistake '#' for a fragment.
-start "" "%INDEX%"
-if not errorlevel 1 exit /b 0
-
+rem Windows HTML association can report success without opening the application.
+rem Prefer the installed Edge executable; preserve '#' by using the actual local path.
 set "BROWSER="
 
 if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" set "BROWSER=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
@@ -71,9 +68,15 @@ if not defined BROWSER (
 )
 
 if defined BROWSER (
+  echo Tarayici dogrudan baslatiliyor: %BROWSER%
   start "" "%BROWSER%" --new-window "%INDEX%"
   if not errorlevel 1 exit /b 0
+  echo UYARI: Tarayici baslatma hatasi; yedek acilis deneniyor.
 )
+
+rem Windows HTML handler is a fallback; never an early-success shortcut.
+start "" "%INDEX%"
+if not errorlevel 1 exit /b 0
 
 rem 1. fallback: Windows'un URL protokol isleyicisi ile ayni file:/// hedefi.
 rundll32.exe url.dll,FileProtocolHandler "%FILEURL%" >nul 2>&1

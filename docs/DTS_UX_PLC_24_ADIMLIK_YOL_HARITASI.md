@@ -16,6 +16,10 @@ Bunlar **24 maddelik mevcut planda zorunlu alt görevlerdir; 25. madde değildir
 
 Bunların dışında 01–24 arasındaki tüm başlıklar korunacak; kanıtsız genel COMPLETE yok. 703 katalog, 1686 ders, SC1194 fiziksel HOLD ve tüm Golden/PASS/HOLD/REVIEW kilitleri devam eder.
 
+### 28 Ekim — P0 Windows başlatıcı sessiz kapanma düzeltmesi
+
+`BASLAT.bat` açılışında `start "" "%INDEX%"` Windows varsayılan HTML ilişkilendirmesi görünür tarayıcı açmadan da başarı döndürebildiği için BAT dosyası Edge'e geçmeden kapanabiliyordu. Öncelik artık kurulu Edge yürütülebilir dosyası (gerekirse Chrome/Firefox), sonra varsayılan HTML ilişkilendirmesi ve eski URL/PowerShell yedekleridir. Yerel `dist/index.html`, `file:///`, smoke-test, paket bütünlüğü, görünür hata mesajı ve sunucusuz kullanım korunur. Eski 4 başlatıcı kontrolü ve yeni 3 hedefli regresyon kontrolü V8 PASS. Gerçek Windows/Edge BAT çift tıklama **REVIEW/NOT_RUN**; genel COMPLETE değil.
+
 ## Paket A — Çalışma alanı (8 madde)
 
 ### 28 Ekim — Kullanıcı Edge ekranına göre tam sayfa malzeme paneli ve PLC sanal simülasyon başlangıcı
