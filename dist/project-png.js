@@ -3,9 +3,11 @@
  // Offline PNG conversion only for self-contained SVG art. Never silently omit external photos.
  function sourceCheck(svg){
   if(!svg?.querySelectorAll)return {ok:false,error:'Devre SVG kaynağı bulunamadı.'};
-  const refs=svg.querySelectorAll('image,foreignObject,use,feImage')||[];
+  const refs=svg.querySelectorAll('image,foreignObject,use,feImage,script,animate,animateMotion,animateTransform,set')||[];
   for(const el of refs){
-   const tag=String(el.tagName||'').toLowerCase();
+   const tag=String(el.localName||el.tagName||'').toLowerCase().split(':').pop();
+   if(['script','animate','animatemotion','animatetransform','set'].includes(tag))
+    return {ok:false,error:'PNG için SVG betikleri ve animasyonları desteklenmiyor; PDF / Yazdır kullanın.'};
    if(tag==='foreignobject')return {ok:false,error:'Bu şema PNG için desteklenmeyen HTML görseli içeriyor.'};
    // SVG filter images can load external resources even without an <image> node.
    // Reject feImage entirely until its offline rendering can be verified.
@@ -20,8 +22,15 @@
  }
  // Serialized SVG includes inline and computed CSS. Only same-document paint refs are safe offline.
  function cssCheck(xml){
-  if(/@import\b/i.test(xml))return {ok:false,error:'PNG için dış CSS içe aktarımı desteklenmiyor.'};
-  const refs=String(xml).match(/url\s*\(\s*[^)]*\)/gi)||[];
+  // Decode CSS escapes and strip comments before checking resource tokens.
+  // Otherwise u\72l(...) or @\69mport can evade a plain text scan.
+  const normalized=String(xml).replace(/\/\*[\s\S]*?\*\//g,'')
+   .replace(/\\(?:([0-9a-f]{1,6})(?:\r\n|[ \t\n\r\f])?|([^\r\n\f0-9a-f]))/gi,(_,hex,other)=>{
+    if(!hex)return other;
+    const cp=parseInt(hex,16);return String.fromCodePoint(cp>0&&cp<=0x10ffff?cp:0xfffd);
+   });
+  if(/@import\b/i.test(normalized))return {ok:false,error:'PNG için dış CSS içe aktarımı desteklenmiyor.'};
+  const refs=normalized.match(/url\s*\(\s*[^)]*\)/gi)||[];
   for(const ref of refs){
    const raw=ref.replace(/^url\s*\(\s*/i,'').replace(/\)\s*$/,'').trim();
    // XMLSerializer escapes quotes in attributes; these still identify local SVG paint servers.
