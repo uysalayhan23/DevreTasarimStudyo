@@ -62,6 +62,11 @@
    const ref=prefix+i;
    if(!assignedBlocks.has(ref)){bits[ref]=false;delete states[ref];}
   }
+  // A restarted virtual clock invalidates elapsed timer state. Keep M latches and
+  // counter memory untouched; a stale TOF/TP must never re-energize an output.
+  if(Number.isFinite(mem.lastTime)&&now<mem.lastTime){
+   for(const ref of assignedBlocks)if(ref[0]==='T'){bits[ref]=false;delete states[ref];}
+  }
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
