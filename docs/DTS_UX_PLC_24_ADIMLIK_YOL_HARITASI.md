@@ -134,6 +134,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 `dist/wire-diagnostics.js` daha önce bir kablonun iki ucunun aynı terminal olup olmadığını `JSON.stringify(from)===JSON.stringify(to)` ile değerlendiriyordu. Terminal alanlarının sırası veya tanıtıcı ek özellikler farklıysa fiziksel olarak aynı kimliğe dönen bağlantı tespit edilemiyordu. `sameEndpoint` yalnız `c+p` veya `j` kimliğiyle karşılaştırır; gerçek kayıtlara, renk/kesit bilgilerine veya native elektriksel simülatöre dokunmaz. Bilinmeyen pin/bileşen/düğüm uyarıları önceliğini korur. `tests/dts-wire-diagnostics-endpoint-identity.test.cjs` 5 yeni + mevcut 4 toplam **9/9 V8 hedefli regresyon PASS**. Windows/Edge görsel işaretleme, 3D terminal hizalaması ve bağımsız native test **REVIEW/NOT_RUN**; 18. madde KISMİ.
 
+### 28 Ekim — Madde 16/17: seçilen cihaz kimliği, 0 terminal ve kablo kesit edit kapısı
+
+Seçili cihaz kartı modelde zaten bulunan `ref` alanını göstermiyordu; sayısal `0` ID/etiketli katalog terminalleri de `||''` yüzünden boş görünüyordu. Yeni kart gerçek cihaz kimliğini HTML kaçışlı `Cihaz: …` satırında gösterir, 0 terminalini korur. Kablo kesit değiştirici daha önce aynı paneldeki rol ve gerilim girişlerinden farklı olarak `guardEdit()` çağırmadan `snapshot()` oluşturuyordu. Kesit artık salt-okunur örnek, güvenlik ve öğretici kilidinde değiştirilemez. İzin verilen normal düzenlemede renk bazlı kesit yayılımı aynıdır; prob kabloları etkilenmez. `tests/dts-component-wire-guard-and-identity.test.cjs` **7 yeni + 3 mevcut = 10/10 hedefli V8 PASS**. Madde 19'un ortak `portPosition` koordinat bağları kaynakta doğrulandı; **gerçek Windows/Edge 2D/3D piksel ve terminal hizası REVIEW**, bağımsız Node NOT_RUN. 703 katalog ve 1686 ders değişmedi.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |
