@@ -36,6 +36,16 @@
     const prefix=['TON','TOF','TP'].includes(tool.id)?'T':['CTU','CTD'].includes(tool.id)?'C':'Q';
     const previous=rung.coil;
     let ref=prefix==='Q'&&limits.outputCount===0?'M1':prefix+'1';
+    if(prefix==='Q'&&['OUT','SET'].includes(tool.id)){
+     // One OUT/SET writer per address; do not reuse Q1/M1 across networks.
+     const outputCount=Number.isInteger(limits.outputCount)?limits.outputCount:16;
+     const family=outputCount===0?'M':'Q';
+     const candidates=Array.from({length:family==='M'?32:Math.min(16,Math.max(0,outputCount))},(_,i)=>family+(i+1));
+     const busy=new Set(next.rungs.filter((x,i)=>i!==r&&['OUT','SET'].includes(x.coil.type)).map(x=>x.coil.ref));
+     ref=candidates.includes(previous?.ref)&&!busy.has(previous.ref)?previous.ref:
+      candidates.find(x=>!busy.has(x));
+     if(!ref)return {ok:false,error:family==='Q'?'Boş PLC çıkış adresi kalmadı.':'Boş M bellek adresi kalmadı.'};
+    }
     if(prefix==='T'||prefix==='C'){
      // Preserve the current owner's compatible address or allocate an unused slot.
      const busy=new Set(next.rungs.filter((x,i)=>i!==r&&
