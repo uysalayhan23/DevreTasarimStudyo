@@ -414,7 +414,7 @@
   function validateMapping(mapping){
     if(!mapping||typeof mapping!=='object')return {ok:false,reason:'mapping'};
     if(typeof mapping.productKey!=='string'||!products[mapping.productKey])return {ok:false,reason:'productKey'};
-    if(typeof mapping.assetKey!=='string'||!mapping.assetKey)return {ok:false,reason:'assetKey'};
+    if(typeof mapping.assetKey!=='string'||!mapping.assetKey.trim())return {ok:false,reason:'assetKey'};
     if(mapping.assetIdentityField!==undefined&&!VALID_ASSET_IDENTITY_FIELDS.has(mapping.assetIdentityField))return {ok:false,reason:'assetIdentityField'};
     if(mapping.assetIdentityField!==undefined&&(typeof mapping.assetIdentityValue!=='string'||!mapping.assetIdentityValue))return {ok:false,reason:'assetIdentityValue'};
     if(!VALID_VISUAL_MATCH.has(mapping.visualMatchStatus))return {ok:false,reason:'visualMatchStatus'};
