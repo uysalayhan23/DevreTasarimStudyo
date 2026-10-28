@@ -34,7 +34,7 @@
     const moves=end=>selected.has(end?.c)||movingJunctions.has(end?.j);
     const wires=project.wires.filter(w=>moves(w.from)&&moves(w.to)).map(w=>({wire:w,original:w.points===undefined?undefined:w.points.map(p=>({...p})),points:(routes[w.id]?.slice(1,-1)||w.points||[]).map(p=>({...p}))}));
     const positioned=components.map(c=>({node:c,x:c.x,y:c.y,labelPositions:c.labelPositions?JSON.parse(JSON.stringify(c.labelPositions)):undefined})).concat((project.junctions||[]).filter(j=>movingJunctions.has(j.id)).map(j=>({node:j,x:j.x,y:j.y})));
-    const boxes=components.map(c=>bounds(c,byId[c.typeId])).concat(positioned.filter(p=>!p.node.typeId).map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y})),wires.flatMap(w=>w.points.map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y}))));
+    const boxes=components.map(c=>bounds(c,byId[c.typeId])).concat(positioned.filter(p=>!p.node.typeId).map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y})),positioned.flatMap(p=>Object.values(p.labelPositions||{}).filter(v=>Number.isFinite(v?.x)&&Number.isFinite(v?.y)).map(v=>({left:v.x,right:v.x,top:v.y,bottom:v.y}))),wires.flatMap(w=>w.points.map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y}))));
     return {positioned,wires,left:Math.min(...boxes.map(b=>b.left)),top:Math.min(...boxes.map(b=>b.top)),right:Math.max(...boxes.map(b=>b.right)),bottom:Math.max(...boxes.map(b=>b.bottom))};
   }
   function constrain(plan,dx,dy,grid=10,width=2400,height=1500){
