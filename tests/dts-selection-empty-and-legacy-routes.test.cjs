@@ -10,7 +10,7 @@ test('legacy null route does not crash group selection',()=>{
  const plan=S.beginMove({components:[c],wires:[w],junctions:[]},['D'],{test:{w:20,h:20}});
  assert.equal(plan.wires.length,1);
  S.applyMove(plan,{x:10,y:10});assert.deepEqual(w.points,[]);
- S.restore(plan);assert.equal(w.points,undefined);assert.equal(c.x,10);
+ S.restore(plan);assert.equal(w.points,null);assert.equal(c.x,10);
 });
 test('valid preexisting routing points still restore',()=>{
  const c={id:'D',typeId:'test',x:10,y:10},w={id:'W',from:{c:'D',p:'1'},to:{c:'D',p:'2'},points:[{x:10,y:20}]};
