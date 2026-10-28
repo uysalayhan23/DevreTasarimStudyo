@@ -19,7 +19,7 @@
   duplicate.removeAttribute('width');duplicate.removeAttribute('height');
   if(duplicate.style){duplicate.style.transform='none';duplicate.style.width='100%';duplicate.style.height='auto'}
   duplicate.querySelector?.('.grid-bg')?.remove?.();
-  for(const child of duplicate.querySelectorAll?.('.wire-editor-layer,.alignment-guides,.draft-wire,.selection-box,.measurement-overlay')||[])child.remove?.();
+  for(const child of duplicate.querySelectorAll?.('.wire-editor-layer,.wire-editors,.alignment-guides,.alignment-guide,.draft-wire,.draft-wire-group,.selection-box')||[])child.remove?.();
   doc.getElementById?.('dtsPrintSurface')?.remove?.();
   const wrapper=doc.createElement('section');wrapper.id='dtsPrintSurface';wrapper.className='dts-print-surface';
   const heading=doc.createElement('header');heading.className='dts-print-heading';heading.textContent=String(title||'Devre çizimi').slice(0,100);

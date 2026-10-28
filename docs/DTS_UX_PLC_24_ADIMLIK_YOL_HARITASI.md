@@ -1,3 +1,8 @@
+### 28 Ekim — Madde 20: PNG/PDF çıktılarında ölçü aletleri ve temiz düzenleme katmanları
+
+Gerçek kusur: `dist/project-png.js` ve `dist/project-print.js` yazdırılacak SVG kopyasını hazırlarken `.measurement-overlay` katmanını bütünüyle siliyordu. Bu katmanda gerçek multimetre, pens metre, osiloskop, prob ve ölçüm kabloları bulunur; yani kullanıcı ekranda gördüğü ölçü aletlerini çıktıda kaybediyordu. İkinci kusur: render kaynağı `.wire-editors` ve `.draft-wire-group` sınıflarını kullanırken mevcut çıktı temizleme seçicisi onları tanımıyordu. Yalnız **geçici düzenleme tutamakları, taslak kablo, hizalama kılavuzları ve seçim kutusu** temizlenir; ölçüm katmanı ve `malzeme < kablo < ölçü aleti` SVG boyama sırası korunur. Harici görsel içeren SVG için PNG güvenlik reddi, çevrimdışı `file:///`, PDF için tarayıcı yazdır ve CSV malzeme listesi mevcut davranışlarını korur. `tests/dts-project-export-meter-layer.test.cjs` yeni 4, mevcut PNG 5, mevcut PDF 4 olmak üzere **13/13 hedefli V8 regresyon PASS**. Gerçek Edge PDF/PNG dosya açılışı **NOT_RUN/REVIEW**; 20. madde **KISMİ**.
+
+
 # DTS UI/UX + PLC Ladder — 24 Adımlık Canlı Geliştirme Planı
 **28 Ekim 2026 · Depo:** `uysalayhan23/DevreTasarimStudyo` · **Aktif dal:** `main`
 

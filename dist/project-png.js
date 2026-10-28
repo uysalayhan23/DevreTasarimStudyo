@@ -51,7 +51,7 @@
   svg.setAttribute('preserveAspectRatio','xMidYMid meet');
   svg.style.transform='none';
   svg.querySelector?.('.grid-bg')?.remove?.();
-  for(const node of svg.querySelectorAll?.('.wire-editor-layer,.alignment-guides,.draft-wire,.selection-box,.measurement-overlay')||[])node.remove?.();
+  for(const node of svg.querySelectorAll?.('.wire-editor-layer,.wire-editors,.alignment-guides,.alignment-guide,.draft-wire,.draft-wire-group,.selection-box')||[])node.remove?.();
   const canvas=doc.createElement('canvas');canvas.width=size.width;canvas.height=size.height;
   const ctx=canvas.getContext?.('2d');if(!ctx||typeof canvas.toBlob!=='function')
    return {ok:false,error:'PNG çizim tuvali kullanılamıyor.'};
