@@ -1225,3 +1225,24 @@ body.dts-full-mode .properties-panel,body.dts-full-mode #openProperties{display:
 .topbar button:disabled{
  color:#424a55!important;-webkit-text-fill-color:#424a55!important;opacity:.88
 }
+
+/* P0 right properties: optional in full screen and while virtual simulation is running. */
+body.dts-full-mode .properties-panel,body.dts-sim-focus .properties-panel{display:flex!important}
+body.dts-full-mode #openProperties:not([hidden]),
+body.dts-sim-focus #openProperties:not([hidden]){display:flex!important}
+@media(min-width:1051px){
+ body.dts-full-mode:not(.properties-collapsed) .app-shell{grid-template-columns:292px minmax(0,1fr) 250px!important}
+ body.dts-full-mode.library-collapsed:not(.properties-collapsed) .app-shell{grid-template-columns:48px minmax(0,1fr) 250px!important}
+ body.dts-full-mode.properties-collapsed .properties-panel,
+ body.dts-sim-focus.properties-collapsed .properties-panel{display:none!important}
+ body.dts-sim-focus:not(.dts-full-mode):not(.properties-collapsed) .app-shell{grid-template-columns:48px minmax(0,1fr) 250px!important}
+}
+/* Compact screens retain existing slide-in panel and its open/close control. */
+@media(max-width:1050px){
+ body.dts-full-mode .properties-panel,body.dts-sim-focus .properties-panel{display:flex!important}
+ body.dts-full-mode .properties-panel:not(.open),
+ body.dts-sim-focus .properties-panel:not(.open){transform:translateX(100%)}
+ body.dts-full-mode .properties-panel.open,
+ body.dts-sim-focus .properties-panel.open{transform:none}
+}
+body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:block}

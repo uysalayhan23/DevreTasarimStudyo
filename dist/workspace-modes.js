@@ -12,7 +12,9 @@
    body.classList.toggle('dts-full-mode',full);
    if(focused()){
     if(!before)before=panelAPI.getState();
-    panelAPI.setState({libraryCollapsed:!full,propertiesVisible:false});
+    // Let the user keep changing the properties panel while in full/simulation mode.
+    // On leaving focus, restore the original panel snapshot.
+    panelAPI.setState({libraryCollapsed:!full,propertiesVisible:!!panelAPI.getState().propertiesVisible});
    }else if(before){
     panelAPI.setState(before);before=null;
    }

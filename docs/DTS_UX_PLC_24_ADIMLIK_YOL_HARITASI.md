@@ -5,6 +5,17 @@
 
 **Durum terminolojisi:** `KOD/TEST` işlevin kodu ve adı geçen hedefli test tamamlandı; **Windows Edge/3D/pedagojik tam kabul değildir.** `KISMİ` başlangıç altyapısı mevcut, bütün kabul maddesi tamamlanmadı. `MEVCUT` daha eski DTS özelliği. `PLAN` henüz uygulanmadı. `REVIEW` kullanıcı/gerçek görsel kabulü açık. PASS yalnız gerçekte koşulan testin kapsamını ifade eder.
 
+## Öncelik 0 — Son kullanıcı geri bildirimleri (24 maddeyi genişletmeden)
+
+Bunlar **24 maddelik mevcut planda zorunlu alt görevlerdir; 25. madde değildir.** Genel UX/devre iyileştirmesinden önce ele alınır:
+
+- **P0-A (03/05/08):** Sağ Özellikler panelini standart, tam sayfa ve simülasyon modunda isteğe bağlı aç/kapat. Sensör/PLC alanları sağ panelden erişilebilir; kapanınca kenar düğmesiyle tekrar açılır. Tam ekran dönüşünde önceki yerleşim korunur. Kaynak: `dist/workspace-modes.js`, `dist/studio.css`. Windows/Edge **REVIEW**.
+- **P0-B (08/16/17/19):** Sağ paneldeki kablo rengi/hat/gerilim/kesit ayarları korunur ve tam ekran/simülasyon modunda panel açılarak erişilir. Simülasyon sırasındaki elektriksel düzenleme kilitleri değiştirilmez. Gerçek kullanıcı tıklama/kablo seçimi Windows **REVIEW**.
+- **P0-C (08/17/19):** SVG çizim sırası **normal malzeme altında → sıradan/terminal kabloları üstünde → ölçü aletleri en üstte**. Multimetre, voltmetre, ampermetre, osiloskop, pens metre, prob vb. aynı üst katmandadır. `dist/scene-layer-order.js` ayrı salt görsel sınıflayıcıdır; `dist/app.js` normal malzemeleri önce, kabloları sonra ve ölçüm cihazlarını en son çizer. 2D/3D terminal geometrisi ve `Simulation.solve` değişmez; fiziksel Windows/3D kabulü **REVIEW**.
+- **P0-D (09/15/23):** Ladder çıkış bloklarında anlaşılır “Bloğu kaldır” etkileşimi ve tek Network'te geçerli OUT'a güvenli dönüş. Önceden kabul edilmiş T/C tür ve adres onarımları tekrarlanmaz. **AÇIK / KISMİ**.
+
+Bunların dışında 01–24 arasındaki tüm başlıklar korunacak; kanıtsız genel COMPLETE yok. 703 katalog, 1686 ders, SC1194 fiziksel HOLD ve tüm Golden/PASS/HOLD/REVIEW kilitleri devam eder.
+
 ## Paket A — Çalışma alanı (8 madde)
 
 ### 28 Ekim — Kullanıcı Edge ekranına göre tam sayfa malzeme paneli ve PLC sanal simülasyon başlangıcı

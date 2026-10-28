@@ -5,6 +5,7 @@
   const WorkspaceSpace=window.DTSWorkspaceSpace;
   const GRID=WorkspaceSpace?.gridScene||10,SHEET_W=WorkspaceSpace?.widthScene||2800,SHEET_H=WorkspaceSpace?.heightScene||1800,APP_VERSION='1.19.20';
   const Symbols=window.CCSSymbols,Simulation=window.CCSSimulation,Viewport=window.CCSViewport,Components=window.CCSComponents,Norms=window.CCSNorms,Labels=window.CCSLabels,Catalog=window.CCSCatalog,Selection=window.CCSSelection,Lines=window.CCSConductors,Leads=window.DTSProbeLeads,Sensors=window.CCSSensors,Clamp=window.DTSClampMeter,Physical=window.DTSPhysicalMetadata;
+  const SceneLayers=window.DTSSceneLayerOrder;
   const Arduino=window.DTSArduino,Workspaces=window.DTSWorkspaces,favorites=Workspaces.favorites(localStorage);
   const allLib=Catalog.prepare(Symbols.prepareLibrary(window.DTSDesignLibrary.extend(window.COMPONENT_LIBRARY)));
   const libraryKey=d=>String(d?.name||'').toLocaleLowerCase('tr-TR').replace(/ü/g,'u').replace(/ö/g,'o').replace(/ş/g,'s').replace(/ı/g,'i').replace(/ğ/g,'g').replace(/ç/g,'c').replace(/\s+/g,' ').trim();
@@ -174,13 +175,15 @@
     }
     els.scene.innerHTML='';
     renderedWirePoints={};routingUsage=new Map();routeObstacles=componentObstacles();
-    project.components.filter(c=>!Leads.floating(byId[c.typeId])&&wireOverDeviceBody(byId[c.typeId])).forEach(c=>renderComponentBackdrop(c));
+    // Paint order: normal devices below wires; measuring equipment above all wires.
+    const layers=SceneLayers.split(project.components,byId,Leads.floating);
+    layers.ordinary.filter(c=>wireOverDeviceBody(byId[c.typeId])).forEach(c=>renderComponentBackdrop(c));
+    layers.ordinary.forEach(c=>renderComponent(c));
     project.wires.filter(w=>!w.probeLead).forEach((w,i)=>renderWire(w,i));
     syncProbePositions();
     syncClampPositions();
     (project.junctions||[]).forEach(j=>els.scene.appendChild(svg('circle',{class:'junction','data-junction':j.id,cx:j.x,cy:j.y,r:5})));
     alignmentGuides.forEach(g=>els.scene.appendChild(svg('line',{class:'alignment-guide',x1:g.axis==='x'?g.value:0,y1:g.axis==='y'?g.value:0,x2:g.axis==='x'?g.value:SHEET_W,y2:g.axis==='y'?g.value:SHEET_H})));
-    project.components.filter(c=>!Leads.floating(byId[c.typeId])).forEach(c=>renderComponent(c));
     renderTerminalLeads();
     renderWireEditors();
     renderDraftWire();
@@ -963,17 +966,21 @@
   function raiseMeasurements(){const layer=els.scene.querySelector('.measurement-overlay');if(layer)els.scene.appendChild(layer)}
   function renderMeasurementOverlay(){
     els.scene.querySelector('.measurement-overlay')?.remove();
-    if(!project.components.some(c=>Leads.floating(byId[c.typeId])))return;
+    const measuring=SceneLayers.split(project.components,byId,Leads.floating).measuring;
+    if(!measuring.length&&!project.wires.some(w=>w.probeLead))return;
     const layer=svg('g',{class:'measurement-overlay'});els.scene.appendChild(layer);
-    project.components.filter(c=>byId[c.typeId]?.kind==='multimeter').forEach(c=>renderComponent(c,layer));
     for(const w of project.wires.filter(w=>w.probeLead)){
       const {path}=Leads.curve(endpointInfo(w.from),endpointInfo(w.to),w.flexOffset),width=Math.max(4,Lines.width(w.size)),g=svg('g',{'data-wire':w.id,class:'probe-lead',style:'--wire-width:'+width+'px'});
       g.innerHTML=`<title>${esc(colorNames[w.color])} ölçüm kablosu · Sürükleyerek kıvrımı değiştirin</title><path class="probe-lead-shadow" d="${path}"/><path class="wire ${selectedWire===w.id?'selected':''}" d="${path}" stroke="${w.color}"/><path class="probe-lead-shine" d="${path}"/><path class="wire-hit" d="${path}"/>`;
       layer.appendChild(g);
     }
-    for(const c of project.components.filter(c=>byId[c.typeId]?.probeColor)){
+    // Measurement bodies remain above probe leads as well as ordinary wires.
+    for(const c of measuring){
       renderComponent(c,layer);
-      if(c.probeTarget){const pos=absolutePort({c:c.id,p:'TIP'});layer.appendChild(svg('circle',{class:'probe-contact','data-probe-contact':c.id,cx:pos.x,cy:pos.y,r:5}))}
+      if(byId[c.typeId]?.probeColor&&c.probeTarget){
+       const pos=absolutePort({c:c.id,p:'TIP'});
+       layer.appendChild(svg('circle',{class:'probe-contact','data-probe-contact':c.id,cx:pos.x,cy:pos.y,r:5}));
+      }
     }
   }
   function renderMeasurements(){
