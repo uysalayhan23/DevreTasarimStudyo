@@ -137,6 +137,7 @@
   if(el.id)return 'id:'+el.id;
   const d=el.dataset||{};
   if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
+  if(d.fbdContactRef)return 'fbd-ref:'+d.fbdContactRef;
    if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.r??'');
   const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
   return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
@@ -286,7 +287,7 @@
      const bits=shown&&active.c._plcRuntime?.powered===true?active.c._dtsLadderMemory?.values:null;
      if(diagram){
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
-      if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field]'))){
+      if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]'))){
        diagram.innerHTML=draw(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value,limits:limits()});
        diagram.dataset.signalKey=key;
       }
@@ -501,7 +502,13 @@
    }
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
    if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');render();return}
-   const {field,r,p,c,fbdCoilField}=e.target.dataset;
+   const {field,r,p,c,fbdCoilField,fbdContactRef}=e.target.dataset;
+   if(fbdContactRef){
+    if(diagramMode!=='fbd'||!active)return;
+    const result=FBDView.editContactRef(active.draft,fbdContactRef,e.target.value,limits());
+    if(!result.ok){editor.toast?.(result.error);render();return}
+    active.draft=result.program;active.history.push(active.draft);render();return;
+   }
    if(fbdCoilField){
     if(diagramMode!=='fbd'||!active)return;
     const nextValue=['presetMs','preset'].includes(fbdCoilField)?

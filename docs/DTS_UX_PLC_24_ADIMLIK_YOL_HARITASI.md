@@ -140,6 +140,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 **Gerçek açık kusur:** FBD görünümündeki `+ Seri` düğmesi yalnız seri kolun sonuna kontak ekliyordu; bir kontağın **önüne veya iki kontak arasına** doğrudan eklemek mümkün değildi. `dist/fbd-view.js` içindeki özgün `editStructure` artık `add-contact-before` komutuyla belirtilen pozisyondan hemen önce yeni NO kontağı ekler. Açık/boş yol için indeks 0, 12 kontak tavanı, 8 paralel yol, geçerli sanal I/M adresleri ve kaynak programın değiştirilmemesi kuralları korunur; `Ladder.validate` doğrular ve gerçek `Ladder.scan` AND davranışı hedefli test edilmiştir. FBD ekranında her kontak için erişilebilir `+ Önüne` düğmesi bulunur; mevcut `+ Seri`, `− Kontak`, Undo/Redo ve kayıtlı program ayrımı korunur. Yeni 6 senaryo + mevcut 4 FBD test dosyasının kontrolleri V8 PASS; bağımsız Node ve gerçek Windows/Edge UI kabulü **NOT_RUN/REVIEW**. FBD tam serbest blok editörü hâlâ **KISMİ**.
 
+### 28 Ekim — Madde 23: FBD üzerinde gerçek kontak I/Q/M/T/C adresini değiştirme
+
+**Somut eksik:** FBD'de NO/NC, seri/paralel konum ve çıkış bloğu düzenlenmesine rağmen kontağın I/Q/M/T/C operandını seçmek için LAD alt bölümüne dönmek gerekiyordu. `dist/fbd-view.js` her kontakta erişilebilir `Adres` seçicisi gösterir ve `editContactRef` yalnız bağımsız taslak kopyasında `Ladder.validate` kontrolü uygular. Giriş/çıkış adetleri gerçek PLC katalog `inputCount/outputCount` sınırındadır; M1–M32/T1–T16/C1–C16 geçerli aralıktadır; sahte I/Q uçları ve bozuk indeks reddedilir. `dist/ladder-editor.js` FBD seçim değişimini yalnız taslak+Undo/Redo'ya işler ve 300 ms izleme yenilemesi sırasında odak koruması ekler. `dist/studio.css` okunabilir/kullanılabilir alanı sağlar. `tests/dts-fbd-contact-ref-edit.test.cjs` yeni 6 + önceden kabul edilen FBD 25 senaryo **31/31 hedefli V8 PASS**. Bağımsız Node, gerçek Windows/Edge, fiziksel `Simulation.solve` ve 3D kabul **NOT_RUN/REVIEW**; 23. madde **KISMİ**.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi

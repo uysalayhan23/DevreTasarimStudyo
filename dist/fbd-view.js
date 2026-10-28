@@ -18,6 +18,34 @@
   return result.ok?{ok:true,program:draft}:{ok:false,error:result.error};
  }
 
+ // FBD contact operands follow the same hardware-dependent I/Q limits as LAD.
+ function contactRefs(limits={}){
+  const upper=(count)=>Number.isInteger(count)?Math.max(0,Math.min(16,count)):16;
+  const refs=[];
+  for(let i=1;i<=upper(limits.inputCount);i++)refs.push('I'+i);
+  for(let i=1;i<=upper(limits.outputCount);i++)refs.push('Q'+i);
+  for(let i=1;i<=32;i++)refs.push('M'+i);
+  for(let i=1;i<=16;i++)refs.push('T'+i);
+  for(let i=1;i<=16;i++)refs.push('C'+i);
+  return refs;
+ }
+ // Only an independent, native-validated draft may be changed by FBD.
+ function editContactRef(program,position,ref,limits={}){
+  if(typeof position!=='string'||!/^(0|[1-9][0-9]*):(0|[1-9][0-9]*):(0|[1-9][0-9]*)$/.test(position))
+   return {ok:false,error:'FBD kontak konumu geçersiz.'};
+  const [r,p,c]=position.split(':').map(Number);
+  if(![r,p,c].every(Number.isSafeInteger))return {ok:false,error:'FBD kontak konumu sayı sınırını aşıyor.'};
+  const checked=Ladder?.validate?.(program,limits);
+  if(!checked?.ok)return {ok:false,error:checked?.error||'Geçersiz Ladder taslağı.'};
+  if(!program.rungs[r]?.paths?.[p]?.[c])return {ok:false,error:'FBD kontağı bulunamadı.'};
+  if(typeof ref!=='string'||!contactRefs(limits).includes(ref))
+   return {ok:false,error:'Seçilen kontak adresi bu PLC için geçersiz.'};
+  const draft=JSON.parse(JSON.stringify(program));
+  draft.rungs[r].paths[p][c].ref=ref;
+  const valid=Ladder.validate(draft,limits);
+  return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
+ }
+
  // V1 FBD and LAD share the same native rung model; edits are draft copies only.
  function editStructure(program,action,position,limits={}){
   const branch=action==='add-path'||action==='remove-path';
@@ -130,7 +158,9 @@
   const states=paths.map((_,i)=>live&&opts.pathStates[i]===true);
   const id=Number.isInteger(opts.index)?opts.index:0;
   const lines=paths.map((path,pi)=>{
-   const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span><button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
+   const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span>'+
+    '<label class="dts-fbd-ref-label">Adres <select class="dts-fbd-contact-ref" data-fbd-contact-ref="'+id+':'+pi+':'+ci+'" aria-label="'+escape('FBD '+(ci+1)+'. kontak adresi')+'">'+contactRefs(opts.limits).map(ref=>'<option value="'+escape(ref)+'"'+(ref===c.ref?' selected':'')+'>'+escape(ref)+'</option>').join('')+'</select></label>'+
+    '<button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
     ('<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact-before" data-fbd-position="'+id+':'+pi+':'+ci+'" '+(path.length>=12?'disabled':'')+' aria-label="'+escape(c.ref+' kontağının önüne yeni kontak ekle')+'">+ Önüne</button>'+
     '<button type="button" class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
    return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+(path.length?contacts:'<span class="dts-fbd-empty-path">BOŞ KONTAK · devre açık</span>')+' <span class="dts-fbd-gate">'+(path.length===0?'AÇIK':path.length>1?'AND':'PASS')+'</span>'+ '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact" data-fbd-position="'+id+':'+pi+':'+(path.length?path.length-1:0)+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
@@ -141,6 +171,6 @@
   return '<section class="dts-fbd-view" role="group" aria-label="'+escape('FBD Network '+(id+1))+'"><header>FBD Network '+(id+1)+' · '+escape(rung?.comment||rung?.id||'')+'</header>'+lines+
    '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type==='NOP'?'BOŞ · çıkış yok':(coil.type||'OUT')+' · '+(coil.ref||'?'))+'</span>'+blockControls(coil,id,opts.limits)+(coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+id+'" title="Bobini ya da bloğu güvenle kaldır">Çıkışı kaldır</button>':'')+'</div></section>';
  }
- const api=Object.freeze({render,toggleContact,editCoil,editStructure,refsFor});
+ const api=Object.freeze({render,toggleContact,editCoil,editStructure,refsFor,contactRefs,editContactRef});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSFBDView=api;
 })(typeof window==='undefined'?globalThis:window);

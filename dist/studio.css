@@ -1246,3 +1246,8 @@ body.dts-sim-focus #openProperties:not([hidden]){display:flex!important}
  body.dts-sim-focus .properties-panel.open{transform:none}
 }
 body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:block}
+
+/* FBD V1 direct contact operand selection, keyboard accessible and visibly distinct. */
+.dts-fbd-contact-group .dts-fbd-ref-label{display:flex;align-items:center;gap:4px;font:600 10px system-ui,sans-serif;color:#25465c}
+.dts-fbd-contact-group .dts-fbd-contact-ref{min-width:72px;max-width:110px;min-height:28px;padding:2px 4px;border:1px solid #8cabbf;border-radius:4px;background:#fff;color:#203747}
+.dts-fbd-contact-group .dts-fbd-contact-ref:focus-visible{outline:3px solid #0b78bd;outline-offset:2px}
