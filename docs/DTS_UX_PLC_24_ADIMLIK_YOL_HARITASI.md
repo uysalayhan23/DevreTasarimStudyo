@@ -160,6 +160,10 @@ FBD kontak operand düzenleme kaynakları yayımlandıktan sonra `dist/index.htm
 
 Sanal PLC operatör paneli daha önce yalnız `!!c.ladderProgram` durumuyla “kayıtlı” kabul ediyor, geçersiz `rungs:[]` programına veya `_dtsLadderError` bulunan sanal tarama hatasına rağmen `_plcRuntime.program==='dts-ladder-v1'` ise eski `0/1` bitlerini **canlı** gösterebiliyordu. `dist/plc-operator.js` şimdi gerçek CPU terminal sayılarıyla aynı `Ladder.validate` denetimini uygular; `dist/ladder-monitor.js` native tarama/validasyon hatasında eski I/O'yu `—` ve doğrulanamayan program durumunu açık metinle gösterir. Sahte PLC modelleri, güç yok ve durdurulmuş simülasyon kilitleri korunur. Başarılı program için canlı I/Q gösterimi değişmez. `tests/dts-plc-operator-validation.test.cjs` yeni 7, güncellenmiş mevcut `tests/dts-plc-operator.test.cjs` 3 senaryoyla **10/10 hedefli V8 PASS**; bağımsız Node.js ve gerçek Windows/Edge UI **NOT_RUN/REVIEW**. 24. madde KISMİ; gerçek fiziksel PLC, Simulation.solve, katalog ve sahneler değişmez.
 
+### 28 Ekim — Madde 21: terminal yerleşimi taslağında asenkron içe aktarmanın son dosya ilkesi
+
+`dist/component-terminal-draft.js` daha önce ilk `.dtscomponent` dosyası okunurken ikinci dosya seçildiğinde iki okumanın da aynı `source` ve `draft` referanslarını taşıması nedeniyle **ilk dosyanın geç biten okumasını kabul edebiliyordu**. Yeni `importSerial` ve saf `importContextMatches` denetimi yalnız son dosyayı kabul eder; modal kapanma/açılma, malzeme değişimi, katalogdan sıfırlama ve X/Y yerleşim düzenlemesi sırasında geç dönen okuma taslağa dokunamaz. `tests/dts-terminal-import-latest-file.test.cjs` yeni 4, mevcut terminal taslağı regresyonlarından 4 toplam **8/8 hedefli V8 PASS**. Taslak yalnız önizlemedir; katalogya kayıt, native devre ve fiziksel 3D pin-kablo hizası **HOLD/REVIEW**. Gerçek Windows/Edge dosya seçimi **NOT_RUN**. Madde 21 **KISMİ**.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi

@@ -108,24 +108,30 @@
     '<text x="'+d.w/2+'" y="'+d.h/2+'" text-anchor="middle" class="dts-draft-title">'+escape(d.name)+'</text>'+
     d.pins.map(pin).join('')+'</svg>';
  }
+ // Import completion must still belong to the latest requested file, draft and open panel.
+ function importContextMatches(request,latest,sourceAtStart,currentSource,draftAtStart,currentDraft,visible){
+  return Number.isSafeInteger(request)&&request>0&&request===latest&&
+   !!sourceAtStart&&sourceAtStart===currentSource&&!!draftAtStart&&
+   draftAtStart===currentDraft&&!!visible;
+ }
  function init(doc=root?.document){
   const button=doc?.getElementById?.('dtsTerminalDesignerBtn');
   if(!button||button.dataset.ready==='1')return false;
-  button.dataset.ready='1';let source=null,draft=null,moving=null;
+  button.dataset.ready='1';let source=null,draft=null,moving=null,importSerial=0;
   const dialog=doc.createElement('div');dialog.id='dtsTerminalDraftOverlay';
   dialog.className='dts-terminal-draft-overlay';dialog.hidden=true;
   dialog.innerHTML='<section class="dts-terminal-draft-dialog" role="dialog" aria-modal="true" aria-label="Terminal konum taslağı" tabindex="-1"></section>';
   doc.body.appendChild(dialog);
   const panel=dialog.querySelector('section');
   function selection(def){
-   source=canPreview(def)?def:null;button.hidden=!source;
+   importSerial++;source=canPreview(def)?def:null;button.hidden=!source;
   }
   function show(){
    if(!source||doc.getElementById('modal')?.hidden===false)return false;
-   draft=fromCatalog(source);dialog.hidden=false;render();
+   importSerial++;draft=fromCatalog(source);dialog.hidden=false;render();
    panel.focus();return true;
   }
-  function close(){moving=null;dialog.hidden=true;draft=null;button.focus();}
+  function close(){importSerial++;moving=null;dialog.hidden=true;draft=null;button.focus();}
   function render(){
    if(!draft)return;
    panel.innerHTML='<header><strong>Terminal konum taslağı</strong><button type="button" data-action="close" aria-label="Kapat">×</button></header>'+
@@ -175,13 +181,13 @@
   });
   dialog.addEventListener('change',async e=>{
    if(e.target?.id==='dtsTerminalImportFile'){
-    const input=e.target,file=input.files?.[0],sourceAtStart=source,draftAtStart=draft;
+    const input=e.target,file=input.files?.[0],sourceAtStart=source,draftAtStart=draft,request=++importSerial;
     if(file&&sourceAtStart&&draftAtStart){
      try{
       if(file.size>maxImportBytes)throw Error('Taslak dosyası 128 KB sınırını aşıyor.');
       const raw=await file.text();
-      if(dialog.hidden||source!==sourceAtStart||draft!==draftAtStart)
-       throw Error('Taslak içe aktarma iptal: seçili bileşen, taslak veya pencere değişti.');
+      if(!importContextMatches(request,importSerial,sourceAtStart,source,draftAtStart,draft,!dialog.hidden))
+       throw Error('Taslak içe aktarma iptal: yeni dosya, seçili bileşen, taslak veya pencere değişti.');
       const imported=parseImport(raw,sourceAtStart);
       draft=imported;render();
       root.DTSEditor?.toast?.('Terminal taslağı doğrulandı; yalnız önizlemeye alındı. Katalog HOLD.');
@@ -224,7 +230,7 @@
   const api=Object.freeze({setSource:selection,open:show,close,isOpen:()=>!dialog.hidden});
   return api;
  }
- const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,parseImport,acceptance,gateMarkup,maxImportBytes,svg,init});
+ const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,parseImport,acceptance,gateMarkup,maxImportBytes,svg,importContextMatches,init});
  if(typeof module==='object'&&module.exports)module.exports=api;
  else if(root?.document)root.DTSTerminalDraft=Object.assign({},api,{controller:init(root.document)});
 })(typeof window==='undefined'?globalThis:window);
