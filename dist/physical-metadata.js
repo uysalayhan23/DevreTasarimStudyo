@@ -404,7 +404,7 @@
     }
     if(!VALID_STATUS.has(record.sourceStatus))return {ok:false,reason:'sourceStatus'};
     if(!VALID_AUTHORITY.has(record.sourceAuthority))return {ok:false,reason:'sourceAuthority'};
-    if(typeof record.sourceUrl!=='string'||!/^https:\/\//.test(record.sourceUrl))return {ok:false,reason:'sourceUrl'};
+    if(typeof record.sourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(record.sourceUrl))return {ok:false,reason:'sourceUrl'};
     if(typeof record.mountingType!=='string'||!record.mountingType)return {ok:false,reason:'mountingType'};
     if(!Array.isArray(record.allowedPanelMounts)||!record.allowedPanelMounts.length||record.allowedPanelMounts.some(v=>!['door','plate','rail','external'].includes(v)))return {ok:false,reason:'allowedPanelMounts'};
     if(!record.allowedPanelMounts.includes(record.defaultPanelMount))return {ok:false,reason:'defaultPanelMount'};
