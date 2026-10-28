@@ -34,7 +34,9 @@
  }
  function printScene(doc,win,title){
   if(typeof win?.print!=='function')return {ok:false,error:'Tarayıcı yazdırma özelliği kullanılamıyor.'};
-  const result=prepare(doc,doc?.getElementById?.('workspace'),doc?.getElementById?.('scene'),title);
+  let result;
+  try{result=prepare(doc,doc?.getElementById?.('workspace'),doc?.getElementById?.('scene'),title)}
+  catch{return {ok:false,error:'Yazdırma çizimi güvenli biçimde hazırlanamadı.'}}
   if(!result.ok)return result;
   let removed=false;
   function cleanup(){if(removed)return;removed=true;win.removeEventListener?.('afterprint',cleanup);result.node.remove?.()}
