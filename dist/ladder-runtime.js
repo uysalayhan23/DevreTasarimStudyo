@@ -7,6 +7,7 @@
  function validate(source,limits={}){
   if(!source||typeof source!=='object'||source.version!==1||!Array.isArray(source.rungs)||source.rungs.length<1||source.rungs.length>32)return {ok:false,error:'Program V1 için 1–32 rung gerekir.'};
   const inputs=Number.isInteger(limits.inputCount)?limits.inputCount:16,outputs=Number.isInteger(limits.outputCount)?limits.outputCount:16;
+  if(inputs<0||inputs>16||outputs<0||outputs>16)return {ok:false,error:'PLC I/O sayısı desteklenen 0–16 sınırını aşıyor.'};
   const seen=new Set(),blockWriters=new Set(),outputWriters=new Set();
   for(let i=0;i<source.rungs.length;i++){
    const r=source.rungs[i];if(!r||typeof r!=='object'||typeof r.id!=='string'||r.id.length<1||r.id.length>40||seen.has(r.id))return {ok:false,error:'Tekrarlanan/geçersiz rung kimliği: '+(i+1)};
