@@ -65,7 +65,7 @@
     if(['terminal','ground','distribution-block','splice'].includes(k))return {group:'terminals',areas:['panel','building','control','electronics','automation']};
     return {group:'drawing',areas:['drawing','panel','control','electronics']};
   }
-  function prepare(lib){return (Array.isArray(lib)?lib:[]).filter(d=>d&&typeof d==='object').map(d=>{d.classification=classification(d);return d})}
+  function prepare(lib){return (Array.isArray(lib)?lib:[]).filter(d=>d&&typeof d==='object').map(d=>{const target=Object.isExtensible(d)?d:{...d};target.classification=classification(d);return target})}
   function matches(d,f={}){
     if(!d||typeof d!=='object')return false;
     if(!f||typeof f!=='object')f={};
