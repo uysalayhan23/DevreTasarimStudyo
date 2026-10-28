@@ -857,7 +857,20 @@
     renderNotes();updateNormBadge();updateProperties();
   }
   function download(){const blob=new Blob([JSON.stringify(project,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(project.name||'devre').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,'_')+'.odsdevre';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Proje dosyası hazırlandı')}
-  function modal(title,body,confirm){$('#modalTitle').textContent=title;$('#modalBody').innerHTML=body;$('#modal').hidden=false;$('#modalConfirm').onclick=()=>{$('#modal').hidden=true;confirm()};$('#modalCancel').onclick=()=>$('#modal').hidden=true}
+  function exportMaterialList(){
+  const bom=window.DTSMaterialList;
+  if(!bom){toast('Malzeme listesi yüklenemedi.');return}
+  if(!project.components.length){toast('Şemada listelenecek malzeme yok.');return}
+  const content=bom.csv(project,byId);
+  const file=new Blob([content],{type:'text/csv;charset=utf-8'});
+  const uri=URL.createObjectURL(file),anchor=document.createElement('a');
+  anchor.href=uri;
+  anchor.download=(project.name||'devre').replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ_-]+/gi,'_')+'-malzeme-listesi.csv';
+  document.body.appendChild(anchor);
+  try{anchor.click()}finally{anchor.remove();setTimeout(()=>URL.revokeObjectURL(uri),1000)}
+  toast('Malzeme listesi hazırlandı (CSV).');
+ }
+ function modal(title,body,confirm){$('#modalTitle').textContent=title;$('#modalBody').innerHTML=body;$('#modal').hidden=false;$('#modalConfirm').onclick=()=>{$('#modal').hidden=true;confirm()};$('#modalCancel').onclick=()=>$('#modal').hidden=true}
 
   els.search.addEventListener('input',renderLibrary);
   let camera={x:24,y:24,zoom:1};
@@ -1277,7 +1290,7 @@
     localStorage.setItem('ccs-norm',norm);appearance='iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();render();scheduleSave();setStatus(norm+' sembolleri seçildi · Terminal ve kablolar korundu');
   });
   $('#newBtn').onclick=()=>modal('Yeni proje','<p>Geçerli çalışma alanı temizlenecek. Kaydetmediğiniz değişiklikleri önce dışa aktarabilirsiniz.</p>',()=>{if(!snapshot())return;const mode=project.workspaceMode||'control';window.DTSEditor.create(mode,mode==='control'?'Kumanda Devresi 1':undefined);toast('Yeni proje açıldı')});
-  $('#saveBtn').onclick=()=>{localStorage.setItem('ods-project',JSON.stringify(project));toast('Proje bu tarayıcıya kaydedildi')};$('#exportBtn').onclick=download;$('#openBtn').onclick=()=>$('#fileInput').click();
+  $('#saveBtn').onclick=()=>{localStorage.setItem('ods-project',JSON.stringify(project));toast('Proje bu tarayıcıya kaydedildi')};$('#exportBtn').onclick=download;$('#materialListBtn').onclick=exportMaterialList;$('#openBtn').onclick=()=>$('#fileInput').click();
   $('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const p=window.DTSProjects.parse(rd.result);if(!snapshot())return;project=migrateProject(p);resetDraft();selectedWire=null;hideWireMenu();setSelection([]);running=false;$('#sheetName').textContent=project.name;populateWireMenu();renderLibrary();render();const scaleAudit=materialLayoutWarning();if(!scaleAudit?.overlapCount)toast('Proje açıldı')}catch{toast('Geçersiz proje dosyası')}};rd.readAsText(f);e.target.value=''};
   $('#renameSheet').onclick=()=>{if(!guardEdit())return;modal('Sayfayı yeniden adlandır',`<label>Sayfa adı<input id="modalName" value="${esc(project.name)}" style="width:100%;margin-top:7px;padding:8px"></label>`,()=>{project.name=$('#modalName')?.value||project.name;$('#sheetName').textContent=project.name;render()})};
   $('#collapseLibrary').onclick=()=>document.body.classList.toggle('library-collapsed');

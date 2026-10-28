@@ -38,7 +38,7 @@
 | 17 | Simülasyon durumu ve aktif enerji yollarını daha anlaşılır göster | **KISMİ**: eski DTS enerji yolu göstergeleri mevcut; tutarlı yeni UX ayrı |
 | 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **PLAN** |
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |
-| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **PLAN** |
+| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV malzeme listesi; gerçek katalog miktarı ve referanslar; PDF/PNG, Windows Edge kabulü açık |
 
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
@@ -101,3 +101,7 @@ Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proj
 ### 28 Ekim — Asenkron Ladder dosyası içe aktarma kimlik kapısı
 
 **Somut kusur:** `File.text()` beklenirken Ladder penceresinde PLC değiştirildiğinde geç gelen dosya sonucu yeni PLC'nin taslağına yazılabiliyordu. **Onarım:** İçe aktarma başındaki PLC nesnesi, proje nesnesi ve terminal sınırı sabitlenir; dosya okunduktan sonra hâlâ aynı PLC ve aynı açık pencere değilse hiçbir program değiştirilmez ve anlaşılır iptal mesajı gösterilir. İçe aktarma zaten kaydedilmiş programa doğrudan müdahale etmez. `tests/dts-ladder-import-context.test.cjs` eklendi. Yalnız hedefli V8 JS davranış testi; Node/Windows görsel kabulü REVIEW.
+
+### 28 Ekim — Çevrimdışı CSV malzeme listesi
+
+Şema `project.components` ve gerçek katalog `byId` alanları kullanılarak malzemeler tür kimliğine göre sayılır, katalog model/marka ve varsa referanslar kaydedilir. Fiyat, fiziksel uygunluk ve çalışır devre iddiası üretilmez. CSV'de formül hücresi enjeksiyonuna karşı güvenli metin kaçışı kullanılır. `dist/material-list.js` ve hedefli testleri eklendi. PDF/PNG ayrı açık; Windows/Edge görsel ve gerçek indirme testi REVIEW.
