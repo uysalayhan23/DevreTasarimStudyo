@@ -60,7 +60,7 @@
      else{if(!Number.isFinite(s.start)||now<s.start)s.start=now;next=(now-s.start)>=coil.presetMs;}
     }else if(coil.type==='TOF'){
      if(active){delete s.offStart;next=true;}
-     else if(bits[ref]&&s.offStart===undefined){s.offStart=now;next=true;}
+     else if(bits[ref]&&(s.offStart===undefined||!Number.isFinite(s.offStart)||now<s.offStart)){s.offStart=now;next=true;}
      else next=Number.isFinite(s.offStart)&&(now-s.offStart)<coil.presetMs;
     }else{
      // IEC-style TP: a new edge cannot extend a pulse that is already running.
