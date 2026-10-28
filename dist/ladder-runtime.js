@@ -66,6 +66,16 @@
    else if(coil.type==='RESET'){if(active){bits[ref]=false;delete states[ref];}next=!!bits[ref];written.add(ref);}
    else if(['TON','TOF','TP'].includes(coil.type)){
     const s=states[ref]||(states[ref]={});
+    // Changing a virtual timer kind starts fresh; old output cannot energize the new block.
+    // Recognize timer state from earlier sessions that lack the kind marker.
+    const previousKind=s.kind||(Number.isFinite(s.start)?'TON':
+     Number.isFinite(s.offStart)?'TOF':
+     (Number.isFinite(s.pulseStart)||typeof s.prev==='boolean')?'TP':null);
+    if(previousKind&&previousKind!==coil.type){
+     delete s.start;delete s.offStart;delete s.pulseStart;delete s.prev;
+     bits[ref]=false;
+    }
+    s.kind=coil.type;
     if(coil.type==='TON'){
      if(!active){delete s.start;next=false;}
      else{if(!Number.isFinite(s.start)||now<s.start)s.start=now;next=(now-s.start)>=coil.presetMs;}

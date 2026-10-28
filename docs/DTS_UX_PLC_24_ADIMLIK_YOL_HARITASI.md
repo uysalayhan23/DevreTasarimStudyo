@@ -36,6 +36,12 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 ## Paket B — PLC Ladder (7 madde)
 
+### 28 Ekim — Ladder T1 zamanlayıcı tür değişiminde eski çıkışın taşınmasını engelleme
+
+**Gerçek kusur:** Sanal Ladder `TON T1` 100 ms sonunda aktifken aynı adresteki blok `TOF T1` türüne değiştirilip giriş pasif yapıldığında eski `T1` biti ve zamanlayıcı belleği yeni TOF'a taşınıyor, Q1 yanlışlıkla açık kalıyordu. Önceki kaynakta bu yanlışlık gerçek V1 taraması ve gerçek katalogdaki CPU 1211C için `PLC.evaluate`/çıkış bağlantısı kontrolünde yeniden üretildi. **Hedefli onarım:** `dist/ladder-runtime.js` T adresinin `TON/TOF/TP` türünü izler; tür değişiminde yalnız o zamanlayıcının eski `start/offStart/pulseStart/prev` alanlarını ve çıkış bitini sıfırlar. Eski oturumların `kind` alanı bulunmayan zamanlayıcı belleği de savunmalı temizlenir. Aynı türün zamanlaması, sayaçlar ve M kilitleri değiştirilmedi. Hedefli 11 V8 kontrolü PASS; `tests/dts-ladder-timer-kind-switch.test.cjs` içindeki 8 regresyon senaryosu V8 koşumuyla PASS. Gerçek `dist/library.js` CPU 1211C katalog tanımıyla `PLC.evaluate` ve `PLC.links` pozitif-negatif entegrasyonu PASS; bu, tam `Simulation.solve` veya fiziksel lamba kanıtı değildir. Bağımsız Node.js ve özgün tam `Simulation.solve` yürütümü bu turda **NOT_RUN**; Windows/Edge, 3D ve fiziksel kabul **REVIEW**. Madde 11/13 **KISMİ**, 1686 ders ve Golden/HOLD kilitleri değişmedi.
+
+
+
 ### 28 Ekim — Kaldırılmış Ladder T/C bloklarının hayalet sinyal temizliği
 
 **Somut kusur:** Bir Ladder taslağında ON olmuş `TON T1` veya `CTU C1` bloğu sonraki program değişikliğinde çıkarıldığında, `scan` yalnız sahipsiz Q çıkışlarını sıfırladığı için eski `T1/C1` bitleri ve `blocks` sayım/zaman belleği kalabiliyordu. Eski bir T/C kontağını okuyan başka Network böylece gerçekte artık üretilmeyen sinyalden Q çıkışını etkinleştirebiliyordu. Her iki durum gerçek eski kaynakla yeniden üretildi. **Dar kapsamlı onarım:** `dist/ladder-runtime.js` yalnız sahibi olmayan T1–T16 / C1–C16 adreslerini kapatıp o adreslerin eski blok durumunu temizler; hâlen sahibi olan zamanlayıcı/sayaç blokları ve M kilitleme belleği korunur. FBD'de CTU'nun pasif RESET'e değiştirilmesi de güvenli sonuç verir. Hedefli 6 yeni regresyon senaryosu V8 ortamında PASS; `tests/dts-ladder-orphan-block-memory.test.cjs` Node test dosyası eklendi, bağımsız Node yürütümü bu turda **NOT_RUN**. 703 katalog / `Simulation.solve`, Windows/Edge, 3D ve bağımsız COMPLETE kabulü bu değişiklikten etkilenmez (**REVIEW**); 11/23 maddeleri **KISMİ** kalır.
