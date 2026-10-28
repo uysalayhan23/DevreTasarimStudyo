@@ -3,7 +3,7 @@
  // Offline PNG conversion only for self-contained SVG art. Never silently omit external photos.
  function sourceCheck(svg){
   if(!svg?.querySelectorAll)return {ok:false,error:'Devre SVG kaynağı bulunamadı.'};
-  const refs=svg.querySelectorAll('image,foreignObject,use,feImage,script,animate,animateMotion,animateTransform,set')||[];
+  const refs=svg.querySelectorAll('image,foreignObject,use,feImage,script,animate,animateMotion,animateTransform,set,[href],[xlink\\:href]')||[];
   for(const el of refs){
    const tag=String(el.localName||el.tagName||'').toLowerCase().split(':').pop();
    if(['script','animate','animatemotion','animatetransform','set'].includes(tag))
@@ -17,6 +17,9 @@
     return {ok:false,error:'Bu şemada harici malzeme görseli var. PNG dönüştürme güvenli değil; PDF / Yazdır kullanın.'};
    if(tag==='use'&&href.some(v=>!/^#[a-zA-Z_][\w:.-]*$/.test(v)))
     return {ok:false,error:'Dış SVG bağlantısı içeren şema PNG için desteklenmiyor.'};
+   // Other SVG references (gradients, text paths, links) must also remain in-document.
+   if(tag!=='image'&&tag!=='use'&&href.some(v=>!/^#[a-zA-Z_][\w:.-]*$/.test(v)))
+    return {ok:false,error:'PNG için dış SVG referansı desteklenmiyor; PDF / Yazdır kullanın.'};
   }
   return {ok:true};
  }
