@@ -172,11 +172,14 @@
    const items=available();
    if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
    const target=items.find(c=>c.id===which)||items[0];
-   if(overlay.hidden)returnFocus=doc.activeElement;
+   const firstOpen=overlay.hidden;
+   if(firstOpen)returnFocus=doc.activeElement;
    active=stateFor(target,editor);
    active.history=sessions.forComponent(editor.getProject(),target,active.draft);
    active.draft=active.history.current();
-   overlay.hidden=false;render();overlay.querySelector('.dts-ladder-dialog')?.focus();
+   overlay.hidden=false;render();
+   // Initial open enters the dialog; switching PLC keeps keyboard focus on its selector.
+   overlay.querySelector(firstOpen?'.dts-ladder-dialog':'#dtsLadderTarget')?.focus();
    if(!monitorTimer)monitorTimer=root.setInterval(()=>{
     if(overlay.hidden||!active)return;
     const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);

@@ -49,3 +49,36 @@ test('non-Tab keys are not intercepted',()=>{
  const f=fixture();f.last.focus();const e=f.event(false,'Escape');
  assert.equal(E.trapModalTab(e,f.dialog,f.doc),false);assert.equal(e.prevented,false);
 });
+
+test('PLC switch retains selector focus, and closing restores opener focus',()=>{
+ const doc={activeElement:null};
+ const button={dataset:{},addEventListener(){},focus(){doc.activeElement=this;}};
+ const dialog={focus(){doc.activeElement=this;}};
+ const selector={id:'dtsLadderTarget',disabled:false,focus(){doc.activeElement=this;}};
+ const overlay={hidden:true,addEventListener(){},setAttribute(){},
+  contains(el){return el===dialog||el===selector;},
+  querySelector(q){return q==='.dts-ladder-dialog'?dialog:q==='#dtsLadderTarget'?selector:null;},
+  querySelectorAll(){return [selector];}};
+ doc.body={appendChild(){}};
+ doc.getElementById=id=>id==='dtsLadderBtn'?button:null;
+ doc.createElement=()=>overlay;
+ const def={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
+  {id:'X10:6',label:'1M',signalType:'POWER'},
+  {id:'X12:1',label:'3L+',signalType:'POWER'},
+  {id:'X12:2',label:'3M',signalType:'POWER'},
+  ...Array.from({length:6},(_,i)=>({id:'X10:'+(i+7),signalType:'DI'})),
+  ...Array.from({length:4},(_,i)=>({id:'X12:'+(i+3),signalType:'DO'}))
+ ]};
+ const project={components:[{id:'a',typeId:def.id},{id:'b',typeId:def.id}]};
+ const editor={byId:{[def.id]:def},getProject:()=>project,running:false};
+ button.focus();
+ assert.equal(E.init(doc,editor),true);
+ assert.equal(globalThis.DTSLadderEditor.open('a'),true);
+ assert.equal(doc.activeElement,dialog);
+ selector.focus();
+ assert.equal(globalThis.DTSLadderEditor.open('b'),true);
+ assert.equal(doc.activeElement,selector);
+ assert.match(overlay.innerHTML,/value="b" selected/);
+ globalThis.DTSLadderEditor.close();
+ assert.equal(doc.activeElement,button);
+});
