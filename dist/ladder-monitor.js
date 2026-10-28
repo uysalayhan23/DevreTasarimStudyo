@@ -3,12 +3,14 @@
  // HMI-like readonly educational monitor: signals come from actual PLC simulation, no force commands.
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
+ const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  function snapshot(c,d,running,savedMatches,validationError=null){
   const state=c?._plcRuntime;
   // A failed native Ladder scan may still return a zero-output virtual CPU state.
   // Never advertise that fault state as live or show misleading 0/1 telemetry.
   const error=validationError||(typeof c?._dtsLadderError==='string'&&c._dtsLadderError.trim()?c._dtsLadderError:null);
-  const live=!!running&&!!savedMatches&&!error&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
+  const mapped=!!state&&['DI','DO'].every(type=>pins(d,type).every(p=>Object.prototype.hasOwnProperty.call(state[type==='DI'?'inputs':'outputs']||{},p.id)&&typeof state[type==='DI'?'inputs':'outputs'][p.id]==='boolean'));
+  const live=!!running&&!!savedMatches&&!error&&mapped&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));
   return {live,powered:live?!!state.powered:null,
    inputs:list('DI','inputs','I'),outputs:list('DO','outputs','Q'),
