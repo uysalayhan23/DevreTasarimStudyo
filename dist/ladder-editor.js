@@ -55,6 +55,24 @@
   ];
  }
  const clone=x=>JSON.parse(JSON.stringify(x));
+ // New LAD rungs and OR paths must not energize an output by themselves.
+ function addSafeRung(program,limits={}){
+  const initial=L?.validate?.(program,limits);
+  if(!initial?.ok)return {ok:false,error:initial?.error||'Ladder programı geçersiz.'};
+  if(program.rungs.length>=32)return {ok:false,error:'En fazla 32 Network.'};
+  const draft=clone(program),used=new Set(draft.rungs.map(r=>r.id));
+  let n=1;while(used.has('R'+n))n++;
+  draft.rungs.push({id:'R'+n,paths:[[]],coil:{type:'NOP',ref:''}});
+  const checked=L.validate(draft,limits);
+  return checked.ok?{ok:true,program:draft}:{ok:false,error:checked.error};
+ }
+ function addSafeParallelPath(program,index,limits={}){
+  if(!Number.isSafeInteger(index)||index<0||!program?.rungs?.[index]?.paths)
+   return {ok:false,error:'Paralel eklenecek Network bulunamadı.'};
+  const p=program.rungs[index].paths;
+  return FBDView.editStructure(program,'add-path',index+':'+(p.length-1),limits);
+ }
+
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
   let steps=[clone(initial)],index=0;
@@ -423,11 +441,17 @@
     }catch(error){editor.toast?.(error.message||'Örnek yüklenemedi')}
     return;
    }
-   if(type==='add-rung'){if(active.draft.rungs.length>=32)return;
-    const used=new Set(active.draft.rungs.map(x=>x.id));let n=1;while(used.has('R'+n))n++;
-    active.draft.rungs.push({id:'R'+n,paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}});}
+   if(type==='add-rung'){
+    const result=addSafeRung(active.draft,limits());
+    if(!result.ok){editor.toast?.(result.error);return}
+    active.draft=result.program;
+   }
    else if(type==='remove-rung'){if(active.draft.rungs.length>1){const id=active.draft.rungs[r]?.id;active.draft.rungs.splice(r,1);closedNetworks.delete(id);if(focusedNetwork===id)focusedNetwork=null;}}
-   else if(type==='add-path'){if(active.draft.rungs[r].paths.length<8)active.draft.rungs[r].paths.push([{type:'NO',ref:'I1'}]);}
+   else if(type==='add-path'){
+    const result=addSafeParallelPath(active.draft,r,limits());
+    if(!result.ok){editor.toast?.(result.error);return}
+    active.draft=result.program;
+   }
    else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
    else if(type==='add-contact'){const path=active.draft.rungs[r].paths[p];if(path.length<12)path.push({type:'NO',ref:'I1'});}
    else if(type==='remove-contact'){
@@ -572,7 +596,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeParallelPath};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);

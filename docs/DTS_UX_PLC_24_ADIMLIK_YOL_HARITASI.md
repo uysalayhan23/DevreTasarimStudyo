@@ -104,6 +104,10 @@ Operatör paneli `_dtsLadderError` durumunda eski 0/1 sinyallerini gizlerken `la
 
 Sanal Ladder ile yeniden üretilen ciddi kaynak kusuru: İlk yol `NO I2` kapalıyken, kullanıcı yalnız `+ Paralel` düğmesine basarsa ek kol kendiliğinden `NO I1` ile oluşuyor ve I1 açık olduğunda `Q1` hemen enerji alıyordu. `dist/fbd-view.js` yeni OR kolunu artık **[] boş/açık devre** olarak oluşturur; `+ Seri` ile gerçek kontak eklenince çalışır. Eski geçerli yollara dokunulmaz, taslak kopyası korunur; fiziksel Q/M SET, 8 paralel sınırı, sıfır girişli PLC M adresi, native `Ladder.scan` ve Undo/Redo pozitif-negatif hedefli test edildi. Önceden otomatik I1 kabul eden FBD regresyon beklentileri yeni güvenli akışa güncellendi. Yeni 7 ve önceki FBD yapı/önüne ekleme/görünüm testleri **26/26 hedefli V8 PASS**. Gerçek Windows/Edge/3D kullanıcı kabulü REVIEW, bağımsız Node NOT_RUN; madde 09/23 genel KISMİ. 703 katalog, 1686 ders, Golden/PASS/HOLD ve SC1194 korunur.
 
+### 28 Ekim — Madde 09/23: LAD + Rung / + Paralel güvenli başlangıç
+
+Gerçek `Ladder.scan` kusuru yeniden üretildi: `+ Rung` varsayılan `NO I1 → OUT Q1`, LAD `+ Paralel` `NO I1` eklediği için I1 zaten aktifse kullanıcı yeni devreyi kurmadan fiziksel Q1/Q2 sanal çıkışı enerjilenebiliyordu. Yeni `addSafeRung` yalnız `paths:[[]]`, `coil:{type:'NOP',ref:''}` ile geçerli ama açık/çıkışsız Network yaratır. Yeni `addSafeParallelPath` FBD ile paylaşılan `editStructure(add-path)` güvenli boş yolunu kullanır. İki işlem programı kopyalar, `Ladder.validate` sınırlarını, R1–R32 kimliğini ve Undo/Redo'yu korur. Kontak/çıkış kullanıcı tarafından seçildiğinde özgün native simülasyon devreye girer. `tests/dts-ladder-safe-new-rung-and-path.test.cjs` 9 yeni + önceki history ve FBD regresyonları **22/22 V8 PASS**. Windows/Edge 3D kabulü REVIEW; bağımsız Node NOT_RUN, genel 09/23 KISMİ. 703 katalog, 1686 ders, SC1194 ve Golden/PASS/HOLD korunur.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
