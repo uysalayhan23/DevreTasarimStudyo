@@ -55,6 +55,11 @@
   return !!simButton&&!simButton.disabled&&c?.plcProgram==='dts-ladder-v1'&&
     !!c.ladderProgram&&JSON.stringify(draft)===JSON.stringify(c.ladderProgram);
  }
+ // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
+ // Never apply an async import to a different component or a replaced project instance.
+ function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible){
+  return !!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible;
+ }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
  const starter=()=>({version:1,rungs:[
@@ -312,13 +317,20 @@
   });
   overlay.addEventListener('change',async e=>{
    if(e.target.id==='dtsLadderImport'){
-    const file=e.target.files?.[0];
-    if(file&&active){
+    const file=e.target.files?.[0],target=active,originalProject=editor.getProject();
+    if(file&&target){
      try{
       if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
-      const draft=ProgramIO.parse(await file.text(),limits());
-      active.draft=draft;active.history.push(active.draft);render();
-      editor.toast?.('Ladder programı taslağa alındı. PLC programını değiştirmek için Kaydet.');
+      // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
+      const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
+      const raw=await file.text();
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden)){
+       editor.toast?.('İçe aktarma iptal: PLC veya proje değişti. Program değiştirilmedi.');
+      }else{
+       const draft=ProgramIO.parse(raw,originalLimits);
+       target.draft=draft;target.history.push(draft);render();
+       editor.toast?.('Ladder dosyası taslağa alındı. PLC programını değiştirmek için Kaydet.');
+      }
      }catch(ex){editor.toast?.(ex.message)}
     }
     e.target.value='';return;
@@ -366,7 +378,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);

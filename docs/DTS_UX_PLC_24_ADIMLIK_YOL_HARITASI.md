@@ -97,3 +97,7 @@ Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proj
 **Onarım:** `ladder-runtime.js` her network için gerçek tarama anı `pathStates` izini üretir. `ladder-editor.js` yalnız kaydedilmiş programın izini gösterir; `ladder-diagram.js` gerçek giriş yolunu ve çıkış durumunu ayrı renklendirir. `plc-runtime.js` enerjisiz CPU'da taramayı durdurup bellek/izleri temizler; `ladder-monitor.js` I/O durumunu gizler. Fiziksel çıkış bankı beslemesi ile CPU mantık çıkışı ayrımı korunur.
 
 **Kanıt:** Yeni `tests/dts-ladder-trace-power-regression.test.cjs` dosyası 7 hedefli vaka içerir; aynı 7 vaka değiştirilmiş gerçek kaynakla V8'de çalıştırıldı. **Node.js dosya çalıştırması ve Windows/Edge/3D kabulü NOT_RUN/REVIEW.** Maddeler 11/13/14/17/24 hâlâ KISMİ; Golden/HOLD/1686 ders etkilenmedi.
+
+### 28 Ekim — Asenkron Ladder dosyası içe aktarma kimlik kapısı
+
+**Somut kusur:** `File.text()` beklenirken Ladder penceresinde PLC değiştirildiğinde geç gelen dosya sonucu yeni PLC'nin taslağına yazılabiliyordu. **Onarım:** İçe aktarma başındaki PLC nesnesi, proje nesnesi ve terminal sınırı sabitlenir; dosya okunduktan sonra hâlâ aynı PLC ve aynı açık pencere değilse hiçbir program değiştirilmez ve anlaşılır iptal mesajı gösterilir. İçe aktarma zaten kaydedilmiş programa doğrudan müdahale etmez. `tests/dts-ladder-import-context.test.cjs` eklendi. Yalnız hedefli V8 JS davranış testi; Node/Windows görsel kabulü REVIEW.
