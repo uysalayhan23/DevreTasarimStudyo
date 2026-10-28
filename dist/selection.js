@@ -39,7 +39,7 @@
     return {positioned,wires,left:Math.min(...boxes.map(b=>b.left)),top:Math.min(...boxes.map(b=>b.top)),right:Math.max(...boxes.map(b=>b.right)),bottom:Math.max(...boxes.map(b=>b.bottom))};
   }
   function constrain(plan,dx,dy,grid=10,width=2400,height=1500){
-    if(plan?.empty)return {x:0,y:0};
+    if(plan?.empty||!Number.isFinite(dx)||!Number.isFinite(dy)||!Number.isFinite(grid)||grid<=0||!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)return {x:0,y:0};
     const snap=v=>Math.round(v/grid)*grid;
     const axis=(v,low,high)=>Math.max(Math.ceil(low/grid)*grid,Math.min(Math.floor(high/grid)*grid,snap(v)));
     // A selection wider than the sheet cannot fit fully; allow movement
