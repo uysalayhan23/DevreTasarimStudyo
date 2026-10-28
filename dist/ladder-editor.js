@@ -5,6 +5,7 @@
  const Diagram=typeof module==='object'&&module.exports?require('./ladder-diagram.js'):root?.DTSLadderDiagram;
  const Monitor=typeof module==='object'&&module.exports?require('./ladder-monitor.js'):root?.DTSLadderMonitor;
  const ProgramIO=typeof module==='object'&&module.exports?require('./ladder-program-io.js'):root?.DTSLadderProgramIO;
+ const Examples=typeof module==='object'&&module.exports?require('./ladder-examples.js'):root?.DTSLadderExamples;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
@@ -144,6 +145,8 @@
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
    const canRun=canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'));
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
+   const options=Examples.list(limits());
+   const exampleSelect=select(options[0]?.id,options.map(item=>({value:item.id,label:item.title})), 'id="dtsLadderExample" aria-label="Örnek Ladder programı"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
     '<button type="button" data-action="close" aria-label="Kapat">×</button></header>'+
@@ -151,7 +154,8 @@
     '<button type="button" data-action="undo" '+(active.history.canUndo()?'':'disabled')+' aria-label="Ladder geri al">↶ Geri al</button>'+
     '<button type="button" data-action="redo" '+(active.history.canRedo()?'':'disabled')+' aria-label="Ladder yinele">↷ Yinele</button>'+
     '<button type="button" data-action="add-rung">+ Rung</button>'+
-    '<button type="button" data-action="starter">Start / Stop örneği</button>'+ 
+    '<label class="dts-ladder-examples">Örnek program '+exampleSelect+'</label>'+ 
+    '<button type="button" data-action="load-example" '+(options.length?'':'disabled')+'>Örneği taslağa al</button>'+ 
     '<button type="button" data-action="export-program">Dışa aktar</button>'+ 
     '<button type="button" data-action="import-program">İçe aktar</button>'+ 
     '<input type="file" id="dtsLadderImport" accept=".dtsladder,.json" hidden>'+
@@ -286,6 +290,16 @@
     return;
    }
    if(type==='starter'){active.draft=starter();active.history.push(active.draft);render();return}
+   if(type==='load-example'){
+    const id=overlay.querySelector('#dtsLadderExample')?.value;
+    try{
+     // This is a draft only; saved PLC program and native runtime are unchanged.
+     const sample=Examples.build(id,limits());
+     active.draft=sample;active.history.push(sample);render();
+     editor.toast?.('Örnek taslağa alındı. Kendi PLC programın için Kaydet.');
+    }catch(error){editor.toast?.(error.message||'Örnek yüklenemedi')}
+    return;
+   }
    if(type==='add-rung'){if(active.draft.rungs.length>=32)return;
     const used=new Set(active.draft.rungs.map(x=>x.id));let n=1;while(used.has('R'+n))n++;
     active.draft.rungs.push({id:'R'+n,paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}});}

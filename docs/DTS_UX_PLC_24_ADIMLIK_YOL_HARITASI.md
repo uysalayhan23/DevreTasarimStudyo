@@ -28,7 +28,7 @@
 | 12 | Ladder I1/Q1 adreslerini gerçek katalog terminalleriyle eşleştirme | **KOD/TEST (tek model)**: `plc-hw-6es7211-1ae40-0xb0` |
 | 13 | Ladder tarama ve özgün `Simulation.solve` ile fiziksel devre | **KOD/TEST (tek model)**: 703 katalog 7/7 hedefli gerçek native sanal sahne |
 | 14 | Canlı Ladder sinyal/aktif kontak/timer/sayaç izleme | **KISMİ**: rung aktivite işareti var; tam mantık yolu, timer değeri ve UI testleri açık |
-| 15 | Ladder kaydet/aç/örnek program kütüphanesi | **KISMİ/KOD**: sürümlü DTS `.dtsladder` JSON dışa/içe aktarım eklendi, kaynak program yalnız Kaydet ile güncellenir; Windows Edge dosya seçici ve örnek kütüphane kabulü açık |
+| 15 | Ladder kaydet/aç/örnek program kütüphanesi | **KISMİ/KOD**: DTS `.dtsladder` dosyası ve **dört özgün hedefli native testli örnek** (Start/Stop, TON, CTU, ileri/geri kilit) editörde yalnız taslağa yüklenir; Windows Edge / dosya seçici kabulü açık |
 
 ## Paket C — Devre deneyimi (5 madde)
 
@@ -117,3 +117,7 @@ Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proj
 ### 28 Ekim — bağımsız sanal PLC operatör paneli (24)
 
 DTS üst barına `▣ PLC I/O` eklendi. Pencere editörden bağımsız açılır/kapanır; yalnız `ladder-runtime.supportedPLC` kapısından geçmiş gerçek katalog cihazları listeler. Giriş/çıkışlar `ladder-monitor.snapshot` ve orijinal `_plcRuntime` durumuyla canlı, simülasyon kapalı/CPU enerjisiz/yanlış Ladder modunda bilinmiyor olarak gösterilir. Panel PLC girişlerini zorlamaz, gerçek donanım ile iletişim kurmaz. Dashboard'a geçerken kapanır; yalnız açıkken 350 ms günceller. **KOD / hedefli izole test; Windows/Edge görsel REVIEW.**
+
+### 28 Ekim — dört özgün testli Ladder hazır örneği
+
+`dist/ladder-examples.js` kaynak kodunda dört özgün derslik V1 programı bulunur: I1/I2 Start–Stop mühürleme; I1→TON T1 1500ms→Q1; CTU C1 üç darbe, I2 RESET C1, Q1; I1/I3 ileri-geri Q1/Q2 sanal karşılıklı kilitleme, I2 durdurma. `Ladder.validate` giriş/çıkış sayısına göre örnek seçimini kısıtlar. `dist/ladder-editor.js` örnek düğmesi yalnız aktif PLC taslağını değiştirir; kalıcı değişiklik için mevcut proje kilitlerini kullanan Kaydet gerekir. Bu kod gerçek Siemens LOGO binary/.lsc örneklerinden türetilmiş bir aktarım değildir. **Bu turdaki JS izole native tarama pozitif/negatif kontrolleri** raporlandı; Windows/Edge ve bağımsız gerçek elektriksel kabul ayrıca REVIEW.
