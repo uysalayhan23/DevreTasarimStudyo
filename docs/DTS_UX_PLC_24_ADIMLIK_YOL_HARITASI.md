@@ -92,6 +92,10 @@ Sanal Ladder'da SET Q1 ile açılmış bir fiziksel Q çıkışının yazarı ka
 
 Network `monitorRows` önce `powered!==true` sonucunu kontrol etmediğinden, program kayıtlı olduğu halde PLC enerjisizken yanıltıcı “Taslak izlenmiyor · kayıtlı program farklı” mesajını veriyordu. Enerji yok veya belirsiz ise açıkça “PLC beslemesi yok” gösterilir ve eski aktif sinyaller `—` olarak kalır; simülasyon kapalı ve gerçek taslak uyuşmazlığı açıklamaları korunur. Yeni 4 + mevcut 8 timer/sayaç izleme senaryosu **12/12 hedefli V8 PASS**. Windows/Edge görsel kabulü ve bağımsız Node NOT_RUN/REVIEW; 14. madde KISMİ.
 
+### 28 Ekim — Madde 14: native tarama hatasında LAD/FBD eski aktif izlerini gizle
+
+Operatör paneli `_dtsLadderError` durumunda eski 0/1 sinyallerini gizlerken `ladder-editor.js` canlı Network `monitorRows` hesabı aynı hatayı kontrol etmiyordu. Hatalı sanal tarama sonrası kaydedilmiş eski `_dtsLadderTraces` ve `_dtsLadderMemory` üzerinden LAD/FBD kontak ve çıkışlar yanlışlıkla **AKTİF/yeşil** görünebiliyordu. `monitorRows` isteğe bağlı `scanError` parametresi ile canlı değerleri ve durum açıklamasını kapatır; ilk render `liveBits` ve 300 ms güncellemesindeki `bits` de eski hafıza renklerini göstermez. Simülasyon kapalı, enerji yok, gerçek taslak uyuşmazlığı ve geçerli TON/TOF/TP/CTU/CTD izleme korunur. `tests/dts-ladder-network-scan-fault.test.cjs` 6 yeni + mevcut timer/sayaç 8 ve besleme 4, toplam **18/18 hedefli V8 PASS**. Gerçek Windows/Edge ve bağımsız Node NOT_RUN/REVIEW. Golden, 703 katalog, 1686 ders, SC1194 HOLD korunur.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
