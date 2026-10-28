@@ -4,6 +4,7 @@
  const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const Diagram=typeof module==='object'&&module.exports?require('./ladder-diagram.js'):root?.DTSLadderDiagram;
  const Monitor=typeof module==='object'&&module.exports?require('./ladder-monitor.js'):root?.DTSLadderMonitor;
+ const ProgramIO=typeof module==='object'&&module.exports?require('./ladder-program-io.js'):root?.DTSLadderProgramIO;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
@@ -144,7 +145,10 @@
     '<button type="button" data-action="undo" '+(active.history.canUndo()?'':'disabled')+' aria-label="Ladder geri al">↶ Geri al</button>'+
     '<button type="button" data-action="redo" '+(active.history.canRedo()?'':'disabled')+' aria-label="Ladder yinele">↷ Yinele</button>'+
     '<button type="button" data-action="add-rung">+ Rung</button>'+
-    '<button type="button" data-action="starter">Start / Stop örneği</button>'+
+    '<button type="button" data-action="starter">Start / Stop örneği</button>'+ 
+    '<button type="button" data-action="export-program">Dışa aktar</button>'+ 
+    '<button type="button" data-action="import-program">İçe aktar</button>'+ 
+    '<input type="file" id="dtsLadderImport" accept=".dtsladder,.json" hidden>'+
     '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button>'+ 
     '<button type="button" data-action="toggle-sim" '+(canRun?'':'disabled title="Önce Ladder programını kaydet ve devreyi doğrula"')+'>'+runAction+'</button></div>'+
     '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(Monitor.snapshot(active.c,active.d,editor.running,live))+'</div>'+ 
@@ -249,6 +253,20 @@
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
    if(type==='close'){close();return}
    if(type==='save'){save();return}
+   if(type==='import-program'){
+    overlay.querySelector('#dtsLadderImport')?.click();return;
+   }
+   if(type==='export-program'){
+    try{
+     const data=ProgramIO.serialize(active.draft,limits(),active.c.label||active.c.id);
+     const file=new Blob([data],{type:'application/json'});
+     const url=root.URL.createObjectURL(file),a=doc.createElement('a');
+     a.href=url;a.download='dts-ladder-program.dtsladder';a.hidden=true;doc.body.appendChild(a);
+     try{a.click()}finally{a.remove();root.setTimeout(()=>root.URL.revokeObjectURL(url),0)}
+     editor.toast?.('DTS Ladder dosyası dışa aktarıldı.');
+    }catch(ex){editor.toast?.(ex.message)}
+    return;
+   }
    if(type==='toggle-sim'){
     const sim=doc.getElementById('simulateBtn');
     if(canStartLadder(active.c,active.draft,editor.running,sim)&&sim&&!sim.disabled)sim.click();
@@ -289,7 +307,19 @@
    if(e.target===overlay){close();return}
    const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
   });
-  overlay.addEventListener('change',e=>{
+  overlay.addEventListener('change',async e=>{
+   if(e.target.id==='dtsLadderImport'){
+    const file=e.target.files?.[0];
+    if(file&&active){
+     try{
+      if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
+      const draft=ProgramIO.parse(await file.text(),limits());
+      active.draft=draft;active.history.push(active.draft);render();
+      editor.toast?.('Ladder programı taslağa alındı. PLC programını değiştirmek için Kaydet.');
+     }catch(ex){editor.toast?.(ex.message)}
+    }
+    e.target.value='';return;
+   }
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
    const {field,r,p,c}=e.target.dataset;if(!field||!active)return;
    const rung=active.draft.rungs[Number(r)];

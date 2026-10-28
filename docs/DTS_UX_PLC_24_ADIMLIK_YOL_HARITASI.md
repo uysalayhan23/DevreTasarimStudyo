@@ -28,7 +28,7 @@
 | 12 | Ladder I1/Q1 adreslerini gerçek katalog terminalleriyle eşleştirme | **KOD/TEST (tek model)**: `plc-hw-6es7211-1ae40-0xb0` |
 | 13 | Ladder tarama ve özgün `Simulation.solve` ile fiziksel devre | **KOD/TEST (tek model)**: 703 katalog 7/7 hedefli gerçek native sanal sahne |
 | 14 | Canlı Ladder sinyal/aktif kontak/timer/sayaç izleme | **KISMİ**: rung aktivite işareti var; tam mantık yolu, timer değeri ve UI testleri açık |
-| 15 | Ladder kaydet/aç/örnek program kütüphanesi | **KISMİ**: `ladderProgram` proje nesnesine kaydedilir ve JSON temizlemede korunur; gelişmiş örnek/ithal/ihracat ve Windows yeniden açma testi açık |
+| 15 | Ladder kaydet/aç/örnek program kütüphanesi | **KISMİ/KOD**: sürümlü DTS `.dtsladder` JSON dışa/içe aktarım eklendi, kaynak program yalnız Kaydet ile güncellenir; Windows Edge dosya seçici ve örnek kütüphane kabulü açık |
 
 ## Paket C — Devre deneyimi (5 madde)
 
