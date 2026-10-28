@@ -91,6 +91,10 @@
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
   }
   function parse(text){if(text.length>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
+  async function readProjectFile(file){
+    if(file?.size>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');
+    return parse(await file.text());
+  }
   function clean(p){return JSON.parse(JSON.stringify(p,(k,v)=>k.startsWith('_')?undefined:v))}
   const isProtected=p=>!!(p?.defaultTemplate?.id&&p.defaultTemplate.readOnly===true);
   function editableCopy(project){const p=clean(project);p.projectId=uid();if(isProtected(p)){p.sourceExample=p.defaultTemplate.id;p.name=(p.name||'Örnek')+' · Çalışma kopyam';delete p.defaultTemplate}return p}
@@ -121,9 +125,9 @@
       const entries=[],warnings=[];
       if(directory){permissionNeeded=!await permission(directory,'read',request);if(permissionNeeded)return {entries:readFolderIndex(),warnings,permissionNeeded:true};
         for await(const [name,handle] of directory.entries())if(handle.kind==='file'&&/\.(odsdevre|dtsproj|json)$/i.test(name)){
-          try{const file=await handle.getFile();if(file.size>20*1024*1024)throw Error('20 MB sınırını aşıyor');entries.push({key:name,name,project:parse(await file.text()),handle,lastModified:file.lastModified})}catch(e){warnings.push(name+': '+e.message)}
+          try{const file=await handle.getFile();entries.push({key:name,name,project:await readProjectFile(file),handle,lastModified:file.lastModified})}catch(e){warnings.push(name+': '+e.message)}
         }
-      }else if(readOnlyFiles){for(const file of readOnlyFiles)try{entries.push({key:file.webkitRelativePath||file.name,name:file.name,project:parse(await file.text()),handle:null,lastModified:file.lastModified})}catch(e){warnings.push(file.name+': '+e.message)}}
+      }else if(readOnlyFiles){for(const file of readOnlyFiles)try{entries.push({key:file.webkitRelativePath||file.name,name:file.name,project:await readProjectFile(file),handle:null,lastModified:file.lastModified})}catch(e){warnings.push(file.name+': '+e.message)}}
       entries.sort((a,b)=>(a.project.name||a.name).localeCompare(b.project.name||b.name,'tr',{numeric:true}));if(directory)writeFolderIndex(entries);return {entries,warnings,permissionNeeded:false};
     }
     async function remember(project,handle,lastModified){if(!project.projectId)project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);await db('put','handle:'+project.projectId,data)}}
@@ -135,12 +139,12 @@
         handle=await directory.getFileHandle(entry.name);
       }
       if(handle&&!await permission(handle,'read',request))throw Error('Proje dosyasını açmak için izin gerekli.');
-      const file=handle?await handle.getFile():null,p=file?parse(await file.text()):validate(migrate(clean(entry.project)));
+      const file=handle?await handle.getFile():null,p=file?await readProjectFile(file):validate(migrate(clean(entry.project)));
       if(!p.projectId)p.projectId=uid();await remember(p,handle,file?.lastModified||entry.lastModified);return p
     }
     async function openFile(){
       if(!env.showOpenFilePicker)return {fallback:true};
-      try{const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});const file=await handle.getFile(),p=parse(await file.text());await remember(p,handle,file.lastModified);return {project:p}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
+      try{const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});const file=await handle.getFile(),p=await readProjectFile(file);await remember(p,handle,file.lastModified);return {project:p}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
     function download(project){const blob=new env.Blob([JSON.stringify(clean(project),null,2)],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
