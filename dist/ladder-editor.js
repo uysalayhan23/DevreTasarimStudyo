@@ -2,6 +2,7 @@
  'use strict';
  // Original DTS Ladder editor. Only edits the user's virtual PLC program; never imports Siemens code.
  const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
+ const Diagram=typeof module==='object'&&module.exports?require('./ladder-diagram.js'):root?.DTSLadderDiagram;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
@@ -124,6 +125,8 @@
    if(!active)return;
    const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
+   const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
+   const liveBits=live?active.c._dtsLadderMemory?.values:null;
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
@@ -138,6 +141,7 @@
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
       return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
+       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+Diagram.render(r,{index:ri,live:!!liveBits,values:liveBits})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
@@ -189,6 +193,16 @@
      const status=el.querySelector('[data-monitor="status"]'),value=el.querySelector('[data-monitor="value"]');
      if(status)status.textContent=row.status;
      if(value)value.textContent=signalText(row);
+     const diagram=el.querySelector('[data-diagram]'),shown=editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
+       JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
+     const bits=shown?active.c._dtsLadderMemory?.values:null;
+     if(diagram){
+      const key=JSON.stringify([!!bits,bits||{},row.active,row.value]);
+      if(diagram.dataset.signalKey!==key){
+       diagram.innerHTML=Diagram.render(active.draft.rungs[i],{index:i,live:!!bits,values:bits});
+       diagram.dataset.signalKey=key;
+      }
+     }
     });
    },300);
    return true;

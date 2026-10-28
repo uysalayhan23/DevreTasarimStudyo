@@ -991,3 +991,23 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-ladder-footer{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #d7e1eb}
 .dts-ladder-footer span{font-size:12px;color:#456173}
 @media(max-width:720px){.dts-ladder-overlay{padding:6px}.dts-ladder-dialog{max-height:98vh}.dts-ladder-rungs{padding:7px}.dts-ladder-contact select{max-width:95px}.dts-ladder-launch{font-size:11px;padding:6px}}
+
+/* 2026-10-28 Original rung diagram: network grid, twin rails, contacts, parallel branches. */
+.dts-ladder-diagram{width:100%;overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid #b9cbd9;border-radius:7px;background-color:#fff;background-image:linear-gradient(#e9f0f7 1px,transparent 1px),linear-gradient(90deg,#e9f0f7 1px,transparent 1px);background-size:20px 20px}
+.dts-ladder-svg{display:block;max-width:none;min-width:100%;height:auto;stroke:#243c54;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.dts-ladder-svg .dts-ladder-rails{stroke:#263d50;stroke-width:3}
+.dts-ladder-svg .dts-ladder-wire{stroke:#42566a}
+.dts-ladder-svg .dts-ladder-wire-hot{stroke:#1b9c60;stroke-width:3.5}
+.dts-ladder-svg .dts-ladder-path-on{stroke:#1b9c60;stroke-width:3}
+.dts-ladder-svg text{fill:#18344a;stroke:none;font:500 13px system-ui,sans-serif}
+.dts-ladder-svg .dts-ladder-rail-label{font-size:12px;font-weight:800}
+.dts-ladder-svg .dts-ladder-net-label{font-size:13px;font-weight:750}
+.dts-ladder-svg .dts-ladder-ref{font-size:14px;font-weight:750}
+.dts-ladder-svg .dts-ladder-kind{font-size:10px;fill:#526d7e}
+.dts-ladder-svg .dts-ladder-function-block rect{fill:#fff;stroke:#274e6d;stroke-width:2.5}
+.dts-ladder-svg .dts-ladder-function-block.dts-ladder-path-on rect{stroke:#1b9c60}
+.dts-ladder-svg .dts-ladder-block-type{font-size:13px;font-weight:800}
+.dts-ladder-svg .dts-ladder-block-detail{font-size:11px}
+.dts-ladder-svg .dts-ladder-mode-label{font-size:11px;fill:#6c8090}
+.dts-ladder-rung .dts-ladder-branches{margin-top:5px}
+@media(prefers-reduced-motion:reduce){.dts-ladder-diagram *{transition:none!important;animation:none!important}}
