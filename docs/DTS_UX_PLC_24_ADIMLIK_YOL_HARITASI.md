@@ -82,6 +82,10 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 **Gerçek eksik:** Native `Ladder.scan` gerçek sayacın `count` bilgisini üretse de `TON/TOF/TP` için geçen süreyi `traces` içine kaydetmiyor; LAD/FBD ortak editör izlemesi yalnız `0/1` ve hedefi gösterilmeyen sayaç değerini yazıyordu. **Hedefli geliştirme:** `dist/ladder-runtime.js` her zamanlayıcı Network'ünün gerçek tarama anındaki `elapsedMs` süresini (süre başlangıcı yoksa `null`, süre dolmuşsa preset ile sınırlı) ekler; `dist/ladder-editor.js` aynı kayıtlı/simüle edilen programın izini `TON 35/100 ms` ve `Sayaç 1/3` biçiminde görüntüler. TOF aktif girişte bekleme, pasif girişte geçen gecikme; TP darbe süresi; CTU/CTD sayım hedefi, çıktı davranışı değişmeden test edildi. Duran/enerjisiz, kaydedilmemiş taslaklarda sahte canlı veri yoktur. `tests/dts-ladder-live-timer-counter-progress.test.cjs` içindeki **8 hedefli V8 regresyon senaryosu PASS**; bağımsız Node çalıştırması **NOT_RUN**, Windows/Edge görseli ve 3D/elektriksel `Simulation.solve` bağımsız kabulü **REVIEW**. **Madde 14 KISMİ**; 08/15/20/23 ve diğer 24 kabul maddeleri ayrı açık kalmaya devam eder.
 
+### 28 Ekim — LAD bobin türü değişikliklerinin FBD ile aynı adres sahipliği kontrolünü kullanması
+
+**Yeni doğrulanmış kusur:** LAD arayüzünde `coil-type` alanı değişince ilk T1/C1 adresi seçildiğinden, T1/C1 başka bir Network tarafından kullanılıyorsa boş T2/C2 var olmasına rağmen LAD programı geçersiz kalıyordu. FBD daha önce boş adres bulacak şekilde düzeltilmişti. `dist/ladder-editor.js` LAD bobin türü değişikliklerini bu **aynı** native Ladder doğrulama yordamına yönlendirir; adres korunabiliyorsa korunur, boş T/C adresi gerekiyorsa seçilir, tümü doluysa taslak değiştirilmeden reddedilir. Kaynak davranışı eski LAD ile yeniden üretildi; `tests/dts-ladder-coil-type-shared-editor.test.cjs` dosyasındaki 7 pozitif/negatif V8 regresyon senaryosu PASS. Uygulama elektriği, 703 katalog, Golden/PASS/HOLD/REVIEW ve Windows/3D kabulünü değiştirmez. Bağımsız Node ile Edge DOM testi bu turda **NOT_RUN/REVIEW**; madde 09/11/23 **KISMİ**.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |

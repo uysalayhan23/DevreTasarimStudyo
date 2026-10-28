@@ -15,6 +15,11 @@
   const labels=new Map(candidates.map(c=>[c.ref,c.label]));
   return names.map(ref=>({value:ref,label:labels.get(ref)||ref}));
  }
+ // Route LAD coil type changes through the native-validated FBD type editor.
+ // Both views operate on one Ladder V1 draft, with shared address ownership rules.
+ function changeCoilType(program,index,type,limits={}) {
+  return FBDView.editCoil(program,index,{type},limits);
+ }
  // Expose every valid native M/T/C contact in both LAD and FBD.
  function contactChoices(inputPins=[],outputPins=[]){
   return [
@@ -464,10 +469,9 @@
     const contact=rung.paths[Number(p)][Number(c)];
     contact[field==='contact-type'?'type':'ref']=e.target.value;
    }else if(field==='coil-type'){
-    rung.coil.type=e.target.value;
-    rung.coil.ref=refOptions(true,rung.coil.type)[0]?.value||'Q1';
-    if(['TON','TOF','TP'].includes(rung.coil.type))rung.coil.presetMs=1000;
-    if(['CTU','CTD'].includes(rung.coil.type))rung.coil.preset=1;
+    const changed=changeCoilType(active.draft,Number(r),e.target.value,limits());
+    if(!changed.ok){editor.toast?.(changed.error);render();return}
+    active.draft=changed.program;
    }else if(field==='coil-ref')rung.coil.ref=e.target.value;
    else if(field==='presetMs'||field==='preset')rung.coil[field]=Number(e.target.value);
    active.history.push(active.draft);render();
@@ -499,7 +503,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
