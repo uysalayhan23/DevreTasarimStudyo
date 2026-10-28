@@ -98,7 +98,7 @@
     const endpointValid=r=>!!r&&typeof r==='object'&&(
       (typeof r.j==='string'&&!!r.j&&!r.c&&!r.p&&(project.junctions||[]).some(j=>j.id===r.j))||
       (typeof r.c==='string'&&!!r.c&&typeof r.p==='string'&&!!r.p&&!r.j&&
-       project.components.some(c=>c.id===r.c&&byId[c.typeId]?.pins?.some(p=>p.id===r.p)))
+       project.components.some(c=>c.id===r.c&&(Array.isArray(byId[c.typeId]?.pins)&&byId[c.typeId].pins.some(p=>p?.id===r.p))))
     );
     if(!endpointValid(from)||!endpointValid(to))return {ok:false,reason:'Kablo ucu geçerli bir malzeme terminaline veya ek noktasına bağlı değil.'};
     if(key(from)===key(to))return {ok:false,reason:'Kablonun iki ucu aynı terminale bağlanamaz.'};
