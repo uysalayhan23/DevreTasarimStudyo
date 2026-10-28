@@ -35,7 +35,7 @@
    path.forEach((contact,ci)=>{
     const x=startX+ci*step;
     bits.push(line(prev,y,x-15,y,cls));
-    bits.push('<g class="dts-ladder-contact-symbol'+(pathLive[pi]?' dts-ladder-path-on':'')+'">');
+    bits.push('<g class="dts-ladder-contact-symbol'+(pathLive[pi]?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-contact="'+(Number.isInteger(options.index)?options.index:0)+':'+pi+':'+ci+'" aria-label="'+escape((contact.ref||'?')+' '+(contact.type==='NC'?'normalde kapalı':'normalde açık')+' kontağını düzenle')+'">');
     bits.push(line(x-10,y-17,x-10,y+17,cls),line(x+10,y-17,x+10,y+17,cls));
     if(contact.type==='NC')bits.push(line(x-15,y+18,x+15,y-18,cls));
     bits.push(text(x,y-23,contact.ref||'?','dts-ladder-ref'));
@@ -45,7 +45,7 @@
    bits.push(line(prev,y,joinX,y,cls));
   });
   if(blocks.has(coil.type)){
-   bits.push('<g class="dts-ladder-function-block'+(energized?' dts-ladder-path-on':'')+'">');
+   bits.push('<g class="dts-ladder-function-block'+(energized?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.type||'')+' '+(coil.ref||'')+' bloğunu düzenle')+'">');
    bits.push('<rect x="'+(coilX-57)+'" y="'+(top-31)+'" width="114" height="64" rx="2"/>');
    bits.push(text(coilX,top-10,coil.type,'dts-ladder-block-type'));
    bits.push(text(coilX,top+8,coil.ref||'?','dts-ladder-ref'));
@@ -53,7 +53,7 @@
    bits.push(text(coilX,top+25,preset,'dts-ladder-block-detail'));
    bits.push('</g>');
   }else{
-   bits.push('<g class="dts-ladder-coil-symbol'+(energized?' dts-ladder-path-on':'')+'">');
+   bits.push('<g class="dts-ladder-coil-symbol'+(energized?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.ref||'')+' bobinini düzenle')+'">');
    bits.push('<path d="M '+(coilX-19)+' '+(top-21)+' Q '+(coilX-34)+' '+top+' '+(coilX-19)+' '+(top+21)+' M '+(coilX+19)+' '+(top-21)+' Q '+(coilX+34)+' '+top+' '+(coilX+19)+' '+(top+21)+'"/>');
    bits.push(text(coilX,top-31,coil.ref||'?','dts-ladder-ref'));
    if(coil.type==='SET'||coil.type==='RESET')bits.push(text(coilX,top+4,coil.type==='SET'?'S':'R','dts-ladder-block-type'));

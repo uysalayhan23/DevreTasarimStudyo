@@ -1011,3 +1011,17 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-ladder-svg .dts-ladder-mode-label{font-size:11px;fill:#6c8090}
 .dts-ladder-rung .dts-ladder-branches{margin-top:5px}
 @media(prefers-reduced-motion:reduce){.dts-ladder-diagram *{transition:none!important;animation:none!important}}
+
+/* Ladder editable symbol targets and read-only PLC I/O watch. */
+.dts-ladder-svg [data-ladder-contact],.dts-ladder-svg [data-ladder-coil]{cursor:pointer}
+.dts-ladder-svg [data-ladder-contact]:hover,.dts-ladder-svg [data-ladder-coil]:hover{stroke:#1687b2}
+.dts-ladder-svg [data-ladder-contact]:focus-visible,.dts-ladder-svg [data-ladder-coil]:focus-visible{outline:3px solid #1687b2;outline-offset:3px}
+.dts-ladder-live{padding:10px 16px;background:#f0f7fa;border-bottom:1px solid #d2e2eb}
+.dts-plc-live-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px;font-size:12px}
+.dts-plc-live-head span{color:#426179;font-size:11px}
+.dts-plc-live-row{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:5px 0}
+.dts-plc-live-row>b{width:68px;font-size:11px;color:#426179}
+.dts-plc-io-pill{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #bccad4;border-radius:5px;padding:3px 5px;white-space:nowrap;font-size:11px}
+.dts-plc-io-pill b{font-weight:750}.dts-plc-io-pill small{font-size:12px;font-weight:750}.dts-plc-io-pill em{font-size:10px;font-style:normal;color:#567083}
+.dts-plc-io-pill.on{border-color:#29a46f;background:#e6f8ed}.dts-plc-io-pill.off{border-color:#afbdc9;background:#f9fbfd}
+.dts-plc-io-pill.unknown{color:#74848f}

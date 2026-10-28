@@ -3,6 +3,7 @@
  // Original DTS Ladder editor. Only edits the user's virtual PLC program; never imports Siemens code.
  const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const Diagram=typeof module==='object'&&module.exports?require('./ladder-diagram.js'):root?.DTSLadderDiagram;
+ const Monitor=typeof module==='object'&&module.exports?require('./ladder-monitor.js'):root?.DTSLadderMonitor;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
@@ -127,6 +128,8 @@
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live?active.c._dtsLadderMemory?.values:null;
+   const runAction=editor.running?'■ Durdur':'▶ Simüle et';
+   const canRun=editor.running||(live&&!!active.c.ladderProgram&&!doc.getElementById('simulateBtn')?.disabled);
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
@@ -136,7 +139,9 @@
     '<button type="button" data-action="redo" '+(active.history.canRedo()?'':'disabled')+' aria-label="Ladder yinele">↷ Yinele</button>'+
     '<button type="button" data-action="add-rung">+ Rung</button>'+
     '<button type="button" data-action="starter">Start / Stop örneği</button>'+
-    '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button></div>'+
+    '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button>'+ 
+    '<button type="button" data-action="toggle-sim" '+(canRun?'':'disabled title="Önce Ladder programını kaydet ve devreyi doğrula"')+'>'+runAction+'</button></div>'+
+    '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(Monitor.snapshot(active.c,active.d,editor.running,live))+'</div>'+ 
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
@@ -204,6 +209,20 @@
       }
      }
     });
+    const liveSaved=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
+      JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
+    const hud=overlay.querySelector('#dtsLadderLivePanel');
+    if(hud){
+      const info=Monitor.snapshot(active.c,active.d,editor.running,liveSaved);
+      const stateKey=JSON.stringify(info);
+      if(hud.dataset.snapshotKey!==stateKey){hud.innerHTML=Monitor.markup(info);hud.dataset.snapshotKey=stateKey}
+    }
+    const simAction=overlay.querySelector('[data-action="toggle-sim"]');
+    if(simAction){
+      const available=!!doc.getElementById('simulateBtn')&&!doc.getElementById('simulateBtn').disabled;
+      simAction.disabled=!editor.running&&(!liveSaved||!available);
+      simAction.textContent=editor.running?'■ Durdur':'▶ Simüle et';
+    }
    },300);
    return true;
   }
@@ -224,6 +243,12 @@
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
    if(type==='close'){close();return}
    if(type==='save'){save();return}
+   if(type==='toggle-sim'){
+    const saved=active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
+    const sim=doc.getElementById('simulateBtn');
+    if((editor.running||saved)&&sim&&!sim.disabled)sim.click();
+    render();return;
+   }
    if(type==='undo'||type==='redo'){
     const next=type==='undo'?active.history.undo():active.history.redo();
     if(next){active.draft=next;render()}
@@ -240,7 +265,22 @@
    else if(type==='remove-contact'){const path=active.draft.rungs[r].paths[p];if(path.length>1)path.splice(c,1);}
    active.history.push(active.draft);render();
   }
+  function activateDiagramTarget(element){
+   const node=element?.closest?.('[data-ladder-contact],[data-ladder-coil]');
+   if(!node||!overlay.contains(node))return false;
+   let target=null;
+   const encoded=node.dataset.ladderContact;
+   if(encoded){
+    const [r,p,c]=encoded.split(':').map(Number);
+    target=overlay.querySelector('select[data-field="contact-ref"][data-r="'+r+'"][data-p="'+p+'"][data-c="'+c+'"]');
+   }else{
+    target=overlay.querySelector('select[data-field="coil-ref"][data-r="'+Number(node.dataset.ladderCoil)+'"]');
+   }
+   if(target){target.focus();return true}
+   return false;
+  }
   overlay.addEventListener('click',e=>{
+   if(activateDiagramTarget(e.target))return;
    if(e.target===overlay){close();return}
    const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
   });
@@ -261,6 +301,10 @@
    active.history.push(active.draft);render();
   });
   overlay.addEventListener('keydown',e=>{
+   if((e.key==='Enter'||e.key===' ')&&e.target.closest?.('[data-ladder-contact],[data-ladder-coil]')){
+    if(activateDiagramTarget(e.target))e.preventDefault();
+    e.stopPropagation();return;
+   }
    if(e.key==='Tab'){trapModalTab(e,overlay.querySelector('.dts-ladder-dialog'),doc);e.stopPropagation();return}
    const key=String(e.key).toLowerCase(),modifier=(e.ctrlKey||e.metaKey)&&!e.altKey;
    const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName||'');
