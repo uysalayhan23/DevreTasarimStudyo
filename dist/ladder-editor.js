@@ -75,9 +75,9 @@
   {id:'R1',paths:[[{type:'NO',ref:'I1'},{type:'NC',ref:'I2'}],[{type:'NO',ref:'Q1'},{type:'NC',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}
  ]});
  // Only saved, currently running programs may display live signals.
- function monitorRows(draft,saved,traces,running,mode){
+ function monitorRows(draft,saved,traces,running,mode,powered){
   const rows=Array.isArray(draft?.rungs)?draft.rungs:[];
-  const live=!!running&&mode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
+  const live=!!running&&powered===true&&mode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
   const byId=new Map((live&&Array.isArray(traces)?traces:[]).map(t=>[t.id,t]));
   return rows.map(r=>{
    const t=live?byId.get(r.id):null;
@@ -150,7 +150,7 @@
    if(!active)return;
    const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
-   const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
+   const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered);
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live?active.c._dtsLadderMemory?.values:null;
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
@@ -228,7 +228,7 @@
    overlay.querySelector(firstOpen?'.dts-ladder-dialog':'#dtsLadderTarget')?.focus();
    if(!monitorTimer)monitorTimer=root.setInterval(()=>{
     if(overlay.hidden||!active)return;
-    const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
+    const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered);
     overlay.querySelectorAll('.dts-ladder-rung').forEach((el,i)=>{
      const row=views[i];if(!row)return;
      el.classList.toggle('active',row.active);
@@ -237,7 +237,7 @@
      if(value)value.textContent=signalText(row);
      const diagram=el.querySelector('[data-diagram]'),shown=editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
        JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
-     const bits=shown?active.c._dtsLadderMemory?.values:null;
+     const bits=shown&&active.c._plcRuntime?.powered===true?active.c._dtsLadderMemory?.values:null;
      if(diagram){
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
       if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field]'))){

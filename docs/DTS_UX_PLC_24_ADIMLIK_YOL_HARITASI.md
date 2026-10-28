@@ -26,6 +26,10 @@
 
 Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse önceki `count`/kenar belleği yanlış yeniden kullanılıyordu; CTD hedef değerinden başlamıyordu. Sayaç tipi değişiminde eski durumu temizleyen dar kapsamlı düzeltme eklendi. CTU→CTD, CTD→CTU ve mevcut yükselen kenar/same-timestamp davranışı için üç hedefli V8 kontrolü PASS; `tests/dts-ladder-counter-type-switch.test.cjs` Node regresyonları eklendi, Node çalıştırması NOT_RUN. Windows/Edge, özgün fiziksel `Simulation.solve` kabulü REVIEW; madde 11 KISMİ kalır.
 
+### 28 Ekim — Enerjisiz PLC için Ladder/FBD canlı iz kapısı
+
+`dist/ladder-editor.js` içindeki canlı Network izleri, eski `pathStates` / `coilValue` değerlerini PLC enerjisizken göstermemeli. `monitorRows` artık `_plcRuntime.powered===true` koşulunu arıyor; FBD ve Ladder diyagramını besleyen `bits` kapısı aynı gerçek PLC beslemesini kontrol ediyor. Enerjisiz / bilinmeyen güç ve durdurulmuş simülasyonda geçmiş yeşil yol işaretleri gizlenir; gerçek `Simulation.solve` veya PLC çıkış hesaplaması değiştirilmedi. Kaynak üzerinden hedefli pozitif-negatif JS doğrulaması ve dört Node regresyon senaryosu eklendi. Gerçek Windows/Edge görsel testi ve 3D kabulü REVIEW; madde 14/23 KISMİ.
+
 ## Paket B — PLC Ladder (7 madde)
 
 | No | Özellik | Durum ve kanıt |
