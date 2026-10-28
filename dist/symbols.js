@@ -33,6 +33,15 @@
   });
   return lib;
   }
+  // Visual devices and their cable terminals share the same effective zoom.
+  function materialScale(c){
+    const scale=Number(c?.materialScale);
+    return Number.isFinite(scale)&&scale>0?Math.max(.25,Math.min(3,scale)):1;
+  }
+  function terminalPosition(c,d,p){
+    const q=rotatedPoint(p,d,c?.rotation||0),scale=materialScale(c);
+    return {x:c.x+q.x*scale,y:c.y+q.y*scale};
+  }
   function rotatedPoint(p,d,rotation=0){
     const cx=d.w/2,cy=d.h/2,q=((rotation%360)+360)%360/90,dx=p.x-cx,dy=p.y-cy;
     const turns=[[dx,dy],[-dy,dx],[-dx,-dy],[dy,-dx]],v=turns[q]||turns[0];
@@ -70,7 +79,7 @@
     return labelMarkup(c,'note',c.note,{x:d.w/2,y},'component-note');
   }
   function markup(d,c={},options={}){
-    if(!options.scaled&&Number(c.materialScale)>0&&Number(c.materialScale)!==1)return '<g class="device-scale" transform="scale('+Math.max(.25,Math.min(3,Number(c.materialScale)))+')">'+markup(d,c,{...options,scaled:true})+'</g>';
+    if(!options.scaled&&materialScale(c)!==1)return '<g class="device-scale" transform="scale('+materialScale(c)+')">'+markup(d,c,{...options,scaled:true})+'</g>';
     d=Assemblies.definition(d,c,options.mode);
     const rotation=c.rotation||0,quarter=((rotation%180)+180)%180===90,material=options.mode==='material',wireBodyOnly=!!options.wireBodyOnly,wireOverlayOnly=!!options.wireOverlayOnly,norm=Norms.normalize(options.norm);
     const h=quarter?d.w:d.h,cx=d.w/2,cy=d.h/2;
@@ -159,7 +168,7 @@
     const c={ref:referencePrefix(d)+'1',label:d.name,state:mode!=='material'&&!!d.previewState,rotation:0,_active:false};
     return '<svg class="preview-svg" viewBox="'+(d.instrument?Math.min(-16,(d.w-262)/2):-16)+' -16 '+(d.instrument?Math.max(262,d.w+32):d.w+(d.reedSensor?210:Devices.analog(d)?90:32))+' '+(d.h+(d.instrument?150:d.reedSensor?90:Devices.analog(d)?145:60))+'" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="'+classes(d,c,mode)+'">'+markup(d,c,{mode,norm})+'</g></svg>';
   }
-  const api={prepareLibrary,markup,noteMarkup,preview,classes,rotatedPoint,rotatedSide,referencePrefix,motionMarkup,directionText};
+  const api={prepareLibrary,markup,noteMarkup,preview,classes,rotatedPoint,rotatedSide,materialScale,terminalPosition,referencePrefix,motionMarkup,directionText};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSymbols=api;
 })(typeof window==='undefined'?globalThis:window);

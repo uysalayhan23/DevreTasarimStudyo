@@ -138,6 +138,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 Seçili cihaz kartı modelde zaten bulunan `ref` alanını göstermiyordu; sayısal `0` ID/etiketli katalog terminalleri de `||''` yüzünden boş görünüyordu. Yeni kart gerçek cihaz kimliğini HTML kaçışlı `Cihaz: …` satırında gösterir, 0 terminalini korur. Kablo kesit değiştirici daha önce aynı paneldeki rol ve gerilim girişlerinden farklı olarak `guardEdit()` çağırmadan `snapshot()` oluşturuyordu. Kesit artık salt-okunur örnek, güvenlik ve öğretici kilidinde değiştirilemez. İzin verilen normal düzenlemede renk bazlı kesit yayılımı aynıdır; prob kabloları etkilenmez. `tests/dts-component-wire-guard-and-identity.test.cjs` **7 yeni + 3 mevcut = 10/10 hedefli V8 PASS**. Madde 19'un ortak `portPosition` koordinat bağları kaynakta doğrulandı; **gerçek Windows/Edge 2D/3D piksel ve terminal hizası REVIEW**, bağımsız Node NOT_RUN. 703 katalog ve 1686 ders değişmedi.
 
+### 28 Ekim — Madde 19: ölçeklenmiş malzeme terminali ve kablonun ortak geometrisi
+
+`Symbols.markup` görsel malzeme ölçeğini `0,25–3` aralığına alırken `app.js` kablo ucu, TX11 özel uçları, terminal overlay clip, imleç yerel koordinatı ve pens çene noktasında ham `c.materialScale||1` kullanıyordu. Eski/dışarıdan açılan 4x veya 0,1x ölçekli projelerde SVG malzeme ile kablo uçları ayrışabiliyordu. `Symbols.materialScale/terminalPosition` artık sembol, kablo uçları, 90° döndürme ve özel cihaz overlay koordinatını aynı etkin ölçekle çözer. Dosya/katalog elektriksel uçları ve `Simulation.solve` değiştirilmedi. `tests/dts-material-terminal-scale-consistency.test.cjs` **7/7 V8 hedefli regresyon PASS**. Gerçek Windows/Edge 3D piksel kabulü **REVIEW**; bağımsız Node NOT_RUN; madde 19 KISMİ, Golden/PASS/HOLD ve SC1194 korunur.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |

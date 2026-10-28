@@ -380,7 +380,7 @@
   }
   function portPosition(c,d,p){
     d=materialDefinition(c,d);p=d.pins.find(q=>q.id===p.id)||p;
-    const pos=Symbols.rotatedPoint(p,d,c.rotation||0);return {x:c.x+pos.x*(c.materialScale||1),y:c.y+pos.y*(c.materialScale||1)};
+    return Symbols.terminalPosition(c,d,p);
   }
 
   function absolutePort(ref){const c=project.components.find(x=>x.id===ref.c),d=c&&byId[c.typeId],p=d&&d.pins.find(x=>x.id===ref.p);return p?portPosition(c,d,p):{x:0,y:0}}
@@ -391,7 +391,7 @@
     const c=project.components.find(x=>x.id===ref?.c),d=c&&materialDefinition(c,byId[c.typeId]),p=d&&d.pins.find(x=>x.id===ref?.p);if(!p)return{pos:{x:0,y:0},stub:{x:0,y:0},componentId:null};
     const pos=portPosition(c,d,p),side=rotatedSide(p.side,c.rotation),v={top:[0,-1],right:[1,0],bottom:[0,1],left:[-1,0]}[side],stub={x:pos.x+v[0]*GRID,y:pos.y+v[1]*GRID};
     if(appearance==='material'&&d.instrument==='tx11'){
-      const scale=c.materialScale||1,world=q=>{const a=Symbols.rotatedPoint(q,d,c.rotation||0);return {x:c.x+a.x*scale,y:c.y+a.y*scale}},top=p.side==='top',offset=top&&p.y>40?-GRID:0,local=[{x:p.x,y:p.y},{x:p.x,y:p.y+(top?-GRID:GRID)},...(offset?[{x:p.x+offset,y:p.y-GRID}]:[]),{x:p.x+offset,y:top?-GRID:d.h+GRID}],lead=local.map(world),corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>world({x,y})),body={left:Math.min(...corners.map(q=>q.x)),right:Math.max(...corners.map(q=>q.x)),top:Math.min(...corners.map(q=>q.y)),bottom:Math.max(...corners.map(q=>q.y))};
+      const scale=Symbols.materialScale(c),world=q=>Symbols.terminalPosition(c,d,q),top=p.side==='top',offset=top&&p.y>40?-GRID:0,local=[{x:p.x,y:p.y},{x:p.x,y:p.y+(top?-GRID:GRID)},...(offset?[{x:p.x+offset,y:p.y-GRID}]:[]),{x:p.x+offset,y:top?-GRID:d.h+GRID}],lead=local.map(world),corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>world({x,y})),body={left:Math.min(...corners.map(q=>q.x)),right:Math.max(...corners.map(q=>q.x)),top:Math.min(...corners.map(q=>q.y)),bottom:Math.max(...corners.map(q=>q.y))};
       return {pos,stub:lead.at(-1),lead,body,componentId:c.id,side};
     }return{pos,stub,lead:[pos,stub],componentId:c.id,side}
   }
@@ -463,7 +463,7 @@
     if(appearance!=='material')return;
     const layer=svg('g',{class:'terminal-wire-overlay'}),defs=svg('defs');layer.appendChild(defs);
     project.components.filter(c=>byId[c.typeId]?.instrument==='tx11'||c.typeId==='abb-acs800-r5'||byId[c.typeId]?.arduinoBoard).forEach((c,index)=>{
-      const d=byId[c.typeId],scale=c.materialScale||1,corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>{const q=Symbols.rotatedPoint({x,y},d,c.rotation||0);return {x:c.x+q.x*scale,y:c.y+q.y*scale}}),xs=corners.map(p=>p.x),ys=corners.map(p=>p.y),clipId='tx-terminal-clip-'+index,clip=svg('clipPath',{id:clipId,clipPathUnits:'userSpaceOnUse'});
+      const d=materialDefinition(c,byId[c.typeId]),scale=Symbols.materialScale(c),corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>Symbols.terminalPosition(c,d,{x,y})),xs=corners.map(p=>p.x),ys=corners.map(p=>p.y),clipId='tx-terminal-clip-'+index,clip=svg('clipPath',{id:clipId,clipPathUnits:'userSpaceOnUse'});
       clip.appendChild(svg('rect',{x:Math.min(...xs)-8,y:Math.min(...ys)-8,width:Math.max(...xs)-Math.min(...xs)+16,height:Math.max(...ys)-Math.min(...ys)+16}));defs.appendChild(clip);
       // Leave the terminal hit areas open while painting the cable over the body.
       const hitId=clipId+'-hit',hitClip=svg('clipPath',{id:hitId,clipPathUnits:'userSpaceOnUse'}),r=5*scale;
@@ -894,7 +894,7 @@
     setSelection(project.components.map(c=>c.id));refreshSelection();setStatus(selectedIds.size+' eleman seçildi');
   }
   function worldPoint(e){return pointerWorldPoint(e)}
-  function componentLocalPoint(c,d,e){const p=worldPoint(e),scale=c.materialScale||1,definition=materialDefinition(c,d),q={x:(p.x-c.x)/scale,y:(p.y-c.y)/scale};return Symbols.rotatedPoint(q,definition,-(c.rotation||0))}
+  function componentLocalPoint(c,d,e){const p=worldPoint(e),scale=Symbols.materialScale(c),definition=materialDefinition(c,d),q={x:(p.x-c.x)/scale,y:(p.y-c.y)/scale};return Symbols.rotatedPoint(q,definition,-(c.rotation||0))}
   function trackGesture(e,handlers){
     let finished=false;
     const move=ev=>{if(ev.pointerId!==e.pointerId)return;if(ev.pointerType==='mouse'&&!(ev.buttons&(e.button===2?2:1))){finish(false,ev);return}handlers.move(ev)};
@@ -953,7 +953,7 @@
     if(node?.getTotalLength){const length=node.getTotalLength();if(length>0){const n=Math.max(1,Math.ceil(length/6));return Array.from({length:n+1},(_,i)=>{const p=node.getPointAtLength(length*i/n);return {x:p.x,y:p.y}})}}
     return renderedWirePoints[w.id]||[];
   }
-  function clampJawPoint(c,d){const scale=c.materialScale||1,q=Symbols.rotatedPoint({x:d.w/2,y:65},d,c.rotation||0);return {x:c.x+q.x*scale,y:c.y+q.y*scale}}
+  function clampJawPoint(c,d){return Symbols.terminalPosition(c,d,{x:d.w/2,y:65})}
   function clampNearest(c,d){const jaw=clampJawPoint(c,d);let best=null;for(const w of project.wires){if(w.probeLead||w.mechanical||w.role==='MECHANICAL')continue;const hit=Leads.nearest(probeRoute(w),jaw);if(hit&&hit.distance<38/zoom&&(!best||hit.distance<best.distance))best={wireId:w.id,t:hit.t,point:hit.point,distance:hit.distance}}return best}
   function syncClampPositions(){if(!Clamp)return;for(const c of project.components){const d=byId[c.typeId];if(d?.kind!=='clamp-meter'||!c.clampedWireId)continue;const w=project.wires.find(w=>w.id===c.clampedWireId);if(!w||w.probeLead||w.mechanical||w.role==='MECHANICAL'){delete c.clampedWireId;delete c.clampT;continue}const point=Leads.at(probeRoute(w),c.clampT);if(!point)continue;const jaw=clampJawPoint(c,d);c.x+=point.x-jaw.x;c.y+=point.y-jaw.y}}
   function syncProbePositions(){
