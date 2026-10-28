@@ -10,6 +10,7 @@
   }
   function begin(c,key,base,client,zoom){return {key,anchor:position(c,key,base),client:{x:client.x,y:client.y},zoom:Number.isFinite(zoom)&&zoom>0?zoom:1}}
   function move(c,drag,client){
+    if(typeof drag?.key!=='string'||!drag.key.trim()||drag.key.length>=100||['__proto__','prototype','constructor'].includes(drag.key))return {x:0,y:0};
     if(!valid(client)||!valid(drag?.anchor)||!valid(drag?.client)||!Number.isFinite(drag?.zoom)||drag.zoom<=0)return position(c,drag?.key,{x:0,y:0});
     const p={x:Math.round((drag.anchor.x+(client.x-drag.client.x)/drag.zoom)*100)/100,y:Math.round((drag.anchor.y+(client.y-drag.client.y)/drag.zoom)*100)/100};
     if(!valid(p))return position(c,drag.key,{x:0,y:0});
