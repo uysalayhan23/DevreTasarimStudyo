@@ -36,6 +36,10 @@
   const values=mem.values&&typeof mem.values==='object'?mem.values:{};
   const states=mem.blocks&&typeof mem.blocks==='object'?mem.blocks:{};
   const bits=Object.assign(Object.create(null),values);
+  // A removed Q coil must never keep energizing a physical output or feed a stale Q contact.
+  // Preserve only outputs still assigned to a coil (including intentional SET latches).
+  const assignedQ=new Set(source.rungs.filter(r=>r.coil.ref[0]==='Q').map(r=>r.coil.ref));
+  for(let i=1;i<=16;i++)if(!assignedQ.has('Q'+i))bits['Q'+i]=false;
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
