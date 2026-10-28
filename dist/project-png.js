@@ -18,6 +18,17 @@
   }
   return {ok:true};
  }
+ // Serialized SVG includes inline and computed CSS. Only same-document paint refs are safe offline.
+ function cssCheck(xml){
+  if(/@import\b/i.test(xml))return {ok:false,error:'PNG için dış CSS içe aktarımı desteklenmiyor.'};
+  const refs=String(xml).match(/url\s*\(\s*[^)]*\)/gi)||[];
+  for(const ref of refs){
+   const value=ref.replace(/^url\s*\(\s*/i,'').replace(/\)\s*$/,'').trim().replace(/^['"]|['"]$/g,'');
+   if(!/^#[a-zA-Z_][\w:.-]*$/.test(value))
+    return {ok:false,error:'PNG için harici CSS görsel bağlantısı desteklenmiyor; PDF / Yazdır kullanın.'};
+  }
+  return {ok:true};
+ }
  function dimension(box,scale=2){
   const width=Math.ceil(box?.width*scale),height=Math.ceil(box?.height*scale);
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1||
@@ -59,6 +70,7 @@
   const ctx=canvas.getContext?.('2d');if(!ctx||typeof canvas.toBlob!=='function')
    return {ok:false,error:'PNG çizim tuvali kullanılamıyor.'};
   const xml=new win.XMLSerializer().serializeToString(svg);
+  const cssSafety=cssCheck(xml);if(!cssSafety.ok)return cssSafety;
   const blob=new win.Blob([xml],{type:'image/svg+xml;charset=utf-8'});
   let svgUrl=null,pngUrl=null;
   try{
@@ -92,6 +104,6 @@
    }
   }
  }
- const api=Object.freeze({sourceCheck,dimension,exportPng});
+ const api=Object.freeze({sourceCheck,cssCheck,dimension,exportPng});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSProjectPng=api;
 })(typeof window==='undefined'?globalThis:window);
