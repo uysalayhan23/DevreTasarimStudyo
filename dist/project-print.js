@@ -40,7 +40,7 @@
   if(!result.ok)return result;
   let removed=false;
   function cleanup(){if(removed)return;removed=true;win.removeEventListener?.('afterprint',cleanup);result.node.remove?.()}
-  win.addEventListener?.('afterprint',cleanup);
+  try{win.addEventListener?.('afterprint',cleanup)}catch{result.node.remove?.();return {ok:false,error:'Yazdırma sonrası temizleme dinleyicisi kurulamadı.'}}
   try{win.print()}catch{cleanup();return {ok:false,error:'Tarayıcı yazdırma penceresi açılamadı.'}}
   return {ok:true,rect:result.rect};
  }
