@@ -13,7 +13,7 @@
   ];
   const groupNames=Object.fromEntries(groups),order=Object.fromEntries(groups.map(([id],i)=>[id,i]));
   function plcGroup(d){
-    const n=d.name.toUpperCase();
+    const n=String(d.name||'').toUpperCase();
     if(/F-D[I Q]|NX-S[LI O]|NX-SOD/.test(n))return 'safety';
     if(/CPU|MICRO850|COMPACTLOGIX|CONTROLLOGIX/.test(n))return 'cpu';
     if(/GÜÇ|^(PM 1207|PS )/.test(n))return 'plc-power';
