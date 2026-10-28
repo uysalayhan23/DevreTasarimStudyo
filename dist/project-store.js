@@ -165,7 +165,13 @@
         if(!handle){const result=download(copy);await put(copy);return {...result,project:copy,requiresOpen:saveAs}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
-        const target=await handle.getFile();let targetProject;try{targetProject=parse(await target.text())}catch{}
+        const target=await handle.getFile();let targetProject;
+        // An existing invalid or oversized target is user data, never a blank new file.
+        // Do not silently overwrite it after a failed parse or allocate an oversized read.
+        if(target.size!==0){
+          try{targetProject=await readProjectFile(target)}
+          catch(e){throw Error('Hedef proje dosyası geçersiz veya okunamadı; üzerine yazılmadı: '+e.message)}
+        }
         if(isProtected(targetProject))throw Error('Bu dosya korunan bir hazır örnek. Farklı bir dosya adı veya klasör seçin.');
         if(saveAs){
           existing=existing||await db('get','handle:'+project.projectId);
