@@ -51,3 +51,46 @@ test('rejects SVG feImage filter sources rather than silently exporting incomple
  }
  assert.equal(Png.sourceCheck(svg([el('use','#local')])).ok,true);
 });
+
+test('serialized SVG CSS URLs reject external loads and retain local paint servers',()=>{
+ for(const css of [
+  '<svg><path fill="url(https://example.invalid/a.png)"/></svg>',
+  '<svg><path style="filter:url(assets/filter.svg#f)"/></svg>',
+  '<svg><style>@import "https://example.invalid/style.css";</style></svg>',
+  '<svg><path fill="url(data:image/svg+xml;base64,AAAA)"/></svg>'
+ ])assert.equal(Png.cssCheck(css).ok,false,css);
+ for(const css of [
+  '<svg><path fill="url(#paint)"/></svg>',
+  '<svg><path fill="url(&quot;#paint&quot;)"/></svg>'.replace('&quot;','').replace('&quot;',''),
+  '<svg><path fill="#fff"/></svg>'
+ ])assert.equal(Png.cssCheck(css).ok,true,css);
+});
+test('malformed serialized SVG and style errors return a safe PNG failure',async()=>{
+ let blobUrls=0,downloads=0;
+ const source={querySelectorAll(){return[]},cloneNode(){return {
+  style:{transform:''},setAttribute(){},removeAttribute(){},querySelector(){return null},querySelectorAll(){return[]}
+ }}};
+ const doc={getElementById:id=>id==='workspace'?source:id==='scene'?{getBBox(){return{x:0,y:0,width:100,height:80}}}:null,
+  body:{appendChild(){}},createElement:k=>k==='canvas'?{getContext(){return{}},toBlob(){}}:{click(){downloads++},remove(){}}};
+ const base={DTSProjectPrint:require('../dist/project-print.js'),Image:class{},Blob:class{},
+  URL:{createObjectURL(){blobUrls++;return 'blob:test'},revokeObjectURL(){}},
+  getComputedStyle(){return{getPropertyValue(){return''}}}};
+ const malformed=await Png.exportPng(doc,{...base,XMLSerializer:class{serializeToString(){throw Error('bad svg')}}},'test');
+ assert.equal(malformed.ok,false);assert.equal(blobUrls,0);assert.equal(downloads,0);
+ const failedStyle=await Png.exportPng(doc,{...base,XMLSerializer:class{},getComputedStyle(){throw Error('detached')}} ,'test');
+ assert.equal(failedStyle.ok,false);assert.equal(blobUrls,0);assert.equal(downloads,0);
+});
+test('external CSS in serialized SVG is rejected before canvas download',async()=>{
+ let urls=0,downloads=0;
+ const source={querySelectorAll(){return[]},cloneNode(){return{
+  style:{transform:''},setAttribute(){},removeAttribute(){},querySelector(){return null},querySelectorAll(){return[]}
+ }}};
+ const doc={getElementById:id=>id==='workspace'?source:id==='scene'?{getBBox(){return{x:0,y:0,width:100,height:80}}}:null,
+  body:{appendChild(){}},createElement:k=>k==='canvas'?{getContext(){return{}},toBlob(){}}:{click(){downloads++},remove(){}}};
+ const win={DTSProjectPrint:require('../dist/project-print.js'),Image:class{},Blob:class{},
+  XMLSerializer:class{serializeToString(){return '<svg><path fill="url(https://example.invalid/a.png)"/></svg>'}},
+  URL:{createObjectURL(){urls++;return 'blob:test'},revokeObjectURL(){}},
+  getComputedStyle(){return{getPropertyValue(){return''}}}};
+ const result=await Png.exportPng(doc,win,'test');
+ assert.equal(result.ok,false);assert.equal(urls,0);assert.equal(downloads,0);
+});
