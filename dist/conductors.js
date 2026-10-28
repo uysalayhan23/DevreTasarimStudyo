@@ -93,6 +93,15 @@
     return {at,nets};
   }
   function check(project,byId,from,to,ignoreWireId){
+    // A visual snap is not an electrical connection until both endpoint IDs
+    // resolve to real catalog terminals or existing junctions.
+    const endpointValid=r=>!!r&&typeof r==='object'&&(
+      (typeof r.j==='string'&&!!r.j&&!r.c&&!r.p&&(project.junctions||[]).some(j=>j.id===r.j))||
+      (typeof r.c==='string'&&!!r.c&&typeof r.p==='string'&&!!r.p&&!r.j&&
+       project.components.some(c=>c.id===r.c&&byId[c.typeId]?.pins?.some(p=>p.id===r.p)))
+    );
+    if(!endpointValid(from)||!endpointValid(to))return {ok:false,reason:'Kablo ucu geçerli bir malzeme terminaline veya ek noktasına bağlı değil.'};
+    if(key(from)===key(to))return {ok:false,reason:'Kablonun iki ucu aynı terminale bağlanamaz.'};
     const socketCheck=Leads.check(project,byId,from,to,ignoreWireId);if(!socketCheck.ok)return socketCheck;
     const lead=Leads.info(project,byId,{from,to});if(lead)return {ok:true,...lead,probeLead:true};
     const graph=analyze(project,byId,{ignoreWireId}),a=graph.at(from),b=graph.at(to);
