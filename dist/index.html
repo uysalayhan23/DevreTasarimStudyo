@@ -84,6 +84,7 @@
     <div class="run-group">
       <span id="plcGuard" class="guard" hidden>PLC bulunan projede simülasyon kapalıdır</span>
       <button id="dtsLadderBtn" class="tool dts-ladder-launch" type="button" title="Projede PLC programı düzenle">▤ PLC Ladder</button>
+      <button id="dtsOperatorBtn" class="tool dts-operator-launch" type="button" aria-pressed="false" title="Sanal PLC giriş ve çıkışlarını ayrı panelde izle">▣ PLC I/O</button>
        <button id="dtsFullModeBtn" class="tool dts-full-toggle" type="button" aria-pressed="false" title="Tam sayfa / standart çalışma alanı (Esc ile çık)">⛶ Tam sayfa</button><span id="dtsFocusBadge" role="status" aria-live="polite" class="dts-focus-badge" hidden>Simülasyon · Odak</span>
        <button id="soundBtn" class="tool sound-toggle" aria-pressed="true" title="Simülasyon seslerini aç / kapat">♪ Ses açık</button>
       <button id="serialMonitorBtn" class="tool serial-monitor-launch" type="button" hidden title="Devreyi kullanmaya devam ederken Serial Monitor'ü ayrı pencerede izle">▤ Serial Monitor</button>
@@ -448,6 +449,7 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <script src="ladder-monitor.js?rev=20261028-io-watch-v1"></script>
   <script src="ladder-program-io.js?rev=20261028-program-io-v1"></script>
   <script src="ladder-editor.js?rev=20261028-program-io-v1"></script>
+  <script src="plc-operator.js?rev=20261028-operator-v1"></script>
   <script src="library-search-ux.js?rev=20261027-search1"></script>
   <script src="tutorial-labs.js?rev=20261008-electric-machines-labs1"></script>
   <script src="tutorial-bootstrap.js?rev=20261025-bell-cache-v2"></script>

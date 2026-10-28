@@ -1069,3 +1069,17 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 #scene [data-wire].dts-wire-audit-highlight path.wire,
 #scene [data-wire].dts-wire-audit-highlight path.mechanical-shaft-link{stroke:#ee721c!important;stroke-dasharray:9 5!important;filter:drop-shadow(0 0 4px #ffb653)}
 @media(prefers-reduced-motion:reduce){#scene [data-wire].dts-wire-audit-highlight path{animation:none!important}}
+
+/* Educational read-only PLC operator window: no hardware actuation. */
+.dts-operator-panel[hidden]{display:none!important}
+.dts-operator-panel{position:fixed;right:16px;top:67px;width:min(420px,calc(100vw - 24px));max-height:calc(100vh - 95px);overflow-y:auto;z-index:220;background:#f8fcff;color:#183950;border:1px solid #8baeba;border-radius:11px;box-shadow:0 12px 38px rgba(0,30,60,.32);padding:0 12px 12px}
+.dts-operator-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;padding:8px 0;background:#f8fcff;z-index:2;border-bottom:1px solid #bed2dd}
+.dts-operator-heading strong{font-size:13px}
+.dts-operator-heading button{border:1px solid #b9cedb;border-radius:5px;background:white;font-size:18px;min-width:32px;min-height:32px;color:#1a3c52;cursor:pointer}
+.dts-operator-panel label{display:flex;gap:10px;align-items:center;font-size:12px;margin:10px 0}
+.dts-operator-panel label select{flex:1;min-width:0;max-width:290px;padding:6px;border:1px solid #adc6d5;border-radius:6px;background:white;color:#1a3c52}
+.dts-operator-panel .dts-plc-live-row>b{width:60px}
+.dts-operator-empty{font-size:12px;color:#577085;padding:12px}
+.dts-operator-caution{margin:10px 0 0;font-size:11px;line-height:1.45;color:#755526;border-top:1px solid #d4e1e7;padding-top:10px}
+.topbar #dtsOperatorBtn{white-space:nowrap}
+@media(max-width:720px){.topbar .tool#dtsOperatorBtn{display:inline-flex!important;align-items:center;padding:4px 6px;font-size:10px}.dts-operator-panel{top:54px;right:6px;width:calc(100vw - 12px)}}
