@@ -13,7 +13,13 @@
   const c=choices.find(x=>String(x.id)===String(selectedId))||choices[0]||null;
   if(!c)return {selection:null,choices:[],status:'Bu projede desteklenen sanal PLC bulunamadı.',info:null};
   const d=byId[c.typeId];
-  const info=Monitor.snapshot(c,d,running,!!c.ladderProgram&&c.plcProgram==='dts-ladder-v1');
+  // A configured Ladder object is not evidence that its program is executable.
+  // Respect the actual supported CPU's terminal counts before showing live values.
+  const valid=c.plcProgram==='dts-ladder-v1'?Ladder.validate(c.ladderProgram,{
+   inputCount:(d.pins||[]).filter(p=>p.signalType==='DI').length,
+   outputCount:(d.pins||[]).filter(p=>p.signalType==='DO').length
+  }):null;
+  const info=Monitor.snapshot(c,d,running,valid?.ok===true,valid&&!valid.ok?valid.error:null);
   const descriptions=choices.map(x=>({id:String(x.id),name:String(x.label||x.ref||byId[x.typeId]?.name||x.typeId||'PLC')}));
   return {selection:String(c.id),choices:descriptions,status:info.message,info};
  }

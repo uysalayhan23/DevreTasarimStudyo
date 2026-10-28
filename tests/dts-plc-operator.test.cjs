@@ -8,7 +8,7 @@ const plc={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
  ...Array.from({length:6},(_,i)=>({signalType:'DI',id:'X10:'+(7+i)})),
  ...Array.from({length:4},(_,i)=>({signalType:'DO',id:'X12:'+(3+i)}))
 ]};
-const c={id:'virtual',typeId:plc.id,plcProgram:'dts-ladder-v1',ladderProgram:{version:1,rungs:[]},
+const c={id:'virtual',typeId:plc.id,plcProgram:'dts-ladder-v1',ladderProgram:{version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]},
  _plcRuntime:{powered:true,program:'dts-ladder-v1',inputs:{'X10:7':true},outputs:{'X12:3':true}}};
 const definitions={[plc.id]:plc,unverified:{...plc,id:'unverified'}};
 test('operator panel selects only native verified CPU model',()=>{

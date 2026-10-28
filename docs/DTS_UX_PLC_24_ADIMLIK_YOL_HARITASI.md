@@ -148,6 +148,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 FBD kontak operand düzenleme kaynakları yayımlandıktan sonra `dist/index.html`, `dist/fbd-view.js`, `dist/ladder-editor.js`, `dist/studio.css` dosyalarını önceki `rev` parametreleriyle işaretliyordu. Yerel `file:///` Windows/Edge yüklemesinde eski FBD sürümünün kullanılma riskini azaltmak için üç yükleme etiketi yenilendi. Yeni bağımsız test `tests/dts-fbd-offline-asset-order.test.cjs`: FBD/LAD/CSS sürüm etiketleri, runtime→FBD→LAD yükleme sırası ve sunucusuz kalan giriş **3/3 V8 PASS**. Tarayıcı önbelleği ve gerçek Windows Edge görsel kabulü **NOT_RUN/REVIEW**; 23. madde **KISMİ**.
 
+### 28 Ekim — Madde 24: Geçersiz Ladder veya native tarama hatasında sanal I/O güvenli izleme
+
+Sanal PLC operatör paneli daha önce yalnız `!!c.ladderProgram` durumuyla “kayıtlı” kabul ediyor, geçersiz `rungs:[]` programına veya `_dtsLadderError` bulunan sanal tarama hatasına rağmen `_plcRuntime.program==='dts-ladder-v1'` ise eski `0/1` bitlerini **canlı** gösterebiliyordu. `dist/plc-operator.js` şimdi gerçek CPU terminal sayılarıyla aynı `Ladder.validate` denetimini uygular; `dist/ladder-monitor.js` native tarama/validasyon hatasında eski I/O'yu `—` ve doğrulanamayan program durumunu açık metinle gösterir. Sahte PLC modelleri, güç yok ve durdurulmuş simülasyon kilitleri korunur. Başarılı program için canlı I/Q gösterimi değişmez. `tests/dts-plc-operator-validation.test.cjs` yeni 7, güncellenmiş mevcut `tests/dts-plc-operator.test.cjs` 3 senaryoyla **10/10 hedefli V8 PASS**; bağımsız Node.js ve gerçek Windows/Edge UI **NOT_RUN/REVIEW**. 24. madde KISMİ; gerçek fiziksel PLC, Simulation.solve, katalog ve sahneler değişmez.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi
