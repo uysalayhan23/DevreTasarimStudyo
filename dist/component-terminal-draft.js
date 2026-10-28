@@ -85,6 +85,18 @@
    explanation:'Taslak yalnız önizleme içindir; katalogya kayıt, 3B terminal-kablo uyumu ve native simülasyon için ayrı fiziksel kabul gerekir.'
   });
  }
+ function gateMarkup(review){
+  if(!review)return '';
+  const moved=review.movedTerminals.length;
+  const geometry=moved
+   ?'<b>REVIEW</b> · '+moved+' terminalin X/Y yeri değişti'
+   :'<b>UNCHANGED</b> · terminal konumları katalogla aynı';
+  return '<strong>Kabul kapıları</strong>'+
+    '<div>Dosya, terminal kimliği ve önizleme: <b>PASS</b></div>'+
+    '<div>Geometri: '+geometry+'</div>'+
+    '<div>Katalogya ekleme: <b>HOLD</b> · 3B terminal/kablo kabulü: <b>HOLD</b> · Native simülasyon: <b>HOLD</b></div>'+
+    '<small>Önizleme yalnız taslaktır. Katalog, gerçek devre ve 3B varlıkları değiştirilmez.</small>';
+ }
  function svg(d){
   const check=validate(d);if(!check.ok)return '';
   const pin=(p,i)=>'<g class="dts-draft-terminal"><circle cx="'+p.x+'" cy="'+p.y+
@@ -120,8 +132,7 @@
     '<p>Bu ekran sadece bir taslaktır. Katalog, kablolar, 3B görünüm ve simülasyon değişmez.</p>'+
     '<div class="dts-terminal-draft-canvas">'+svg(draft)+'</div>'+
     '<div class="dts-terminal-draft-gates" role="status" aria-live="polite">'+
-      '<strong>Kabul kapıları</strong> · Dosya / terminal kimliği: <b>PASS</b> · Katalogya ekleme: <b>HOLD</b> · 3B ve native simülasyon: <b>HOLD</b>'+
-      '<small>Önizleme, elektriksel kabul veya katalog değişikliği değildir.</small></div>'+
+      gateMarkup(acceptance(draft,source))+'</div>'+
     '<div class="dts-terminal-draft-fields">'+draft.pins.map(p=>
       '<label>'+escape(p.label)+' <small>('+escape(p.id)+')</small>'+
       '<span>X <input type="number" min="0" max="'+draft.w+'" step="0.5" data-axis="x" data-id="'+escape(p.id)+'" value="'+p.x+'"></span>'+
@@ -213,7 +224,7 @@
   const api=Object.freeze({setSource:selection,open:show,close,isOpen:()=>!dialog.hidden});
   return api;
  }
- const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,parseImport,acceptance,maxImportBytes,svg,init});
+ const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,parseImport,acceptance,gateMarkup,maxImportBytes,svg,init});
  if(typeof module==='object'&&module.exports)module.exports=api;
  else if(root?.document)root.DTSTerminalDraft=Object.assign({},api,{controller:init(root.document)});
 })(typeof window==='undefined'?globalThis:window);

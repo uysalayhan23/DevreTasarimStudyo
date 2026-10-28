@@ -52,3 +52,14 @@ test('distinct immutable evidence gates hold catalogue, 3D and native acceptance
  assert.deepEqual(moved.movedTerminals,['13']);assert.equal(moved.geometry,'REVIEW');
  assert.equal(catalog.pins[0].y,44);
 });
+
+test('visual acceptance panel distinguishes unmodified from moved geometry',()=>{
+ const original=source(),moved=T.move(original,'13',0,49);
+ const clean=T.gateMarkup(T.acceptance(original,catalog));
+ const changed=T.gateMarkup(T.acceptance(moved,catalog));
+ assert.match(clean,/UNCHANGED/);assert.match(changed,/REVIEW/);
+ assert.match(changed,/1 terminal/);
+ assert.match(changed,/Katalogya ekleme: <b>HOLD<\/b>/);
+ assert.match(changed,/Native simülasyon: <b>HOLD<\/b>/);
+ assert.equal(catalog.pins[0].y,44);
+});
