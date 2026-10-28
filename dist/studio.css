@@ -1174,3 +1174,24 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-ladder-drop-hover{outline:4px solid #2385b9!important;outline-offset:-4px;background-color:#d5eefa!important}
 .dts-ladder-diagram[data-drop-kind]{cursor:copy}
 @media(max-width:720px){.dts-ladder-tool-list{flex-wrap:nowrap;overflow-x:auto}.dts-ladder-tool-list button{flex:0 0 auto}}
+
+/* Safe terminal-position scratchpad: no live catalogue or circuit mutation. */
+.dts-terminal-designer-launch{margin:0 10px 8px;padding:8px 10px;border-radius:6px;border:1px solid #6985a0;background:#fff;color:#111;font-weight:700;cursor:pointer}
+.dts-terminal-designer-launch[hidden],.dts-terminal-draft-overlay[hidden]{display:none!important}
+.dts-terminal-draft-overlay{position:fixed;inset:0;z-index:2700;display:grid;place-items:center;padding:12px;background:rgba(10,25,43,.82)}
+.dts-terminal-draft-dialog{width:min(850px,98vw);max-height:95vh;overflow:auto;padding:18px;border-radius:10px;background:#f8fbff;color:#162c41;box-shadow:0 15px 60px #0008}
+.dts-terminal-draft-dialog header,.dts-terminal-draft-dialog footer{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dts-terminal-draft-dialog p{font-size:12px;line-height:1.5}
+.dts-terminal-draft-dialog button{border:1px solid #73859c;background:white;color:#111;padding:8px;border-radius:6px;cursor:pointer}
+.dts-terminal-draft-canvas{max-height:420px;overflow:auto;border:1px solid #b8cbd9;background:repeating-linear-gradient(0deg,#eff4f8 0 1px,transparent 1px 20px),repeating-linear-gradient(90deg,#eff4f8 0 1px,#fff 1px 20px);border-radius:6px;padding:8px}
+.dts-terminal-preview{display:block;width:100%;min-height:230px;max-height:380px}
+.dts-terminal-preview .dts-draft-body{fill:#e2edf7;stroke:#25475e;stroke-width:2}
+.dts-terminal-preview .dts-draft-title{font-size:14px;font-weight:650;fill:#162c41}
+.dts-terminal-preview .dts-draft-terminal circle{fill:#fff;stroke:#146d95;stroke-width:2;cursor:grab}
+.dts-terminal-preview .dts-draft-terminal circle:focus-visible{outline:2px solid #258ac4}
+.dts-terminal-preview .dts-draft-terminal text{font-size:11px;fill:#111;pointer-events:none}
+.dts-terminal-draft-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px;max-height:220px;overflow:auto;padding:10px 0}
+.dts-terminal-draft-fields label{display:flex;align-items:center;flex-wrap:wrap;gap:6px;border:1px solid #ccdbe6;border-radius:5px;padding:5px;font-size:12px}
+.dts-terminal-draft-fields span{display:inline-flex;align-items:center;gap:3px}
+.dts-terminal-draft-fields input{width:65px;padding:4px;border:1px solid #afc1d1;border-radius:4px}
+.dts-terminal-draft-dialog footer{flex-wrap:wrap;margin-top:12px}

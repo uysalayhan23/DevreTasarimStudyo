@@ -689,6 +689,7 @@
 
   function updateProperties(){
     const c=project.components.find(x=>x.id===selected);
+    window.DTSTerminalDraft?.controller?.setSource?.(c?byId[c.typeId]:null);
     const brief=$('#dtsComponentBrief');
     if(brief){
       const item=c?window.DTSComponentBrief?.model?.(byId[c.typeId],c):null;

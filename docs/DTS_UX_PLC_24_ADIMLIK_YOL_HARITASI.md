@@ -44,7 +44,7 @@
 
 | No | Özellik | Durum |
 | --- | --- | --- |
-| 21 | Görsel bileşen editörü, terminal koordinatları ve katalogya kontrollü ekleme | **PLAN** |
+| 21 | Görsel bileşen editörü, terminal koordinatları ve katalogya kontrollü ekleme | **KISMİ/KOD**: gerçek katalogdan salt okunur kopyalanan terminal taslağı, ayrı SVG sürükleme/nümerik koordinat ve `.dtscomponent` taslak indirme; gerçek kataloğa ekleme, Windows/Edge kabulü açık |
 | 22 | Hızlı Başla / Hazır Örnek / Öğretici başlangıç akışı | **KISMİ**: dashboard mevcut, yeniden tasarım açık |
 | 23 | FBD editörü, Ladder ile işlevsel eşdeğerlik | **KISMİ/KOD**: LAD/FBD arasında aynı native Ladder programını gösteren alternatif AND/OR/NOT blok görünümü; tıklanabilir bloklar mevcut alanları düzenler, bağımsız FBD dosyası/sürükle-bırak ve Edge kabulü açık |
 | 24 | Sanal operatör paneli ve canlı PLC I/O ekranı | **KISMİ/KOD**: ayrı açılıp kapanan salt okunur sanal PLC I/O paneli, birden fazla native onaylı PLC seçimi, kaynaklı sinyal durumu; giriş zorlama/cihaz kontrolü yok, Windows/Edge kabulü açık |
@@ -166,3 +166,7 @@ DTS üst barına `▣ PLC I/O` eklendi. Pencere editörden bağımsız açılır
 Ana üst kontrol ve Ladder/PLC panel butonlarında **siyah yazı ve açık kontrastlı arka plan** uygulandı. Ladder editörü her rung'u ayrı daraltılabilir Network penceresi olarak sunar; **Tek pencere** odak tuşuyla yalnız seçili Network büyütülebilir, **Tüm Networkleri göster** ile geri dönülür. Network başına görsel SVG ve mevcut select düzenlemesi saklanır. Üstte **NO, NC, OUT, SET, RESET, TON, TOF, TP, CTU, CTD** komut paleti yer alır; HTML5 sürükle-bırak veya palet öğesini seçip Network/seri kontak/sonuç alanına tıklama ile yalnız **taslak** program güncellenir. Undo/Redo, gerçek pin sınırları ve simülasyon çalışırken düzenleme kilidi korunur. `dist/ladder-toolbox.js` saf doğrulamalı değişiklik motorudur. Siemens kodu/UI varlıkları kopyalanmadı. **Uygulama kodu/testleri teslim, gerçek Windows Edge file:/// sürükle-bırak ve görsel kabulü REVIEW.**
 
 **Öğe üzerinde hassas bırakma:** SVG'nin gerçek kontak sembolleri `data-drop-kind=contact`, `r/p/i` ve bobin/timer/sayaç sembolleri `data-drop-kind=coil` alanlarına sahip. Araç paletinden doğrudan sembol üzerine sürüklenince o Network ve o konum düzenlenir. Paletten seçip sembole tıklama da aynı yolu kullanır; palet seçili değilken eski operandla düzenleme davranışı korunur. Sadece taslak/Undo geçmişi değişir. Edge fare testi REVIEW.
+
+### 28 Ekim — Madde 21 güvenli terminal yerleşim taslağı
+
+Seçili bileşenin gerçek `w/h/pins[id,label,x,y,side]` katalog verileri salt okunur şekilde **bağımsız taslağa** kopyalanır. `dist/component-terminal-draft.js` ile taslak terminalleri ayrı SVG'de fareyle veya X/Y sayısal alanlarında ayarlanabilir. `dts-terminal-draft` sürümlü JSON `.dtscomponent` indirilir. **Katalogya ekleme/elektriksel simülasyona bağlama/3B fiziksel konum değiştirme YOK**; kaynak `byId`, proje, kablolar ve native `Simulation.solve` asla değiştirilmez. Geçersiz ölçüler/koordinatlar, yinelenen uç kimlikleri engellenir. Bu, ürün maddesi 21'in yalnız güvenli taslak önizleme aşamasıdır; Windows Edge file:/// sürükle-bırak/indirme görsel kabulü ve gerçek katalog entegrasyonu **REVIEW/HOLD**.
