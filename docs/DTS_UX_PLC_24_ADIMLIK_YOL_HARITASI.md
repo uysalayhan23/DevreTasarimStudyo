@@ -84,6 +84,10 @@ Aynı PLC'de iki `File.text()` okuması ters sırada tamamlanırsa eski dosya ye
 
 Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FBD regresyonunun “son kontak silinemez” beklentisi yeni kabul şartına göre güncellendi. Mevcut `importSerial` farklı dosya/PLC ve modal yarışlarını engelliyordu; yeni `draftSnapshot` ayrıca **dosya okunurken yapılan yerel kontak/bobin düzenlemesini** korur, geç dönen dosya yeni taslağı ezmez. Önceki 5 ve 7 argümanlı yardımcı işlev çağrıları korunur. Güncellenmiş FBD 8 + yeni içe aktarma 5, toplam **13/13 V8 hedefli regresyon PASS**; bağımsız Node/Windows-Edge dosya diyalogu **NOT_RUN / REVIEW**. Madde 15/23 KISMİ, 1686 ders / 703 katalog / Golden/PASS/HOLD korunur.
 
+### 28 Ekim — Madde 11: RESET-only Q çıkışının güvenli kapatılması
+
+Sanal Ladder'da SET Q1 ile açılmış bir fiziksel Q çıkışının yazarı kaldırılıp yalnız pasif RESET Q1 kaldığında eski Q1 enerjili kalıyordu. RESET tek başına Q'yu sahiplenemez; artık gerçek OUT/SET yazarı bulunmayan Q çıkışı her yeni taramada sıfırlanır. Aynı programdaki geçerli SET+RESET kilidi, bağımsız M belleği ve zamanlayıcı/sayaç davranışı korunur. 7 yeni ve 10 mevcut hedefli V8 taraması **17/17 PASS**; bağımsız Node, gerçek Windows/Edge ve fiziksel Simulation.solve NOT_RUN/REVIEW. 703 katalog, 1686 ders ve SC1194 HOLD korunur.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
