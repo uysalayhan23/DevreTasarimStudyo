@@ -63,8 +63,12 @@
      else if(bits[ref]&&s.offStart===undefined){s.offStart=now;next=true;}
      else next=Number.isFinite(s.offStart)&&(now-s.offStart)<coil.presetMs;
     }else{
-     if(active&&!s.prev){s.pulseStart=now;}
-     next=Number.isFinite(s.pulseStart)&&now-s.pulseStart<coil.presetMs&&now>=s.pulseStart;
+     // IEC-style TP: a new edge cannot extend a pulse that is already running.
+     // Rewind is defensive for a restarted virtual simulation clock.
+     if(Number.isFinite(s.pulseStart)&&now<s.pulseStart)delete s.pulseStart;
+     const pulseRunning=Number.isFinite(s.pulseStart)&&now-s.pulseStart<coil.presetMs;
+     if(active&&!s.prev&&!pulseRunning)s.pulseStart=now;
+     next=Number.isFinite(s.pulseStart)&&now>=s.pulseStart&&now-s.pulseStart<coil.presetMs;
      s.prev=active;
     }
     bits[ref]=next;written.add(ref);
