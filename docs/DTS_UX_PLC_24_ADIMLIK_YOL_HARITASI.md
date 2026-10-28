@@ -70,6 +70,12 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
+### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi
+
+**Gerçek kusur:** FBD'nin `editCoil` işlevi, farklı bir bloğu TON/TOF/TP veya CTU/CTD'ye dönüştürürken daima ilk `T1/C1` adresini seçiyordu. Bu adres zaten başka bir fonksiyon bloğuna aitse `T2/C2` gibi boş adresler bulunsa bile tür değiştirme yanlışlıkla reddediliyordu. Eski FBD kaynak kodunda iki karşıt örnekle yeniden üretildi. **Onarım:** Yalnız `type` değişikliği sırasında mevcut blok sahibinin adresi korunur veya ilk boş T/C adresi seçilir. Bütün adresler doluysa işlem güvenli biçimde başarısız olur; açık `ref` düzenlemesinde çakışmayı sessizce başka adrese taşıma yapılmaz. Katalog, `Simulation.solve` ve Ladder tarama motoru değiştirilmedi. On hedefli V8 kontrolü PASS; `tests/dts-fbd-free-block-address.test.cjs` içindeki 7 regresyon senaryosu V8 test koşumuyla PASS. Bağımsız Node.js yürütümü **NOT_RUN**, Windows/Edge görsel ve 3D kabulü **REVIEW**, plan maddesi 23 **KISMİ**.
+
+
+
 | No | Özellik | Durum |
 | --- | --- | --- |
 | 21 | Görsel bileşen editörü, terminal koordinatları ve katalogya kontrollü ekleme | **KISMİ/KOD**: gerçek katalogdan salt okunur kopyalanan terminal taslağı, ayrı SVG sürükleme/nümerik koordinat ve `.dtscomponent` taslak indirme; gerçek kataloğa ekleme, Windows/Edge kabulü açık |

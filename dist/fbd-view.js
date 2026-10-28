@@ -78,6 +78,15 @@
    const options=refsFor(type,limits);
    if(!options.length)return {ok:false,error:'PLC için geçerli çıkış adresi yok.'};
    if(!options.includes(ref))ref=options[0];
+   // Reuse this block's address, or find an unused T/C address on a type change.
+   // An explicit address edit must still fail rather than silently remap.
+   if(['TON','TOF','TP','CTU','CTD'].includes(type)){
+    const owners=new Set(program.rungs
+     .filter((r,i)=>i!==index&&['TON','TOF','TP','CTU','CTD'].includes(r.coil.type))
+     .map(r=>r.coil.ref));
+    if(owners.has(ref))ref=options.find(candidate=>!owners.has(candidate));
+    if(!ref)return {ok:false,error:'Boş zamanlayıcı/sayaç adresi kalmadı.'};
+   }
   }else if(field==='ref'){
    if(typeof patch.ref!=='string'||!refsFor(type,limits).includes(patch.ref))
     return {ok:false,error:'FBD blok adresi bu PLC için geçersiz.'};
