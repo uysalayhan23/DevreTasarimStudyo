@@ -10,8 +10,8 @@
    String(a.c)===String(b.c)&&String(a.p)===String(b.p);
  }
  function scan(project,byId){
-  const components=new Map((project?.components||[]).filter(Boolean).map(c=>[String(c.id),c]));
-  const junctions=new Set((project?.junctions||[]).map(j=>String(j.id)));
+  const components=new Map((Array.isArray(project?.components)?project.components:[]).filter(c=>c&&typeof c==='object').map(c=>[String(c.id),c]));
+  const junctions=new Set((Array.isArray(project?.junctions)?project.junctions:[]).filter(j=>j&&j.id!=null).map(j=>String(j.id)));
   const issues=[],wires=Array.isArray(project?.wires)?project.wires:[];
   function report(wire,kind,message){issues.push({wire:String(wire?.id||'Kablo'),kind,message})}
   function endpoint(wire,ref,side){
@@ -25,12 +25,17 @@
    if(!c){report(wire,'missing-component',side+' bağlı bileşen bulunamadı: '+String(ref.c));return false}
    const def=byId?.[c.typeId];
    if(!def){report(wire,'unknown-catalog',side+' bileşenin katalog modeli bulunamadı: '+String(c.typeId));return false}
-   if(!Array.isArray(def.pins)||!def.pins.some(p=>String(p.id)===String(ref.p))){
+   if(!Array.isArray(def.pins)||!def.pins.some(p=>p&&p.id!=null&&String(p.id)===String(ref.p))){
     report(wire,'unknown-pin',side+' terminal katalogda yok: '+String(ref.p));return false}
    return true;
   }
+  const seenWireIds=new Set();
   for(const wire of wires){
    if(!wire||typeof wire!=='object'){report(wire,'invalid-wire','Kablo kaydı geçersiz.');continue}
+   const wireId=wire.id==null?'':String(wire.id);
+   if(!wireId.trim())report(wire,'missing-wire-id','Kablo kimliği eksik; benzersiz kablo kimliği gereklidir.');
+   else if(seenWireIds.has(wireId))report(wire,'duplicate-wire-id','Aynı kablo kimliği birden fazla kez kullanılmış: '+wireId);
+   else seenWireIds.add(wireId);
    const a=endpoint(wire,wire.from,'Başlangıç'),b=endpoint(wire,wire.to,'Bitiş');
    if(a&&b&&sameEndpoint(wire.from,wire.to))report(wire,'same-endpoint','Kablo aynı uca dönüyor; bağlantıyı kontrol edin.');
   }
