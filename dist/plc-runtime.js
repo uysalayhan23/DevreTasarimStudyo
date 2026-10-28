@@ -23,7 +23,9 @@ function supplyPair(d){
 function inputAnchor(d,p){
  const ps=blockPins(d,p);
  // Documented CPU 1211C DI uses dedicated X10:6 (1M), not CPU power M.
- if(d?.id==='plc-0-0-documented'&&p?.block==='X10')return ps.find(x=>x.id==='X10:6')||ps.find(isCommon)||null;
+ if((d?.id==='plc-0-0-documented'||d?.id==='plc-hw-6es7211-1ae40-0xb0')&&
+    (p?.block==='X10'||/^X10:/.test(String(p?.id||''))))
+   return ps.find(x=>x.id==='X10:6')||ps.find(isCommon)||null;
  return ps.find(isCommon)||ps.find(isAcNeutral)||ps[0]||null;
 }
 function outputAnchor(d,p){
@@ -35,7 +37,10 @@ function outputAnchor(d,p){
 }
 function inputState(c,d,net,p){
  const anchor=inputAnchor(d,p);if(!anchor||anchor.id===p.id)return false;
- return !!net.voltage(c,p.id,anchor.id);
+ const voltage=net.voltage(c,p.id,anchor.id);
+ // Verified CPU 1211C DC inputs require positive polarity relative to X10:6 (1M).
+ // Negative or absent voltage must not become logical TRUE via !!voltage.
+ return d?.id==='plc-hw-6es7211-1ae40-0xb0'?Number(voltage)>0:!!voltage;
 }
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
