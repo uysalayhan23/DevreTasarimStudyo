@@ -121,7 +121,7 @@
     if(s.kind&&s.kind!==coil.type){s.count=initial;delete s.prev;delete s.tick;}
     s.kind=coil.type;
     if(!Number.isInteger(s.count))s.count=initial;
-    if(active&&!s.prev&&s.tick!==now)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
+    if(active&&!s.prev)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
     bits[ref]=next;written.add(ref);
