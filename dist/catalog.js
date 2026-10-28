@@ -31,6 +31,7 @@
   const arduinoSharedTools=new Set(['unit-ut33d-plus','unit-ut61e-plus','unit-ut200a','test-probe-red','test-probe-black','encoder-incremental']);
   const arduinoBasic=d=>d.arduinoShared===true||arduinoSharedTools.has(d.id)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.kind)||['resistor','potentiometer','capacitor','diode','rectifier','ground'].includes(d.id);
   function classification(d){
+    if(!d||typeof d!=='object')return {group:'drawing',areas:['drawing','panel','control','electronics']};
     if(['unit-ut33d-plus','unit-ut61e-plus','unit-ut200a'].includes(d.id))return {group:'measurement',areas:['control','panel','building','automation','measurement','electronics','motor']};
     if(d.arduinoGroup)return {group:d.arduinoGroup,areas:['electronics','automation','control']};
     // Reuse the isolated secondary-only 12 VAC source, not a second transformer model.
@@ -66,7 +67,7 @@
   }
   function prepare(lib){return lib.map(d=>{d.classification=classification(d);return d})}
   function matches(d,f={}){
-    const m=d.classification||classification(d),q=(f.query||'').trim().toLocaleLowerCase('tr');
+    const m=d.classification||classification(d),q=String(f.query??'').trim().toLocaleLowerCase('tr');
     return d.catalogHidden!==true&&(f.category!=='electrical'||(!d.isPLC&&!d.arduinoOnly))&&(f.category!=='plc'||d.isPLC||d.kind==='plc-io'||arduinoSharedTools.has(d.id))&&(f.category!=='arduino'||d.arduinoBoard||d.arduinoOnly||arduinoBasic(d))&&
       (!f.area||f.area==='all'||m.areas.includes(f.area))&&(!f.group||f.group==='all'||m.group===f.group)&&
       (!f.brand||f.brand==='all'||d.brand===f.brand)&&(!f.series||f.series==='all'||d.series===f.series)&&
@@ -74,7 +75,7 @@
   }
   function sections(lib,f={}){
     const found=lib.filter(d=>matches(d,f));
-    return groups.map(([id,title])=>({id,title,items:found.filter(d=>(d.classification||classification(d)).group===id).sort((a,b)=>(a.brand||'').localeCompare(b.brand||'','tr')||(a.series||'').localeCompare(b.series||'','tr')||a.name.localeCompare(b.name,'tr',{numeric:true}))})).filter(g=>g.items.length);
+    return groups.map(([id,title])=>({id,title,items:found.filter(d=>(d.classification||classification(d)).group===id).sort((a,b)=>(a.brand||'').localeCompare(b.brand||'','tr')||(a.series||'').localeCompare(b.series||'','tr')||String(a.name||'').localeCompare(String(b.name||''),'tr',{numeric:true}))})).filter(g=>g.items.length);
   }
   const api={areas,groups,groupNames,order,arduinoSharedTools,arduinoBasic,classification,prepare,matches,sections};
   if(typeof module==='object'&&module.exports)module.exports=api;else root.CCSCatalog=api;
