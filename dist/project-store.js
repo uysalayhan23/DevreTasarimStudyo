@@ -170,7 +170,7 @@
       try{
         // Save As opens its picker before any IndexedDB work loses the user gesture.
         if(saveAs&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}],...(directory?{startIn:directory}:{})});
-        if(!handle&&!saveAs){existing=existing||await db('get','handle:'+project.projectId);handle=existing?.handle}
+        if(!handle&&!saveAs){if(!existing){try{existing=await db('get','handle:'+project.projectId)}catch{}}handle=existing?.handle}
         if(!handle&&directory&&!saveAs){
           if(!await permission(directory,'readwrite',true))throw Error('Klasöre yazma izni verilmedi.');
           let name=filename(copy.name),n=2;
