@@ -1129,3 +1129,12 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-fbd-block-controls input{width:92px}
 .dts-fbd-block-controls :is(select,input):focus-visible{outline:2px solid #147fac;outline-offset:2px}
 .dts-fbd-output{flex-wrap:wrap}
+
+/* FBD structural AND/OR editing over the canonical Ladder V1 native network. */
+.dts-fbd-line{flex-wrap:wrap;white-space:normal;gap:7px}
+.dts-fbd-structure{border:1px solid #6390aa;border-radius:5px;background:#e8f4fb;color:#24506c;
+ font:600 11px system-ui,sans-serif;padding:6px 8px;min-height:30px;cursor:pointer;white-space:nowrap}
+.dts-fbd-structure.dts-fbd-remove{background:#fff2f0;border-color:#b78e88;color:#85443d}
+.dts-fbd-structure:hover:enabled{background:#d1eaf7}
+.dts-fbd-structure:focus-visible{outline:3px solid #0b78bd;outline-offset:2px}
+.dts-fbd-structure:disabled{cursor:not-allowed;opacity:.52}

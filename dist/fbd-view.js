@@ -18,6 +18,34 @@
   return result.ok?{ok:true,program:draft}:{ok:false,error:result.error};
  }
 
+ // V1 FBD and LAD share the same native rung model; edits are draft copies only.
+ function editStructure(program,action,position,limits={}){
+  const branch=action==='add-path'||action==='remove-path';
+  const contact=action==='add-contact'||action==='remove-contact';
+  if(!branch&&!contact)return {ok:false,error:'FBD işlem türü bilinmiyor.'};
+  const syntax=branch?/^(0|[1-9]\d*):(0|[1-9]\d*)$/:/^(0|[1-9]\d*):(0|[1-9]\d*):(0|[1-9]\d*)$/;
+  if(typeof position!=='string'||!syntax.test(position))return {ok:false,error:'FBD konum biçimi hatalı.'};
+  const loc=position.split(':').map(Number),[r,p,c]=loc;
+  if(!loc.every(Number.isSafeInteger))return {ok:false,error:'FBD konumu sayı sınırını aşıyor.'};
+  const valid=Ladder?.validate?.(program,limits);
+  if(!valid?.ok)return {ok:false,error:valid?.error||'Geçersiz Ladder programı.'};
+  const paths=program.rungs[r]?.paths,series=paths?.[p];
+  if(!series)return {ok:false,error:'Belirtilen FBD yolu yok.'};
+  if(contact&&(c<0||c>=series.length))return {ok:false,error:'Belirtilen FBD kontağı yok.'};
+  if(action==='add-contact'&&series.length>=12)return {ok:false,error:'En fazla 12 seri kontak.'};
+  if(action==='remove-contact'&&series.length===1)return {ok:false,error:'Son kontak silinemez.'};
+  if(action==='add-path'&&paths.length>=8)return {ok:false,error:'En fazla 8 paralel yol.'};
+  if(action==='remove-path'&&paths.length===1)return {ok:false,error:'Son yol silinemez.'};
+  const draft=JSON.parse(JSON.stringify(program)),out=draft.rungs[r].paths;
+  const fresh={type:'NO',ref:Number.isInteger(limits.inputCount)&&limits.inputCount<1?'M1':'I1'};
+  if(action==='add-contact')out[p].splice(c+1,0,fresh);
+  if(action==='remove-contact')out[p].splice(c,1);
+  if(action==='add-path')out.splice(p+1,0,[fresh]);
+  if(action==='remove-path')out.splice(p,1);
+  const check=Ladder.validate(draft,limits);
+  return check.ok?{ok:true,program:draft}:{ok:false,error:check.error};
+ }
+
  // FBD edits the same native V1 Ladder draft; it never creates a parallel simulator.
  const blockTypes=['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
  function refsFor(type,limits={}){
@@ -89,13 +117,16 @@
   const states=paths.map((_,i)=>live&&opts.pathStates[i]===true);
   const id=Number.isInteger(opts.index)?opts.index:0;
   const lines=paths.map((path,pi)=>{
-   const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span><button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button></span>').join(' <span class="dts-fbd-link">━</span> ');
-   return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+contacts+' <span class="dts-fbd-gate">'+(path.length>1?'AND':'PASS')+'</span></div>';
+   const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span><button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
+    (path.length>1?'<button type="button" class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>':'')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
+   return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+contacts+' <span class="dts-fbd-gate">'+(path.length>1?'AND':'PASS')+'</span>'+ '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact" data-fbd-position="'+id+':'+pi+':'+(path.length-1)+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
+    '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-path" data-fbd-position="'+id+':'+pi+'" '+(paths.length>=8?'disabled':'')+'>+ Paralel</button>'+
+    (paths.length>1?'<button type="button" class="dts-fbd-structure dts-fbd-remove" data-fbd-structure="remove-path" data-fbd-position="'+id+':'+pi+'">Yolu sil</button>':'')+'</div>';
   }).join('');
   const coil=rung?.coil||{},out=live&&opts.coilValue===true;
   return '<section class="dts-fbd-view" role="group" aria-label="'+escape('FBD Network '+(id+1))+'"><header>FBD Network '+(id+1)+' · '+escape(rung?.comment||rung?.id||'')+'</header>'+lines+
    '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type||'OUT')+' · '+escape(coil.ref||'?')+'</span>'+blockControls(coil,id,opts.limits)+'</div></section>';
  }
- const api=Object.freeze({render,toggleContact,editCoil,refsFor});
+ const api=Object.freeze({render,toggleContact,editCoil,editStructure,refsFor});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSFBDView=api;
 })(typeof window==='undefined'?globalThis:window);

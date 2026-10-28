@@ -335,6 +335,13 @@
    return false;
   }
   overlay.addEventListener('click',e=>{
+   const structure=e.target.closest?.('[data-fbd-structure]');
+   if(structure&&overlay.contains(structure)){
+    if(diagramMode!=='fbd'||!active)return;
+    const result=FBDView.editStructure(active.draft,structure.dataset.fbdStructure,structure.dataset.fbdPosition,limits());
+    if(!result.ok){editor.toast?.(result.error);return}
+    active.draft=result.program;active.history.push(active.draft);render();return;
+   }
    const polarity=e.target.closest?.('[data-fbd-toggle-contact]');
    if(polarity&&overlay.contains(polarity)){
     // The FBD view edits the same draft as LAD; the saved program is never updated by a click.
