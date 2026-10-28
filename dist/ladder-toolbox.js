@@ -29,7 +29,7 @@
    if(!Number.isInteger(p)||p<0||p>=rung.paths.length)return {ok:false,error:'Paralel yol bulunamadı.'};
    const path=rung.paths[p],at=target.i==null?path.length:Number(target.i);
    if(!Number.isInteger(at)||at<0||at>path.length||path.length>=12)return {ok:false,error:'Seri yolda en fazla 12 kontak kullanılabilir.'};
-   const ref=limits.inputCount>0?'I1':'M1';
+   const ref=Number.isInteger(limits.inputCount)&&limits.inputCount<1?'M1':'I1';
    path.splice(at,0,{type:tool.id,ref});
   }else{
    if(target.kind==='coil'||target.kind==='network'){
