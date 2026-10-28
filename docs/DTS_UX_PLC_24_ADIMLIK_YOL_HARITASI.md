@@ -142,6 +142,10 @@ Seçili cihaz kartı modelde zaten bulunan `ref` alanını göstermiyordu; sayı
 
 `Symbols.markup` görsel malzeme ölçeğini `0,25–3` aralığına alırken `app.js` kablo ucu, TX11 özel uçları, terminal overlay clip, imleç yerel koordinatı ve pens çene noktasında ham `c.materialScale||1` kullanıyordu. Eski/dışarıdan açılan 4x veya 0,1x ölçekli projelerde SVG malzeme ile kablo uçları ayrışabiliyordu. `Symbols.materialScale/terminalPosition` artık sembol, kablo uçları, 90° döndürme ve özel cihaz overlay koordinatını aynı etkin ölçekle çözer. Dosya/katalog elektriksel uçları ve `Simulation.solve` değiştirilmedi. `tests/dts-material-terminal-scale-consistency.test.cjs` **7/7 V8 hedefli regresyon PASS**. Gerçek Windows/Edge 3D piksel kabulü **REVIEW**; bağımsız Node NOT_RUN; madde 19 KISMİ, Golden/PASS/HOLD ve SC1194 korunur.
 
+### 28 Ekim — Madde 19: malzeme/kablo engel geometrisini ortaklaştırma
+
+Önceki düzeltme terminal konumunu `Symbols.terminalPosition` ile görsel ölçekte sabitlemişti; kablo yönlendirici `componentObstacles()` hâlâ ham `c.materialScale||1` kullandığı için eski projede sınır dışı ölçeklerde kablo cihaz gövdesini yanlış boyutta algılıyordu. Pens metre açık çene göstergesi de ham ölçeği kullanıyordu. Yeni `Symbols.materialBounds` cihazın dört döndürülmüş köşesini aynı sınırlandırılmış ölçekte hesaplar; kablo engeli ve açık çene de bu ortak geometriyi kullanır. `tests/dts-material-obstacle-scale.test.cjs` 5 yeni, güncellenmiş eski geometri testleri 7, toplam **12/12 V8 PASS**. Bağımsız Node.js ve Windows/Edge 2D/3D görsel kabulü **NOT_RUN/REVIEW**; `Simulation.solve`, 703 katalog, 1686 ders, SC1194 ve tüm Golden/PASS/HOLD/REVIEW kilitleri değişmedi. Madde 19 KISMİ.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |

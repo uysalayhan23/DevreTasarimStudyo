@@ -42,6 +42,13 @@
     const q=rotatedPoint(p,d,c?.rotation||0),scale=materialScale(c);
     return {x:c.x+q.x*scale,y:c.y+q.y*scale};
   }
+  // Geometry for routing, rendering and terminal placement must have one scale.
+  function materialBounds(c,d,padding=0){
+    const corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>terminalPosition(c,d,{x,y}));
+    const xs=corners.map(p=>p.x),ys=corners.map(p=>p.y);
+    return {left:Math.min(...xs)-padding,right:Math.max(...xs)+padding,
+      top:Math.min(...ys)-padding,bottom:Math.max(...ys)+padding};
+  }
   function rotatedPoint(p,d,rotation=0){
     const cx=d.w/2,cy=d.h/2,q=((rotation%360)+360)%360/90,dx=p.x-cx,dy=p.y-cy;
     const turns=[[dx,dy],[-dy,dx],[-dx,-dy],[dy,-dx]],v=turns[q]||turns[0];
@@ -168,7 +175,7 @@
     const c={ref:referencePrefix(d)+'1',label:d.name,state:mode!=='material'&&!!d.previewState,rotation:0,_active:false};
     return '<svg class="preview-svg" viewBox="'+(d.instrument?Math.min(-16,(d.w-262)/2):-16)+' -16 '+(d.instrument?Math.max(262,d.w+32):d.w+(d.reedSensor?210:Devices.analog(d)?90:32))+' '+(d.h+(d.instrument?150:d.reedSensor?90:Devices.analog(d)?145:60))+'" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><g class="'+classes(d,c,mode)+'">'+markup(d,c,{mode,norm})+'</g></svg>';
   }
-  const api={prepareLibrary,markup,noteMarkup,preview,classes,rotatedPoint,rotatedSide,materialScale,terminalPosition,referencePrefix,motionMarkup,directionText};
+  const api={prepareLibrary,markup,noteMarkup,preview,classes,rotatedPoint,rotatedSide,materialScale,terminalPosition,materialBounds,referencePrefix,motionMarkup,directionText};
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.CCSSymbols=api;
 })(typeof window==='undefined'?globalThis:window);

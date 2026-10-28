@@ -32,7 +32,7 @@ test('core endpoint, clip and pointer code use shared effective geometry',()=>{
 });
 test('offline symbols load before app using updated local revision',()=>{
  const h=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
- assert.match(h,/src="symbols\.js\?rev=20261028-consistent-material-scale1"/);
- assert.match(h,/src="app\.js\?rev=20261028-consistent-material-scale1"/);
+ assert.match(h,/src="symbols\.js\?rev=20261028-canonical-obstacles2"/);
+ assert.match(h,/src="app\.js\?rev=20261028-canonical-obstacles2"/);
  assert.ok(h.indexOf('src="symbols.js?rev=')<h.indexOf('src="app.js?rev='));
 });

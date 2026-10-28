@@ -255,7 +255,7 @@
       g.dataset.clampJawState=c._clampJawOpen?'open':'closed';
       if(c._clampJawOpen){
         const overlay=svg('g',{class:'clamp-jaw-open-indicator','data-clamp-jaw-state':'open','pointer-events':'none'});
-        const scale=c.materialScale||1;
+        const scale=Symbols.materialScale(c);
         const q=Symbols.rotatedPoint({x:d.w/2,y:65},d,c.rotation||0);
         overlay.appendChild(svg('path',{d:'M '+(q.x*scale-22)+' '+(q.y*scale-8)+' Q '+(q.x*scale-18)+' '+(q.y*scale-29)+' '+(q.x*scale-3)+' '+(q.y*scale-34),
           fill:'none',stroke:'#e29a26','stroke-width':4,'stroke-linecap':'round'}));
@@ -408,7 +408,7 @@
     while(changed){changed=false;for(let i=1;i<out.length-1;i++){const a=out[i-1],b=out[i],c=out[i+1];if((a.x===b.x&&b.x===c.x)||(a.y===b.y&&b.y===c.y)){out.splice(i,1);changed=true;break}}}
     return out;
   }
-  function componentObstacles(){return project.components.filter(c=>byId[c.typeId]?.kind!=='clamp-meter'&&!Leads.floating(byId[c.typeId])&&!(appearance==='material'&&c.auxFor)).map(c=>{const base=materialDefinition(c,byId[c.typeId]),scale=c.materialScale||1,d={...base,w:base.w*scale,h:base.h*scale},quarter=((c.rotation||0)%180+180)%180===90,cx=c.x+d.w/2,cy=c.y+d.h/2,w=quarter?d.h:d.w,h=quarter?d.w:d.h;return{left:cx-w/2-GRID*.7,right:cx+w/2+GRID*.7,top:cy-h/2-GRID*.7,bottom:cy+h/2+GRID*.7}})}
+  function componentObstacles(){return project.components.filter(c=>byId[c.typeId]?.kind!=='clamp-meter'&&!Leads.floating(byId[c.typeId])&&!(appearance==='material'&&c.auxFor)).map(c=>Symbols.materialBounds(c,materialDefinition(c,byId[c.typeId]),GRID*.7))}
   function heapPush(heap,node){heap.push(node);let i=heap.length-1;while(i){const p=(i-1)>>1;if(heap[p].f<=node.f)break;heap[i]=heap[p];i=p}heap[i]=node}
   function heapPop(heap){if(!heap.length)return null;const root=heap[0],last=heap.pop();if(heap.length){let i=0;while(true){let l=i*2+1,r=l+1;if(l>=heap.length)break;let c=r<heap.length&&heap[r].f<heap[l].f?r:l;if(heap[c].f>=last.f)break;heap[i]=heap[c];i=c}heap[i]=last}return root}
   function gridRoute(from,to,preferredDir=null){
