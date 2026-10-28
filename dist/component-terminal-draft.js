@@ -23,7 +23,9 @@
   return {ok:true};
  }
  function fromCatalog(d){
-  if(!d||!Array.isArray(d.pins))throw Error('Katalog terminal bilgisi bulunamadı.');
+  if(!d||!Array.isArray(d.pins)||d.pins.some(p=>!p||p.x==null||p.y==null||
+   (typeof p.x==='string'&&!p.x.trim())||(typeof p.y==='string'&&!p.y.trim())))
+   throw Error('Katalog terminal koordinatları eksik; (0,0) konumu varsayılamaz.');
   const draft={format:'dts-terminal-draft',version:1,sourceId:String(d.id||''),
    name:String(d.name||d.id||'Malzeme'),w:Number(d.w),h:Number(d.h),
    pins:d.pins.map(p=>({id:String(p.id||''),label:String(p.label||p.id||''),
@@ -48,8 +50,20 @@
   return JSON.stringify({format:d.format,version:d.version,sourceId:d.sourceId,name:d.name,
     w:d.w,h:d.h,pins:d.pins},null,2);
  }
+ function utf8ByteLength(raw){
+  let bytes=0;
+  for(let i=0;i<raw.length;i++){
+   const c=raw.charCodeAt(i);
+   if(c<128)bytes++;
+   else if(c<2048)bytes+=2;
+   else if(c>=0xD800&&c<=0xDBFF&&i+1<raw.length&&raw.charCodeAt(i+1)>=0xDC00&&raw.charCodeAt(i+1)<=0xDFFF){bytes+=4;i++}
+   else bytes+=3;
+   if(bytes>maxImportBytes)return bytes;
+  }
+  return bytes;
+ }
  function parseImport(raw,catalog){
-  if(typeof raw!=='string'||raw.length>maxImportBytes)throw Error('Taslak dosyası 128 KB sınırını aşıyor veya geçersiz.');
+  if(typeof raw!=='string'||raw.length>maxImportBytes||utf8ByteLength(raw)>maxImportBytes)throw Error('Taslak dosyası 128 KB sınırını aşıyor veya geçersiz.');
   let data;
   try{data=JSON.parse(raw)}catch{throw Error('Terminal taslağı geçerli JSON değil.')}
   // Format, pin coordinates and exact identities are validated before anything is displayed.
