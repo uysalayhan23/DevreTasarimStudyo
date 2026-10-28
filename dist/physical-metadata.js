@@ -432,7 +432,7 @@
       if(typeof mapping.connectorType!=='string'||!mapping.connectorType)return {ok:false,reason:'connectorType'};
       if(typeof mapping.connectorSourceUrl!=='string'||!/^https:\/\//.test(mapping.connectorSourceUrl))return {ok:false,reason:'connectorSourceUrl'};
       const pins=Object.entries(mapping.connectorPinAssignment||{});
-      if(!pins.length||pins.some(([k,v])=>typeof k!=='string'||!k||!Number.isInteger(v)||v<=0))return {ok:false,reason:'connectorPinAssignment'};
+      if(!pins.length||pins.some(([k,v])=>typeof k!=='string'||!k||!Number.isInteger(v)||v<=0)||new Set(pins.map(([,v])=>v)).size!==pins.length)return {ok:false,reason:'connectorPinAssignment'};
       if(mapping.connectorLocationStatus!=='verified-drawing-callout')return {ok:false,reason:'connectorLocationStatus'};
     }
     if(mapping.physicalRole!==undefined&&!['primary','logical-part','standalone'].includes(mapping.physicalRole))return {ok:false,reason:'physicalRole'};
