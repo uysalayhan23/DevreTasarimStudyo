@@ -2,7 +2,8 @@
   'use strict';
   function panFrom(start,dx,dy){return {x:start.x+dx,y:start.y+dy,zoom:start.zoom}}
   function zoomAt(view,newZoom,anchor){
-    const zoom=Math.min(4,Math.max(.2,newZoom)),ratio=zoom/view.zoom;
+    const current=Number.isFinite(view.zoom)&&view.zoom>0?view.zoom:1;
+    const zoom=Number.isFinite(newZoom)?Math.min(4,Math.max(.2,newZoom)):current,ratio=zoom/current;
     return {x:anchor.x-(anchor.x-view.x)*ratio,y:anchor.y-(anchor.y-view.y)*ratio,zoom};
   }
   function toWorld(view,point){return {x:(point.x-view.x)/view.zoom,y:(point.y-view.y)/view.zoom}}
