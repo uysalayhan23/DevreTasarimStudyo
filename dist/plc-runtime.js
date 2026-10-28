@@ -45,7 +45,9 @@ function inputState(c,d,net,p){
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
  if(c.plcProgram==='dts-ladder-v1'){
-  const result=Ladder?.scan?.(c.ladderProgram,Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value])),c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length});
+  let result;
+  try{result=Ladder?.scan?.(c.ladderProgram,Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value])),c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
+  catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
   if(result?.ok){
    c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
    return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map((x,i)=>[x.id,!!result.outputs['Q'+(i+1)]]))};
