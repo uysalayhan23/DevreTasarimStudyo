@@ -1112,3 +1112,11 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
  #dtsPrintSurface svg{display:block!important;width:100%!important;height:auto!important;max-height:158mm!important;
  transform:none!important;overflow:visible!important}
 }
+
+/* FBD V1: direct editable NO/NC polarity, separate from native saved program. */
+.dts-fbd-contact-group{display:inline-flex;flex-direction:column;align-items:stretch;gap:4px;vertical-align:middle;flex:0 0 auto}
+.dts-fbd-contact-group .dts-fbd-contact{justify-content:center}
+.dts-fbd-polarity{border:1px solid #6487a2;background:#f7fbff;color:#184961;border-radius:5px;font:600 10px system-ui,sans-serif;min-height:28px;padding:3px 6px;cursor:pointer}
+.dts-fbd-polarity:hover{background:#d9eefb}
+.dts-fbd-polarity:focus-visible{outline:3px solid #0b78bd;outline-offset:2px}
+.dts-fbd-on .dts-fbd-polarity{background:#edf7f4}

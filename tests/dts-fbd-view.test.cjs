@@ -16,3 +16,33 @@ test('green is never inferred from unrelated program states',()=>{
  }
  assert.doesNotMatch(F.render(rung,{live:false,pathStates:[true,true],coilValue:true}),/dts-fbd-on/);
 });
+
+test('FBD contact polarity edits an independent draft and changes actual Ladder output',()=>{
+ const source={version:1,rungs:[structuredClone(rung)]},before=JSON.stringify(source),limits={inputCount:6,outputCount:4};
+ const off=L.scan(source,{I1:true,I2:true,I3:false},{},10,limits).outputs.Q1;
+ assert.equal(off,false);
+ const edit=F.toggleContact(source,'0:0:1',limits);
+ assert.equal(edit.ok,true);assert.equal(edit.program.rungs[0].paths[0][1].type,'NO');
+ assert.equal(JSON.stringify(source),before,'saved project remains unchanged');
+ assert.equal(L.scan(edit.program,{I1:true,I2:true,I3:false},{},10,limits).outputs.Q1,true);
+ const restored=F.toggleContact(edit.program,'0:0:1',limits);
+ assert.equal(restored.ok,true);
+ assert.deepEqual(restored.program,source);
+});
+test('FBD editing rejects bad indices, invalid addresses and invalid PLC input bounds',()=>{
+ const p={version:1,rungs:[structuredClone(rung)]},saved=JSON.stringify(p);
+ for(const id of ['0:0:7','0:7:0','4:0:0','-1:0:0','0:0:abc','01:0:0','0:0:0:0']){
+  const out=F.toggleContact(p,id,{inputCount:6,outputCount:4});
+  assert.equal(out.ok,false,id);
+ }
+ assert.equal(F.toggleContact(p,'0:0:0',{inputCount:1,outputCount:4}).ok,false);
+ assert.equal(F.toggleContact({version:1,rungs:[]},'0:0:0').ok,false);
+ assert.equal(JSON.stringify(p),saved,'no rejected edit may mutate the source');
+});
+test('FBD presents separate keyboard-accessible NO/NC edit buttons',()=>{
+ const svg=F.render(rung,{index:1});
+ assert.match(svg,/data-fbd-toggle-contact="1:0:1"/);
+ assert.match(svg,/NO → NC/);
+ assert.match(svg,/NC → NO/);
+ assert.match(svg,/aria-label="I2 kontağını normalde açık yap"/);
+});

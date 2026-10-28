@@ -84,6 +84,7 @@
   if(!el)return '';
   if(el.id)return 'id:'+el.id;
   const d=el.dataset||{};
+  if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
   const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
   return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
  }
@@ -329,6 +330,16 @@
    return false;
   }
   overlay.addEventListener('click',e=>{
+   const polarity=e.target.closest?.('[data-fbd-toggle-contact]');
+   if(polarity&&overlay.contains(polarity)){
+    // The FBD view edits the same draft as LAD; the saved program is never updated by a click.
+    if(diagramMode!=='fbd'||!active)return;
+    const result=FBDView.toggleContact(active.draft,polarity.dataset.fbdToggleContact,limits());
+    if(!result.ok){editor.toast?.(result.error);return}
+    active.draft=result.program;
+    active.history.push(active.draft);
+    render();return;
+   }
    if(activateDiagramTarget(e.target))return;
    if(e.target===overlay){close();return}
    const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
