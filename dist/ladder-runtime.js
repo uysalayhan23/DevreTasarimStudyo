@@ -7,7 +7,7 @@
  function validate(source,limits={}){
   if(!source||typeof source!=='object'||source.version!==1||!Array.isArray(source.rungs)||source.rungs.length<1||source.rungs.length>32)return {ok:false,error:'Program V1 için 1–32 rung gerekir.'};
   const inputs=Number.isInteger(limits.inputCount)?limits.inputCount:16,outputs=Number.isInteger(limits.outputCount)?limits.outputCount:16;
-  const seen=new Set(),blockWriters=new Set();
+  const seen=new Set(),blockWriters=new Set(),outputWriters=new Set();
   for(let i=0;i<source.rungs.length;i++){
    const r=source.rungs[i];if(!r||typeof r!=='object'||typeof r.id!=='string'||r.id.length<1||r.id.length>40||seen.has(r.id))return {ok:false,error:'Tekrarlanan/geçersiz rung kimliği: '+(i+1)};
    seen.add(r.id);
@@ -31,6 +31,11 @@
    if(['TON','TOF','TP'].includes(r.coil.type)&&(!/^T/.test(r.coil.ref)||!Number.isInteger(r.coil.presetMs)||r.coil.presetMs<1||r.coil.presetMs>600000))return {ok:false,error:'Zamanlayıcı adresi veya süresi geçersiz.'};
    if(['CTU','CTD'].includes(r.coil.type)&&(!/^C/.test(r.coil.ref)||!Number.isInteger(r.coil.preset)||r.coil.preset<1||r.coil.preset>65535))return {ok:false,error:'Sayaç adresi veya hedefi geçersiz.'};
    if(['OUT','SET'].includes(r.coil.type)&&!/^[QM]/.test(r.coil.ref))return {ok:false,error:'OUT/SET yalnız Q veya M adresine yazabilir.'};
+   // OUT/SET on one Q/M address has ambiguous network-order ownership. RESET is a separate permitted command.
+   if(['OUT','SET'].includes(r.coil.type)){
+    if(outputWriters.has(r.coil.ref))return {ok:false,error:'Aynı Q/M çıkışına birden fazla OUT/SET Network yazamaz: '+r.coil.ref};
+    outputWriters.add(r.coil.ref);
+   }
    // Each timer/counter has one owning block; separate RESET instructions remain valid.
    if(['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)){
     if(blockWriters.has(r.coil.ref))return {ok:false,error:'Zamanlayıcı/sayaç aynı adrese birden fazla Network yazamaz: '+r.coil.ref};
