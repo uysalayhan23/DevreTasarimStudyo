@@ -57,11 +57,14 @@ test('serialized SVG CSS URLs reject external loads and retain local paint serve
   '<svg><path fill="url(https://example.invalid/a.png)"/></svg>',
   '<svg><path style="filter:url(assets/filter.svg#f)"/></svg>',
   '<svg><style>@import "https://example.invalid/style.css";</style></svg>',
-  '<svg><path fill="url(data:image/svg+xml;base64,AAAA)"/></svg>'
+  '<svg><path fill="url(data:image/svg+xml;base64,AAAA)"/></svg>',
+  '<svg><path fill="url(&quot;https://example.invalid/x.svg&quot;)"/></svg>'
  ])assert.equal(Png.cssCheck(css).ok,false,css);
  for(const css of [
   '<svg><path fill="url(#paint)"/></svg>',
-  '<svg><path fill="url(&quot;#paint&quot;)"/></svg>'.replace('&quot;','').replace('&quot;',''),
+  '<svg><path fill="url(&quot;#paint&quot;)"/></svg>',
+  '<svg><path fill="url(&apos;#paint&apos;)"/></svg>',
+  '<svg><path fill="url(&#34;#paint&#34;)"/></svg>',
   '<svg><path fill="#fff"/></svg>'
  ])assert.equal(Png.cssCheck(css).ok,true,css);
 });
