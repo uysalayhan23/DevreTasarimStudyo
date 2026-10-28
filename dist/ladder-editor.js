@@ -62,6 +62,27 @@
     status:!running?'Simülasyon kapalı':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
   });
  }
+ // Stable control identities let rerenders keep keyboard focus on the same Ladder field.
+ function focusKey(el){
+  if(!el)return '';
+  if(el.id)return 'id:'+el.id;
+  const d=el.dataset||{};
+  const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
+  return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
+ }
+ // Keep keyboard navigation inside the dialog; disabled controls are never targets.
+ function trapModalTab(e,dialog,doc){
+  if(e.key!=='Tab'||!dialog)return false;
+  const items=Array.from(dialog.querySelectorAll('button,select,input,[tabindex]')).filter(el=>
+   !el.disabled&&!el.hidden&&el.tabIndex>=0&&el.getAttribute?.('aria-hidden')!=='true'&&typeof el.focus==='function');
+  if(!items.length){e.preventDefault();dialog.focus();return true}
+  const first=items[0],last=items[items.length-1],current=doc.activeElement;
+  const outside=!dialog.contains(current)||current===dialog;
+  if(outside||(e.shiftKey?current===first:current===last)){
+   e.preventDefault();(e.shiftKey?last:first).focus();return true;
+  }
+  return false;
+ }
  function signalText(row){return row.value===null?'—':(row.value?'1':'0')+(row.count===null?'':' · Sayaç '+row.count);}
  function stateFor(c,editor){
   const d=editor.byId[c.typeId];
@@ -76,7 +97,7 @@
   const overlay=doc.createElement('div');
   overlay.id='dtsLadderOverlay';overlay.className='dts-ladder-overlay';overlay.hidden=true;
   overlay.setAttribute('role','presentation');doc.body.appendChild(overlay);
-  let active=null,monitorTimer=null;
+  let active=null,monitorTimer=null,returnFocus=null;
   const sessions=createDraftSessions();
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
@@ -101,6 +122,7 @@
   };
   function render(){
    if(!active)return;
+   const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
@@ -135,12 +157,22 @@
      }).join('')+'</main>'+
      '<footer class="dts-ladder-footer"><span id="dtsLadderValidation" role="status">'+(valid.ok?'Program kontrolü: uygun.':escape(valid.error))+'</span><button type="button" data-action="close">Kapat</button></footer>'+
      '</section>';
+   if(priorFocus){
+    const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>!el.disabled&&focusKey(el)===priorFocus);
+    if(next)next.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
+   }
   }
-  function close(){overlay.hidden=true;active=null;if(monitorTimer){root.clearInterval(monitorTimer);monitorTimer=null}btn.focus();}
+  function close(){
+   overlay.hidden=true;active=null;
+   if(monitorTimer){root.clearInterval(monitorTimer);monitorTimer=null}
+   const target=returnFocus?.isConnected&&typeof returnFocus.focus==='function'?returnFocus:btn;
+   returnFocus=null;target.focus?.();
+  }
   function open(which){
    const items=available();
    if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
    const target=items.find(c=>c.id===which)||items[0];
+   if(overlay.hidden)returnFocus=doc.activeElement;
    active=stateFor(target,editor);
    active.history=sessions.forComponent(editor.getProject(),target,active.draft);
    active.draft=active.history.current();
@@ -212,6 +244,7 @@
    active.history.push(active.draft);render();
   });
   overlay.addEventListener('keydown',e=>{
+   if(e.key==='Tab'){trapModalTab(e,overlay.querySelector('.dts-ladder-dialog'),doc);e.stopPropagation();return}
    const key=String(e.key).toLowerCase(),modifier=(e.ctrlKey||e.metaKey)&&!e.altKey;
    const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName||'');
    if(modifier&&!editing&&(key==='z'||key==='y')){
@@ -233,7 +266,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
