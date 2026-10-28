@@ -594,7 +594,7 @@
   }
 
   function materialScaleAudit(component,options={}){
-    const record=get(component),sceneW=Number(component?.w),sceneH=Number(component?.h),aspectTolerance=Math.max(0,Number(options.aspectTolerance??0.05)||0);
+    const record=get(component),sceneW=Number(component?.w),sceneH=Number(component?.h),aspectTolerance=Number.isFinite(Number(options.aspectTolerance??0.05))?Math.max(0,Number(options.aspectTolerance??0.05)):0.05;
     if(!record||record.sourceStatus!=='verified')return {status:'unverified-physical-dimensions',componentId:component?.id||null,productKey:record?.productKey||null};
     if(![sceneW,sceneH,record.widthMm,record.heightMm].every(v=>Number.isFinite(v)&&v>0))return {status:'invalid-dimensions',componentId:component?.id||null,productKey:record.productKey};
     const sceneAspect=sceneW/sceneH,physicalAspect=record.widthMm/record.heightMm,aspectError=Math.abs(sceneAspect/physicalAspect-1),unitsPerMm={x:sceneW/record.widthMm,y:sceneH/record.heightMm};
