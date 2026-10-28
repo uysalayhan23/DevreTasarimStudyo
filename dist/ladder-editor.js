@@ -73,6 +73,28 @@
   return FBDView.editStructure(program,'add-path',index+':'+(p.length-1),limits);
  }
 
+ // Network copy/move keeps the saved PLC unchanged until explicit Save.
+ function editNetworkOrder(program,action,index,limits={}){
+  const check=L.validate(program,limits);
+  if(!check.ok)return {ok:false,error:check.error};
+  const rows=program.rungs;
+  if(!Number.isSafeInteger(index)||index<0||index>=rows.length)return {ok:false,error:'Network bulunamadı.'};
+  if(!['copy','up','down'].includes(action))return {ok:false,error:'Network işlemi geçersiz.'};
+  if(action==='copy'&&rows.length>=32)return {ok:false,error:'En fazla 32 Network.'};
+  if(action==='up'&&index===0||action==='down'&&index===rows.length-1)return {ok:false,error:'Network sınırda.'};
+  const draft=clone(program);
+  if(action==='copy'){
+   const used=new Set(draft.rungs.map(r=>r.id));
+   let n=1;while(used.has('R'+n))n++;
+   const copied=clone(draft.rungs[index]);copied.id='R'+n;
+   draft.rungs.splice(index+1,0,copied);
+  }else{
+   const target=index+(action==='up'?-1:1);
+   [draft.rungs[index],draft.rungs[target]]=[draft.rungs[target],draft.rungs[index]];
+  }
+  const valid=L.validate(draft,limits);
+  return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
+ }
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
   let steps=[clone(initial)],index=0;
@@ -269,7 +291,7 @@
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs"><div class="dts-ladder-networks-bar"><strong>'+active.draft.rungs.length+' Network · LAD</strong>'+(focusedNetwork?'<button type="button" data-action="all-networks">▣ Tüm Networkleri göster</button>':'<span>Her Network ayrı bir çalışma penceresidir.</span>')+'</div>'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
-      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'" '+(focusedNetwork&&focusedNetwork!==r.id?'hidden':'')+'><div class="dts-ladder-rung-title"><strong>Network '+(ri+1)+' · '+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="toggle-network" data-r="'+ri+'" aria-expanded="'+!closedNetworks.has(r.id)+'">'+(closedNetworks.has(r.id)?'▣ Aç':'▾ Daralt')+'</button><button type="button" data-action="focus-network" data-r="'+ri+'">'+(focusedNetwork===r.id?'Tümüne dön':'⛶ Tek pencere')+'</button><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div><div class="dts-ladder-network-body" '+(closedNetworks.has(r.id)?'hidden':'')+'>'+
+      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'" '+(focusedNetwork&&focusedNetwork!==r.id?'hidden':'')+'><div class="dts-ladder-rung-title"><strong>Network '+(ri+1)+' · '+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="toggle-network" data-r="'+ri+'" aria-expanded="'+!closedNetworks.has(r.id)+'">'+(closedNetworks.has(r.id)?'▣ Aç':'▾ Daralt')+'</button><button type="button" data-action="focus-network" data-r="'+ri+'">'+(focusedNetwork===r.id?'Tümüne dön':'⛶ Tek pencere')+'</button><button type="button" data-action="copy-rung" data-r="'+ri+'" '+(active.draft.rungs.length>=32?'disabled':'')+'>Kopyala</button><button type="button" data-action="move-rung-up" data-r="'+ri+'" '+(ri===0?'disabled':'')+'>↑</button><button type="button" data-action="move-rung-down" data-r="'+ri+'" '+(ri===active.draft.rungs.length-1?'disabled':'')+'>↓</button><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div><div class="dts-ladder-network-body" '+(closedNetworks.has(r.id)?'hidden':'')+'>'+
        '<div class="dts-ladder-diagram" data-drop-kind="network" data-r="'+ri+'" data-diagram="'+ri+'" title="Paletten öğeyi buraya bırakın">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
@@ -382,7 +404,7 @@
   function action(button){
    if(!active)return;
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
-   if(editor.running&&['undo','redo','starter','load-example','add-rung','remove-rung','add-path','remove-path','add-contact','remove-contact'].includes(type)){
+   if(editor.running&&['undo','redo','starter','load-example','add-rung','remove-rung','copy-rung','move-rung-up','move-rung-down','add-path','remove-path','add-contact','remove-contact'].includes(type)){
     editor.toast?.('Önce simülasyonu durdurun.');return;
    }
    if(type==='close'){close();return}
@@ -443,6 +465,12 @@
    }
    if(type==='add-rung'){
     const result=addSafeRung(active.draft,limits());
+    if(!result.ok){editor.toast?.(result.error);return}
+    active.draft=result.program;
+   }
+   else if(['copy-rung','move-rung-up','move-rung-down'].includes(type)){
+    const operation=type==='copy-rung'?'copy':type==='move-rung-up'?'up':'down';
+    const result=editNetworkOrder(active.draft,operation,r,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
    }
@@ -596,7 +624,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeParallelPath};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeParallelPath,editNetworkOrder};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
