@@ -18,6 +18,7 @@
   const pathLive=paths.map((p,i)=>live&&(traced?options.pathStates[i]===true:pathState(p,options.values)));
   const energized=pathLive.some(Boolean),wireClass=energized?'dts-ladder-wire-hot':'dts-ladder-wire';
   const coilOn=typeof options.coilValue==='boolean'?live&&options.coilValue:energized;
+  
   const coil=rung?.coil||{},blocks=new Set(['TON','TOF','TP','CTU','CTD']);
   const bits=[];
   bits.push('<svg class="dts-ladder-svg" role="img" aria-label="'+escape('Network '+(Number.isInteger(options.index)?options.index+1:1)+': '+(rung?.id||'')+(live?', canlı sinyaller':'') )+'" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'" xmlns="http://www.w3.org/2000/svg">');
@@ -30,7 +31,7 @@
    bits.push(line(joinX,top,joinX,top+(paths.length-1)*78,'dts-ladder-wire'));
   }
   bits.push(line(joinX,top,coilX-(blocks.has(coil.type)?57:26),top,wireClass));
-  bits.push(line(coilX+(blocks.has(coil.type)?57:26),top,rightX,top,wireClass));
+  bits.push(line(coilX+(blocks.has(coil.type)?57:26),top,rightX,top,coilOn?'dts-ladder-wire-hot':'dts-ladder-wire'));
   paths.forEach((path,pi)=>{
    if(!Array.isArray(path))return;
    const y=top+pi*78,cls=pathLive[pi]?'dts-ladder-wire-hot':'dts-ladder-wire';

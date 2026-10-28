@@ -30,6 +30,10 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 `dist/ladder-editor.js` içindeki canlı Network izleri, eski `pathStates` / `coilValue` değerlerini PLC enerjisizken göstermemeli. `monitorRows` artık `_plcRuntime.powered===true` koşulunu arıyor; FBD ve Ladder diyagramını besleyen `bits` kapısı aynı gerçek PLC beslemesini kontrol ediyor. Enerjisiz / bilinmeyen güç ve durdurulmuş simülasyonda geçmiş yeşil yol işaretleri gizlenir; gerçek `Simulation.solve` veya PLC çıkış hesaplaması değiştirilmedi. Kaynak üzerinden hedefli pozitif-negatif JS doğrulaması ve dört Node regresyon senaryosu eklendi. Gerçek Windows/Edge görsel testi ve 3D kabulü REVIEW; madde 14/23 KISMİ.
 
+### 28 Ekim — LAD çıkış kablosu durum çizimi
+
+`dist/ladder-diagram.js` daha önce TON giriş yolu aktifken zamanlayıcı çıkışı kapalı olmasına rağmen bobinden sonraki kabloyu yeşile boyuyordu. Giriş yolu gerçek `pathStates`, çıkış kablosu ise gerçek `coilValue` ile çizilir. TON bekleme/bitiş, TOF gecikmeli çıkış ve OUT açık/kapalı için 5 hedefli JavaScript kontrolü PASS. `tests/dts-ladder-output-wire-state.test.cjs` Node regresyon dosyası eklendi (Node çalıştırması NOT_RUN); Windows/Edge, 3D ve tam fiziksel kabul REVIEW, madde 14 KISMİ.
+
 ## Paket B — PLC Ladder (7 madde)
 
 | No | Özellik | Durum ve kanıt |
