@@ -63,6 +63,10 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 LAD ve FBD açılır menülerindeki daha önce düzeltilmiş adres sahipliği kuralı, `dist/ladder-toolbox.js` sürükle/bırak paletinde uygulanmıyordu. T1/C1 başka bir Network'te kullanılıyorsa, T2/C2 boş olsa bile yeni TON/CTD işlemi reddediliyordu. Gerçek eski kaynakta tekrar üretildi. Palet şimdi mevcut geçerli T/C adresini ve süre/hedefini korur; yeni fonksiyon bloklarında boş T1–T16/C1–C16 adresini seçer; adresler doluysa yerel taslağı değiştirmeden hata verir. Normal NO/NC ve OUT davranışı korunur. `tests/dts-ladder-palette-free-block-address.test.cjs`: **8/8 hedefli V8 regresyon PASS**. Bağımsız Node/Windows-Edge sürükle/bırak **NOT_RUN/REVIEW**. 24 maddenin 09/11/15/23 kabulü **KISMİ** kalır. Native `Simulation.solve`, 703 katalog, 1686 ders ve Golden/PASS/HOLD/REVIEW değiştirilmedi.
 
+### 28 Ekim — M bellek sahipliği / FBD açık yol hedefli güvenlik onarımı
+
+Network sil/yeniden ekle teslimatı sonrası bir regresyon bulundu: ilk sürüm, yazarı olmayan bütün M bitlerini sıfırlayarak bağımsız M değerlerini de silebiliyordu. Artık yalnız **önceki taramada OUT/SET yazarı bulunan ve kaldırılmış M bitleri** sıfırlanır; diğer M bellek ve geçerli SET latch korunur. FBD boş yol artık `AÇIK` gösterir; FBD yapısal düzenleme ve polarite değişimi simülasyon çalışırken engellenir. Boş yol/NOP `.dtsladder` roundtrip ve olumsuz dosya testleri `tests/dts-ladder-empty-path-memory-and-io.test.cjs` içinde hedefli V8 PASS. Native fiziksel `Simulation.solve`, 703 katalog ve ders kabulü değiştirilmedi. Windows/Edge ve 3D **REVIEW**.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri

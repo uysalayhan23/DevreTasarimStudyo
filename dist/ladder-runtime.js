@@ -51,9 +51,11 @@
   // Preserve only outputs still assigned to a coil (including intentional SET latches).
   const assignedQ=new Set(source.rungs.filter(r=>r.coil.ref[0]==='Q').map(r=>r.coil.ref));
   for(let i=1;i<=16;i++)if(!assignedQ.has('Q'+i))bits['Q'+i]=false;
-  // Deleted SET/OUT M writers cannot keep their old virtual latch energized.
-  const assignedM=new Set(source.rungs.filter(r=>r.coil.ref?.[0]==='M').map(r=>r.coil.ref));
-  for(let i=1;i<=32;i++)if(!assignedM.has('M'+i))bits['M'+i]=false;
+  // Track M writers so removing an OUT/SET clears only that previously-owned
+  // bit. Independent M values and still-present SET latches must be preserved.
+  const assignedM=new Set(source.rungs.filter(r=>['OUT','SET'].includes(r.coil.type)&&r.coil.ref?.[0]==='M').map(r=>r.coil.ref));
+  for(const ref of Array.isArray(mem._ladderOwnedM)?mem._ladderOwnedM:[])
+   if(/^M(?:[1-9]|[12][0-9]|3[0-2])$/.test(ref)&&!assignedM.has(ref))bits[ref]=false;
   // Timer/counter blocks removed from the program cannot keep driving old contacts.
   const assignedBlocks=new Set(source.rungs.filter(r=>['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)).map(r=>r.coil.ref));
   for(let i=1;i<=16;i++)for(const prefix of ['T','C']){
@@ -124,7 +126,7 @@
    traces.push(trace);
   }
   const physical={};for(let i=1;i<=(Number.isInteger(limits.outputCount)?limits.outputCount:16);i++)physical['Q'+i]=!!bits['Q'+i];
-  mem.values=bits;mem.blocks=states;mem.lastTime=now;
+  mem.values=bits;mem.blocks=states;mem.lastTime=now;mem._ladderOwnedM=[...assignedM];
   return {ok:true,outputs:physical,memory:mem,traces};
  }
  function blank(){return {version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};}

@@ -423,6 +423,7 @@
    const structure=e.target.closest?.('[data-fbd-structure]');
    if(structure&&overlay.contains(structure)){
     if(diagramMode!=='fbd'||!active)return;
+    if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
     const result=FBDView.editStructure(active.draft,structure.dataset.fbdStructure,structure.dataset.fbdPosition,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;active.history.push(active.draft);render();return;
@@ -431,6 +432,7 @@
    if(polarity&&overlay.contains(polarity)){
     // The FBD view edits the same draft as LAD; the saved program is never updated by a click.
     if(diagramMode!=='fbd'||!active)return;
+    if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
     const result=FBDView.toggleContact(active.draft,polarity.dataset.fbdToggleContact,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
