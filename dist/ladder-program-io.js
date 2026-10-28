@@ -3,8 +3,22 @@
  // DTS-only interchange format. Do not claim Siemens .lsc binary compatibility.
  const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const MAGIC='dts-ladder-project',MAX_BYTES=512*1024;
+ // Count UTF-8 bytes, not UTF-16 code units. Works offline without TextEncoder.
+ function utf8Bytes(value){
+  let bytes=0;
+  for(let i=0;i<value.length;i++){
+   const c=value.charCodeAt(i);
+   if(c<128)bytes++;
+   else if(c<2048)bytes+=2;
+   else if(c>=0xD800&&c<=0xDBFF&&i+1<value.length&&value.charCodeAt(i+1)>=0xDC00&&value.charCodeAt(i+1)<=0xDFFF){bytes+=4;i++;}
+   else bytes+=3;
+   if(bytes>MAX_BYTES)return bytes;
+  }
+  return bytes;
+ }
+
  function parse(raw,limits){
-  if(typeof raw!=='string'||raw.length>MAX_BYTES)throw Error('Ladder program dosyası fazla büyük veya geçersiz.');
+  if(typeof raw!=='string'||utf8Bytes(raw)>MAX_BYTES)throw Error('Ladder program dosyası fazla büyük veya geçersiz.');
   let data;try{data=JSON.parse(raw)}catch{throw Error('Ladder dosyası geçerli JSON değil.')}
   if(!data||Array.isArray(data)||data.format!==MAGIC||data.version!==1)throw Error('Bu dosya DTS Ladder V1 programı değil.');
   const valid=L?.validate?.(data.program,limits);
@@ -15,7 +29,7 @@
   const valid=L?.validate?.(program,limits);
   if(!valid?.ok)throw Error('Dışa aktarılamayan Ladder programı: '+(valid?.error||'model yok'));
   const text=JSON.stringify({format:MAGIC,version:1,name:String(name||'DTS Ladder').slice(0,60),program},null,2);
-  if(text.length>MAX_BYTES)throw Error('Ladder programı dosya boyut sınırını aşıyor.');
+  if(utf8Bytes(text)>MAX_BYTES)throw Error('Ladder programı dosya boyut sınırını aşıyor.');
   return text;
  }
  const api=Object.freeze({format:MAGIC,maxBytes:MAX_BYTES,parse,serialize});
