@@ -1291,6 +1291,12 @@
   });
   $('#newBtn').onclick=()=>modal('Yeni proje','<p>Geçerli çalışma alanı temizlenecek. Kaydetmediğiniz değişiklikleri önce dışa aktarabilirsiniz.</p>',()=>{if(!snapshot())return;const mode=project.workspaceMode||'control';window.DTSEditor.create(mode,mode==='control'?'Kumanda Devresi 1':undefined);toast('Yeni proje açıldı')});
   $('#saveBtn').onclick=()=>{localStorage.setItem('ods-project',JSON.stringify(project));toast('Proje bu tarayıcıya kaydedildi')};$('#exportBtn').onclick=download;$('#materialListBtn').onclick=exportMaterialList;
+ $('#dtsPrintPdfBtn').onclick=()=>{
+  if(project.workspaceMode==='panel'){toast('Pano 3B görünümü için PDF yazdırma henüz desteklenmiyor.');return}
+  const result=window.DTSProjectPrint?.printScene?.(document,window,project.name);
+  if(!result?.ok){toast(result?.error||'PDF yazdırma açılamadı.');return}
+  toast('Tarayıcıda Yazdır → PDF olarak kaydet seçeneğini kullanın.');
+ };
  $('#dtsWireCheckBtn').onclick=()=>{
   const target=$('#dtsWireCheckReport');
   const audit=window.DTSWireDiagnostics;

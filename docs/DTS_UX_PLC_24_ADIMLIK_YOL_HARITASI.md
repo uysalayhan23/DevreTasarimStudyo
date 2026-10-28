@@ -38,7 +38,7 @@
 | 17 | Simülasyon durumu ve aktif enerji yollarını daha anlaşılır göster | **KISMİ**: eski DTS enerji yolu göstergeleri mevcut; tutarlı yeni UX ayrı |
 | 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **KISMİ/KOD**: salt okunur kablo ucu/katalog terminali ve silinmiş bileşen referansı taraması, sorun adıyla rapor; fiziksel kablo davranışı / ekran üstü vurgulama açık |
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |
-| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV malzeme listesi; gerçek katalog miktarı ve referanslar; PDF/PNG, Windows Edge kabulü açık |
+| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV + 2B SVG devresi için tarayıcıda **Yazdır → PDF olarak kaydet** akışı; doğrudan PDF binary, PNG, pano 3B ve Windows Edge kabulü açık |
 
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
@@ -133,3 +133,8 @@ DTS üst barına `▣ PLC I/O` eklendi. Pencere editörden bağımsız açılır
 ### 28 Ekim — Gerçek tarama verisine bağlı FBD blok görünümü
 
 `dist/fbd-view.js` yalnız Ladder V1 rung'larını alternatif AND/OR ve ters kontak (NOT) blokları olarak gösterir. Tıklanan kontak ve bobin mevcut Ladder editöründeki ilgili alana yönlendirilir. Yeşil durumlar `pathStates` ve `coilValue` tarama izinden gelir; yeni bir hesaplama/sahte elektrik modeli oluşturulmaz. Geliştirme **KISMİ**; Windows/Edge ve serbest FBD düzenleme kabulü açık.
+
+
+### 28 Ekim — 2B SVG devresi için çevrimdışı PDF Yazdır akışı
+
+`dist/project-print.js` mevcut `#workspace` SVG'yi ve `#scene.getBBox()` çizim sınırını kullanarak yalnız yazdırma amaçlı kopya oluşturur; gerçek projedeki kamera ve simülasyon değişmez. `PDF / Yazdır` düğmesi tarayıcı yazdırma arayüzünü açar; PDF dosyasını kullanıcı `PDF olarak kaydet` seçimiyle oluşturur. Kaynak SVG'nin boyutu/koordinatı doğrulanır, ekran taşıma/yakınlaştırma çıktıda kaldırılır. Kopya görünümü A4 yatay kağıda sığdırılır. **Doğrudan PDF dosyası üretme, otomatik dosyaya kaydetme veya pano 3B desteği iddia edilmez.** PNG ayrı açıktır. Hedefli izole JS testleri eklenmiştir; gerçek Edge `file:///` yazdırma kabulü REVIEW. Ders/GOLDEN/703 katalog değiştirilmedi.
