@@ -36,6 +36,14 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 ## Paket B — PLC Ladder (7 madde)
 
+### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
+
+**Somut kusur:** Native Ladder V1 `M1–M32`, `T1–T16`, `C1–C16` kontaklarını ve FBD bu yüksek adresleri kabul ederken LAD arayüzündeki kontak menüsü yalnız `M1–M8`, `T1–T4`, `C1–C4` gösteriyordu. Geçerli yüksek adresli içe alınan program kontakları LAD üzerinden seçilemiyor/değiştirilemiyordu. Kaynak içindeki gerçek adres oluşturma işlevinden `M32`, `T16`, `C16` örnekleriyle kusur yeniden üretildi. **Onarım:** `dist/ladder-editor.js` kontak seçenekleri ortak `contactChoices` yordamıyla tüm sanal M/T/C adreslerini ve yalnız gerçek PLC'nin mevcut I/Q pinlerini gösterir; terminal etiketleri korunur. FBD, native scan ve 703 katalog değiştirilmedi. Hedefli 11 kaynak-V8 kontrolü ve `tests/dts-ladder-contact-address-range.test.cjs` içindeki 5 regresyon senaryosu gerçek kaynakları V8'de yürüterek PASS; bağımsız Node dosya yürütümü **NOT_RUN**. Windows/Edge `file:///` kullanıcı kabulü **REVIEW**; madde 09/11/15 **KISMİ**.
+ 
+**24 madde bütünlük denetimi:** 01–08 çalışma alanı; 09–15 Ladder/PLC; 16–20 devre deneyimi; 21–24 gelişmiş üretkenlik olarak 24 madde yol haritasında ayrı ayrı kayıtlıdır. `KOD/TEST` ve `MEVCUT` ifadeleri Windows/3D bağımsız kabulü yerine geçmez. Açık kalemler arasında 06/08 responsive+görsel, 09/11/14/15 Ladder UI ve sınır davranışları, 16/17/18/19/20 devre UX ve dışa aktarım, 21/22/23/24 daha zengin editör+HMI ve gerçek Windows/3D kabul kapıları vardır. Bu not hiçbir maddeyi `COMPLETE` ilan etmez.
+
+
+
 ### 28 Ekim — Ladder T1 zamanlayıcı tür değişiminde eski çıkışın taşınmasını engelleme
 
 **Gerçek kusur:** Sanal Ladder `TON T1` 100 ms sonunda aktifken aynı adresteki blok `TOF T1` türüne değiştirilip giriş pasif yapıldığında eski `T1` biti ve zamanlayıcı belleği yeni TOF'a taşınıyor, Q1 yanlışlıkla açık kalıyordu. Önceki kaynakta bu yanlışlık gerçek V1 taraması ve gerçek katalogdaki CPU 1211C için `PLC.evaluate`/çıkış bağlantısı kontrolünde yeniden üretildi. **Hedefli onarım:** `dist/ladder-runtime.js` T adresinin `TON/TOF/TP` türünü izler; tür değişiminde yalnız o zamanlayıcının eski `start/offStart/pulseStart/prev` alanlarını ve çıkış bitini sıfırlar. Eski oturumların `kind` alanı bulunmayan zamanlayıcı belleği de savunmalı temizlenir. Aynı türün zamanlaması, sayaçlar ve M kilitleri değiştirilmedi. Hedefli 11 V8 kontrolü PASS; `tests/dts-ladder-timer-kind-switch.test.cjs` içindeki 8 regresyon senaryosu V8 koşumuyla PASS. Gerçek `dist/library.js` CPU 1211C katalog tanımıyla `PLC.evaluate` ve `PLC.links` pozitif-negatif entegrasyonu PASS; bu, tam `Simulation.solve` veya fiziksel lamba kanıtı değildir. Bağımsız Node.js ve özgün tam `Simulation.solve` yürütümü bu turda **NOT_RUN**; Windows/Edge, 3D ve fiziksel kabul **REVIEW**. Madde 11/13 **KISMİ**, 1686 ders ve Golden/HOLD kilitleri değişmedi.

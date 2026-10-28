@@ -15,6 +15,16 @@
   const labels=new Map(candidates.map(c=>[c.ref,c.label]));
   return names.map(ref=>({value:ref,label:labels.get(ref)||ref}));
  }
+ // Expose every valid native M/T/C contact in both LAD and FBD.
+ function contactChoices(inputPins=[],outputPins=[]){
+  return [
+   ...inputPins.map((p,i)=>({ref:'I'+(i+1),label:'I'+(i+1)+' · '+p.id})),
+   ...outputPins.map((p,i)=>({ref:'Q'+(i+1),label:'Q'+(i+1)+' · '+p.id})),
+   ...Array.from({length:32},(_,i)=>({ref:'M'+(i+1),label:'M'+(i+1)+' · Bellek'})),
+   ...Array.from({length:16},(_,i)=>({ref:'T'+(i+1),label:'T'+(i+1)+' · Zamanlayıcı'})),
+   ...Array.from({length:16},(_,i)=>({ref:'C'+(i+1),label:'C'+(i+1)+' · Sayaç'}))
+  ];
+ }
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
@@ -129,16 +139,7 @@
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
   const draw=(r,options)=>(diagramMode==='fbd'?FBDView:Diagram).render(r,options);
-  function choices(){
-   if(!active)return[];
-   return [
-    ...active.inputs.map((p,i)=>({ref:'I'+(i+1),label:'I'+(i+1)+' · '+p.id})),
-    ...active.outputs.map((p,i)=>({ref:'Q'+(i+1),label:'Q'+(i+1)+' · '+p.id})),
-    ...Array.from({length:8},(_,i)=>({ref:'M'+(i+1),label:'M'+(i+1)+' · Bellek'})),
-    ...Array.from({length:4},(_,i)=>({ref:'T'+(i+1),label:'T'+(i+1)+' · Zamanlayıcı'})),
-    ...Array.from({length:4},(_,i)=>({ref:'C'+(i+1),label:'C'+(i+1)+' · Sayaç'}))
-   ];
-  }
+  function choices(){return active?contactChoices(active.inputs,active.outputs):[];}
   const select=(value,values,attrs)=>'<select '+attrs+'>'+values.map(o=>'<option value="'+escape(o.value)+'" '+(value===o.value?'selected':'')+'>'+escape(o.label)+'</option>').join('')+'</select>';
   const asOptions=arr=>arr.map(x=>({value:x.ref,label:x.label}));
   const refOptions=(forCoil,type)=>{
@@ -486,7 +487,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
