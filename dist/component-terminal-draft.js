@@ -4,6 +4,7 @@
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
  const sides=['left','right','top','bottom'];
+ const maxImportBytes=128*1024;
  function validate(d){
   if(!d||d.format!=='dts-terminal-draft'||d.version!==1||typeof d.sourceId!=='string'||
       !d.sourceId||d.sourceId.length>100||typeof d.name!=='string'||d.name.length>100||
@@ -47,6 +48,43 @@
   return JSON.stringify({format:d.format,version:d.version,sourceId:d.sourceId,name:d.name,
     w:d.w,h:d.h,pins:d.pins},null,2);
  }
+ function parseImport(raw,catalog){
+  if(typeof raw!=='string'||raw.length>maxImportBytes)throw Error('Taslak dosyası 128 KB sınırını aşıyor veya geçersiz.');
+  let data;
+  try{data=JSON.parse(raw)}catch{throw Error('Terminal taslağı geçerli JSON değil.')}
+  // Format, pin coordinates and exact identities are validated before anything is displayed.
+  const check=validate(data);
+  if(!check.ok)throw Error(check.error);
+  const original=fromCatalog(catalog);
+  if(data.sourceId!==original.sourceId)throw Error('Bu taslak farklı katalog bileşenine ait.');
+  if(data.name!==original.name||data.w!==original.w||data.h!==original.h)
+   throw Error('Katalog adı veya gövde ölçüleri bu taslakla eşleşmiyor.');
+  if(data.pins.length!==original.pins.length)throw Error('Terminal sayısı katalog ile eşleşmiyor.');
+  const incoming=new Map(data.pins.map(p=>[p.id,p]));
+  const checked=[];
+  for(const pin of original.pins){
+   const found=incoming.get(pin.id);
+   if(!found)throw Error('Katalog terminali taslakta yok: '+pin.id);
+   if(found.label!==pin.label||found.side!==pin.side)
+    throw Error('Terminal kimliği/etiketi/kenarı katalogla eşleşmiyor: '+pin.id);
+   checked.push({id:pin.id,label:pin.label,side:pin.side,x:found.x,y:found.y});
+  }
+  // Never trust unknown file keys or pin metadata. Return a new, exact V1 draft.
+  const result={format:'dts-terminal-draft',version:1,sourceId:original.sourceId,
+   name:original.name,w:original.w,h:original.h,pins:checked};
+  if(!validate(result).ok)throw Error('İçe aktarılan terminal yerleşimi geçersiz.');
+  return result;
+ }
+ function acceptance(d,catalog){
+  const checked=parseImport(exportDraft(d),catalog),original=fromCatalog(catalog);
+  const changed=checked.pins.filter((p,i)=>p.x!==original.pins[i].x||p.y!==original.pins[i].y).map(p=>p.id);
+  return Object.freeze({
+   file:'PASS',identity:'PASS',preview:'PASS',
+   geometry:changed.length?'REVIEW':'UNCHANGED',movedTerminals:changed,
+   catalog:'HOLD',threeD:'HOLD',native:'HOLD',
+   explanation:'Taslak yalnız önizleme içindir; katalogya kayıt, 3B terminal-kablo uyumu ve native simülasyon için ayrı fiziksel kabul gerekir.'
+  });
+ }
  function svg(d){
   const check=validate(d);if(!check.ok)return '';
   const pin=(p,i)=>'<g class="dts-draft-terminal"><circle cx="'+p.x+'" cy="'+p.y+
@@ -81,11 +119,16 @@
    panel.innerHTML='<header><strong>Terminal konum taslağı</strong><button type="button" data-action="close" aria-label="Kapat">×</button></header>'+
     '<p>Bu ekran sadece bir taslaktır. Katalog, kablolar, 3B görünüm ve simülasyon değişmez.</p>'+
     '<div class="dts-terminal-draft-canvas">'+svg(draft)+'</div>'+
+    '<div class="dts-terminal-draft-gates" role="status" aria-live="polite">'+
+      '<strong>Kabul kapıları</strong> · Dosya / terminal kimliği: <b>PASS</b> · Katalogya ekleme: <b>HOLD</b> · 3B ve native simülasyon: <b>HOLD</b>'+
+      '<small>Önizleme, elektriksel kabul veya katalog değişikliği değildir.</small></div>'+
     '<div class="dts-terminal-draft-fields">'+draft.pins.map(p=>
       '<label>'+escape(p.label)+' <small>('+escape(p.id)+')</small>'+
       '<span>X <input type="number" min="0" max="'+draft.w+'" step="0.5" data-axis="x" data-id="'+escape(p.id)+'" value="'+p.x+'"></span>'+
       '<span>Y <input type="number" min="0" max="'+draft.h+'" step="0.5" data-axis="y" data-id="'+escape(p.id)+'" value="'+p.y+'"></span></label>'
     ).join('')+'</div><footer><button type="button" data-action="reset">Katalogdan yeniden al</button>'+
+    '<button type="button" data-action="import">Taslak içe aktar (.dtscomponent)</button>'+
+    '<input id="dtsTerminalImportFile" type="file" accept=".dtscomponent,.json" hidden>'+
     '<button type="button" data-action="export">Taslağı indir (.dtscomponent)</button></footer>';
   }
   function download(){
@@ -108,6 +151,7 @@
    const action=e.target?.closest?.('[data-action]')?.dataset.action;
    if(action==='close')close();
    else if(action==='reset'){draft=fromCatalog(source);render()}
+   else if(action==='import')panel.querySelector('#dtsTerminalImportFile')?.click();
    else if(action==='export'){try{download()}catch(err){root.DTSEditor?.toast?.(err.message)}}
   });
   dialog.addEventListener('keydown',e=>{
@@ -118,7 +162,22 @@
     input?.focus();
    }
   });
-  dialog.addEventListener('change',e=>{
+  dialog.addEventListener('change',async e=>{
+   if(e.target?.id==='dtsTerminalImportFile'){
+    const input=e.target,file=input.files?.[0],sourceAtStart=source,draftAtStart=draft;
+    if(file&&sourceAtStart&&draftAtStart){
+     try{
+      if(file.size>maxImportBytes)throw Error('Taslak dosyası 128 KB sınırını aşıyor.');
+      const raw=await file.text();
+      if(dialog.hidden||source!==sourceAtStart||draft!==draftAtStart)
+       throw Error('Taslak içe aktarma iptal: seçili bileşen, taslak veya pencere değişti.');
+      const imported=parseImport(raw,sourceAtStart);
+      draft=imported;render();
+      root.DTSEditor?.toast?.('Terminal taslağı doğrulandı; yalnız önizlemeye alındı. Katalog HOLD.');
+     }catch(err){root.DTSEditor?.toast?.(err.message)}
+    }
+    input.value='';return;
+   }
    const el=e.target;if(!el?.dataset?.axis||!draft)return;
    const pin=draft.pins.find(p=>p.id===el.dataset.id);
    if(!pin)return;
@@ -154,7 +213,7 @@
   const api=Object.freeze({setSource:selection,open:show,close,isOpen:()=>!dialog.hidden});
   return api;
  }
- const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,svg,init});
+ const api=Object.freeze({validate,fromCatalog,canPreview,move,exportDraft,parseImport,acceptance,maxImportBytes,svg,init});
  if(typeof module==='object'&&module.exports)module.exports=api;
  else if(root?.document)root.DTSTerminalDraft=Object.assign({},api,{controller:init(root.document)});
 })(typeof window==='undefined'?globalThis:window);

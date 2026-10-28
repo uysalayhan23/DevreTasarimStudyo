@@ -1195,3 +1195,9 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-terminal-draft-fields span{display:inline-flex;align-items:center;gap:3px}
 .dts-terminal-draft-fields input{width:65px;padding:4px;border:1px solid #afc1d1;border-radius:4px}
 .dts-terminal-draft-dialog footer{flex-wrap:wrap;margin-top:12px}
+
+/* Isolated V1 terminal import: review gates are explicit, not a catalogue save action. */
+.dts-terminal-draft-gates{padding:9px 11px;border:1px solid #b2cddd;background:#ecf6fa;border-radius:7px;margin-top:9px;color:#254257;font-size:12px;line-height:1.55}
+.dts-terminal-draft-gates b{color:#25384a;font-weight:800}
+.dts-terminal-draft-gates small{display:block;color:#526c80;margin-top:4px}
+.dts-terminal-draft-dialog input[type=file][hidden]{display:none!important}
