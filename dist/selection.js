@@ -33,7 +33,7 @@
     }
     const moves=end=>selected.has(end?.c)||movingJunctions.has(end?.j);
     const wires=project.wires.filter(w=>moves(w.from)&&moves(w.to)).map(w=>({wire:w,original:w.points===undefined?undefined:w.points.map(p=>({...p})),points:(routes[w.id]?.slice(1,-1)||w.points||[]).map(p=>({...p}))}));
-    const positioned=components.map(c=>({node:c,x:c.x,y:c.y})).concat((project.junctions||[]).filter(j=>movingJunctions.has(j.id)).map(j=>({node:j,x:j.x,y:j.y})));
+    const positioned=components.map(c=>({node:c,x:c.x,y:c.y,labelPositions:c.labelPositions?JSON.parse(JSON.stringify(c.labelPositions)):undefined})).concat((project.junctions||[]).filter(j=>movingJunctions.has(j.id)).map(j=>({node:j,x:j.x,y:j.y})));
     const boxes=components.map(c=>bounds(c,byId[c.typeId])).concat(positioned.filter(p=>!p.node.typeId).map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y})),wires.flatMap(w=>w.points.map(p=>({left:p.x,right:p.x,top:p.y,bottom:p.y}))));
     return {positioned,wires,left:Math.min(...boxes.map(b=>b.left)),top:Math.min(...boxes.map(b=>b.top)),right:Math.max(...boxes.map(b=>b.right)),bottom:Math.max(...boxes.map(b=>b.bottom))};
   }
@@ -47,11 +47,11 @@
     return {x:axis(dx,left,right),y:axis(dy,top,bottom)};
   }
   function applyMove(plan,delta){
-    for(const p of plan.positioned){p.node.x=p.x+delta.x;p.node.y=p.y+delta.y}
+    for(const p of plan.positioned){p.node.x=p.x+delta.x;p.node.y=p.y+delta.y;if(p.labelPositions)p.node.labelPositions=Object.fromEntries(Object.entries(p.labelPositions).map(([k,v])=>[k,{x:v.x+delta.x,y:v.y+delta.y}]))}
     for(const w of plan.wires)w.wire.points=w.points.map(p=>({x:p.x+delta.x,y:p.y+delta.y}));
   }
   function restore(plan){
-    for(const p of plan.positioned){p.node.x=p.x;p.node.y=p.y}
+    for(const p of plan.positioned){p.node.x=p.x;p.node.y=p.y;if(p.labelPositions)p.node.labelPositions=JSON.parse(JSON.stringify(p.labelPositions));else if(p.node.typeId)delete p.node.labelPositions}
     for(const w of plan.wires){if(w.original===undefined)delete w.wire.points;else w.wire.points=w.original.map(p=>({...p}))}
   }
   const api={bounds,rectangle,inBox,clicked,beginMove,constrain,applyMove,restore,isEditing};
