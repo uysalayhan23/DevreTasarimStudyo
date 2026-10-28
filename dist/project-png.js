@@ -10,10 +10,10 @@
    // SVG filter images can load external resources even without an <image> node.
    // Reject feImage entirely until its offline rendering can be verified.
    if(tag==='feimage')return {ok:false,error:'Bu şemadaki SVG filtre görseli PNG için desteklenmiyor; PDF / Yazdır kullanın.'};
-   const href=el.getAttribute?.('href')||el.getAttribute?.('xlink:href')||'';
-   if(tag==='image'&&!/^data:image\/(png|jpeg|jpg|webp);base64,/i.test(href))
+   const href=[el.getAttribute?.('href'),el.getAttribute?.('xlink:href')].filter(v=>v!==null&&v!==undefined);
+   if(tag==='image'&&(!href.length||href.some(v=>!/^data:image\/(png|jpeg|jpg|webp);base64,[a-z0-9+/]+={0,2}$/i.test(v))))
     return {ok:false,error:'Bu şemada harici malzeme görseli var. PNG dönüştürme güvenli değil; PDF / Yazdır kullanın.'};
-   if(tag==='use'&&href&&!href.startsWith('#'))
+   if(tag==='use'&&href.some(v=>!/^#[a-zA-Z_][\w:.-]*$/.test(v)))
     return {ok:false,error:'Dış SVG bağlantısı içeren şema PNG için desteklenmiyor.'};
   }
   return {ok:true};
