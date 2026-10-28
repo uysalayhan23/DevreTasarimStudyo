@@ -3,7 +3,7 @@
  // Original DTS virtual PLC Ladder V1. This is NOT a Siemens LOGO file parser or a safety PLC.
  const address=/^(?:I(?:[1-9]|1[0-6])|Q(?:[1-9]|1[0-6])|M(?:[1-9]|[12][0-9]|3[0-2])|T(?:[1-9]|1[0-6])|C(?:[1-9]|1[0-6]))$/;
  const output=/^(?:Q(?:[1-9]|1[0-6])|M(?:[1-9]|[12][0-9]|3[0-2])|T(?:[1-9]|1[0-6])|C(?:[1-9]|1[0-6]))$/;
- const kinds=['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
+ const kinds=['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
  function validate(source,limits={}){
   if(!source||typeof source!=='object'||source.version!==1||!Array.isArray(source.rungs)||source.rungs.length<1||source.rungs.length>32)return {ok:false,error:'Program V1 için 1–32 rung gerekir.'};
   const inputs=Number.isInteger(limits.inputCount)?limits.inputCount:16,outputs=Number.isInteger(limits.outputCount)?limits.outputCount:16;
@@ -21,7 +21,12 @@
      if(c.ref[0]==='Q'&&Number(c.ref.slice(1))>outputs)return {ok:false,error:'PLC çıkış sınırı aşıldı: '+c.ref};
     }
    }
-   if(!r.coil||!kinds.includes(r.coil.type)||!output.test(r.coil.ref))return {ok:false,error:'Geçersiz bobin/komut.'};
+   if(!r.coil||!kinds.includes(r.coil.type))return {ok:false,error:'Geçersiz bobin/komut.'};
+   // Address-free NOP is a disconnected output; no Q/M/T/C write is possible.
+   if(r.coil.type==='NOP'){
+    if(r.coil.ref!==''||Object.keys(r.coil).some(k=>k!=='type'&&k!=='ref'))
+     return {ok:false,error:'Boş Network çıkışına adres veya hedef atanamaz.'};
+   }else if(!output.test(r.coil.ref))return {ok:false,error:'Geçersiz bobin/komut.'};
    if(r.coil.ref[0]==='Q'&&Number(r.coil.ref.slice(1))>outputs)return {ok:false,error:'PLC çıkış sınırı aşıldı: '+r.coil.ref};
    if(['TON','TOF','TP'].includes(r.coil.type)&&(!/^T/.test(r.coil.ref)||!Number.isInteger(r.coil.presetMs)||r.coil.presetMs<1||r.coil.presetMs>600000))return {ok:false,error:'Zamanlayıcı adresi veya süresi geçersiz.'};
    if(['CTU','CTD'].includes(r.coil.type)&&(!/^C/.test(r.coil.ref)||!Number.isInteger(r.coil.preset)||r.coil.preset<1||r.coil.preset>65535))return {ok:false,error:'Sayaç adresi veya hedefi geçersiz.'};
@@ -61,7 +66,8 @@
    const active=pathStates.some(Boolean);
    const coil=rung.coil,ref=coil.ref;
    let next=false;
-   if(coil.type==='OUT'){next=active;bits[ref]=next;written.add(ref);}
+   if(coil.type==='NOP'){next=false;/* no output assignment */}
+   else if(coil.type==='OUT'){next=active;bits[ref]=next;written.add(ref);}
    else if(coil.type==='SET'){if(active)bits[ref]=true;next=!!bits[ref];written.add(ref);}
    else if(coil.type==='RESET'){if(active){bits[ref]=false;delete states[ref];}next=!!bits[ref];written.add(ref);}
    else if(['TON','TOF','TP'].includes(coil.type)){
@@ -105,7 +111,7 @@
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
     bits[ref]=next;written.add(ref);
    }
-   const trace={id:rung.id,active,pathStates,coil:ref,value:!!bits[ref],count:states[ref]?.count??null};
+   const trace={id:rung.id,active,pathStates,coil:ref,value:coil.type==='NOP'?false:!!bits[ref],count:coil.type==='NOP'?null:states[ref]?.count??null};
    if(['TON','TOF','TP'].includes(coil.type)){
     const state=states[ref]||{};
     const started=coil.type==='TON'?state.start:coil.type==='TOF'?state.offStart:state.pulseStart;

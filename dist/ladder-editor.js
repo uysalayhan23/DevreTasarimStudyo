@@ -20,6 +20,12 @@
  function changeCoilType(program,index,type,limits={}) {
   return FBDView.editCoil(program,index,{type},limits);
  }
+ // Remove a timer/counter into an address-free NOP, never an accidentally active Q/M OUT.
+ function removeFunctionBlock(program,index,limits={}){
+  if(!Number.isInteger(index)||index<0||!['TON','TOF','TP','CTU','CTD'].includes(program?.rungs?.[index]?.coil?.type))
+   return {ok:false,error:'Kaldırılacak zamanlayıcı veya sayaç bulunamadı.'};
+  return FBDView.editCoil(program,index,{type:'NOP'},limits);
+ }
  // Expose every valid native M/T/C contact in both LAD and FBD.
  function contactChoices(inputPins=[],outputPins=[]){
   return [
@@ -211,10 +217,11 @@
         '</div>').join('')+
        '<button type="button" data-action="add-path" data-r="'+ri+'" '+(r.paths.length>=8?'disabled':'')+'>+ Paralel yol</button></div>'+
        '<div class="dts-ladder-coil"><span>SONUÇ →</span><button type="button" class="dts-ladder-dropzone" data-drop-kind="coil" data-r="'+ri+'" title="Buraya bobin, timer veya counter bırakın">⇣ Bobin / Blok bırak</button>'+
-       select(r.coil.type,['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v})),'data-field="coil-type" data-r="'+ri+'"')+
-       select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"')+
+       select(r.coil.type,['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v==='NOP'?'BOŞ (çıkış yok)':v})),'data-field="coil-type" data-r="'+ri+'"')+
+       (r.coil.type==='NOP'?'<span class="dts-ladder-empty-output">Çıkış adresi yok</span>':select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"'))+
        (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
        (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
+       (['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'<button type="button" data-action="remove-block" data-r="'+ri+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' bloğunu güvenle kaldır')+'">Bloğu kaldır</button>':'')+
        '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
        '</div></div></article>';
      }).join('')+'</main>'+
@@ -323,6 +330,14 @@
     focusedNetwork=focusedNetwork===id?null:id;closedNetworks.delete(id);render();return;
    }
    if(type==='all-networks'){focusedNetwork=null;render();return}
+   if(type==='remove-block'){
+    if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
+    const removed=removeFunctionBlock(active.draft,r,limits());
+    if(!removed.ok){editor.toast?.(removed.error);return}
+    active.draft=removed.program;active.history.push(active.draft);render();
+    editor.toast?.('Blok kaldırıldı. Network çıkışsızdır; Geri al ile dönebilirsiniz.');
+    return;
+   }
    if(type==='import-program'){
     overlay.querySelector('#dtsLadderImport')?.click();return;
    }
@@ -503,7 +518,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);

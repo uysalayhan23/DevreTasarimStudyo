@@ -17,9 +17,8 @@
   const traced=Array.isArray(options.pathStates)&&options.pathStates.length===paths.length;
   const pathLive=paths.map((p,i)=>live&&(traced?options.pathStates[i]===true:pathState(p,options.values)));
   const energized=pathLive.some(Boolean),wireClass=energized?'dts-ladder-wire-hot':'dts-ladder-wire';
-  const coilOn=typeof options.coilValue==='boolean'?live&&options.coilValue:energized;
-  
-  const coil=rung?.coil||{},blocks=new Set(['TON','TOF','TP','CTU','CTD']);
+  const coil=rung?.coil||{},blocks=new Set(['NOP','TON','TOF','TP','CTU','CTD']);
+  const coilOn=coil.type==='NOP'?false:(typeof options.coilValue==='boolean'?live&&options.coilValue:energized);
   const bits=[];
   bits.push('<svg class="dts-ladder-svg" role="img" aria-label="'+escape('Network '+(Number.isInteger(options.index)?options.index+1:1)+': '+(rung?.id||'')+(live?', canlı sinyaller':'') )+'" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'" xmlns="http://www.w3.org/2000/svg">');
   bits.push('<g class="dts-ladder-rails">'+line(railLeft,31,railLeft,height-21)+line(rightX,31,rightX,height-21)+'</g>');
@@ -31,7 +30,7 @@
    bits.push(line(joinX,top,joinX,top+(paths.length-1)*78,'dts-ladder-wire'));
   }
   bits.push(line(joinX,top,coilX-(blocks.has(coil.type)?57:26),top,wireClass));
-  bits.push(line(coilX+(blocks.has(coil.type)?57:26),top,rightX,top,coilOn?'dts-ladder-wire-hot':'dts-ladder-wire'));
+  if(coil.type!=='NOP')bits.push(line(coilX+(blocks.has(coil.type)?57:26),top,rightX,top,coilOn?'dts-ladder-wire-hot':'dts-ladder-wire'));
   paths.forEach((path,pi)=>{
    if(!Array.isArray(path))return;
    const y=top+pi*78,cls=pathLive[pi]?'dts-ladder-wire-hot':'dts-ladder-wire';
@@ -49,7 +48,12 @@
    });
    bits.push(line(prev,y,joinX,y,cls));
   });
-  if(blocks.has(coil.type)){
+  if(coil.type==='NOP'){
+   bits.push('<g class="dts-ladder-empty-block" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" data-drop-kind="coil" data-r="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="Çıkış yok, blok ekle">');
+   bits.push('<rect x="'+(coilX-57)+'" y="'+(top-31)+'" width="114" height="64" rx="2" fill="none" stroke="#64748b" stroke-dasharray="5 4"/>');
+   bits.push(text(coilX,top-4,'BOŞ','dts-ladder-block-type'),text(coilX,top+19,'Çıkış yok','dts-ladder-block-detail'));
+   bits.push('</g>');
+  }else if(blocks.has(coil.type)){
    bits.push('<g class="dts-ladder-function-block'+(coilOn?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" data-drop-kind="coil" data-r="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.type||'')+' '+(coil.ref||'')+' bloğunu düzenle')+'">');
    bits.push('<rect x="'+(coilX-57)+'" y="'+(top-31)+'" width="114" height="64" rx="2"/>');
    bits.push(text(coilX,top-10,coil.type,'dts-ladder-block-type'));

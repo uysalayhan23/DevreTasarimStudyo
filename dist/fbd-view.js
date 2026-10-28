@@ -47,7 +47,7 @@
  }
 
  // FBD edits the same native V1 Ladder draft; it never creates a parallel simulator.
- const blockTypes=['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
+ const blockTypes=['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'];
  function refsFor(type,limits={}){
   if(!blockTypes.includes(type))return [];
   const maxQ=Number.isInteger(limits.outputCount)?Math.max(0,Math.min(16,limits.outputCount)):16;
@@ -75,9 +75,11 @@
   if(field==='type'){
    if(!blockTypes.includes(patch.type))return {ok:false,error:'FBD blok türü tanınmıyor.'};
    type=patch.type;
-   const options=refsFor(type,limits);
-   if(!options.length)return {ok:false,error:'PLC için geçerli çıkış adresi yok.'};
-   if(!options.includes(ref))ref=options[0];
+   if(type==='NOP')ref='';
+   else{
+    const options=refsFor(type,limits);
+    if(!options.length)return {ok:false,error:'PLC için geçerli çıkış adresi yok.'};
+    if(!options.includes(ref))ref=options[0];
    // Reuse this block's address, or find an unused T/C address on a type change.
    // An explicit address edit must still fail rather than silently remap.
    if(['TON','TOF','TP','CTU','CTD'].includes(type)){
@@ -86,6 +88,7 @@
      .map(r=>r.coil.ref));
     if(owners.has(ref))ref=options.find(candidate=>!owners.has(candidate));
     if(!ref)return {ok:false,error:'Boş zamanlayıcı/sayaç adresi kalmadı.'};
+   }
    }
   }else if(field==='ref'){
    if(typeof patch.ref!=='string'||!refsFor(type,limits).includes(patch.ref))
@@ -112,7 +115,8 @@
  function blockControls(coil,index,limits={}){
   const options=items=>items.map(value=>'<option value="'+escape(value)+'"'+(value===coil.ref||value===coil.type?' selected':'')+'>'+escape(value)+'</option>').join('');
   const typeSelect='<label>Komut <select data-fbd-coil-field="type" data-r="'+index+'" aria-label="FBD çıkış komutu">'+options(blockTypes)+'</select></label>';
-  const refSelect='<label>Adres <select data-fbd-coil-field="ref" data-r="'+index+'" aria-label="FBD çıkış adresi">'+options(refsFor(coil.type,limits))+'</select></label>';
+  const refSelect=coil.type==='NOP'?'<span class="dts-fbd-empty-output">BOŞ · Çıkış yok</span>':
+   '<label>Adres <select data-fbd-coil-field="ref" data-r="'+index+'" aria-label="FBD çıkış adresi">'+options(refsFor(coil.type,limits))+'</select></label>';
   let preset='';
   if(['TON','TOF','TP'].includes(coil.type))
    preset='<label>Süre (ms) <input data-fbd-coil-field="presetMs" data-r="'+index+'" aria-label="FBD zamanlayıcı süresi ms" type="number" min="1" max="600000" step="1" value="'+escape(coil.presetMs)+'"></label>';
@@ -134,7 +138,7 @@
   }).join('');
   const coil=rung?.coil||{},out=live&&opts.coilValue===true;
   return '<section class="dts-fbd-view" role="group" aria-label="'+escape('FBD Network '+(id+1))+'"><header>FBD Network '+(id+1)+' · '+escape(rung?.comment||rung?.id||'')+'</header>'+lines+
-   '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type||'OUT')+' · '+escape(coil.ref||'?')+'</span>'+blockControls(coil,id,opts.limits)+'</div></section>';
+   '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type==='NOP'?'BOŞ · çıkış yok':(coil.type||'OUT')+' · '+(coil.ref||'?'))+'</span>'+blockControls(coil,id,opts.limits)+'</div></section>';
  }
  const api=Object.freeze({render,toggleContact,editCoil,editStructure,refsFor});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSFBDView=api;
