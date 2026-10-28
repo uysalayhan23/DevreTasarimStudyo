@@ -100,7 +100,7 @@
   }
   function normalizeLegacy(p){return migrate(p)}
   function validate(p){
-    if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&w.to))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
+    if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&typeof w.from==='object'&&!Array.isArray(w.from)&&w.to&&typeof w.to==='object'&&!Array.isArray(w.to)))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
     const ids=new Set();for(const c of p.components){if(ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(!Number.isFinite(Number(c[k]))||Math.abs(Number(c[k]))>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
     if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!Number.isFinite(j.x)||!Number.isFinite(j.y))))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
@@ -115,8 +115,8 @@
   function editableCopy(project){const p=clean(project);p.projectId=uid();if(isProtected(p)){p.sourceExample=p.defaultTemplate.id;p.name=(p.name||'Örnek')+' · Çalışma kopyam';delete p.defaultTemplate}return p}
   function create({storage=root.localStorage,indexedDB=root.indexedDB,env=root}={}){
     let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false;const handles=new Map();
-    const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');return Array.isArray(rows)?rows:[]}catch{return []}};
-    const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries:[]}catch{return []}};
+    const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');return Array.isArray(rows)?rows.filter(r=>r&&typeof r==='object'&&!Array.isArray(r)&&(typeof r.id==='string'||typeof r.id==='number')&&String(r.id).length>0):[]}catch{return []}};
+    const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries.filter(e=>e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.name==='string'&&e.project&&typeof e.project==='object'):[]}catch{return []}};
     const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId||'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
     const openDB=()=>{if(!indexedDB)return Promise.resolve(null);if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{const r=indexedDB.open('dts-projects',1);r.onupgradeneeded=()=>r.result.createObjectStore('objects');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)}).catch(()=>null);return dbPromise};
     async function db(action,key,value){const database=await openDB();if(!database)return null;return new Promise((resolve,reject)=>{const tx=database.transaction('objects',action==='get'?'readonly':'readwrite'),store=tx.objectStore('objects'),r=action==='get'?store.get(key):action==='delete'?store.delete(key):store.put(value,key);let result;r.onsuccess=()=>{result=r.result};tx.oncomplete=()=>resolve(action==='get'?result:true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Kayıt tamamlanamadı.'))})}
@@ -124,10 +124,10 @@
     async function put(project){
       if(isProtected(project))return clean(project);
       validate(project);if(!project.projectId)project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
-      const persisted=await db('put','project:'+copy.projectId,copy);if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
+      let persisted=false;try{persisted=await db('put','project:'+copy.projectId,copy)}catch{}if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
       const rows=readIndex().filter(r=>r.id!==copy.projectId);rows.unshift(metadata(copy));storage.setItem('dts-project-index',JSON.stringify(rows));return copy;
     }
-    async function get(id){const value=await db('get','project:'+id);if(value)return validate(migrate(value));const raw=storage.getItem('dts-project:'+id);if(raw)return parse(raw);const legacy=storage.getItem('ods-project');if(legacy){try{const p=parse(legacy);if(p.projectId===id)return p}catch{}}return null}
+    async function get(id){let value,dbError=null;try{value=await db('get','project:'+id)}catch(e){dbError=e}if(value)try{return validate(migrate(value))}catch(e){dbError=e}const raw=storage.getItem('dts-project:'+id);if(raw)return parse(raw);const legacy=storage.getItem('ods-project');if(legacy){try{const p=parse(legacy);if(p.projectId===id)return p}catch{}}if(dbError)throw dbError;return null}
     async function removeDraft(id){await db('delete','project:'+id);storage.removeItem?.('dts-project:'+id);storage.setItem('dts-project-index',JSON.stringify(readIndex().filter(r=>r.id!==id)))}
     async function permission(handle,mode='read',request=false){if(!handle?.queryPermission)return true;if(await handle.queryPermission({mode})==='granted')return true;return !!(request&&await handle.requestPermission({mode})==='granted')}
     async function restoreFolder(){directory=await db('get','directory');if(!directory)return false;permissionNeeded=!await permission(directory);return !permissionNeeded}
