@@ -48,6 +48,12 @@
    forget(project,component){if(project&&typeof project==='object')projects.get(project)?.delete(component.id)}
   });
  }
+ // Simulation can start only for a saved, current Ladder program and an enabled native simulator.
+ function canStartLadder(c,draft,running,simButton){
+  if(running)return true;
+  return !!simButton&&!simButton.disabled&&c?.plcProgram==='dts-ladder-v1'&&
+    !!c.ladderProgram&&JSON.stringify(draft)===JSON.stringify(c.ladderProgram);
+ }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
  const starter=()=>({version:1,rungs:[
@@ -129,7 +135,7 @@
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live?active.c._dtsLadderMemory?.values:null;
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
-   const canRun=editor.running||(live&&!!active.c.ladderProgram&&!doc.getElementById('simulateBtn')?.disabled);
+   const canRun=canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'));
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="PLC Ladder programla" tabindex="-1">'+
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
@@ -244,9 +250,8 @@
    if(type==='close'){close();return}
    if(type==='save'){save();return}
    if(type==='toggle-sim'){
-    const saved=active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
     const sim=doc.getElementById('simulateBtn');
-    if((editor.running||saved)&&sim&&!sim.disabled)sim.click();
+    if(canStartLadder(active.c,active.draft,editor.running,sim)&&sim&&!sim.disabled)sim.click();
     render();return;
    }
    if(type==='undo'||type==='redo'){
@@ -327,7 +332,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
