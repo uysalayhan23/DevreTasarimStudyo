@@ -49,6 +49,7 @@
     return {x:axis(dx,left,right),y:axis(dy,top,bottom)};
   }
   function applyMove(plan,delta){
+    if(!Number.isFinite(delta?.x)||!Number.isFinite(delta?.y))return;
     for(const p of plan.positioned){p.node.x=p.x+delta.x;p.node.y=p.y+delta.y;if(p.labelPositions)p.node.labelPositions=Object.fromEntries(Object.entries(p.labelPositions).map(([k,v])=>[k,{x:v.x+delta.x,y:v.y+delta.y}]))}
     for(const w of plan.wires)w.wire.points=w.points.map(p=>({x:p.x+delta.x,y:p.y+delta.y}));
   }
