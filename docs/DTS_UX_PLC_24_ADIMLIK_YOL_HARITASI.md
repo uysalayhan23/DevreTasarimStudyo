@@ -36,6 +36,12 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 ## Paket B — PLC Ladder (7 madde)
 
+### 28 Ekim — Çoklu Network'ün aynı T/C fonksiyon bloğuna yazmasını reddetme
+
+**Somut kusur:** `dist/ladder-runtime.js` birden fazla TON/TOF/TP Network'ünün aynı T adresini veya CTU/CTD Network'ünün aynı C adresini paylaşmasını geçerli sayıyordu. Gerçek V1 taramasında I1 açık ve 100 ms dolmuş olsa bile ikinci `TON T1` (I2 kapalı) ortak zamanlayıcı durumunu temizliyor ve `Q1` yanlış kapalı kalıyordu. **Düzeltme:** `validate` aşamasında T/C için tek fonksiyon bloğu yazarı zorunludur; açık `RESET T1/C1` rung'ları ve ayrı T/C adresleri kabul edilmeye devam eder. Geçersiz program taraması çıktıları kapalı tutar, belleğe dokunmaz. Önce hata eski kaynakta yeniden üretildi, ardından 12 hedefli çekirdek + 3 FBD V8/JavaScript kontrolü PASS. `tests/dts-ladder-block-owner-unique.test.cjs` 7 Node regresyonu eklendi; Node test dosyası burada yürütülmedi (**NOT_RUN**). `Simulation.solve`, 703 katalog, Windows/Edge ve fiziksel/3D kabulü değiştirilmedi (**REVIEW**); madde 11 ve 23 **KISMİ**.
+
+
+
 | No | Özellik | Durum ve kanıt |
 | --- | --- | --- |
 | 09 | PLC üzerinde görsel Ladder editörü | **KISMİ**: `64bc88b835`, rung/kontak/bobin kontrol ekranı; sürükle-bırak, Edge REVIEW |
