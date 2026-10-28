@@ -1,0 +1,10 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const PNG=require('../dist/project-png.js');
+const el=(tag,href,xlink)=>({tagName:tag,getAttribute:k=>k==='href'?href:k==='xlink:href'?xlink:null});
+const check=e=>PNG.sourceCheck({querySelectorAll:()=>[e]}).ok;
+test('image with safe href and external xlink is rejected',()=>assert.equal(check(el('image','data:image/png;base64,AA==','https://unsafe.example/image')),false));
+test('safe embedded image remains supported',()=>assert.equal(check(el('image','data:image/png;base64,AA==',null)),true));
+test('empty image payload is rejected',()=>assert.equal(check(el('image','data:image/png;base64,',null)),false));
+test('local use cannot hide external namespaced link',()=>assert.equal(check(el('use','#local','https://unsafe.example/sprite')),false));
+test('local same-document use remains allowed',()=>assert.equal(check(el('use','#local',null)),true));
