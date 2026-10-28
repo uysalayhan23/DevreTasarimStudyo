@@ -1062,3 +1062,10 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-wire-audit ul{margin:5px 0 0;padding-left:19px}
 .dts-wire-audit li{margin-bottom:5px}
 .dts-wire-audit-ok{color:#296c55}
+
+/* Wiring diagnosis is a temporary visual overlay; never change actual component or wire state. */
+#dtsWireCheckReport [data-audit-wire]{border:1px solid #bbd0dd;background:#fff5e9;color:#7b4312;border-radius:5px;padding:3px 5px;cursor:pointer;font-weight:700}
+#dtsWireCheckReport [data-audit-wire]:focus-visible{outline:2px solid #de7a1c;outline-offset:2px}
+#scene [data-wire].dts-wire-audit-highlight path.wire,
+#scene [data-wire].dts-wire-audit-highlight path.mechanical-shaft-link{stroke:#ee721c!important;stroke-dasharray:9 5!important;filter:drop-shadow(0 0 4px #ffb653)}
+@media(prefers-reduced-motion:reduce){#scene [data-wire].dts-wire-audit-highlight path{animation:none!important}}

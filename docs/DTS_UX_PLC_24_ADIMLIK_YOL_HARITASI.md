@@ -109,3 +109,7 @@ Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proj
 ### 28 Ekim — Kaynak temelli bağlantı denetimi
 
 `dist/wire-diagnostics.js` gerçek şemadaki kabloların `from/to` uçlarını `project.components`, `junctions`, `byId` katalog terminal kimlikleriyle karşılaştırır. Silinmiş bileşen, olmayan terminal/düğüm, eksik uç, aynı uç bağlantısı gibi doğrulanabilir referans sorunlarını gösterir. **Kabloları veya simülasyonu otomatik değiştirmez.** Sonuçta sorun yoksa yalnız kimliklerin tanındığını söyler; güvenli/devre çalışır/elektriksel doğru iddiası vermez. Madde 18 KISMİ; terminal vurgusu, Windows Edge ve fiziksel kabul ayrı.
+
+### 28 Ekim — Kablo teşhisinden çizimdeki kabloya görsel yönlendirme
+
+18 numaralı bağlantı denetimi geliştirildi: gerçek `data-wire` SVG kimliği üzerinden ilgili kablo, çizimde geçici turuncu kesik çizgili vurguyla işaretlenir. Sonuç listesindeki kablo kimliği düğmesine tıklamak yalnız o kabloyu vurgular; eşleşen çizim düğümü yoksa yanlış başarı bildirmez. `wire-diagnostics.js` salt okunur DOM sınıfı değiştirir, model, gerçek tel rengi, bağlantı veya native `Simulation.solve` durumuna dokunmaz. Tanınan uçlar elektriksel doğruluk veya güvenlik kabulü değildir. Hedefli pozitif/negatif V8 mantık kontrolleri; Windows/Edge görsel kabulü **REVIEW**.

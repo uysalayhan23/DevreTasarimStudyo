@@ -1297,8 +1297,23 @@
   if(!audit){toast('Bağlantı denetimi yüklenemedi.');return}
   const result=audit.scan(project,byId);
   target.innerHTML=audit.markup(result);target.hidden=false;
-  toast(result.total?result.total+' kablo referans sorunu bulundu.':'Kablo terminal kimlikleri kontrol edildi.');
+  const marked=audit.mark(els.scene,result);
+  target.dataset.auditResult=JSON.stringify(result.issues.map(x=>x.wire));
+  toast(result.total?result.total+' kablo referans sorunu bulundu; '+marked+' çizim grubu işaretlendi.':'Kablo terminal kimlikleri kontrol edildi.');
  };
+ $('#dtsWireCheckReport').addEventListener('click',e=>{
+  const selected=e.target.closest?.('[data-audit-wire]');
+  if(!selected)return;
+  const wireId=selected.dataset.auditWire;
+  const groups=Array.from(els.scene.querySelectorAll('[data-wire]'));
+  let count=0;
+  for(const group of groups){
+   const match=String(group.dataset.wire)===wireId;
+   group.classList.toggle('dts-wire-audit-highlight',match);
+   if(match)count++;
+  }
+  toast(count?'Kablo '+wireId+' çizimde işaretlendi.':'Kablo '+wireId+' şu anda çizimde bulunamadı.');
+ });
  $('#openBtn').onclick=()=>$('#fileInput').click();
   $('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const p=window.DTSProjects.parse(rd.result);if(!snapshot())return;project=migrateProject(p);resetDraft();selectedWire=null;hideWireMenu();setSelection([]);running=false;$('#sheetName').textContent=project.name;populateWireMenu();renderLibrary();render();const scaleAudit=materialLayoutWarning();if(!scaleAudit?.overlapCount)toast('Proje açıldı')}catch{toast('Geçersiz proje dosyası')}};rd.readAsText(f);e.target.value=''};
   $('#renameSheet').onclick=()=>{if(!guardEdit())return;modal('Sayfayı yeniden adlandır',`<label>Sayfa adı<input id="modalName" value="${esc(project.name)}" style="width:100%;margin-top:7px;padding:8px"></label>`,()=>{project.name=$('#modalName')?.value||project.name;$('#sheetName').textContent=project.name;render()})};

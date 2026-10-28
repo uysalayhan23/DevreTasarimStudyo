@@ -32,10 +32,23 @@
  function markup(report){
   if(!report)return '';
   if(!report.total)return '<p class="dts-wire-audit-ok">Kayıtlı '+report.checked+' kablonun bileşen ve terminal kimlikleri tanınıyor. Bu, elektriksel doğruluk veya güvenlik kabulü değildir.</p>';
-  const detail=report.issues.map(x=>'<li><strong>'+esc(x.wire)+'</strong>: '+esc(x.message)+'</li>').join('');
+  const detail=report.issues.map(x=>'<li><button type="button" data-audit-wire="'+esc(x.wire)+'" title="Şemada kabloyu işaretle">'+esc(x.wire)+'</button>: '+esc(x.message)+'</li>').join('');
   return '<p><strong>'+report.total+' referans sorunu</strong> bulundu. Kablolar değiştirilmedi.</p><ul>'+detail+'</ul>'+
    (report.truncated?'<small>İlk 16 sorun gösterildi; yeniden kontrol edin.</small>':'');
  }
- const api=Object.freeze({scan,markup});
+ // Visually mark only current DOM wire groups; leave wire color, endpoints and native solver untouched.
+ function mark(scene,report,onlyWire=null){
+  if(!scene||typeof scene.querySelectorAll!=='function')return 0;
+  const ids=new Set((report?.issues||[]).map(i=>String(i.wire)));
+  let marked=0;
+  for(const group of scene.querySelectorAll('[data-wire]')){
+   const visible=ids.has(String(group.dataset?.wire))&&
+    (onlyWire===null||String(group.dataset.wire)===String(onlyWire));
+   group.classList.toggle('dts-wire-audit-highlight',visible);
+   if(visible)marked++;
+  }
+  return marked;
+ }
+ const api=Object.freeze({scan,markup,mark});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSWireDiagnostics=api;
 })(typeof window==='undefined'?globalThis:window);
