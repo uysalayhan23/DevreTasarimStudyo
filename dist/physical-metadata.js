@@ -417,6 +417,8 @@
     if(typeof mapping.assetKey!=='string'||!mapping.assetKey.trim())return {ok:false,reason:'assetKey'};
     if(mapping.assetIdentityField!==undefined&&!VALID_ASSET_IDENTITY_FIELDS.has(mapping.assetIdentityField))return {ok:false,reason:'assetIdentityField'};
     if(mapping.assetIdentityField!==undefined&&(typeof mapping.assetIdentityValue!=='string'||!mapping.assetIdentityValue.trim()))return {ok:false,reason:'assetIdentityValue'};
+    if(mapping.visualSourceStatus!==undefined&&mapping.visualSourceStatus!==null&&!['repo-exact-product-visual','repo-existing-product-visual','derived-from-exact-repo-source','verified-manifest-provenance','user-supplied-canonical','user-supplied-manufacturer-cad+exact-photo-evidence'].includes(mapping.visualSourceStatus))return {ok:false,reason:'visualSourceStatus'};
+    if(mapping.visualSourceFile!==undefined&&mapping.visualSourceFile!==null&&(typeof mapping.visualSourceFile!=='string'||!mapping.visualSourceFile.trim()))return {ok:false,reason:'visualSourceFile'};
     if(!VALID_VISUAL_MATCH.has(mapping.visualMatchStatus))return {ok:false,reason:'visualMatchStatus'};
     if(!VALID_VISUAL_ORIENTATION.has(mapping.visualOrientationStatus))return {ok:false,reason:'visualOrientationStatus'};
     if(!VALID_TERMINAL_STATUS.has(mapping.terminalGeometryStatus))return {ok:false,reason:'terminalGeometryStatus'};
