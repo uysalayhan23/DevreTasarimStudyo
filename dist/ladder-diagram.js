@@ -21,6 +21,7 @@
   bits.push('<g class="dts-ladder-rails">'+line(railLeft,31,railLeft,height-21)+line(rightX,31,rightX,height-21)+'</g>');
   bits.push(text(railLeft,20,'L1','dts-ladder-rail-label'),text(rightX,20,'L2','dts-ladder-rail-label'));
   bits.push(text(126,20,'Network '+(Number.isInteger(options.index)?options.index+1:1),'dts-ladder-net-label'));
+  if(rung?.comment)bits.push(text(width/2,20,String(rung.comment).slice(0,66),'dts-ladder-comment-svg'));
   if(paths.length>1){
    bits.push(line(branchX,top,branchX,top+(paths.length-1)*78,'dts-ladder-wire'));
    bits.push(line(joinX,top,joinX,top+(paths.length-1)*78,'dts-ladder-wire'));

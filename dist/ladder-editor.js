@@ -151,7 +151,7 @@
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
-      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
+      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
        '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+Diagram.render(r,{index:ri,live:!!liveBits,values:liveBits})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
@@ -293,7 +293,8 @@
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
    const {field,r,p,c}=e.target.dataset;if(!field||!active)return;
    const rung=active.draft.rungs[Number(r)];
-   if(field==='contact-type'||field==='contact-ref'){
+   if(field==='rung-comment')rung.comment=String(e.target.value||'').slice(0,100);
+   else if(field==='contact-type'||field==='contact-ref'){
     const contact=rung.paths[Number(p)][Number(c)];
     contact[field==='contact-type'?'type':'ref']=e.target.value;
    }else if(field==='coil-type'){

@@ -1025,3 +1025,8 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-plc-io-pill b{font-weight:750}.dts-plc-io-pill small{font-size:12px;font-weight:750}.dts-plc-io-pill em{font-size:10px;font-style:normal;color:#567083}
 .dts-plc-io-pill.on{border-color:#29a46f;background:#e6f8ed}.dts-plc-io-pill.off{border-color:#afbdc9;background:#f9fbfd}
 .dts-plc-io-pill.unknown{color:#74848f}
+
+/* Ladder rung commentary: optional educational network title, not a solver operand. */
+.dts-ladder-comment-field{flex:1 1 210px;max-width:400px;min-width:120px;padding:7px 9px;border:1px solid #bdccd7;border-radius:6px;background:#fff;color:#173044;font-size:12px}
+.dts-ladder-comment-field:focus-visible{outline:2px solid #1687b2;outline-offset:2px}
+.dts-ladder-svg .dts-ladder-comment-svg{font-size:12px;font-weight:600;fill:#44627b}

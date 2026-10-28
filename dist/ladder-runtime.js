@@ -11,6 +11,7 @@
   for(let i=0;i<source.rungs.length;i++){
    const r=source.rungs[i];if(!r||typeof r!=='object'||typeof r.id!=='string'||r.id.length<1||r.id.length>40||seen.has(r.id))return {ok:false,error:'Tekrarlanan/geçersiz rung kimliği: '+(i+1)};
    seen.add(r.id);
+   if(r.comment!==undefined&&(typeof r.comment!=='string'||r.comment.length>100))return {ok:false,error:'Network açıklaması en fazla 100 karakter olmalı.'};
    if(!Array.isArray(r.paths)||r.paths.length<1||r.paths.length>8)return {ok:false,error:'Rung '+r.id+' için 1–8 paralel yol gerekir.'};
    for(const path of r.paths){
     if(!Array.isArray(path)||path.length<1||path.length>12)return {ok:false,error:'Seri yol 1–12 kontak içermeli.'};
