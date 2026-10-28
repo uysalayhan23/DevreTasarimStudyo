@@ -382,13 +382,14 @@
     active.history.push(active.draft);
     render();return;
    }
-   if(activateDiagramTarget(e.target))return;
    const tile=e.target.closest?.('[data-tool-id]');
    if(tile&&overlay.contains(tile)){
     selectedTool=selectedTool===tile.dataset.toolId?null:tile.dataset.toolId;render();return;
    }
    const zone=e.target.closest?.('[data-drop-kind]');
    if(zone&&overlay.contains(zone)&&selectedTool&&diagramMode==='ladder'){addFromPalette(selectedTool,zone);return}
+   // No selected tool: click an existing symbol to edit its operand.
+   if(activateDiagramTarget(e.target))return;
    if(e.target===overlay){close();return}
    const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
   });
