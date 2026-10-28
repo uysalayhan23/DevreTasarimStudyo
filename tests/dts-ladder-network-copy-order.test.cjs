@@ -38,3 +38,22 @@ test('invalid original program cannot be reordered',()=>{
  const source=original();source.rungs[1].id='R1';
  assert.equal(Editor.editNetworkOrder(source,'down',0,limits).ok,false);
 });
+
+test('copying an OUT writer disconnects the duplicate until explicitly assigned',()=>{
+ const source={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
+ const result=Editor.editNetworkOrder(source,'copy',0,limits);
+ assert.equal(result.ok,true);
+ assert.deepEqual(result.program.rungs.map(r=>r.coil),[{type:'OUT',ref:'Q1'},{type:'NOP',ref:''}]);
+ assert.equal(Ladder.scan(result.program,{I1:false},{},0,limits).outputs.Q1,false);
+ assert.equal(Ladder.scan(result.program,{I1:true},{},0,limits).outputs.Q1,true);
+ assert.equal(source.rungs.length,1);
+});
+test('SET and RESET copies cannot silently duplicate a writer',()=>{
+ for(const type of ['SET','RESET']){
+  const source={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type,ref:'Q1'}}]};
+  const result=Editor.editNetworkOrder(source,'copy',0,limits);
+  assert.equal(result.ok,true);
+  assert.deepEqual(result.program.rungs[1].coil,{type:'NOP',ref:''});
+  assert.equal(result.program.rungs[0].coil.type,type);
+ }
+});
