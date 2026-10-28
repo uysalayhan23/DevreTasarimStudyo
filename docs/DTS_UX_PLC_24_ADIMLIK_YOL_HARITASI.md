@@ -100,6 +100,10 @@ Operatör paneli `_dtsLadderError` durumunda eski 0/1 sinyallerini gizlerken `la
 
 Önceki `activateDiagramTarget` FBD görünümündeki kontak veya çıkış sembolünde de LAD `data-field=contact-ref/coil-ref` alanına yönleniyordu; görünür FBD operandının odaklanması tutarsızdı. `focusDiagramOperand` aktif görünümde `data-fbd-contact-ref` ya da `data-fbd-coil-field=ref` alanını, LAD modunda özgün LAD alanını seçer. Çıkışı silinmiş NOP blokta adres olmadığı için komut menüsüne geçer. Geçersiz/taşmış konumlar ve diyalog dışı öğeler reddedilir. Yeni 9 ve mevcut FBD hedefli regresyonları V8 PASS; gerçek Windows/Edge odak ve dokunma kabulü REVIEW. `Simulation.solve`, 703 katalog, 1686 ders, Golden/PASS/HOLD ve SC1194 korunur; genel 09/23 KISMİ.
 
+### 28 Ekim — Madde 09/23: FBD + Paralel kolu güvenli/açık başlat
+
+Sanal Ladder ile yeniden üretilen ciddi kaynak kusuru: İlk yol `NO I2` kapalıyken, kullanıcı yalnız `+ Paralel` düğmesine basarsa ek kol kendiliğinden `NO I1` ile oluşuyor ve I1 açık olduğunda `Q1` hemen enerji alıyordu. `dist/fbd-view.js` yeni OR kolunu artık **[] boş/açık devre** olarak oluşturur; `+ Seri` ile gerçek kontak eklenince çalışır. Eski geçerli yollara dokunulmaz, taslak kopyası korunur; fiziksel Q/M SET, 8 paralel sınırı, sıfır girişli PLC M adresi, native `Ladder.scan` ve Undo/Redo pozitif-negatif hedefli test edildi. Önceden otomatik I1 kabul eden FBD regresyon beklentileri yeni güvenli akışa güncellendi. Yeni 7 ve önceki FBD yapı/önüne ekleme/görünüm testleri **26/26 hedefli V8 PASS**. Gerçek Windows/Edge/3D kullanıcı kabulü REVIEW, bağımsız Node NOT_RUN; madde 09/23 genel KISMİ. 703 katalog, 1686 ders, Golden/PASS/HOLD ve SC1194 korunur.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri

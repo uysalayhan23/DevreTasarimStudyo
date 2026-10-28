@@ -68,7 +68,9 @@
   if(action==='add-contact')out[p].splice(out[p].length?c+1:0,0,fresh);
   if(action==='add-contact-before')out[p].splice(c,0,fresh);
   if(action==='remove-contact')out[p].splice(c,1);
-  if(action==='add-path')out.splice(p+1,0,[fresh]);
+  // A newly created OR path must be open, never an implicit energized I1 input.
+  // A user may add its first contact explicitly with + Seri.
+  if(action==='add-path')out.splice(p+1,0,[]);
   if(action==='remove-path')out.splice(p,1);
   const check=Ladder.validate(draft,limits);
   return check.ok?{ok:true,program:draft}:{ok:false,error:check.error};

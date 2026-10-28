@@ -10,7 +10,9 @@ test('FBD series edits same native LAD AND scan without changing source',()=>{
  assert.equal(L.scan(x.program,{I1:true,I2:true},{},0,limits).outputs.Q1,true);
 });
 test('FBD parallel branch is the same LAD OR condition',()=>{
- const x=F.editStructure(base,'add-path','0:0',limits);
+ const branch=F.editStructure(base,'add-path','0:0',limits);
+ assert.equal(branch.ok,true);assert.deepEqual(branch.program.rungs[0].paths[1],[]);
+ const x=F.editStructure(branch.program,'add-contact','0:1:0',limits);
  assert.equal(x.ok,true);x.program.rungs[0].paths[1][0].ref='I3';
  assert.equal(L.scan(x.program,{I1:false,I3:true},{},0,limits).outputs.Q1,true);
  assert.equal(L.scan(x.program,{I1:false,I3:false},{},0,limits).outputs.Q1,false);
@@ -37,7 +39,10 @@ test('12 series and 8 parallel limits are enforced',()=>{
 test('invalid native I/O and CPU without physical inputs do not invent I1',()=>{
  assert.equal(F.editStructure(base,'add-path','0:0',{inputCount:0,outputCount:0}).ok,false);
  const p={version:1,rungs:[{id:'M',paths:[[{type:'NO',ref:'M1'}]],coil:{type:'OUT',ref:'M2'}}]};
- assert.equal(F.editStructure(p,'add-path','0:0',{inputCount:0,outputCount:0}).program.rungs[0].paths[1][0].ref,'M1');
+ const empty=F.editStructure(p,'add-path','0:0',{inputCount:0,outputCount:0});
+ assert.equal(empty.ok,true);assert.deepEqual(empty.program.rungs[0].paths[1],[]);
+ const added=F.editStructure(empty.program,'add-contact','0:1:0',{inputCount:0,outputCount:0});
+ assert.equal(added.ok,true);assert.equal(added.program.rungs[0].paths[1][0].ref,'M1');
 });
 test('FBD displays keyboard buttons for structural AND/OR edits',()=>{
  const x=F.editStructure(base,'add-path','0:0',limits);
