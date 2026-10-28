@@ -34,7 +34,7 @@
 
 | No | Özellik | Durum |
 | --- | --- | --- |
-| 16 | Bileşene tıklayınca kısa görev/terminal/parametre kartı | **PLAN** |
+| 16 | Bileşene tıklayınca kısa görev/terminal/parametre kartı | **KISMİ/KOD**: katalog ad/model/kind/gerçek ilk 8 terminal özeti; dinamik parametre öğreticisi ve Edge görsel kabulü açık |
 | 17 | Simülasyon durumu ve aktif enerji yollarını daha anlaşılır göster | **KISMİ**: eski DTS enerji yolu göstergeleri mevcut; tutarlı yeni UX ayrı |
 | 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **PLAN** |
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |

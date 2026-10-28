@@ -688,7 +688,14 @@
   }
 
   function updateProperties(){
-    const c=project.components.find(x=>x.id===selected);els.form.hidden=!c;els.none.hidden=!!c||selectedIds.size>1;$('#multiSelection').hidden=selectedIds.size<2;$('#selectionCount').textContent=selectedIds.size+' eleman seçili';if(!c)return;
+    const c=project.components.find(x=>x.id===selected);
+    const brief=$('#dtsComponentBrief');
+    if(brief){
+      const item=c?window.DTSComponentBrief?.model?.(byId[c.typeId],c):null;
+      brief.hidden=!item||project.workspaceMode==='panel';
+      brief.innerHTML=item?window.DTSComponentBrief.markup(item):'';
+    }
+    els.form.hidden=!c;els.none.hidden=!!c||selectedIds.size>1;$('#multiSelection').hidden=selectedIds.size<2;$('#selectionCount').textContent=selectedIds.size+' eleman seçili';if(!c)return;
     const d=byId[c.typeId],B=window.DTSDeviceBehavior,isSensor=['sensor','detector'].includes(d.kind),isAnalog=B.analog(d),isTimed=d.kind==='timer'||d.kind==='coil-flasher'||d.kind.startsWith('delay-');
     $('#instrumentSettings').innerHTML=window.DTSInstrumentUI.form(d,c);
     const arduinoBox=$('#arduinoComponentSettings'),arduinoControls=$('#arduinoSensorControls'),arduinoRole=d.arduinoRole;
