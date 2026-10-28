@@ -2,6 +2,13 @@
  'use strict';
  // Read-only structural diagnostics. Valid terminal IDs do NOT prove correct electrical behavior.
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ // Endpoint identity does not depend on object key insertion order or UI metadata.
+ function sameEndpoint(a,b){
+  if(!a||!b)return false;
+  if(a.j!=null||b.j!=null)return a.j!=null&&b.j!=null&&String(a.j)===String(b.j);
+  return a.c!=null&&b.c!=null&&a.p!=null&&b.p!=null&&
+   String(a.c)===String(b.c)&&String(a.p)===String(b.p);
+ }
  function scan(project,byId){
   const components=new Map((project?.components||[]).filter(Boolean).map(c=>[String(c.id),c]));
   const junctions=new Set((project?.junctions||[]).map(j=>String(j.id)));
@@ -25,7 +32,7 @@
   for(const wire of wires){
    if(!wire||typeof wire!=='object'){report(wire,'invalid-wire','Kablo kaydı geçersiz.');continue}
    const a=endpoint(wire,wire.from,'Başlangıç'),b=endpoint(wire,wire.to,'Bitiş');
-   if(a&&b&&JSON.stringify(wire.from)===JSON.stringify(wire.to))report(wire,'same-endpoint','Kablo aynı uca dönüyor; bağlantıyı kontrol edin.');
+   if(a&&b&&sameEndpoint(wire.from,wire.to))report(wire,'same-endpoint','Kablo aynı uca dönüyor; bağlantıyı kontrol edin.');
   }
   return {total:issues.length,checked:wires.length,issues:issues.slice(0,16),truncated:issues.length>16};
  }
@@ -49,6 +56,6 @@
   }
   return marked;
  }
- const api=Object.freeze({scan,markup,mark});
+ const api=Object.freeze({scan,markup,mark,sameEndpoint});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSWireDiagnostics=api;
 })(typeof window==='undefined'?globalThis:window);

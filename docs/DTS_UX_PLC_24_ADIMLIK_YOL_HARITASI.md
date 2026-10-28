@@ -130,6 +130,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 **Yeni doğrulanmış kusur:** LAD arayüzünde `coil-type` alanı değişince ilk T1/C1 adresi seçildiğinden, T1/C1 başka bir Network tarafından kullanılıyorsa boş T2/C2 var olmasına rağmen LAD programı geçersiz kalıyordu. FBD daha önce boş adres bulacak şekilde düzeltilmişti. `dist/ladder-editor.js` LAD bobin türü değişikliklerini bu **aynı** native Ladder doğrulama yordamına yönlendirir; adres korunabiliyorsa korunur, boş T/C adresi gerekiyorsa seçilir, tümü doluysa taslak değiştirilmeden reddedilir. Kaynak davranışı eski LAD ile yeniden üretildi; `tests/dts-ladder-coil-type-shared-editor.test.cjs` dosyasındaki 7 pozitif/negatif V8 regresyon senaryosu PASS. Uygulama elektriği, 703 katalog, Golden/PASS/HOLD/REVIEW ve Windows/3D kabulünü değiştirmez. Bağımsız Node ile Edge DOM testi bu turda **NOT_RUN/REVIEW**; madde 09/11/23 **KISMİ**.
 
+### 28 Ekim — Madde 18: Kablo kendi terminaline geri bağlandığında kimlik tabanlı teşhis
+
+`dist/wire-diagnostics.js` daha önce bir kablonun iki ucunun aynı terminal olup olmadığını `JSON.stringify(from)===JSON.stringify(to)` ile değerlendiriyordu. Terminal alanlarının sırası veya tanıtıcı ek özellikler farklıysa fiziksel olarak aynı kimliğe dönen bağlantı tespit edilemiyordu. `sameEndpoint` yalnız `c+p` veya `j` kimliğiyle karşılaştırır; gerçek kayıtlara, renk/kesit bilgilerine veya native elektriksel simülatöre dokunmaz. Bilinmeyen pin/bileşen/düğüm uyarıları önceliğini korur. `tests/dts-wire-diagnostics-endpoint-identity.test.cjs` 5 yeni + mevcut 4 toplam **9/9 V8 hedefli regresyon PASS**. Windows/Edge görsel işaretleme, 3D terminal hizalaması ve bağımsız native test **REVIEW/NOT_RUN**; 18. madde KISMİ.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |
