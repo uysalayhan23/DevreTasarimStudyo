@@ -40,7 +40,11 @@
   function constrain(plan,dx,dy,grid=10,width=2400,height=1500){
     const snap=v=>Math.round(v/grid)*grid;
     const axis=(v,low,high)=>Math.max(Math.ceil(low/grid)*grid,Math.min(Math.floor(high/grid)*grid,snap(v)));
-    return {x:axis(dx,Math.min(0,-plan.left),Math.max(0,width-plan.right)),y:axis(dy,Math.min(0,-plan.top),Math.max(0,height-plan.bottom))};
+    // A selection wider than the sheet cannot fit fully; allow movement
+    // between its visible edges instead of locking it to zero displacement.
+    const range=(start,end,size)=>end-start>size?[size-end,-start]:[Math.min(0,-start),Math.max(0,size-end)];
+    const [left,right]=range(plan.left,plan.right,width),[top,bottom]=range(plan.top,plan.bottom,height);
+    return {x:axis(dx,left,right),y:axis(dy,top,bottom)};
   }
   function applyMove(plan,delta){
     for(const p of plan.positioned){p.node.x=p.x+delta.x;p.node.y=p.y+delta.y}
