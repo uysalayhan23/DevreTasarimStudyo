@@ -24,8 +24,8 @@ test('removing intermediate contact and branch preserves coil identity',()=>{
  assert.equal(rp.ok,true);assert.equal(rp.program.rungs[0].paths.length,1);
  assert.equal(rp.program.rungs[0].coil.ref,'Q1');
 });
-test('bad indices, last element removal and unsupported commands fail closed',()=>{
- for(const [op,pos] of [['remove-contact','0:0:0'],['remove-path','0:0'],['add-path','0:6'],['add-contact','0:0:6'],['add-path','00:0'],['other','0:0']])
+test('bad indices, last path removal and unsupported commands fail closed',()=>{
+ for(const [op,pos] of [['remove-contact','0:0:3'],['remove-path','0:0'],['add-path','0:6'],['add-contact','0:0:6'],['add-path','00:0'],['other','0:0']])
   assert.equal(F.editStructure(base,op,pos,limits).ok,false,op+pos);
 });
 test('12 series and 8 parallel limits are enforced',()=>{
@@ -43,4 +43,12 @@ test('FBD displays keyboard buttons for structural AND/OR edits',()=>{
  const x=F.editStructure(base,'add-path','0:0',limits);
  const html=F.render(x.program.rungs[0],{index:0,limits});
  for(const op of ['add-contact','remove-contact','add-path','remove-path'])assert.match(html,new RegExp('data-fbd-structure="'+op+'"'));
+});
+
+test('last contact may be deleted without powering a coil, then re-added',()=>{
+ const deleted=F.editStructure(base,'remove-contact','0:0:0',limits);
+ assert.equal(deleted.ok,true);assert.deepEqual(deleted.program.rungs[0].paths,[[]]);
+ assert.equal(L.scan(deleted.program,{I1:true},{},0,limits).outputs.Q1,false);
+ const restored=F.editStructure(deleted.program,'add-contact','0:0:0',limits);
+ assert.equal(restored.ok,true);assert.equal(restored.program.rungs[0].paths[0].length,1);
 });

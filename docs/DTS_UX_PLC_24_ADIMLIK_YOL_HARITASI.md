@@ -71,6 +71,10 @@ Network sil/yeniden ekle teslimatı sonrası bir regresyon bulundu: ilk sürüm,
 
 Aynı PLC'de iki `File.text()` okuması ters sırada tamamlanırsa eski dosya yeni taslağın üzerine yazılabiliyordu. Her seçim artık artan istek kimliği taşır; eski okuma, kapanmış modal, farklı PLC/proje veya simülasyon sırasında tamamlanan dosya taslağı değiştirmez. LAD/FBD alanları, yapısal ekle/sil, Undo/Redo ve örnek yükleme simülasyon çalışırken düzenlenemez; simülasyonu durdurma erişimi korunur. `tests/dts-ladder-import-race-and-edit-lock.test.cjs`: 7 hedefli V8 test PASS (bağımsız Edge dosya seçici **REVIEW**). Önceki 703 katalog, `Simulation.solve`, 1686 ders ve fiziksel kabul değiştirilmedi.
 
+### 28 Ekim — Kullanıcı serbest silme kabulü ve .dtsladder asenkron dosya yükleme güvenliği
+
+Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FBD regresyonunun “son kontak silinemez” beklentisi yeni kabul şartına göre güncellendi. Mevcut `importSerial` farklı dosya/PLC ve modal yarışlarını engelliyordu; yeni `draftSnapshot` ayrıca **dosya okunurken yapılan yerel kontak/bobin düzenlemesini** korur, geç dönen dosya yeni taslağı ezmez. Önceki 5 ve 7 argümanlı yardımcı işlev çağrıları korunur. Güncellenmiş FBD 8 + yeni içe aktarma 5, toplam **13/13 V8 hedefli regresyon PASS**; bağımsız Node/Windows-Edge dosya diyalogu **NOT_RUN / REVIEW**. Madde 15/23 KISMİ, 1686 ders / 703 katalog / Golden/PASS/HOLD korunur.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri

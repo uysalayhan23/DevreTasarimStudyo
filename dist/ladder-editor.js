@@ -105,9 +105,11 @@
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
  // Never apply an async import to a different component or a replaced project instance.
- function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null){
-  return !!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible&&
+ function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null,draftSnapshot=null,currentDraft=null){
+  const matches=!!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible&&
    (requestId===null||(Number.isSafeInteger(requestId)&&requestId===currentRequestId));
+  // Do not overwrite contacts or outputs changed while the selected file was reading.
+  return matches&&(draftSnapshot===null||JSON.stringify(currentDraft)===draftSnapshot);
  }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
@@ -479,15 +481,15 @@
    if(e.target.id==='dtsLadderImport'){
     const file=e.target.files?.[0],target=active,originalProject=editor.getProject();
     if(file&&target){
-     const requestId=++importSerial;
+     const requestId=++importSerial,draftSnapshot=JSON.stringify(target.draft);
      try{
       if(editor.running)throw Error('İçe aktarmadan önce simülasyonu durdurun.');
       if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
       // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
       const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
       const raw=await file.text();
-      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial)||editor.running){
-       editor.toast?.('İçe aktarma iptal: PLC veya proje değişti. Program değiştirilmedi.');
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft)||editor.running){
+       editor.toast?.('İçe aktarma iptal: PLC, proje veya taslak değişti. Program değiştirilmedi.');
       }else{
        const draft=ProgramIO.parse(raw,originalLimits);
        target.draft=draft;target.history.push(draft);render();
