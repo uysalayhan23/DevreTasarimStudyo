@@ -23,7 +23,10 @@
   if(/@import\b/i.test(xml))return {ok:false,error:'PNG için dış CSS içe aktarımı desteklenmiyor.'};
   const refs=String(xml).match(/url\s*\(\s*[^)]*\)/gi)||[];
   for(const ref of refs){
-   const value=ref.replace(/^url\s*\(\s*/i,'').replace(/\)\s*$/,'').trim().replace(/^['"]|['"]$/g,'');
+   const raw=ref.replace(/^url\s*\(\s*/i,'').replace(/\)\s*$/,'').trim();
+   // XMLSerializer escapes quotes in attributes; these still identify local SVG paint servers.
+   const value=raw.replace(/&quot;|&#0*34;|&#x0*22;/gi,'"')
+    .replace(/&apos;|&#0*39;|&#x0*27;/gi,"'").replace(/^['"]|['"]$/g,'');
    if(!/^#[a-zA-Z_][\w:.-]*$/.test(value))
     return {ok:false,error:'PNG için harici CSS görsel bağlantısı desteklenmiyor; PDF / Yazdır kullanın.'};
   }
