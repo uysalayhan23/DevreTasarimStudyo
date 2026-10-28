@@ -7,6 +7,7 @@
  const ProgramIO=typeof module==='object'&&module.exports?require('./ladder-program-io.js'):root?.DTSLadderProgramIO;
  const Examples=typeof module==='object'&&module.exports?require('./ladder-examples.js'):root?.DTSLadderExamples;
  const FBDView=typeof module==='object'&&module.exports?require('./fbd-view.js'):root?.DTSFBDView;
+ const Toolbox=typeof module==='object'&&module.exports?require('./ladder-toolbox.js'):root?.DTSLadderToolbox;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  // LAD and FBD use exactly the same allowed native output addresses.
  function coilSelectOptions(type,limits={},candidates=[]){
@@ -122,7 +123,8 @@
   const overlay=doc.createElement('div');
   overlay.id='dtsLadderOverlay';overlay.className='dts-ladder-overlay';overlay.hidden=true;
   overlay.setAttribute('role','presentation');doc.body.appendChild(overlay);
-  let active=null,monitorTimer=null,returnFocus=null,diagramMode='ladder';
+  let active=null,monitorTimer=null,returnFocus=null,diagramMode='ladder',selectedTool=null,focusedNetwork=null;
+  const closedNetworks=new Set();
   const sessions=createDraftSessions();
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
@@ -147,6 +149,7 @@
   function render(){
    if(!active)return;
    const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
+   const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram);
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live?active.c._dtsLadderMemory?.values:null;
@@ -170,31 +173,36 @@
     '<input type="file" id="dtsLadderImport" accept=".dtsladder,.json" hidden>'+
     '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button>'+ 
     '<button type="button" data-action="toggle-sim" '+(canRun?'':'disabled title="Önce Ladder programını kaydet ve devreyi doğrula"')+'>'+runAction+'</button></div>'+
+    '<div class="dts-ladder-toolbox" role="group" aria-label="Ladder araç paleti" '+(diagramMode==='fbd'?'hidden':'')+'><strong>Komut paleti</strong><small>Kontak veya bloğu Network üzerine sürükleyin. Alternatif: paletten seçin, ekleme alanına tıklayın.</small><div class="dts-ladder-tool-list">'+
+    Toolbox.tools.map(t=>'<button type="button" draggable="true" data-tool-id="'+t.id+'" aria-pressed="'+(selectedTool===t.id)+'" title="'+escape(t.label)+' sürükle veya seç"><span class="dts-tool-symbol">'+escape(t.symbol)+'</span><span>'+escape(t.label)+'</span></button>').join('')+
+    '</div></div>'+ 
     '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(Monitor.snapshot(active.c,active.d,editor.running,live))+'</div>'+ 
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
-    '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
+    '<main class="dts-ladder-rungs"><div class="dts-ladder-networks-bar"><strong>'+active.draft.rungs.length+' Network · LAD</strong>'+(focusedNetwork?'<button type="button" data-action="all-networks">▣ Tüm Networkleri göster</button>':'<span>Her Network ayrı bir çalışma penceresidir.</span>')+'</div>'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
-      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
-       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
+      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'" '+(focusedNetwork&&focusedNetwork!==r.id?'hidden':'')+'><div class="dts-ladder-rung-title"><strong>Network '+(ri+1)+' · '+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="toggle-network" data-r="'+ri+'" aria-expanded="'+!closedNetworks.has(r.id)+'">'+(closedNetworks.has(r.id)?'▣ Aç':'▾ Daralt')+'</button><button type="button" data-action="focus-network" data-r="'+ri+'">'+(focusedNetwork===r.id?'Tümüne dön':'⛶ Tek pencere')+'</button><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div><div class="dts-ladder-network-body" '+(closedNetworks.has(r.id)?'hidden':'')+'>'+
+       '<div class="dts-ladder-diagram" data-drop-kind="network" data-r="'+ri+'" data-diagram="'+ri+'" title="Paletten öğeyi buraya bırakın">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
         select(contact.ref,asOptions(choices()),'data-field="contact-ref" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
         '<button type="button" data-action="remove-contact" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'" '+(path.length===1?'disabled':'')+' aria-label="Kontağı sil">×</button></div>').join('')+
         '<button type="button" data-action="add-contact" data-r="'+ri+'" data-p="'+pi+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
+        '<button type="button" class="dts-ladder-dropzone" data-drop-kind="contact" data-r="'+ri+'" data-p="'+pi+'" data-i="'+path.length+'" '+(path.length>=12?'disabled':'')+' title="Bu seri kola kontak bırakın">⇣ Kontak bırak</button>'+
         (pi?'<button type="button" data-action="remove-path" data-r="'+ri+'" data-p="'+pi+'">Yolu sil</button>':'')+
         '</div>').join('')+
        '<button type="button" data-action="add-path" data-r="'+ri+'" '+(r.paths.length>=8?'disabled':'')+'>+ Paralel yol</button></div>'+
-       '<div class="dts-ladder-coil"><span>SONUÇ →</span>'+
+       '<div class="dts-ladder-coil"><span>SONUÇ →</span><button type="button" class="dts-ladder-dropzone" data-drop-kind="coil" data-r="'+ri+'" title="Buraya bobin, timer veya counter bırakın">⇣ Bobin / Blok bırak</button>'+
        select(r.coil.type,['OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v})),'data-field="coil-type" data-r="'+ri+'"')+
        select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"')+
        (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
        (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
        '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
-       '</div></article>';
+       '</div></div></article>';
      }).join('')+'</main>'+
      '<footer class="dts-ladder-footer"><span id="dtsLadderValidation" role="status">'+(valid.ok?'Program kontrolü: uygun.':escape(valid.error))+'</span><button type="button" data-action="close">Kapat</button></footer>'+
      '</section>';
+   const newList=overlay.querySelector('.dts-ladder-rungs');if(newList)newList.scrollTop=oldScroll;
    if(priorFocus){
     const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>!el.disabled&&focusKey(el)===priorFocus);
     if(next)next.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
@@ -211,7 +219,7 @@
    if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
    const target=items.find(c=>c.id===which)||items[0];
    const firstOpen=overlay.hidden;
-   if(firstOpen){returnFocus=doc.activeElement;diagramMode='ladder';}
+   if(firstOpen){returnFocus=doc.activeElement;diagramMode='ladder';selectedTool=null;focusedNetwork=null;closedNetworks.clear();}
    active=stateFor(target,editor);
    active.history=sessions.forComponent(editor.getProject(),target,active.draft);
    active.draft=active.history.current();
@@ -269,12 +277,34 @@
    editor.toast?.('PLC Ladder programı kaydedildi · Projeyi de kaydetmeyi unutmayın.');
    close();return true;
   }
+  function addFromPalette(id,zone){
+   if(!active||diagramMode!=='ladder')return false;
+   if(editor.running){editor.toast?.('Önce simülasyonu durdurup programı düzenleyin.');return false}
+   const target={r:Number(zone.dataset.r),kind:zone.dataset.dropKind};
+   if(zone.dataset.p!==undefined)target.p=Number(zone.dataset.p);
+   if(zone.dataset.i!==undefined)target.i=Number(zone.dataset.i);
+   const result=Toolbox.apply(active.draft,id,target,limits());
+   if(!result.ok){editor.toast?.(result.error);return false}
+   active.draft=result.program;active.history.push(result.program);
+   closedNetworks.delete(result.rungId);
+   selectedTool=null;render();return true;
+  }
   function action(button){
    if(!active)return;
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
    if(type==='close'){close();return}
    if(type==='save'){save();return}
-   if(type==='toggle-diagram'){diagramMode=diagramMode==='fbd'?'ladder':'fbd';render();return}
+   if(type==='toggle-diagram'){diagramMode=diagramMode==='fbd'?'ladder':'fbd';selectedTool=null;render();return}
+   if(type==='toggle-network'){
+    const id=active.draft.rungs[r]?.id;if(!id)return;
+    if(closedNetworks.has(id))closedNetworks.delete(id);else closedNetworks.add(id);
+    render();return;
+   }
+   if(type==='focus-network'){
+    const id=active.draft.rungs[r]?.id;if(!id)return;
+    focusedNetwork=focusedNetwork===id?null:id;closedNetworks.delete(id);render();return;
+   }
+   if(type==='all-networks'){focusedNetwork=null;render();return}
    if(type==='import-program'){
     overlay.querySelector('#dtsLadderImport')?.click();return;
    }
@@ -313,7 +343,7 @@
    if(type==='add-rung'){if(active.draft.rungs.length>=32)return;
     const used=new Set(active.draft.rungs.map(x=>x.id));let n=1;while(used.has('R'+n))n++;
     active.draft.rungs.push({id:'R'+n,paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}});}
-   else if(type==='remove-rung'){if(active.draft.rungs.length>1)active.draft.rungs.splice(r,1);}
+   else if(type==='remove-rung'){if(active.draft.rungs.length>1){const id=active.draft.rungs[r]?.id;active.draft.rungs.splice(r,1);closedNetworks.delete(id);if(focusedNetwork===id)focusedNetwork=null;}}
    else if(type==='add-path'){if(active.draft.rungs[r].paths.length<8)active.draft.rungs[r].paths.push([{type:'NO',ref:'I1'}]);}
    else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
    else if(type==='add-contact'){const path=active.draft.rungs[r].paths[p];if(path.length<12)path.push({type:'NO',ref:'I1'});}
@@ -353,8 +383,35 @@
     render();return;
    }
    if(activateDiagramTarget(e.target))return;
+   const tile=e.target.closest?.('[data-tool-id]');
+   if(tile&&overlay.contains(tile)){
+    selectedTool=selectedTool===tile.dataset.toolId?null:tile.dataset.toolId;render();return;
+   }
+   const zone=e.target.closest?.('[data-drop-kind]');
+   if(zone&&overlay.contains(zone)&&selectedTool&&diagramMode==='ladder'){addFromPalette(selectedTool,zone);return}
    if(e.target===overlay){close();return}
    const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
+  });
+  overlay.addEventListener('dragstart',e=>{
+   const tile=e.target.closest?.('[data-tool-id]');
+   if(!tile||!active||diagramMode!=='ladder'||editor.running||!e.dataTransfer)return;
+   if(!Toolbox.byId(tile.dataset.toolId))return;
+   e.dataTransfer.effectAllowed='copy';
+   e.dataTransfer.setData('text/plain','DTS-LAD:'+tile.dataset.toolId);
+  });
+  overlay.addEventListener('dragover',e=>{
+   const zone=e.target.closest?.('[data-drop-kind]');
+   if(!zone||!active||editor.running||diagramMode!=='ladder'||zone.disabled)return;
+   if(!Array.from(e.dataTransfer?.types||[]).includes('text/plain'))return;
+   e.preventDefault();e.dataTransfer.dropEffect='copy';zone.classList.add('dts-ladder-drop-hover');
+  });
+  overlay.addEventListener('dragleave',e=>e.target.closest?.('[data-drop-kind]')?.classList.remove('dts-ladder-drop-hover'));
+  overlay.addEventListener('drop',e=>{
+   const zone=e.target.closest?.('[data-drop-kind]');
+   if(!zone||diagramMode!=='ladder'||zone.disabled)return;
+   e.preventDefault();zone.classList.remove('dts-ladder-drop-hover');
+   const data=e.dataTransfer?.getData('text/plain')||'';
+   if(data.startsWith('DTS-LAD:'))addFromPalette(data.slice(8),zone);
   });
   overlay.addEventListener('change',async e=>{
    if(e.target.id==='dtsLadderImport'){
