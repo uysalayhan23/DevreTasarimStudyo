@@ -75,6 +75,9 @@
    }else if(coil.type==='CTU'||coil.type==='CTD'){
     const initial=coil.type==='CTD'?coil.preset:0;
     const s=states[ref]||(states[ref]={count:initial});
+    // A CTU/CTD type change must not reuse the other counter's count or edge memory.
+    if(s.kind&&s.kind!==coil.type){s.count=initial;delete s.prev;delete s.tick;}
+    s.kind=coil.type;
     if(!Number.isInteger(s.count))s.count=initial;
     if(active&&!s.prev&&s.tick!==now)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;

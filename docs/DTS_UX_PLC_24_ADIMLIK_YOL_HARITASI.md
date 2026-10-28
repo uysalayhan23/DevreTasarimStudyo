@@ -22,6 +22,10 @@
 
 `dist/ladder-runtime.js` TOF gecikmeli kapatma sırasında sanal saat geri alınırsa geçmiş `offStart` değerini yeni zaman çizelgesine taşımayıp gecikmeyi o andan başlatır. Önceki kodda 1010 ms'de başlatılan 100 ms gecikme, sanal saat 0 ms'ye döndüğünde 100 ms sonunda kapanmıyordu. Yalnız TOF dalı değiştirildi; TON, TP, katalog ve elektriksel `Simulation.solve` değiştirilmedi. Hedefli 7 JavaScript V8 kontrolü PASS (eski kusur yeniden üretildi); `tests/dts-ladder-tof-rewind.test.cjs` beş Node test senaryosu eklendi, bu ortamda Node test dosyası bağımsız çalıştırılmadı (NOT_RUN). Windows/Edge, 3D ve tam native kabul **REVIEW**; madde 11 **KISMİ** korunur.
 
+### 28 Ekim — CTU/CTD tür değiştirme regresyonu
+
+Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse önceki `count`/kenar belleği yanlış yeniden kullanılıyordu; CTD hedef değerinden başlamıyordu. Sayaç tipi değişiminde eski durumu temizleyen dar kapsamlı düzeltme eklendi. CTU→CTD, CTD→CTU ve mevcut yükselen kenar/same-timestamp davranışı için üç hedefli V8 kontrolü PASS; `tests/dts-ladder-counter-type-switch.test.cjs` Node regresyonları eklendi, Node çalıştırması NOT_RUN. Windows/Edge, özgün fiziksel `Simulation.solve` kabulü REVIEW; madde 11 KISMİ kalır.
+
 ## Paket B — PLC Ladder (7 madde)
 
 | No | Özellik | Durum ve kanıt |
