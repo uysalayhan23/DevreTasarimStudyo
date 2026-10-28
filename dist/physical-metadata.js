@@ -397,7 +397,7 @@
     }
     if(record.profileStatus==='verified'){
       if(typeof record.profileMethod!=='string'||!record.profileMethod)return {ok:false,reason:'profileMethod'};
-      if(typeof record.profileSourceUrl!=='string'||!/^https:\/\//.test(record.profileSourceUrl))return {ok:false,reason:'profileSourceUrl'};
+      if(typeof record.profileSourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(record.profileSourceUrl))return {ok:false,reason:'profileSourceUrl'};
       const b=record.profileBoundsMm;
       if(!b||![b.width,b.height,b.depth].every(v=>Number.isFinite(v)&&v>0))return {ok:false,reason:'profileBounds'};
       if(!Array.isArray(record.profileEvidenceFiles)||!record.profileEvidenceFiles.length||record.profileEvidenceFiles.some(x=>!x||typeof x.file!=='string'||!x.file||typeof x.sha256!=='string'||!/^[0-9a-f]{64}$/.test(x.sha256)||typeof x.role!=='string'||!x.role))return {ok:false,reason:'profileEvidenceFiles'};
@@ -432,7 +432,7 @@
     if(mapping.connectorIdentityStatus!==undefined){
       if(mapping.connectorIdentityStatus!=='verified')return {ok:false,reason:'connectorIdentityStatus'};
       if(typeof mapping.connectorType!=='string'||!mapping.connectorType)return {ok:false,reason:'connectorType'};
-      if(typeof mapping.connectorSourceUrl!=='string'||!/^https:\/\//.test(mapping.connectorSourceUrl))return {ok:false,reason:'connectorSourceUrl'};
+      if(typeof mapping.connectorSourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(mapping.connectorSourceUrl))return {ok:false,reason:'connectorSourceUrl'};
       const pins=Object.entries(mapping.connectorPinAssignment||{});
       if(!pins.length||pins.some(([k,v])=>typeof k!=='string'||!k||!Number.isInteger(v)||v<=0)||new Set(pins.map(([,v])=>v)).size!==pins.length)return {ok:false,reason:'connectorPinAssignment'};
       if(mapping.connectorLocationStatus!=='verified-drawing-callout')return {ok:false,reason:'connectorLocationStatus'};
@@ -443,7 +443,7 @@
     if(mapping.panelTerminals!==undefined){
       if(!Array.isArray(mapping.panelTerminals)||!mapping.panelTerminals.length)return {ok:false,reason:'panelTerminals'};
       if(mapping.terminalIdentityStatus!=='verified')return {ok:false,reason:'terminalIdentityStatus'};
-      if(typeof mapping.terminalIdentitySourceUrl!=='string'||!/^https:\/\//.test(mapping.terminalIdentitySourceUrl))return {ok:false,reason:'terminalIdentitySourceUrl'};
+      if(typeof mapping.terminalIdentitySourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(mapping.terminalIdentitySourceUrl))return {ok:false,reason:'terminalIdentitySourceUrl'};
       const ids=new Set();
       for(const p of mapping.panelTerminals){
         if(!p||typeof p.id!=='string'||!p.id||ids.has(p.id))return {ok:false,reason:'panelTerminalId'};
@@ -454,7 +454,7 @@
     if(mapping.terminalGeometryStatus==='connectorized-external'&&mapping.connectorIdentityStatus!=='verified')return {ok:false,reason:'connectorizedExternalIdentity'};
     if(mapping.terminalGeometryRequiredForPanel!==undefined&&typeof mapping.terminalGeometryRequiredForPanel!=='boolean')return {ok:false,reason:'terminalGeometryRequiredForPanel'};
     if(mapping.terminalGeometryStatus==='verified'){
-      if(typeof mapping.terminalSourceUrl!=='string'||!/^https:\/\//.test(mapping.terminalSourceUrl))return {ok:false,reason:'terminalSourceUrl'};
+      if(typeof mapping.terminalSourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(mapping.terminalSourceUrl))return {ok:false,reason:'terminalSourceUrl'};
       const entries=Object.entries(mapping.terminalAnchors||{});
       if(!entries.length)return {ok:false,reason:'terminalAnchors'};
       const product=products[mapping.productKey];
