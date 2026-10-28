@@ -73,6 +73,7 @@
     return [];
   }
   function analyze(project,byId,options={}){
+    for(const c of project.components||[]){const d=byId?.[c.typeId];if(d&&(!Array.isArray(d.pins)||d.pins.some(p=>!p||typeof p.id!=='string')))return {invalidCatalog:true,nets:new Map(),at:()=>({members:[],anchors:[],wires:[],roles:new Set(),domains:new Set(),conflict:true})};}
     const parents=new Map(),nets=new Map(),sources=[];
     const find=k=>{if(!parents.has(k))parents.set(k,k);let r=k;while(parents.get(r)!==r)r=parents.get(r);while(parents.get(k)!==k){const next=parents.get(k);parents.set(k,r);k=next}return r};
     const join=(a,b)=>{if(a&&b)parents.set(find(a),find(b))};
@@ -107,7 +108,7 @@
     if(key(from)===key(to))return {ok:false,reason:'Kablonun iki ucu aynı terminale bağlanamaz.'};
     const socketCheck=Leads.check(project,byId,from,to,ignoreWireId);if(!socketCheck.ok)return socketCheck;
     const lead=Leads.info(project,byId,{from,to});if(lead)return {ok:true,...lead,probeLead:true};
-    const graph=analyze(project,byId,{ignoreWireId}),a=graph.at(from),b=graph.at(to);
+    const graph=analyze(project,byId,{ignoreWireId});if(graph.invalidCatalog)return {ok:false,reason:'Katalog terminal listesi bozuk.'};const a=graph.at(from),b=graph.at(to);
     const provisional=n=>!n.anchors.length&&n.wires.every(w=>!w.roleBound);
     if(a.anchors.length&&provisional(b)){b.roles=new Set();b.conflict=false}
     if(b.anchors.length&&provisional(a)){a.roles=new Set();a.conflict=false}
@@ -156,7 +157,7 @@
     return {...result,role,color,size:sizeLabel(project.colorSizes?.[color]||size)};
   }
   function synchronize(project,byId,{legacy=false}={}){
-    Leads.prepare(project,byId);state(project);releaseUnused(project,byId);const graph=analyze(project,byId,{legacy}),warnings=[];
+    Leads.prepare(project,byId);state(project);releaseUnused(project,byId);const graph=analyze(project,byId,{legacy}),warnings=[];if(graph.invalidCatalog){for(const w of project.wires||[])w._lineConflict=true;return [{reason:'Katalog terminal listesi bozuk.'}]}
     for(const c of project.components)c._terminalLines={};
     const ordered=[...graph.nets.values()].sort((a,b)=>b.anchors.length-a.anchors.length);
     for(const n of ordered){
