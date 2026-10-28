@@ -68,13 +68,16 @@
   function prepare(lib){return lib.map(d=>{d.classification=classification(d);return d})}
   function matches(d,f={}){
     if(!d||typeof d!=='object')return false;
-    const m=d.classification||classification(d),q=String(f.query??'').trim().toLocaleLowerCase('tr');
+    if(!f||typeof f!=='object')f={};
+    const proposed=d.classification;
+    const m=proposed&&typeof proposed.group==='string'&&Array.isArray(proposed.areas)?proposed:classification(d),q=String(f.query??'').trim().toLocaleLowerCase('tr');
     return d.catalogHidden!==true&&(f.category!=='electrical'||(!d.isPLC&&!d.arduinoOnly))&&(f.category!=='plc'||d.isPLC||d.kind==='plc-io'||arduinoSharedTools.has(d.id))&&(f.category!=='arduino'||d.arduinoBoard||d.arduinoOnly||arduinoBasic(d))&&
       (!f.area||f.area==='all'||m.areas.includes(f.area))&&(!f.group||f.group==='all'||m.group===f.group)&&
       (!f.brand||f.brand==='all'||d.brand===f.brand)&&(!f.series||f.series==='all'||d.series===f.series)&&
       (!q||[d.name,d.model,d.materialModel,d.brand,d.series,d.autodeskGroup,d.symbolCode,d.searchTerms,d.symbolSource?.file,groupNames[m.group],...m.areas.map(a=>Object.fromEntries(areas)[a])].filter(Boolean).join(' ').toLocaleLowerCase('tr').includes(q));
   }
   function sections(lib,f={}){
+    if(!f||typeof f!=='object')f={};
     const found=(Array.isArray(lib)?lib:[]).filter(d=>matches(d,f));
     return groups.map(([id,title])=>({id,title,items:found.filter(d=>(d.classification||classification(d)).group===id).sort((a,b)=>String(a.brand||'').localeCompare(String(b.brand||''),'tr')||String(a.series||'').localeCompare(String(b.series||''),'tr')||String(a.name||'').localeCompare(String(b.name||''),'tr',{numeric:true}))})).filter(g=>g.items.length);
   }
