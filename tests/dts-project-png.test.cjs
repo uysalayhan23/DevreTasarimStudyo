@@ -44,3 +44,10 @@ test('successful download keeps PNG Blob URL valid until browser can start savin
  assert.equal(typeof delayed,'function');
  delayed();assert.deepEqual(revoked,['blob:test1','blob:test2']);
 });
+
+test('rejects SVG feImage filter sources rather than silently exporting incomplete art',()=>{
+ for(const href of ['https://example.invalid/filter.png','assets/filter.png','data:image/png;base64,AAAA']){
+  assert.equal(Png.sourceCheck(svg([el('feImage',href)])).ok,false);
+ }
+ assert.equal(Png.sourceCheck(svg([el('use','#local')])).ok,true);
+});

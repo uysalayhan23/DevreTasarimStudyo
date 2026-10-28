@@ -3,10 +3,13 @@
  // Offline PNG conversion only for self-contained SVG art. Never silently omit external photos.
  function sourceCheck(svg){
   if(!svg?.querySelectorAll)return {ok:false,error:'Devre SVG kaynağı bulunamadı.'};
-  const refs=svg.querySelectorAll('image,foreignObject,use')||[];
+  const refs=svg.querySelectorAll('image,foreignObject,use,feImage')||[];
   for(const el of refs){
    const tag=String(el.tagName||'').toLowerCase();
    if(tag==='foreignobject')return {ok:false,error:'Bu şema PNG için desteklenmeyen HTML görseli içeriyor.'};
+   // SVG filter images can load external resources even without an <image> node.
+   // Reject feImage entirely until its offline rendering can be verified.
+   if(tag==='feimage')return {ok:false,error:'Bu şemadaki SVG filtre görseli PNG için desteklenmiyor; PDF / Yazdır kullanın.'};
    const href=el.getAttribute?.('href')||el.getAttribute?.('xlink:href')||'';
    if(tag==='image'&&!/^data:image\/(png|jpeg|jpg|webp);base64,/i.test(href))
     return {ok:false,error:'Bu şemada harici malzeme görseli var. PNG dönüştürme güvenli değil; PDF / Yazdır kullanın.'};
