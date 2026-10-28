@@ -205,12 +205,12 @@
   function updateWireStatus(){
     const w=project.wires.find(x=>x.id===selectedWire),color=w?.color||wireColor,role=w?.role||project.colorLocks?.[color]||project.colorRoles?.[color]||'CONTROL';
     $('#wireStatus').textContent=`Kablo: ${colorNames[color]||color} · ${roleName(role)} · ${w?.probeLead?w.size:project.colorSizes?.[color]||w?.size||'1,5 mm²'}`;
-    $('#wireSize').value=Lines.sizeLabel(w?.probeLead?w.size:project.colorSizes?.[wireColor]||1.5);
+    $('#wireSize').value=Lines.sizeLabel(w?.probeLead?w.size:project.colorSizes?.[color]||w?.size||1.5);
     $('#wireRole').innerHTML=(w?.probeLead?[['MEASURE','Ölçüm probu']]:w?.freeColor?[['FREE','Sinyal · serbest renk']]:conductorRoles).map(([id,label])=>`<option value="${id}">${esc(label)}</option>`).join('');
-    $('#wireRole').value=w?.probeLead?'MEASURE':w?.freeColor?'FREE':project.colorLocks?.[wireColor]||project.colorRoles?.[wireColor]||'CONTROL';$('#wireRole').disabled=!!w?.probeLead||!!w?.freeColor;
+    $('#wireRole').value=w?.probeLead?'MEASURE':w?.freeColor?'FREE':w?.role||project.colorLocks?.[color]||project.colorRoles?.[color]||'CONTROL';$('#wireRole').disabled=!!w?.probeLead||!!w?.freeColor;
     $('#wireRoleHelp').textContent=w?.probeLead?'Probun rengi hat kimliğini değiştirmez.':w?.freeColor?'EX / SIG uçlarında renk serbesttir.':'Hat ve gerilim etiketini seçebilirsiniz. Gerçek gerilimi devrenin beslemesi belirler.';
-    $('#wireVoltage').value=project.colorVoltages?.[wireColor]||'Otomatik';$('#wireVoltage').disabled=!!w?.probeLead||!!w?.freeColor;
-    $$('.color-dot').forEach(x=>x.classList.toggle('active',x.dataset.color===wireColor));
+    $('#wireVoltage').value=project.colorVoltages?.[color]||'Otomatik';$('#wireVoltage').disabled=!!w?.probeLead||!!w?.freeColor;
+    $$('.color-dot').forEach(x=>x.classList.toggle('active',x.dataset.color===color));
   }
   function populateWireMenu(){
     $('#colorPalette').innerHTML=paletteColors().map(c=>`<button class="color-dot" type="button" style="background:${c}" data-color="${c}" title="${colorNames[c]||c} · ${roleName(project.colorRoles?.[c])}" aria-label="${colorNames[c]||c}"></button>`).join('');
@@ -578,7 +578,7 @@
   function beginReconnect(w,end,e){
     if(!guardEdit())return;
     reconnectReleaseCleanup?.();
-    selectedWire=w.id;setSelection([]);reconnecting={wireId:w.id,end};pendingPort=clone(w[end==='from'?'to':'from']);draftPoints=[];draftMouse=canvasPoint(e);setStatus('Kablo ucu ayrıldı · yeni terminale veya kabloya bırakın','warn');render();
+    selectedWire=w.id;wireColor=w.color;setSelection([]);reconnecting={wireId:w.id,end};pendingPort=clone(w[end==='from'?'to':'from']);draftPoints=[];draftMouse=canvasPoint(e);setStatus('Kablo ucu ayrıldı · yeni terminale veya kabloya bırakın','warn');render();
     const release=ev=>{if(ev.pointerId!==e.pointerId||ev.button!==0)return;window.removeEventListener('pointerup',release);const target=document.elementFromPoint(ev.clientX,ev.clientY),pg=target?.closest?.('.port-group'),jg=target?.closest?.('[data-junction]'),wg=target?.closest?.('[data-wire]');if(pg){finishConnection({c:pg.closest('.component').dataset.id,p:pg.dataset.port})}else if(jg)finishConnection({j:jg.dataset.junction});else if(wg){const targetWire=project.wires.find(x=>x.id===wg.dataset.wire);if(targetWire)branchToWire(targetWire,canvasPoint(ev))}};
     reconnectReleaseCleanup=()=>window.removeEventListener('pointerup',release);window.addEventListener('pointerup',release);
   }

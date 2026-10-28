@@ -146,6 +146,10 @@ Seçili cihaz kartı modelde zaten bulunan `ref` alanını göstermiyordu; sayı
 
 Önceki düzeltme terminal konumunu `Symbols.terminalPosition` ile görsel ölçekte sabitlemişti; kablo yönlendirici `componentObstacles()` hâlâ ham `c.materialScale||1` kullandığı için eski projede sınır dışı ölçeklerde kablo cihaz gövdesini yanlış boyutta algılıyordu. Pens metre açık çene göstergesi de ham ölçeği kullanıyordu. Yeni `Symbols.materialBounds` cihazın dört döndürülmüş köşesini aynı sınırlandırılmış ölçekte hesaplar; kablo engeli ve açık çene de bu ortak geometriyi kullanır. `tests/dts-material-obstacle-scale.test.cjs` 5 yeni, güncellenmiş eski geometri testleri 7, toplam **12/12 V8 PASS**. Bağımsız Node.js ve Windows/Edge 2D/3D görsel kabulü **NOT_RUN/REVIEW**; `Simulation.solve`, 703 katalog, 1686 ders, SC1194 ve tüm Golden/PASS/HOLD/REVIEW kilitleri değişmedi. Madde 19 KISMİ.
 
+### 28 Ekim — Madde 17: Kablo ayar panelinde seçili rengin doğru okunması
+
+Kablo durum satırı `w?.color||wireColor` kullanırken kesit/hat/gerilim/renk seçimi `wireColor` kullanıyordu; bu iki renk özellikle kablo yeniden bağlanırken farklı kalabiliyordu. `updateWireStatus()` seçili kablo için aynı `color` anahtarıyla ilgili kesit, rol, gerilim ve aktif renk düğmesini gösterir; boş seçimde palet rengini kullanır. `beginReconnect()` seçili kablonun rengini de eşitler. Mevcut `guardEdit/snapshot`, kablo elektriksel ağı ve 703 katalog korunur. `tests/dts-wire-selected-settings.test.cjs` 5/5 hedefli V8 PASS (farklı palet rengi, boş seçim, ölçüm probu, mutasyonsuz görünüm, yeniden bağlama). Bağımsız Node / Windows Edge ve 3D kabulü NOT_RUN/REVIEW; madde 17 KISMİ.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |
