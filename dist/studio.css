@@ -1030,3 +1030,14 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-ladder-comment-field{flex:1 1 210px;max-width:400px;min-width:120px;padding:7px 9px;border:1px solid #bdccd7;border-radius:6px;background:#fff;color:#173044;font-size:12px}
 .dts-ladder-comment-field:focus-visible{outline:2px solid #1687b2;outline-offset:2px}
 .dts-ladder-svg .dts-ladder-comment-svg{font-size:12px;font-weight:600;fill:#44627b}
+
+/* Organized accessible project toolbar: existing IDs and handlers are unchanged. */
+.topbar .toolbar.dts-toolbar-organized{display:flex;gap:0;align-items:center;flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;scrollbar-width:thin;scrollbar-color:#6f8799 transparent}
+.dts-toolbar-cluster{display:inline-flex;align-items:center;gap:5px;padding:0 9px;flex:0 0 auto;white-space:nowrap}
+.dts-toolbar-cluster:first-child{padding-left:0}
+.dts-toolbar-cluster+.dts-toolbar-cluster{border-left:1px solid #536477}
+.dts-toolbar-organized #zoomLabel{flex:0 0 auto}
+.dts-toolbar-organized button:focus-visible{outline:2px solid #8bd7ff;outline-offset:1px}
+@media(max-width:1050px){.topbar .toolbar.dts-toolbar-organized{min-width:65px}}
+@media(max-width:720px){.topbar .toolbar.dts-toolbar-organized{gap:0}.topbar .toolbar.dts-toolbar-organized .dts-toolbar-cluster{padding:0 6px}.topbar .toolbar.dts-toolbar-organized .tool{display:none}}
+@media(prefers-reduced-motion:reduce){.topbar .toolbar.dts-toolbar-organized{scroll-behavior:auto}}

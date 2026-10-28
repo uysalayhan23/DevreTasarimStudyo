@@ -61,19 +61,24 @@
   <header class="topbar">
     <div class="brand"><span class="brand-mark">DTS</span><span>Devre Tasarım Stüdyosu</span><span class="offline">ÇEVRİMDIŞI · v1.19.20</span></div>
     <button id="homeBtn" class="tool home-button" title="Dashboarda dön">⌂ Dashboard</button>
-    <div class="toolbar" role="toolbar" aria-label="Proje araçları">
-      <button id="newBtn" class="tool">Yeni</button>
-      <button id="saveBtn" class="tool">Kaydet</button>
-      <button id="openBtn" class="tool">Aç</button>
-      <button id="exportBtn" class="tool">Farklı kaydet</button>
-      <button id="selectAllBtn" class="tool" title="Tüm elemanları seç (Ctrl+A)">Tümünü seç</button>
-      <button id="undoBtn" class="icon-tool" title="Geri al">↶</button>
-      <button id="redoBtn" class="icon-tool" title="Yinele">↷</button>
-      <span class="separator"></span>
-      <button id="zoomOut" class="icon-tool" title="Uzaklaştır">−</button>
-      <span id="zoomLabel">100%</span>
-      <button id="zoomIn" class="icon-tool" title="Yakınlaştır">+</button>
-      <button id="fitBtn" class="icon-tool" title="Sayfaya sığdır">⌗</button>
+    <div class="toolbar dts-toolbar-organized" role="toolbar" aria-label="Proje araçları">
+      <div class="dts-toolbar-cluster" role="group" aria-label="Dosya">
+        <button id="newBtn" class="tool">Yeni</button>
+        <button id="saveBtn" class="tool">Kaydet</button>
+        <button id="openBtn" class="tool">Aç</button>
+        <button id="exportBtn" class="tool">Farklı kaydet</button>
+      </div>
+      <div class="dts-toolbar-cluster" role="group" aria-label="Düzenle">
+        <button id="selectAllBtn" class="tool" title="Tüm elemanları seç (Ctrl+A)">Tümünü seç</button>
+        <button id="undoBtn" class="icon-tool" aria-label="Geri al" title="Geri al">↶</button>
+        <button id="redoBtn" class="icon-tool" aria-label="Yinele" title="Yinele">↷</button>
+      </div>
+      <div class="dts-toolbar-cluster" role="group" aria-label="Görünüm">
+        <button id="zoomOut" class="icon-tool" aria-label="Uzaklaştır" title="Uzaklaştır">−</button>
+        <span id="zoomLabel" aria-label="Yakınlaştırma oranı">100%</span>
+        <button id="zoomIn" class="icon-tool" aria-label="Yakınlaştır" title="Yakınlaştır">+</button>
+        <button id="fitBtn" class="icon-tool" aria-label="Sayfaya sığdır" title="Sayfaya sığdır">⌗</button>
+      </div>
     </div>
     <div class="run-group">
       <span id="plcGuard" class="guard" hidden>PLC bulunan projede simülasyon kapalıdır</span>
