@@ -89,7 +89,7 @@
    const copied=clone(draft.rungs[index]);copied.id='R'+n;
    // A copied Q/M writer must not silently acquire the original output address.
    // Keep its contacts, but require an explicit output assignment before energizing it.
-   if(['OUT','SET','RESET'].includes(copied.coil.type))copied.coil={type:'NOP',ref:''};
+   if(copied.coil.type!=='NOP')copied.coil={type:'NOP',ref:''};
    draft.rungs.splice(index+1,0,copied);
   }else{
    const target=index+(action==='up'?-1:1);
