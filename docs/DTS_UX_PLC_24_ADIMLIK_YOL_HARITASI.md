@@ -144,6 +144,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 **Somut eksik:** FBD'de NO/NC, seri/paralel konum ve çıkış bloğu düzenlenmesine rağmen kontağın I/Q/M/T/C operandını seçmek için LAD alt bölümüne dönmek gerekiyordu. `dist/fbd-view.js` her kontakta erişilebilir `Adres` seçicisi gösterir ve `editContactRef` yalnız bağımsız taslak kopyasında `Ladder.validate` kontrolü uygular. Giriş/çıkış adetleri gerçek PLC katalog `inputCount/outputCount` sınırındadır; M1–M32/T1–T16/C1–C16 geçerli aralıktadır; sahte I/Q uçları ve bozuk indeks reddedilir. `dist/ladder-editor.js` FBD seçim değişimini yalnız taslak+Undo/Redo'ya işler ve 300 ms izleme yenilemesi sırasında odak koruması ekler. `dist/studio.css` okunabilir/kullanılabilir alanı sağlar. `tests/dts-fbd-contact-ref-edit.test.cjs` yeni 6 + önceden kabul edilen FBD 25 senaryo **31/31 hedefli V8 PASS**. Bağımsız Node, gerçek Windows/Edge, fiziksel `Simulation.solve` ve 3D kabul **NOT_RUN/REVIEW**; 23. madde **KISMİ**.
 
+### 28 Ekim — Madde 23 FBD dosyalarının çevrimdışı Edge önbellek güncellemesi
+
+FBD kontak operand düzenleme kaynakları yayımlandıktan sonra `dist/index.html`, `dist/fbd-view.js`, `dist/ladder-editor.js`, `dist/studio.css` dosyalarını önceki `rev` parametreleriyle işaretliyordu. Yerel `file:///` Windows/Edge yüklemesinde eski FBD sürümünün kullanılma riskini azaltmak için üç yükleme etiketi yenilendi. Yeni bağımsız test `tests/dts-fbd-offline-asset-order.test.cjs`: FBD/LAD/CSS sürüm etiketleri, runtime→FBD→LAD yükleme sırası ve sunucusuz kalan giriş **3/3 V8 PASS**. Tarayıcı önbelleği ve gerçek Windows Edge görsel kabulü **NOT_RUN/REVIEW**; 23. madde **KISMİ**.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi
