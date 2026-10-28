@@ -65,7 +65,7 @@
     if(d.id==='abb-acs800-r5')return [line('X22:7','+24V','acsdi:'+c.id),line('X22:10','0V','acsdi:'+c.id),...['U2','V2','W2'].map((p,i)=>line(p,'L'+(i+1),'out:'+c.id))];
     if(d.id==='sinamics-v20-1p')return [line('13','+24V','control:'+c.id),line('14','0V','control:'+c.id),...['U','V','W'].map((p,i)=>line(p,'L'+(i+1),'out:'+c.id))];
     if(['supply','supply3'].includes(d.kind))return d.pins.map(p=>line(p.id,p.id==='L'?'L1':p.id,'mains'));
-    if(d.kind.startsWith('supply-dc'))return [line('P',d.excitationSource?'DC+':'+24V','dc:'+c.id),line('M','0V','dc:'+c.id)];
+    if(String(d.kind||'').startsWith('supply-dc'))return [line('P',d.excitationSource?'DC+':'+24V','dc:'+c.id),line('M','0V','dc:'+c.id)];
     if(d.kind==='power24')return [line('P','+24V','out:'+c.id),line('M','0V','out:'+c.id)];
     if(['transformer','autotransformer'].includes(d.kind))return [line('3','L1','out:'+c.id),line('4','N','out:'+c.id)];
     if(d.kind==='rectifier')return [line('+','+24V','out:'+c.id),line('−','0V','out:'+c.id)];
