@@ -38,7 +38,7 @@
     if(['electronics-semiconductors','electronics-ics'].includes(d.catalogGroup))return {group:'semiconductors',areas:['electronics','control']};
     if(d.catalogGroup)return {group:d.catalogGroup,areas:d.diagramOnly?['drawing','panel','building','measurement','automation']:['control','panel','building','automation','measurement']};
     if(d.isPLC)return {group:plcGroup(d),areas:['automation','control','panel']};
-    const k=d.kind,id=d.id;
+    const k=typeof d.kind==='string'?d.kind:'',id=d.id;
     if(k==='plc-io')return {group:'digital-io',areas:['automation','control']};
     if(id==='coil-contactor'||k==='contactor3')return {group:'contactors',areas:['control','motor','panel','automation']};
     if(k.startsWith('contact-'))return {group:'auxiliary',areas:['control','motor','panel','automation']};
