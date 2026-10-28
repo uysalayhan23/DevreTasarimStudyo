@@ -22,3 +22,25 @@ test('caps output dimensions, avoiding unsafe memory pressure',()=>{
 test('unsupported browser declines without touching the model',async()=>{
  const result=await Png.exportPng({},{});assert.equal(result.ok,false);
 });
+
+test('successful download keeps PNG Blob URL valid until browser can start saving it',async()=>{
+ const Print=require('../dist/project-print.js');
+ let seq=0,downloaded=0,delayed=null;const revoked=[];
+ const image={style:{transform:''},setAttribute(){},removeAttribute(){},querySelector(){return null},querySelectorAll(){return []}};
+ const source={cloneNode:()=>image,querySelectorAll(){return[]}};
+ const scene={getBBox:()=>({x:0,y:0,width:100,height:70})};
+ const doc={getElementById:id=>id==='workspace'?source:id==='scene'?scene:null,
+  body:{appendChild(){}},createElement:k=>k==='canvas'?{getContext(){return{fillRect(){},drawImage(){},set fillStyle(v){}}},toBlob(cb){cb({type:'image/png'})}}:
+  {click(){downloaded++},remove(){}}};
+ const win={DTSProjectPrint:Print,Image:class{set src(v){this.onload?.()}},
+  XMLSerializer:class{serializeToString(){return'<svg/>'}},
+  Blob:class{},getComputedStyle(){return{getPropertyValue(){return''}}},
+  URL:{createObjectURL(){return 'blob:test'+(++seq)},revokeObjectURL(u){revoked.push(u)}},
+  setTimeout(fn,ms){delayed=fn;assert.equal(ms,1200)}
+ };
+ const result=await Png.exportPng(doc,win,'Test');
+ assert.equal(result.ok,true);assert.equal(downloaded,1);
+ assert.deepEqual(revoked,['blob:test1']);
+ assert.equal(typeof delayed,'function');
+ delayed();assert.deepEqual(revoked,['blob:test1','blob:test2']);
+});

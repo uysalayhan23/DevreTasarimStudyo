@@ -81,7 +81,12 @@
    return {ok:false,error:'PNG dönüştürme tarayıcı güvenliği veya SVG içeriği nedeniyle başarısız. PDF / Yazdır seçeneğini kullanın.'};
   }finally{
    if(svgUrl)win.URL.revokeObjectURL(svgUrl);
-   if(pngUrl)win.URL.revokeObjectURL(pngUrl);
+   // Revoking a download Blob URL during the same click stack can cancel the download.
+   if(pngUrl){
+    const completedUrl=pngUrl;
+    if(typeof win.setTimeout==='function')win.setTimeout(()=>win.URL.revokeObjectURL(completedUrl),1200);
+    else win.URL.revokeObjectURL(completedUrl);
+   }
   }
  }
  const api=Object.freeze({sourceCheck,dimension,exportPng});
