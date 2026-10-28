@@ -46,7 +46,7 @@
 | --- | --- | --- |
 | 21 | Görsel bileşen editörü, terminal koordinatları ve katalogya kontrollü ekleme | **PLAN** |
 | 22 | Hızlı Başla / Hazır Örnek / Öğretici başlangıç akışı | **KISMİ**: dashboard mevcut, yeniden tasarım açık |
-| 23 | FBD editörü, Ladder ile işlevsel eşdeğerlik | **PLAN** |
+| 23 | FBD editörü, Ladder ile işlevsel eşdeğerlik | **KISMİ/KOD**: LAD/FBD arasında aynı native Ladder programını gösteren alternatif AND/OR/NOT blok görünümü; tıklanabilir bloklar mevcut alanları düzenler, bağımsız FBD dosyası/sürükle-bırak ve Edge kabulü açık |
 | 24 | Sanal operatör paneli ve canlı PLC I/O ekranı | **KISMİ/KOD**: ayrı açılıp kapanan salt okunur sanal PLC I/O paneli, birden fazla native onaylı PLC seçimi, kaynaklı sinyal durumu; giriş zorlama/cihaz kontrolü yok, Windows/Edge kabulü açık |
 
 ## Zorunlu teknik dosyalar ve gerçek teslimat özeti
@@ -129,3 +129,7 @@ DTS üst barına `▣ PLC I/O` eklendi. Pencere editörden bağımsız açılır
 **Onarım:** Yeni yükselen kenar yalnız önceki TP darbesi bitmişse yeni darbe başlatır; giriş darbe sırasında bırakılıp tekrar verilirse süre uzamaz. Süre sonunda giriş hâlâ yüksekse kendiliğinden yeni darbe oluşmaz; yeni yükselen kenar gerekir. Sanal saat geriye dönerse gelecekteki başlangıç belleği temizlenir. TON, TOF, CTU, CTD, PLC katalog modeli ve fiziksel çıkış eşlemesi değiştirilmedi.
 
 **Kanıt:** Kaynaktaki hata önce gerçek Node 22 testinde yeniden üretildi (**1 FAIL, 2 PASS**); onarımdan sonra yeni `tests/dts-ladder-tp-nonretrigger.test.cjs` **5/5 PASS**, daha önce var olan `dts-ladder-ctd-regression.test.cjs` **4/4 PASS** ve `dts-ladder-output-safety.test.cjs` **4/4 PASS**, toplam **13/13 hedefli Node testi PASS**. Gerçek Windows/Edge görsel ve tüm `Simulation.solve` entegrasyonu bu turda **NOT_RUN/REVIEW**; madde **11 KISMİ**, 24 maddelik tam kabul veya 1686 ders COMPLETE sayacı değişmedi.
+
+### 28 Ekim — Gerçek tarama verisine bağlı FBD blok görünümü
+
+`dist/fbd-view.js` yalnız Ladder V1 rung'larını alternatif AND/OR ve ters kontak (NOT) blokları olarak gösterir. Tıklanan kontak ve bobin mevcut Ladder editöründeki ilgili alana yönlendirilir. Yeşil durumlar `pathStates` ve `coilValue` tarama izinden gelir; yeni bir hesaplama/sahte elektrik modeli oluşturulmaz. Geliştirme **KISMİ**; Windows/Edge ve serbest FBD düzenleme kabulü açık.

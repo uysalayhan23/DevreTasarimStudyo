@@ -1083,3 +1083,16 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-operator-caution{margin:10px 0 0;font-size:11px;line-height:1.45;color:#755526;border-top:1px solid #d4e1e7;padding-top:10px}
 .topbar #dtsOperatorBtn{white-space:nowrap}
 @media(max-width:720px){.topbar .tool#dtsOperatorBtn{display:inline-flex!important;align-items:center;padding:4px 6px;font-size:10px}.dts-operator-panel{top:54px;right:6px;width:calc(100vw - 12px)}}
+
+/* Alternative DTS FBD visual projection; native Ladder scan remains authoritative. */
+.dts-fbd-view{padding:16px;min-width:550px;color:#1c3e55;font-size:12px}
+.dts-fbd-view header{font-weight:750;padding-bottom:10px;border-bottom:1px solid #c6d7e1}
+.dts-fbd-line,.dts-fbd-output{display:flex;align-items:center;flex-wrap:nowrap;gap:9px;padding:10px 0;white-space:nowrap}
+.dts-fbd-line small{min-width:48px;color:#567081}
+.dts-fbd-contact,.dts-fbd-gate,.dts-fbd-coil{display:inline-flex;align-items:center;padding:10px 14px;border:2px solid #62829b;border-radius:6px;background:white;font-weight:650}
+.dts-fbd-gate{border-color:#346e96;background:#e4f2fb}
+.dts-fbd-coil{border-color:#307ea5;background:#d7eafa}
+.dts-fbd-link{font-size:19px;color:#608197}
+.dts-fbd-on .dts-fbd-contact,.dts-fbd-on .dts-fbd-gate,.dts-fbd-on.dts-fbd-coil{background:#ddf7e9;border-color:#168d61}
+.dts-fbd-contact[role="button"],.dts-fbd-coil[role="button"]{cursor:pointer}
+.dts-fbd-contact:focus-visible,.dts-fbd-coil:focus-visible{outline:3px solid #0b78bd;outline-offset:2px}
