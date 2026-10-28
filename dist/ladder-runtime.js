@@ -46,6 +46,12 @@
   // Preserve only outputs still assigned to a coil (including intentional SET latches).
   const assignedQ=new Set(source.rungs.filter(r=>r.coil.ref[0]==='Q').map(r=>r.coil.ref));
   for(let i=1;i<=16;i++)if(!assignedQ.has('Q'+i))bits['Q'+i]=false;
+  // Timer/counter blocks removed from the program cannot keep driving old contacts.
+  const assignedBlocks=new Set(source.rungs.filter(r=>['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)).map(r=>r.coil.ref));
+  for(let i=1;i<=16;i++)for(const prefix of ['T','C']){
+   const ref=prefix+i;
+   if(!assignedBlocks.has(ref)){bits[ref]=false;delete states[ref];}
+  }
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
