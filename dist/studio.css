@@ -1120,3 +1120,12 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-fbd-polarity:hover{background:#d9eefb}
 .dts-fbd-polarity:focus-visible{outline:3px solid #0b78bd;outline-offset:2px}
 .dts-fbd-on .dts-fbd-polarity{background:#edf7f4}
+
+/* FBD V1 native output editing. Actual PLC simulation remains Ladder.scan. */
+.dts-fbd-block-controls{display:flex;align-items:center;flex-wrap:wrap;gap:7px;border:1px solid #b6cedd;background:#f0f7fc;border-radius:7px;padding:7px}
+.dts-fbd-block-controls label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:650;color:#284e65}
+.dts-fbd-block-controls select,.dts-fbd-block-controls input{font:inherit;color:#173f57;background:#fff;border:1px solid #9cb8ca;border-radius:5px;min-height:30px;padding:4px 5px}
+.dts-fbd-block-controls select{max-width:110px}
+.dts-fbd-block-controls input{width:92px}
+.dts-fbd-block-controls :is(select,input):focus-visible{outline:2px solid #147fac;outline-offset:2px}
+.dts-fbd-output{flex-wrap:wrap}

@@ -85,6 +85,7 @@
   if(el.id)return 'id:'+el.id;
   const d=el.dataset||{};
   if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
+   if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.r??'');
   const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
   return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
  }
@@ -170,7 +171,7 @@
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
       return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
-       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value})+'</div>'+ 
+       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
@@ -227,8 +228,8 @@
      const bits=shown?active.c._dtsLadderMemory?.values:null;
      if(diagram){
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
-      if(diagram.dataset.signalKey!==key){
-       diagram.innerHTML=draw(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value});
+      if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field]'))){
+       diagram.innerHTML=draw(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value,limits:limits()});
        diagram.dataset.signalKey=key;
       }
      }
@@ -365,7 +366,16 @@
     e.target.value='';return;
    }
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
-   const {field,r,p,c}=e.target.dataset;if(!field||!active)return;
+   const {field,r,p,c,fbdCoilField}=e.target.dataset;
+   if(fbdCoilField){
+    if(diagramMode!=='fbd'||!active)return;
+    const nextValue=['presetMs','preset'].includes(fbdCoilField)?
+      (e.target.value.trim()===''?NaN:Number(e.target.value)):e.target.value;
+    const result=FBDView.editCoil(active.draft,Number(r),{[fbdCoilField]:nextValue},limits());
+    if(!result.ok){editor.toast?.(result.error);render();return}
+    active.draft=result.program;active.history.push(active.draft);render();return;
+   }
+   if(!field||!active)return;
    const rung=active.draft.rungs[Number(r)];
    if(field==='rung-comment')rung.comment=String(e.target.value||'').slice(0,100);
    else if(field==='contact-type'||field==='contact-ref'){
