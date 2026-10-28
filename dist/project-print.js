@@ -14,7 +14,9 @@
    return {ok:false,error:'SVG çizim alanı bulunamadı.'};
   let area;try{area=bounds(scene.getBBox())}catch{return{ok:false,error:'Çizim sınırları okunamadı.'}}
   if(!area)return{ok:false,error:'Yazdırılacak görünür devre çizimi bulunamadı.'};
-  const duplicate=svg.cloneNode(true);
+  let duplicate;
+  try{duplicate=svg.cloneNode(true)}catch{return {ok:false,error:'Yazdırma için SVG çizimi kopyalanamadı.'}}
+  if(!duplicate?.setAttribute)return {ok:false,error:'Yazdırma için SVG çizimi kopyalanamadı.'};
   duplicate.id='dtsPrintableArtwork';
   duplicate.setAttribute('viewBox',[area.x,area.y,area.width,area.height].join(' '));
   duplicate.setAttribute('preserveAspectRatio','xMidYMid meet');
