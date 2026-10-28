@@ -34,10 +34,21 @@
   }else{
    if(target.kind==='coil'||target.kind==='network'){
     const prefix=['TON','TOF','TP'].includes(tool.id)?'T':['CTU','CTD'].includes(tool.id)?'C':'Q';
-    const ref=prefix==='Q'&&limits.outputCount===0?'M1':prefix+'1';
+    const previous=rung.coil;
+    let ref=prefix==='Q'&&limits.outputCount===0?'M1':prefix+'1';
+    if(prefix==='T'||prefix==='C'){
+     // Preserve the current owner's compatible address or allocate an unused slot.
+     const busy=new Set(next.rungs.filter((x,i)=>i!==r&&
+      (prefix==='T'?['TON','TOF','TP']:['CTU','CTD']).includes(x.coil.type))
+      .map(x=>x.coil.ref));
+     const own=previous?.ref;
+     ref=typeof own==='string'&&new RegExp('^'+prefix+'(?:[1-9]|1[0-6])$').test(own)&&!busy.has(own)?
+      own:Array.from({length:16},(_,i)=>prefix+(i+1)).find(x=>!busy.has(x));
+     if(!ref)return {ok:false,error:prefix==='T'?'Boş zamanlayıcı adresi kalmadı.':'Boş sayaç adresi kalmadı.'};
+    }
     rung.coil={type:tool.id,ref};
-    if(prefix==='T')rung.coil.presetMs=1000;
-    if(prefix==='C')rung.coil.preset=1;
+    if(prefix==='T')rung.coil.presetMs=Number.isInteger(previous?.presetMs)?previous.presetMs:1000;
+    if(prefix==='C')rung.coil.preset=Number.isInteger(previous?.preset)?previous.preset:1;
    }
   }
   const check=Ladder?.validate?.(next,limits);

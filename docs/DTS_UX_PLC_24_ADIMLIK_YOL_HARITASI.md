@@ -55,6 +55,10 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 
 `dist/ladder-diagram.js` daha önce TON giriş yolu aktifken zamanlayıcı çıkışı kapalı olmasına rağmen bobinden sonraki kabloyu yeşile boyuyordu. Giriş yolu gerçek `pathStates`, çıkış kablosu ise gerçek `coilValue` ile çizilir. TON bekleme/bitiş, TOF gecikmeli çıkış ve OUT açık/kapalı için 5 hedefli JavaScript kontrolü PASS. `tests/dts-ladder-output-wire-state.test.cjs` Node regresyon dosyası eklendi (Node çalıştırması NOT_RUN); Windows/Edge, 3D ve tam fiziksel kabul REVIEW, madde 14 KISMİ.
 
+### 28 Ekim — LAD paletinde geçerli T/C adresi seçimi
+
+LAD ve FBD açılır menülerindeki daha önce düzeltilmiş adres sahipliği kuralı, `dist/ladder-toolbox.js` sürükle/bırak paletinde uygulanmıyordu. T1/C1 başka bir Network'te kullanılıyorsa, T2/C2 boş olsa bile yeni TON/CTD işlemi reddediliyordu. Gerçek eski kaynakta tekrar üretildi. Palet şimdi mevcut geçerli T/C adresini ve süre/hedefini korur; yeni fonksiyon bloklarında boş T1–T16/C1–C16 adresini seçer; adresler doluysa yerel taslağı değiştirmeden hata verir. Normal NO/NC ve OUT davranışı korunur. `tests/dts-ladder-palette-free-block-address.test.cjs`: **8/8 hedefli V8 regresyon PASS**. Bağımsız Node/Windows-Edge sürükle/bırak **NOT_RUN/REVIEW**. 24 maddenin 09/11/15/23 kabulü **KISMİ** kalır. Native `Simulation.solve`, 703 katalog, 1686 ders ve Golden/PASS/HOLD/REVIEW değiştirilmedi.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
