@@ -18,17 +18,24 @@
  function apply(program,toolId,target,limits={}){
   const tool=byId.get(toolId);
   if(!tool)return {ok:false,error:'Bilinmeyen Ladder aracı.'};
-  if(!program||!Array.isArray(program.rungs)||!target)return {ok:false,error:'Hedef Network bulunamadı.'};
-  const r=Number(target.r),p=target.p===undefined?0:Number(target.p);
-  if(!Number.isInteger(r)||r<0||r>=program.rungs.length)return {ok:false,error:'Network numarası geçersiz.'};
+  // Reject malformed saved/imported drafts before reading nested paths or coils.
+  const initial=Ladder?.validate?.(program,limits);
+  if(!initial?.ok)return {ok:false,error:initial?.error||'Ladder taslağı geçersiz.'};
+  if(!target||typeof target!=='object')return {ok:false,error:'Hedef Network bulunamadı.'};
+  // DOM dataset indices are decimal strings; null, hex, booleans and coercions
+  // must never silently select Network 0 or another contact.
+  const index=v=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0?v:
+   typeof v==='string'&&/^(?:0|[1-9][0-9]*)$/.test(v)&&Number.isSafeInteger(Number(v))?Number(v):NaN;
+  const r=index(target.r),p=target.p===undefined?0:index(target.p);
+  if(!Number.isSafeInteger(r)||r>=program.rungs.length)return {ok:false,error:'Network numarası geçersiz.'};
   if(!['network','contact','coil'].includes(target.kind))return {ok:false,error:'Hedef alan geçersiz.'};
   const isContact=tool.kind==='contact';
   if(target.kind!=='network'&&target.kind!==tool.kind)return {ok:false,error:isContact?'Kontak seri kola eklenir.':'Bobin veya blok sonuç alanına eklenir.'};
   const next=JSON.parse(JSON.stringify(program)),rung=next.rungs[r];
   if(isContact){
    if(!Number.isInteger(p)||p<0||p>=rung.paths.length)return {ok:false,error:'Paralel yol bulunamadı.'};
-   const path=rung.paths[p],at=target.i==null?path.length:Number(target.i);
-   if(!Number.isInteger(at)||at<0||at>path.length||path.length>=12)return {ok:false,error:'Seri yolda en fazla 12 kontak kullanılabilir.'};
+   const path=rung.paths[p],at=target.i==null?path.length:index(target.i);
+   if(!Number.isSafeInteger(at)||at>path.length||path.length>=12)return {ok:false,error:'Seri yolda en fazla 12 kontak kullanılabilir.'};
    const ref=Number.isInteger(limits.inputCount)&&limits.inputCount<1?'M1':'I1';
    path.splice(at,0,{type:tool.id,ref});
   }else{
