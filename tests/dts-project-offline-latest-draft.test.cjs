@@ -55,3 +55,20 @@ test('protected example remains locked after Save As download fallback',async()=
  assert.equal(result.download,true);assert.equal(result.requiresOpen,true);assert.equal(clicks,1);
  assert.equal(Projects.isProtected(protectedExample),true);assert.equal(Projects.isProtected(result.project),false);
 });
+
+test('mismatched IndexedDB project ID cannot override correct local draft',async()=>{
+ const store=Projects.create({storage:memory(JSON.stringify(base())),indexedDB:indexedDBWith({...base(),projectId:'other'}),env:{}});
+ assert.equal((await store.get('p1')).projectId,'p1');
+});
+test('mismatched local project ID cannot override correct IndexedDB draft',async()=>{
+ const store=Projects.create({storage:memory(JSON.stringify({...base(),projectId:'other'})),indexedDB:indexedDBWith(base()),env:{}});
+ assert.equal((await store.get('p1')).projectId,'p1');
+});
+test('mismatched project ID without valid backup is rejected',async()=>{
+ const store=Projects.create({storage:memory(null),indexedDB:indexedDBWith({...base(),projectId:'other'}),env:{}});
+ await assert.rejects(store.get('p1'),/kimliği uyuşmuyor/);
+});
+test('matching project IDs retain normal restore behavior',async()=>{
+ const store=Projects.create({storage:memory(JSON.stringify(base())),indexedDB:indexedDBWith(base()),env:{}});
+ assert.equal((await store.get('p1')).projectId,'p1');
+});
