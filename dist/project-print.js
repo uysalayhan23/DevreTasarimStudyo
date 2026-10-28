@@ -5,7 +5,9 @@
   if(!rect||!Number.isFinite(pad)||pad<0||pad>500)return null;
   const v=[rect.x,rect.y,rect.width,rect.height].map(Number);
   if(!v.every(Number.isFinite)||v[2]<=0||v[3]<=0||v[2]>20000||v[3]>20000)return null;
-  return {x:v[0]-pad,y:v[1]-pad,width:v[2]+2*pad,height:v[3]+2*pad};
+  const out={x:v[0]-pad,y:v[1]-pad,width:v[2]+2*pad,height:v[3]+2*pad};
+  if(!Object.values(out).every(Number.isFinite)||out.x+out.width===out.x||out.y+out.height===out.y)return null;
+  return out;
  }
  function prepare(doc,svg,scene,title){
   if(!doc?.createElement||!doc?.body||!svg?.cloneNode||!scene?.getBBox)
