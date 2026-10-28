@@ -21,7 +21,7 @@
  // V1 FBD and LAD share the same native rung model; edits are draft copies only.
  function editStructure(program,action,position,limits={}){
   const branch=action==='add-path'||action==='remove-path';
-  const contact=action==='add-contact'||action==='remove-contact';
+  const contact=action==='add-contact'||action==='add-contact-before'||action==='remove-contact';
   if(!branch&&!contact)return {ok:false,error:'FBD işlem türü bilinmiyor.'};
   const syntax=branch?/^(0|[1-9]\d*):(0|[1-9]\d*)$/:/^(0|[1-9]\d*):(0|[1-9]\d*):(0|[1-9]\d*)$/;
   if(typeof position!=='string'||!syntax.test(position))return {ok:false,error:'FBD konum biçimi hatalı.'};
@@ -31,13 +31,14 @@
   if(!valid?.ok)return {ok:false,error:valid?.error||'Geçersiz Ladder programı.'};
   const paths=program.rungs[r]?.paths,series=paths?.[p];
   if(!series)return {ok:false,error:'Belirtilen FBD yolu yok.'};
-  if(contact&&(c<0||(action==='add-contact'&&series.length===0?c!==0:c>=series.length)))return {ok:false,error:'Belirtilen FBD kontağı yok.'};
-  if(action==='add-contact'&&series.length>=12)return {ok:false,error:'En fazla 12 seri kontak.'};
+  if(contact&&(c<0||(['add-contact','add-contact-before'].includes(action)&&series.length===0?c!==0:c>=series.length)))return {ok:false,error:'Belirtilen FBD kontağı yok.'};
+  if(['add-contact','add-contact-before'].includes(action)&&series.length>=12)return {ok:false,error:'En fazla 12 seri kontak.'};
   if(action==='add-path'&&paths.length>=8)return {ok:false,error:'En fazla 8 paralel yol.'};
   if(action==='remove-path'&&paths.length===1)return {ok:false,error:'Son yol silinemez.'};
   const draft=JSON.parse(JSON.stringify(program)),out=draft.rungs[r].paths;
   const fresh={type:'NO',ref:Number.isInteger(limits.inputCount)&&limits.inputCount<1?'M1':'I1'};
   if(action==='add-contact')out[p].splice(out[p].length?c+1:0,0,fresh);
+  if(action==='add-contact-before')out[p].splice(c,0,fresh);
   if(action==='remove-contact')out[p].splice(c,1);
   if(action==='add-path')out.splice(p+1,0,[fresh]);
   if(action==='remove-path')out.splice(p,1);
@@ -130,7 +131,8 @@
   const id=Number.isInteger(opts.index)?opts.index:0;
   const lines=paths.map((path,pi)=>{
    const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span><button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
-    ('<button type="button" class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
+    ('<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact-before" data-fbd-position="'+id+':'+pi+':'+ci+'" '+(path.length>=12?'disabled':'')+' aria-label="'+escape(c.ref+' kontağının önüne yeni kontak ekle')+'">+ Önüne</button>'+
+    '<button type="button" class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
    return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+(path.length?contacts:'<span class="dts-fbd-empty-path">BOŞ KONTAK · devre açık</span>')+' <span class="dts-fbd-gate">'+(path.length===0?'AÇIK':path.length>1?'AND':'PASS')+'</span>'+ '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact" data-fbd-position="'+id+':'+pi+':'+(path.length?path.length-1:0)+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
     '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-path" data-fbd-position="'+id+':'+pi+'" '+(paths.length>=8?'disabled':'')+'>+ Paralel</button>'+
     (paths.length>1?'<button type="button" class="dts-fbd-structure dts-fbd-remove" data-fbd-structure="remove-path" data-fbd-position="'+id+':'+pi+'">Yolu sil</button>':'')+'</div>';

@@ -136,6 +136,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |
 | 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV + 2B SVG devresi için tarayıcıda **Yazdır → PDF olarak kaydet** akışı; doğrudan PDF binary, harici görselli PNG ve pano 3B ile Windows Edge kabulü açık |
 
+### 28 Ekim — Madde 23: FBD kontakları seçili konuma ekleme
+
+**Gerçek açık kusur:** FBD görünümündeki `+ Seri` düğmesi yalnız seri kolun sonuna kontak ekliyordu; bir kontağın **önüne veya iki kontak arasına** doğrudan eklemek mümkün değildi. `dist/fbd-view.js` içindeki özgün `editStructure` artık `add-contact-before` komutuyla belirtilen pozisyondan hemen önce yeni NO kontağı ekler. Açık/boş yol için indeks 0, 12 kontak tavanı, 8 paralel yol, geçerli sanal I/M adresleri ve kaynak programın değiştirilmemesi kuralları korunur; `Ladder.validate` doğrular ve gerçek `Ladder.scan` AND davranışı hedefli test edilmiştir. FBD ekranında her kontak için erişilebilir `+ Önüne` düğmesi bulunur; mevcut `+ Seri`, `− Kontak`, Undo/Redo ve kayıtlı program ayrımı korunur. Yeni 6 senaryo + mevcut 4 FBD test dosyasının kontrolleri V8 PASS; bağımsız Node ve gerçek Windows/Edge UI kabulü **NOT_RUN/REVIEW**. FBD tam serbest blok editörü hâlâ **KISMİ**.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi
