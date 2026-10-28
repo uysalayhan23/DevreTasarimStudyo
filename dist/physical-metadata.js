@@ -455,7 +455,8 @@
       if(typeof mapping.terminalSourceUrl!=='string'||!/^https:\/\//.test(mapping.terminalSourceUrl))return {ok:false,reason:'terminalSourceUrl'};
       const entries=Object.entries(mapping.terminalAnchors||{});
       if(!entries.length)return {ok:false,reason:'terminalAnchors'};
-      for(const [,a] of entries)if(!a||!Number.isFinite(a.xMm)||!Number.isFinite(a.yMm)||a.xMm<0||a.yMm<0||!['top','bottom','left','right'].includes(a.side))return {ok:false,reason:'terminalAnchor'};
+      const product=products[mapping.productKey];
+      for(const [,a] of entries)if(!a||!Number.isFinite(a.xMm)||!Number.isFinite(a.yMm)||a.xMm<0||a.yMm<0||a.xMm>product.widthMm||a.yMm>product.heightMm||!['top','bottom','left','right'].includes(a.side))return {ok:false,reason:'terminalAnchor'};
     }
     return {ok:true};
   }
