@@ -96,7 +96,7 @@
     // A visual snap is not an electrical connection until both endpoint IDs
     // resolve to real catalog terminals or existing junctions.
     // Damaged catalog pin arrays must never enter the electrical net analyzer.
-    if(project.components.some(c=>!Array.isArray(byId[c.typeId]?.pins)||byId[c.typeId].pins.some(p=>!p||typeof p.id!=='string')))
+    if(project.components.some(c=>Array.isArray(byId[c.typeId]?.pins)&&byId[c.typeId].pins.some(p=>!p||typeof p.id!=='string')))
       return {ok:false,reason:'Katalog terminal listesi eksik veya bozuk.'};
     const endpointValid=r=>!!r&&typeof r==='object'&&(
       (typeof r.j==='string'&&!!r.j&&!r.c&&!r.p&&(project.junctions||[]).some(j=>j.id===r.j))||
