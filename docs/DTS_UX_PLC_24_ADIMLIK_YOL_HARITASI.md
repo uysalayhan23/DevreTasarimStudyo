@@ -164,6 +164,10 @@ Sanal PLC operatör paneli daha önce yalnız `!!c.ladderProgram` durumuyla “k
 
 `dist/component-terminal-draft.js` daha önce ilk `.dtscomponent` dosyası okunurken ikinci dosya seçildiğinde iki okumanın da aynı `source` ve `draft` referanslarını taşıması nedeniyle **ilk dosyanın geç biten okumasını kabul edebiliyordu**. Yeni `importSerial` ve saf `importContextMatches` denetimi yalnız son dosyayı kabul eder; modal kapanma/açılma, malzeme değişimi, katalogdan sıfırlama ve X/Y yerleşim düzenlemesi sırasında geç dönen okuma taslağa dokunamaz. `tests/dts-terminal-import-latest-file.test.cjs` yeni 4, mevcut terminal taslağı regresyonlarından 4 toplam **8/8 hedefli V8 PASS**. Taslak yalnız önizlemedir; katalogya kayıt, native devre ve fiziksel 3D pin-kablo hizası **HOLD/REVIEW**. Gerçek Windows/Edge dosya seçimi **NOT_RUN**. Madde 21 **KISMİ**.
 
+### 28 Ekim — Madde 22: Dashboard son seçilen projenin açılması
+
+İki proje kartı kısa aralıklarla seçildiğinde önceki kartın asenkron okuması sonradan sonuçlanıp en son seçimi ezebiliyordu. `dist/dashboard-open-requests.js` güncel istek belirtecini korur; `dist/studio.js` proje kartı için hem `await preserve()` sonrası hem `await store.readEntry/get()` sonrası token, Dashboard ve güvenlik kapısı kontrol eder. Başka proje oluşturma, dosya açma, eve dönme veya yükleme bekleyen isteği iptal eder. `aria-busy` korunarak kart yükleme sürecinde işaretlenir. `tests/dts-dashboard-latest-project-request.test.cjs`: **5/5 V8 hedefli regresyon PASS**. Gerçek Windows/Edge disk/klasör izin denemesi **NOT_RUN/REVIEW**; 22. madde KISMİ. Salt okunur örnekler ve eski dört atölye kilidi korunur.
+
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
 ### 28 Ekim — FBD tür değiştirmede boş zamanlayıcı/sayaç adresi seçimi

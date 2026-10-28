@@ -24,6 +24,8 @@
   }
   if(!E||!W||!Projects||!window.DTSSafety){startupFault('Gerekli uygulama modüllerinden biri yüklenemedi. Paket eski, eksik veya karışmış olabilir.');return}
   const store=Projects.create(),safety=window.DTSSafety.create({document,storage:localStorage});
+  const projectRequests=window.DTSDashboardOpenRequests?.create?.();
+  if(!projectRequests){startupFault('Dashboard proje seçim denetleyicisi yüklenemedi.');return}
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let isHome=true,saveQueue=Promise.resolve(),scanToken=0,diskEntries=[],templateOriginal=null,fileDirty=false;
   const protectedProject=()=>Projects.isProtected(E.getProject());
@@ -45,7 +47,7 @@
     if(isHome||Projects.isProtected(project)||project.tutorialLesson)return saveQueue;const data=Projects.clean(project);
     saveQueue=saveQueue.then(()=>store.put(data)).catch(e=>{E.toast('Taslak kaydedilemedi: '+e.message)});return saveQueue;
   }
-  async function home(){window.DTSArduinoIDE?.closeSerialMonitor?.();E.stop();await checkpoint(E.getProject());isHome=true;document.body.classList.remove('tutorial-active');$('#dashboard').hidden=false;document.body.classList.add('dashboard-open');document.querySelector('.topbar').inert=true;document.querySelector('.app-shell').inert=true;$('#resumeProject').hidden=!E.getProject().projectId;await renderProjects();$('#dashboard').scrollTop=0}
+  async function home(){projectRequests.invalidate();window.DTSArduinoIDE?.closeSerialMonitor?.();E.stop();await checkpoint(E.getProject());isHome=true;document.body.classList.remove('tutorial-active');$('#dashboard').hidden=false;document.body.classList.add('dashboard-open');document.querySelector('.topbar').inert=true;document.querySelector('.app-shell').inert=true;$('#resumeProject').hidden=!E.getProject().projectId;await renderProjects();$('#dashboard').scrollTop=0}
   function showLegacyCircuitWarning(project){
     const found=Projects.compatibilityWarnings?.(project)||[];
     if(!found.length)return;
@@ -57,11 +59,11 @@
     const close=()=>{modal.hidden=true;confirm.textContent='Onayla';cancel.textContent='İptal'};
     confirm.onclick=close;cancel.onclick=close;modal.hidden=false;
   }
-  function load(project){templateOriginal=null;E.load(project);templateOriginal=Projects.isProtected(project)?Projects.clean(E.getProject()):null;markClean();showEditor();if(project.preferredAppearance==='material')E.setAppearance('material');templateUI();checkpoint(E.getProject());showLegacyCircuitWarning(project)}
+  function load(project){projectRequests.invalidate();templateOriginal=null;E.load(project);templateOriginal=Projects.isProtected(project)?Projects.clean(E.getProject()):null;markClean();showEditor();if(project.preferredAppearance==='material')E.setAppearance('material');templateUI();checkpoint(E.getProject());showLegacyCircuitWarning(project)}
   async function preserve(){E.stop();if(!isHome)await checkpoint(E.getProject())}
   function createProject(mode){
     if(safety.visible)return;
-    mode=W.normalize(mode);const title=modeName(mode),defaults={control:'Kumanda Devrem',building:'Tesisat Devrem',panel:'Eğitim Panom',arduino:'Arduino Projem'};
+    projectRequests.invalidate();mode=W.normalize(mode);const title=modeName(mode),defaults={control:'Kumanda Devrem',building:'Tesisat Devrem',panel:'Eğitim Panom',arduino:'Arduino Projem'};
     $('#modalTitle').textContent='Yeni proje';$('#modalBody').innerHTML=`<p>${esc(title)}</p><label>Proje adı<input id="newProjectName" maxlength="100" value="${esc(defaults[mode]||title||'Yeni Proje')}"></label>`;$('#modal').hidden=false;$('#newProjectName').focus();
     $('#modalConfirm').onclick=async()=>{
       const name=$('#newProjectName').value.trim()||title||'Yeni Proje';$('#modal').hidden=true;
@@ -81,11 +83,21 @@
     const date=value=>{const d=new Date(value);return Number.isNaN(d.getTime())?'':d.toLocaleDateString('tr-TR',{day:'2-digit',month:'short',year:'numeric'})};
     const card=(p,key,source)=>`<button class="project-card" data-project-key="${esc(key)}" data-project-source="${source}"><span class="project-mode ${W.normalize(p.workspaceMode)}">${p.workspaceMode==='panel'?'▤':p.workspaceMode==='building'?'⌂':'⌁'}</span><span class="project-card-text"><strong>${esc(p.name||'Adsız proje')}</strong><span>${esc(modeName(p.workspaceMode))}</span><small>${source==='disk'?'Klasör dosyası':'Tarayıcı taslağı'} · ${esc(date(p.updatedAt))}</small></span><b>↗</b></button>`;
     $('#projectCards').innerHTML=diskEntries.map(e=>card(e.project,e.key,'disk')).join('')+drafts.map(p=>card(p,p.id,'draft')).join('')||'<div class="projects-empty">Henüz proje yok. Yukarıdan bir tasarım alanı seçerek ilk projeni oluştur.</div>';
-    for(const b of document.querySelectorAll('[data-project-key]'))b.onclick=async()=>{try{await preserve();const p=b.dataset.projectSource==='disk'?await store.readEntry(diskEntries.find(e=>e.key===b.dataset.projectKey),true):await store.get(b.dataset.projectKey);if(!p)throw Error('Proje taslağı bulunamadı.');load(p)}catch(e){E.toast(e.message)}};
+    for(const b of document.querySelectorAll('[data-project-key]'))b.onclick=async()=>{
+      const ticket=projectRequests.begin();b.disabled=true;b.setAttribute('aria-busy','true');
+      try{
+       await preserve();
+       if(!projectRequests.isCurrent(ticket)||!isHome||safety.visible)return;
+       const p=b.dataset.projectSource==='disk'?await store.readEntry(diskEntries.find(e=>e.key===b.dataset.projectKey),true):await store.get(b.dataset.projectKey);
+       if(!projectRequests.isCurrent(ticket)||!isHome||safety.visible)return;
+       if(!p)throw Error('Proje taslağı bulunamadı.');load(p);
+      }catch(e){if(projectRequests.isCurrent(ticket))E.toast(e.message)}
+      finally{b.disabled=false;b.removeAttribute('aria-busy')}
+    };
     $('#resumeProject').hidden=!(E.getProject().components.length||E.getProject().panel?.items?.length||store.list().some(p=>p.id===E.getProject().projectId));
   }
   async function chooseFolder(){try{const result=await store.chooseFolder();if(result.fallback){$('#projectFolderInput').click();return}if(!result.cancelled)await renderProjects()}catch(e){if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#projectFolderInput').click();return}E.toast('Klasör açılamadı: '+e.message)}}
-  async function open(){if(safety.visible)return;try{const result=await store.openFile();if(result.fallback){$('#fileInput').click();return}if(result.cancelled)return;await preserve();load(result.project)}catch(e){if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#fileInput').click();return}E.toast('Proje açılamadı: '+e.message)}}
+  async function open(){if(safety.visible)return;projectRequests.invalidate();try{const result=await store.openFile();if(result.fallback){$('#fileInput').click();return}if(result.cancelled)return;await preserve();load(result.project)}catch(e){if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#fileInput').click();return}E.toast('Proje açılamadı: '+e.message)}}
   async function save(saveAs=false){
     if(isHome||safety.visible)return;if(!saveAs&&protectedNotice())return;const project=protectedProject()&&templateOriginal?Projects.clean(templateOriginal):E.getProject(),button=saveAs?$('#exportBtn'):$('#saveBtn');if(button.disabled)return;button.disabled=true;
     try{const result=await store.save(project,{saveAs});if(result.cancelled){E.toast('Kaydetme iptal edildi; mevcut proje değişmedi.');return}if(result.requiresOpen){markClean();E.toast('Kopya indirildi. Düzenlemek için Dosya Aç ile indirdiğiniz kopyayı açın.');return}if(saveAs&&result.saved){load(result.project);markClean();E.toast('Kopya kaydedildi. Artık düzenleyebilirsiniz.')}else{markClean();E.toast(result.saved?result.name+' dosyasına kaydedildi.':'Dosya indirildi. Tarayıcı indirme klasörünü kontrol edin.')}localStorage.setItem('ods-project',JSON.stringify(Projects.clean(E.getProject())))}catch(e){E.toast('Kaydedilemedi: '+e.message)}finally{button.disabled=false}
