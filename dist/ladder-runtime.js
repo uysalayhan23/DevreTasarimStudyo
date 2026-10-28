@@ -141,6 +141,8 @@
  }
  function blank(){return {version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};}
  function supportedPLC(d){
+  const terminals=d?.pins||[];
+  if(!Array.isArray(terminals)||terminals.some(p=>!p||typeof p.id!=='string'||!p.id)||new Set(terminals.map(p=>p.id)).size!==terminals.length)return false;
   return !!d&&d.id==='plc-hw-6es7211-1ae40-0xb0'&&d.isPLC===true&&
    (d.pins||[]).filter(p=>p.signalType==='DI').length===6&&
    (d.pins||[]).filter(p=>p.signalType==='DO').length===4&&
