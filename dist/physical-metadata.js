@@ -423,7 +423,7 @@
     if(!VALID_VISUAL_ORIENTATION.has(mapping.visualOrientationStatus))return {ok:false,reason:'visualOrientationStatus'};
     if(!VALID_TERMINAL_STATUS.has(mapping.terminalGeometryStatus))return {ok:false,reason:'terminalGeometryStatus'};
     if(mapping.terminalIdentityStatus!==undefined&&!VALID_TERMINAL_IDENTITY_STATUS.has(mapping.terminalIdentityStatus))return {ok:false,reason:'terminalIdentityStatus'};
-    if(['verified','partial'].includes(mapping.terminalIdentityStatus)&&(typeof mapping.terminalIdentitySourceUrl!=='string'||!/^https:\/\//.test(mapping.terminalIdentitySourceUrl)))return {ok:false,reason:'terminalIdentitySourceUrl'};
+    if(['verified','partial'].includes(mapping.terminalIdentityStatus)&&(typeof mapping.terminalIdentitySourceUrl!=='string'||!/^https:\/\/[^/\s?#]+\.[^/\s?#]+(?:[/?#]|$)/i.test(mapping.terminalIdentitySourceUrl)))return {ok:false,reason:'terminalIdentitySourceUrl'};
     if(mapping.terminalIdentityStatus==='partial'){
       if(!Array.isArray(mapping.verifiedTerminalIds)||!mapping.verifiedTerminalIds.length)return {ok:false,reason:'verifiedTerminalIds'};
       const ids=new Set();for(const id of mapping.verifiedTerminalIds)if(typeof id!=='string'||!id||ids.has(id))return {ok:false,reason:'verifiedTerminalIds'};else ids.add(id);
