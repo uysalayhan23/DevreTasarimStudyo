@@ -96,6 +96,10 @@ Network `monitorRows` önce `powered!==true` sonucunu kontrol etmediğinden, pro
 
 Operatör paneli `_dtsLadderError` durumunda eski 0/1 sinyallerini gizlerken `ladder-editor.js` canlı Network `monitorRows` hesabı aynı hatayı kontrol etmiyordu. Hatalı sanal tarama sonrası kaydedilmiş eski `_dtsLadderTraces` ve `_dtsLadderMemory` üzerinden LAD/FBD kontak ve çıkışlar yanlışlıkla **AKTİF/yeşil** görünebiliyordu. `monitorRows` isteğe bağlı `scanError` parametresi ile canlı değerleri ve durum açıklamasını kapatır; ilk render `liveBits` ve 300 ms güncellemesindeki `bits` de eski hafıza renklerini göstermez. Simülasyon kapalı, enerji yok, gerçek taslak uyuşmazlığı ve geçerli TON/TOF/TP/CTU/CTD izleme korunur. `tests/dts-ladder-network-scan-fault.test.cjs` 6 yeni + mevcut timer/sayaç 8 ve besleme 4, toplam **18/18 hedefli V8 PASS**. Gerçek Windows/Edge ve bağımsız Node NOT_RUN/REVIEW. Golden, 703 katalog, 1686 ders, SC1194 HOLD korunur.
 
+### 28 Ekim — Madde 09/23: FBD şemasına tıklamada ilgili operand menüsüne odaklanma
+
+Önceki `activateDiagramTarget` FBD görünümündeki kontak veya çıkış sembolünde de LAD `data-field=contact-ref/coil-ref` alanına yönleniyordu; görünür FBD operandının odaklanması tutarsızdı. `focusDiagramOperand` aktif görünümde `data-fbd-contact-ref` ya da `data-fbd-coil-field=ref` alanını, LAD modunda özgün LAD alanını seçer. Çıkışı silinmiş NOP blokta adres olmadığı için komut menüsüne geçer. Geçersiz/taşmış konumlar ve diyalog dışı öğeler reddedilir. Yeni 9 ve mevcut FBD hedefli regresyonları V8 PASS; gerçek Windows/Edge odak ve dokunma kabulü REVIEW. `Simulation.solve`, 703 katalog, 1686 ders, Golden/PASS/HOLD ve SC1194 korunur; genel 09/23 KISMİ.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri

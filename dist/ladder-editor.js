@@ -171,6 +171,30 @@
   return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),
    draft:L?.validate(c.ladderProgram,{inputCount:pins(d,'DI').length,outputCount:pins(d,'DO').length}).ok?clone(c.ladderProgram):L.blank()};
  }
+ // Match a diagram symbol with the visible LAD or FBD operand editor.
+ function focusDiagramOperand(container,element,mode){
+  const node=element?.closest?.('[data-ladder-contact],[data-ladder-coil]');
+  if(!node||!container?.contains?.(node))return false;
+  const contact=node.dataset?.ladderContact,coil=node.dataset?.ladderCoil;
+  let selector='',fallback='';
+  if(typeof contact==='string'){
+   if(!/^(0|[1-9][0-9]*):(0|[1-9][0-9]*):(0|[1-9][0-9]*)$/.test(contact))return false;
+   const [r,p,c]=contact.split(':').map(Number);
+   if(![r,p,c].every(Number.isSafeInteger))return false;
+   selector=mode==='fbd'?'select[data-fbd-contact-ref="'+contact+'"]':
+    'select[data-field="contact-ref"][data-r="'+r+'"][data-p="'+p+'"][data-c="'+c+'"]';
+  }else{
+   if(typeof coil!=='string'||!/^(0|[1-9][0-9]*)$/.test(coil))return false;
+   const r=Number(coil);if(!Number.isSafeInteger(r))return false;
+   selector=mode==='fbd'?'select[data-fbd-coil-field="ref"][data-r="'+r+'"]':
+    'select[data-field="coil-ref"][data-r="'+r+'"]';
+   fallback=mode==='fbd'?'select[data-fbd-coil-field="type"][data-r="'+r+'"]':
+    'select[data-field="coil-type"][data-r="'+r+'"]';
+  }
+  const target=container.querySelector(selector)||(fallback?container.querySelector(fallback):null);
+  if(!target||target.disabled||typeof target.focus!=='function')return false;
+  target.focus();return true;
+ }
  function init(doc=root.document,editor=root.DTSEditor){
   const btn=doc?.getElementById?.('dtsLadderBtn');
   if(!btn||!L||!editor)return false;
@@ -414,18 +438,7 @@
    active.history.push(active.draft);render();
   }
   function activateDiagramTarget(element){
-   const node=element?.closest?.('[data-ladder-contact],[data-ladder-coil]');
-   if(!node||!overlay.contains(node))return false;
-   let target=null;
-   const encoded=node.dataset.ladderContact;
-   if(encoded){
-    const [r,p,c]=encoded.split(':').map(Number);
-    target=overlay.querySelector('select[data-field="contact-ref"][data-r="'+r+'"][data-p="'+p+'"][data-c="'+c+'"]');
-   }else{
-    target=overlay.querySelector('select[data-field="coil-ref"][data-r="'+Number(node.dataset.ladderCoil)+'"]');
-   }
-   if(target){target.focus();return true}
-   return false;
+   return focusDiagramOperand(overlay,element,diagramMode);
   }
   overlay.addEventListener('click',e=>{
    const structure=e.target.closest?.('[data-fbd-structure]');
@@ -559,7 +572,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
