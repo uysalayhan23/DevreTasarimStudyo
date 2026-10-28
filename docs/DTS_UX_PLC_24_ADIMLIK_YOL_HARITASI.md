@@ -72,6 +72,10 @@ Sanal Ladder V1'de FBD/PLC taslağı CTU C1'den CTD C1'e değiştirilirse öncek
 | 14 | Canlı Ladder sinyal/aktif kontak/timer/sayaç izleme | **KISMİ**: rung aktivite işareti var; tam mantık yolu, timer değeri ve UI testleri açık |
 | 15 | Ladder kaydet/aç/örnek program kütüphanesi | **KISMİ/KOD**: DTS `.dtsladder` dosyası ve **dört özgün hedefli native testli örnek** (Start/Stop, TON, CTU, ileri/geri kilit) editörde yalnız taslağa yüklenir; Windows Edge / dosya seçici kabulü açık |
 
+### 28 Ekim — Madde 14: canlı TON/TOF/TP ilerleme ve CTU/CTD hedef takibi
+
+**Gerçek eksik:** Native `Ladder.scan` gerçek sayacın `count` bilgisini üretse de `TON/TOF/TP` için geçen süreyi `traces` içine kaydetmiyor; LAD/FBD ortak editör izlemesi yalnız `0/1` ve hedefi gösterilmeyen sayaç değerini yazıyordu. **Hedefli geliştirme:** `dist/ladder-runtime.js` her zamanlayıcı Network'ünün gerçek tarama anındaki `elapsedMs` süresini (süre başlangıcı yoksa `null`, süre dolmuşsa preset ile sınırlı) ekler; `dist/ladder-editor.js` aynı kayıtlı/simüle edilen programın izini `TON 35/100 ms` ve `Sayaç 1/3` biçiminde görüntüler. TOF aktif girişte bekleme, pasif girişte geçen gecikme; TP darbe süresi; CTU/CTD sayım hedefi, çıktı davranışı değişmeden test edildi. Duran/enerjisiz, kaydedilmemiş taslaklarda sahte canlı veri yoktur. `tests/dts-ladder-live-timer-counter-progress.test.cjs` içindeki **8 hedefli V8 regresyon senaryosu PASS**; bağımsız Node çalıştırması **NOT_RUN**, Windows/Edge görseli ve 3D/elektriksel `Simulation.solve` bağımsız kabulü **REVIEW**. **Madde 14 KISMİ**; 08/15/20/23 ve diğer 24 kabul maddeleri ayrı açık kalmaya devam eder.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |

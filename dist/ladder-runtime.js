@@ -105,7 +105,14 @@
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
     bits[ref]=next;written.add(ref);
    }
-   traces.push({id:rung.id,active,pathStates,coil:ref,value:!!bits[ref],count:states[ref]?.count??null});
+   const trace={id:rung.id,active,pathStates,coil:ref,value:!!bits[ref],count:states[ref]?.count??null};
+   if(['TON','TOF','TP'].includes(coil.type)){
+    const state=states[ref]||{};
+    const started=coil.type==='TON'?state.start:coil.type==='TOF'?state.offStart:state.pulseStart;
+    // Snapshot the elapsed value at this rung; later RESETs must not rewrite its trace.
+    trace.elapsedMs=Number.isFinite(started)?Math.max(0,Math.min(coil.presetMs,now-started)):null;
+   }
+   traces.push(trace);
   }
   const physical={};for(let i=1;i<=(Number.isInteger(limits.outputCount)?limits.outputCount:16);i++)physical['Q'+i]=!!bits['Q'+i];
   mem.values=bits;mem.blocks=states;mem.lastTime=now;

@@ -92,6 +92,9 @@
   return rows.map(r=>{
    const t=live?byId.get(r.id):null;
    return {active:!!t?.active,value:t?!!t.value:null,count:Number.isInteger(t?.count)?t.count:null,
+    type:r.coil.type,preset:['CTU','CTD'].includes(r.coil.type)?r.coil.preset:null,
+    presetMs:['TON','TOF','TP'].includes(r.coil.type)?r.coil.presetMs:null,
+    elapsedMs:Number.isFinite(t?.elapsedMs)?t.elapsedMs:null,
     pathStates:Array.isArray(t?.pathStates)&&t.pathStates.length===r.paths.length?t.pathStates.map(Boolean):null,
     status:!running?'Simülasyon kapalı':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
   });
@@ -119,7 +122,16 @@
   }
   return false;
  }
- function signalText(row){return row.value===null?'—':(row.value?'1':'0')+(row.count===null?'':' · Sayaç '+row.count);}
+ function signalText(row){
+  if(row.value===null)return '—';
+  const value=row.value?'1':'0';
+  if(row.count!==null)return value+' · Sayaç '+row.count+
+   (Number.isInteger(row.preset)?'/'+row.preset:'');
+  if(['TON','TOF','TP'].includes(row.type)&&Number.isInteger(row.presetMs))
+   return value+' · '+row.type+' '+
+    (row.elapsedMs===null?'hazır':row.elapsedMs+'/'+row.presetMs+' ms');
+  return value;
+ }
  function stateFor(c,editor){
   const d=editor.byId[c.typeId];
   return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),
