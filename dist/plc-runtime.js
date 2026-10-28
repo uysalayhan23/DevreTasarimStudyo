@@ -398,10 +398,14 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   }else if(volts>=on)c._sc999Cooling=true;
   else if(volts<=off)c._sc999Cooling=false;
  }
- if(!powered&&c.plcProgram==='dts-ladder-v1')delete c._dtsLadderMemory;
+ // CPU power loss must not perform a hidden Ladder scan or retain stale traces.
+ if(!powered&&c.plcProgram==='dts-ladder-v1'){
+  delete c._dtsLadderMemory;c._dtsLadderTraces=[];
+ }
  const outputPins=pins(d,'DO');
  const allowed=c.plcProgram!=='dts-ladder-v1'||Ladder?.supportedPLC?.(d)===true;
- const prg=allowed?program(c,inputs,outputPins,now,options.program):
+ const ladderUnpowered=c.plcProgram==='dts-ladder-v1'&&!powered;
+ const prg=allowed&&!ladderUnpowered?program(c,inputs,outputPins,now,options.program):
   {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(p=>[p.id,false]))};
  if(!allowed){
   c._dtsLadderError='PLC terminali ve simülasyonu henüz doğrulanmadı.';

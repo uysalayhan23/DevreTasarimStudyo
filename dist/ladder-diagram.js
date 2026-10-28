@@ -13,8 +13,11 @@
   const coilX=joinX+124,rightX=coilX+119,width=rightX+35;
   const rows=Math.max(1,paths.length),height=Math.max(172,128+(rows-1)*78),top=80;
   const live=options.live===true&&options.values&&typeof options.values==='object';
-  const pathLive=paths.map(p=>live&&pathState(p,options.values));
+  // Actual scan trace overrides end-of-scan memory for every network.
+  const traced=Array.isArray(options.pathStates)&&options.pathStates.length===paths.length;
+  const pathLive=paths.map((p,i)=>live&&(traced?options.pathStates[i]===true:pathState(p,options.values)));
   const energized=pathLive.some(Boolean),wireClass=energized?'dts-ladder-wire-hot':'dts-ladder-wire';
+  const coilOn=typeof options.coilValue==='boolean'?live&&options.coilValue:energized;
   const coil=rung?.coil||{},blocks=new Set(['TON','TOF','TP','CTU','CTD']);
   const bits=[];
   bits.push('<svg class="dts-ladder-svg" role="img" aria-label="'+escape('Network '+(Number.isInteger(options.index)?options.index+1:1)+': '+(rung?.id||'')+(live?', canlı sinyaller':'') )+'" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'" xmlns="http://www.w3.org/2000/svg">');
@@ -46,7 +49,7 @@
    bits.push(line(prev,y,joinX,y,cls));
   });
   if(blocks.has(coil.type)){
-   bits.push('<g class="dts-ladder-function-block'+(energized?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.type||'')+' '+(coil.ref||'')+' bloğunu düzenle')+'">');
+   bits.push('<g class="dts-ladder-function-block'+(coilOn?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.type||'')+' '+(coil.ref||'')+' bloğunu düzenle')+'">');
    bits.push('<rect x="'+(coilX-57)+'" y="'+(top-31)+'" width="114" height="64" rx="2"/>');
    bits.push(text(coilX,top-10,coil.type,'dts-ladder-block-type'));
    bits.push(text(coilX,top+8,coil.ref||'?','dts-ladder-ref'));
@@ -54,7 +57,7 @@
    bits.push(text(coilX,top+25,preset,'dts-ladder-block-detail'));
    bits.push('</g>');
   }else{
-   bits.push('<g class="dts-ladder-coil-symbol'+(energized?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.ref||'')+' bobinini düzenle')+'">');
+   bits.push('<g class="dts-ladder-coil-symbol'+(coilOn?' dts-ladder-path-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+(Number.isInteger(options.index)?options.index:0)+'" aria-label="'+escape((coil.ref||'')+' bobinini düzenle')+'">');
    bits.push('<path d="M '+(coilX-19)+' '+(top-21)+' Q '+(coilX-34)+' '+top+' '+(coilX-19)+' '+(top+21)+' M '+(coilX+19)+' '+(top-21)+' Q '+(coilX+34)+' '+top+' '+(coilX+19)+' '+(top+21)+'"/>');
    bits.push(text(coilX,top-31,coil.ref||'?','dts-ladder-ref'));
    if(coil.type==='SET'||coil.type==='RESET')bits.push(text(coilX,top+4,coil.type==='SET'?'S':'R','dts-ladder-block-type'));

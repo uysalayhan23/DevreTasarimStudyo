@@ -45,7 +45,9 @@
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
   for(const rung of source.rungs){
-   const active=rung.paths.some(path=>path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
+   // Preserve path truth at the exact scan point, before later coils change shared bits.
+   const pathStates=rung.paths.map(path=>path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
+   const active=pathStates.some(Boolean);
    const coil=rung.coil,ref=coil.ref;
    let next=false;
    if(coil.type==='OUT'){next=active;bits[ref]=next;written.add(ref);}
@@ -75,7 +77,7 @@
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
     bits[ref]=next;written.add(ref);
    }
-   traces.push({id:rung.id,active,coil:ref,value:!!bits[ref],count:states[ref]?.count??null});
+   traces.push({id:rung.id,active,pathStates,coil:ref,value:!!bits[ref],count:states[ref]?.count??null});
   }
   const physical={};for(let i=1;i<=(Number.isInteger(limits.outputCount)?limits.outputCount:16);i++)physical['Q'+i]=!!bits['Q'+i];
   mem.values=bits;mem.blocks=states;mem.lastTime=now;

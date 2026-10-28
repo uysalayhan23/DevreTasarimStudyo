@@ -68,6 +68,7 @@
   return rows.map(r=>{
    const t=live?byId.get(r.id):null;
    return {active:!!t?.active,value:t?!!t.value:null,count:Number.isInteger(t?.count)?t.count:null,
+    pathStates:Array.isArray(t?.pathStates)&&t.pathStates.length===r.paths.length?t.pathStates.map(Boolean):null,
     status:!running?'Simülasyon kapalı':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
   });
  }
@@ -156,7 +157,7 @@
     '<main class="dts-ladder-rungs">'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
       return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'"><div class="dts-ladder-rung-title"><strong>'+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div>'+
-       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+Diagram.render(r,{index:ri,live:!!liveBits,values:liveBits})+'</div>'+ 
+       '<div class="dts-ladder-diagram" data-diagram="'+ri+'">'+Diagram.render(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
@@ -212,9 +213,9 @@
        JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
      const bits=shown?active.c._dtsLadderMemory?.values:null;
      if(diagram){
-      const key=JSON.stringify([!!bits,bits||{},row.active,row.value]);
+      const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
       if(diagram.dataset.signalKey!==key){
-       diagram.innerHTML=Diagram.render(active.draft.rungs[i],{index:i,live:!!bits,values:bits});
+       diagram.innerHTML=Diagram.render(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value});
        diagram.dataset.signalKey=key;
       }
      }
