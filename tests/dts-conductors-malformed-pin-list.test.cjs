@@ -11,3 +11,7 @@ test('valid catalog pin arrays still allow connection',()=>assert.equal(Conducto
 test('missing terminal is rejected',()=>{
  const d=catalog();d.a.pins=[];assert.equal(Conductors.check(project(),d,...ends).ok,false);
 });
+
+test('null pin entry is safely rejected before network analysis',()=>{
+ const d=catalog();d.a.pins.push(null);assert.equal(Conductors.check(project(),d,...ends).ok,false);
+});
