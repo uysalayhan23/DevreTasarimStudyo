@@ -440,7 +440,7 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   delete c._dtsLadderMemory;c._dtsLadderTraces=[];
  }
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
- const outputSupplyValid=d?.id!=='plc-0-0-documented'||!!net.voltage(c,'X12:1','X12:2');
+ const outputSupplyValid=!['plc-0-0-documented','plc-hw-6es7211-1ae40-0xb0'].includes(d?.id)||Number(net.voltage(c,'X12:1','X12:2'))>0;
  if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;
  const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
  c._plcRuntime=state;c._active=powered;return state;
