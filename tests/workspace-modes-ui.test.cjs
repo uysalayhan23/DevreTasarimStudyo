@@ -20,9 +20,9 @@ function sample(){
    key:(key)=>{let prevented=false;handlers.keydown?.({key,preventDefault(){prevented=true}});return prevented},
    click:()=>buttonHandlers.click(),simulate:on=>{sim.classList.toggle('running',on);simHandlers.mutate()}};
 }
-test('sim starts focus, hides side panels, preserves original layout',()=>{
+test('simulation focus collapses library but preserves user properties preference',()=>{
  const x=sample();x.simulate(true);assert.equal(x.c.getState().focus,true);
- assert.deepEqual(x.panel(),{libraryCollapsed:true,propertiesVisible:false});
+ assert.deepEqual(x.panel(),{libraryCollapsed:true,propertiesVisible:true});
  assert.equal(x.body.classList.contains('dts-sim-focus'),true);
  assert.equal(x.badge.hidden,false);
 });
@@ -37,7 +37,7 @@ test('already collapsed panels remain collapsed after auto-focus',()=>{
  y.simulate(true);let before=y.panels.length;y.simulate(true);assert.equal(y.panels.length,before);
  y.simulate(false);assert.equal(y.c.getState().hasPanelSnapshot,false);
 });
-test('manual full mode hides both panels; restores on escape',()=>{
+test('manual full mode keeps accessible panels; restores on Escape',()=>{
  const x=sample();x.click();assert.equal(x.c.getState().full,true);
  assert.equal(x.body.classList.contains('dts-full-mode'),true);
  assert.equal(x.key('Escape'),true);assert.deepEqual(x.panel(),x.initial);
@@ -71,4 +71,27 @@ test('simulation-only changes presentation, not any editor project state',()=>{
 });
 test('disabled simulator does not activate focus',()=>{
  const x=sample();x.sim.disabled=true;x.simulate(true);assert.equal(x.c.getState().running,false);
+});
+
+test('exit fullscreen is permitted even when modal, safety or dashboard opens later',()=>{
+ for(const kind of ['modal','dashboard','safety']){
+  const x=sample();
+  assert.equal(x.click(),true);
+  if(kind==='modal')x.modal.hidden=false;
+  if(kind==='dashboard')x.body.classList.toggle('dashboard-open',true);
+  if(kind==='safety')x.win.DTSStudio.safety.visible=true;
+  assert.equal(x.click(),true,'must allow exiting despite '+kind);
+  assert.equal(x.c.getState().full,false);
+  assert.deepEqual(x.panel(),x.initial);
+ }
+});
+test('entering fullscreen remains blocked while modal, safety or dashboard is open',()=>{
+ for(const kind of ['modal','dashboard','safety']){
+  const x=sample();
+  if(kind==='modal')x.modal.hidden=false;
+  if(kind==='dashboard')x.body.classList.toggle('dashboard-open',true);
+  if(kind==='safety')x.win.DTSStudio.safety.visible=true;
+  assert.equal(x.click(),false);
+  assert.equal(x.c.getState().full,false);
+ }
 });

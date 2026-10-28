@@ -29,6 +29,10 @@ Bunların dışında 01–24 arasındaki tüm başlıklar korunacak; kanıtsız 
 
 `BASLAT.bat` açılışında `start "" "%INDEX%"` Windows varsayılan HTML ilişkilendirmesi görünür tarayıcı açmadan da başarı döndürebildiği için BAT dosyası Edge'e geçmeden kapanabiliyordu. Öncelik artık kurulu Edge yürütülebilir dosyası (gerekirse Chrome/Firefox), sonra varsayılan HTML ilişkilendirmesi ve eski URL/PowerShell yedekleridir. Yerel `dist/index.html`, `file:///`, smoke-test, paket bütünlüğü, görünür hata mesajı ve sunucusuz kullanım korunur. Eski 4 başlatıcı kontrolü ve yeni 3 hedefli regresyon kontrolü V8 PASS. Gerçek Windows/Edge BAT çift tıklama **REVIEW/NOT_RUN**; genel COMPLETE değil.
 
+### 28 Ekim — Madde 08 tam sayfa çıkışı ve sağ panel tercih regresyonu
+
+Çalışma alanı `toggleFull()` önce modal/güvenlik/dashboard engelini kontrol ettiğinden, tam sayfa **zaten açıkken** bir güvenlik veya ayar penceresi görünürse üstteki tam sayfa düğmesiyle standart görünüme dönmek engellenebiliyordu. Engel yalnız **tam sayfaya girerken** uygulanır; standart görünüme çıkış her zaman mümkün, Escape ve native fullscreen kapatma korunur. Eski `tests/workspace-modes-ui.test.cjs` sağ panelin simülasyonda zorla gizlenmesini bekliyordu; kullanıcı isteğiyle önceden düzeltilmiş `propertiesVisible` koruma davranışına uyarlandı. Toplam **12/12 hedefli V8 regresyon PASS**. Windows/Edge gerçek modal/tam ekran ve responsive piksel kabulü **REVIEW**; 08. madde KISMİ, devre/PLC/3D kabulü değişmez.
+
 ## Paket A — Çalışma alanı (8 madde)
 
 ### 28 Ekim — Kullanıcı Edge ekranına göre tam sayfa malzeme paneli ve PLC sanal simülasyon başlangıcı
