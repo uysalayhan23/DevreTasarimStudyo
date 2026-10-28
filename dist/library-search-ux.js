@@ -8,7 +8,8 @@
   function blocked(){
    return doc.body?.classList?.contains('dashboard-open')||
     env.DTSStudio?.isHome||env.DTSStudio?.safety?.visible||
-    doc.getElementById('modal')?.hidden===false;
+    doc.getElementById('modal')?.hidden===false||
+    doc.getElementById('dtsLadderOverlay')?.hidden===false;
   }
   doc.addEventListener('keydown',function(e){
    if(!(e.ctrlKey||e.metaKey)||e.altKey||String(e.key).toLowerCase()!=='k'||blocked())return;
@@ -16,6 +17,8 @@
    if(active&&active!==input&&
      (['INPUT','TEXTAREA','SELECT'].includes(active.tagName)||active.isContentEditable))return;
    e.preventDefault();
+   // Ctrl+K must reveal its target even if simulation focus collapsed the library.
+   if(doc.body?.classList?.contains('library-collapsed'))doc.body.classList.remove('library-collapsed');
    input.focus();
    if(input.value)input.select();
   });
