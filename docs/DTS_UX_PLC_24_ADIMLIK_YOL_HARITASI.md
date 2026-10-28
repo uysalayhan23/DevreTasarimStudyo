@@ -36,7 +36,7 @@
 | --- | --- | --- |
 | 16 | Bileşene tıklayınca kısa görev/terminal/parametre kartı | **KISMİ/KOD**: katalog ad/model/kind/gerçek ilk 8 terminal özeti; dinamik parametre öğreticisi ve Edge görsel kabulü açık |
 | 17 | Simülasyon durumu ve aktif enerji yollarını daha anlaşılır göster | **KISMİ**: eski DTS enerji yolu göstergeleri mevcut; tutarlı yeni UX ayrı |
-| 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **PLAN** |
+| 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **KISMİ/KOD**: salt okunur kablo ucu/katalog terminali ve silinmiş bileşen referansı taraması, sorun adıyla rapor; fiziksel kablo davranışı / ekran üstü vurgulama açık |
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |
 | 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV malzeme listesi; gerçek katalog miktarı ve referanslar; PDF/PNG, Windows Edge kabulü açık |
 
@@ -105,3 +105,7 @@ Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proj
 ### 28 Ekim — Çevrimdışı CSV malzeme listesi
 
 Şema `project.components` ve gerçek katalog `byId` alanları kullanılarak malzemeler tür kimliğine göre sayılır, katalog model/marka ve varsa referanslar kaydedilir. Fiyat, fiziksel uygunluk ve çalışır devre iddiası üretilmez. CSV'de formül hücresi enjeksiyonuna karşı güvenli metin kaçışı kullanılır. `dist/material-list.js` ve hedefli testleri eklendi. PDF/PNG ayrı açık; Windows/Edge görsel ve gerçek indirme testi REVIEW.
+
+### 28 Ekim — Kaynak temelli bağlantı denetimi
+
+`dist/wire-diagnostics.js` gerçek şemadaki kabloların `from/to` uçlarını `project.components`, `junctions`, `byId` katalog terminal kimlikleriyle karşılaştırır. Silinmiş bileşen, olmayan terminal/düğüm, eksik uç, aynı uç bağlantısı gibi doğrulanabilir referans sorunlarını gösterir. **Kabloları veya simülasyonu otomatik değiştirmez.** Sonuçta sorun yoksa yalnız kimliklerin tanındığını söyler; güvenli/devre çalışır/elektriksel doğru iddiası vermez. Madde 18 KISMİ; terminal vurgusu, Windows Edge ve fiziksel kabul ayrı.

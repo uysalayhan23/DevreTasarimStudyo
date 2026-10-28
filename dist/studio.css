@@ -1052,3 +1052,13 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-component-pins{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
 .dts-component-pin{background:#fff;color:#244760;font-size:11px;padding:4px 6px;border:1px solid #bfd3e0;border-radius:5px}
 .dts-component-foot{display:block;margin-top:8px}
+
+/* Read-only, manually refreshed wiring reference audit. No simulation state is modified. */
+.dts-wire-audit{margin:10px 10px 12px;padding:10px;border:1px solid #b9d1df;border-radius:8px;background:#f7fbfd}
+.dts-wire-audit button{border:1px solid #357998;border-radius:6px;background:#e7f4fa;color:#154967;padding:7px 10px;font-weight:650;cursor:pointer}
+.dts-wire-audit button:focus-visible{outline:2px solid #1687b2}
+.dts-wire-audit [hidden]{display:none!important}
+.dts-wire-audit #dtsWireCheckReport{max-height:200px;overflow:auto;font-size:12px;line-height:1.5}
+.dts-wire-audit ul{margin:5px 0 0;padding-left:19px}
+.dts-wire-audit li{margin-bottom:5px}
+.dts-wire-audit-ok{color:#296c55}
