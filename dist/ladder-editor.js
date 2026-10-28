@@ -128,7 +128,7 @@
     presetMs:['TON','TOF','TP'].includes(r.coil.type)?r.coil.presetMs:null,
     elapsedMs:Number.isFinite(t?.elapsedMs)?t.elapsedMs:null,
     pathStates:Array.isArray(t?.pathStates)&&t.pathStates.length===r.paths.length?t.pathStates.map(Boolean):null,
-    status:!running?'Simülasyon kapalı':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
+    status:!running?'Simülasyon kapalı':powered!==true?'PLC beslemesi yok':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
   });
  }
  // Stable control identities let rerenders keep keyboard focus on the same Ladder field.

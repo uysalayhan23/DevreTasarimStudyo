@@ -88,6 +88,10 @@ Son kontak silindiğinde Ladder V1 yolu artık güvenli açık devredir. Eski FB
 
 Sanal Ladder'da SET Q1 ile açılmış bir fiziksel Q çıkışının yazarı kaldırılıp yalnız pasif RESET Q1 kaldığında eski Q1 enerjili kalıyordu. RESET tek başına Q'yu sahiplenemez; artık gerçek OUT/SET yazarı bulunmayan Q çıkışı her yeni taramada sıfırlanır. Aynı programdaki geçerli SET+RESET kilidi, bağımsız M belleği ve zamanlayıcı/sayaç davranışı korunur. 7 yeni ve 10 mevcut hedefli V8 taraması **17/17 PASS**; bağımsız Node, gerçek Windows/Edge ve fiziksel Simulation.solve NOT_RUN/REVIEW. 703 katalog, 1686 ders ve SC1194 HOLD korunur.
 
+### 28 Ekim — Madde 14: enerjisiz sanal PLC için doğru Network durum metni
+
+Network `monitorRows` önce `powered!==true` sonucunu kontrol etmediğinden, program kayıtlı olduğu halde PLC enerjisizken yanıltıcı “Taslak izlenmiyor · kayıtlı program farklı” mesajını veriyordu. Enerji yok veya belirsiz ise açıkça “PLC beslemesi yok” gösterilir ve eski aktif sinyaller `—` olarak kalır; simülasyon kapalı ve gerçek taslak uyuşmazlığı açıklamaları korunur. Yeni 4 + mevcut 8 timer/sayaç izleme senaryosu **12/12 hedefli V8 PASS**. Windows/Edge görsel kabulü ve bağımsız Node NOT_RUN/REVIEW; 14. madde KISMİ.
+
 ## Paket B — PLC Ladder (7 madde)
 
 ### 28 Ekim — Ladder kontak seçicisinde tüm geçerli M/T/C adresleri
