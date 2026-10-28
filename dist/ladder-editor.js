@@ -66,6 +66,33 @@
   const checked=L.validate(draft,limits);
   return checked.ok?{ok:true,program:draft}:{ok:false,error:checked.error};
  }
+ // The + Seri button must use the same hardware-aware default as drag/drop.
+ function addSafeContact(program,r,p,limits={}){
+  return Toolbox.apply(program,'NO',{r,p,kind:'contact'},limits);
+ }
+ // Every LAD field edit is transactional: invalid addresses or numeric inputs
+ // must not poison the draft, its Undo history, or the next saved PLC program.
+ function editLadderField(program,field,r,p,c,value,limits={}){
+  const initial=L?.validate?.(program,limits);
+  if(!initial?.ok)return {ok:false,error:initial?.error||'Ladder taslağı geçersiz.'};
+  if(!Number.isSafeInteger(r)||r<0||r>=program.rungs.length)
+   return {ok:false,error:'Network konumu geçersiz.'};
+  if(field==='coil-type')return changeCoilType(program,r,value,limits);
+  const draft=clone(program),rung=draft.rungs[r];
+  if(field==='rung-comment')rung.comment=String(value??'').slice(0,100);
+  else if(field==='contact-type'||field==='contact-ref'){
+   if(!Number.isSafeInteger(p)||!Number.isSafeInteger(c)||p<0||c<0||!rung.paths[p]?.[c])
+    return {ok:false,error:'Kontak konumu geçersiz.'};
+   rung.paths[p][c][field==='contact-type'?'type':'ref']=value;
+  }else if(field==='coil-ref')rung.coil.ref=value;
+  else if(field==='presetMs'||field==='preset'){
+   if(!/^[1-9][0-9]*$/.test(String(value))||!Number.isSafeInteger(Number(value)))
+    return {ok:false,error:'Süre/hedef pozitif tam sayı olmalıdır.'};
+   rung.coil[field]=Number(value);
+  }else return {ok:false,error:'Bilinmeyen Ladder alanı.'};
+  const valid=L.validate(draft,limits);
+  return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
+ }
  function addSafeParallelPath(program,index,limits={}){
   if(!Number.isSafeInteger(index)||index<0||!program?.rungs?.[index]?.paths)
    return {ok:false,error:'Paralel eklenecek Network bulunamadı.'};
@@ -484,7 +511,11 @@
     active.draft=result.program;
    }
    else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
-   else if(type==='add-contact'){const path=active.draft.rungs[r].paths[p];if(path.length<12)path.push({type:'NO',ref:'I1'});}
+   else if(type==='add-contact'){
+    const added=addSafeContact(active.draft,r,p,limits());
+    if(!added.ok){editor.toast?.(added.error);return}
+    active.draft=added.program;
+   }
    else if(type==='remove-contact'){
     const removed=removeContact(active.draft,r,p,c,limits());
     if(!removed.ok){editor.toast?.(removed.error);return}
@@ -587,17 +618,9 @@
     active.draft=result.program;active.history.push(active.draft);render();return;
    }
    if(!field||!active)return;
-   const rung=active.draft.rungs[Number(r)];
-   if(field==='rung-comment')rung.comment=String(e.target.value||'').slice(0,100);
-   else if(field==='contact-type'||field==='contact-ref'){
-    const contact=rung.paths[Number(p)][Number(c)];
-    contact[field==='contact-type'?'type':'ref']=e.target.value;
-   }else if(field==='coil-type'){
-    const changed=changeCoilType(active.draft,Number(r),e.target.value,limits());
-    if(!changed.ok){editor.toast?.(changed.error);render();return}
-    active.draft=changed.program;
-   }else if(field==='coil-ref')rung.coil.ref=e.target.value;
-   else if(field==='presetMs'||field==='preset')rung.coil[field]=Number(e.target.value);
+   const changed=editLadderField(active.draft,field,Number(r),Number(p),Number(c),e.target.value,limits());
+   if(!changed.ok){editor.toast?.(changed.error);render();return}
+   active.draft=changed.program;
    active.history.push(active.draft);render();
   });
   overlay.addEventListener('keydown',e=>{
@@ -627,7 +650,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeParallelPath,editNetworkOrder};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
