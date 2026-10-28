@@ -57,7 +57,8 @@
   let bb;try{bb=win.DTSProjectPrint?.bounds?.(scene?.getBBox?.())}catch{}
   if(!bb)return {ok:false,error:'PNG için görünür devre sınırları hesaplanamadı.'};
   const size=dimension(bb);if(!size)return {ok:false,error:'PNG boyutu tarayıcının güvenli sınırını aşıyor.'};
-  const svg=styleCopy(doc,win,source);
+  let svg;
+  try{svg=styleCopy(doc,win,source)}catch{return {ok:false,error:'SVG stilleri güvenli biçimde kopyalanamadı.'}}
   if(!svg)return {ok:false,error:'SVG stilleri kopyalanamadı.'};
   svg.removeAttribute('width');svg.removeAttribute('height');
   svg.setAttribute('width',String(size.width));svg.setAttribute('height',String(size.height));
@@ -69,7 +70,8 @@
   const canvas=doc.createElement('canvas');canvas.width=size.width;canvas.height=size.height;
   const ctx=canvas.getContext?.('2d');if(!ctx||typeof canvas.toBlob!=='function')
    return {ok:false,error:'PNG çizim tuvali kullanılamıyor.'};
-  const xml=new win.XMLSerializer().serializeToString(svg);
+  let xml;
+  try{xml=new win.XMLSerializer().serializeToString(svg)}catch{return {ok:false,error:'PNG için SVG görüntüsü serileştirilemedi.'}}
   const cssSafety=cssCheck(xml);if(!cssSafety.ok)return cssSafety;
   const blob=new win.Blob([xml],{type:'image/svg+xml;charset=utf-8'});
   let svgUrl=null,pngUrl=null;
