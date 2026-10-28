@@ -14,7 +14,7 @@
    if(r.comment!==undefined&&(typeof r.comment!=='string'||r.comment.length>100))return {ok:false,error:'Network açıklaması en fazla 100 karakter olmalı.'};
    if(!Array.isArray(r.paths)||r.paths.length<1||r.paths.length>8)return {ok:false,error:'Rung '+r.id+' için 1–8 paralel yol gerekir.'};
    for(const path of r.paths){
-    if(!Array.isArray(path)||path.length<1||path.length>12)return {ok:false,error:'Seri yol 1–12 kontak içermeli.'};
+    if(!Array.isArray(path)||path.length>12)return {ok:false,error:'Seri yol en fazla 12 kontak içermeli.'};
     for(const c of path){
      if(!c||!['NO','NC'].includes(c.type)||!address.test(c.ref))return {ok:false,error:'Geçersiz kontak/operand.'};
      if(c.ref[0]==='I'&&Number(c.ref.slice(1))>inputs)return {ok:false,error:'PLC giriş sınırı aşıldı: '+c.ref};
@@ -51,6 +51,9 @@
   // Preserve only outputs still assigned to a coil (including intentional SET latches).
   const assignedQ=new Set(source.rungs.filter(r=>r.coil.ref[0]==='Q').map(r=>r.coil.ref));
   for(let i=1;i<=16;i++)if(!assignedQ.has('Q'+i))bits['Q'+i]=false;
+  // Deleted SET/OUT M writers cannot keep their old virtual latch energized.
+  const assignedM=new Set(source.rungs.filter(r=>r.coil.ref?.[0]==='M').map(r=>r.coil.ref));
+  for(let i=1;i<=32;i++)if(!assignedM.has('M'+i))bits['M'+i]=false;
   // Timer/counter blocks removed from the program cannot keep driving old contacts.
   const assignedBlocks=new Set(source.rungs.filter(r=>['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)).map(r=>r.coil.ref));
   for(let i=1;i<=16;i++)for(const prefix of ['T','C']){
@@ -62,7 +65,7 @@
   const written=new Set(),traces=[];
   for(const rung of source.rungs){
    // Preserve path truth at the exact scan point, before later coils change shared bits.
-   const pathStates=rung.paths.map(path=>path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
+   const pathStates=rung.paths.map(path=>path.length>0&&path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
    const active=pathStates.some(Boolean);
    const coil=rung.coil,ref=coil.ref;
    let next=false;

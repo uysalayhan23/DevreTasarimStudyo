@@ -26,6 +26,24 @@
    return {ok:false,error:'Kaldırılacak zamanlayıcı veya sayaç bulunamadı.'};
   return FBDView.editCoil(program,index,{type:'NOP'},limits);
  }
+ // Removal never substitutes a potentially energized OUT Q/M for any coil.
+ function removeOutput(program,index,limits={}){
+  if(!Number.isInteger(index)||index<0||!program?.rungs?.[index]||program.rungs[index].coil.type==='NOP')
+   return {ok:false,error:'Kaldırılacak çıkış bulunamadı.'};
+  return FBDView.editCoil(program,index,{type:'NOP'},limits);
+ }
+ // Removing the final contact leaves a safe, OPEN path, not a true empty AND.
+ function removeContact(program,r,p,c,limits={}){
+  if(![r,p,c].every(Number.isSafeInteger)||r<0||p<0||c<0)
+   return {ok:false,error:'Kontak konumu geçersiz.'};
+  const valid=L.validate(program,limits);
+  if(!valid.ok)return {ok:false,error:valid.error};
+  const path=program.rungs[r]?.paths?.[p];
+  if(!path||c>=path.length)return {ok:false,error:'Silinecek kontak bulunamadı.'};
+  const next=clone(program);next.rungs[r].paths[p].splice(c,1);
+  const check=L.validate(next,limits);
+  return check.ok?{ok:true,program:next}:{ok:false,error:check.error};
+ }
  // Expose every valid native M/T/C contact in both LAD and FBD.
  function contactChoices(inputPins=[],outputPins=[]){
   return [
@@ -210,7 +228,7 @@
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
         select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
         select(contact.ref,asOptions(choices()),'data-field="contact-ref" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
-        '<button type="button" data-action="remove-contact" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'" '+(path.length===1?'disabled':'')+' aria-label="Kontağı sil">×</button></div>').join('')+
+        '<button type="button" data-action="remove-contact" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'" aria-label="Kontağı sil">×</button></div>').join('')+(path.length?'':'<span class="dts-ladder-empty-path">BOŞ KONTAK · devre açık. + Seri ile yeniden ekleyin.</span>')+
         '<button type="button" data-action="add-contact" data-r="'+ri+'" data-p="'+pi+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
         '<button type="button" class="dts-ladder-dropzone" data-drop-kind="contact" data-r="'+ri+'" data-p="'+pi+'" data-i="'+path.length+'" '+(path.length>=12?'disabled':'')+' title="Bu seri kola kontak bırakın">⇣ Kontak bırak</button>'+
         (pi?'<button type="button" data-action="remove-path" data-r="'+ri+'" data-p="'+pi+'">Yolu sil</button>':'')+
@@ -221,7 +239,7 @@
        (r.coil.type==='NOP'?'<span class="dts-ladder-empty-output">Çıkış adresi yok</span>':select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"'))+
        (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
        (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
-       (['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'<button type="button" data-action="remove-block" data-r="'+ri+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' bloğunu güvenle kaldır')+'">Bloğu kaldır</button>':'')+
+       (r.coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+ri+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' çıkışını güvenle kaldır')+'">'+(['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'Bloğu kaldır':'Bobini kaldır')+'</button>':'')+
        '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
        '</div></div></article>';
      }).join('')+'</main>'+
@@ -330,9 +348,9 @@
     focusedNetwork=focusedNetwork===id?null:id;closedNetworks.delete(id);render();return;
    }
    if(type==='all-networks'){focusedNetwork=null;render();return}
-   if(type==='remove-block'){
+   if(type==='remove-block'||type==='remove-output'){
     if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
-    const removed=removeFunctionBlock(active.draft,r,limits());
+    const removed=type==='remove-output'?removeOutput(active.draft,r,limits()):removeFunctionBlock(active.draft,r,limits());
     if(!removed.ok){editor.toast?.(removed.error);return}
     active.draft=removed.program;active.history.push(active.draft);render();
     editor.toast?.('Blok kaldırıldı. Network çıkışsızdır; Geri al ile dönebilirsiniz.');
@@ -380,7 +398,11 @@
    else if(type==='add-path'){if(active.draft.rungs[r].paths.length<8)active.draft.rungs[r].paths.push([{type:'NO',ref:'I1'}]);}
    else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
    else if(type==='add-contact'){const path=active.draft.rungs[r].paths[p];if(path.length<12)path.push({type:'NO',ref:'I1'});}
-   else if(type==='remove-contact'){const path=active.draft.rungs[r].paths[p];if(path.length>1)path.splice(c,1);}
+   else if(type==='remove-contact'){
+    const removed=removeContact(active.draft,r,p,c,limits());
+    if(!removed.ok){editor.toast?.(removed.error);return}
+    active.draft=removed.program;
+   }
    active.history.push(active.draft);render();
   }
   function activateDiagramTarget(element){
@@ -518,7 +540,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);

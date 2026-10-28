@@ -5,6 +5,10 @@
 
 **Durum terminolojisi:** `KOD/TEST` işlevin kodu ve adı geçen hedefli test tamamlandı; **Windows Edge/3D/pedagojik tam kabul değildir.** `KISMİ` başlangıç altyapısı mevcut, bütün kabul maddesi tamamlanmadı. `MEVCUT` daha eski DTS özelliği. `PLAN` henüz uygulanmadı. `REVIEW` kullanıcı/gerçek görsel kabulü açık. PASS yalnız gerçekte koşulan testin kapsamını ifade eder.
 
+### 28 Ekim — Network içindeki her öğe için güvenli sil / yeniden ekle
+
+Kullanıcı, Network'e eklediği **her kontağı ve her çıkış bobinini/blokunu** ayrı ayrı kaldırıp yeniden eklemek istiyor. Önceden LAD/FBD tek kalan kontağı silemiyor, Ladder V1'de boş seri yol tehlikeli biçimde `[].every(...)=true` çıkışı enerjileyebiliyordu. Onarım: son kontak silindiğinde yol `[]` olabilir ancak `scan` onu daima **açık devre/false** sayar; SVG ve FBD `BOŞ KONTAK` gösterir. Kullanıcı + Seri / paletten kontakla tekrar doldurur. OUT/SET/RESET dahil tüm çıkışlar adrese yazmayan `NOP` olarak kaldırılıp komut paleti/menüyle geri eklenebilir; silinen SET M latch belleği artık yetim M bitini enerji altında tutmaz, hâlen SET sahibi olan M belleği korunur. Tüm değişiklikler taslak+Undo/Redo olarak kalır. `tests/dts-ladder-remove-any-network-element.test.cjs` **10/10 hedefli V8 regresyon PASS**, bağımsız Node ve Windows/Edge görsel kabulü ayrı **NOT_RUN/REVIEW**. 24 madde/09/11/15/23 **KISMİ**, 703 katalog ve fiziksel Simulation.solve değiştirilmedi.
+
 ## Öncelik 0 — Son kullanıcı geri bildirimleri (24 maddeyi genişletmeden)
 
 Bunlar **24 maddelik mevcut planda zorunlu alt görevlerdir; 25. madde değildir.** Genel UX/devre iyileştirmesinden önce ele alınır:

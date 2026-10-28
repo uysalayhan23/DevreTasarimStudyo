@@ -35,6 +35,12 @@
    if(!Array.isArray(path))return;
    const y=top+pi*78,cls=pathLive[pi]?'dts-ladder-wire-hot':'dts-ladder-wire';
    bits.push(line(railLeft,y,branchX,y,cls));
+   if(path.length===0){
+    bits.push(line(branchX,y,branchX+54,y,'dts-ladder-wire'));
+    bits.push(line(joinX-54,y,joinX,y,'dts-ladder-wire'));
+    bits.push(text((branchX+joinX)/2,y-13,'BOŞ · kontak ekle','dts-ladder-empty-contact'));
+    return;
+   }
    let prev=branchX;
    path.forEach((contact,ci)=>{
     const x=startX+ci*step;
