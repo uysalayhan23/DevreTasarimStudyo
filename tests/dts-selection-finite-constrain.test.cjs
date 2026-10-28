@@ -1,0 +1,10 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const Selection=require('../dist/selection.js');
+const c={id:'A',typeId:'part',x:100,y:100};
+const p=Selection.beginMove({components:[c],wires:[],junctions:[]},['A'],{part:{w:20,h:20}});
+test('zero grid cannot produce nonfinite movement',()=>assert.deepEqual(Selection.constrain(p,20,10,0),{x:0,y:0}));
+test('negative grid rejected',()=>assert.deepEqual(Selection.constrain(p,20,10,-10),{x:0,y:0}));
+test('NaN movement rejected',()=>assert.deepEqual(Selection.constrain(p,NaN,10),{x:0,y:0}));
+test('infinite movement rejected',()=>assert.deepEqual(Selection.constrain(p,20,Infinity),{x:0,y:0}));
+test('valid grid still snaps and moves',()=>assert.deepEqual(Selection.constrain(p,20,10,10),{x:20,y:10}));
