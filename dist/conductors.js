@@ -193,7 +193,8 @@
   function recolor(project,byId,wireId,color,size){
     const w=project.wires.find(w=>w.id===wireId);if(!w)return {ok:false,reason:'Kablo bulunamadı.'};
     const lead=Leads.info(project,byId,w);if(lead){w.probeSize=sizeLabel(size||w.probeSize||6);Leads.prepare(project,byId);return {ok:true,role:lead.role,color:lead.color}}
-    const net=analyze(project,byId).at(w.from);
+    const graph=analyze(project,byId);if(graph.invalidCatalog)return {ok:false,reason:'Katalog terminal listesi bozuk.'};
+    const net=graph.at(w.from);
     const fixed=netPowerColor(project,byId,net.members);
     if(fixed==='CONFLICT')return {ok:false,reason:'DC+ ve DC−/GND polariteleri aynı hatta bağlanmış.'};
     if(fixed){if(normalizeColor(color)!==fixed)return {ok:false,reason:'DC besleme ucu sabit kablo rengi: '+(fixed===DC_POSITIVE?'kırmızı':'siyah')+'.'};
