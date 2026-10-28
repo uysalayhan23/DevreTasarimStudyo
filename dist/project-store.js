@@ -163,7 +163,11 @@
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;try{targetProject=parse(await target.text())}catch{}
         if(isProtected(targetProject))throw Error('Bu dosya korunan bir hazır örnek. Farklı bir dosya adı veya klasör seçin.');
-        if(saveAs&&isProtected(project)){existing=existing||await db('get','handle:'+project.projectId);if(existing?.handle&&(handle===existing.handle||await handle.isSameEntry?.(existing.handle)))throw Error('Özgün örneğin üzerine kaydedilemez. Farklı bir dosya seçin.')}
+        if(saveAs){
+          existing=existing||await db('get','handle:'+project.projectId);
+          if(existing?.handle&&(handle===existing.handle||await handle.isSameEntry?.(existing.handle)))
+            throw Error(isProtected(project)?'Özgün örneğin üzerine kaydedilemez. Farklı bir dosya seçin.':'Farklı Kaydet özgün proje dosyasının üzerine yazamaz. Başka bir dosya seçin.');
+        }
         if(existing&&!saveAs){const current=await handle.getFile();if(current.lastModified!==existing.lastModified)throw Error('Dosya başka bir uygulamada değişmiş. Üzerine yazılmadı; Farklı kaydet ile bir kopya kaydedin.')}
         const writable=await handle.createWritable();try{await writable.write(JSON.stringify(copy,null,2));await writable.close()}catch(e){try{await writable.abort()}catch{}throw e}
         const saved=await handle.getFile();await remember(copy,handle,saved.lastModified);await put(copy);return {saved:true,name:handle.name,project:copy};
