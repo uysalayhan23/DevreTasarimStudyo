@@ -1201,3 +1201,27 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-terminal-draft-gates b{color:#25384a;font-weight:800}
 .dts-terminal-draft-gates small{display:block;color:#526c80;margin-top:4px}
 .dts-terminal-draft-dialog input[type=file][hidden]{display:none!important}
+
+/* Full screen is still a design workspace: materials remain accessible. */
+body.dts-full-mode .app-shell{grid-template-columns:292px minmax(0,1fr) 0!important}
+body.dts-full-mode.library-collapsed .app-shell{grid-template-columns:48px minmax(0,1fr) 0!important}
+body.dts-full-mode .library-panel{display:flex!important;min-width:0}
+body.dts-full-mode .properties-panel,body.dts-full-mode #openProperties{display:none!important}
+@media(max-width:1050px){
+ body.dts-full-mode .app-shell{grid-template-columns:clamp(208px,30vw,260px) minmax(0,1fr)!important}
+ body.dts-full-mode.library-collapsed .app-shell{grid-template-columns:48px minmax(0,1fr)!important}
+}
+@media(max-width:600px){
+ body.dts-full-mode .app-shell{grid-template-columns:min(195px,52vw) minmax(0,1fr)!important}
+ body.dts-full-mode.library-collapsed .app-shell{grid-template-columns:48px minmax(0,1fr)!important}
+}
+/* Near-black-grey labels on light toolbar and panel buttons, including Edge/WebKit. */
+.topbar button.tool,.topbar button.icon-tool,.topbar button.simulate,
+.library-panel button,.properties-panel button,.dts-ladder-dialog button,
+.dts-operator-panel button{
+ color:#242c35!important;-webkit-text-fill-color:#242c35!important;
+ text-shadow:none!important;
+}
+.topbar button:disabled{
+ color:#424a55!important;-webkit-text-fill-color:#424a55!important;opacity:.88
+}

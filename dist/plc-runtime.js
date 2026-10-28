@@ -287,6 +287,25 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  });
  return {mode,outputs:out};
 }
+// UI gate for virtual PLC simulation. Never enable an unverified hardware model.
+function simulationGate(project,byId){
+ let standby=false;
+ for(const c of Array.isArray(project?.components)?project.components:[]){
+  const d=byId?.[c?.typeId];
+  if(d?.visualOnly)return {blocked:true,standby:false,reason:'Görsel amaçlı bileşen simülasyon için doğrulanmadı.'};
+  if(!d?.isPLC)continue;
+  if(Ladder?.supportedPLC?.(d)!==true)
+   return {blocked:true,standby:false,reason:'Bu PLC modeli için sanal simülasyon henüz doğrulanmadı.'};
+  if(!c.plcProgram){standby=true;continue}
+  if(c.plcProgram!=='dts-ladder-v1')
+   return {blocked:true,standby:false,reason:'Bu PLC programı henüz doğrulanmadı; özgün DTS Ladder kullanın.'};
+  const valid=Ladder?.validate?.(c.ladderProgram,{
+   inputCount:pins(d,'DI').length,outputCount:pins(d,'DO').length
+  });
+  if(!valid?.ok)return {blocked:true,standby:false,reason:'PLC Ladder programı geçersiz: '+(valid?.error||'doğrulanamadı')};
+ }
+ return {blocked:false,standby,reason:''};
+}
 function evaluate(c,d,net,now=Date.now(),options={}){
  const sp=supplyPair(d),ioCount=pins(d,'DI').length+pins(d,'DO').length+pins(d,'AI').length+pins(d,'AO').length;
  const powered=sp?!!net.voltage(c,sp.a.id,sp.b.id):(ioCount>0&&(d.plcBackplane!==false||c.plcBackplanePowered===true));
@@ -405,8 +424,12 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  const outputPins=pins(d,'DO');
  const allowed=c.plcProgram!=='dts-ladder-v1'||Ladder?.supportedPLC?.(d)===true;
  const ladderUnpowered=c.plcProgram==='dts-ladder-v1'&&!powered;
- const prg=allowed&&!ladderUnpowered?program(c,inputs,outputPins,now,options.program):
-  {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(p=>[p.id,false]))};
+ // A verified PLC without an explicit Ladder program is a powered, idle virtual CPU.
+ // No implicit legacy start/stop program may energize its outputs.
+ const idleVerified=allowed&&Ladder?.supportedPLC?.(d)===true&&!c.plcProgram;
+ if(idleVerified){delete c._dtsLadderMemory;c._dtsLadderTraces=[];}
+ const prg=allowed&&!ladderUnpowered&&!idleVerified?program(c,inputs,outputPins,now,options.program):
+  {mode:idleVerified?'dts-ladder-idle':'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(p=>[p.id,false]))};
  if(!allowed){
   c._dtsLadderError='PLC terminali ve simülasyonu henüz doğrulanmadı.';
   delete c._dtsLadderMemory;c._dtsLadderTraces=[];
@@ -427,6 +450,6 @@ function links(c,d){
  return out;
 }
 function clear(c){delete c._dtsLadderMemory;delete c._dtsLadderTraces;delete c._dtsLadderError;delete c._plcRuntime;delete c._plcLatch;delete c._plcTimerStart;delete c._plcStopSince;delete c._plcDirection;delete c._plcRearm;delete c._sc331RequireFreshStart;delete c._plcSrChoice;delete c._plcSrRequireRelease;delete c._plcEdgeTick;delete c._plcEdgePrev;delete c._plcEdgePulse;delete c._plcEdgeRequireRelease;delete c._plcEdgePowerBlocked;delete c._sc977Latch;delete c._sc977RequireRelease;delete c._sc977StartAt;delete c._sc977LastStart;delete c._sc977PowerBlocked;delete c._sc983Epoch;delete c._sc983Enabled;delete c._sc983PowerBlocked;delete c._sc983RequireRelease;delete c._sc989Count;delete c._sc989Rearm;delete c._sc989PowerBlocked;delete c._sc989PrevIn;delete c._sc989PrevOut;delete c._sc989Tick;delete c._sc990PowerBlocked;delete c._sc990RequireRelease;delete c._sc996PowerBlocked;delete c._sc996RequireRelease;delete c._sc996StartAt;delete c._sc996PresetMs;delete c._sc996LastStart;delete c._sc999Cooling;delete c._sc999RequireCoolReset;delete c._sc999BridgeVoltage;delete c._sc999SensorValid;delete c._sc1001PowerBlocked;delete c._sc1001Direction;delete c._sc1001Rearm;delete c._sc1002PowerBlocked;delete c._sc1002Latch;delete c._sc1002Rearm;delete c._sc1002LastStart}
-const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear};
+const api={pins,powerPins,supplyPair,inputAnchor,outputAnchor,inputState,program,evaluate,links,clear,simulationGate};
 if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCRuntime=api;
 })(typeof window==='undefined'?globalThis:window);

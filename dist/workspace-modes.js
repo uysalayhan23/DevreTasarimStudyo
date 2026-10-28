@@ -12,7 +12,7 @@
    body.classList.toggle('dts-full-mode',full);
    if(focused()){
     if(!before)before=panelAPI.getState();
-    panelAPI.setState({libraryCollapsed:true,propertiesVisible:false});
+    panelAPI.setState({libraryCollapsed:!full,propertiesVisible:false});
    }else if(before){
     panelAPI.setState(before);before=null;
    }

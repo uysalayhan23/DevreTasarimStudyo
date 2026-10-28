@@ -188,17 +188,13 @@
     renderMeasurementOverlay();
     els.empty.style.display=project.components.length?'none':'flex';
     els.count.textContent=`${project.components.length} eleman · ${project.wires.length} bağlantı`;
-    const hasPLC=project.components.some(c=>{
-      const d=byId[c.typeId];if(d?.visualOnly)return true;
-      if(!d?.isPLC)return false;
-      // Unproven PLC runtime configurations remain guarded; only validated DTS Ladder may run.
-      return c.plcProgram!=='dts-ladder-v1'||!window.DTSLadderRuntime?.supportedPLC?.(d)||!window.DTSLadderRuntime?.validate?.(c.ladderProgram,{
-        inputCount:(d.pins||[]).filter(p=>p.signalType==='DI').length,
-        outputCount:(d.pins||[]).filter(p=>p.signalType==='DO').length
-      })?.ok;
-    });
-    els.guard.hidden=!hasPLC;els.simulate.disabled=hasPLC;
-    if(hasPLC&&running){running=false;els.simulate.classList.remove('running');els.simulate.textContent='▶ SİMÜLE ET'}
+    // Verified PLCs can enter the simulator without a Ladder program; Q remains low until saved.
+    const gate=window.DTSPLCRuntime?.simulationGate?.(project,byId)||
+      {blocked:true,reason:'Sanal PLC doğrulaması yüklenemedi.'};
+    els.guard.hidden=!gate.blocked;
+    if(gate.blocked)els.guard.textContent=gate.reason;
+    els.simulate.disabled=gate.blocked;
+    if(gate.blocked&&running){running=false;els.simulate.classList.remove('running');els.simulate.textContent='▶ SİMÜLE ET'}
     updateWireStatus();window.DTSTutorialMode?.sync?.(project);if(!simulationTick){updateProperties();scheduleSave();window.DTSArduinoIDE?.refresh?.()}
   }
 
@@ -657,11 +653,14 @@
   }
 
   function simulate(){
-    if(project.workspaceMode==='panel'||window.DTSStudio?.safety?.visible)return;gesture?.cancel();labelCancel?.();resetDraft();
+    if(project.workspaceMode==='panel'||window.DTSStudio?.safety?.visible)return;
+    const gate=window.DTSPLCRuntime?.simulationGate?.(project,byId);
+    if(!gate||gate.blocked){toast(gate?.reason||'PLC doğrulaması yüklenemedi.');return}
+    gesture?.cancel();labelCancel?.();resetDraft();
     actuations.cancelAll();heldPointers.clear();sound.unlock();running=!running;Simulation.clear(project);Arduino?.clear?.(project);
     if(!running)window.DTSStudio?.restoreExample();
     if(!running)project.components.forEach(c=>{if(byId[c.typeId]?.controlMode==='momentary'){c.state=false;if(byId[c.typeId]?.independentContacts)c.switchStates={}}});
-    setStatus(running?'Simülasyon çalışıyor':'Simülasyon durduruldu');render(true);
+    setStatus(running?(gate.standby?'Simülasyon çalışıyor · Ladder kaydedilene kadar PLC çıkışları kapalı':'Simülasyon çalışıyor'):'Simülasyon durduruldu');render(true);
   }
   function runSolver(){
     const now=performance.now(),arduinoFrame=Arduino?.tick?.(project,byId,{now})||{active:false,errors:[]};

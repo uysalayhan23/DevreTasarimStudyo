@@ -7,6 +7,12 @@
 
 ## Paket A — Çalışma alanı (8 madde)
 
+### 28 Ekim — Kullanıcı Edge ekranına göre tam sayfa malzeme paneli ve PLC sanal simülasyon başlangıcı
+
+Ekran görüntüsüyle doğrulanan üç kullanım sorunu: tam sayfada kütüphanenin CSS ile gizlenmesi, açık düğmelerin okunabilir koyu yazı istemi ve henüz Ladder kaydedilmemiş doğrulanmış CPU 1211C'nin genel PLC yasağına takılması. Tam sayfada sol malzeme paneli görünür ve kullanıcı daraltabilir; standart moda dönünce önceki panel düzeni geri yüklenir. Üst araç çubuğu, kütüphane ve Ladder düğmelerinin açık arka plan üzerinde koyu gri Edge/WebKit yazı rengi kesinleştirilir. `DTSPLCRuntime.simulationGate` yalnız `plc-hw-6es7211-1ae40-0xb0` ve geçerli DTS Ladder'ı kabul eder; **henüz programı olmayan doğrulanmış PLC** simülatörü güvenli boş durumda çalıştırabilir, otomatik program atanmaz ve Q çıkışları 0 kalır. Geçersiz Ladder, doğrulanmamış PLC modu, görsel-only cihaz ve desteklenmeyen PLC kilidi korunur. Eski genel `PLC bulunan projede simülasyon kapalıdır` yazısı yalnız gerçek engel nedenini gösterir. İlgili dosyalar `dist/workspace-modes.js`, `dist/studio.css`, `dist/plc-runtime.js`, `dist/app.js`, `dist/index.html`. Bağımsız Windows/Edge gerçek tıklama/görsel ve 3D kabulü **REVIEW**; tam elektriksel `Simulation.solve` bu turda değiştirilmedi. Madde 01/04/08/11/13 ve 24 listesi **KISMİ** kabul çerçevesinde korunur.
+
+
+
 | No | Özellik | Durum ve kanıt |
 | --- | --- | --- |
 | 01 | Standart / Simülasyon Odak / Tam Sayfa görünüm | **KOD/TEST**: `ea96daf90d`; 18/18 izolasyon UI testi, Windows görsel REVIEW |
