@@ -3,6 +3,21 @@
   const uid=()=> 'dts-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
   const filename=name=>(String(name||'Yeni Proje').replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_').replace(/[. ]+$/,'').slice(0,100)||'Yeni Proje')+'.odsdevre';
   const CURRENT_VERSION=7,MIN_SUPPORTED_VERSION=5,LEGACY_BASELINE_VERSION=5;
+  const MAX_PROJECT_BYTES=20*1024*1024;
+  // Use UTF-8 byte limits for browser files and local persistence alike.
+  function exceedsProjectBytes(text){
+    if(typeof text!=='string'||text.length>MAX_PROJECT_BYTES)return true;
+    let bytes=0;
+    for(let i=0;i<text.length;i++){
+      const c=text.charCodeAt(i);
+      if(c<0x80)bytes++;
+      else if(c<0x800)bytes+=2;
+      else if(c>=0xD800&&c<=0xDBFF&&i+1<text.length&&text.charCodeAt(i+1)>=0xDC00&&text.charCodeAt(i+1)<=0xDFFF){bytes+=4;i++}
+      else bytes+=3;
+      if(bytes>MAX_PROJECT_BYTES)return true;
+    }
+    return false;
+  }
   const WORKSPACE_ALIASES=Object.freeze({installation:'building',tesisat:'building',cabinet:'panel',pano:'panel','arduino-workshop':'arduino',kumanda:'control'});
   function canonicalShape(p){
     if(!p||typeof p!=='object'||Array.isArray(p))return p;
@@ -90,7 +105,7 @@
     if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!Number.isFinite(j.x)||!Number.isFinite(j.y))))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
   }
-  function parse(text){if(text.length>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
+  function parse(text){if(exceedsProjectBytes(text))throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
   async function readProjectFile(file){
     if(file?.size>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');
     return parse(await file.text());
@@ -108,7 +123,7 @@
     function metadata(p){return {id:p.projectId,name:p.name||'Adsız proje',workspaceMode:p.workspaceMode||'control',updatedAt:p.updatedAt||new Date().toISOString(),count:p.workspaceMode==='panel'?(p.panel?.items?.length||0):p.components.length}}
     async function put(project){
       if(isProtected(project))return clean(project);
-      validate(project);if(!project.projectId)project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);
+      validate(project);if(!project.projectId)project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       const persisted=await db('put','project:'+copy.projectId,copy);if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
       const rows=readIndex().filter(r=>r.id!==copy.projectId);rows.unshift(metadata(copy));storage.setItem('dts-project-index',JSON.stringify(rows));return copy;
     }
@@ -146,10 +161,11 @@
       if(!env.showOpenFilePicker)return {fallback:true};
       try{const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});const file=await handle.getFile(),p=await readProjectFile(file);await remember(p,handle,file.lastModified);return {project:p}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
-    function download(project){const blob=new env.Blob([JSON.stringify(clean(project),null,2)],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
+    function download(project){const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
       if(!project.projectId)project.projectId=uid();const copy=saveAs?editableCopy(project):clean(project);copy.updatedAt=new Date().toISOString();
+      if(exceedsProjectBytes(JSON.stringify(copy,null,2)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let existing=handles.get(project.projectId),handle;
       try{
         // Save As opens its picker before any IndexedDB work loses the user gesture.
