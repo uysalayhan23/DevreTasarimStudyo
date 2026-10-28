@@ -4,6 +4,48 @@
  const L=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const clone=x=>JSON.parse(JSON.stringify(x));
+ // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
+ function createDraftHistory(initial,maxSteps=50){
+  let steps=[clone(initial)],index=0;
+  const limit=Math.max(2,Math.min(100,Number.isInteger(maxSteps)?maxSteps:50));
+  const current=()=>clone(steps[index]);
+  return Object.freeze({
+   current,
+   push(next){
+    if(JSON.stringify(next)===JSON.stringify(steps[index]))return false;
+    steps=steps.slice(0,index+1);
+    steps.push(clone(next));
+    if(steps.length>limit)steps.shift();
+    index=steps.length-1;
+    return true;
+   },
+   undo(){if(index===0)return null;index--;return current()},
+   redo(){if(index>=steps.length-1)return null;index++;return current()},
+   canUndo:()=>index>0,canRedo:()=>index<steps.length-1
+  });
+ }
+ // Unsaved drafts are scoped to the actual project object and component ID.
+ // A changed saved-program baseline invalidates the old draft on reopening.
+ function createDraftSessions(){
+  const projects=new WeakMap();
+  function entries(project){
+   if(!project||typeof project!=='object')throw Error('Ladder projesi bulunamadı.');
+   let per=projects.get(project);
+   if(!per){per=new Map();projects.set(project,per)}
+   return per;
+  }
+  return Object.freeze({
+   forComponent(project,component,initial){
+    const per=entries(project),baseline=JSON.stringify(component.ladderProgram??null);
+    const previous=per.get(component.id);
+    if(previous&&previous.component===component&&previous.baseline===baseline)return previous.history;
+    const history=createDraftHistory(initial);
+    per.set(component.id,{component,baseline,history});
+    return history;
+   },
+   forget(project,component){if(project&&typeof project==='object')projects.get(project)?.delete(component.id)}
+  });
+ }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
  const starter=()=>({version:1,rungs:[
@@ -35,6 +77,7 @@
   overlay.id='dtsLadderOverlay';overlay.className='dts-ladder-overlay';overlay.hidden=true;
   overlay.setAttribute('role','presentation');doc.body.appendChild(overlay);
   let active=null,monitorTimer=null;
+  const sessions=createDraftSessions();
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
   function choices(){
@@ -64,6 +107,8 @@
     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Özgün sanal Ladder · Gerçek LOGO! dosyası değildir</small></div>'+
     '<button type="button" data-action="close" aria-label="Kapat">×</button></header>'+
     '<div class="dts-ladder-toolbar"><label>PLC '+selectPLC+'</label>'+
+    '<button type="button" data-action="undo" '+(active.history.canUndo()?'':'disabled')+' aria-label="Ladder geri al">↶ Geri al</button>'+
+    '<button type="button" data-action="redo" '+(active.history.canRedo()?'':'disabled')+' aria-label="Ladder yinele">↷ Yinele</button>'+
     '<button type="button" data-action="add-rung">+ Rung</button>'+
     '<button type="button" data-action="starter">Start / Stop örneği</button>'+
     '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button></div>'+
@@ -97,6 +142,8 @@
    if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
    const target=items.find(c=>c.id===which)||items[0];
    active=stateFor(target,editor);
+   active.history=sessions.forComponent(editor.getProject(),target,active.draft);
+   active.draft=active.history.current();
    overlay.hidden=false;render();overlay.querySelector('.dts-ladder-dialog')?.focus();
    if(!monitorTimer)monitorTimer=root.setInterval(()=>{
     if(overlay.hidden||!active)return;
@@ -118,6 +165,7 @@
    if(!valid.ok){editor.toast?.('Ladder: '+valid.error);return false}
    if(!editor.guardEdit?.()||!editor.snapshot?.())return false;
    active.c.ladderProgram=clone(active.draft);active.c.plcProgram='dts-ladder-v1';
+   sessions.forget(editor.getProject(),active.c);
    editor.render?.();editor.scheduleSave?.();root.DTSStudio?.markDirty?.();
    editor.toast?.('PLC Ladder programı kaydedildi · Projeyi de kaydetmeyi unutmayın.');
    close();return true;
@@ -127,7 +175,12 @@
    const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
    if(type==='close'){close();return}
    if(type==='save'){save();return}
-   if(type==='starter'){active.draft=starter();render();return}
+   if(type==='undo'||type==='redo'){
+    const next=type==='undo'?active.history.undo():active.history.redo();
+    if(next){active.draft=next;render()}
+    return;
+   }
+   if(type==='starter'){active.draft=starter();active.history.push(active.draft);render();return}
    if(type==='add-rung'){if(active.draft.rungs.length>=32)return;
     const used=new Set(active.draft.rungs.map(x=>x.id));let n=1;while(used.has('R'+n))n++;
     active.draft.rungs.push({id:'R'+n,paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}});}
@@ -136,7 +189,7 @@
    else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
    else if(type==='add-contact'){const path=active.draft.rungs[r].paths[p];if(path.length<12)path.push({type:'NO',ref:'I1'});}
    else if(type==='remove-contact'){const path=active.draft.rungs[r].paths[p];if(path.length>1)path.splice(c,1);}
-   render();
+   active.history.push(active.draft);render();
   }
   overlay.addEventListener('click',e=>{
    if(e.target===overlay){close();return}
@@ -156,9 +209,17 @@
     if(['CTU','CTD'].includes(rung.coil.type))rung.coil.preset=1;
    }else if(field==='coil-ref')rung.coil.ref=e.target.value;
    else if(field==='presetMs'||field==='preset')rung.coil[field]=Number(e.target.value);
-   render();
+   active.history.push(active.draft);render();
   });
   overlay.addEventListener('keydown',e=>{
+   const key=String(e.key).toLowerCase(),modifier=(e.ctrlKey||e.metaKey)&&!e.altKey;
+   const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName||'');
+   if(modifier&&!editing&&(key==='z'||key==='y')){
+    const redo=key==='y'||(key==='z'&&e.shiftKey);
+    const next=redo?active?.history.redo():active?.history.undo();
+    if(next){active.draft=next;render()}
+    e.preventDefault();e.stopPropagation();return;
+   }
    if(e.key==='Escape'){e.preventDefault();close()}
    e.stopPropagation();
   });
@@ -172,7 +233,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
