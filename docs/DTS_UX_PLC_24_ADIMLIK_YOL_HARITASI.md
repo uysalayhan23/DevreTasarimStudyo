@@ -38,7 +38,7 @@
 | 17 | Simülasyon durumu ve aktif enerji yollarını daha anlaşılır göster | **KISMİ**: eski DTS enerji yolu göstergeleri mevcut; tutarlı yeni UX ayrı |
 | 18 | Yanlış bağlantıyı kaynak/terminal üzerinde açıkla | **KISMİ/KOD**: salt okunur kablo ucu/katalog terminali ve silinmiş bileşen referansı taraması, sorun adıyla rapor; fiziksel kablo davranışı / ekran üstü vurgulama açık |
 | 19 | 2D/3D arasında terminal/kablo sürekliliği | **MEVCUT/REVIEW**: eski özellik, Windows piksel kabulü ayrı |
-| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV + 2B SVG devresi için tarayıcıda **Yazdır → PDF olarak kaydet** akışı; doğrudan PDF binary, PNG, pano 3B ve Windows Edge kabulü açık |
+| 20 | PDF/PNG ve malzeme listesiyle proje teslimi | **KISMİ/KOD**: çevrimdışı CSV + 2B SVG devresi için tarayıcıda **Yazdır → PDF olarak kaydet** akışı; doğrudan PDF binary, harici görselli PNG ve pano 3B ile Windows Edge kabulü açık |
 
 ## Paket D — Gelişmiş üretkenlik (4 madde)
 
@@ -138,3 +138,7 @@ DTS üst barına `▣ PLC I/O` eklendi. Pencere editörden bağımsız açılır
 ### 28 Ekim — 2B SVG devresi için çevrimdışı PDF Yazdır akışı
 
 `dist/project-print.js` mevcut `#workspace` SVG'yi ve `#scene.getBBox()` çizim sınırını kullanarak yalnız yazdırma amaçlı kopya oluşturur; gerçek projedeki kamera ve simülasyon değişmez. `PDF / Yazdır` düğmesi tarayıcı yazdırma arayüzünü açar; PDF dosyasını kullanıcı `PDF olarak kaydet` seçimiyle oluşturur. Kaynak SVG'nin boyutu/koordinatı doğrulanır, ekran taşıma/yakınlaştırma çıktıda kaldırılır. Kopya görünümü A4 yatay kağıda sığdırılır. **Doğrudan PDF dosyası üretme, otomatik dosyaya kaydetme veya pano 3B desteği iddia edilmez.** PNG ayrı açıktır. Hedefli izole JS testleri eklenmiştir; gerçek Edge `file:///` yazdırma kabulü REVIEW. Ders/GOLDEN/703 katalog değiştirilmedi.
+
+### 28 Ekim — Güvenli 2B PNG dışa aktarma (kısıtlı destek)
+
+`dist/project-png.js` mevcut SVG devre sahnesini, kaynak nesnesini değiştirmeden `getComputedStyle` ile bağımsız kopyalar; ekran kamera pan/zoom'unu kaldırır ve geçerli çizim sınırından beyaz zeminli PNG üretir. Yalnız **harici dosya görselleri olmayan**, SVG içinde gömülü kaynaklarla çizilebilen devrelerde desteklenir. Cihaz fotoğrafı `<image href="assets/...">`, `foreignObject`, başka belgeye giden `use` içeren şemalar PNG için **açık hata** verir; çıktı kaydedildi diye sahte başarı yazılmaz. 24 megapiksel/10.000 px sınırı vardır; Canvas/CORS/tainted sorunlarında hata durumuna düşer. Kaynak SVG, kamera, fiziksel terminaller, `Simulation.solve` değişmez. **Gerçek Windows/Edge `file:///` PNG indirme görsel kabulü REVIEW; bütün katalog görsellerinin PNG'ye aktarımı TAMAM değil.** 20. madde kısmi.
