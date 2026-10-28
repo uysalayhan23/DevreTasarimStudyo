@@ -229,8 +229,10 @@
     }
     const simAction=overlay.querySelector('[data-action="toggle-sim"]');
     if(simAction){
-      const available=!!doc.getElementById('simulateBtn')&&!doc.getElementById('simulateBtn').disabled;
-      simAction.disabled=!editor.running&&(!liveSaved||!available);
+      // Reuse the saved-program start gate: liveSaved is false whenever stopped.
+      // The timer must not disable a valid program's Start button after 300 ms.
+      const nativeSim=doc.getElementById('simulateBtn');
+      simAction.disabled=!canStartLadder(active.c,active.draft,editor.running,nativeSim);
       simAction.textContent=editor.running?'■ Durdur':'▶ Simüle et';
     }
    },300);

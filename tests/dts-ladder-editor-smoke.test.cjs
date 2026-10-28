@@ -40,3 +40,19 @@ test('Live Ladder monitor does not invent signals before solver trace',()=>{
  const p=L.blank(),rows=E.monitorRows(p,p,[],true,'dts-ladder-v1');
  assert.equal(rows[0].status,'Sinyal bekleniyor');assert.equal(rows[0].value,null);
 });
+
+// A stopped but saved Ladder must remain startable after the modal refresh timer.
+test('saved Ladder start gate remains enabled while stopped',()=>{
+ const saved=L.blank(),plc={plcProgram:'dts-ladder-v1',ladderProgram:saved};
+ assert.equal(E.canStartLadder(plc,structuredClone(saved),false,{disabled:false}),true);
+ assert.equal(E.canStartLadder(plc,saved,true,{disabled:false}),true);
+});
+test('unsaved, foreign, locked and missing simulator cannot start',()=>{
+ const saved=L.blank(),draft=structuredClone(saved),plc={plcProgram:'dts-ladder-v1',ladderProgram:saved};
+ draft.rungs[0].coil.ref='Q2';
+ assert.equal(E.canStartLadder(plc,draft,false,{disabled:false}),false);
+ assert.equal(E.canStartLadder(plc,saved,false,{disabled:true}),false);
+ assert.equal(E.canStartLadder(plc,saved,false,null),false);
+ assert.equal(E.canStartLadder({...plc,plcProgram:'other'},saved,false,{disabled:false}),false);
+ assert.equal(E.canStartLadder({...plc,ladderProgram:null},saved,false,{disabled:false}),false);
+});

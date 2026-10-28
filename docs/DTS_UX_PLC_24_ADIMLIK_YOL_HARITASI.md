@@ -85,3 +85,7 @@ Yeni SVG kontak ve bobin sembolleri klavye (Enter/Space) ve fare ile kendi düze
 ### Network açıklaması ve görsel rung başlıkları
 
 Her Ladder ağında isteğe bağlı 100 karakterlik açıklama desteklenir; proje nesnesiyle birlikte kaydedilir, Ctrl+Z/ileri al ile geri alınabilir, SVG üstünde Network başlığının yanında güvenli kaçışla gösterilir. Açıklama mantık hesabının operandı değildir, 100 karakter üstü veya metin dışı içeriği doğrulama kapısı reddeder. **KOD + hedefli mantık testi; gerçek Windows/Edge görsel kabulü REVIEW.**
+
+### 28 Ekim — Ladder modalı simülasyon başlatma düğmesinin 300 ms güncelleme kusuru
+
+**Somut kusur:** İlk çizimde kayıtlı Ladder için etkin görünen `Simüle et`, 300 ms izleme yenilemesinde `liveSaved` (yalnız çalışan simülasyonda true) ile denetlendiği için simülasyon kapalıyken yanlışlıkla devre dışı kalıyordu. `dist/ladder-editor.js` zamanlayıcı yolunda mevcut `canStartLadder` kapısı tekrar kullanıldı; kaydedilmemiş taslak, devre kilidi, başka program ve devre dışı native simülasyon için negatif kapılar korunur. `tests/dts-ladder-editor-smoke.test.cjs` dosyasına iki hedefli pozitif/negatif test eklendi. **Bu turda V8 üzerinde gerçek kaynakla 8/8 izole JS testi PASS; Node/Windows Edge görsel ve native entegrasyon bu turda NOT_RUN/REVIEW.** 09/13/14 numaralı maddeler hâlâ KISMİ; bağımsız COMPLETE verilmedi.
