@@ -8,6 +8,12 @@
  const Examples=typeof module==='object'&&module.exports?require('./ladder-examples.js'):root?.DTSLadderExamples;
  const FBDView=typeof module==='object'&&module.exports?require('./fbd-view.js'):root?.DTSFBDView;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ // LAD and FBD use exactly the same allowed native output addresses.
+ function coilSelectOptions(type,limits={},candidates=[]){
+  const names=FBDView.refsFor(type,limits);
+  const labels=new Map(candidates.map(c=>[c.ref,c.label]));
+  return names.map(ref=>({value:ref,label:labels.get(ref)||ref}));
+ }
  const clone=x=>JSON.parse(JSON.stringify(x));
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
@@ -136,9 +142,7 @@
   const refOptions=(forCoil,type)=>{
    const c=choices();
    if(!forCoil)return asOptions(c);
-   if(['TON','TOF','TP'].includes(type))return asOptions(c.filter(x=>/^T/.test(x.ref)));
-   if(['CTU','CTD'].includes(type))return asOptions(c.filter(x=>/^C/.test(x.ref)));
-   return asOptions(c.filter(x=>/^[QM]/.test(x.ref)));
+   return coilSelectOptions(type,limits(),c);
   };
   function render(){
    if(!active)return;
@@ -417,7 +421,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
