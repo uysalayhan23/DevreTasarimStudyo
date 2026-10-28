@@ -33,6 +33,6 @@ test('19: material pin and wire endpoints share normalized port geometry in sour
 });
 test('offline app imports updated guarded UI',()=>{
  const h=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
- assert.match(h,/component-brief\.js\?rev=20261028-reference-pin0-guard1/);
- assert.match(h,/app\.js\?rev=20261028-wire-size-edit-guard1/);
+ assert.match(h,/component-brief\.js\?rev=20261028-sensor-card1/);
+ assert.match(h,/app\.js\?rev=20261028-canonical-obstacles2/);
 });

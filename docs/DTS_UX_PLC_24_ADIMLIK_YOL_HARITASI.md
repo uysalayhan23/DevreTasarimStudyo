@@ -150,6 +150,10 @@ Seçili cihaz kartı modelde zaten bulunan `ref` alanını göstermiyordu; sayı
 
 Kablo durum satırı `w?.color||wireColor` kullanırken kesit/hat/gerilim/renk seçimi `wireColor` kullanıyordu; bu iki renk özellikle kablo yeniden bağlanırken farklı kalabiliyordu. `updateWireStatus()` seçili kablo için aynı `color` anahtarıyla ilgili kesit, rol, gerilim ve aktif renk düğmesini gösterir; boş seçimde palet rengini kullanır. `beginReconnect()` seçili kablonun rengini de eşitler. Mevcut `guardEdit/snapshot`, kablo elektriksel ağı ve 703 katalog korunur. `tests/dts-wire-selected-settings.test.cjs` 5/5 hedefli V8 PASS (farklı palet rengi, boş seçim, ölçüm probu, mutasyonsuz görünüm, yeniden bağlama). Bağımsız Node / Windows Edge ve 3D kabulü NOT_RUN/REVIEW; madde 17 KISMİ.
 
+### 28 Ekim — Madde 16: Seçili algılama sensörünün sanal parametreleri
+
+Bileşen kısa kartı daha önce katalog ad/model/ilk 8 terminali gösterirken sensör hedef ve hareket parametrelerini göstermiyordu. Salt okunur `dist/component-brief.js` artık yalnız `Sensors.supported(d)` ile desteklenen algılama sensörlerinde mevcut `Sensors.settings(c,d)` üzerinden sanal hedef, algılama aralığı, hedef uzaklığı ve otomatik hareket tercihini listeler. Desteklenmeyen cihazlara sahte parametre eklenmez; eski terminal ve HTML kaçış koruması sürer. Test: `dts-component-sensor-parameter-card.test.cjs` 5 yeni + 7 eski hedefli V8 kontrol **12/12 PASS**. Bağımsız Node/Windows Edge ve fiziksel sensör/3D kabulü NOT_RUN/REVIEW; madde 16 KISMİ, 703 katalog, 1686 ders ve `Simulation.solve` değişmedi.
+
 ## Paket C — Devre deneyimi (5 madde)
 
 | No | Özellik | Durum |
