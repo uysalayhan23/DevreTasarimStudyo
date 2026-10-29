@@ -14,7 +14,8 @@
  function model(d,c){
   if(!d||!c)return null;
   // A malformed optional draft pin cannot take down the selected-device card.
-  const ps=(Array.isArray(d.pins)?d.pins:[]).filter(p=>p&&typeof p==='object'&&p.id!=null&&String(p.id).trim());
+  const sourcePins=Array.isArray(d.pins)?d.pins:null;
+  const ps=(sourcePins||[]).filter(p=>p&&typeof p==='object'&&p.id!=null&&String(p.id).trim());
   const name=String(d.name||d.model||d.id||'Eleman');
   const subtitle=[d.brand,d.model].filter(Boolean).map(String).join(' · ');
   const terminals=ps.slice(0,8).map(p=>({id:String(p.id??''),label:String(p.label??p.id??''),type:String(p.signalType??'')}));
@@ -31,7 +32,9 @@
   return {name,subtitle,kind:String(d.kind||''),
    hint:kindHints[d.kind]||'Malzeme bilgileri katalogdan alınmıştır. İşlev ve simülasyon desteği modele göre değişebilir.',
    ref:String(c.ref??c.label??c.id??''),terminals,totalPins:ps.length,parameters,
-   note:ps.length>8?'İlk 8 uç gösteriliyor · toplam '+ps.length+' uç':'Toplam '+ps.length+' uç'};
+   note:!sourcePins?'Terminal bilgisi katalogda bulunamadı.':sourcePins.length!==ps.length?
+    'Geçersiz '+(sourcePins.length-ps.length)+' uç kaydı bulunuyor · '+ps.length+' tanımlı uç gösterilebilir.':
+    ps.length>8?'İlk 8 uç gösteriliyor · toplam '+ps.length+' uç':'Toplam '+ps.length+' uç'};
  }
  function markup(item){
   if(!item)return '';
