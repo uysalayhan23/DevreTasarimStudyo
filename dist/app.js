@@ -428,8 +428,11 @@
     return out;
   }
   function componentObstacles(){return project.components.filter(c=>byId[c.typeId]?.kind!=='clamp-meter'&&!Leads.floating(byId[c.typeId])&&!(appearance==='material'&&c.auxFor)).map(c=>Symbols.materialBounds(c,materialDefinition(c,byId[c.typeId]),GRID*.7))}
-  function heapPush(heap,node){heap.push(node);let i=heap.length-1;while(i){const p=(i-1)>>1;if(heap[p].f<=node.f)break;heap[i]=heap[p];i=p}heap[i]=node}
-  function heapPop(heap){if(!heap.length)return null;const root=heap[0],last=heap.pop();if(heap.length){let i=0;while(true){let l=i*2+1,r=l+1;if(l>=heap.length)break;let c=r<heap.length&&heap[r].f<heap[l].f?r:l;if(heap[c].f>=last.f)break;heap[i]=heap[c];i=c}heap[i]=last}return root}
+  // Prefer states closer to their destination on equal A* scores. This
+  // removes the huge equal-cost wavefront without changing routing penalties.
+  function routeHeapBetter(a,b){return a.f<b.f||(a.f===b.f&&a.h<b.h)}
+  function heapPush(heap,node){heap.push(node);let i=heap.length-1;while(i){const p=(i-1)>>1;if(!routeHeapBetter(node,heap[p]))break;heap[i]=heap[p];i=p}heap[i]=node}
+  function heapPop(heap){if(!heap.length)return null;const root=heap[0],last=heap.pop();if(heap.length){let i=0;while(true){let l=i*2+1,r=l+1;if(l>=heap.length)break;let c=r<heap.length&&routeHeapBetter(heap[r],heap[l])?r:l;if(!routeHeapBetter(heap[c],last))break;heap[i]=heap[c];i=c}heap[i]=last}return root}
   // One collision index per scene redraw; routing uses it across every cable.
   let obstacleCellSource=null,obstacleCells=new Set();
   function routingBlockedCells(){
@@ -445,27 +448,37 @@
   function gridRoute(from,to,preferredDir=null){
     const snap=p=>({x:Math.max(0,Math.min(SHEET_W,Math.round(p.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(p.y/GRID)*GRID))}),s=snap(from),goal=snap(to),cell=p=>`${p.x},${p.y}`,state=(p,dir)=>`${p.x},${p.y},${dir}`,goalCell=cell(goal);
     if(cell(s)===goalCell)return[s];
-    // A clear, unoccupied straight route is already the minimum-cost A* answer.
-    // Skip thousands of grid searches during full scene redraws after drag release.
-    const straightDir=s.y===goal.y?(goal.x>s.x?0:1):s.x===goal.x?(goal.y>s.y?2:3):-1;
-    if(straightDir>=0&&(preferredDir==null||preferredDir===straightDir)){
-      const length=Math.round((Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y))/GRID);
-      let clear=true;
-      for(let step=1;step<length&&clear;step++){
-        const q={x:s.x+Math.sign(goal.x-s.x)*GRID*step,y:s.y+Math.sign(goal.y-s.y)*GRID*step};
-        if(routingUsage.has(cell(q))&&routingUsage.get(cell(q))>0){clear=false;break}
-        for(const obstacle of routeObstacles){
-          if(q.x>obstacle.left&&q.x<obstacle.right&&q.y>obstacle.top&&q.y<obstacle.bottom){clear=false;break}
+    // For clear direct/one-turn paths, the shortest route is known without
+    // exploring the 3200x2100 grid. Only use paths that match a required initial
+    // terminal direction; the remaining cases keep the original A* penalties.
+    const occupied=routingBlockedCells();
+    const simpleCandidates=s.x===goal.x||s.y===goal.y?[[s,goal]]:
+      [[s,{x:goal.x,y:s.y},goal],[s,{x:s.x,y:goal.y},goal]];
+    let simpleBest=null;
+    for(const points of simpleCandidates){
+      let heading=preferredDir??-1,score=0,valid=true;
+      for(let i=1;i<points.length&&valid;i++){
+        const a=points[i-1],b=points[i],dx=Math.sign(b.x-a.x),dy=Math.sign(b.y-a.y);
+        const dir=dx>0?0:dx<0?1:dy>0?2:3;
+        if(i===1&&preferredDir!=null&&dir!==preferredDir){valid=false;break}
+        score+=Math.abs(b.x-a.x)+Math.abs(b.y-a.y)+
+          (heading<0||heading===dir?0:(heading^1)===dir?120:70);
+        heading=dir;
+        const steps=(Math.abs(b.x-a.x)+Math.abs(b.y-a.y))/GRID;
+        for(let n=1;n<=steps;n++){
+          const k=cell({x:a.x+dx*n*GRID,y:a.y+dy*n*GRID});
+          if(k!==goalCell&&(occupied.has(k)||(routingUsage.get(k)||0)>0)){valid=false;break}
         }
       }
-      if(clear&&!routingUsage.get(goalCell))return cleanPoints([s,goal]);
+      if(valid&&(!simpleBest||score<simpleBest.score))simpleBest={points,score};
     }
-    const occupied=routingBlockedCells(),directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&occupied.has(cell(p)),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
-    heapPush(open,{...s,dir:preferredDir??-1,key:startKey,f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
+    if(simpleBest)return cleanPoints(simpleBest.points);
+    const directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&occupied.has(cell(p)),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
+    heapPush(open,{...s,dir:preferredDir??-1,key:startKey,h:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y),f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
     let foundKey=null,guard=0;
     while(open.length&&guard++<160000){
       const cur=heapPop(open),ck=cur.key;if(closed.has(ck))continue;if(cell(cur)===goalCell){foundKey=ck;break}closed.add(ck);
-      directions.forEach(([dx,dy],dir)=>{const n={x:cur.x+dx,y:cur.y+dy};if(n.x<0||n.x>SHEET_W||n.y<0||n.y>SHEET_H||blocked(n))return;const nk=state(n,dir),turn=cur.dir<0||cur.dir===dir?0:(cur.dir^1)===dir?120:70,ng=cost.get(ck)+GRID+turn+(routingUsage.get(cell(n))||0)*250;if(ng<(cost.get(nk)??Infinity)){cost.set(nk,ng);prev.set(nk,ck);heapPush(open,{...n,dir,key:nk,f:ng+Math.abs(goal.x-n.x)+Math.abs(goal.y-n.y)})}});
+      directions.forEach(([dx,dy],dir)=>{const n={x:cur.x+dx,y:cur.y+dy};if(n.x<0||n.x>SHEET_W||n.y<0||n.y>SHEET_H||blocked(n))return;const nk=state(n,dir),turn=cur.dir<0||cur.dir===dir?0:(cur.dir^1)===dir?120:70,ng=cost.get(ck)+GRID+turn+(routingUsage.get(cell(n))||0)*250;if(ng<(cost.get(nk)??Infinity)){cost.set(nk,ng);prev.set(nk,ck);heapPush(open,{...n,dir,key:nk,h:Math.abs(goal.x-n.x)+Math.abs(goal.y-n.y),f:ng+Math.abs(goal.x-n.x)+Math.abs(goal.y-n.y)})}});
     }
     if(!foundKey){const mid=Math.round((s.x+goal.x)/(2*GRID))*GRID;return cleanPoints([s,{x:mid,y:s.y},{x:mid,y:goal.y},goal])}
     const path=[];let k=foundKey;while(k){const [x,y]=k.split(',').map(Number);path.push({x,y});if(k===startKey)break;k=prev.get(k)}return cleanPoints(path.reverse());
