@@ -2,7 +2,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const Png=require('../dist/project-png.js');
 function svg(nodes=[]){return {querySelectorAll(){return nodes}}}
-function el(tag,href){return {tagName:tag,getAttribute:k=>k==='href'?href:''}}
+// Missing SVG attributes return null in the DOM, not an empty URL.
+function el(tag,href){return {tagName:tag,getAttribute:k=>k==='href'?href:null}}
 test('rejects unsafe external image, HTML and remote-use references',()=>{
  for(const x of [el('image','assets/plc/front.png'),el('foreignObject',''),el('use','https://outside/file.svg#icon')])
   assert.equal(Png.sourceCheck(svg([x])).ok,false);
