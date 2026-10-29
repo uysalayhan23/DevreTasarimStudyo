@@ -12,12 +12,15 @@
  function scan(project,byId){
   const componentRows=(Array.isArray(project?.components)?project.components:[]).filter(c=>c&&typeof c==='object');
   const components=new Map(componentRows.filter(c=>c.id!=null&&String(c.id).trim()).map(c=>[String(c.id),c]));
-  const junctionRows=(Array.isArray(project?.junctions)?project.junctions:[]).filter(j=>j&&j.id!=null&&String(j.id).trim());
-  const junctions=new Set(junctionRows.map(j=>String(j.id)));
+  const rawJunctions=project?.junctions;
+  const junctionRows=Array.isArray(rawJunctions)?rawJunctions:[];
+  const junctions=new Set(junctionRows.filter(j=>j&&j.id!=null&&String(j.id).trim()).map(j=>String(j.id)));
   const issues=[],wires=Array.isArray(project?.wires)?project.wires:[];
+  if(rawJunctions!=null&&!Array.isArray(rawJunctions))
+   issues.push({wire:'Düğüm',kind:'invalid-junctions',message:'Bağlantı düğümü listesi geçersiz.'});
   const seenComponents=new Set(),seenJunctions=new Set();
   for(const c of componentRows){const id=c.id==null?'':String(c.id);if(!id.trim())issues.push({wire:'Bileşen',kind:'missing-component-id',message:'Bileşen kimliği eksik.'});else if(seenComponents.has(id))issues.push({wire:'Bileşen',kind:'duplicate-component-id',message:'Tekrarlı bileşen kimliği: '+id});else seenComponents.add(id)}
-  for(const j of junctionRows){const id=String(j.id);if(seenJunctions.has(id))issues.push({wire:'Düğüm',kind:'duplicate-junction-id',message:'Tekrarlı bağlantı düğümü kimliği: '+id});else seenJunctions.add(id)}
+  for(const j of junctionRows){const id=j?.id==null?'':String(j.id);if(!id.trim())issues.push({wire:'Düğüm',kind:'missing-junction-id',message:'Bağlantı düğümü kimliği eksik.'});else if(seenJunctions.has(id))issues.push({wire:'Düğüm',kind:'duplicate-junction-id',message:'Tekrarlı bağlantı düğümü kimliği: '+id});else seenJunctions.add(id)}
   function report(wire,kind,message){issues.push({wire:String(wire?.id||'Kablo'),kind,message})}
   function endpoint(wire,ref,side){
    if(!ref||typeof ref!=='object'){report(wire,'missing-endpoint',side+' bağlantı ucu tanımlı değil.');return false}
@@ -56,7 +59,7 @@
   const detail=report.issues.map(x=>{
    const label=esc(x.wire),msg=esc(x.message);
    // Device/node identity errors are not wire objects; never create a fake wire-focus button.
-   const focus=x.kind==='duplicate-component-id'||x.kind==='missing-component-id'||x.kind==='duplicate-junction-id'
+   const focus=x.kind==='duplicate-component-id'||x.kind==='missing-component-id'||x.kind==='duplicate-junction-id'||x.kind==='missing-junction-id'||x.kind==='invalid-junctions'
     ?'<strong>'+label+'</strong>'
     :'<button type="button" data-audit-wire="'+label+'" title="Şemada kabloyu işaretle">'+label+'</button>';
    return '<li>'+focus+': '+msg+'</li>';
