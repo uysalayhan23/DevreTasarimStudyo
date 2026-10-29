@@ -23,7 +23,7 @@ test('moving a selection keeps internal wires and junctions together while exter
   const plan=S.beginMove(p,['a','b'],byId,routes);S.applyMove(plan,{x:60,y:30});
   assert.deepEqual(p.junctions,[{id:'internal',x:320,y:210},{id:'shared',x:480,y:220}]);
   assert.deepEqual(p.components[2],before.components[2]);
-  assert.deepEqual(p.components[0].labelPositions,before.components[0].labelPositions);
+  assert.deepEqual(p.components[0].labelPositions,{ref:{x:before.components[0].labelPositions.ref.x+60,y:before.components[0].labelPositions.ref.y+30}},'Custom annotation moves with its selected device');
   assert.equal(p.components[1].x-p.components[0].x,200);
   assert.deepEqual(p.wires[0].points,[{x:280,y:130},{x:280,y:230}]);
   assert.deepEqual(p.wires[3],before.wires[3]);
@@ -37,7 +37,7 @@ test('selecting the whole circuit moves all branches without changing connectivi
   assert.equal(p.junctions[1].x,410);
   for(let i=0;i<p.wires.length;i++)assert.deepEqual(p.wires[i].points,before.wires[i].points.map(q=>({x:q.x-70,y:q.y+80})));
   const saved=JSON.parse(JSON.stringify(p));assert.deepEqual(saved,p);
-  assert.deepEqual(saved.components[0].labelPositions,before.components[0].labelPositions);
+  assert.deepEqual(saved.components[0].labelPositions,{ref:{x:before.components[0].labelPositions.ref.x-70,y:before.components[0].labelPositions.ref.y+80}},'Custom annotation remains anchored relative to the moved device');
 });
 test('one shared grid displacement constrains every selected body to the sheet without spreading the group',()=>{
   const p=fixture(),plan=S.beginMove(p,['a','b'],byId);
