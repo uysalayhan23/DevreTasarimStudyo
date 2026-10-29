@@ -21,6 +21,10 @@
   function report(wire,kind,message){issues.push({wire:String(wire?.id||'Kablo'),kind,message})}
   function endpoint(wire,ref,side){
    if(!ref||typeof ref!=='object'){report(wire,'missing-endpoint',side+' bağlantı ucu tanımlı değil.');return false}
+   if(ref.j!=null&&(ref.c!=null||ref.p!=null)){
+    report(wire,'ambiguous-endpoint',side+' bağlantı ucu hem düğüm hem bileşen terminali gösteriyor.');
+    return false;
+   }
    if(ref.j!=null){
     if(!junctions.has(String(ref.j))){report(wire,'unknown-junction',side+' bağlantı düğümü bulunamadı: '+String(ref.j));return false}
     return true;
