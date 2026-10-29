@@ -236,6 +236,9 @@
           catch(e){throw Error('Hedef proje dosyası geçersiz veya okunamadı; üzerine yazılmadı: '+e.message)}
         }
         if(isProtected(targetProject))throw Error('Bu dosya korunan bir hazır örnek. Farklı bir dosya adı veya klasör seçin.');
+        // A picker may return the original file even when no handle was remembered.
+        // Save As must never replace a non-empty project, including one with the same ID.
+        if(saveAs&&target.size!==0)throw Error('Farklı Kaydet mevcut bir proje dosyasının üzerine yazamaz. Yeni bir dosya adı seçin.');
         // Never replace another editable project's file, even if it parses cleanly.
         // Keep legacy files without an ID openable through their remembered handle.
         if(targetProject?.projectId!=null&&String(targetProject.projectId)!==String(project.projectId))
