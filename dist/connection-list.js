@@ -3,6 +3,8 @@
  // Read-only IEC-style connection schedule. Device/terminal IDs come from the
  // actual project and catalog; no physical/electrical correctness is inferred.
  const text=v=>typeof v==='string'?v.trim():'';
+ // IDs are exact project/catalog keys. Trimming them would invent connections.
+ const identity=v=>typeof v==='string'&&v.trim()?v:'';
  function audit(project,byId,panelWiring){
   const schematic=Array.isArray(project?.components)?project.components:[];
   const panelItems=Array.isArray(project?.panel?.items)?project.panel.items:[];
@@ -11,24 +13,26 @@
   const wires=panel?project?.panel?.wires:project?.wires;
   const errors=[],out=[],items=new Map(),seenWires=new Set(),junctions=new Set();
   if(!Array.isArray(wires))return {ok:false,rows:[],errors:['Kablo listesi geçersiz.']};
+  if(!panel&&project?.junctions!=null&&!Array.isArray(project.junctions))
+   return {ok:false,rows:[],errors:['Bağlantı düğümleri geçersiz.']};
   for(const device of devices){
-   const id=text(device?.id);
+   const id=identity(device?.id);
    if(!id||items.has(id)){errors.push('Eksik veya tekrarlı cihaz kimliği.');continue}
    items.set(id,device);
   }
   if(!panel){
    for(const j of project?.junctions||[]){
-    const id=text(j?.id);
+    const id=identity(j?.id);
     if(!id||junctions.has(id))errors.push('Eksik veya tekrarlı düğüm kimliği.');
     else junctions.add(id);
    }
   }
   function endpoint(end){
    if(!end||typeof end!=='object'||Array.isArray(end))return null;
-   const j=text(end.j),c=text(end.c),p=text(end.p);
+   const j=identity(end.j),c=identity(end.c),p=identity(end.p);
    if(j){
     if(panel||c||p||!junctions.has(j))return null;
-    return {id:'J:'+j,ref:'',pin:'DÜĞÜM',key:'j:'+j};
+    return {id:'J:'+j,ref:'',pin:'DÜĞÜM',key:JSON.stringify(['j',j])};
    }
    if(!c||!p||end.j!=null||!items.has(c))return null;
    const item=items.get(c),original=byId?.[item.typeId];
@@ -36,14 +40,14 @@
     ?panelWiring.panelDefinition(original):original;
    const pin=Array.isArray(def?.pins)?def.pins.find(q=>q&&String(q.id)===p):null;
    if(!pin)return null;
-   return {id:c,ref:text(item.ref),pin:p,key:'c:'+c+':'+p};
+   return {id:c,ref:text(item.ref),pin:p,key:JSON.stringify(['c',c,p])};
   }
   for(const wire of wires){
    if(wire?.probeLead)continue;
-   const id=text(wire?.id);
+   const id=identity(wire?.id);
    if(!id||seenWires.has(id)){errors.push('Eksik veya tekrarlı kablo kimliği.');continue}
    seenWires.add(id);
-   const a=endpoint(wire.from),b=endpoint(wire.to);
+   const a=endpoint(wire?.from),b=endpoint(wire?.to);
    if(!a||!b||a.key===b.key){errors.push('Kablo '+id+' için terminal referansı geçersiz.');continue}
    out.push({id,fromId:a.id,fromRef:a.ref,fromPin:a.pin,toId:b.id,toRef:b.ref,toPin:b.pin,
     role:text(wire.role),color:text(wire.color),size:text(wire.size)});
