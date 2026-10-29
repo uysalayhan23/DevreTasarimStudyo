@@ -62,9 +62,11 @@
   // Two smooth cubic spans keep their exact socket endpoints. The bend is free
   // of the routing grid, obstacles and ordinary conductor lane allocation.
   function curve(a,b,offset={}){
+    // Invalid legacy offsets must not create non-finite SVG paths or extreme bends.
+    const safeOffset=v=>typeof v==='number'&&Number.isFinite(v)?Math.max(-10000,Math.min(10000,v)):0;
     const start=a.pos,end=b.pos,span=Math.hypot(end.x-start.x,end.y-start.y),sag=Math.max(80,Math.min(240,span*.35)),reach=Math.max(65,Math.min(170,span*.28));
     const v=side=>({top:[0,-1],bottom:[0,1],left:[-1,0],right:[1,0]})[side]||[0,1];
-    const av=v(a.side),bv=v(b.side),bend={x:(start.x+end.x)/2+(Number(offset.x)||0),y:Math.max(start.y,end.y)+sag+(Number(offset.y)||0)};
+    const av=v(a.side),bv=v(b.side),bend={x:(start.x+end.x)/2+safeOffset(offset?.x),y:Math.max(start.y,end.y)+sag+safeOffset(offset?.y)};
     const sign=end.x>=start.x?1:-1,tangent=Math.max(45,Math.min(160,span*.2));
     const p=(x,y)=>Number(x.toFixed(3))+' '+Number(y.toFixed(3));
     return {bend,path:'M'+p(start.x,start.y)+' C'+p(start.x+av[0]*reach,start.y+av[1]*reach)+' '+p(bend.x-sign*tangent,bend.y)+' '+p(bend.x,bend.y)+' C'+p(bend.x+sign*tangent,bend.y)+' '+p(end.x+bv[0]*reach,end.y+bv[1]*reach)+' '+p(end.x,end.y)};

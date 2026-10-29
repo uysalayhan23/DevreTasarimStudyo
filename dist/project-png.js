@@ -27,7 +27,13 @@
  function cssCheck(xml){
   // Decode CSS escapes and strip comments before checking resource tokens.
   // Otherwise u\72l(...) or @\69mport can evade a plain text scan.
-  const normalized=String(xml).replace(/\/\*[\s\S]*?\*\//g,'')
+  // XMLSerializer can preserve numeric entities inside SVG attributes. Browsers
+  // decode them before applying CSS, so inspect their decoded spelling first.
+  const decoded=String(xml).replace(/&#(?:x([0-9a-f]+)|([0-9]+));/gi,(_,hex,dec)=>{
+   const code=parseInt(hex||dec,hex?16:10);
+   return String.fromCodePoint(code>0&&code<=0x10ffff?code:0xfffd);
+  });
+  const normalized=decoded.replace(/\/\*[\s\S]*?\*\//g,'')
    .replace(/\\(?:([0-9a-f]{1,6})(?:\r\n|[ \t\n\r\f])?|([^\r\n\f0-9a-f]))/gi,(_,hex,other)=>{
     if(!hex)return other;
     const cp=parseInt(hex,16);return String.fromCodePoint(cp>0&&cp<=0x10ffff?cp:0xfffd);

@@ -38,8 +38,10 @@
    const item=items.get(c),original=byId?.[item.typeId];
    const def=panel&&typeof panelWiring?.panelDefinition==='function'
     ?panelWiring.panelDefinition(original):original;
-   const pin=Array.isArray(def?.pins)?def.pins.find(q=>q&&String(q.id)===p):null;
-   if(!pin)return null;
+   // A duplicated terminal identity is ambiguous and must not be exported as
+   // if it identified one unique physical/electrical connection.
+   const matching=Array.isArray(def?.pins)?def.pins.filter(q=>q&&String(q.id)===p):[];
+   if(matching.length!==1)return null;
    return {id:c,ref:text(item.ref),pin:p,key:JSON.stringify(['c',c,p])};
   }
   for(const wire of wires){

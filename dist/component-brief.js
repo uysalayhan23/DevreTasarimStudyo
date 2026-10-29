@@ -15,7 +15,14 @@
   if(!d||!c)return null;
   // A malformed optional draft pin cannot take down the selected-device card.
   const sourcePins=Array.isArray(d.pins)?d.pins:null;
-  const ps=(sourcePins||[]).filter(p=>p&&typeof p==='object'&&p.id!=null&&String(p.id).trim());
+  // Duplicate catalog pin IDs are ambiguous: never present them as separate usable terminals.
+  const seenPins=new Set();
+  const ps=(sourcePins||[]).filter(p=>{
+   if(!p||typeof p!=='object'||p.id==null||!String(p.id).trim())return false;
+   const id=String(p.id);
+   if(seenPins.has(id))return false;
+   seenPins.add(id);return true;
+  });
   const name=String(d.name||d.model||d.id||'Eleman');
   const subtitle=[d.brand,d.model].filter(Boolean).map(String).join(' · ');
   const terminals=ps.slice(0,8).map(p=>({id:String(p.id??''),label:String(p.label??p.id??''),type:String(p.signalType??'')}));

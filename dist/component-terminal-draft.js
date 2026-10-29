@@ -24,6 +24,7 @@
  }
  function fromCatalog(d){
   if(!d||!Array.isArray(d.pins)||d.pins.some(p=>!p||p.x==null||p.y==null||
+   !['number','string'].includes(typeof p.x)||!['number','string'].includes(typeof p.y)||
    (typeof p.x==='string'&&!p.x.trim())||(typeof p.y==='string'&&!p.y.trim())))
    throw Error('Katalog terminal koordinatları eksik; (0,0) konumu varsayılamaz.');
   const draft={format:'dts-terminal-draft',version:1,sourceId:String(d.id||''),
@@ -40,7 +41,10 @@
   if(x<0||y<0||x>d.w||y>d.h)throw Error('Terminal, önizleme gövdesinin dışında.');
   const next=clone(d),p=next.pins.find(v=>v.id===id);
   if(!p)throw Error('Terminal taslakta bulunamadı.');
-  p.x=Math.round(x*2)/2;p.y=Math.round(y*2)/2;
+  // Fractional manufacturer body limits can fall between half-mm grid points.
+  // Clamp the snapped point to the true body edge rather than rejecting a valid drag.
+  p.x=Math.min(d.w,Math.round(x*2)/2);
+  p.y=Math.min(d.h,Math.round(y*2)/2);
   if(!validate(next).ok)throw Error('Yeni terminal koordinatı kabul edilemedi.');
   return next;
  }

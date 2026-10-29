@@ -156,7 +156,13 @@
       const base=item?.requiredClearanceMm,byVoltage=item?.requiredClearanceByVoltageMm;
       if(!base&&!byVoltage)continue;
       const evidenceOk=item.physicalDimensionStatus==='verified'&&sourceUrlValid(item.dimensionSource);
-      const geometryOk=item.dimensionStatus==='verified'&&item.panelGeometryStatus==='ready';
+      // Status flags alone cannot verify missing, coerced or out-of-panel geometry.
+      const validBox=x=>x&&['x','y','w','h'].every(k=>Number.isFinite(x[k]))&&x.w>0&&x.h>0;
+      const panelSizeOk=Number.isFinite(panel?.width)&&Number.isFinite(panel?.height)&&panel.width>0&&panel.height>0;
+      const sameSurface=(panel?.items||[]).filter(x=>x!==item&&(x?.mount==='door')===(item?.mount==='door'));
+      const geometryOk=item.dimensionStatus==='verified'&&item.panelGeometryStatus==='ready'&&
+       panelSizeOk&&validBox(item)&&item.x>=0&&item.y>=0&&
+       item.x+item.w<=panel.width&&item.y+item.h<=panel.height&&sameSurface.every(validBox);
       const row={itemId:item.id,status:'unknown',authority:evidenceOk&&geometryOk?'verified-product-and-panel-geometry':'insufficient-verified-data',sourceUrl:evidenceOk?item.dimensionSource:null,checks:[],unresolved:[],missing:[]};
       if(!evidenceOk)row.missing.push('verified-product-clearance-source');
       if(!geometryOk)row.missing.push('verified-panel-geometry');
@@ -165,7 +171,18 @@
         continue;
       }
       const check=(context,direction,required,detail)=>{
-        if(!Number.isFinite(Number(required))||Number(required)<0||!detail||!Number.isFinite(Number(detail.distance)))return;
+        // Empty manufacturer measurements are unknown, never authoritative zero millimetres.
+        if(required==null||(typeof required==='string'&&!required.trim())||
+           !Number.isFinite(Number(required))||Number(required)<0){
+          row.unresolved.push(context+':'+direction);
+          row.missing.push('verified-clearance-measure:'+context+':'+direction);
+          return;
+        }
+        if(!detail||!Number.isFinite(Number(detail.distance))){
+          row.unresolved.push(context+':'+direction);
+          row.missing.push('verified-clearance-distance:'+context+':'+direction);
+          return;
+        }
         if(detail.geometryVerified===false){
           const token='verified-neighbour-geometry'+(detail.itemIds?.length?':'+detail.itemIds.join(','):'');
           if(!row.missing.includes(token))row.missing.push(token);
@@ -176,19 +193,19 @@
         row.checks.push({context,direction,requiredMm:req,availableMm:round(avail,2),status:avail+1e-9>=req?'ok':'violation'});
       };
       const airflow=base?.freeAirFlow||{};
-      for(const direction of ['up','down','left','right'])if(Number.isFinite(Number(airflow[direction])))check('freeAirFlow',direction,airflow[direction],directionalGapDetail(panel,item,direction));
+      for(const direction of ['up','down','left','right'])if(Object.prototype.hasOwnProperty.call(airflow,direction))check('freeAirFlow',direction,airflow[direction],directionalGapDetail(panel,item,direction));
       const neighbours=base?.neighbouringSubassemblies||{};
-      if(Number.isFinite(Number(neighbours.side))){
+      if(Object.prototype.hasOwnProperty.call(neighbours,'side')){
         const left=directionalGapDetail(panel,item,'left',()=>true,false),right=directionalGapDetail(panel,item,'right',()=>true,false),choices=[left,right].filter(Boolean),nearest=choices.length?choices.sort((a,b)=>a.distance-b.distance)[0]:null;
         if(nearest)check('neighbouringSubassemblies','side',neighbours.side,nearest);
       }
       const enclosure=base?.cabinetEnclosure||{};
-      if(Number.isFinite(Number(enclosure.side))){
+      if(Object.prototype.hasOwnProperty.call(enclosure,'side')){
         const left=Math.max(0,Number(item.x)||0),right=Math.max(0,(Number(panel?.width)||0)-((Number(item.x)||0)+(Number(item.w)||0)));
         check('cabinetEnclosure','side',enclosure.side,{distance:Math.min(left,right),source:'boundary',itemIds:[],geometryVerified:true});
       }
       const adjacent=base?.adjacentConverters||{};
-      if(Number.isFinite(Number(adjacent.side))){
+      if(Object.prototype.hasOwnProperty.call(adjacent,'side')){
         const same=x=>x.physicalProductKey&&x.physicalProductKey===item.physicalProductKey;
         const left=directionalGapDetail(panel,item,'left',same,false),right=directionalGapDetail(panel,item,'right',same,false),choices=[left,right].filter(Boolean),nearest=choices.length?choices.sort((a,b)=>a.distance-b.distance)[0]:null;
         if(nearest)check('adjacentConverters','side',adjacent.side,nearest);

@@ -109,6 +109,35 @@
       if(typeof w.id!=='string'||!w.id.trim()||wireIds.has(w.id))throw Error('Projedeki kablo kimliği geçersiz veya tekrarlanıyor.');
       wireIds.add(w.id);
     }
+    // A panel is its own editable graph. A duplicate part or wire ID must never
+    // resolve to an arbitrary object when reopening a saved panel project.
+    if(p.panel!=null){
+      if(typeof p.panel!=='object'||Array.isArray(p.panel))throw Error('Pano proje verisi geçersiz.');
+      if(p.panel.items!==undefined&&!Array.isArray(p.panel.items))
+        throw Error('Pano malzeme listesi geçersiz.');
+      if(p.panel.wires!==undefined&&!Array.isArray(p.panel.wires))
+        throw Error('Pano kablo listesi geçersiz.');
+      // Apply the established schematic collection limits to the panel workspace too.
+      if((p.panel.items?.length||0)>10000||(p.panel.wires?.length||0)>40000)
+        throw Error('Pano projesi eğitim çalışma alanı için çok büyük.');
+      const panelIds=new Set();
+      for(const item of p.panel.items||[]){
+        const id=item?.id;
+        if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
+          panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
+        panelIds.add(String(id));
+      }
+      const panelWireIds=new Set();
+      for(const wire of p.panel.wires||[]){
+        if(!wire||typeof wire!=='object'||Array.isArray(wire))
+          throw Error('Pano kablo kaydı geçersiz.');
+        if(wire.id==null)continue; // Legacy unnamed panel wires remain readable.
+        const id=wire.id;
+        if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
+          panelWireIds.has(String(id)))throw Error('Pano kablo kimliği eksik veya tekrarlı.');
+        panelWireIds.add(String(id));
+      }
+    }
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
   }
   function parse(text){if(exceedsProjectBytes(text))throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
