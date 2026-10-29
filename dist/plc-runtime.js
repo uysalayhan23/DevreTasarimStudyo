@@ -40,7 +40,7 @@ function inputState(c,d,net,p){
  const voltage=net.voltage(c,p.id,anchor.id);
  // Verified CPU 1211C DC inputs require positive polarity relative to X10:6 (1M).
  // Negative or absent voltage must not become logical TRUE via !!voltage.
- return d?.id==='plc-hw-6es7211-1ae40-0xb0'?Number(voltage)>0:!!voltage;
+ return d?.id==='plc-hw-6es7211-1ae40-0xb0'?(Number.isFinite(Number(voltage))&&Number(voltage)>0):!!voltage;
 }
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
@@ -315,7 +315,10 @@ function simulationGate(project,byId){
 }
 function evaluate(c,d,net,now=Date.now(),options={}){
  const sp=supplyPair(d),ioCount=pins(d,'DI').length+pins(d,'DO').length+pins(d,'AI').length+pins(d,'AO').length;
- const powered=sp?!!net.voltage(c,sp.a.id,sp.b.id):(ioCount>0&&(d.plcBackplane!==false||c.plcBackplanePowered===true));
+ const supplyVoltage=sp?net.voltage(c,sp.a.id,sp.b.id):null;
+ const verifiedDc=d?.id==='plc-hw-6es7211-1ae40-0xb0';
+ const powered=sp?(verifiedDc?Number.isFinite(Number(supplyVoltage))&&Number(supplyVoltage)>0:!!supplyVoltage):
+  (ioCount>0&&(d.plcBackplane!==false||c.plcBackplanePowered===true));
  const inputPins=pins(d,'DI'),inputs=inputPins.map(p=>({id:p.id,label:p.label,value:powered&&inputState(c,d,net,p)}));
  const analogInputs=Object.fromEntries(pins(d,'AI').map(p=>{
    const anchor=inputAnchor(d,p),raw=powered&&anchor&&anchor.id!==p.id?Number(net.voltage(c,p.id,anchor.id)):0;
@@ -442,7 +445,9 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   delete c._dtsLadderMemory;c._dtsLadderTraces=[];
  }
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
- const outputSupplyValid=!['plc-0-0-documented','plc-hw-6es7211-1ae40-0xb0'].includes(d?.id)||Number(net.voltage(c,'X12:1','X12:2'))>0;
+ const bankVoltage=net.voltage(c,'X12:1','X12:2');
+ const outputSupplyValid=!['plc-0-0-documented','plc-hw-6es7211-1ae40-0xb0'].includes(d?.id)||
+  (Number.isFinite(Number(bankVoltage))&&Number(bankVoltage)>0);
  if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;
  const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
  c._plcRuntime=state;c._active=powered;return state;
