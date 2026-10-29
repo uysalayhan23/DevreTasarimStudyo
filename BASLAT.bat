@@ -68,28 +68,44 @@ if not defined BROWSER (
 )
 
 if defined BROWSER (
-  echo Tarayici dogrudan baslatiliyor: %BROWSER%
+  rem Quoted path avoids CMD parsing the '(x86)' folder as an IF-block terminator.
+  echo Tarayici dogrudan baslatiliyor: "%BROWSER%"
   start "" "%BROWSER%" --new-window "%INDEX%"
-  if not errorlevel 1 exit /b 0
+  if not errorlevel 1 (
+    call :confirm_browser_window
+    if not errorlevel 1 exit /b 0
+  )
   echo UYARI: Tarayici baslatma hatasi; yedek acilis deneniyor.
 )
 
 rem Windows HTML handler is a fallback; never an early-success shortcut.
 start "" "%INDEX%"
-if not errorlevel 1 exit /b 0
+if not errorlevel 1 (
+    call :confirm_browser_window
+    if not errorlevel 1 exit /b 0
+  )
 
 rem 1. fallback: Windows'un URL protokol isleyicisi ile ayni file:/// hedefi.
 rundll32.exe url.dll,FileProtocolHandler "%FILEURL%" >nul 2>&1
-if not errorlevel 1 exit /b 0
+if not errorlevel 1 (
+    call :confirm_browser_window
+    if not errorlevel 1 exit /b 0
+  )
 
 rem 2. fallback: PowerShell ile dogrudan dist/index.html dosyasini ac.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
   "$p=[IO.Path]::GetFullPath($env:INDEX); Start-Process -FilePath $p" >nul 2>&1
-if not errorlevel 1 exit /b 0
+if not errorlevel 1 (
+    call :confirm_browser_window
+    if not errorlevel 1 exit /b 0
+  )
 
 rem 3. fallback: varsayilan HTML uygulamasina dogrudan dist/index.html devri.
 start "" "%INDEX%"
-if not errorlevel 1 exit /b 0
+if not errorlevel 1 (
+    call :confirm_browser_window
+    if not errorlevel 1 exit /b 0
+  )
 
 goto :launch_error
 
@@ -113,5 +129,17 @@ echo Ardindan dist\index.html dosyasini dogrudan acin.
 echo.
 echo Bu pencere hata gorulebilsin diye acik tutuluyor.
 echo.
+echo.
+echo Acilis tanisi: tarayici penceresi dogrulanamadi; dist\index.html dosyasini Edge ile acin.
 pause
 exit /b 7
+
+rem The Windows START exit code proves command dispatch, not an opened browser.
+rem Verify the DTS window title before declaring success. Do not count this CMD
+rem window; it shares the "Devre Tasarim" prefix with the actual page.
+:confirm_browser_window
+timeout /t 3 /nobreak >nul 2>&1
+powershell.exe -NoProfile -Command "$w=Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(msedge|chrome|firefox|brave|opera|iexplore)
+ -and $_.MainWindowTitle -like '*Devre Tasar*' }; if(@($w).Count -gt 0){exit 0}else{exit 1}" >nul 2>&1
+exit /b %ERRORLEVEL%
+
