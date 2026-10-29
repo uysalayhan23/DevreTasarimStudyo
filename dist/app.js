@@ -1389,7 +1389,17 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
     create(mode,name){if(mode==='arduino'&&Arduino){const p=Arduino.exampleProject('blank',window.DTSProjects.uid());p.name=name||'Arduino Projem';this.load(p);return}this.load({version:7,projectId:window.DTSProjects.uid(),workspaceMode:mode,name:name||'Yeni Proje',symbolNorm:Norms.normalize(localStorage.getItem('ccs-norm')),components:[],wires:[],junctions:[],colorRoles:clone(defaultColorRoles),...(mode==='panel'?{panel:window.DTSPanel.defaults()}:{})})},
     setAppearance(value){appearance=value==='material'?'material':'iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();render();materialLayoutWarning()}
   };
-  const cached=localStorage.getItem('ods-project');if(cached){try{project=migrateProject(JSON.parse(cached))}catch{}}else project=migrateProject(project);
+  // P0-04 / P7-04: untrusted browser draft must pass the same schema and catalog gates as an opened file.
+  let cached=null;
+  try{cached=localStorage.getItem('ods-project')}catch{}
+  if(cached){
+    try{
+      const recovered=window.DTSProjects.parse(cached);
+      if(recovered.components.some(c=>!byId[c.typeId])||(recovered.panel?.items||[]).some(c=>!byId[c.typeId]))
+        throw Error('Taslakta bu sürümün tanımadığı malzeme var.');
+      project=migrateProject(recovered);
+    }catch{project=migrateProject(project)}
+  }else project=migrateProject(project);
   populateWireMenu();
   applyPropertiesVisibility();
   $('#sheetName').textContent=project.name;els.workspace.setAttribute('viewBox','0 0 '+SHEET_W+' '+SHEET_H);applyCamera();renderLibrary();render();materialLayoutWarning();
