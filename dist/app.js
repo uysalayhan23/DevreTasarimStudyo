@@ -153,7 +153,8 @@
     if($('#resetFilters'))$('#resetFilters').onclick=()=>{category=project.workspaceMode==='arduino'?'arduino':'electrical';group=brand=series='all';els.search.value='';renderLibrary()};
     $$('[data-favorite]').forEach(b=>{b.onclick=e=>{e.preventDefault();e.stopPropagation();try{favorites.toggle(b.dataset.favorite);renderLibrary()}catch{toast('Favori kaydedilemedi; tarayıcı depolamasını kontrol edin.')}};b.onkeydown=e=>e.stopPropagation();b.ondragstart=e=>{e.preventDefault();e.stopPropagation()}});
     $$('.component-card').forEach(card=>card.addEventListener('dragstart',e=>{if(!guardEdit()){e.preventDefault();return}e.dataTransfer.setData('text/component',card.dataset.type);if(card.dataset.arduinoSaved)e.dataTransfer.setData('text/arduino-board',card.dataset.arduinoSaved);e.dataTransfer.effectAllowed='copy'}));
-    $$('.component-card').forEach(card=>card.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.closest('[data-favorite]'))return;e.preventDefault();if(project.workspaceMode==='panel'){window.DTSPanelEditor?.add(card.dataset.type);return}const r=els.viewport.getBoundingClientRect(),p=canvasPoint({clientX:r.left+r.width/2,clientY:r.top+r.height/2});addComponent(card.dataset.type,p.x,p.y,card.dataset.arduinoSaved||'')}));
+    $('.component-card').forEach(card=>card.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.closest('[data-favorite]'))return;e.preventDefault();if(project.workspaceMode==='panel'){window.DTSPanelEditor?.add(card.dataset.type);return}const r=els.viewport.getBoundingClientRect(),p=canvasPoint({clientX:r.left+r.width/2,clientY:r.top+r.height/2});addComponent(card.dataset.type,p.x,p.y,card.dataset.arduinoSaved||'')}));
+    els.library.dataset.catalogReady='1';
   }
   function updateNormBadge(){$('#sheetNorm').textContent=appearance==='material'?'3D':project.symbolNorm}
 
@@ -1412,5 +1413,5 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
   }else project=migrateProject(project);
   populateWireMenu();
   applyPropertiesVisibility();
-  $('#sheetName').textContent=project.name;els.workspace.setAttribute('viewBox','0 0 '+SHEET_W+' '+SHEET_H);applyCamera();renderLibrary();render();materialLayoutWarning();
+  $('#sheetName').textContent=project.name;els.workspace.setAttribute('viewBox','0 0 '+SHEET_W+' '+SHEET_H);applyCamera();if(!document.body.classList.contains('dashboard-open'))renderLibrary();render();materialLayoutWarning();
 })();
