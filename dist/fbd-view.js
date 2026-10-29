@@ -161,8 +161,14 @@
   return '<div class="dts-fbd-block-controls" role="group" aria-label="FBD blok düzenleme">'+typeSelect+refSelect+preset+'</div>';
  }
  function render(rung,opts={}){
-  const paths=Array.isArray(rung?.paths)?rung.paths:[];
-  const live=opts.live===true&&Array.isArray(opts.pathStates)&&opts.pathStates.length===paths.length;
+  // A malformed/stale imported draft is never an energized or editable FBD network.
+  // Use the same native validation as LAD before mapping contacts into markup.
+  const checked=Ladder?.validate?.({version:1,rungs:[rung]},opts.limits||{});
+  if(!checked?.ok)return '<section class="dts-fbd-view dts-fbd-invalid" role="status">FBD Network · geçersiz taslak: '+escape(checked?.error||'Program doğrulanamadı.')+'</section>';
+  const paths=rung.paths;
+  // Reject partial or non-boolean trace payloads rather than coloring a stale coil live.
+  const live=opts.live===true&&Array.isArray(opts.pathStates)&&opts.pathStates.length===paths.length&&
+   opts.pathStates.every(value=>typeof value==='boolean')&&typeof opts.coilValue==='boolean';
   const states=paths.map((_,i)=>live&&opts.pathStates[i]===true);
   const id=Number.isInteger(opts.index)?opts.index:0;
   const lines=paths.map((path,pi)=>{
