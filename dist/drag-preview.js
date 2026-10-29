@@ -21,6 +21,16 @@
   for(const p of tail)connect(p);
   return points.length>=2?points:null;
  }
+ // Capture stationary terminal geometry once per gesture, not per mouse event.
+ function snapAnchors(project,ids,byId,floating,position,sideOf){
+  const selected=new Set(ids),out=[];
+  for(const c of project?.components||[]){
+   const d=byId?.[c.typeId];
+   if(selected.has(c.id)||!d||floating(d))continue;
+   for(const pin of d.pins||[])out.push({pos:position(c,d,pin),side:sideOf(pin.side,c.rotation)});
+  }
+  return out;
+ }
  function create(scene,project,ids,plan,endpoints,roundedPath){
   if(!scene||typeof scene.querySelectorAll!=='function'||typeof endpoints!=='function'||typeof roundedPath!=='function')return null;
   const moved=new Set(ids);
@@ -37,11 +47,16 @@
   const wires=[];
   const groups=new Map();
   for(const g of scene.querySelectorAll('g[data-wire]')){
+   // A terminal overlay uses fixed absolute clip geometry. Full renderer must
+   // rebuild its clip while moving an owning device.
+   if(moved.has(g.dataset?.terminalOverlay))return null;
    const id=g.dataset?.wire;if(!groups.has(id))groups.set(id,[]);groups.get(id).push(g);
   }
   for(const w of project.wires||[]){
-   if(w.probeLead)continue;
    const touches=e=>moved.has(e?.c)||junctions.has(e?.j);
+   // Probe leads have their own overlay and must stay with the native renderer.
+   if(w.probeLead&& (touches(w.from)||touches(w.to)))return null;
+   if(w.probeLead)continue;
    if(touches(w.from)||touches(w.to))wires.push({wire:w,groups:groups.get(w.id)||[]});
   }
   const items=(project.components||[]).filter(c=>moved.has(c.id));
@@ -66,7 +81,7 @@
   }
   return Object.freeze({refresh,wireCount:wires.length,componentCount:items.length});
  }
- const api=Object.freeze({route,create});
+ const api=Object.freeze({route,create,snapAnchors});
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.DTSDragPreview=api;
 })(typeof window==='undefined'?globalThis:window);

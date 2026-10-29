@@ -58,9 +58,12 @@ test('app schedules lightweight preview on RAF and exact full render only at fin
  assert.match(fn,/if\(moved\)\{render\(\);scheduleSave\(\)\}/);
  assert.match(fn,/if\(cancelled&&moved\)\{Selection\.restore\(plan\);history\.pop\(\);future=oldFuture\}/);
 });
-test('running simulation retains old rendering path, no solver behavior changes',()=>{
+test('running simulation keeps native fallback, with single verified PLC-only preview',()=>{
  const app=fs.readFileSync(path.join(root,'app.js'),'utf8');const fn=app.slice(app.indexOf('function beginComponentDrag(c,e){'),app.indexOf('function operateInstallation('));
- assert.match(fn,/!running&&window\.DTSDragPreview\?\.create/);
+ assert.match(fn,/plcLiveMove=running&&ids\.length===1&&byId\[c\.typeId\]\?\.isPLC===true/);
+ assert.match(fn,/window\.DTSLadderRuntime\?\.supportedPLC\?\.\(byId\[c\.typeId\]\)===true/);
+ assert.match(fn,/\(!running\|\|plcLiveMove\)&&window\.DTSDragPreview/);
+ assert.match(fn,/dragPreview\?dragPreview\.refresh\(\):render\(\)/);
 });
 test('offline script loads before app and no external request added',()=>{
  const index=fs.readFileSync(path.join(root,'index.html'),'utf8');const a=index.indexOf('drag-preview.js?rev=20261029-drag-fast1'),b=index.indexOf('app.js?rev=20261029-drag-fast1');

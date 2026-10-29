@@ -414,8 +414,8 @@
       return {pos,stub:lead.at(-1),lead,body,componentId:c.id,side};
     }return{pos,stub,lead:[pos,stub],componentId:c.id,side}
   }
-  function snapDraggedComponent(c){
-    const d=byId[c.typeId],others=[];project.components.filter(x=>!selectedIds.has(x.id)&&!Leads.floating(byId[x.typeId])).forEach(o=>{const od=byId[o.typeId];od.pins.forEach(p=>others.push({pos:portPosition(o,od,p),side:rotatedSide(p.side,o.rotation)}))});
+  function snapDraggedComponent(c,stationaryAnchors=null){
+    const d=byId[c.typeId],others=stationaryAnchors||[];if(!stationaryAnchors)project.components.filter(x=>!selectedIds.has(x.id)&&!Leads.floating(byId[x.typeId])).forEach(o=>{const od=byId[o.typeId];od.pins.forEach(p=>others.push({pos:portPosition(o,od,p),side:rotatedSide(p.side,o.rotation)}))});
     let bestX=null,bestY=null;
     d.pins.forEach(p=>{const pos=portPosition(c,d,p),side=rotatedSide(p.side,c.rotation);others.forEach(o=>{if(['top','bottom'].includes(side)&&['top','bottom'].includes(o.side)){const delta=o.pos.x-pos.x;if(Math.abs(delta)<=8&&(!bestX||Math.abs(delta)<Math.abs(bestX.delta)))bestX={delta,value:o.pos.x}}if(['left','right'].includes(side)&&['left','right'].includes(o.side)){const delta=o.pos.y-pos.y;if(Math.abs(delta)<=8&&(!bestY||Math.abs(delta)<Math.abs(bestY.delta)))bestY={delta,value:o.pos.y}}})});
     if(bestX)c.x+=bestX.delta;if(bestY)c.y+=bestY.delta;alignmentGuides=[...(bestX?[{axis:'x',value:bestX.value}]:[]),...(bestY?[{axis:'y',value:bestY.value}]:[])];
@@ -1040,7 +1040,9 @@
     if(gesture||labelDragging)return;e.preventDefault();
     const ids=[...selectedIds],plan=Selection.beginMove(project,ids,byId,renderedWirePoints),startZoom=zoom,oldFuture=[...future];
      // During a stopped simulation, move SVG nodes instead of rebuilding every device and rerouting every cable per frame.
-     const dragPreview=!running&&window.DTSDragPreview?.create?.(els.scene,project,ids,plan,endpointInfo,roundedPath);
+     const plcLiveMove=running&&ids.length===1&&byId[c.typeId]?.isPLC===true&&window.DTSLadderRuntime?.supportedPLC?.(byId[c.typeId])===true;
+     const dragPreview=(!running||plcLiveMove)&&window.DTSDragPreview?.create?.(els.scene,project,ids,plan,endpointInfo,roundedPath);
+     let snapAnchors=null;
     let moved=false,raf=0;
     trackGesture(e,{
       move:ev=>{
@@ -1049,7 +1051,9 @@
         if(!moved&&!delta.x&&!delta.y)return;
         if(!moved){if(!snapshot())return;moved=true}
         Selection.applyMove(plan,delta);
-        const x=c.x,y=c.y;snapDraggedComponent(c);
+        const x=c.x,y=c.y;
+         if(!snapAnchors&&window.DTSDragPreview?.snapAnchors)snapAnchors=window.DTSDragPreview.snapAnchors(project,ids,byId,Leads.floating,portPosition,rotatedSide);
+         snapDraggedComponent(c,snapAnchors);
         delta=Selection.constrain(plan,delta.x+c.x-x,delta.y+c.y-y,GRID,SHEET_W,SHEET_H);Selection.applyMove(plan,delta);
         if(!raf)raf=requestAnimationFrame(()=>{raf=0;dragPreview?dragPreview.refresh():render()});
       },
