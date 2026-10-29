@@ -162,7 +162,10 @@
   return !!d&&d.id==='plc-hw-6es7211-1ae40-0xb0'&&d.isPLC===true&&
    (d.pins||[]).filter(p=>p.signalType==='DI').length===6&&
    (d.pins||[]).filter(p=>p.signalType==='DO').length===4&&
-   (d.pins||[]).some(p=>p.id==='X10:6'&&p.label==='1M'&&p.signalType==='POWER')&&
+   // CPU supply is separate from 3L+/3M; missing CPU power pins fail closed.
+    (d.pins||[]).some(p=>p.id==='X10:1'&&p.signalType==='POWER')&&
+    (d.pins||[]).some(p=>p.id==='X10:2'&&p.signalType==='POWER')&&
+    (d.pins||[]).some(p=>p.id==='X10:6'&&p.label==='1M'&&p.signalType==='POWER')&&
    (d.pins||[]).some(p=>p.id==='X12:1'&&p.label==='3L+'&&p.signalType==='POWER')&&
    (d.pins||[]).some(p=>p.id==='X12:2'&&p.label==='3M'&&p.signalType==='POWER')&&
    (d.pins||[]).some(p=>p.id==='X10:7'&&p.signalType==='DI')&&
