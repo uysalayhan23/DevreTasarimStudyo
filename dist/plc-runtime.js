@@ -459,6 +459,13 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   const bankVoltage=bankRestricted?(verifiedDc&&typeof net.dcVoltage==='function'?net.dcVoltage(c,'X12:1','X12:2'):net.voltage(c,'X12:1','X12:2')):null;
  const outputSupplyValid=!bankRestricted||(Number.isFinite(Number(bankVoltage))&&Number(bankVoltage)>0);
  if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;
+ // A Q terminal wired directly to the output bank's 3M return is a hard
+ // short, not a valid energized load. Refuse that Q link before network
+ // iteration to avoid toggling between powered and shorted states.
+ if(verifiedDc&&typeof net.find==='function'){
+  const returnRoot=net.find(JSON.stringify([c.id,'X12:2']));
+  for(const p of outputPins)if(net.find(JSON.stringify([c.id,p.id]))===returnRoot)prg.outputs[p.id]=false;
+ }
  const state={powered,inputs:Object.fromEntries(inputs.map(x=>[x.id,x.value])),analogInputs,outputs:prg.outputs,program:prg.mode,supply:sp?{a:sp.a.id,b:sp.b.id,type:sp.type}:null};
  c._plcRuntime=state;c._active=powered;return state;
 }
