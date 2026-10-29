@@ -18,16 +18,16 @@
   }
   function ports(item,d){
     d=panelDefinition(d);
-    return (d?.pins||[]).map(pin=>{
+    return (Array.isArray(d?.pins)?d.pins:[]).filter(pin=>pin&&typeof pin.id==='string'&&pin.id).map(pin=>{
       const physical=item?.panelGeometryStatus==='ready'&&Physical&&typeof Physical.terminalAnchor==='function'?Physical.terminalAnchor(d,pin.id):null;
       if(physical){
         const side=physical.side,v=directions[side];
-        return {c:item.id,p:pin.id,label:pin.label||pin.id,side,v,surface:surface(item),z:20+item.depth,
+        return {c:item.id,p:pin.id,label:pin.label||pin.id,side,v,surface:surface(item),z:20+(Number.isFinite(item?.depth)?item.depth:0),
           geometryStatus:'verified',geometrySource:physical.sourceUrl,
           x:round(item.x+physical.xMm),y:round(item.y+physical.yMm)};
       }
       const side=directions[pin.side]?pin.side:pin.y<=0?'top':pin.y>=d.h?'bottom':pin.x<=0?'left':'right',v=directions[side];
-      return {c:item.id,p:pin.id,label:pin.label||pin.id,side,v,surface:surface(item),z:20+item.depth,
+      return {c:item.id,p:pin.id,label:pin.label||pin.id,side,v,surface:surface(item),z:20+(Number.isFinite(item?.depth)?item.depth:0),
         geometryStatus:'approximate',geometrySource:null,
         x:round(item.x+(side==='left'?0:side==='right'?item.w:pin.x/d.w*item.w)),
         y:round(item.y+(side==='top'?0:side==='bottom'?item.h:pin.y/d.h*item.h))};
