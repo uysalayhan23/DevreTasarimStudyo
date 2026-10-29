@@ -2,7 +2,8 @@
  'use strict';
  // HMI-like readonly educational monitor: signals come from actual PLC simulation, no force commands.
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
+ const pins=(d,t)=>(Array.isArray(d?.pins)?d.pins:[])
+  .filter(p=>p&&typeof p.id==='string'&&p.id&&p.signalType===t);
  const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  function snapshot(c,d,running,savedMatches,validationError=null){
   const state=c?._plcRuntime;
@@ -10,7 +11,13 @@
   // Never advertise that fault state as live or show misleading 0/1 telemetry.
   const error=validationError||(typeof c?._dtsLadderError==='string'&&c._dtsLadderError.trim()?c._dtsLadderError:null);
   const mapped=!!state&&['DI','DO'].every(type=>pins(d,type).every(p=>Object.prototype.hasOwnProperty.call(state[type==='DI'?'inputs':'outputs']||{},p.id)&&typeof state[type==='DI'?'inputs':'outputs'][p.id]==='boolean'));
-  const live=!!running&&!!savedMatches&&!error&&mapped&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
+  // For real saved Ladder programs, require a complete scan trace before exposing I/O.
+  // Legacy read-only telemetry without a Ladder program keeps its existing contract.
+  const traceReady=!c?.ladderProgram||(Array.isArray(c?.ladderProgram?.rungs)&&
+   Array.isArray(c?._dtsLadderTraces)&&c._dtsLadderTraces.length===c.ladderProgram.rungs.length&&
+   c._dtsLadderTraces.every((t,i)=>t&&t.id===c.ladderProgram.rungs[i]?.id&&
+    typeof t.active==='boolean'&&typeof t.value==='boolean'));
+  const live=!!running&&!!savedMatches&&!error&&mapped&&traceReady&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));
   return {live,powered:live?!!state.powered:null,
    inputs:list('DI','inputs','I'),outputs:list('DO','outputs','Q'),
