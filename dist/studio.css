@@ -1109,7 +1109,7 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
  #dtsPrintSurface .dts-print-heading{font-size:18pt;font-weight:700;margin:0 0 6mm;color:#142b3d}
  #dtsPrintSurface>p{font-size:9pt;color:#516273;margin:0 0 4mm}
  #dtsPrintSurface .dts-print-diagram{display:block!important;width:100%;overflow:visible!important}
- #dtsPrintSurface svg{display:block!important;width:100%!important;height:auto!important;max-height:158mm!important;
+ #dtsPrintSurface .dts-print-diagram > svg{display:block!important;width:100%!important;height:auto!important;max-height:158mm!important;
  transform:none!important;overflow:visible!important}
 }
 
