@@ -5,7 +5,7 @@ const limits={inputCount:2,outputCount:2};
 const p={version:1,rungs:[{id:'before',paths:[[{type:'NO',ref:'Q1'}]],coil:{type:'OUT',ref:'Q2'}},{id:'after',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
 const draw=(r,s,t)=>D.render(r,{live:true,values:s.memory.values,pathStates:t.pathStates,coilValue:t.value});
 test('scan-time trace cannot color a preceding rung from later Q changes',()=>{
- const s=L.scan(p,{I1:true},{},1,limits),row=E.monitorRows(p,p,s.traces,true,'dts-ladder-v1')[0];
+ const s=L.scan(p,{I1:true},{},1,limits),row=E.monitorRows(p,p,s.traces,true,'dts-ladder-v1',true)[0];
  assert.equal(s.memory.values.Q1,true);assert.deepEqual(row.pathStates,[false]);
  assert.doesNotMatch(draw(p.rungs[0],s,s.traces[0]),/dts-ladder-wire-hot/);
 });
