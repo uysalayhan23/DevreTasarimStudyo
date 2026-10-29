@@ -50,7 +50,13 @@
     try{
      const result=doc.documentElement.requestFullscreen();
      nativeRequested=true;
-     result?.catch?.(()=>{nativeRequested=false});
+     result?.then?.(()=>{
+      // A native fullscreen request can finish AFTER the user exits CSS full mode.
+      // Never leave a delayed browser fullscreen active after switching to standard view.
+      if(!full&&doc.fullscreenElement===doc.documentElement&&typeof doc.exitFullscreen==='function'){
+       try{doc.exitFullscreen()?.catch?.(()=>{})}catch{}
+      }
+     },()=>{nativeRequested=false});
     }catch{nativeRequested=false}
    }
    return true;
