@@ -173,7 +173,7 @@
       if(document.body.classList.contains('dashboard-open')){deferredInitialScene=true;return}
     }
     deferredInitialScene=false;
-    if(project.workspaceMode==='panel'){running=false;clearTimeout(simulationTimer);syncSensorAnimation();sound.sync(project,byId,false);els.simulate.disabled=true;els.simulate.classList.remove('running');els.simulate.textContent='PANO YERLEŞİMİ';els.guard.hidden=true;window.DTSPanelEditor?.render();if(!simulationTick)scheduleSave();return}
+    if(project.workspaceMode==='panel'){if(pendingScenePaint){cancelAnimationFrame(pendingScenePaint);pendingScenePaint=0}++scenePaintGeneration;running=false;clearTimeout(simulationTimer);syncSensorAnimation();sound.sync(project,byId,false);els.simulate.disabled=true;els.simulate.classList.remove('running');els.simulate.textContent='PANO YERLEŞİMİ';els.guard.hidden=true;window.DTSPanelEditor?.render();if(!simulationTick)scheduleSave();return}
     clearTimeout(simulationTimer);simulationTimer=null;
     window.DTSAssemblies.sync(project,byId,appearance);
     Lines.synchronize(project,byId);syncMechanicalEncoderBindings();
