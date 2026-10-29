@@ -101,8 +101,14 @@
   function normalizeLegacy(p){return migrate(p)}
   function validate(p){
     if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&typeof w.from==='object'&&!Array.isArray(w.from)&&w.to&&typeof w.to==='object'&&!Array.isArray(w.to)))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
-    const ids=new Set();for(const c of p.components){if(ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(!Number.isFinite(Number(c[k]))||Math.abs(Number(c[k]))>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
-    if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!Number.isFinite(j.x)||!Number.isFinite(j.y))))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
+    const ids=new Set();for(const c of p.components){if(!c.id.trim()||ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(!Number.isFinite(Number(c[k]))||Math.abs(Number(c[k]))>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
+    if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!j.id.trim()||!Number.isFinite(j.x)||!Number.isFinite(j.y))))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
+    const junctionIds=new Set();for(const j of p.junctions||[]){if(junctionIds.has(j.id))throw Error('Projedeki kablo birleşim noktası kimliği tekrarlanıyor.');junctionIds.add(j.id)}
+    // Legacy unnamed conductors remain readable; present wire identities must be unique.
+    const wireIds=new Set();for(const w of p.wires)if(w.id!==undefined&&w.id!==null){
+      if(typeof w.id!=='string'||!w.id.trim()||wireIds.has(w.id))throw Error('Projedeki kablo kimliği geçersiz veya tekrarlanıyor.');
+      wireIds.add(w.id);
+    }
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
   }
   function parse(text){if(exceedsProjectBytes(text))throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
