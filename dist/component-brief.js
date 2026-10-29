@@ -13,11 +13,13 @@
  };
  function model(d,c){
   if(!d||!c)return null;
-  const ps=Array.isArray(d.pins)?d.pins:[];
+  // A malformed optional draft pin cannot take down the selected-device card.
+  const ps=(Array.isArray(d.pins)?d.pins:[]).filter(p=>p&&typeof p==='object'&&p.id!=null&&String(p.id).trim());
   const name=String(d.name||d.model||d.id||'Eleman');
   const subtitle=[d.brand,d.model].filter(Boolean).map(String).join(' · ');
   const terminals=ps.slice(0,8).map(p=>({id:String(p.id??''),label:String(p.label??p.id??''),type:String(p.signalType??'')}));
-  const sensing=Sensors?.supported?.(d)?Sensors.settings(c,d):null;
+  // Sensor presentation may inspect incomplete drafts; never mutate the catalog.
+  const sensing=Sensors?.supported?.(d)?Sensors.settings(c,{...d,pins:ps}):null;
   const numeric=n=>Number(n).toLocaleString('tr-TR',{maximumFractionDigits:1});
   const target=sensing?Sensors.materials.find(([key])=>key===sensing.target)?.[1]||'Hedef yok':null;
   const parameters=sensing?[
