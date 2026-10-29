@@ -11,6 +11,31 @@
   if(!Object.values(out).every(Number.isFinite)||out.x+out.width===out.x||out.y+out.height===out.y)return null;
   return out;
  }
+ // PDF print must not silently load remote SVG content. Local packaged product
+ // photos remain printable, unlike the stricter PNG canvas export rules.
+ function safeResources(svg){
+  if(typeof svg?.querySelectorAll!=='function')return {ok:false,error:'Yazdırılacak SVG kaynakları incelenemedi.'};
+  let nodes;
+  try{nodes=svg.querySelectorAll('image,use,script,foreignObject,feImage,animate,animateMotion,animateTransform,set,[href],[xlink\\:href]')}
+  catch{return {ok:false,error:'SVG kaynak incelemesi başarısız.'}}
+  for(const node of nodes||[]){
+   const tag=String(node?.localName||node?.tagName||'').toLowerCase().split(':').pop();
+   if(['script','foreignobject','feimage','animate','animatemotion','animatetransform','set'].includes(tag))
+    return {ok:false,error:'PDF için etkin veya harici SVG öğesi desteklenmiyor.'};
+   const href=[node?.getAttribute?.('href'),node?.getAttribute?.('xlink:href')]
+     .filter(x=>x!==null&&x!==undefined);
+   if(tag==='image'&&!href.length)return {ok:false,error:'PDF görsel kaynağı eksik.'};
+   for(const value of href){
+    const v=String(value).trim();
+    // Same-document refs and packaged raster photos are allowed; remote URLs are not.
+    const local=/^#[a-z_][\w:.-]*$/i.test(v);
+    const shipped=tag==='image'&&/^assets\/(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.(?:png|jpe?g|webp)$/i.test(v);
+    const data=tag==='image'&&/^data:image\/(?:png|jpe?g|webp);base64,[a-z0-9+/]+={0,2}$/i.test(v);
+    if(!local&&!shipped&&!data)return {ok:false,error:'PDF yazdırmada harici veya güvensiz SVG kaynağı engellendi.'};
+   }
+  }
+  return {ok:true};
+ }
  function prepare(doc,svg,scene,title){
   if(!doc?.createElement||!doc?.body||!svg?.cloneNode||!scene?.getBBox)
    return {ok:false,error:'SVG çizim alanı bulunamadı.'};
@@ -19,6 +44,7 @@
   let duplicate;
   try{duplicate=svg.cloneNode(true)}catch{return {ok:false,error:'Yazdırma için SVG çizimi kopyalanamadı.'}}
   if(!duplicate?.setAttribute)return {ok:false,error:'Yazdırma için SVG çizimi kopyalanamadı.'};
+  const safety=safeResources(duplicate);if(!safety.ok)return safety;
   duplicate.id='dtsPrintableArtwork';
   duplicate.setAttribute('viewBox',[area.x,area.y,area.width,area.height].join(' '));
   duplicate.setAttribute('preserveAspectRatio','xMidYMid meet');
@@ -46,6 +72,6 @@
   try{win.print()}catch{cleanup();return {ok:false,error:'Tarayıcı yazdırma penceresi açılamadı.'}}
   return {ok:true,rect:result.rect};
  }
- const api=Object.freeze({bounds,prepare,printScene});
+ const api=Object.freeze({bounds,safeResources,prepare,printScene});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSProjectPrint=api;
 })(typeof window==='undefined'?globalThis:window);
