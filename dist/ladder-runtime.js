@@ -97,7 +97,13 @@
      delete s.start;delete s.offStart;delete s.pulseStart;delete s.prev;
      bits[ref]=false;
     }
-    s.kind=coil.type;
+    // Changing a timer preset is a fresh configuration. Old elapsed time must
+    // not complete TON early or re-energize an already expired TOF/TP.
+    if(Number.isInteger(s.presetMs)&&s.presetMs!==coil.presetMs){
+     delete s.start;delete s.offStart;delete s.pulseStart;
+     s.prev=active;bits[ref]=false;
+    }
+    s.kind=coil.type;s.presetMs=coil.presetMs;
     if(coil.type==='TON'){
      if(!active){delete s.start;next=false;}
      else{if(!Number.isFinite(s.start)||now<s.start)s.start=now;next=(now-s.start)>=coil.presetMs;}
@@ -120,7 +126,11 @@
     const s=states[ref]||(states[ref]={count:initial});
     // A CTU/CTD type change must not reuse the other counter's count or edge memory.
     if(s.kind&&s.kind!==coil.type){s.count=initial;delete s.prev;delete s.tick;}
-    s.kind=coil.type;
+    // A new counter target must not inherit the old count or a held input edge.
+    if(Number.isInteger(s.preset)&&s.preset!==coil.preset){
+     s.count=initial;s.prev=active;bits[ref]=false;
+    }
+    s.kind=coil.type;s.preset=coil.preset;
     if(!Number.isInteger(s.count))s.count=initial;
     if(active&&!s.prev)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;
