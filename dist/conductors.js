@@ -96,6 +96,18 @@
   function check(project,byId,from,to,ignoreWireId){
     // A visual snap is not an electrical connection until both endpoint IDs
     // resolve to real catalog terminals or existing junctions.
+    // A visual snap is not a unique physical socket when IDs collide.
+    const uniqueEndpoint=r=>{
+      if(r?.j!=null)return (project.junctions||[]).filter(j=>j?.id===r.j).length===1;
+      if(r?.c!=null){
+        const matches=(project.components||[]).filter(c=>c?.id===r.c);
+        if(matches.length!==1)return false;
+        const pins=byId?.[matches[0].typeId]?.pins;
+        return Array.isArray(pins)&&pins.filter(p=>p?.id===r.p).length===1;
+      }
+      return false;
+    };
+    if(!uniqueEndpoint(from)||!uniqueEndpoint(to))return {ok:false,reason:'Kablo uç kimliği tekil değil veya katalog terminali doğrulanamadı.'};
     // Damaged catalog pin arrays must never enter the electrical net analyzer.
     if(project.components.some(c=>Array.isArray(byId[c.typeId]?.pins)&&byId[c.typeId].pins.some(p=>!p||typeof p.id!=='string')))
       return {ok:false,reason:'Katalog terminal listesi eksik veya bozuk.'};
