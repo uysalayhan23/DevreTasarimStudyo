@@ -532,6 +532,7 @@
         distance+=steps*GRID;
         if(distance>Math.min(directDistance*2.5,directDistance+2800)){valid=false;break}
         for(let n=1;n<=steps;n++){
+          if((n&63)===0)yield;
           const key=cell({x:p.x+dx*n*GRID,y:p.y+dy*n*GRID});
           if(key!==goalCell&&occupied.has(key)){valid=false;break}
           score+=GRID+(routingUsage.get(key)||0)*250;
