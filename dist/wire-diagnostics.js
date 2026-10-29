@@ -53,7 +53,14 @@
  function markup(report){
   if(!report)return '';
   if(!report.total)return '<p class="dts-wire-audit-ok">Kayıtlı '+report.checked+' kablonun bileşen ve terminal kimlikleri tanınıyor. Bu, elektriksel doğruluk veya güvenlik kabulü değildir.</p>';
-  const detail=report.issues.map(x=>'<li><button type="button" data-audit-wire="'+esc(x.wire)+'" title="Şemada kabloyu işaretle">'+esc(x.wire)+'</button>: '+esc(x.message)+'</li>').join('');
+  const detail=report.issues.map(x=>{
+   const label=esc(x.wire),msg=esc(x.message);
+   // Device/node identity errors are not wire objects; never create a fake wire-focus button.
+   const focus=x.kind==='duplicate-component-id'||x.kind==='missing-component-id'||x.kind==='duplicate-junction-id'
+    ?'<strong>'+label+'</strong>'
+    :'<button type="button" data-audit-wire="'+label+'" title="Şemada kabloyu işaretle">'+label+'</button>';
+   return '<li>'+focus+': '+msg+'</li>';
+  }).join('');
   return '<p><strong>'+report.total+' referans sorunu</strong> bulundu. Kablolar değiştirilmedi.</p><ul>'+detail+'</ul>'+
    (report.truncated?'<small>İlk 16 sorun gösterildi; yeniden kontrol edin.</small>':'');
  }
