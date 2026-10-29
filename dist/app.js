@@ -220,15 +220,20 @@
     // Opening or dropping a wired project must not block zoom, pan and selection
     // while the entire cable graph is routed synchronously on the UI thread.
     if(progressive&&sceneWires.length>4){
-      let index=0;
+      let index=0,routingTask=null;
       const paintBatch=()=>{
         pendingScenePaint=0;
         if(scenePaintGeneration!==paintGeneration)return;
         const started=performance.now();
         do{
-          const wire=sceneWires[index];
-          renderWire(wire,index,reuseRoutes?.get(wire.id));index++;
-        }while(index<sceneWires.length&&performance.now()-started<9);
+          const wire=sceneWires[index],reused=reuseRoutes?.get(wire.id);
+          if(reused){renderWire(wire,index,reused);index++}
+          else{
+            if(!routingTask)routingTask=routePointsIter(wire.from,wire.to,wire.points||wire.fixedPoints||[]);
+            const result=routingTask.next();
+            if(result.done){renderWire(wire,index,result.value);routingTask=null;index++}
+          }
+        }while(index<sceneWires.length&&performance.now()-started<8);
         if(index<sceneWires.length)pendingScenePaint=requestAnimationFrame(paintBatch);
         else finishScene();
       };
@@ -471,7 +476,7 @@
     }
     obstacleCellSource=routeObstacles;obstacleCells=next;return next;
   }
-  function gridRoute(from,to,preferredDir=null){
+  function* gridRouteIter(from,to,preferredDir=null){
     const snap=p=>({x:Math.max(0,Math.min(SHEET_W,Math.round(p.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(p.y/GRID)*GRID))}),s=snap(from),goal=snap(to),cell=p=>`${p.x},${p.y}`,state=(p,dir)=>`${p.x},${p.y},${dir}`,goalCell=cell(goal);
     if(cell(s)===goalCell)return[s];
     // For clear direct/one-turn paths, the shortest route is known without
@@ -502,13 +507,14 @@
     const directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&occupied.has(cell(p)),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
     heapPush(open,{...s,dir:preferredDir??-1,key:startKey,h:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y),f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
     let foundKey=null,guard=0;
-    while(open.length&&guard++<160000){
+    while(open.length&&guard++<160000){if((guard&63)===0)yield;
       const cur=heapPop(open),ck=cur.key;if(closed.has(ck))continue;if(cell(cur)===goalCell){foundKey=ck;break}closed.add(ck);
       directions.forEach(([dx,dy],dir)=>{const n={x:cur.x+dx,y:cur.y+dy};if(n.x<0||n.x>SHEET_W||n.y<0||n.y>SHEET_H||blocked(n))return;const nk=state(n,dir),turn=cur.dir<0||cur.dir===dir?0:(cur.dir^1)===dir?120:70,ng=cost.get(ck)+GRID+turn+(routingUsage.get(cell(n))||0)*250;if(ng<(cost.get(nk)??Infinity)){cost.set(nk,ng);prev.set(nk,ck);heapPush(open,{...n,dir,key:nk,h:Math.abs(goal.x-n.x)+Math.abs(goal.y-n.y),f:ng+Math.abs(goal.x-n.x)+Math.abs(goal.y-n.y)})}});
     }
     if(!foundKey){const mid=Math.round((s.x+goal.x)/(2*GRID))*GRID;return cleanPoints([s,{x:mid,y:s.y},{x:mid,y:goal.y},goal])}
     const path=[];let k=foundKey;while(k){const [x,y]=k.split(',').map(Number);path.push({x,y});if(k===startKey)break;k=prev.get(k)}return cleanPoints(path.reverse());
   }
+  function gridRoute(from,to,preferredDir=null){const task=gridRouteIter(from,to,preferredDir);let result;do{result=task.next()}while(!result.done);return result.value}
   function markRoute(points){for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],steps=Math.max(1,Math.round(Math.max(Math.abs(b.x-a.x),Math.abs(b.y-a.y))/GRID));for(let n=0;n<=steps;n++){const x=Math.round((a.x+(b.x-a.x)*n/steps)/GRID)*GRID,y=Math.round((a.y+(b.y-a.y)*n/steps)/GRID)*GRID,k=`${x},${y}`;routingUsage.set(k,(routingUsage.get(k)||0)+1)}}}
   function routePoints(fromRef,toRef,manual=[],recordUsage=true){
     const escapeCheckpoint=point=>{let q={x:Math.max(0,Math.min(SHEET_W,Math.round(point.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(point.y/GRID)*GRID))};for(const o of routeObstacles){if(q.x>o.left&&q.x<o.right&&q.y>o.top&&q.y<o.bottom){const options=[{x:Math.round((o.left-GRID)/GRID)*GRID,y:q.y},{x:Math.round((o.right+GRID)/GRID)*GRID,y:q.y},{x:q.x,y:Math.round((o.top-GRID)/GRID)*GRID},{x:q.x,y:Math.round((o.bottom+GRID)/GRID)*GRID}].filter(p=>p.x>=0&&p.x<=SHEET_W&&p.y>=0&&p.y<=SHEET_H);q=options.sort((a,b)=>Math.abs(a.x-q.x)+Math.abs(a.y-q.y)-Math.abs(b.x-q.x)-Math.abs(b.y-q.y))[0]||q}}return q};
@@ -517,6 +523,14 @@
     for(let i=1;i<checkpoints.length;i++){const segment=gridRoute(checkpoints[i-1],checkpoints[i],i===1?firstDir:null);pts.push(...segment.slice(i===1?1:0))}
     pts.push(...(b.lead?[...b.lead].reverse().slice(1):[b.pos]));
     const cleaned=cleanPoints(pts);if(recordUsage)markRoute(cleaned);return cleaned;
+  }
+  function* routePointsIter(fromRef,toRef,manual=[],recordUsage=true){
+    const escapeCheckpoint=point=>{let q={x:Math.max(0,Math.min(SHEET_W,Math.round(point.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(point.y/GRID)*GRID))};for(const o of routeObstacles){if(q.x>o.left&&q.x<o.right&&q.y>o.top&&q.y<o.bottom){const options=[{x:Math.round((o.left-GRID)/GRID)*GRID,y:q.y},{x:Math.round((o.right+GRID)/GRID)*GRID,y:q.y},{x:q.x,y:Math.round((o.top-GRID)/GRID)*GRID},{x:q.x,y:Math.round((o.bottom+GRID)/GRID)*GRID}].filter(p=>p.x>=0&&p.x<=SHEET_W&&p.y>=0&&p.y<=SHEET_H);q=options.sort((a,b)=>Math.abs(a.x-q.x)+Math.abs(a.y-q.y)-Math.abs(b.x-q.x)-Math.abs(b.y-q.y))[0]||q}}return q};
+    const a=endpointInfo(fromRef),b=toRef?.point?{pos:toRef.point,stub:toRef.point}:endpointInfo(toRef),checkpoints=[a.stub,...manual.map(escapeCheckpoint),b.stub],pts=[...(a.lead||[a.pos])];
+    const firstDir={right:0,left:1,bottom:2,top:3}[a.side];
+    for(let i=1;i<checkpoints.length;i++){const segment=yield* gridRouteIter(checkpoints[i-1],checkpoints[i],i===1?firstDir:null);pts.push(...segment.slice(i===1?1:0))}
+    pts.push(...(b.lead?[...b.lead].reverse().slice(1):[b.pos]));
+    const cleaned=cleanPoints(pts);return cleaned;
   }
   function roundedPath(points,radius=7){
     if(points.length<2)return'';
