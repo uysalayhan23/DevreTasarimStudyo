@@ -236,6 +236,10 @@
           catch(e){throw Error('Hedef proje dosyası geçersiz veya okunamadı; üzerine yazılmadı: '+e.message)}
         }
         if(isProtected(targetProject))throw Error('Bu dosya korunan bir hazır örnek. Farklı bir dosya adı veya klasör seçin.');
+        // Never replace another editable project's file, even if it parses cleanly.
+        // Keep legacy files without an ID openable through their remembered handle.
+        if(targetProject?.projectId!=null&&String(targetProject.projectId)!==String(project.projectId))
+          throw Error('Hedef dosya başka bir projeye ait; üzerine yazılmadı. Farklı bir dosya seçin.');
         if(saveAs){
           existing=existing||await db('get','handle:'+project.projectId);
           if(existing?.handle&&(handle===existing.handle||await handle.isSameEntry?.(existing.handle)))
