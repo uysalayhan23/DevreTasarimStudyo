@@ -1,0 +1,32 @@
+SC262 Two-NPN Schmitt trigger - ngspice 47 exploratory simulation
+* Educational low-voltage, software-only model. Not a manufacturer-verified BD139 SPICE model.
+* Nodes: in=input sweep, out=Q2 collector, b1/b2=bases, c1=Q1 collector, e=shared emitter.
+* Prior SC030 source: RC1=RC2=2.2k, RE=680, RIN=10k, RPD=100k,
+* RFB=10k (Q1 collector to Q2 base), RB2=22k. SC262 adds RPOS=100k
+* from Q2 collector to Q1 base as a separate feedback path.
+VCC vcc 0 DC 12
+* Input: ramp from 0 to 12 V over 0.2 s, then down to 0 V over 0.2 s.
+VIN in 0 PWL(0 0 5m 0 205m 12 405m 0 410m 0)
+RIN in b1 10k
+RPD b1 0 100k
+RPOS out b1 100k
+RC1 vcc c1 2.2k
+RC2 vcc out 2.2k
+RE e 0 680
+RFB c1 b2 10k
+RB2 b2 0 22k
+Q1 c1 b1 e BD139_APPROX
+Q2 out b2 e BD139_APPROX
+* Approximate generic NPN parameters, NOT a vendor-authentic BD139 model.
+* Replace with a trusted BD139 manufacturer model before physical acceptance.
+.model BD139_APPROX NPN(IS=1e-13 BF=100 VAF=80 IKF=0.5 ISE=1e-12 NE=1.5 BR=5 CJE=120p CJC=50p TF=0.6n TR=100n)
+.tran 50u 410m 0 50u
+* Q2 collector is expected to go LOW->HIGH on the rising input sweep,
+* and HIGH->LOW on the falling sweep. A lack of measurement is a failed check.
+.meas tran vin_up FIND v(in) WHEN v(out)=6 RISE=1
+.meas tran vin_down FIND v(in) WHEN v(out)=6 FALL=1
+.meas tran out_start FIND v(out) AT=5m
+.meas tran out_peak FIND v(out) AT=205m
+.meas tran out_end FIND v(out) AT=405m
+.save v(in) v(out) v(b1) v(b2) v(c1) v(e)
+.end

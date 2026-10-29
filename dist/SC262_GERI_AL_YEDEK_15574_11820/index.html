@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Devre Tasarım Stüdyosu</title>
+  <link rel="stylesheet" href="styles.css?rev=20261008-marquee-screen-overlay2">
+  <link rel="stylesheet" href="studio.css?rev=20261004-wp014shboard3">
+  <link rel="stylesheet" href="v20.css"><link rel="stylesheet" href="acs800.css">
+  <link rel="stylesheet" href="arduino.css?rev=20261004-wp014shboard3">
+  <link rel="stylesheet" href="tutorial.css?rev=20261010-measure-batch-d2">
+</head>
+<body class="dashboard-open">
+  <section id="dashboard" class="dashboard" aria-label="Proje dashboardu">
+    <header class="dashboard-header"><a class="dashboard-brand" href="#" aria-label="Devre Tasarım Stüdyosu"><span class="brand-mark">DTS</span><span>Devre Tasarım Stüdyosu<small>Keşfet. Tasarla. Güvenle öğren.</small></span></a><span class="dashboard-version">ÇEVRİMDIŞI · v1.19.20</span></header>
+    <div class="dashboard-content">
+      <section class="electrical-warning" aria-label="Elektrik tehlikesi uyarısı">
+        <div class="warning-sign" data-electrical-sign></div>
+        <div class="danger-banner"><strong>ELEKTRİK GÖZLE GÖRÜLMEZ.<br>ELEKTRİK ÇARPMASI ÖLÜMCÜL OLABİLİR!</strong><p>GERÇEK DEVREYE, PANOYA VEYA KABLOYA DOKUNMADAN ÖNCE ENERJİYİ KES!<br>ENERJİSİ KESİLMEMİŞ KABLOYA KESİNLİKLE DOKUNMA!</p><span>Enerjisizliği öğretmenin veya yetkili bir kişi uygun ölçü aletiyle doğrulasın. Enerjinin tekrar verilmesini önleyin. Gerçek elektrik çalışmalarını tek başına yapma.</span></div>
+      </section>
+      <div class="dashboard-welcome"><div><span class="eyebrow">YAKUB’UN ATÖLYESİ</span><h1>Bugün ne tasarlayalım?</h1><p>Bir tasarım alanı seç veya kaldığın projeden devam et.</p></div><button id="resumeProject" class="secondary" hidden>Son taslağa devam et →</button></div>
+      <div class="design-cards">
+        <button class="design-card control-card" data-new-mode="control"><span class="mode-number">01</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M12 8v12m0 22v10h55V38m0-21V8H12M12 22l10 16M59 20h16v18H59Z"/></svg><strong>KUMANDA DEVRELERİ TASARIMI</strong><span>Buton, kontaktör, motor ve PLC.<br>Devreni kur, klasik kumandayı simüle et.</span><b>Yeni kumanda projesi →</b></button>
+        <button class="design-card building-card" data-new-mode="building"><span class="mode-number">02</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M6 28L40 4l34 24M16 24v30h48V24M30 54V34h20v20M40 13v10"/><circle cx="40" cy="25" r="3"/></svg><strong>TESİSAT VE DAĞITIM DEVRELERİ TASARIMI</strong><span>Aydınlatma, priz ve topraklama.<br>Bina tesisatı ve A.G. dağıtımını çiz.</span><b>Yeni tesisat projesi →</b></button>
+        <button class="design-card panel-card" data-new-mode="panel"><span class="mode-number">03</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M31 5h43v50H31ZM31 5L7 12v41l24 2M39 20h27M39 40h27M44 15v12h7V15ZM56 34v12h7V34M16 27v9"/></svg><strong>PANO TASARIMI</strong><span>DIN rayı, montaj plakası ve kapak.<br>Malzemeleri 3D panoya yerleştir.</span><b>Yeni pano projesi →</b></button>
+        <button class="design-card arduino-card" data-new-mode="arduino"><span class="mode-number">04</span><svg viewBox="0 0 80 60" aria-hidden="true"><rect x="8" y="10" width="64" height="40" rx="7"/><path d="M16 17h12v8H16ZM51 18h13M51 24h13M18 41h8m6 0h8m6 0h8m6 0h4M35 20h10v18H35Z"/><circle cx="60" cy="34" r="4"/></svg><strong>ARDUINO ATÖLYESİ</strong><span>Arduino UNO, sensörler, motorlar ve ekranlar.<br>IDE’de kodla, devresini kur ve simüle et.</span><b>Yeni Arduino projesi →</b></button>
+        <button class="design-card tutorial-card" type="button" data-open-tutorial><span class="mode-number">05</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M12 10h24v38H12zM44 10h24v38H44zM18 18h12M18 25h12M18 32h8M50 18h12M50 25h12M50 32h8"/><path d="M34 28h12M40 22v12"/></svg><strong>ÖĞRETİCİ MODU</strong><span>Devreyi gör, çalışma mantığını öğren.<br>Sonra terminal terminal kendin yeniden kur.</span><b>Genişletilmiş uygulamalı derslere gir →</b></button>
+      </div>
+      <section id="tutorialDashboard" class="tutorial-dashboard tutorial-page" aria-labelledby="tutorialTitle" hidden>
+        <div class="tutorial-page-nav"><button type="button" data-tutorial-back>← Dashboard</button><span>ÖĞRETİCİ MODU · kaynak temelli geniş müfredat</span></div>
+        <div class="tutorial-hero"><div><span class="tutorial-kicker">ÖĞRETİCİ MODU</span><h2 id="tutorialTitle">Devreyi gör, anla, sonra terminal terminal kendin kur.</h2><p>Kaynaklardaki konu, temrin ve deneyler ilgili başlıklar altında çoklu uygulamalara dönüştürülür. Önce çalışan örneği ve konu anlatımını incele; sonra <b>Devreyi yeniden kur</b> ile kabloları silip yanıp sönen terminalleri adım adım bağla. Her bağlantı anında kontrol edilir.</p></div><strong id="tutorialStats">0 uygulama tamamlandı</strong></div>
+        <section id="tutorialLabHub" class="tutorial-lab-hub" aria-labelledby="tutorialLabTitle">
+          <header><span>YENİ · SERBEST DENEY ALANI</span><h3 id="tutorialLabTitle">Etkileşimli Deney Laboratuvarları</h3><p>Parametreleri değiştir, simülasyonu çalıştır ve sonucu anında gözlemle.</p></header>
+          <div class="tutorial-lab-cards">
+            <button type="button" class="tutorial-lab-card" data-tutorial-lab-open="transformer"><span>⎍</span><div><strong>Transformatörler Laboratuvarı</strong><small>Primer/sekonder sarım, step-up/down, V-f-akı, yük, verim ve regülasyon.</small></div><b>Deneyi aç →</b></button>
+            <button type="button" class="tutorial-lab-card" data-tutorial-lab-open="motor"><span>⟳</span><div><strong>Motorlar Laboratuvarı</strong><small>Asenkron, senkron ve DC motor; hız, tork, akım, yük, kutup ve V/f etkileri.</small></div><b>Deneyi aç →</b></button>
+          </div>
+        </section>
+        <section id="tutorialLabPanel" class="tutorial-lab-panel" hidden aria-live="polite"></section>
+        <div class="tutorial-toolbar"><input id="tutorialSearch" type="search" placeholder="Konu ara: vaviyen, 4–20 mA, PNP, mühürleme…" aria-label="Öğretici konu ara"><div id="tutorialGroupFilters" class="tutorial-group-filters" aria-label="Öğretici konu grupları"></div></div>
+        <div id="tutorialTopicGrid" class="tutorial-topic-grid" aria-live="polite"></div>
+      </section>
+      <section class="projects-section"><div class="section-heading"><div><h2>Projelerim</h2><p id="folderStatus">Proje klasörünü seçerek bilgisayarındaki projeleri burada görebilirsin.</p></div><div class="project-actions"><button id="dashboardOpen" class="secondary">Dosyadan aç</button><button id="chooseProjectFolder" class="primary">Proje klasörü seç</button><button id="refreshProjects" class="secondary" title="Projeleri yenile">↻ Yenile</button></div></div><div id="folderNotice" class="folder-notice" hidden></div><div id="projectCards" class="project-cards" aria-live="polite"></div></section>
+      <section class="starter-section"><h2>ABB ACS800 R5 · sürücü atölyesi</h2><div class="starter-buttons"><button data-example="acs800panel">ACS800 · Panel ve yön</button><button data-example="acs800pot">ACS800 · RMIO ve potansiyometre</button><button data-example="acs800current">ACS800 · 4–20 mA ve röleler</button><button data-example="acs800pid">ACS800 · PID kontrol</button></div></section>
+      <section class="starter-section"><h2>SINAMICS V20 · sürücü atölyesi</h2><div class="starter-buttons"><button data-example="v20bop">V20 · Panel ve rampalar</button><button data-example="v20pot">V20 · Potansiyometre ile hız</button><button data-example="v20npn">V20 · NPN kumanda</button><button data-example="v20current">V20 · 4–20 mA ve AO1 ölçümü</button></div></section>
+      <section class="starter-section"><h2>Ölçüm atölyesi · yeni</h2><div class="starter-buttons"><button data-example="ht2115">Gentek · sıcaklık ve nem</button><button data-example="waz115">WAZ5 · V → mA</button><button data-example="rtd115">ORDEL · PT100 döngüsü</button><button data-example="tc115">ORDEL · termokupl döngüsü</button><button data-example="enda115">ENDA · sıcaklık kontrolü</button><button data-example="tx115">Baykon · kg → mA</button><button data-example="meter115">UNI-T · hareketli problar</button><button data-example="lit115">Işıklı buton · bağımsız lamba</button></div></section>
+      <section class="starter-section"><h2>HCFA X2E · servo atölyesi</h2><div class="starter-buttons"><button data-example="hcfa_x2e_pulse_npn">X2E · NPN Pulse/Direction</button><button data-example="hcfa_x2e_internal_position">X2E · 16 dahili pozisyon</button><button data-example="hcfa_x2e_modbus_speed">X2E · Modbus hız</button><button data-example="hcfa_x2e_modbus_torque">X2E · Modbus tork</button><button data-example="hcfa_x2e_modbus_position">X2E · Modbus konum</button></div></section>
+      <section class="starter-section"><h2>DOLD SAFEMASTER · emniyet atölyesi</h2><div class="starter-buttons"><button data-example="dold_bg5933">BG 5933 · İki el</button><button data-example="dold_bh5933">BH 5933 · İki el</button><button data-example="dold_bn5930">BN 5930.48 · Not-Aus</button><button data-example="dold_bo5988_47">BO 5988.47 · Gecikmeli</button><button data-example="dold_bo5988_61">BO 5988.61 · 6NO+1NC</button><button data-example="dold_bo5988_62">BO 5988.62 · 6NO+1NO</button><button data-example="dold_lg5925_02">LG 5925.02 · 2NO</button><button data-example="dold_lg5925_04">LG 5925.04 · 4NO</button><button data-example="dold_lg5925_48">LG 5925.48 · 3NO+1NC</button></div></section>
+      <section class="starter-section"><h2>Endüstriyel enkoder · A/B/Z</h2><div class="starter-buttons"><button data-example="encoder_control_119">24 V NPN · Kumanda</button><button data-example="encoder_arduino_119">Arduino UNO · Interrupt sayımı</button></div></section>
+      <section class="starter-section"><h2>Örnekten başla</h2><div class="starter-buttons"><button data-example="control">▶ Başlat / durdur ve mühürleme</button><button data-example="building">⌂ Vavien aydınlatma</button><button data-example="panel">▤ Raylı eğitim panosu</button><button data-example="analog110">↔ Analog sensör çubukları</button><button data-example="selector110">↻ Seçici ve üç lamba</button><button data-example="sounds110">♪ Flaşör ve sesli uyarılar</button><button data-example="temperature112">↕ NTC ve sıcaklık probları</button><button data-example="load112">↓ Kobastar SB2 yük hücresi</button><button data-example="reed113">↔ Reed mıknatıs takımı</button><button data-example="visuals113">▦ Siemens ve mekanik görseller</button><button data-example="visuals111">▦ v1.11 malzemeler</button><button data-example="ct111">↔ Akım trafosu</button><button data-example="phase111">ϟ Faz röleleri</button><button data-example="fuses111">▥ Sigortalar ve NH</button><button data-example="visuals110">▦ Yeni ürün görselleri</button></div></section>
+      <footer class="dashboard-footer"><label class="checkbox-row"><input id="showOpeningWarning" type="checkbox" checked>Elektrik uyarısını her açılışta göster</label><button id="replayOpeningWarning" class="text-button">Açılış mesajını göster</button><span>Bu atölye, Yakub Uysal için babası tarafından hazırlanmıştır.</span></footer>
+    </div>
+  </section>
+  <aside id="tutorialCoach" class="tutorial-coach" hidden aria-live="polite"></aside>
+  <div id="tutorialBottomBar" class="tutorial-bottom-bar" hidden aria-live="polite"></div>
+  <aside id="exampleProtection" class="example-protection" hidden><span>🔒 <b>Hazır örnek · salt okunur</b> — Düzenlemek için kendi kopyanı kaydet.</span><button id="saveExampleCopy">Farklı Kaydet</button></aside>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">DTS</span><span>Devre Tasarım Stüdyosu</span><span class="offline">ÇEVRİMDIŞI · v1.19.20</span></div>
+    <button id="homeBtn" class="tool home-button" title="Dashboarda dön">⌂ Dashboard</button>
+    <div class="toolbar" role="toolbar" aria-label="Proje araçları">
+      <button id="newBtn" class="tool">Yeni</button>
+      <button id="saveBtn" class="tool">Kaydet</button>
+      <button id="openBtn" class="tool">Aç</button>
+      <button id="exportBtn" class="tool">Farklı kaydet</button>
+      <button id="selectAllBtn" class="tool" title="Tüm elemanları seç (Ctrl+A)">Tümünü seç</button>
+      <button id="undoBtn" class="icon-tool" title="Geri al">↶</button>
+      <button id="redoBtn" class="icon-tool" title="Yinele">↷</button>
+      <span class="separator"></span>
+      <button id="zoomOut" class="icon-tool" title="Uzaklaştır">−</button>
+      <span id="zoomLabel">100%</span>
+      <button id="zoomIn" class="icon-tool" title="Yakınlaştır">+</button>
+      <button id="fitBtn" class="icon-tool" title="Sayfaya sığdır">⌗</button>
+    </div>
+    <div class="run-group">
+      <span id="plcGuard" class="guard" hidden>PLC bulunan projede simülasyon kapalıdır</span>
+      <button id="soundBtn" class="tool sound-toggle" aria-pressed="true" title="Simülasyon seslerini aç / kapat">♪ Ses açık</button>
+      <button id="serialMonitorBtn" class="tool serial-monitor-launch" type="button" hidden title="Devreyi kullanmaya devam ederken Serial Monitor'ü ayrı pencerede izle">▤ Serial Monitor</button>
+      <button id="simulateBtn" class="simulate">▶ SİMÜLE ET</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <aside class="library-panel">
+      <div class="panel-heading">
+        <div><strong id="libraryTitle">Sembol Kütüphanesi</strong><small id="libraryCount"></small></div>
+        <button id="collapseLibrary" class="mini" title="Paneli daralt">‹</button>
+      </div>
+      <label class="view-choice">Görünüm<select id="symbolMode"><option value="iec">Şema sembolleri</option><option value="material">3D malzeme</option></select></label>
+      <label class="view-choice norm-choice">Sembol normu<select id="symbolNorm"><option value="TSE">Türk normu · TSE</option><option value="IEC">Avrupa normu · IEC</option><option value="ANSI">Amerikan normu · ANSI</option></select></label>
+      <div class="library-filter-scroll">
+        <label class="search"><span>⌕</span><input id="searchInput" aria-label="Kütüphanede ara" placeholder="Eleman, marka veya model ara…"></label>
+        <div id="categoryTabs" class="tabs" role="tablist" aria-label="Kütüphane türü"></div>
+        <div id="brandFilters" class="brand-filters" aria-label="Markalar"></div>
+        <label class="library-group"><span>Malzeme grubu</span><select id="libraryGroupFilter"></select></label>
+        <label id="seriesFilterRow" class="library-group" hidden><span>PLC ailesi</span><select id="librarySeriesFilter"></select></label>
+      </div>
+      <div id="componentLibrary" class="component-library"></div>
+      <a class="library-guide-link" href="normlar.html" target="_blank" rel="noopener">Norm ve sembol rehberi ↗</a>
+    </aside>
+
+    <section class="workspace-wrap">
+      <div class="sheetbar">
+        <div class="sheet active"><span class="sheet-dot"></span><span id="sheetName">Kumanda Devresi 1</span></div>
+        <span id="modeBadge" class="mode-badge"></span><span id="sheetNorm" class="sheet-norm">IEC</span><button id="renameSheet" class="mini">Yeniden adlandır</button>
+        <span class="sheet-tip">Tekerlek: yakınlaştır · Sağ sürükle: sayfayı taşı · Sol sürükle: kutuyla seç · Simülasyonda Alt+sürükle: kumanda elemanını taşı</span>
+      </div>
+      <div id="viewport" class="viewport" tabindex="0">
+        <svg id="workspace" xmlns="http://www.w3.org/2000/svg" aria-label="Devre çizim alanı">
+          <defs>
+            <pattern id="minorGrid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="#dde4ec" stroke-width="0.85"/></pattern>
+            <pattern id="majorGrid" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="url(#minorGrid)"/><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#c5cfdb" stroke-width="1.15"/></pattern>
+            <filter id="selectedGlow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#2563eb" flood-opacity=".35"/></filter>
+          </defs>
+          <rect class="grid-bg" x="0" y="0" width="2400" height="1500" fill="url(#majorGrid)"/>
+          <g id="scene"></g>
+        </svg>
+        <div id="emptyHint" class="empty-hint">
+          <div class="hint-icon">⌁</div>
+          <strong>Devrenizi oluşturmaya başlayın</strong>
+          <span>Soldaki kütüphaneden bir elemanı bu alana sürükleyin.</span>
+        </div>
+      </div>
+      <section id="panelWorkspace" class="panel-workspace" hidden>
+        <div class="panel-tools panel-toolbar" role="toolbar" aria-label="Pano araçları">
+          <div class="panel-tool-group" role="group" aria-label="Görünüm"><div class="panel-view-buttons"><button data-panel-view="3d" class="active">3D görünüm</button><button data-panel-view="plate">Pano içi</button><button data-panel-view="door">Kapak</button></div><button id="panelOrbitLeft" title="Bakışı sola döndür">↶ Bakış</button><button id="panelOrbitRight" title="Bakışı sağa döndür">Bakış ↷</button></div>
+          <div class="panel-tool-group" role="group" aria-label="Kapak hareketi"><button id="panelToggleDoor">Kapağı kapat</button><label class="door-angle" title="Kapağın açısını ayarla">Açı <input id="panelDoorAngle" type="range" min="0" max="120" value="105"><output id="panelDoorValue">105°</output></label></div>
+          <div class="panel-tool-group" role="group" aria-label="Pano yerleşimi"><button id="panelDimensionsBtn">Pano ölçüleri</button><button id="panelAddRail">+ DIN rayı</button><button id="panelAddDuct">+ Kablo kanalı</button><label>Yerleşim <select id="panelMount"><option value="auto">Malzemeye göre</option><option value="rail">DIN rayı</option><option value="plate">Montaj plakası</option><option value="door">Kapak</option><option value="external">Pano dışı besleme</option></select></label></div>
+          <div class="panel-tool-group panel-wiring-tools" role="group" aria-label="Kablolar"><button id="panelWireMode" aria-pressed="false">⌁ Kablo bağla</button><label><span id="panelWireColorLabel">Yeni kablo</span> <select id="panelWireColor" aria-label="Pano kablo rengi"></select></label><label>Kesit <select id="panelWireSize" aria-label="Pano kablo kesiti"></select></label><button id="panelCancelWire" hidden>İptal (Esc)</button></div>
+        </div>
+        <div id="panelViewport" class="panel-viewport" tabindex="0"><svg id="panelSvg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Üç boyutlu pano yerleşimi ve kablo bağlantıları"></svg><div id="panelHint" class="panel-hint">Önce DIN rayı ekle. Sonra kütüphanedeki malzemeleri üzerine sürükle.<br>İki terminale tıklayarak kablo bağla. Uç yüksükleri otomatik eklenir.</div><span id="panelWireHint" class="panel-wire-hint">İki terminale tıkla: bağla. Kabloya tıkla: rengini değiştir.</span><span class="panel-units">Ölçüler: mm · Yerleşim: 5 mm</span></div>
+      </section>
+      <footer class="statusbar">
+        <span id="statusText"><i class="status-dot"></i> Hazır</span>
+        <span id="wireStatus">Kablo: Kırmızı · 1,5 mm²</span>
+        <span id="objectCount">0 eleman · 0 bağlantı</span>
+        <span id="gridStatus">2 mm grid · Tarayıcı taslağı</span>
+      </footer>
+    </section>
+
+    <aside id="propertiesPanel" class="properties-panel">
+      <div class="panel-heading"><strong>Özellikler</strong><button id="closeProperties" class="mini" type="button" title="Özellikler panelini kapat" aria-label="Özellikler panelini kapat">×</button></div>
+      <div id="tutorialCoachPanelControl" class="tutorial-coach-panel-control" hidden><button id="tutorialCoachReopen" type="button" data-tutorial-coach-toggle aria-controls="tutorialCoach" aria-expanded="true">▣ Konu anlatımı</button><small>Yüzer ders penceresini kapatıp buradan yeniden açabilirsiniz.</small></div>
+      <div id="circuitProperties">
+      <div id="noSelection" class="no-selection">Düzenlemek için çalışma alanından bir eleman seçin.</div>
+      <div id="multiSelection" class="multi-selection" hidden><strong id="selectionCount"></strong><p>Seçili elemanlardan birinin gövdesini tutup birlikte taşıyın. Shift veya Ctrl ile seçime ekleyin / çıkarın.</p><div class="form-actions"><button id="clearSelectionBtn" type="button">Seçimi kaldır</button><button id="deleteSelectionBtn" type="button" class="danger">Seçilenleri sil</button></div></div>
+      <form id="propertyForm" hidden>
+        <label>Açıklama<input id="propLabel" maxlength="120"></label>
+        <label>Cihaz adı / Referans<input id="propRef" maxlength="16" placeholder="Örn. K1"></label>
+        <small class="property-help">Bobin ile ona bağlı güç ve yardımcı kontaklara aynı cihaz adını yazın: örneğin K1.</small>
+        <label id="contactTypeRow" hidden>Kontak tipi · tümü<select id="propContactType"></select></label>
+        <div id="contactGroups" class="contact-groups"></div>
+        <small id="contactTypeHelp" class="property-help" hidden>NO: normalde açık, NC: normalde kapalı. Değiştirici kontakların iki yolu birbirinin tersidir. Tip değişince kablolar bağlı kalır.</small>
+        <label id="addressRow">Adres<input id="propAddress" maxlength="20" placeholder="Örn. I0.0 / Q0.0"></label>
+        <label id="deviceColorRow" hidden>Buton / lamba rengi<input id="propDeviceColor" type="color" value="#20b26b"></label>
+        <div id="instrumentSettings"></div>
+        <div id="arduinoComponentSettings" class="arduino-component-settings" hidden>
+          <strong>Arduino bileşeni</strong>
+          <button id="arduinoSelectedIde" type="button">∞ Bu Arduino kartını IDE’de aç</button>
+          <div id="arduinoSensorControls"></div>
+          <button id="hc05WorkNote" class="hc05-work-note-button" type="button" aria-controls="hc05GuideModal" hidden>📘 Bluetooth Çalışma Notu</button>
+        </div>
+        <div id="deviceBehaviorSettings" hidden>
+        <label id="sensorOutputRow">Sensör çıkışı<select id="propSensorOutput"><option>PNP</option><option>NPN</option></select></label>
+        <label id="analogModeRow">Analog çıkış<select id="propAnalogMode"><option value="current">4–20 mA</option><option value="voltage">0–10 V</option></select></label>
+        <label id="analogPositionRow">Konum (%)<input id="propAnalogPosition" type="range" min="0" max="100" step="0.1"></label>
+        <label id="temperatureRow">Sıcaklık (°C)<input id="propTemperature" type="number" min="-50" max="150" value="25"></label>
+        <p id="analogModelNote" class="property-help"></p>
+        <div id="timingRows"><label>Röle / kontak gecikmesi<select id="propTimerMode"><option value="on">Çekmede · Kapanmada gecikme</option><option value="off">Bırakmada · Açılmada gecikme</option></select></label><label>Süre<input id="propDelayValue" type="number" min="0" max="3600" step="0.1" value="1"></label><label>Birim<select id="propDelayUnit"><option value="sec">Saniye</option><option value="min">Dakika</option></select></label></div>
+        </div><p id="plcTerminalInfo" class="property-help" hidden></p>
+        <div id="acs800Settings" hidden><div id="acs800SidebarStatus" class="v20-sidebar-status"></div><button id="acs800Parameters" type="button" class="v20-open-button">⚙ ACS800 Parametreler</button><p class="property-help">ABB R5 · RMIO giriş/çıkışları, motor, yön ve rampa ayarları.</p></div>
+        <div id="hcfaSettings" hidden><div id="hcfaSidebarStatus" class="v20-sidebar-status"></div>
+          <div class="hcfa-quick-params">
+            <strong>HCFA X2E · hızlı parametreler</strong>
+            <label>P00.01 · Kontrol modu<select id="hcfaQuickMode"><option value="0">0 · Pozisyon</option><option value="1">1 · Hız</option><option value="2">2 · Tork</option><option value="3">3 · Pozisyon/Hız</option><option value="4">4 · Pozisyon/Tork</option><option value="5">5 · Hız/Tork</option></select></label>
+            <label>P00.05 · Pozisyon kaynağı<select id="hcfaQuickPositionSource"><option value="0">0 · Harici pulse</option><option value="2">2 · Dahili pozisyon</option></select></label>
+            <label>P03.03 · Hız talimatı (rpm)<input id="hcfaQuickSpeed" type="number" min="-5000" max="5000" step="1"></label>
+            <label>P03.25 · Tork talimatı (%)<input id="hcfaQuickTorque" type="number" min="-300" max="300" step="1"></label>
+            <label>P08.06 · 1. pozisyon (unit)<input id="hcfaQuickPosition" type="number" min="-1073741824" max="1073741824" step="1"></label>
+            <label>P09.00 · Modbus eksen<input id="hcfaQuickAxis" type="number" min="1" max="247" step="1"></label>
+          </div>
+          <button id="hcfaParameters" type="button" class="v20-open-button">⚙ Tüm HCFA parametreleri</button><p class="property-help">SV-X2EA040A-A · P00/P03/P04/P07/P08/P09/P20/P21. Çalışırken değiştirilemeyen parametrelerde önce Servo OFF yapın.</p></div>
+        <div id="driveSettings" hidden><div id="v20SidebarStatus" class="v20-sidebar-status"></div><button id="v20Parameters" type="button" class="v20-open-button">⚙ V20 Parametreler</button><p class="property-help">Sürücünün ekranını izleyin; parametre penceresinden kumanda, hız, rampa, giriş ve çıkışları ayarlayın.</p></div>
+        <label>Eleman boyutu (%)<input id="propMaterialScale" type="number" min="25" max="300" step="5" value="100"></label>
+        <label id="ptWiresRow" hidden>PT100 bağlantısı<select id="propPtWires"><option value="2">2 telli</option><option value="3">3 telli</option><option value="4">4 telli</option></select></label>
+        <label id="poleCountRow" hidden>Kutup sayısı<input id="propPoleCount" type="number" min="1" max="8" value="1"></label>
+        <label id="fuseCountRow" hidden>Klemens sayısı<input id="propFuseCount" type="number" min="1" max="6" value="1"></label>
+        <div id="loadCellSettings" hidden><label>Kapasite (kg)<select id="propLoadCapacity"><option>100</option><option>200</option><option>500</option><option selected>1000</option><option>2000</option><option>5000</option></select></label><label>Uygulanan ağırlık (kg)<input id="propLoadWeight" type="number" min="0" max="1000" step="1" value="0"></label><button id="resetLoad" type="button">Yükü kaldır</button><p>Oku basılı tutun veya aşağı sürükleyin. Yukarı sürüklemek yükü azaltır. EX+/EX−: 10 VDC besleme; SIG+/SIG−: ölçüm çıkışı. Tam yükte 20 mV.</p></div>
+        <label id="excitationRow" hidden>Uyartım gerilimi (VDC)<input id="propExcitation" type="number" min="5" max="15" step="1" value="10"></label>
+        <div id="arduinoSupplySettings" hidden>
+          <strong>Ayarlanabilir DC güç kaynağı</strong>
+          <label>Çıkış gerilimi (VDC)<input id="propArduinoSupplyVoltage" type="number" min="0" max="30" step="0.1" value="5"></label>
+          <label>Akım limiti (A)<input id="propArduinoSupplyCurrent" type="number" min="0" max="5" step="0.1" value="1"></label>
+          <small class="property-help">Eğitim modeli · ayar değeri cihaz görünümünde gösterilir.</small>
+        </div>
+        <div id="ctSettings" hidden><label>Akım trafosu oranı<select id="propCtRatio"><option>50/5</option><option>100/5</option><option>200/5</option><option>400/5</option><option>600/5</option><option>1000/5</option><option>100/1</option><option>200/1</option><option>400/1</option><option>1000/1</option></select></label><p>RMS akım modeli: direnç, kondansatör ve bobin/reaktör yükleri sayısal modelde hesaba katılır.</p></div>
+        <label id="resistanceRow" hidden>Yük direnci (Ω)<input id="propResistance" type="number" min="0.01" max="10000000" value="1000"></label>
+        <label id="capacitanceRow" hidden>Kapasite (µF)<input id="propCapacitance" type="number" min="0.001" max="1000000" step="0.001" value="100"></label>
+        <label id="inductanceRow" hidden>Endüktans (mH)<input id="propInductance" type="number" min="0.001" max="100000" step="0.001" value="150"></label>
+        <div id="reactiveLiveRow" class="property-help" hidden></div>
+        <div id="nhSettings" hidden><p>Sigorta takmak/çıkarmak için kapağı açın.</p><button type="button" id="nhLid">Kapağı aç / kapat</button><label><input id="nhFuse0" type="checkbox">L1 NH sigortası</label><label><input id="nhFuse1" type="checkbox">L2 NH sigortası</label><label><input id="nhFuse2" type="checkbox">L3 NH sigortası</label></div>
+        <div id="phaseSourceSettings" hidden><label>L1 gerilimi (V)<input id="phaseVoltageL1" type="number" min="0" max="400" value="230"></label><label>L2 gerilimi (V)<input id="phaseVoltageL2" type="number" min="0" max="400" value="230"></label><label>L3 gerilimi (V)<input id="phaseVoltageL3" type="number" min="0" max="400" value="230"></label></div>
+        <label id="potMaxRow" hidden>Potansiyometre azami direnci (Ω)<input id="propPotMax" type="number" min="1" max="10000000" value="10000"></label>
+        <label id="potentiometerRow" hidden>Potansiyometre konumu (%)<input id="propPotentiometer" type="range" min="0" max="100" value="50"></label>
+        <label id="selectorStepsRow" hidden>Çıkış / kademe sayısı<input id="propSelectorSteps" type="number" min="1" max="12" step="1"></label><div id="flashSettings" hidden><label>Yanma süresi (sn)<input id="propFlashOn" type="number" min="0.05" max="3600" step="0.05" value="1"></label><label>Sönme süresi (sn)<input id="propFlashOff" type="number" min="0.05" max="3600" step="0.05" value="1"></label></div><div id="packetSettings" hidden><label>Paket şalter konumu<select id="propPacketPosition"></select></label><details><summary>Çalışma diyagramı</summary><table id="packetTable"></table><small>● Kapalı kontak · — Açık kontak. İşlevsel eğitim modeli.</small></details></div>
+        <label id="windingConnectionRow" hidden>Bir fazlı motor sargı bağlantısı<select id="propWindingConnection"><option value="forward">Ana ve yardımcı sargı · İleri</option><option value="reverse">Yardımcı sargı ters · Geri</option><option value="external">Harici bağlantı · U1/U2 ve Z1/Z2</option></select><small class="property-help">Mantıksal sargı bağlantısı modeli; kondansatör ve kalkış akımı hesabı içermez.</small></label>
+        <label id="motorConnectionRow" hidden>Motor klemensi köprüleri<select id="propMotorConnection"><option value="external">Köprü yok · Harici kontaktör bağlantısı</option><option value="star">Yıldız · U2–V2–W2</option><option value="delta">Üçgen · U1–W2 / V1–U2 / W1–V2</option></select></label>
+        <details id="motorTutorial" hidden><summary>Öğretici · Motor bağlantısı ve yönü</summary><div id="motorTutorialText" class="property-help"></div></details>
+        <label id="directionRow" hidden>Referans dönme yönü<select id="propDirection"><option value="cw">Sağ · CW / Saat yönü</option><option value="ccw">Sol · CCW / Saat yönünün tersi</option></select><small class="property-help">Mil tarafından bakış. Üç fazda iki fazın yeri, DC motorda kutuplar değişince animasyon ters döner.</small></label>
+        <fieldset id="sensorSettings" hidden><legend>Sensör hedefi</legend>
+          <label>Önündeki malzeme<select id="propSensorTarget"></select></label>
+          <label>Algılama mesafesi (mm)<input id="propSensorRange" type="number" min="0.1" max="400" step="0.1"></label>
+          <label>Algılama yüzü<select id="propSensorFace"><option value="right">Sağ</option><option value="left">Sol</option><option value="top">Üst</option><option value="bottom">Alt</option></select></label>
+          <label>Hedef mesafesi <output id="sensorDistanceOutput"></output><input id="propSensorDistance" type="range" min="0" max="200" step="0.1"></label>
+          <label class="checkbox-row"><input id="propSensorAuto" type="checkbox">Otomatik ileri–geri hareket</label>
+          <small id="sensorDetection" class="property-help" aria-live="polite"></small>
+          <small id="sensorPrincipleHelp" class="property-help">Hedefi sayfada tutup sürükleyin. İndüktif: metal; kapasitif: dolu hedefler; optik: opak malzeme / reflektör. Elektronik sensörler besleme gerektirir; reed kontak pasiftir.</small>
+        </fieldset>
+        <small id="terminalLineInfo" class="property-help" hidden></small>
+        <label>Not<textarea id="propNote" rows="3"></textarea></label>
+        <label class="checkbox-row"><input id="propShowNote" type="checkbox" checked>Notu sayfada göster</label>
+        <div class="label-tools"><strong>Etiket yerleşimi</strong><small>Adı, açıklamayı, terminal yazısını veya notu tutup sürükleyin. Klavyede: etiketi seçip ok tuşlarıyla taşıyın; Shift ile 10 birim.</small><button type="button" id="resetLabelsBtn">Etiket konumlarını sıfırla</button></div>
+        <div id="doldSettings" class="dold-settings" hidden>
+          <label>Başlatma modu<select id="propDoldStartMode"><option value="manual">Manuel start</option><option value="auto">Otomatik start</option></select></label>
+          <label id="doldDelayRow" hidden>Bırakma gecikmesi (sn)<input id="propDoldOffDelay" type="number" min="0.1" max="600" step="0.1" value="1"></label>
+          <label id="doldCrossRow" class="checkbox-row"><input id="propDoldCrossShort" type="checkbox" checked>Çapraz kısa devre izleme etkin</label>
+          <small id="doldRuntimeStatus" class="property-help"></small>
+        </div>
+        <div id="deviceGuide" class="device-guide" hidden></div>
+        <small id="propNormSource" class="property-help"></small>
+        <div class="form-actions">
+          <button type="button" id="rotateBtn">90° Döndür</button>
+          <button type="button" id="duplicateBtn">Çoğalt</button>
+          <button type="button" id="deleteBtn" class="danger">Sil</button>
+        </div>
+      </form>
+      <div class="wire-settings">
+        <strong>Kablo ayarları</strong>
+        <div id="colorPalette" class="palette"></div>
+        <label>Rengin hattı<select id="wireRole"></select></label><label>Gerilim / kullanım<select id="wireVoltage"></select></label><small id="wireRoleHelp" class="property-help"></small>
+        <select id="wireSize" aria-label="Kablo kesiti">
+          <option>0,75 mm²</option><option selected>1,5 mm²</option><option>2,5 mm²</option><option>4 mm²</option><option>6 mm²</option>
+        </select>
+      </div>
+      <div class="legend">
+        <strong>Simülasyon göstergeleri</strong>
+        <span><i class="led live"></i> Enerjili</span><span><i class="led off"></i> Enerjisiz</span><span><i class="led plc"></i> PLC / görsel eleman</span>
+      </div>
+      </div>
+      <div id="panelProperties" hidden>
+        <form id="panelDimensions" class="panel-form"><strong>Pano ölçüleri (mm)</strong><div class="dimension-row"><label>Genişlik<input id="panelWidth" type="number" min="200" max="2400" step="10" value="600"></label><label>Yükseklik<input id="panelHeight" type="number" min="200" max="2400" step="10" value="800"></label></div><label>Derinlik<input id="panelDepth" type="number" min="100" max="800" step="10" value="220"></label><button type="submit">Ölçüleri uygula</button></form>
+        <div id="panelSelectionProperties" class="panel-form"></div>
+        <div id="panelEngineeringSummary" class="panel-note panel-engineering-summary"><strong>Mühendislik denetimi · advisory</strong><p id="panelEngineeringStatus">Denetim hazırlanıyor…</p><small id="panelEngineeringDetail">Doğrulanmamış üretici/kablo/kanal verisi uygunluk sonucu olarak kullanılmaz.</small><details id="panelEngineeringDetails"><summary>Rapor ayrıntıları</summary><div id="panelEngineeringReport" class="panel-engineering-report"></div></details></div>
+        <div class="panel-note"><strong>Pano atölyesi</strong><p>Sağ tuşla taşı, tekerlekle yakınlaş. Sol tuşla malzemeyi seç ve sürükle. İki terminale tıklayarak kablo bağla; arada boş alana tıklayarak güzergâh noktası koy.</p><p>Kabloyu seçerek rengini, kesitini ve uçlarını düzenle. Uç yüksükleri otomatik görünür. Kapak bağlantıları için 3D görünümü kullanabilirsin.</p><p>Ürün boyutları temsili başlangıç ölçüleridir. Bu bölüm fiziksel yerleşim ve kablolama içindir.</p><p>Gerçek panoda gövde ve kapağın koruma topraklaması yetkili kişi tarafından yapılmalıdır.</p></div>
+      </div>
+    </aside>
+    <button id="openProperties" class="properties-reopen" type="button" aria-controls="propertiesPanel" aria-expanded="true" title="Özellikler panelini aç" hidden>‹ Özellikler</button>
+  </main>
+
+  <input id="fileInput" type="file" accept=".odsdevre,.dtsproj,.json" hidden>
+  <input id="projectFolderInput" type="file" webkitdirectory multiple hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="wireContextMenu" class="context-menu" hidden>
+    <strong>Kablo özellikleri</strong>
+    <label>Renk<select id="contextWireColor"></select></label>
+    <label>Elektriksel görev<select id="contextWireRole"></select></label>
+    <label>Bu rengin kesiti<select id="contextWireSize"></select></label>
+    <small>Hat kimliği kilitlidir. Renk ve kesit, o hattın tüm kablolarına uygulanır.</small>
+    <button id="applyWireContext" type="button">Uygula</button>
+  </div>
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="modal-actions"><button id="modalCancel">İptal</button><button id="modalConfirm" class="primary">Onayla</button></div></div>
+  </div>
+  <div id="hc05GuideModal" class="hc05-guide-modal" role="dialog" aria-modal="true" aria-labelledby="hc05GuideTitle" hidden>
+    <section class="hc05-guide-card">
+      <header><div><strong id="hc05GuideTitle">Bluetooth · Çalışma Notu</strong><small>HC-05 / HC-06 · Arduino UNO bağlantısı, kod, simülasyon ve PC Bluetooth/COM kullanımı</small></div><button id="hc05GuideClose" type="button" aria-label="HC-05 çalışma notunu kapat">×</button></header>
+      <div class="hc05-guide-body">
+        <section><h3>1 · Normal veri modu</h3><p><b>Önerilen bağlantı:</b> HC-05 VCC → UNO 5V, GND → GND, HC-05 TXD → Arduino alıcı pini, HC-05 RXD ← Arduino verici pini. SoftwareSerial örneğinde uygulama D10'u RX, D11'i TX olarak kullanabilir.</p><pre>SoftwareSerial BT(10, 11);
+BT.begin(9600);</pre><p>TX ve RX çapraz bağlanır. Simülasyonda HC-05 baud değeri ile sketch içindeki <code>begin()</code> değeri aynı olmalıdır.</p></section>
+        <section><h3>2 · IDE'de çalıştırma</h3><ol><li>UNO ve HC-05'i çalışma alanına ekleyin ve kabloları bağlayın.</li><li>UNO'yu seçip Arduino IDE'yi açın.</li><li>Sketch'i karta yükleyin.</li><li>Üstteki mevcut <b>SİMÜLE ET</b> düğmesine basın.</li><li>IDE içindeki Seri Monitör veya <b>Sanal eş cihaz → Bluetooth</b> alanıyla veri gönderip alın.</li></ol><p>Seri Monitör baud'u, sketch içindeki <code>Serial.begin(...)</code> değeriyle aynı olmalıdır. Aksi halde veri bozuk görünür.</p></section>
+        <section id="hc05GuideAt"><h3>3 · HC-05 AT / KEY modu</h3><p>Sağdaki HC-05 özelliklerinden <b>AT / KEY modu</b>'nu açın. Eğitim modelinde AT modu 38400 baud kullanır. Örnek komutlar:</p><pre>AT
+AT+NAME?
+AT+NAME=YAKUB_BT
+AT+UART?
+AT+UART=9600,0,0
+AT+PSWD?
+AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı için AT / KEY modunu kapatın ve sketch baud'unu HC-05 veri baud'u ile eşleştirin.</p></section>
+        <section><h3>4 · Gerçek modül ile elektriksel not</h3><p>Gerçek HC-05 / HC-06 modülünün RXD tarafı 3,3 V lojik seviyesindedir. Fiziksel UNO'nun 5 V TX çıkışını doğrudan HC-05 RXD'ye vermek yerine uygun gerilim bölücü veya seviye dönüştürücü kullanın. Sanal simülasyon bu fiziksel hasarı otomatik modellemez.</p></section>
+        <section><h3>5 · PC Bluetooth / COM ile dış dünya</h3><ol><li>HC-05'i Windows Bluetooth ayarlarından eşleştirin.</li><li>Windows'un HC-05 için bir Bluetooth SPP / sanal COM portu oluşturduğunu doğrulayın.</li><li>Arduino IDE içindeki <b>Bluetooth Classic · SPP Köprüsü</b> bölümüne girin.</li><li><b>PC Bluetooth / COM'a bağlan</b> düğmesine basın ve HC-05'e ait COM portunu seçin.</li><li>Bağlantı açıldığında fiziksel seri porttan gelen byte'lar sanal HC-05 RX tarafına, sanal HC-05 TX verileri de COM portuna aktarılır.</li></ol><p><b>Not:</b> HC-05 Bluetooth Classic SPP kullanır. Bu nedenle doğrudan Web Bluetooth/BLE yerine işletim sistemindeki sanal COM portu + Web Serial köprüsü kullanılır. Tarayıcı port erişimine izin vermeli; özellik görünmüyorsa desteklenen Chrome/Edge ve güvenli/izinli bir çalışma ortamı gerekir.</p></section>
+        <section><h3>6 · Hızlı arıza kontrolü</h3><ul><li>Veri yoksa önce GND ortak mı kontrol edin.</li><li>TXD ve RXD'nin çapraz bağlı olduğunu doğrulayın.</li><li>HC-05 baud'u ile SoftwareSerial/Serial baud'unu eşleştirin.</li><li>AT modundaysanız 38400 baud kullanın.</li><li>PC köprüsünde doğru Bluetooth COM portunu seçtiğinizi kontrol edin.</li><li>D0/D1 donanımsal UART kullanıyorsanız gerçek UNO'da USB seri haberleşmesiyle aynı pinleri paylaştığını unutmayın.</li></ul></section>
+      </div>
+      <footer><button id="hc05GuideDone" type="button">Kapat</button></footer>
+    </section>
+  </div>
+  <div id="arduinoIdeModal" class="arduino-ide-modal" role="dialog" aria-modal="true" aria-labelledby="arduinoIdeTitle" hidden>
+    <section class="arduino-ide-window">
+      <header class="arduino-ide-header">
+        <div><strong id="arduinoIdeTitle">Arduino IDE · Devre Tasarım Stüdyosu</strong><small>UNO R3 eğitim IDE’si · çevrimdışı · kod + devre + seri monitör</small></div>
+        <button id="arduinoIdeClose" type="button" aria-label="Arduino IDE’yi kapat">×</button>
+      </header>
+      <div class="arduino-ide-toolbar">
+        <label>Kart<select id="arduinoBoardSelect"></select></label>
+        <label>Program adı<input id="arduinoProgramName" maxlength="80" value="Arduino Kartım"></label>
+        <label>Resmi Arduino örnekleri<select id="arduinoExampleSelect"></select></label>
+        <button id="arduinoLoadExample" type="button">Orijinal kodu aç</button>
+        <button id="arduinoOpenExampleCircuit" type="button">Örnek devreyi aç</button>
+        <div id="arduinoExampleInfo"></div>
+      </div>
+      <aside id="arduinoOfficialBanner" class="arduino-official-banner" hidden></aside>
+      <div class="arduino-ide-actions">
+        <button id="arduinoVerify" type="button">✓ Eğitim doğrulaması</button>
+        <button id="arduinoUpload" type="button">→ Karta yükle</button>
+        <button id="arduinoSaveProgram" type="button">Kaydet</button>
+        <button id="arduinoSaveAsProgram" type="button">Farklı Kaydet</button>
+        <span id="arduinoIdeRunState">Üst simülasyon: DURDU</span>
+        <span id="arduinoIdeStatus" role="status">Kart hazır</span>
+      </div>
+      <div class="arduino-ide-body">
+        <div class="arduino-code-pane">
+          <div class="arduino-pane-title"><span>Sketch</span><span>Arduino C/C++ eğitim editörü</span></div>
+          <div class="arduino-editor-wrap"><pre id="arduinoLineNumbers" aria-hidden="true">1</pre><textarea id="arduinoCode" spellcheck="false" aria-label="Arduino sketch kodu"></textarea></div>
+        </div>
+        <div class="arduino-console-pane">
+          <div class="arduino-pane-title"><span>Seri Monitör</span><span id="arduinoSerialBaudState">Program: —</span></div>
+          <div class="arduino-serial-toolbar">
+            <label>Baud<select id="arduinoSerialBaud">
+              <option>300</option><option>1200</option><option>2400</option><option>4800</option><option selected>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option>
+            </select></label>
+            <button id="arduinoSerialClear" type="button">Temizle</button>
+          </div>
+          <pre id="arduinoConsole">Seri Monitör · çıktı yok</pre>
+          <div class="arduino-serial-send">
+            <input id="arduinoSerialInput" type="text" autocomplete="off" placeholder="Arduino'ya gönderilecek veri">
+            <select id="arduinoSerialEnding" aria-label="Satır sonu">
+              <option value="none">Satır sonu yok</option>
+              <option value="nl">Newline (LF)</option>
+              <option value="cr">Carriage return (CR)</option>
+              <option value="both">Both NL & CR</option>
+            </select>
+            <button id="arduinoSerialSend" type="button">Gönder</button>
+          </div>
+          <section class="hc05-bridge-panel">
+            <div class="hc05-bridge-title"><strong>Bluetooth Classic · SPP Köprüsü</strong><span id="hc05BridgeStatus">Bağlı değil</span></div>
+            <label>Modül<select id="hc05BridgeModule"></select></label>
+            <div class="hc05-bridge-actions">
+              <button id="hc05PcConnect" type="button">PC Bluetooth / COM'a bağlan</button>
+              <button id="hc05PcDisconnect" type="button" disabled>Bağlantıyı kes</button>
+            </div>
+            <div class="hc05-virtual-send">
+              <input id="hc05VirtualInput" type="text" autocomplete="off" placeholder="Sanal eş cihazdan HC-05'e veri gönder">
+              <button id="hc05VirtualSend" type="button">Sanal eş cihaz → Bluetooth</button>
+            </div>
+            <pre id="hc05Terminal">Bluetooth trafik günlüğü · veri yok</pre>
+          </section>
+        </div>
+      </div>
+      <footer class="arduino-ide-foot">Resmi Arduino örnekleri orijinal kaynak koduyla salt okunur açılır; UNO karta yüklenip test/simüle edilebilir. Değişiklik için önce Farklı Kaydet ile çalışma kopyası oluşturulur. Üstteki SİMÜLE ET düğmesinin görünümü ve davranışı değiştirilmemiştir.</footer>
+    </section>
+  </div>
+  <aside id="serialMonitorPopup" class="serial-monitor-popup" aria-label="Serial Monitor" hidden>
+    <header id="serialPopupHeader" class="serial-monitor-popup-header"><div><strong>Serial Monitor</strong><span id="serialPopupRunState">SİMÜLASYON DURDU</span></div><button id="serialPopupClose" type="button" aria-label="Serial Monitor penceresini kapat">×</button></header>
+    <div class="serial-monitor-popup-tools"><label>Kart<select id="serialPopupBoard"></select></label><label>Baud<select id="serialPopupBaud"><option>300</option><option>1200</option><option>2400</option><option>4800</option><option selected>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select></label><button id="serialPopupClear" type="button">Temizle</button></div>
+    <pre id="serialPopupConsole">Seri Monitör · simülasyon durdu</pre>
+    <div class="serial-monitor-popup-send"><input id="serialPopupInput" type="text" autocomplete="off" placeholder="Arduino'ya veri gönder"><select id="serialPopupEnding" aria-label="Serial Monitor satır sonu"><option value="none">Satır sonu yok</option><option value="nl">LF</option><option value="cr">CR</option><option value="both">CR+LF</option></select><button id="serialPopupSend" type="button">Gönder</button></div>
+    <footer><span id="serialPopupBaudState">Program: — · Monitör: 9600</span><small>Başlığı sürükleyerek taşı · köşeden boyutlandır</small></footer>
+  </aside>
+  <div id="safetyModal" class="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safetyTitle" hidden><div class="safety-card"><div class="safety-stripe"></div><div class="safety-sign" data-electrical-sign></div><h2 id="safetyTitle"></h2><div id="safetyBody"></div><label id="safetyDismissRow" class="checkbox-row"><input id="safetyDismiss" type="checkbox">Bir daha gösterme</label><button id="safetyAcknowledge" class="safety-ack">Anladım · Güvenle öğrenmeye başla</button></div></div>
+  <script src="installation-v118.js?rev=20261004-wp014"></script>
+  <script src="design-library.js?rev=20261014-bell-trafo-v1"></script>
+  <script src="workspace-space.js?rev=20261007-workspace-space1"></script>
+  <script src="workspaces.js?rev=20261010-real-ics1"></script>
+  <script src="project-store.js?rev=20261011-collector-legacy-warning1"></script>
+  <script src="safety.js?rev=20261004-wp014"></script>
+  <script src="design-visuals.js?rev=20261004-wp014"></script>
+  <script src="library.js?rev=20261008-user-scale-lock7"></script>
+  <script src="electronics-library-v119.js?rev=20261010-real-visuals1"></script>
+  <script src="electronics-ics-v11920.js?rev=20261010-real-ics1"></script>
+  <script src="tutorial-components.js?rev=20261009-energy-rich1"></script>
+  <script src="dold-atlas-0.js?rev=20261004-wp014s1"></script>
+  <script src="dold-atlas-1.js?rev=20261004-wp014s1"></script>
+  <script src="dold-atlas-2.js?rev=20261004-wp014s1"></script>
+  <script src="dold-atlas-3.js?rev=20261004-wp014s1"></script>
+  <script src="dold-atlas-4.js?rev=20261004-wp014s1"></script>
+  <script src="dold-atlas-5.js?rev=20261004-wp014s1"></script>
+  <script src="dold-library.js?rev=20261008-visual-runtime4"></script>
+  <script src="hcfa-x2e.js?rev=20261008-panel-interactive1"></script>
+  <script src="hcfa-library.js?rev=20261008-motor-labels1"></script>
+  <script src="arduino-library.js?rev=20261010-real-ic-visuals1"></script>
+  <script src="arduino-examples.js?rev=20261004-wp014"></script>
+  <script src="incremental-encoder.js?rev=20261004-wp014"></script>
+  <script src="dold-safety.js?rev=20261004-wp014"></script>
+  <script src="arduino-runtime.js?rev=20261004-wp014"></script>
+  <script src="thermal.js"></script><script src="multimeter.js?rev=20261009-frequency-rich1"></script><script src="clamp-meter.js?rev=20261004-wp014"></script><script src="energy-analyzer.js?rev=20261009-energy-rich1"></script><script src="instruments.js"></script><script src="instrument-ui.js?rev=20261009-energy-rich1"></script>
+  <script src="acs800.js"></script><script src="acs800-art.js"></script><script src="acs800-ui.js"></script><script src="v20.js"></script><script src="v20-ui.js?rev=20261006-v20-photo1"></script><script src="hcfa-drive-img-0.js?rev=20261004-wp014"></script><script src="hcfa-drive-img-1.js?rev=20261004-wp014"></script><script src="hcfa-drive-img-2.js?rev=20261004-wp014"></script><script src="hcfa-motor-img-0.js?rev=20261004-wp014"></script><script src="hcfa-motor-img-1.js?rev=20261004-wp014"></script><script src="hcfa-motor-img-2.js?rev=20261004-wp014"></script><script src="hcfa-motor-img-3.js?rev=20261004-wp014"></script><script src="hcfa-ui.js?rev=20261008-sim-audit1"></script>
+  <script src="device-behavior.js?rev=20261004-wp014"></script>
+  <script src="sensors.js?rev=20261004-wp014"></script>
+  <script src="probe-leads.js?rev=20261004-wp014"></script>
+  <script src="conductors.js?rev=20261004-wp014"></script>
+  <script src="components.js?rev=20261004-wp014"></script>
+  <script src="material-assets.js?rev=20261004-wp014"></script>
+  <script src="product-assets.js?rev=20261006-protop-derived-front1"></script>
+  <script src="hcfa-material-assets.js?rev=20261008-visual-runtime4"></script>
+  <script src="plc-assets.js?rev=20261004-wp014"></script>
+  <script src="product-assets-v110.js"></script><script src="photo-plane.js"></script><script src="plc-photo-data.js"></script><script src="plc-front.js?rev=20261008-sim-audit1"></script><script src="materials-v113.js?rev=20261010-bg-clean2"></script><script src="materials-v111.js?rev=20261010-bg-clean2"></script><script src="modern-materials.js"></script><script src="materials-v115.js?rev=20261010-bg-clean3"></script><script src="materials.js?rev=20261010-real-visuals1"></script>
+  <script src="book-symbols.js?rev=20261008-terminal-readable1"></script>
+  <script src="norms.js?rev=20261004-wp014"></script>
+  <script src="labels.js?rev=20261004-wp014"></script>
+  <script src="catalog.js?rev=20261010-real-visuals1"></script>
+  <script src="assemblies.js?rev=20261004-wp014"></script>
+  <script src="symbols.js?rev=20261010-real-visuals1"></script>
+  <script src="current-model.js?rev=20261010-real-ics1"></script><script src="signed-flow.js?rev=20261004-wp014"></script><script src="plc-runtime.js?rev=20261008-sim-audit1"></script><script src="digital-ic-runtime-v11920.js?rev=20261010-real-ics1"></script><script src="simulation.js?rev=20261014-bell-trafo-v1"></script>
+  <script src="viewport.js?rev=20261008-scroll-coordinates1"></script>
+  <script src="selection.js?rev=20261004-wp014"></script>
+  <script src="actuation.js?rev=20261004-wp014"></script>
+  <script src="audio.js?rev=20261004-wp014"></script>
+  <script src="physical-metadata.js?rev=20261008-user-scale-lock6"></script>
+  <script src="asset-quality.js?rev=20261005-v20-realframe1"></script>
+  <script src="digital-twin.js?rev=20261005-wp021"></script>
+<script src="panel-wiring.js?rev=20261004-wp014"></script>
+  <script src="panel-engineering.js?rev=20261004-wp015"></script>
+  <script src="panel.js?rev=20261004-wp014"></script>
+  <script src="starter-projects.js?rev=20261004-wp014"></script>
+  <script src="dold-examples.js?rev=20261004-wp014"></script>
+  <script src="hcfa-examples.js?rev=20261004-wp014"></script>
+  <script src="sc262-bridge-ui.js?rev=20261019-a"></script>
+  <script src="app.js?rev=20261010-lm358-output1"></script>
+  <script src="arduino-ide.js?rev=20261004-wp014"></script>
+  <script src="panel-editor.js?rev=20261004-wp014"></script>
+  <script src="starter-v115.js?rev=20261004-wp014"></script><script src="starter-v113.js"></script><script src="starter-v112.js?rev=20261004-wp014"></script><script src="starter-v111.js"></script><script src="starter-v110.js"></script><script src="starter-v116.js"></script><script src="starter-v117.js"></script><script src="studio.js?rev=20261011-collector-legacy-warning1"></script>
+  <script src="tutorial-labs.js?rev=20261008-electric-machines-labs1"></script>
+  <script src="tutorial-bootstrap.js?rev=20261015-mq07-mosfet-health-v1"></script>
+</body>
+</html>
