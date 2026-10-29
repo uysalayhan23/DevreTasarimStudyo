@@ -250,9 +250,12 @@
         }
         if(existing&&!saveAs){const current=await handle.getFile();if(current.lastModified!==existing.lastModified)throw Error('Dosya başka bir uygulamada değişmiş. Üzerine yazılmadı; Farklı kaydet ile bir kopya kaydedin.')}
         const writable=await handle.createWritable();try{await writable.write(JSON.stringify(copy,null,2));await writable.close()}catch(e){try{await writable.abort()}catch{}throw e}
-        const saved=await handle.getFile();let cacheWarning=false;
-        // The disk write is complete. Cache/index failures must not report it as unsaved.
-        try{await remember(copy,handle,saved.lastModified)}catch{cacheWarning=true}
+        let saved=null,cacheWarning=false;
+        // A successful writable.close() confirms the disk write. A later metadata
+        // read failure must not turn that confirmed save into a false failure.
+        try{saved=await handle.getFile()}catch{cacheWarning=true}
+        // Without fresh metadata, do not cache a stale lastModified guard.
+        if(saved)try{await remember(copy,handle,saved.lastModified)}catch{cacheWarning=true}
         try{await put(copy)}catch{cacheWarning=true}
         return {saved:true,name:handle.name,project:copy,cacheWarning};
       }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}

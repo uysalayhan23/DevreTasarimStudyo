@@ -74,3 +74,58 @@ test('P0-04 fallback download preserves its unconfirmed state with healthy cache
   assert.equal(r.result.download,true);assert.equal(r.result.saved,undefined);
   assert.equal(r.result.cacheWarning,false);assert.equal(r.clicks,1);
 });
+
+async function postCloseMetadataScenario({failBefore=false,failAfter=false,failClose=false}={}){
+  const map=new Map();let data='',reads=0,writes=0,closed=false;
+  const handle={
+    name:'verified.odsdevre',
+    getFile:async()=>{
+      reads++;
+      if((failBefore&&reads===1)||(failAfter&&reads>1))throw Error('metadata unavailable');
+      return {size:data.length,lastModified:reads,text:async()=>data};
+    },
+    createWritable:async()=>({
+      write:async value=>{data=value;writes++},
+      close:async()=>{if(failClose)throw Error('close failed');closed=true},
+      abort:async()=>{}
+    })
+  };
+  const storage={getItem:key=>map.get(key)||null,setItem:(key,value)=>map.set(key,value)};
+  const store=Projects.create({storage,indexedDB:null,env:{showSaveFilePicker:async()=>handle}});
+  const project={version:7,projectId:'p',name:'Verified',components:[],wires:[],junctions:[]};
+  try{
+    const result=await store.save(project);
+    return {result,writes,reads,closed,recovered:(await store.get('p'))?.projectId};
+  }catch(e){return {error:String(e),writes,reads,closed}}
+}
+
+test('P0-04 successful disk close survives post-save metadata read failure',async()=>{
+  const r=await postCloseMetadataScenario({failAfter:true});
+  assert.equal(r.result.saved,true);
+  assert.equal(r.result.cacheWarning,true);
+  assert.equal(r.writes,1);
+  assert.equal(r.closed,true);
+  assert.equal(r.recovered,'p');
+});
+
+test('P0-04 healthy post-save metadata read still remembers confirmed save',async()=>{
+  const r=await postCloseMetadataScenario();
+  assert.equal(r.result.saved,true);
+  assert.equal(r.result.cacheWarning,false);
+  assert.equal(r.writes,1);
+  assert.equal(r.closed,true);
+});
+
+test('P0-04 failure to inspect target before write remains blocking',async()=>{
+  const r=await postCloseMetadataScenario({failBefore:true});
+  assert.match(r.error,/metadata unavailable/);
+  assert.equal(r.writes,0);
+  assert.equal(r.closed,false);
+});
+
+test('P0-04 failed writable close is never confirmed as saved',async()=>{
+  const r=await postCloseMetadataScenario({failClose:true});
+  assert.match(r.error,/close failed/);
+  assert.equal(r.writes,1);
+  assert.equal(r.closed,false);
+});
