@@ -16,3 +16,11 @@ test('junction endpoints use distinct canonical IDs',()=>{const p=base();p.junct
 test('panel terminal definitions are respected',()=>{const p=base();p.workspaceMode='panel';p.panel={items:p.components,wires:p.wires};const panel={panelDefinition:d=>({...d,pins:[{id:'P1'}]})};assert.equal(list.audit(p,defs,panel).ok,false);p.panel.wires[0].from.p='P1';p.panel.wires[0].to.p='P1';assert.equal(list.audit(p,defs,panel).ok,true)});
 test('measurement probe leads are excluded',()=>{const p=base();p.wires.push({id:'PROBE',probeLead:true,from:{},to:{}});assert.equal(list.audit(p,defs).rows.length,1)});
 test('missing wire identity fails closed',()=>{const p=base();delete p.wires[0].id;assert.throws(()=>list.csv(p,defs,null,material.cell),/kimliği/)});
+// Exact project IDs must never be silently normalized into a different wire connection.
+test('P3-03 preserves exact valid terminal IDs',()=>{assert.equal(list.audit(base(),defs).ok,true)});
+test('P3-03 rejects padded device ID alias',()=>{const p=base();p.components[0].id=' c1 ';assert.equal(list.audit(p,defs).ok,false)});
+test('P3-03 rejects padded wire endpoint device alias',()=>{const p=base();p.wires[0].from.c=' c1 ';assert.equal(list.audit(p,defs).ok,false)});
+test('P3-03 rejects padded junction alias',()=>{const p=base();p.junctions=[{id:' j1 '}];p.wires[0].from={j:'j1'};assert.equal(list.audit(p,defs).ok,false)});
+test('P3-03 rejects padded catalog terminal alias',()=>{const p=base();p.wires[0].from.p=' 1 ';assert.equal(list.audit(p,defs).ok,false)});
+test('P3-03 preserves matching exact IDs even with whitespace',()=>{const p=base();p.components[0].id=' c1 ';p.wires[0].from.c=' c1 ';assert.equal(list.audit(p,defs).ok,true)});
+test('P3-03 rejects malformed junctions without throwing',()=>{const p=base();p.junctions={bad:true};assert.equal(list.audit(p,defs).ok,false)});
