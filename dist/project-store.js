@@ -126,6 +126,15 @@
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
           panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
         panelIds.add(String(id));
+        // Optional legacy geometry may be absent, but an explicitly corrupt
+        // coordinate or footprint must never be treated as real panel space.
+        for(const key of ['x','y','w','h','depth']){
+          const value=item[key];
+          if(value===undefined)continue;
+          if(typeof value!=='number'||!Number.isFinite(value)||Math.abs(value)>100000||
+             (['w','h'].includes(key)&&value<=0)||(key==='depth'&&value<0))
+            throw Error('Pano malzeme geometrisi geçersiz.');
+        }
       }
       const panelWireIds=new Set();
       for(const wire of p.panel.wires||[]){
