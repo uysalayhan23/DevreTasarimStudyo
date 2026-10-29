@@ -18,7 +18,11 @@
   }
   function ports(item,d){
     d=panelDefinition(d);
-    return (Array.isArray(d?.pins)?d.pins:[]).filter(pin=>pin&&typeof pin.id==='string'&&pin.id).map(pin=>{
+    // Do not silently invent terminal geometry for damaged or incomplete panel items.
+    if(!item||![item.x,item.y,item.w,item.h,d?.w,d?.h].every(Number.isFinite)||
+       item.w<=0||item.h<=0||d.w<=0||d.h<=0)return [];
+    return (Array.isArray(d.pins)?d.pins:[]).filter(pin=>pin&&typeof pin.id==='string'&&
+      !!pin.id&&Number.isFinite(pin.x)&&Number.isFinite(pin.y)).map(pin=>{
       const physical=item?.panelGeometryStatus==='ready'&&Physical&&typeof Physical.terminalAnchor==='function'?Physical.terminalAnchor(d,pin.id):null;
       if(physical){
         const side=physical.side,v=directions[side];
@@ -31,7 +35,8 @@
         geometryStatus:'approximate',geometrySource:null,
         x:round(item.x+(side==='left'?0:side==='right'?item.w:pin.x/d.w*item.w)),
         y:round(item.y+(side==='top'?0:side==='bottom'?item.h:pin.y/d.h*item.h))};
-    });
+    }).filter(port=>Number.isFinite(port.x)&&Number.isFinite(port.y)&&
+      Number.isFinite(port.z)&&!!port.v);
   }
   function endpoint(p,byId,ref){const i=p.items.find(i=>i.id===ref?.c);return i&&ports(i,byId[i.typeId]).find(t=>t.p===ref.p)||null}
   function normalize(p,byId){
@@ -52,6 +57,11 @@
   // symbol. Keep those declared nets distinct when the shared line planner runs.
   function synchronize(p,byId){for(const w of p.wires||[])if(w.role)w.roleBound=true;const styles=new Map((p.wires||[]).map(w=>[w.id,{color:w.styleColor||w.color,size:w.styleSize||w.size}]));const g=graph(p),defs=panelDefinitions(p,byId);Lines.initialize(g,defs);copyLineState(p,g);for(const w of p.wires||[]){const s=styles.get(w.id);w.color=w.styleColor=/^#[0-9a-f]{6}$/i.test(s?.color||'')?s.color:'#808080';w.size=w.styleSize=Lines.sizeLabel(s?.size)}}
   function connect(p,byId,from,to,color='#e53935',size='1,5 mm²',points=[]){
+    if(!Array.isArray(points)||points.length>1000||points.some(q=>!q||
+       !Number.isFinite(q.x)||!Number.isFinite(q.y)||
+       Math.abs(q.x)>10000||Math.abs(q.y)>10000||
+       !['plate','door'].includes(q.surface)))
+      return {ok:false,reason:'Pano kablo güzergâh noktaları geçersiz.'};
     if(!endpoint(p,byId,from)||!endpoint(p,byId,to))return {ok:false,reason:'İki malzemenin bağlantı terminallerini seçin.'};
     if(same(from,to))return {ok:false,reason:'Kablonun diğer ucu için farklı bir terminal seçin.'};
     if((p.wires||[]).some(w=>same(w.from,from)&&same(w.to,to)||same(w.to,from)&&same(w.from,to)))return {ok:false,reason:'Bu iki terminal zaten bağlı.'};
