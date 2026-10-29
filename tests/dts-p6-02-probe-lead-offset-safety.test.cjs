@@ -6,8 +6,8 @@ const b={pos:{x:456.25,y:220.5},side:'left'};
 const base=()=>Leads.curve(a,b);
 const valid=curve=>{
  assert.ok(Number.isFinite(curve.bend.x)&&Number.isFinite(curve.bend.y));
- assert.doesNotMatch(curve.path,/NaN|Infinity|e\\+308/);
- assert.match(curve.path,/^M12\\.375 85\\.125 C/);
+ assert.doesNotMatch(curve.path,/NaN|Infinity|e\+308/);
+ assert.match(curve.path,/^M12\.375 85\.125 C/);
  assert.ok(curve.path.endsWith('456.25 220.5'));
 };
 test('P6-02: normal probe curve retains exact endpoints',()=>valid(base()));
