@@ -23,7 +23,7 @@ test('P3-02 repeated drags use original waypoint positions, not accumulated tran
  assert.equal(f.wire.points[0].surface,'plate');assert.equal(f.wire.points[0].z,15);
 });
 test('P3-02 Escape restores original cable routing and metadata exactly',()=>{
- const f=fixture(),before=structuredClone(f.project),plan=S.beginMove(f.project,['a','b'],{part:{w:20,h:20}});
+ const f=fixture(),before=JSON.parse(JSON.stringify(f.project)),plan=S.beginMove(f.project,['a','b'],{part:{w:20,h:20}});
  S.applyMove(plan,{x:40,y:20});S.restore(plan);
  assert.deepEqual(f.project,before);
 });
@@ -32,7 +32,7 @@ test('P3-02 external wire branches retain their original position and metadata',
  f.project.components.push(external);
  const branch={id:'branch',from:{c:'a',p:'2'},to:{c:'out',p:'1'},points:[{x:200,y:90,surface:'door'}]};
  f.project.wires.push(branch);
- const original=structuredClone(branch);
+ const original=JSON.parse(JSON.stringify(branch));
  S.applyMove(S.beginMove(f.project,['a','b'],{part:{w:20,h:20}}),{x:50,y:20});
  assert.deepEqual(branch,original);
 });
