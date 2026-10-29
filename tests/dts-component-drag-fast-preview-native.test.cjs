@@ -62,7 +62,7 @@ test('running simulation keeps native fallback, with single verified PLC-only pr
  const app=fs.readFileSync(path.join(root,'app.js'),'utf8');const fn=app.slice(app.indexOf('function beginComponentDrag(c,e){'),app.indexOf('function operateInstallation('));
  assert.match(fn,/plcLiveMove=running&&ids\.length===1&&byId\[c\.typeId\]\?\.isPLC===true/);
  assert.match(fn,/window\.DTSLadderRuntime\?\.supportedPLC\?\.\(byId\[c\.typeId\]\)===true/);
- assert.match(fn,/\(!running\|\|plcLiveMove\)&&window\.DTSDragPreview/);
+ assert.match(fn,/\(!running\|\|plcLiveMove\|\|passiveLiveMove\)&&window\.DTSDragPreview/);
  assert.match(fn,/dragPreview\?dragPreview\.refresh\(\):render\(\)/);
 });
 test('offline script loads before app and no external request added',()=>{

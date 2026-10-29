@@ -31,6 +31,36 @@
   }
   return out;
  }
+ // The native solver has a spatial multimeter/NCV mode. Do not turn on the
+ // short visual-only live drag path in a project containing one.
+ // Only audited two-terminal, position-independent loads get the shortcut.
+ const livePassiveKinds=Object.freeze({resistor:'resistor','lamp-red':'lamp','lamp-green':'lamp',fuse:'fuse','nh-fuse':'fuse'});
+ function canPreviewLivePassives(project,ids,byId){
+  if(!Array.isArray(ids)||ids.length===0||!Array.isArray(project?.components)||!byId)return false;
+  if(project.components.some(c=>byId[c?.typeId]?.kind==='multimeter'))return false;
+  const components=new Map(project.components.map(c=>[c.id,c]));
+  return ids.every(id=>{
+   const c=components.get(id),d=c&&byId[c.typeId],kind=d&&livePassiveKinds[d.id];
+   return !!(kind&&d.kind===kind&&d.id===c.typeId&&d.pins?.length===2&&
+    !d.materialPins?.length&&!d.isPLC&&!c.auxFor&&!c.probeTarget);
+  });
+ }
+ // Magnetic alignment guides must stay live during the fast SVG preview.
+ // Repaint only these small SVG lines; never rebuild the scene or reroute wires.
+ function syncGuides(scene,guides,width,height){
+  if(!scene?.ownerDocument?.createElementNS||typeof scene.querySelectorAll!=='function'||typeof scene.appendChild!=='function')return;
+  for(const old of scene.querySelectorAll('.alignment-guide'))old.remove();
+  if(!Array.isArray(guides))return;
+  const ns='http://www.w3.org/2000/svg';
+  for(const guide of guides){
+   if(!['x','y'].includes(guide?.axis)||!Number.isFinite(guide.value))continue;
+   const line=scene.ownerDocument.createElementNS(ns,'line'),x=guide.axis==='x';
+   const attrs={class:'alignment-guide',x1:x?guide.value:0,y1:x?0:guide.value,
+    x2:x?guide.value:width,y2:x?height:guide.value,'pointer-events':'none'};
+   for(const [key,value] of Object.entries(attrs))line.setAttribute(key,value);
+   scene.appendChild(line);
+  }
+ }
  function create(scene,project,ids,plan,endpoints,roundedPath){
   if(!scene||typeof scene.querySelectorAll!=='function'||typeof endpoints!=='function'||typeof roundedPath!=='function')return null;
   const moved=new Set(ids);
@@ -81,7 +111,7 @@
   }
   return Object.freeze({refresh,wireCount:wires.length,componentCount:items.length});
  }
- const api=Object.freeze({route,create,snapAnchors});
+ const api=Object.freeze({route,create,snapAnchors,canPreviewLivePassives,syncGuides});
  if(typeof module==='object'&&module.exports)module.exports=api;
  else root.DTSDragPreview=api;
 })(typeof window==='undefined'?globalThis:window);

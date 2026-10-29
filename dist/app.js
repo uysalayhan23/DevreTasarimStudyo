@@ -1041,7 +1041,8 @@
     const ids=[...selectedIds],plan=Selection.beginMove(project,ids,byId,renderedWirePoints),startZoom=zoom,oldFuture=[...future];
      // During a stopped simulation, move SVG nodes instead of rebuilding every device and rerouting every cable per frame.
      const plcLiveMove=running&&ids.length===1&&byId[c.typeId]?.isPLC===true&&window.DTSLadderRuntime?.supportedPLC?.(byId[c.typeId])===true;
-     const dragPreview=(!running||plcLiveMove)&&window.DTSDragPreview?.create?.(els.scene,project,ids,plan,endpointInfo,roundedPath);
+     const passiveLiveMove=running&&window.DTSDragPreview?.canPreviewLivePassives?.(project,ids,byId)===true;
+     const dragPreview=(!running||plcLiveMove||passiveLiveMove)&&window.DTSDragPreview?.create?.(els.scene,project,ids,plan,endpointInfo,roundedPath);
      let snapAnchors=null;
     let moved=false,raf=0;
     trackGesture(e,{
@@ -1055,7 +1056,7 @@
          if(!snapAnchors&&window.DTSDragPreview?.snapAnchors)snapAnchors=window.DTSDragPreview.snapAnchors(project,ids,byId,Leads.floating,portPosition,rotatedSide);
          snapDraggedComponent(c,snapAnchors);
         delta=Selection.constrain(plan,delta.x+c.x-x,delta.y+c.y-y,GRID,SHEET_W,SHEET_H);Selection.applyMove(plan,delta);
-        if(!raf)raf=requestAnimationFrame(()=>{raf=0;dragPreview?dragPreview.refresh():render()});
+        if(!raf)raf=requestAnimationFrame(()=>{raf=0;dragPreview?dragPreview.refresh():render();if(dragPreview)window.DTSDragPreview?.syncGuides?.(els.scene,alignmentGuides,SHEET_W,SHEET_H)});
       },
       finish:cancelled=>{
         if(raf)cancelAnimationFrame(raf);alignmentGuides=[];

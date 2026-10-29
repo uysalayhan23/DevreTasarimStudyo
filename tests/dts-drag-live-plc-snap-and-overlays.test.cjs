@@ -30,7 +30,7 @@ test('snap cache excludes moving and floating components',()=>{
 test('live simulation fast preview only for supported single PLC',()=>{
  const app=fs.readFileSync(path.join(root,'app.js'),'utf8'),s=app.slice(app.indexOf('function beginComponentDrag(c,e){'),app.indexOf('function operateInstallation('));
  assert.match(s,/running&&ids\.length===1&&byId\[c\.typeId\]\?\.isPLC===true&&window\.DTSLadderRuntime\?\.supportedPLC\?\.\(byId\[c\.typeId\]\)===true/);
- assert.match(s,/\(!running\|\|plcLiveMove\)&&window\.DTSDragPreview/);
+ assert.match(s,/\(!running\|\|plcLiveMove\|\|passiveLiveMove\)&&window\.DTSDragPreview/);
  assert.match(s,/dragPreview\?dragPreview\.refresh\(\):render\(\)/);
  assert.match(s,/if\(moved\)\{render\(\);scheduleSave\(\)\}/);
 });
