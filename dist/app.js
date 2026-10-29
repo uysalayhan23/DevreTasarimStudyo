@@ -164,7 +164,8 @@
   }
 
   let deferredInitialScene=false,bootstrapSceneAttempted=false;
-  function render(simulationTick=false){
+  let pendingScenePaint=0,scenePaintGeneration=0;
+  function render(simulationTick=false,progressive=false,reuseRoutes=null){
     // Bootstrap is hidden behind the dashboard; don't create the offscreen SVG.
     // Later manual renders (including project load) are always allowed.
     if(!bootstrapSceneAttempted){
@@ -185,14 +186,18 @@
     if(simulationTick&&els.scene.querySelectorAll('g.component').length===project.components.length){
       updateSimulationPresentation();return;
     }
+    if(pendingScenePaint){cancelAnimationFrame(pendingScenePaint);pendingScenePaint=0}
+    const paintGeneration=++scenePaintGeneration;
     els.scene.innerHTML='';
     renderedWirePoints={};routingUsage=new Map();routeObstacles=componentObstacles();
     // Paint order: normal devices below wires; measuring equipment above all wires.
     const layers=SceneLayers.split(project.components,byId,Leads.floating);
     layers.ordinary.filter(c=>wireOverDeviceBody(byId[c.typeId])).forEach(c=>renderComponentBackdrop(c));
     layers.ordinary.forEach(c=>renderComponent(c));
-    project.wires.filter(w=>!w.probeLead).forEach((w,i)=>renderWire(w,i));
-    syncProbePositions();
+    const sceneWires=project.wires.filter(w=>!w.probeLead);
+    const finishScene=()=>{
+      if(scenePaintGeneration!==paintGeneration)return;
+      syncProbePositions();
     syncClampPositions();
     (project.junctions||[]).forEach(j=>els.scene.appendChild(svg('circle',{class:'junction','data-junction':j.id,cx:j.x,cy:j.y,r:5})));
     alignmentGuides.forEach(g=>els.scene.appendChild(svg('line',{class:'alignment-guide',x1:g.axis==='x'?g.value:0,y1:g.axis==='y'?g.value:0,x2:g.axis==='x'?g.value:SHEET_W,y2:g.axis==='y'?g.value:SHEET_H})));
@@ -211,6 +216,27 @@
     els.simulate.disabled=gate.blocked;
     if(gate.blocked&&running){running=false;els.simulate.classList.remove('running');els.simulate.textContent='▶ SİMÜLE ET'}
     updateWireStatus();window.DTSTutorialMode?.sync?.(project);if(!simulationTick){updateProperties();scheduleSave();window.DTSArduinoIDE?.refresh?.()}
+    };
+    // Opening or dropping a wired project must not block zoom, pan and selection
+    // while the entire cable graph is routed synchronously on the UI thread.
+    if(progressive&&sceneWires.length>4){
+      let index=0;
+      const paintBatch=()=>{
+        pendingScenePaint=0;
+        if(scenePaintGeneration!==paintGeneration)return;
+        const started=performance.now();
+        do{
+          const wire=sceneWires[index];
+          renderWire(wire,index,reuseRoutes?.get(wire.id));index++;
+        }while(index<sceneWires.length&&performance.now()-started<9);
+        if(index<sceneWires.length)pendingScenePaint=requestAnimationFrame(paintBatch);
+        else finishScene();
+      };
+      pendingScenePaint=requestAnimationFrame(paintBatch);
+    }else{
+      sceneWires.forEach((w,i)=>renderWire(w,i,reuseRoutes?.get(w.id)));
+      finishScene();
+    }
   }
 
   function paletteColors(){return [...new Set([...wireColors,...Object.keys(project.colorRoles||{})])]}
@@ -509,9 +535,11 @@
     if(project.workspaceMode==='arduino')return true;
     return [w.from,w.to].some(ref=>{const c=project.components.find(x=>x.id===ref?.c);return !!(c&&byId[c.typeId]?.arduinoBoard)});
   }
-  function renderWire(w,index){
+  function renderWire(w,index,reusedPoints=null){
     if(reconnecting?.wireId===w.id)return;
-    const points=routePoints(w.from,w.to,w.points||w.fixedPoints||[]),path=roundedPath(points),role=w.role||'CONTROL',lp=wireLabelPoint(points);renderedWirePoints[w.id]=points;w.role=role;
+    const points=reusedPoints||routePoints(w.from,w.to,w.points||w.fixedPoints||[]);
+    if(reusedPoints)markRoute(points);
+    const path=roundedPath(points),role=w.role||'CONTROL',lp=wireLabelPoint(points);renderedWirePoints[w.id]=points;w.role=role;
     const g=svg('g',{'data-wire':w.id,style:wireStyle(w)});
     if(w.mechanical||role==='MECHANICAL')g.innerHTML=`<title>Mekanik mil bağlantısı · motor devri enkodere aktarılır</title><path d="${path}" fill="none" stroke="#475569" stroke-width="8" stroke-linecap="round" opacity=".18"/><path class="mechanical-shaft-link ${selectedWire===w.id?'selected':''}" d="${path}" fill="none" stroke="#64748b" stroke-width="3.2" stroke-dasharray="8 5" stroke-linecap="round"/><path class="wire-hit" d="${path}"/><text class="wire-role-label" x="${lp.x}" y="${lp.y}">SHAFT</text>`;
     else g.innerHTML=`<title>${esc(colorNames[w.color]||w.color)} · ${esc(roleName(role))}</title><path class="wire-outline" d="${path}"/><path class="wire ${selectedWire===w.id?'selected':''} ${w._active?'energized':''} ${flowClass(w)} ${w._lineConflict?'line-conflict':''}" d="${path}" stroke="${w.color}" style="color:${w.color}"/><path class="wire-hit" d="${path}"/><text class="wire-role-label" x="${lp.x}" y="${lp.y}">${esc(role==='FREE'?'':role+(Lines.voltageLabel(project,w.color)?' · '+Lines.voltageLabel(project,w.color):''))}</text>`;
@@ -694,7 +722,7 @@
         finish:cancelled=>{
           if(raf)cancelAnimationFrame(raf);
           if(cancelled&&moved){Object.keys(w).forEach(k=>delete w[k]);Object.assign(w,previous);history.pop();future=oldFuture}
-          if(moved){setStatus('Arduino kablosu istediğiniz yöne taşındı · uç bağlantıları korundu');render();scheduleSave()}
+          if(moved){setStatus('Arduino kablosu istediğiniz yöne taşındı · uç bağlantıları korundu');render(false,true);scheduleSave()}
         }
       });return;
     }
@@ -715,7 +743,7 @@
       finish:cancelled=>{
         if(raf)cancelAnimationFrame(raf);
         if(cancelled&&moved){Object.keys(w).forEach(k=>delete w[k]);Object.assign(w,previous);for(const before of previousJunctions){const j=project.junctions.find(j=>j.id===before.id);if(j)Object.assign(j,before)}history.pop();future=oldFuture}
-        if(moved){const followed=junctionEnds.some(x=>x.follow),extended=junctionEnds.some(x=>!x.follow);setStatus(followed&&extended?'Kablo taşındı · uygun ek noktası taşındı, diğer uçta kablo uzatıldı':followed?'Kablo ve uygun ek noktası birlikte taşındı':extended?'Ek noktası sabit kaldı · kablo düzgün şekilde uzatıldı':'Kablo güzergâhı taşındı');render();scheduleSave()}
+        if(moved){const followed=junctionEnds.some(x=>x.follow),extended=junctionEnds.some(x=>!x.follow);setStatus(followed&&extended?'Kablo taşındı · uygun ek noktası taşındı, diğer uçta kablo uzatıldı':followed?'Kablo ve uygun ek noktası birlikte taşındı':extended?'Ek noktası sabit kaldı · kablo düzgün şekilde uzatıldı':'Kablo güzergâhı taşındı');render(false,true);scheduleSave()}
       }
     });
   }
@@ -1101,6 +1129,32 @@
     const d=byId[c.typeId],old={x:c.x,y:c.y,wire:c.clampedWireId,t:c.clampT},start=worldPoint(e),oldFuture=[...future];let moved=false,candidate=null;
     trackGesture(e,{move:ev=>{const q=worldPoint(ev);if(!moved&&Math.hypot(q.x-start.x,q.y-start.y)<3)return;if(!moved){if(!snapshot(true))return;moved=true}delete c.clampedWireId;delete c.clampT;c.x=old.x+q.x-start.x;c.y=old.y+q.y-start.y;candidate=clampNearest(c,d);c._clampCandidate=candidate?{wireId:candidate.wireId,t:candidate.t}:null;c._clampJawOpen=!!candidate;render();},finish:cancel=>{if(cancel&&moved){c.x=old.x;c.y=old.y;if(old.wire){c.clampedWireId=old.wire;c.clampT=old.t}else{delete c.clampedWireId;delete c.clampT}history.pop();future=oldFuture}else if(moved&&candidate){c.clampedWireId=candidate.wireId;c.clampT=candidate.t;const jaw=clampJawPoint(c,d);c.x+=candidate.point.x-jaw.x;c.y+=candidate.point.y-jaw.y}delete c._clampJawOpen;delete c._clampCandidate;if(moved){render();scheduleSave()}updateProperties()}});
   }
+  // Keep valid routes of unrelated wires on drop. Re-route touched wires and
+  // every old wire whose path would intersect the newly placed component body.
+  function reusableRoutesAfterComponentMove(ids,plan){
+    const moved=new Set(ids),movedJunctions=new Set((plan?.positioned||[])
+      .filter(p=>p.node&&!p.node.typeId).map(p=>p.node.id));
+    const movingBounds=project.components.filter(c=>moved.has(c.id)&&byId[c.typeId])
+      .map(c=>Symbols.materialBounds(c,materialDefinition(c,byId[c.typeId]),GRID*.7));
+    const crosses=(points,box)=>{
+      for(let i=1;i<points.length;i++){
+        const a=points[i-1],b=points[i];
+        if(Math.max(a.x,b.x)>box.left&&Math.min(a.x,b.x)<box.right&&
+           Math.max(a.y,b.y)>box.top&&Math.min(a.y,b.y)<box.bottom)return true;
+      }
+      return false;
+    };
+    const cache=new Map();
+    for(const w of project.wires){
+      const points=renderedWirePoints[w.id];
+      if(w.probeLead||!Array.isArray(points)||points.length<2)continue;
+      if(moved.has(w.from?.c)||moved.has(w.to?.c)||
+         movedJunctions.has(w.from?.j)||movedJunctions.has(w.to?.j))continue;
+      if(movingBounds.some(box=>crosses(points,box)))continue;
+      cache.set(w.id,points);
+    }
+    return cache;
+  }
   function beginComponentDrag(c,e){
     if(byId[c.typeId]?.kind==='clamp-meter'&&selectedIds.size===1){beginClampDrag(c,e);return}
     if(byId[c.typeId]?.kind==='multimeter'&&selectedIds.size===1){beginMeterDrag(c,e);return}
@@ -1129,7 +1183,10 @@
       finish:cancelled=>{
         if(raf)cancelAnimationFrame(raf);alignmentGuides=[];
         if(cancelled&&moved){Selection.restore(plan);history.pop();future=oldFuture}
-        if(moved){render();scheduleSave()}
+        if(moved){
+          render(false,true,!cancelled&&dragPreview?reusableRoutesAfterComponentMove(ids,plan):null);
+          scheduleSave();
+        }
         else if(!cancelled&&ids.length>1){setSelection([c.id]);refreshSelection()}
       }
     });
@@ -1429,7 +1486,7 @@
   toast(count?'Kablo '+wireId+' çizimde işaretlendi.':'Kablo '+wireId+' şu anda çizimde bulunamadı.');
  });
  $('#openBtn').onclick=()=>$('#fileInput').click();
-  $('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const p=window.DTSProjects.parse(rd.result);if(!snapshot())return;project=migrateProject(p);resetDraft();selectedWire=null;hideWireMenu();setSelection([]);running=false;$('#sheetName').textContent=project.name;populateWireMenu();renderLibrary();render();const scaleAudit=materialLayoutWarning();if(!scaleAudit?.overlapCount)toast('Proje açıldı')}catch{toast('Geçersiz proje dosyası')}};rd.readAsText(f);e.target.value=''};
+  $('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const p=window.DTSProjects.parse(rd.result);if(!snapshot())return;project=migrateProject(p);resetDraft();selectedWire=null;hideWireMenu();setSelection([]);running=false;$('#sheetName').textContent=project.name;populateWireMenu();renderLibrary();render(false,true);const scaleAudit=materialLayoutWarning();if(!scaleAudit?.overlapCount)toast('Proje açıldı')}catch{toast('Geçersiz proje dosyası')}};rd.readAsText(f);e.target.value=''};
   $('#renameSheet').onclick=()=>{if(!guardEdit())return;modal('Sayfayı yeniden adlandır',`<label>Sayfa adı<input id="modalName" value="${esc(project.name)}" style="width:100%;margin-top:7px;padding:8px"></label>`,()=>{project.name=$('#modalName')?.value||project.name;$('#sheetName').textContent=project.name;render()})};
   $('#collapseLibrary').onclick=()=>document.body.classList.toggle('library-collapsed');
   // Presentation-only bridge: preserves the user's actual panel preferences.
@@ -1478,7 +1535,7 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
       if(p.components.some(c=>!byId[c.typeId])||(p.panel?.items||[]).some(c=>!byId[c.typeId]))throw Error('Projedeki bazı malzemeler bu sürümde tanınmıyor. Dosya değiştirilmedi.');
       gesture?.cancel();labelCancel?.();resetDraft();running=false;setStatus('Hazır');cancelPressedControls();clearTimeout(saveTimer);
       project=migrateProject(p);history=[];future=[];selectedWire=null;hideWireMenu();setSelection([]);category='electrical';group=brand=series='all';els.search.value='';
-      modeUI();populateWireMenu();renderLibrary();render();if(project.workspaceMode==='panel')window.DTSPanelEditor?.fit();else materialLayoutWarning();
+      modeUI();populateWireMenu();renderLibrary();render(false,true);if(project.workspaceMode==='panel')window.DTSPanelEditor?.fit();else materialLayoutWarning();
     },
     create(mode,name){if(mode==='arduino'&&Arduino){const p=Arduino.exampleProject('blank',window.DTSProjects.uid());p.name=name||'Arduino Projem';this.load(p);return}this.load({version:7,projectId:window.DTSProjects.uid(),workspaceMode:mode,name:name||'Yeni Proje',symbolNorm:Norms.normalize(localStorage.getItem('ccs-norm')),components:[],wires:[],junctions:[],colorRoles:clone(defaultColorRoles),...(mode==='panel'?{panel:window.DTSPanel.defaults()}:{})})},
     setAppearance(value){appearance=value==='material'?'material':'iec';localStorage.setItem('ccs-appearance',appearance);renderLibrary();render();materialLayoutWarning()}
