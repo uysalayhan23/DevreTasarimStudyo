@@ -36,7 +36,7 @@
   const conductorRoles=[['L1','L1 faz'],['L2','L2 faz'],['L3','L3 faz'],['N','Nötr (N)'],['PE','Koruma iletkeni (PE)'],['+24V','+24 VDC'],['DC+','Uyartım +5–15 VDC'],['0V','0 V / M'],['CONTROL','Kumanda'],['SIGNAL','Sinyal'],['SPARE','Yedek']];
   const defaultColorRoles=Lines.defaults;
   let project={version:7,workspaceMode:'control',projectId:window.DTSProjects.uid(),symbolNorm:Norms.normalize(localStorage.getItem('ccs-norm')),name:'Kumanda Devresi 1',components:[],wires:[],junctions:[],colorRoles:clone(defaultColorRoles)};
-  let selected=null,selectedIds=new Set(),gesture=null,selectedWire=null,pendingPort=null,reconnecting=null,draftPoints=[],draftMouse=null,alignmentGuides=[],renderedWirePoints={},routingUsage=new Map(),routeObstacles=[],running=false,zoom=1,category='electrical',group='all',brand='all',series='all',wireColor=wireColors[0],history=[],future=[],saveTimer,labelDragging=false;
+  let selected=null,selectedIds=new Set(),gesture=null,selectedWire=null,pendingPort=null,reconnecting=null,draftPoints=[],draftMouse=null,alignmentGuides=[],renderedWirePoints={},renderedWireNodes=new Map(),routingPreviewIds=new Set(),routingUsage=new Map(),routeObstacles=[],running=false,zoom=1,category='electrical',group='all',brand='all',series='all',wireColor=wireColors[0],history=[],future=[],saveTimer,labelDragging=false;
   let simulationTimer=null,reconnectReleaseCleanup=null,labelCancel=null,sensorFrame=null,sensorTime=null,liveEditWarningUntil=0;
   let tutorialPropertyPass=false;
   let appearance=['iec','material'].includes(localStorage.getItem('ccs-appearance'))?localStorage.getItem('ccs-appearance'):'iec';
@@ -189,7 +189,7 @@
     if(pendingScenePaint){cancelAnimationFrame(pendingScenePaint);pendingScenePaint=0}
     const paintGeneration=++scenePaintGeneration;
     els.scene.innerHTML='';
-    renderedWirePoints={};routingUsage=new Map();routeObstacles=componentObstacles();
+    renderedWirePoints={};renderedWireNodes=new Map();routingPreviewIds=new Set();routingUsage=new Map();routeObstacles=componentObstacles();
     // Paint order: normal devices below wires; measuring equipment above all wires.
     const layers=SceneLayers.split(project.components,byId,Leads.floating);
     layers.ordinary.filter(c=>wireOverDeviceBody(byId[c.typeId])).forEach(c=>renderComponentBackdrop(c));
@@ -220,6 +220,15 @@
     // Opening or dropping a wired project must not block zoom, pan and selection
     // while the entire cable graph is routed synchronously on the UI thread.
     if(progressive&&sceneWires.length>4){
+      // Previous progressive rendering left every cable invisible until A* finished.
+      // Keep provisional connected SVG paths visible while validated routes resolve.
+      for(let i=0;i<sceneWires.length;i++){
+        const wire=sceneWires[i];
+        const from=endpointInfo(wire.from),to=wire.to?.point?
+          {pos:wire.to.point,stub:wire.to.point}:endpointInfo(wire.to);
+        const preview=window.DTSDragPreview?.route?.(from,to,wire.points||wire.fixedPoints||[]);
+        if(preview)renderWire(wire,i,preview,true);
+      }
       let index=0,routingTask=null;
       const paintBatch=()=>{
         pendingScenePaint=0;
@@ -586,15 +595,19 @@
     if(project.workspaceMode==='arduino')return true;
     return [w.from,w.to].some(ref=>{const c=project.components.find(x=>x.id===ref?.c);return !!(c&&byId[c.typeId]?.arduinoBoard)});
   }
-  function renderWire(w,index,reusedPoints=null){
+  function renderWire(w,index,reusedPoints=null,preview=false){
     if(reconnecting?.wireId===w.id)return;
     const points=reusedPoints||routePoints(w.from,w.to,w.points||w.fixedPoints||[]);
-    if(reusedPoints)markRoute(points);
+    if(reusedPoints&&!preview)markRoute(points);
     const path=roundedPath(points),role=w.role||'CONTROL',lp=wireLabelPoint(points);renderedWirePoints[w.id]=points;w.role=role;
-    const g=svg('g',{'data-wire':w.id,style:wireStyle(w)});
+    const g=svg('g',{'data-wire':w.id,style:wireStyle(w)+(preview?';opacity:.65;pointer-events:none':'')});
+    if(preview){g.dataset.routingPreview='true';routingPreviewIds.add(w.id)}
+    else routingPreviewIds.delete(w.id);
     if(w.mechanical||role==='MECHANICAL')g.innerHTML=`<title>Mekanik mil bağlantısı · motor devri enkodere aktarılır</title><path d="${path}" fill="none" stroke="#475569" stroke-width="8" stroke-linecap="round" opacity=".18"/><path class="mechanical-shaft-link ${selectedWire===w.id?'selected':''}" d="${path}" fill="none" stroke="#64748b" stroke-width="3.2" stroke-dasharray="8 5" stroke-linecap="round"/><path class="wire-hit" d="${path}"/><text class="wire-role-label" x="${lp.x}" y="${lp.y}">SHAFT</text>`;
     else g.innerHTML=`<title>${esc(colorNames[w.color]||w.color)} · ${esc(roleName(role))}</title><path class="wire-outline" d="${path}"/><path class="wire ${selectedWire===w.id?'selected':''} ${w._active?'energized':''} ${flowClass(w)} ${w._lineConflict?'line-conflict':''}" d="${path}" stroke="${w.color}" style="color:${w.color}"/><path class="wire-hit" d="${path}"/><text class="wire-role-label" x="${lp.x}" y="${lp.y}">${esc(role==='FREE'?'':role+(Lines.voltageLabel(project,w.color)?' · '+Lines.voltageLabel(project,w.color):''))}</text>`;
-    els.scene.appendChild(g)
+    const prior=renderedWireNodes.get(w.id);
+    if(prior?.parentNode)prior.replaceWith(g);else els.scene.appendChild(g);
+    renderedWireNodes.set(w.id,g);
   }
   function wireStyle(w){return '--wire-width:'+Lines.width(w.size)+'px;--wire-outline:'+(String(w.color).toLowerCase()==='#ffffff'?'#64748b':'#fff')}
   function renderTerminalLeads(){
@@ -1198,7 +1211,7 @@
     const cache=new Map();
     for(const w of project.wires){
       const points=renderedWirePoints[w.id];
-      if(w.probeLead||!Array.isArray(points)||points.length<2)continue;
+      if(w.probeLead||routingPreviewIds.has(w.id)||!Array.isArray(points)||points.length<2)continue;
       if(moved.has(w.from?.c)||moved.has(w.to?.c)||
          movedJunctions.has(w.from?.j)||movedJunctions.has(w.to?.j))continue;
       if(movingBounds.some(box=>crosses(points,box)))continue;
