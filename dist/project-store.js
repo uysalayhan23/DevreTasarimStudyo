@@ -101,8 +101,11 @@
   function normalizeLegacy(p){return migrate(p)}
   function validate(p){
     if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&typeof w.from==='object'&&!Array.isArray(w.from)&&w.to&&typeof w.to==='object'&&!Array.isArray(w.to)))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
-    const ids=new Set();for(const c of p.components){if(!c.id.trim()||ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(!Number.isFinite(Number(c[k]))||Math.abs(Number(c[k]))>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
+    const ids=new Set();for(const c of p.components){if(!c.id.trim()||ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(typeof c[k]!=='number'||!Number.isFinite(c[k])||Math.abs(c[k])>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
     if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!j.id.trim()||!Number.isFinite(j.x)||!Number.isFinite(j.y))))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
+    // The junction graph is bounded like wire records; malformed huge node-only
+    // imports must not bypass the project's existing 40k connection ceiling.
+    if((p.junctions?.length||0)>40000)throw Error('Projede çok fazla kablo birleşim noktası var.');
     const junctionIds=new Set();for(const j of p.junctions||[]){if(junctionIds.has(j.id))throw Error('Projedeki kablo birleşim noktası kimliği tekrarlanıyor.');junctionIds.add(j.id)}
     // Legacy unnamed conductors remain readable; present wire identities must be unique.
     const wireIds=new Set();for(const w of p.wires)if(w.id!==undefined&&w.id!==null){
@@ -126,6 +129,15 @@
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
           panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
         panelIds.add(String(id));
+        // Optional legacy geometry may be absent, but an explicitly corrupt
+        // coordinate or footprint must never be treated as real panel space.
+        for(const key of ['x','y','w','h','depth']){
+          const value=item[key];
+          if(value===undefined)continue;
+          if(typeof value!=='number'||!Number.isFinite(value)||Math.abs(value)>100000||
+             (['w','h'].includes(key)&&value<=0)||(key==='depth'&&value<0))
+            throw Error('Pano malzeme geometrisi geçersiz.');
+        }
       }
       const panelWireIds=new Set();
       for(const wire of p.panel.wires||[]){
