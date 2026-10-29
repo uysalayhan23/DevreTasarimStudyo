@@ -208,10 +208,18 @@
     const items=panel?.items||[];
     return items.map(item=>{
       const e=item.engineering||{},ok=verified(e)&&finitePositive(e.serviceClearanceMm),required=ok?Number(e.serviceClearanceMm):null;
-      if(!ok)return {itemId:item.id,status:'unknown',authority:'insufficient-verified-data',requiredClearanceMm:null,minimumAvailableMm:null,missing:['verified-service-clearance']};
-      const box={x:Number(item.x)||0,y:Number(item.y)||0,w:Number(item.w)||0,h:Number(item.h)||0};
-      const edge=Math.min(box.x,box.y,Math.max(0,(Number(panel.width)||0)-(box.x+box.w)),Math.max(0,(Number(panel.height)||0)-(box.y+box.h)));
-      const same=items.filter(x=>x.id!==item.id&&(x.mount==='door')===(item.mount==='door')).map(x=>rectGap(box,{x:Number(x.x)||0,y:Number(x.y)||0,w:Number(x.w)||0,h:Number(x.h)||0}));
+      const validBox=x=>x&&['x','y','w','h'].every(k=>Number.isFinite(x[k]))&&x.w>0&&x.h>0;
+      const neighbours=items.filter(x=>x.id!==item.id&&(x.mount==='door')===(item.mount==='door'));
+      const geometryKnown=Number.isFinite(panel?.width)&&Number.isFinite(panel?.height)&&
+        panel.width>0&&panel.height>0&&validBox(item)&&neighbours.every(validBox);
+      if(!ok||!geometryKnown)return {
+        itemId:item.id,status:'unknown',authority:'insufficient-verified-data',
+        requiredClearanceMm:ok?required:null,minimumAvailableMm:null,
+        missing:[...(!ok?['verified-service-clearance']:[]),...(!geometryKnown?['verified-service-geometry']:[])]
+      };
+      const box={x:item.x,y:item.y,w:item.w,h:item.h};
+      const edge=Math.min(box.x,box.y,Math.max(0,panel.width-(box.x+box.w)),Math.max(0,panel.height-(box.y+box.h)));
+      const same=neighbours.map(x=>rectGap(box,x));
       const available=Math.min(edge,...same.length?same:[Infinity]);
       return {itemId:item.id,status:available+1e-9>=required?'ok':'violation',authority:'verified-inputs',requiredClearanceMm:required,minimumAvailableMm:round(available,2),missing:[]};
     });
