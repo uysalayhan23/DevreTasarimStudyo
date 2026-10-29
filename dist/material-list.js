@@ -2,7 +2,14 @@
  'use strict';
  function rows(project,byId){
   const groups=new Map();
-  for(const component of Array.isArray(project?.components)?project.components:[]){
+  // The panel workshop stores real placed parts in panel.items, not components.
+  // Select the active workspace inventory: never double-count a part represented
+  // in both the schematic and its panel layout.
+  const schematic=Array.isArray(project?.components)?project.components:[];
+  const panelItems=Array.isArray(project?.panel?.items)?project.panel.items:[];
+  const source=project?.workspaceMode==='panel'||(!schematic.length&&panelItems.length)
+   ?panelItems:schematic;
+  for(const component of source){
    if(!component||typeof component.typeId!=='string')continue;
    const d=byId?.[component.typeId],key=component.typeId;
    let item=groups.get(key);
