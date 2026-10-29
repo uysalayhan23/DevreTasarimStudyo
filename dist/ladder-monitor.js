@@ -15,8 +15,14 @@
   // Legacy read-only telemetry without a Ladder program keeps its existing contract.
   const traceReady=!c?.ladderProgram||(Array.isArray(c?.ladderProgram?.rungs)&&
    Array.isArray(c?._dtsLadderTraces)&&c._dtsLadderTraces.length===c.ladderProgram.rungs.length&&
-   c._dtsLadderTraces.every((t,i)=>t&&t.id===c.ladderProgram.rungs[i]?.id&&
-    typeof t.active==='boolean'&&typeof t.value==='boolean'));
+   c._dtsLadderTraces.every((t,i)=>{
+    const rung=c.ladderProgram.rungs[i];
+    return t&&t.id===rung?.id&&Array.isArray(rung.paths)&&
+     Array.isArray(t.pathStates)&&t.pathStates.length===rung.paths.length&&
+     t.pathStates.every(v=>typeof v==='boolean')&&
+     typeof t.active==='boolean'&&t.active===t.pathStates.some(Boolean)&&
+     typeof t.value==='boolean';
+   }));
   const live=!!running&&!!savedMatches&&!error&&mapped&&traceReady&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));
   return {live,powered:live?!!state.powered:null,
