@@ -32,4 +32,4 @@ test('Safety overlay shortcut is not routed to project save',()=>assert.deepEqua
 test('Alt+Ctrl+S is not a save shortcut',()=>assert.deepEqual(run({ctrl:true,alt:true}),{saved:0,saveAs:false,prevented:false}));
 test('IME composition cannot trigger a save',()=>assert.deepEqual(run({ctrl:true,composing:true}),{saved:0,saveAs:false,prevented:false}));
 test('Plain S does not save',()=>assert.deepEqual(run(),{saved:0,saveAs:false,prevented:false}));
-test('Offline HTML references updated studio script revision',()=>assert.ok(html.includes('studio.js?rev=20261029-p8-modal-save1')));
+test('Offline HTML references updated studio script revision',()=>assert.ok(html.includes('studio.js?rev=20261030-p0-open-race1')));

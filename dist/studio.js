@@ -66,9 +66,10 @@
     projectRequests.invalidate();mode=W.normalize(mode);const title=modeName(mode),defaults={control:'Kumanda Devrem',building:'Tesisat Devrem',panel:'Eğitim Panom',arduino:'Arduino Projem'};
     $('#modalTitle').textContent='Yeni proje';$('#modalBody').innerHTML=`<p>${esc(title)}</p><label>Proje adı<input id="newProjectName" maxlength="100" value="${esc(defaults[mode]||title||'Yeni Proje')}"></label>`;$('#modal').hidden=false;$('#newProjectName').focus();
     $('#modalConfirm').onclick=async()=>{
+      const ticket=projectRequests.begin();
       const name=$('#newProjectName').value.trim()||title||'Yeni Proje';$('#modal').hidden=true;
-      try{await preserve();E.create(mode,name);showEditor();markDirty();if(mode==='panel')E.setAppearance('material');await checkpoint(E.getProject())}
-      catch(e){E.toast('Atölye açılamadı: '+(e?.message||e))}
+      try{await preserve();if(!projectRequests.isCurrent(ticket)||safety.visible)return;E.create(mode,name);showEditor();markDirty();if(mode==='panel')E.setAppearance('material');await checkpoint(E.getProject())}
+      catch(e){if(projectRequests.isCurrent(ticket))E.toast('Atölye açılamadı: '+(e?.message||e))}
     };
     $('#modalCancel').onclick=()=>$('#modal').hidden=true;
   }
@@ -97,13 +98,41 @@
     $('#resumeProject').hidden=!(E.getProject().components.length||E.getProject().panel?.items?.length||store.list().some(p=>p.id===E.getProject().projectId));
   }
   async function chooseFolder(){try{const result=await store.chooseFolder();if(result.fallback){$('#projectFolderInput').click();return}if(!result.cancelled)await renderProjects()}catch(e){if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#projectFolderInput').click();return}E.toast('Klasör açılamadı: '+e.message)}}
-  async function open(){if(safety.visible)return;projectRequests.invalidate();try{const result=await store.openFile();if(result.fallback){$('#fileInput').click();return}if(result.cancelled)return;await preserve();load(result.project)}catch(e){if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#fileInput').click();return}E.toast('Proje açılamadı: '+e.message)}}
+  async function open(){
+    if(safety.visible)return;
+    const ticket=projectRequests.begin();
+    try{
+      const result=await store.openFile();
+      if(!projectRequests.isCurrent(ticket)||safety.visible)return;
+      if(result.fallback){$('#fileInput').click();return}
+      if(result.cancelled)return;
+      await preserve();
+      if(!projectRequests.isCurrent(ticket)||safety.visible)return;
+      load(result.project);
+    }catch(e){
+      if(!projectRequests.isCurrent(ticket))return;
+      if(e.name==='SecurityError'||e.name==='NotSupportedError'){$('#fileInput').click();return}
+      E.toast('Proje açılamadı: '+e.message);
+    }
+  }
   async function save(saveAs=false){
     if(isHome||safety.visible)return;if(!saveAs&&protectedNotice())return;const project=protectedProject()&&templateOriginal?Projects.clean(templateOriginal):E.getProject(),button=saveAs?$('#exportBtn'):$('#saveBtn');if(button.disabled)return;button.disabled=true;
     try{const result=await store.save(project,{saveAs});if(result.cancelled){E.toast('Kaydetme iptal edildi; mevcut proje değişmedi.');return}if(result.requiresOpen){E.toast('Kopya için indirme isteği gönderildi. Dosyanın indirildiğini doğrulayın; düzenlemek için Dosya Aç kullanın.');if(result.cacheWarning)E.toast('Tarayıcı taslak yedeği kaydedilemedi; indirilen dosyayı ayrıca doğrulayın.');return}if(saveAs&&result.saved){load(result.project);markClean();E.toast('Kopya kaydedildi. Artık düzenleyebilirsiniz.')}else if(result.saved){markClean();E.toast(result.name+' dosyasına kaydedildi.')}else if(result.download){E.toast('İndirme isteği gönderildi; dosyanın gerçekten indirildiğini doğrulayın. Değişiklikler tarayıcı taslağında korunuyor.')}else throw Error('Kaydetme sonucu doğrulanamadı.');try{localStorage.setItem('ods-project',JSON.stringify(Projects.clean(E.getProject())))}catch(e){E.toast('Dosya işlemi tamamlandı; tarayıcı taslak yedeği güncellenemedi.')}if(result.cacheWarning)E.toast('Dosya işlemi tamamlandı; tarayıcı proje arşivi güncellenemedi.')}catch(e){E.toast('Kaydedilemedi: '+e.message)}finally{button.disabled=false}
   }
   $('#projectFolderInput').onchange=async e=>{if(!e.target.files?.length)return;store.useFolderFiles(e.target.files);await renderProjects();$('#folderStatus').textContent+=' · Bu tarayıcıda klasör salt okunur; Kaydet dosya indirir.';e.target.value=''};
-  $('#fileInput').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const raw=await f.text(),p=Projects.parse(raw);await preserve();load(p)}catch(e){E.toast('Proje açılamadı: '+e.message)}e.target.value=''};
+  $('#fileInput').onchange=async e=>{
+    const f=e.target.files?.[0];if(!f)return;
+    const ticket=projectRequests.begin();
+    try{
+      const raw=await f.text();
+      if(!projectRequests.isCurrent(ticket)||safety.visible)return;
+      const p=Projects.parse(raw);
+      await preserve();
+      if(!projectRequests.isCurrent(ticket)||safety.visible)return;
+      load(p);
+    }catch(e){if(projectRequests.isCurrent(ticket))E.toast('Proje açılamadı: '+e.message)}
+    finally{e.target.value=''}
+  };
   $('#homeBtn').onclick=home;$('#dashboardOpen').onclick=open;$('#chooseProjectFolder').onclick=chooseFolder;$('#refreshProjects').onclick=()=>renderProjects(true);$('#resumeProject').onclick=()=>{showEditor();showLegacyCircuitWarning(E.getProject())};
   $('#newBtn').onclick=()=>createProject(E.getProject().workspaceMode);$('#openBtn').onclick=open;$('#saveBtn').onclick=()=>save();$('#exportBtn').onclick=()=>save(true);
   $('#dashboard').addEventListener('click',e=>{const b=e.target.closest?.('[data-new-mode]');if(!b||!$('#dashboard').contains(b))return;e.preventDefault();createProject(b.dataset.newMode)});
