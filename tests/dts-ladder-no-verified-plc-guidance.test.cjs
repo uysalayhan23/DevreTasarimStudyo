@@ -18,7 +18,7 @@ function fixture(components=[],byId={}){
  return {doc,button,overlay,dialog,listeners};
 }
 test('Ladder button opens a persistent explanation when a project contains no PLC',()=>{
- const f=fixture();assert.equal(globalThis.DTSLadderEditor.open(),false);
+ const f=fixture();f.listeners['button:click']();
  assert.equal(f.overlay.hidden,false);
  assert.equal(f.doc.activeElement,f.dialog);
  assert.match(f.overlay.innerHTML,/Siemens CPU 1211C DC\/DC\/DC/);
