@@ -2,6 +2,8 @@
 const assert=require('node:assert/strict'),{test}=require('node:test');
 const E=require('../dist/ladder-editor.js'),L=require('../dist/ladder-runtime.js');
 const verified={id:'plc-hw-6es7211-1ae40-0xb0',name:'CPU 1211C DC/DC/DC',isPLC:true,pins:[
+ {id:'X10:1',label:'L+',signalType:'POWER'},
+ {id:'X10:2',label:'M',signalType:'POWER'},
  {id:'X10:6',label:'1M',signalType:'POWER'},
  {id:'X12:1',label:'3L+',signalType:'POWER'},
  {id:'X12:2',label:'3M',signalType:'POWER'},
@@ -21,13 +23,13 @@ test('Starter has two seal-in paths and NC STOP in both paths',()=>{
 });
 
 test('Live Ladder monitor shows actual saved rung trace and counter',()=>{
- const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',active:true,value:true,count:3}],true,'dts-ladder-v1');
+ const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',active:true,value:true,count:3}],true,'dts-ladder-v1',true);
  assert.equal(rows[0].status,'AKTİF');assert.equal(rows[0].active,true);
  assert.equal(E.signalText(rows[0]),'1 · Sayaç 3');
 });
 test('Unsaved Ladder draft never shows misleading saved-program trace',()=>{
  const p=L.blank(),draft=JSON.parse(JSON.stringify(p));draft.rungs[0].paths[0][0].type='NC';
- const rows=E.monitorRows(draft,p,[{id:'R1',active:true,value:true}],true,'dts-ladder-v1');
+ const rows=E.monitorRows(draft,p,[{id:'R1',active:true,value:true}],true,'dts-ladder-v1',true);
  assert.equal(rows[0].value,null);assert.equal(rows[0].active,false);
  assert.match(rows[0].status,/Taslak izlenmiyor/);
 });
@@ -37,7 +39,7 @@ test('Stopped simulation hides stale Ladder signal and count',()=>{
  assert.equal(rows[0].count,null);assert.equal(E.signalText(rows[0]),'—');
 });
 test('Live Ladder monitor does not invent signals before solver trace',()=>{
- const p=L.blank(),rows=E.monitorRows(p,p,[],true,'dts-ladder-v1');
+ const p=L.blank(),rows=E.monitorRows(p,p,[],true,'dts-ladder-v1',true);
  assert.equal(rows[0].status,'Sinyal bekleniyor');assert.equal(rows[0].value,null);
 });
 
