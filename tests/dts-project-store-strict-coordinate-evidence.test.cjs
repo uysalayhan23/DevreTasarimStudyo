@@ -54,3 +54,15 @@ test('P0-04 real bundled protected training panel stays readable and readonly',(
  const example=JSON.parse(fs.readFileSync(path.join(__dirname,'../Kaydedilen_Projeler/03_Egitim_Panosu.odsdevre'),'utf8'));
  const p=parse(example);assert.equal(p.panel.items.length,15);assert.equal(Store.isProtected(p),true);
 });
+
+test('P0-04 supported junction count is bounded at the established wire limit',()=>{
+ const p=base();p.junctions=Array.from({length:40000},(_,i)=>({id:'j'+i,x:0,y:0}));
+ assert.equal(parse(p).junctions.length,40000);
+ p.junctions.push({id:'overflow',x:0,y:0});
+ assert.throws(()=>parse(p),/çok fazla kablo birleşim noktası/);
+});
+test('P0-04 oversized node-only document is rejected even without any connected wire',()=>{
+ const p=base();p.components=[];p.wires=[];
+ p.junctions=Array.from({length:40001},(_,i)=>({id:'j'+i,x:0,y:0}));
+ assert.throws(()=>parse(p),/çok fazla kablo birleşim noktası/);
+});
