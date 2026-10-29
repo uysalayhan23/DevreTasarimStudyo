@@ -3,6 +3,15 @@
  // Offline PNG conversion only for self-contained SVG art. Never silently omit external photos.
  function sourceCheck(svg){
   if(!svg?.querySelectorAll)return {ok:false,error:'Devre SVG kaynağı bulunamadı.'};
+  // xml:base changes the target of otherwise local #fragment links. Block it
+  // on both the SVG root and descendants before creating a raster Blob URL.
+  let all;
+  try{all=svg.querySelectorAll('*')}catch{return {ok:false,error:'PNG SVG kaynakları incelenemedi.'}}
+  for(const el of [svg,...(all||[])]){
+   if(el?.getAttribute?.('xml:base')!=null||
+      el?.getAttributeNS?.('http://www.w3.org/XML/1998/namespace','base')!=null)
+    return {ok:false,error:'PNG için XML temel adresi desteklenmiyor.'};
+  }
   const refs=svg.querySelectorAll('image,foreignObject,use,feImage,script,animate,animateMotion,animateTransform,set,[href],[xlink\\:href]')||[];
   for(const el of refs){
    const tag=String(el.localName||el.tagName||'').toLowerCase().split(':').pop();
