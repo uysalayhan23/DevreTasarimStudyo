@@ -315,12 +315,6 @@
           seed(c,o.pin,domain,leg,'dc',o.voltage);seed(c,o.ground,domain,'0','dc',o.voltage);
         }
       }
-      for(const c of project.components){
-        const d=definition(byId,c);if(!d?.isPLC||!PLC)continue;
-        // Respect the PLC's own configured program. SC202 has no verified
-        // delayed-stop/TON/TOF model: do not silently force timed-stop here.
-        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,c.plcProgram==='temperature-ntc-sc999'?{project}:{});
-      }
       for(const c of project.components){const d=definition(byId,c);if(d?.doldSafety)DoldSafety.seedControl(c,d,{at,dcVoltage,voltage},seed)}
       for(const c of instruments)for(const [i,v] of (c._instrument?.voltage||[]).entries()){seed(c,v.a,'instrument:'+c.id+':'+i,'+','dc',v.value);seed(c,v.b,'instrument:'+c.id+':'+i,'0','dc',v.value)}
       for(const c of derived)if(enabled.has(c.id)){
@@ -411,6 +405,16 @@
           if(domains.has(v.domain)&&domains.get(v.domain)!==v.leg){faultDomains.add(v.domain);faultRoots.add(r)}
           domains.set(v.domain,v.leg);
         }
+      }
+      // Evaluate the virtual PLC only after converted supplies, digital outputs,
+      // and short-circuit faults have settled for this inner network pass.
+      // The earlier position ran before the SMPS output was seeded, leaving an
+      // actually powered CPU 1211C permanently reported as unpowered.
+      for(const c of project.components){
+        const d=definition(byId,c);if(!d?.isPLC||!PLC)continue;
+        // Respect the PLC's own configured program. SC202 has no verified
+        // delayed-stop/TON/TOF model: do not silently force timed-stop here.
+        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,c.plcProgram==='temperature-ntc-sc999'?{project}:{});
       }
       const next=new Set();
       for(const c of derived){const spec=converter(definition(byId,c));if(spec.hcfa){if(voltage(c,'L1','L2'))next.add(c.id);continue;}if(spec.acs){const ext=dcVoltage(c,'X23:1','X23:2'),external=at(c,'X23:1').some(v=>v.domain!=='acsaux:'+c.id);c._acsExternal=external&&ext>=21.6&&ext<=26.4;if(threePhase(c,spec.input)||voltage(c,'U1','V1')||voltage(c,'U1','W1')||voltage(c,'V1','W1')||c._acsExternal)next.add(c.id);continue;}const ex=spec.loadCell?dcVoltage(c,...spec.input):null;if(spec.loadCell?(ex!==null&&Math.abs(ex)>0&&Math.abs(ex)<=15):spec.threePhase?threePhase(c,spec.input):voltage(c,...spec.input))next.add(c.id)}
