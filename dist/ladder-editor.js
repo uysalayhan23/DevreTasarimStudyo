@@ -274,9 +274,16 @@
   return value;
  }
  function stateFor(c,editor){
-  const d=editor.byId[c.typeId];
-  return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),savedBaseline:JSON.stringify(c.ladderProgram??null),
-   draft:L?.validate(c.ladderProgram,{inputCount:pins(d,'DI').length,outputCount:pins(d,'DO').length}).ok?clone(c.ladderProgram):L.blank()};
+  const d=editor.byId[c.typeId],inputs=pins(d,'DI'),outputs=pins(d,'DO');
+  const valid=L?.validate?.(c.ladderProgram,{inputCount:inputs.length,outputCount:outputs.length})?.ok===true;
+  const hasSaved=c.plcProgram==='dts-ladder-v1'||c.ladderProgram!=null;
+  // Invalid saved programs must not silently become an executable OUT Q1
+  // starter. Use an electrically open, address-free NOP recovery draft instead.
+  // A genuinely new PLC keeps the existing explicit starter workflow.
+  const safeDraft=()=>({version:1,rungs:[{id:'R1',paths:[[]],coil:{type:'NOP',ref:''}}]});
+  return {c,d,inputs,outputs,savedBaseline:JSON.stringify(c.ladderProgram??null),
+   recoveryWarning:!valid&&hasSaved,
+   draft:valid?clone(c.ladderProgram):hasSaved?safeDraft():L.blank()};
  }
  function canCommitDraft(active,editor){
   const project=editor?.getProject?.();
@@ -372,6 +379,7 @@
     Toolbox.tools.map(t=>'<button type="button" draggable="true" data-tool-id="'+t.id+'" aria-pressed="'+(selectedTool===t.id)+'" title="'+escape(t.label)+' sürükle veya seç"><span class="dts-tool-symbol">'+escape(t.symbol)+'</span><span>'+escape(t.label)+'</span></button>').join('')+
     '</div></div>'+ 
     '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(Monitor.snapshot(active.c,active.d,editor.running,live))+'</div>'+ 
+    (active.recoveryWarning?'<p class="dts-ladder-hint" role="alert">Kayıtlı Ladder programı geçersiz veya eksik. Güvenli BOŞ/NOP taslak açıldı; hiçbir çıkış otomatik atanmadı. Gerekirse programınızı elle düzenleyip açıkça kaydedin.</p>':'')+
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs"><div class="dts-ladder-networks-bar"><strong>'+active.draft.rungs.length+' Network · LAD</strong>'+(focusedNetwork?'<button type="button" data-action="all-networks">▣ Tüm Networkleri göster</button>':'<span>Her Network ayrı bir çalışma penceresidir.</span>')+'</div>'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
