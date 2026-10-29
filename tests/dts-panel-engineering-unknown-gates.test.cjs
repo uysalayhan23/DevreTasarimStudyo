@@ -49,3 +49,18 @@ test('P6-03 approved engineering source retains positive duct capacity',()=>{
  const [row]=E.ductAudit(p);
  assert.equal(row.fill.status,'ok');assert.equal(row.fill.authority,'verified-inputs');
 });
+
+test('P6-03 incomplete panel dimensions never authorize service clearance',()=>{
+ const p=panel();p.items.push({id:'partial',x:100,y:100,w:50,mount:'plate',
+  engineering:{...evidence,serviceClearanceMm:10}});
+ const [row]=E.serviceAudit(p);
+ assert.equal(row.status,'unknown');assert.equal(row.authority,'insufficient-verified-data');
+ assert.ok(row.missing.includes('verified-service-geometry'));
+});
+test('P6-03 measured neighbouring service space still reports a violation',()=>{
+ const p=panel();p.items.push({id:'a',x:20,y:20,w:40,h:40,mount:'plate',
+  engineering:{...evidence,serviceClearanceMm:30}});
+ p.items.push({id:'b',x:70,y:20,w:40,h:40,mount:'plate'});
+ const [row]=E.serviceAudit(p);
+ assert.equal(row.status,'violation');assert.equal(row.minimumAvailableMm,10);
+});
