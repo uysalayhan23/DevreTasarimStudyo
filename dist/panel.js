@@ -114,6 +114,10 @@
     return {ok:true};
   }
   function proposal(p,item,x,y,mount=item.mount){
+    const previous=p?.items?.find(i=>i.id===item.id);
+    if(previous?.panelGeometryStatus==='ready'&&previous?.dimensionStatus==='verified'&&
+       ['w','h','depth'].some(key=>item[key]!==previous[key]))
+      return {ok:false,reason:'Doğrulanmış üretici ölçüleri değiştirilemez; gerçek terminal ve 3D ölçek korunur.'};
     const result={...item,mount,x:snap(x),y:snap(y)};delete result.railId;
     if(mount==='rail'){
       const rails=p.rails.filter(r=>result.x+result.w>=r.x&&result.x<=r.x+r.length).sort((a,b)=>Math.abs(a.y-(y+item.h/2))-Math.abs(b.y-(y+item.h/2)));

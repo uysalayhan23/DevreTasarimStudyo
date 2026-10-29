@@ -1,0 +1,20 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const M=require('../dist/physical-metadata.js'),W=require('../dist/panel-wiring.js'),P=require('../dist/panel.js');
+const mapping=M.componentMap['main-contact'],d={id:'main-contact',name:'SIRIUS 3RT2016',kind:'contactor',materialAsset:mapping.assetKey,w:45,h:58,pins:[{id:'A1',x:41,y:9.6,side:'top'}]};
+function fixture(){const spec=P.spec(d);assert.equal(spec.panelGeometryStatus,'ready');const p=P.defaults(),item={id:'K1',typeId:d.id,ref:'K1',x:100,y:121,...spec,mount:'rail',railId:'r1'};p.rails=[{id:'r1',x:40,y:150,length:450}];p.items=[item];return {p,item};}
+const port=i=>W.ports(i,d).find(t=>t.p==='A1');
+test('P8-02 real anchor and 3D depth stay verified for exact physical frame',()=>{const {item}=fixture(),a=M.terminalAnchor(d,'A1'),t=port(item);assert.ok(a);assert.equal(t.geometryStatus,'verified');assert.equal(t.x,item.x+a.xMm);assert.equal(t.y,item.y+a.yMm);assert.equal(t.z,20+item.depth)});
+test('P8-02 smaller body cannot claim verified terminal beyond its bounds',()=>{const {item}=fixture(),t=port({...item,w:10});assert.equal(t.geometryStatus,'approximate');assert.ok(t.x>=item.x&&t.x<=item.x+10)});
+test('P8-02 changed height downgrades physical geometry',()=>{const {item}=fixture();assert.equal(port({...item,h:item.h+10}).geometryStatus,'approximate')});
+test('P8-02 changed depth downgrades 3D physical geometry',()=>{const {item}=fixture();assert.equal(port({...item,depth:item.depth+5}).geometryStatus,'approximate')});
+test('P8-02 missing physical width cannot claim verified geometry',()=>{const {item}=fixture();assert.equal(port({...item,physicalWidthMm:undefined}).geometryStatus,'approximate')});
+test('P8-02 approximate status cannot claim verified geometry',()=>{const {item}=fixture();assert.equal(port({...item,dimensionStatus:'approximate'}).geometryStatus,'approximate')});
+test('P8-02 staged status cannot claim verified geometry',()=>{const {item}=fixture();assert.equal(port({...item,panelGeometryStatus:'staged'}).geometryStatus,'approximate')});
+test('P8-02 translation retains canonical anchor offset',()=>{const {item}=fixture(),a=port(item),b=port({...item,x:item.x+25,y:item.y+15});assert.equal(b.geometryStatus,'verified');assert.equal(b.x,a.x+25);assert.equal(b.y,a.y+15)});
+test('P8-02 width height depth edits are rejected for verified products',()=>{const {p,item}=fixture();for(const key of ['w','h','depth']){const before=JSON.stringify(p.items),r=P.proposal(p,{...item,[key]:item[key]+5},item.x,item.y);assert.equal(r.ok,false,key);assert.match(r.reason,/üretici ölçüleri/);assert.equal(JSON.stringify(p.items),before)}});
+test('P8-02 verified body may still move on its rail',()=>{const {p,item}=fixture(),r=P.proposal(p,{...item},item.x+10,item.y);assert.equal(r.ok,true,r.reason);assert.equal(r.item.x,item.x+10)});
+test('P8-02 approximate legacy item may be resized',()=>{const {p,item}=fixture();p.items[0]={...item,panelGeometryStatus:'staged',dimensionStatus:'approximate'};assert.equal(P.proposal(p,{...p.items[0],w:item.w+5},item.x,item.y).ok,true)});
+test('P8-02 saved legacy frame remains unchanged but uncertified',()=>{const {p,item}=fixture();p.items[0]={...item,w:item.w-10};const loaded=JSON.parse(JSON.stringify(p));assert.equal(loaded.items[0].w,item.w-10);assert.equal(port(loaded.items[0]).geometryStatus,'approximate')});
+test('P8-02 generic terminals still use approximate boundary',()=>{const g={id:'generic',w:80,h:70,pins:[{id:'1',x:0,y:0,side:'top'}]},t=W.ports({id:'g',x:20,y:30,w:80,h:70,depth:40},g)[0];assert.equal(t.geometryStatus,'approximate');assert.equal(t.x,20)});
+test('P8-02 Edge file mode loads updated panel modules in order',()=>{const h=fs.readFileSync(path.join(__dirname,'..','dist','index.html'),'utf8');assert.ok(h.includes('panel-wiring.js?rev=20261030-p8-02-physical-frame1'));assert.ok(h.includes('panel.js?rev=20261030-p8-02-physical-frame1'));assert.ok(h.indexOf('panel-wiring.js?rev=')<h.indexOf('panel.js?rev='))});

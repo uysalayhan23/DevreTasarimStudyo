@@ -23,7 +23,8 @@
        item.w<=0||item.h<=0||d.w<=0||d.h<=0)return [];
     return (Array.isArray(d.pins)?d.pins:[]).filter(pin=>pin&&typeof pin.id==='string'&&
       !!pin.id&&Number.isFinite(pin.x)&&Number.isFinite(pin.y)).map(pin=>{
-      const physical=item?.panelGeometryStatus==='ready'&&Physical&&typeof Physical.terminalAnchor==='function'?Physical.terminalAnchor(d,pin.id):null;
+      const verifiedFrame=item?.panelGeometryStatus==='ready'&&item?.dimensionStatus==='verified'&&[['w','physicalWidthMm'],['h','physicalHeightMm'],['depth','physicalDepthMm']].every(([key,physicalKey])=>Number.isFinite(item[key])&&Number.isFinite(item[physicalKey])&&Math.abs(item[key]-item[physicalKey])<1e-6);
+      const physical=verifiedFrame&&Physical&&typeof Physical.terminalAnchor==='function'?Physical.terminalAnchor(d,pin.id):null;
       if(physical){
         const side=physical.side,v=directions[side];
         return {c:item.id,p:pin.id,label:pin.label||pin.id,side,v,surface:surface(item),z:20+(Number.isFinite(item?.depth)?item.depth:0),
