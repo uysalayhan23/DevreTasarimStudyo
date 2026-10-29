@@ -76,6 +76,12 @@
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
+   // Counter RESET has priority over a simultaneous count pulse regardless of
+   // Network order. Preserve the owner's input edge so releasing RESET while
+   // the count button is held does not invent another rising edge.
+   const counterOwners=new Map(source.rungs.filter(r=>['CTU','CTD'].includes(r.coil.type))
+    .map(r=>[r.coil.ref,r]));
+   const resetCounters=new Set();
   for(const rung of source.rungs){
    // Preserve path truth at the exact scan point, before later coils change shared bits.
    const pathStates=rung.paths.map(path=>path.length>0&&path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
@@ -85,7 +91,19 @@
    if(coil.type==='NOP'){next=false;/* no output assignment */}
    else if(coil.type==='OUT'){next=active;bits[ref]=next;written.add(ref);}
    else if(coil.type==='SET'){if(active)bits[ref]=true;next=!!bits[ref];written.add(ref);}
-   else if(coil.type==='RESET'){if(active){bits[ref]=false;delete states[ref];}next=!!bits[ref];written.add(ref);}
+   else if(coil.type==='RESET'){
+     if(active){
+      bits[ref]=false;
+      const owner=ref[0]==='C'?counterOwners.get(ref):null;
+      if(owner){
+       const inputHeld=owner.paths.some(path=>path.length>0&&path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
+       states[ref]={kind:owner.coil.type,preset:owner.coil.preset,
+        count:owner.coil.type==='CTD'?owner.coil.preset:0,prev:inputHeld,tick:now};
+       resetCounters.add(ref);
+      }else delete states[ref];
+     }
+     next=!!bits[ref];written.add(ref);
+    }
    else if(['TON','TOF','TP'].includes(coil.type)){
     const s=states[ref]||(states[ref]={});
     // Changing a virtual timer kind starts fresh; old output cannot energize the new block.
@@ -132,7 +150,8 @@
     }
     s.kind=coil.type;s.preset=coil.preset;
     if(!Number.isInteger(s.count))s.count=initial;
-    if(active&&!s.prev)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
+    if(resetCounters.has(ref))s.count=initial;
+    else if(active&&!s.prev)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;
     next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
     bits[ref]=next;written.add(ref);
