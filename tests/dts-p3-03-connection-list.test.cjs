@@ -1,0 +1,18 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const list=require('../dist/connection-list.js');
+const material=require('../dist/material-list.js');
+const defs={a:{pins:[{id:'1'},{id:'2'}]},b:{pins:[{id:'A1'},{id:'A2'}]}};
+const base=()=>({workspaceMode:'control',name:'Test',components:[{id:'c1',typeId:'a',ref:'S1'},{id:'c2',typeId:'b',ref:'K1'}],junctions:[],wires:[{id:'W1',from:{c:'c1',p:'1'},to:{c:'c2',p:'A1'},role:'CONTROL',color:'#ff0000',size:'1,5 mm²'}]});
+test('canonical terminal identity and IEC refs are preserved',()=>{const p=base(),before=JSON.stringify(p),r=list.audit(p,defs);assert.equal(r.ok,true);assert.deepEqual(r.rows.map(x=>[x.id,x.fromRef,x.fromPin,x.toRef,x.toPin]),[['W1','S1','1','K1','A1']]);assert.equal(JSON.stringify(p),before)});
+test('CSV uses the existing formula-safe serializer',()=>{const p=base();p.components[0].ref='=HYPERLINK("bad")';assert.match(list.csv(p,defs,null,material.cell),/"'=HYPERLINK\(""bad""\)"/)});
+test('rejects unknown terminal',()=>{const p=base();p.wires[0].to.p='BAD';assert.equal(list.audit(p,defs).ok,false)});
+test('rejects unknown component',()=>{const p=base();p.wires[0].to.c='absent';assert.equal(list.audit(p,defs).ok,false)});
+test('rejects same-endpoint conductor',()=>{const p=base();p.wires[0].to={...p.wires[0].from};assert.equal(list.audit(p,defs).ok,false)});
+test('rejects ambiguous junction/component endpoint',()=>{const p=base();p.junctions=[{id:'j1'}];p.wires[0].from={j:'j1',c:'c1',p:'1'};assert.equal(list.audit(p,defs).ok,false)});
+test('rejects duplicate wire identities',()=>{const p=base();p.wires.push({...p.wires[0]});assert.equal(list.audit(p,defs).ok,false)});
+test('junction endpoints use distinct canonical IDs',()=>{const p=base();p.junctions=[{id:'j1'}];p.wires[0].from={j:'j1'};assert.equal(list.audit(p,defs).rows[0].fromId,'J:j1')});
+test('panel terminal definitions are respected',()=>{const p=base();p.workspaceMode='panel';p.panel={items:p.components,wires:p.wires};const panel={panelDefinition:d=>({...d,pins:[{id:'P1'}]})};assert.equal(list.audit(p,defs,panel).ok,false);p.panel.wires[0].from.p='P1';p.panel.wires[0].to.p='P1';assert.equal(list.audit(p,defs,panel).ok,true)});
+test('measurement probe leads are excluded',()=>{const p=base();p.wires.push({id:'PROBE',probeLead:true,from:{},to:{}});assert.equal(list.audit(p,defs).rows.length,1)});
+test('missing wire identity fails closed',()=>{const p=base();delete p.wires[0].id;assert.throws(()=>list.csv(p,defs,null,material.cell),/kimliği/)});
