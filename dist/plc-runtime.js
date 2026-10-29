@@ -3,7 +3,7 @@
 const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root.DTSLadderRuntime;
 const norm=s=>String(s||'').trim().toUpperCase();
-const pins=(d,type)=>(d?.pins||[]).filter(p=>p.signalType===type);
+const pins=(d,type)=>(Array.isArray(d?.pins)?d.pins:[]).filter(p=>p&&typeof p==='object'&&typeof p.id==='string'&&p.id.length>0&&p.signalType===type);
 const powerPins=d=>pins(d,'POWER');
 const sameBlock=(a,b)=>!a?.block||!b?.block||a.block===b.block;
 const isPlus=p=>/(^|\s)(?:\d)?L\+($|\s)|\+24|24V|V\+/.test(norm(p?.label||p?.id));
