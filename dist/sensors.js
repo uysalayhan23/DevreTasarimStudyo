@@ -6,7 +6,9 @@
   const supported=d=>!!d&&(d.reedSensor||(['sensor','detector'].includes(d.kind)&&(['inductive','capacitive','optical','ultrasonic'].includes(d.sensorPrinciple)||(d.id==='sensor-hall'&&d.sensorPrinciple==='magnetic'))));
   function settings(c,d){
     const s=c.sensing||{},range=clamp(s.range,.1,400,d.sensingRange||(d.sensorPrinciple==='optical'?40:d.sensorPrinciple==='capacitive'?10:4));
-    const freeSide=['right','left','bottom','top'].sort((a,b)=>d.pins.filter(p=>p.side===a).length-d.pins.filter(p=>p.side===b).length)[0];
+    // Incomplete manufacturer pin metadata is not allowed to crash sensor controls.
+    const pins=(Array.isArray(d.pins)?d.pins:[]).filter(p=>p&&typeof p==='object');
+    const freeSide=['right','left','bottom','top'].sort((a,b)=>pins.filter(p=>p.side===a).length-pins.filter(p=>p.side===b).length)[0];
     return {mm:d.sensorPrinciple==='ultrasonic'?.35:MM,target:d.reedSensor?'magnet':materials.some(([v])=>v===s.target)?s.target:'none',range,distance:clamp(s.distance,0,1000,range*1.5),offset:clamp(s.offset,-200,200,0),face:['right','left','bottom','top'].includes(s.face)?s.face:freeSide,auto:!!s.auto,travelDirection:s.travelDirection===-1?-1:1};
   }
   function detect(c,d){
@@ -26,10 +28,17 @@
   }
   function beginDrag(c,d){return {...settings(c,d),...geometry(c,d)}}
   function drag(c,d,start,delta){
+    // Ignore invalid pointer deltas rather than resetting a valid target position.
+    if(!Number.isFinite(delta?.x)||!Number.isFinite(delta?.y)||
+       !Number.isFinite(start?.s?.distance)||!Number.isFinite(start?.s?.offset)||
+       !Number.isFinite(start?.s?.mm)||start.s.mm<=0||
+       ![start.worldV?.x,start.worldV?.y,start.worldN?.x,start.worldN?.y].every(Number.isFinite))return;
     c.sensing={...settings(c,d),auto:false,distance:clamp(start.s.distance+(delta.x*start.worldV.x+delta.y*start.worldV.y)/start.s.mm,0,1000),offset:clamp(start.s.offset+(delta.x*start.worldN.x+delta.y*start.worldN.y)/start.s.mm,-200,200)};
   }
   function advance(c,d,dt){
-    const s=settings(c,d);if(!supported(d)||s.target==='none'||!s.auto)return false;
+    // Invalid or paused frames must not teleport or rewrite a virtual sensor target.
+    if(!Number.isFinite(dt)||dt<=0||!supported(d))return false;
+    const s=settings(c,d);if(s.target==='none'||!s.auto)return false;
     const low=s.range*.2,high=s.range*1.8,span=high-low,speed=span/1.4;
     let next=s.distance+speed*Math.max(0,Math.min(.1,dt))*s.travelDirection,dir=s.travelDirection;
     if(next>high){next=high-(next-high);dir=-1}if(next<low){next=low+(low-next);dir=1}
