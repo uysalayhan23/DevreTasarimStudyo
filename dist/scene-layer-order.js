@@ -4,7 +4,7 @@
  function measurementDevice(d){
   const kind=String(d?.kind||'').toLowerCase();
   return !!d&&(!!d.probeColor||kind==='multimeter'||kind==='clamp-meter'||
-   /^(?:meter-|voltmeter$|ammeter$|oscilloscope$|scope$|power-analyzer$|energy-analyzer$|logic-analyzer$|frequency-meter$)/.test(kind));
+   /^(?:meter-|voltmeter$|ammeter$|oscilloscope$|scope$|power-meter$|power-analyzer$|energy-analyzer$|logic-analyzer$|frequency-meter$)/.test(kind));
  }
  function split(components,byId,floating){
   const ordinary=[],measuring=[];
