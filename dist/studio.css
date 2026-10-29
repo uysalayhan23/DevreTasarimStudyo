@@ -1149,7 +1149,7 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .topbar button.simulate.running{color:#101820!important;background:#ffb9b7!important;border-color:#ae6565!important}
 .topbar button:disabled{color:#374151!important;background:#dce5ed!important}
 .dts-ladder-dialog button,.dts-ladder-dialog select,
-.dts-operator-panel button,.properties-panel button,.library-panel button{
+.dts-operator-panel button,.properties-panel button:not(.color-dot),.library-panel button{
  color:#101820!important;background:#edf5fb!important;border-color:#91adc0!important;text-shadow:none!important;
 }
 .dts-ladder-dialog .dts-ladder-header button{background:#edf5fb!important;color:#101820!important;border:1px solid #9bb4c4!important;border-radius:7px}
