@@ -125,6 +125,29 @@
   const valid=L.validate(draft,limits);
   return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
  }
+ // Structural deletions are transactional; a malformed UI index must not
+ // delete Network 0 via Array.splice(NaN,1) or crash on a missing path.
+ function removeNetwork(program,index,limits={}){
+  const check=L.validate(program,limits);
+  if(!check.ok)return {ok:false,error:check.error};
+  if(!Number.isSafeInteger(index)||index<0||index>=program.rungs.length)
+   return {ok:false,error:'Network konumu geçersiz.'};
+  if(program.rungs.length<=1)return {ok:false,error:'Son Network silinemez.'};
+  const draft=clone(program),removed=draft.rungs.splice(index,1)[0];
+  const valid=L.validate(draft,limits);
+  return valid.ok?{ok:true,program:draft,removedId:removed.id}:{ok:false,error:valid.error};
+ }
+ function removeParallelPath(program,r,p,limits={}){
+  const check=L.validate(program,limits);
+  if(!check.ok)return {ok:false,error:check.error};
+  if(!Number.isSafeInteger(r)||r<0||r>=program.rungs.length||
+   !Number.isSafeInteger(p)||p<0||p>=program.rungs[r].paths.length)
+   return {ok:false,error:'Paralel yol konumu geçersiz.'};
+  if(program.rungs[r].paths.length<=1)return {ok:false,error:'Son paralel yol silinemez.'};
+  const draft=clone(program);draft.rungs[r].paths.splice(p,1);
+  const valid=L.validate(draft,limits);
+  return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
+ }
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
   let steps=[clone(initial)],index=0;
@@ -219,13 +242,19 @@
   return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
  }
  // Keep keyboard navigation inside the dialog; disabled controls are never targets.
+ function focusableControl(el){
+  // A control inside a collapsed Network is hidden even if the input itself
+  // has no hidden attribute. Do not move keyboard focus into that subtree.
+  return !!el&&!el.disabled&&!el.hidden&&el.tabIndex>=0&&
+   el.getAttribute?.('aria-hidden')!=='true'&&
+   !el.closest?.('[hidden],[inert],[aria-hidden="true"]')&&typeof el.focus==='function';
+ }
  function trapModalTab(e,dialog,doc){
   if(e.key!=='Tab'||!dialog)return false;
-  const items=Array.from(dialog.querySelectorAll('button,select,input,[tabindex]')).filter(el=>
-   !el.disabled&&!el.hidden&&el.tabIndex>=0&&el.getAttribute?.('aria-hidden')!=='true'&&typeof el.focus==='function');
+  const items=Array.from(dialog.querySelectorAll('button,select,input,[tabindex]')).filter(focusableControl);
   if(!items.length){e.preventDefault();dialog.focus();return true}
   const first=items[0],last=items[items.length-1],current=doc.activeElement;
-  const outside=!dialog.contains(current)||current===dialog;
+  const outside=!dialog.contains(current)||current===dialog||!items.includes(current);
   if(outside||(e.shiftKey?current===first:current===last)){
    e.preventDefault();(e.shiftKey?last:first).focus();return true;
   }
@@ -368,7 +397,7 @@
      '</section>';
    const newList=overlay.querySelector('.dts-ladder-rungs');if(newList)newList.scrollTop=oldScroll;
    if(priorFocus){
-    const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>!el.disabled&&focusKey(el)===priorFocus);
+    const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>focusableControl(el)&&focusKey(el)===priorFocus);
     if(next)next.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
    }
   }
@@ -527,13 +556,22 @@
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
    }
-   else if(type==='remove-rung'){if(active.draft.rungs.length>1){const id=active.draft.rungs[r]?.id;active.draft.rungs.splice(r,1);closedNetworks.delete(id);if(focusedNetwork===id)focusedNetwork=null;}}
+   else if(type==='remove-rung'){
+     const result=removeNetwork(active.draft,r,limits());
+     if(!result.ok){editor.toast?.(result.error);return}
+     active.draft=result.program;closedNetworks.delete(result.removedId);
+     if(focusedNetwork===result.removedId)focusedNetwork=null;
+    }
    else if(type==='add-path'){
     const result=addSafeParallelPath(active.draft,r,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
    }
-   else if(type==='remove-path'){if(active.draft.rungs[r].paths.length>1)active.draft.rungs[r].paths.splice(p,1);}
+   else if(type==='remove-path'){
+     const result=removeParallelPath(active.draft,r,p,limits());
+     if(!result.ok){editor.toast?.(result.error);return}
+     active.draft=result.program;
+    }
    else if(type==='add-contact'){
     const added=addSafeContact(active.draft,r,p,limits());
     if(!added.ok){editor.toast?.(added.error);return}
@@ -679,7 +717,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,ladderShortcut,canCommitDraft};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
