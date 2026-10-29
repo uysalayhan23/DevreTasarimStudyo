@@ -433,6 +433,21 @@
   function gridRoute(from,to,preferredDir=null){
     const snap=p=>({x:Math.max(0,Math.min(SHEET_W,Math.round(p.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(p.y/GRID)*GRID))}),s=snap(from),goal=snap(to),cell=p=>`${p.x},${p.y}`,state=(p,dir)=>`${p.x},${p.y},${dir}`,goalCell=cell(goal);
     if(cell(s)===goalCell)return[s];
+    // A clear, unoccupied straight route is already the minimum-cost A* answer.
+    // Skip thousands of grid searches during full scene redraws after drag release.
+    const straightDir=s.y===goal.y?(goal.x>s.x?0:1):s.x===goal.x?(goal.y>s.y?2:3):-1;
+    if(straightDir>=0&&(preferredDir==null||preferredDir===straightDir)){
+      const length=Math.round((Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y))/GRID);
+      let clear=true;
+      for(let step=1;step<length&&clear;step++){
+        const q={x:s.x+Math.sign(goal.x-s.x)*GRID*step,y:s.y+Math.sign(goal.y-s.y)*GRID*step};
+        if(routingUsage.has(cell(q))&&routingUsage.get(cell(q))>0){clear=false;break}
+        for(const obstacle of routeObstacles){
+          if(q.x>obstacle.left&&q.x<obstacle.right&&q.y>obstacle.top&&q.y<obstacle.bottom){clear=false;break}
+        }
+      }
+      if(clear&&!routingUsage.get(goalCell))return cleanPoints([s,goal]);
+    }
     const directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&routeObstacles.some(o=>p.x>o.left&&p.x<o.right&&p.y>o.top&&p.y<o.bottom),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
     heapPush(open,{...s,dir:preferredDir??-1,key:startKey,f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
     let foundKey=null,guard=0;
