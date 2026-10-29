@@ -40,7 +40,7 @@
   function templateUI(){const p=protectedProject();document.body.classList.toggle('protected-example',p);$('#exampleProtection').hidden=!p;$('#sheetName').textContent=E.getProject().name+(p?' · Salt okunur':'')}
   function restoreExample(){if(!protectedProject()||!templateOriginal||templateOriginal.defaultTemplate.id!==E.getProject().defaultTemplate.id)return;const p=E.getProject(),base=Projects.clean(templateOriginal);for(const key of Object.keys(p))delete p[key];Object.assign(p,base)}
   const modeName=id=>W.modes.find(([key])=>key===W.normalize(id))?.[1];
-  function showEditor(){isHome=false;templateUI();$('#dashboard').hidden=true;document.body.classList.remove('dashboard-open');document.querySelector('.topbar').inert=false;document.querySelector('.app-shell').inert=false;E.modeUI();if(document.querySelector('#componentLibrary')?.dataset.catalogReady!=='1')E.renderLibrary();if(E.getProject().workspaceMode==='panel')window.DTSPanelEditor.fit()}
+  function showEditor(){isHome=false;templateUI();$('#dashboard').hidden=true;document.body.classList.remove('dashboard-open');document.querySelector('.topbar').inert=false;document.querySelector('.app-shell').inert=false;E.modeUI();if(document.querySelector('#componentLibrary')?.dataset.catalogReady!=='1')E.renderLibrary();if(E.needsInitialScene)E.render();if(E.getProject().workspaceMode==='panel')window.DTSPanelEditor.fit()}
   function markDirty(){if(!isHome&&!protectedProject()&&!E.getProject().tutorialLesson)fileDirty=true}
   function markClean(){fileDirty=false}
   function checkpoint(project){

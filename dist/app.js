@@ -163,7 +163,15 @@
     for(const c of project.components){const d=byId[c.typeId];if(!d?.incrementalEncoder38mm)continue;const motor=window.DTSIncrementalEncoder?.motorCoupling?.(project,byId,c);if(motor){c._encoderMotorId=motor.id;c._encoderMotorRef=motor.ref||motor.label||motor.id}else{delete c._encoderMotorId;delete c._encoderMotorRef}}
   }
 
+  let deferredInitialScene=false,bootstrapSceneAttempted=false;
   function render(simulationTick=false){
+    // Bootstrap is hidden behind the dashboard; don't create the offscreen SVG.
+    // Later manual renders (including project load) are always allowed.
+    if(!bootstrapSceneAttempted){
+      bootstrapSceneAttempted=true;
+      if(document.body.classList.contains('dashboard-open')){deferredInitialScene=true;return}
+    }
+    deferredInitialScene=false;
     if(project.workspaceMode==='panel'){running=false;clearTimeout(simulationTimer);syncSensorAnimation();sound.sync(project,byId,false);els.simulate.disabled=true;els.simulate.classList.remove('running');els.simulate.textContent='PANO YERLEŞİMİ';els.guard.hidden=true;window.DTSPanelEditor?.render();if(!simulationTick)scheduleSave();return}
     clearTimeout(simulationTimer);simulationTimer=null;
     window.DTSAssemblies.sync(project,byId,appearance);
@@ -1389,7 +1397,7 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
   $('#arduinoSensorControls').addEventListener('change',e=>{const key=e.target.dataset.arduinoSetting,card=project.components.find(c=>c.id===selected);if(!key||!card)return;const type=e.target.dataset.arduinoSettingType;let value=type==='bool'?!!e.target.checked:type==='text'?String(e.target.value):Number(e.target.value);if(type!=='bool'&&type!=='text'&&!Number.isFinite(value))return;const def=byId[card.typeId];if(def?.kind==='pwm-generator'&&((key==='dutyPercent'&&(value<0||value>100))||(key==='frequencyHz'&&(value<1||value>20000))))return;if(def?.kind==='opto-flasher-timer'&&((key==='dutyPercent'&&(value<0||value>100))||(key==='frequencyHz'&&(value<.2||value>10))))return;if(['ac-scr-trigger','ac-triac-trigger'].includes(def?.kind)&&((key==='triggerAngleDeg'&&(value<0||value>170))||(key==='pulseWidthDeg'&&(value<1||value>45))))return;if(def?.kind==='ac-virtual-source'&&((key==='rmsVoltage'&&(value<1||value>24))||(key==='frequencyHz'&&![50,60].includes(value))))return;if(!running&&!snapshot())return;card[key]=value;if(key==='scopeTimeDivMs')card.scopeTimeMs=Math.max(.5,Math.min(2000,Number(value)*10));if(def?.incrementalEncoder38mm)window.DTSIncrementalEncoder?.state(card,def,performance.now(),false);render(true);updateProperties();if(!running)scheduleSave()});
   function updateSoundButton(){$('#soundBtn').textContent=sound.enabled?'♪ Ses açık':'♪ Ses kapalı';$('#soundBtn').setAttribute('aria-pressed',String(sound.enabled))}
   $('#soundBtn').onclick=()=>{sound.setEnabled(!sound.enabled);localStorage.setItem('ccs-sound',sound.enabled?'on':'off');updateSoundButton()};updateSoundButton();
-  window.DTSEditor={library:lib,byId,getProject:()=>project,get running(){return running},snapshot,changed:projectChanged,render,renderLibrary,scheduleSave,flushDraftSync,stop,guardEdit,toast,modeUI,undo,redo,
+  window.DTSEditor={library:lib,byId,getProject:()=>project,get needsInitialScene(){return deferredInitialScene},get running(){return running},snapshot,changed:projectChanged,render,renderLibrary,scheduleSave,flushDraftSync,stop,guardEdit,toast,modeUI,undo,redo,
     load(value){
       const migrated=window.DTSProjects.migrate?.(value)||value,p=window.DTSProjects.clean(window.DTSProjects.validate(migrated));
       if(p.components.some(c=>!byId[c.typeId])||(p.panel?.items||[]).some(c=>!byId[c.typeId]))throw Error('Projedeki bazı malzemeler bu sürümde tanınmıyor. Dosya değiştirilmedi.');
