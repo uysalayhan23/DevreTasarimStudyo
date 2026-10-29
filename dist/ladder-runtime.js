@@ -154,6 +154,11 @@
  function supportedPLC(d){
   const terminals=d?.pins||[];
   if(!Array.isArray(terminals)||terminals.some(p=>!p||typeof p.id!=='string'||!p.id)||new Set(terminals.map(p=>p.id)).size!==terminals.length)return false;
+  // I1..I6 and Q1..Q4 are mapped by pin-array order in plc-runtime.
+  // Merely counting terminals permits a reordered catalogue to energize the wrong Q.
+  const di=terminals.filter(p=>p.signalType==='DI'),out=terminals.filter(p=>p.signalType==='DO');
+  if(di.length!==6||out.length!==4||di.some((p,i)=>p.id!=='X10:'+(i+7))||
+     out.some((p,i)=>p.id!=='X12:'+(i+3)))return false;
   return !!d&&d.id==='plc-hw-6es7211-1ae40-0xb0'&&d.isPLC===true&&
    (d.pins||[]).filter(p=>p.signalType==='DI').length===6&&
    (d.pins||[]).filter(p=>p.signalType==='DO').length===4&&
