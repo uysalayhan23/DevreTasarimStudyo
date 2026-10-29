@@ -896,7 +896,7 @@
     e.preventDefault();e.stopPropagation();node.focus({preventScroll:true});setSelection([c.id]);selectedWire=null;
     const key=node.dataset.labelKey,base={x:Number(node.dataset.baseX),y:Number(node.dataset.baseY)},drag=Labels.begin(c,key,base,{x:e.clientX,y:e.clientY},zoom*(key==='note'?1:(c.materialScale||1))),previous=clone(c.labelPositions||{}),oldFuture=[...future];
     let moved=false;labelDragging=true;document.body.classList.add('label-dragging');
-    owner.parentNode.appendChild(owner);raiseTerminalLeads();const notes=els.scene.querySelector('.note-overlay-layer');if(notes)els.scene.appendChild(notes);raiseMeasurements();for(const g of els.scene.querySelectorAll('g.component'))g.classList.toggle('selected',g.dataset.id===c.id);updateProperties();
+    if(owner.hasAttribute('data-note-owner'))owner.parentNode.appendChild(owner);raiseTerminalLeads();const notes=els.scene.querySelector('.note-overlay-layer');if(notes)els.scene.appendChild(notes);raiseMeasurements();for(const g of els.scene.querySelectorAll('g.component'))g.classList.toggle('selected',g.dataset.id===c.id);updateProperties();
     const move=ev=>{
       if(ev.pointerId!==e.pointerId)return;
       if(!moved&&Math.hypot(ev.clientX-e.clientX,ev.clientY-e.clientY)<2)return;
