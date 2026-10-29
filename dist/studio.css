@@ -1269,3 +1269,4 @@ body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:bloc
 @media(max-width:600px){
  body.dts-sim-focus:not(.dts-full-mode):not(.library-collapsed) .app-shell{grid-template-columns:min(195px,52vw) minmax(0,1fr)!important}
 }
+.dashboard-welcome-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}

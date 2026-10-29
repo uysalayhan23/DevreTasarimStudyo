@@ -108,7 +108,20 @@
   $('#newBtn').onclick=()=>createProject(E.getProject().workspaceMode);$('#openBtn').onclick=open;$('#saveBtn').onclick=()=>save();$('#exportBtn').onclick=()=>save(true);
   $('#dashboard').addEventListener('click',e=>{const b=e.target.closest?.('[data-new-mode]');if(!b||!$('#dashboard').contains(b))return;e.preventDefault();createProject(b.dataset.newMode)});
   for(const [id,p] of Object.entries(window.DTSStarterProjects)){p.defaultTemplate={id:'starter:'+id,readOnly:true};p.projectId='dts-default-'+id;const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value)}};freeze(p)}
-  for(const b of document.querySelectorAll('[data-example]'))b.onclick=async()=>{if(safety.visible)return;await preserve();load(Projects.clean(window.DTSStarterProjects[b.dataset.example]));protectedNotice()};
+  async function openStarter(id){
+    if(safety.visible||!isHome)return;
+    const ticket=projectRequests.begin();
+    try{
+      await preserve();
+      if(!projectRequests.isCurrent(ticket)||!isHome||safety.visible)return;
+      const examples=window.DTSStarterProjects;
+      const starter=examples&&Object.prototype.hasOwnProperty.call(examples,id)?examples[id]:null;
+      if(!starter){E.toast('Hazır örnek bulunamadı.');return}
+      load(Projects.clean(starter));protectedNotice();
+    }catch(e){if(projectRequests.isCurrent(ticket))E.toast('Örnek açılamadı: '+(e?.message||e))}
+  }
+  const quickStartButton=$('#quickStartProject');if(quickStartButton)quickStartButton.onclick=()=>openStarter('control');
+  for(const b of document.querySelectorAll('[data-example]'))b.onclick=()=>openStarter(b.dataset.example);
   $('#saveExampleCopy').onclick=()=>save(true);
   $('#showOpeningWarning').checked=window.DTSSafety.showOnStart(localStorage);$('#showOpeningWarning').onchange=e=>{try{window.DTSSafety.setShow(localStorage,e.target.checked)}catch{e.target.checked=true;E.toast('Açılış tercihi kaydedilemedi.')}};$('#replayOpeningWarning').onclick=()=>safety.show('opening');
   document.addEventListener('keydown',e=>{if(!isHome&&!safety.visible&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save(e.shiftKey)}});
