@@ -34,6 +34,22 @@
     if(!local&&!shipped&&!data)return {ok:false,error:'PDF yazdırmada harici veya güvensiz SVG kaynağı engellendi.'};
    }
   }
+  // Inherited xml:base can redirect a permitted relative assets/ image to a remote host.
+  for(const el of [svg,...(svg.querySelectorAll('*')||[])]){
+   if(el?.getAttribute?.('xml:base')!=null||
+      el?.getAttributeNS?.('http://www.w3.org/XML/1998/namespace','base')!=null)
+    return {ok:false,error:'PDF için XML temel adresi desteklenmiyor.'};
+  }
+  // SVG style rules and paint attributes can load remote CSS/images without href.
+  // Share the existing PNG CSS validator so PDF and PNG follow the same offline rule.
+  const cssCheck=typeof module==='object'&&module.exports
+   ? require('./project-png.js').cssCheck : root.DTSProjectPng?.cssCheck;
+  if(typeof cssCheck!=='function')
+   return {ok:false,error:'PDF için çevrimdışı CSS güvenlik kontrolü kullanılamıyor.'};
+  if(svg?.nodeType===1&&typeof svg.outerHTML!=='string')
+   return {ok:false,error:'PDF SVG stilleri güvenli biçimde okunamadı.'};
+  const cssResult=cssCheck(typeof svg.outerHTML==='string'?svg.outerHTML:'');
+  if(!cssResult.ok)return {ok:false,error:'PDF için harici CSS kaynağı engellendi.'};
   return {ok:true};
  }
  function prepare(doc,svg,scene,title){
