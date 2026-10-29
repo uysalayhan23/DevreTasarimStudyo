@@ -611,21 +611,48 @@
     }
     return true;
   }
+  // Move only the affected SVG paths during cable dragging. Full render/solver runs on release.
+  function previewDraggedWire(w,junctionEnds){
+    const affected=[w];
+    for(const end of junctionEnds||[]){
+      if(!end.follow)continue;
+      const junction=project.junctions.find(j=>j.id===end.id);
+      if(!junction)continue;
+      for(const node of els.scene.querySelectorAll('[data-junction]')){
+        if(node.dataset.junction===junction.id){node.setAttribute('cx',junction.x);node.setAttribute('cy',junction.y)}
+      }
+      for(const peer of project.wires){
+        if(peer!==w&&!peer.probeLead&&(peer.from?.j===junction.id||peer.to?.j===junction.id)&&!affected.includes(peer))affected.push(peer);
+      }
+    }
+    for(const wire of affected){
+      const points=routePoints(wire.from,wire.to,wire.points||wire.fixedPoints||[],false);
+      const d=roundedPath(points),label=wireLabelPoint(points);
+      renderedWirePoints[wire.id]=points;
+      for(const node of els.scene.querySelectorAll('[data-wire]')){
+        if(node.dataset.wire!==wire.id)continue;
+        for(const path of node.querySelectorAll('path'))path.setAttribute('d',d);
+        const text=node.querySelector('.wire-role-label');
+        if(text){text.setAttribute('x',label.x);text.setAttribute('y',label.y)}
+      }
+    }
+  }
   function beginWireSegmentDrag(w,segment,e){
     if(!guardEdit())return;
     if(gesture||labelDragging)return;
     const base=editableRoute(w),range=editableSegmentRange(w,base);if(segment<range.first||segment>range.last)return;
     const a=base[segment],b=base[segment+1],vertical=Math.abs(a.x-b.x)<1;if(!vertical&&Math.abs(a.y-b.y)>=1)return;
     if(wireFreeDrag(w)){
-      const previous=clone(w),oldFuture=[...future];let moved=false;
+      const previous=clone(w),oldFuture=[...future];let moved=false,raf=0;
       e.preventDefault();trackGesture(e,{
         move:ev=>{
           if(!moved&&Math.hypot(ev.clientX-e.clientX,ev.clientY-e.clientY)<4)return;
           const p=canvasPoint(ev);if(!moved){if(!snapshot())return;moved=true}
           const full=uniquePoints([...base.slice(0,segment+1),p,...base.slice(segment+1)]);
-          w.points=manualPointsBetween(w.from,w.to,full);delete w.fixedPoints;render();
+          w.points=manualPointsBetween(w.from,w.to,full);delete w.fixedPoints;if(!raf)raf=requestAnimationFrame(()=>{raf=0;previewDraggedWire(w,[])})
         },
         finish:cancelled=>{
+          if(raf)cancelAnimationFrame(raf);
           if(cancelled&&moved){Object.keys(w).forEach(k=>delete w[k]);Object.assign(w,previous);history.pop();future=oldFuture}
           if(moved){setStatus('Arduino kablosu istediğiniz yöne taşındı · uç bağlantıları korundu');render();scheduleSave()}
         }
@@ -634,7 +661,7 @@
     const junctionEnds=[];
     if(segment===0&&w.from?.j)junctionEnds.push({id:w.from.j,index:0,follow:junctionCanFollowSegment(w.from.j,w.id,vertical)});
     if(segment===base.length-2&&w.to?.j)junctionEnds.push({id:w.to.j,index:base.length-1,follow:junctionCanFollowSegment(w.to.j,w.id,vertical)});
-    const previous=clone(w),previousJunctions=junctionEnds.filter(x=>x.follow).map(x=>{const j=project.junctions.find(j=>j.id===x.id);return j&&{id:j.id,x:j.x,y:j.y}}).filter(Boolean),oldFuture=[...future];let moved=false;
+    const previous=clone(w),previousJunctions=junctionEnds.filter(x=>x.follow).map(x=>{const j=project.junctions.find(j=>j.id===x.id);return j&&{id:j.id,x:j.x,y:j.y}}).filter(Boolean),oldFuture=[...future];let moved=false,raf=0;
     e.preventDefault();trackGesture(e,{
       move:ev=>{
         if(!moved&&Math.hypot(ev.clientX-e.clientX,ev.clientY-e.clientY)<4)return;
@@ -643,9 +670,10 @@
         const movedBase=base.map(q=>({...q}));
         for(const end of junctionEnds){if(!end.follow)continue;const j=project.junctions.find(j=>j.id===end.id);if(!j)continue;if(vertical)j.x=p.x;else j.y=p.y;movedBase[end.index]={...movedBase[end.index],x:j.x,y:j.y}}
         const ma=movedBase[segment],mb=movedBase[segment+1],shifted=vertical?[{x:p.x,y:ma.y},{x:p.x,y:mb.y}]:[{x:ma.x,y:p.y},{x:mb.x,y:p.y}],full=uniquePoints([...movedBase.slice(0,segment+1),...shifted,...movedBase.slice(segment+1)]);
-        w.points=manualPointsBetween(w.from,w.to,full);delete w.fixedPoints;render();
+        w.points=manualPointsBetween(w.from,w.to,full);delete w.fixedPoints;if(!raf)raf=requestAnimationFrame(()=>{raf=0;previewDraggedWire(w,junctionEnds)})
       },
       finish:cancelled=>{
+        if(raf)cancelAnimationFrame(raf);
         if(cancelled&&moved){Object.keys(w).forEach(k=>delete w[k]);Object.assign(w,previous);for(const before of previousJunctions){const j=project.junctions.find(j=>j.id===before.id);if(j)Object.assign(j,before)}history.pop();future=oldFuture}
         if(moved){const followed=junctionEnds.some(x=>x.follow),extended=junctionEnds.some(x=>!x.follow);setStatus(followed&&extended?'Kablo taşındı · uygun ek noktası taşındı, diğer uçta kablo uzatıldı':followed?'Kablo ve uygun ek noktası birlikte taşındı':extended?'Ek noktası sabit kaldı · kablo düzgün şekilde uzatıldı':'Kablo güzergâhı taşındı');render();scheduleSave()}
       }
