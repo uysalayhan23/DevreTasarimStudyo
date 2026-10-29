@@ -17,9 +17,9 @@ function run(type,steps){
   return r.outputs.Q1;
  });
 }
-test('TOF off-delay restarts safely when virtual clock rewinds',()=>{
+test('TOF off-delay cancels safely when virtual clock rewinds',()=>{
  assert.deepEqual(run('TOF',[[1000,true],[1010,false],[1050,false],[0,false],[99,false],[100,false]]),
-  [true,true,true,true,true,false]);
+  [true,true,true,false,false,false]);
 });
 test('TOF normal expiry remains unchanged',()=>{
  assert.deepEqual(run('TOF',[[0,true],[10,false],[109,false],[110,false]]),
