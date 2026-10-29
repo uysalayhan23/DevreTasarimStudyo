@@ -863,7 +863,7 @@
   function exportMaterialList(){
   const bom=window.DTSMaterialList;
   if(!bom){toast('Malzeme listesi yüklenemedi.');return}
-  if(!project.components.length){toast('Şemada listelenecek malzeme yok.');return}
+  if(!bom.rows(project,byId).length){toast('Şemada veya panoda listelenecek malzeme yok.');return}
   const content=bom.csv(project,byId);
   const file=new Blob([content],{type:'text/csv;charset=utf-8'});
   const uri=URL.createObjectURL(file),anchor=document.createElement('a');
