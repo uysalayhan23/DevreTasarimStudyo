@@ -17,18 +17,30 @@
   return bytes;
  }
 
+ // Imported files must not smuggle unrecognized properties into saved PLC state.
+ // Preserve only the native Ladder V1 electrical contract and optional comments.
+ function canonical(program){
+  return {version:1,rungs:program.rungs.map(r=>({
+   id:r.id,
+   ...(r.comment===undefined?{}:{comment:r.comment}),
+   paths:r.paths.map(path=>path.map(c=>({type:c.type,ref:c.ref}))),
+   coil:{type:r.coil.type,ref:r.coil.ref,
+    ...(['TON','TOF','TP'].includes(r.coil.type)?{presetMs:r.coil.presetMs}:{}),
+    ...(['CTU','CTD'].includes(r.coil.type)?{preset:r.coil.preset}:{})}
+  }))};
+ }
  function parse(raw,limits){
   if(typeof raw!=='string'||utf8Bytes(raw)>MAX_BYTES)throw Error('Ladder program dosyası fazla büyük veya geçersiz.');
   let data;try{data=JSON.parse(raw)}catch{throw Error('Ladder dosyası geçerli JSON değil.')}
   if(!data||Array.isArray(data)||data.format!==MAGIC||data.version!==1)throw Error('Bu dosya DTS Ladder V1 programı değil.');
   const valid=L?.validate?.(data.program,limits);
   if(!valid?.ok)throw Error('Ladder programı doğrulanamadı: '+(valid?.error||'model yok'));
-  return JSON.parse(JSON.stringify(data.program));
+  return canonical(data.program);
  }
  function serialize(program,limits,name='DTS Ladder'){
   const valid=L?.validate?.(program,limits);
   if(!valid?.ok)throw Error('Dışa aktarılamayan Ladder programı: '+(valid?.error||'model yok'));
-  const text=JSON.stringify({format:MAGIC,version:1,name:String(name||'DTS Ladder').slice(0,60),program},null,2);
+  const text=JSON.stringify({format:MAGIC,version:1,name:String(name||'DTS Ladder').slice(0,60),program:canonical(program)},null,2);
   if(utf8Bytes(text)>MAX_BYTES)throw Error('Ladder programı dosya boyut sınırını aşıyor.');
   return text;
  }
