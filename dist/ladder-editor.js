@@ -175,11 +175,12 @@
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
  // Never apply an async import to a different component or a replaced project instance.
- function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null,draftSnapshot=null,currentDraft=null){
+ function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null,draftSnapshot=null,currentDraft=null,savedSnapshot=null,currentSaved=null){
   const matches=!!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible&&
    (requestId===null||(Number.isSafeInteger(requestId)&&requestId===currentRequestId));
   // Do not overwrite contacts or outputs changed while the selected file was reading.
-  return matches&&(draftSnapshot===null||JSON.stringify(currentDraft)===draftSnapshot);
+  return matches&&(draftSnapshot===null||JSON.stringify(currentDraft)===draftSnapshot)&&
+   (savedSnapshot===null||JSON.stringify(currentSaved)===savedSnapshot);
  }
  const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
@@ -242,8 +243,25 @@
  }
  function stateFor(c,editor){
   const d=editor.byId[c.typeId];
-  return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),
+  return {c,d,inputs:pins(d,'DI'),outputs:pins(d,'DO'),savedBaseline:JSON.stringify(c.ladderProgram??null),
    draft:L?.validate(c.ladderProgram,{inputCount:pins(d,'DI').length,outputCount:pins(d,'DO').length}).ok?clone(c.ladderProgram):L.blank()};
+ }
+ function canCommitDraft(active,editor){
+  const project=editor?.getProject?.();
+  return !!active?.c&&Array.isArray(project?.components)&&project.components.includes(active.c)&&
+   supported(editor).includes(active.c)&&
+   active.savedBaseline===JSON.stringify(active.c.ladderProgram??null);
+ }
+ function ladderShortcut(e,editing=false,running=false){
+  if(e?.isComposing||e?.keyCode===229||!((e?.ctrlKey||e?.metaKey)&&!e?.altKey))return null;
+  const key=String(e.key||'').toLowerCase();
+  if(key==='s'&&!e.shiftKey)return editing?'pending-field':running?'locked':'save';
+  if(key==='z'||key==='y'){
+   if(editing)return null;
+   if(running)return 'locked';
+   return key==='y'||!!e.shiftKey?'redo':'undo';
+  }
+  return null;
  }
  // Match a diagram symbol with the visible LAD or FBD operand editor.
  function focusDiagramOperand(container,element,mode){
@@ -414,6 +432,7 @@
   function save(){
    if(!active)return false;
    if(editor.running){editor.toast?.('Ladder programını değiştirmek için simülasyonu durdurun.');return false}
+   if(!canCommitDraft(active,editor)){editor.toast?.('PLC veya kayıtlı program değişti. Eski taslak kaydedilmedi.');return false}
    const valid=L.validate(active.draft,limits());
    if(!valid.ok){editor.toast?.('Ladder: '+valid.error);return false}
    if(!editor.guardEdit?.()||!editor.snapshot?.())return false;
@@ -586,14 +605,14 @@
    if(e.target.id==='dtsLadderImport'){
     const file=e.target.files?.[0],target=active,originalProject=editor.getProject();
     if(file&&target){
-     const requestId=++importSerial,draftSnapshot=JSON.stringify(target.draft);
+     const requestId=++importSerial,draftSnapshot=JSON.stringify(target.draft),savedSnapshot=JSON.stringify(target.c.ladderProgram??null);
      try{
       if(editor.running)throw Error('İçe aktarmadan önce simülasyonu durdurun.');
       if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
       // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
       const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
       const raw=await file.text();
-      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft)||editor.running){
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft,savedSnapshot,target.c.ladderProgram??null)||!canCommitDraft(target,editor)||editor.running){
        editor.toast?.('İçe aktarma iptal: PLC, proje veya taslak değişti. Program değiştirilmedi.');
       }else{
        const draft=ProgramIO.parse(raw,originalLimits);
@@ -628,18 +647,24 @@
    active.history.push(active.draft);render();
   });
   overlay.addEventListener('keydown',e=>{
+   if(e.isComposing||e.keyCode===229){e.stopPropagation();return}
    if((e.key==='Enter'||e.key===' ')&&e.target.closest?.('[data-ladder-contact],[data-ladder-coil]')){
     if(activateDiagramTarget(e.target))e.preventDefault();
     e.stopPropagation();return;
    }
    if(e.key==='Tab'){trapModalTab(e,overlay.querySelector('.dts-ladder-dialog'),doc);e.stopPropagation();return}
-   const key=String(e.key).toLowerCase(),modifier=(e.ctrlKey||e.metaKey)&&!e.altKey;
    const editing=/^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName||'');
-   if(modifier&&!editing&&!editor.running&&(key==='z'||key==='y')){
-    const redo=key==='y'||(key==='z'&&e.shiftKey);
-    const next=redo?active?.history.redo():active?.history.undo();
-    if(next){active.draft=next;render()}
-    e.preventDefault();e.stopPropagation();return;
+   const shortcut=ladderShortcut(e,editing,editor.running);
+   if(shortcut){
+    e.preventDefault();e.stopPropagation();
+    if(shortcut==='save')save();
+    else if(shortcut==='pending-field')editor.toast?.('Önce düzenlediğiniz alanı tamamlayın, sonra Ctrl+S ile kaydedin.');
+    else if(shortcut==='locked')editor.toast?.('Ladder düzenlemesi için önce simülasyonu durdurun.');
+    else{
+     const next=shortcut==='redo'?active?.history.redo():active?.history.undo();
+     if(next){active.draft=next;render()}
+    }
+    return;
    }
    if(e.key==='Escape'){e.preventDefault();close()}
    e.stopPropagation();
@@ -654,7 +679,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,ladderShortcut,canCommitDraft};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
