@@ -63,7 +63,9 @@ test('PLC switch retains selector focus, and closing restores opener focus',()=>
  doc.getElementById=id=>id==='dtsLadderBtn'?button:null;
  doc.createElement=()=>overlay;
  const def={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
-  {id:'X10:6',label:'1M',signalType:'POWER'},
+  {id:'X10:1',label:'L+',signalType:'POWER'},
+ {id:'X10:2',label:'M',signalType:'POWER'},
+ {id:'X10:6',label:'1M',signalType:'POWER'},
   {id:'X12:1',label:'3L+',signalType:'POWER'},
   {id:'X12:2',label:'3M',signalType:'POWER'},
   ...Array.from({length:6},(_,i)=>({id:'X10:'+(i+7),signalType:'DI'})),
