@@ -18,7 +18,8 @@
   const pathLive=paths.map((p,i)=>live&&(traced?options.pathStates[i]===true:pathState(p,options.values)));
   const energized=pathLive.some(Boolean),wireClass=energized?'dts-ladder-wire-hot':'dts-ladder-wire';
   const coil=rung?.coil||{},blocks=new Set(['NOP','TON','TOF','TP','CTU','CTD']);
-  const coilOn=coil.type==='NOP'?false:(typeof options.coilValue==='boolean'?live&&options.coilValue:energized);
+  // Path truth alone does not prove an output: timers, counters and RESET may remain off.
+  const coilOn=coil.type!=='NOP'&&live&&options.coilValue===true;
   const bits=[];
   bits.push('<svg class="dts-ladder-svg" role="img" aria-label="'+escape('Network '+(Number.isInteger(options.index)?options.index+1:1)+': '+(rung?.id||'')+(live?', canlı sinyaller':'') )+'" width="'+width+'" height="'+height+'" viewBox="0 0 '+width+' '+height+'" xmlns="http://www.w3.org/2000/svg">');
   bits.push('<g class="dts-ladder-rails">'+line(railLeft,31,railLeft,height-21)+line(rightX,31,rightX,height-21)+'</g>');
@@ -26,8 +27,12 @@
   bits.push(text(126,20,'Network '+(Number.isInteger(options.index)?options.index+1:1),'dts-ladder-net-label'));
   if(rung?.comment)bits.push(text(width/2,20,String(rung.comment).slice(0,66),'dts-ladder-comment-svg'));
   if(paths.length>1){
-   bits.push(line(branchX,top,branchX,top+(paths.length-1)*78,'dts-ladder-wire'));
-   bits.push(line(joinX,top,joinX,top+(paths.length-1)*78,'dts-ladder-wire'));
+   // A parallel vertical segment is live only when a lower branch actually conducts.
+   for(let i=1;i<paths.length;i++){
+    const cls=pathLive.slice(i).some(Boolean)?'dts-ladder-wire-hot':'dts-ladder-wire';
+    bits.push(line(branchX,top+(i-1)*78,branchX,top+i*78,cls));
+    bits.push(line(joinX,top+(i-1)*78,joinX,top+i*78,cls));
+   }
   }
   bits.push(line(joinX,top,coilX-(blocks.has(coil.type)?57:26),top,wireClass));
   if(coil.type!=='NOP')bits.push(line(coilX+(blocks.has(coil.type)?57:26),top,rightX,top,coilOn?'dts-ladder-wire-hot':'dts-ladder-wire'));
