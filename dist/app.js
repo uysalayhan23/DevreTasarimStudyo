@@ -507,7 +507,8 @@
         const steps=(Math.abs(b.x-a.x)+Math.abs(b.y-a.y))/GRID;
         for(let n=1;n<=steps;n++){
           const k=cell({x:a.x+dx*n*GRID,y:a.y+dy*n*GRID});
-          if(k!==goalCell&&(occupied.has(k)||(routingUsage.get(k)||0)>0)){valid=false;break}
+          // Previously routed cables are not physical obstacles: sharing a clear corridor avoids repeated A* wavefronts.
+          if(k!==goalCell&&occupied.has(k)){valid=false;break}
         }
       }
       if(valid&&(!simpleBest||score<simpleBest.score))simpleBest={points,score};
