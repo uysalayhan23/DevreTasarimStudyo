@@ -124,7 +124,7 @@
   for(const b of document.querySelectorAll('[data-example]'))b.onclick=()=>openStarter(b.dataset.example);
   $('#saveExampleCopy').onclick=()=>save(true);
   $('#showOpeningWarning').checked=window.DTSSafety.showOnStart(localStorage);$('#showOpeningWarning').onchange=e=>{try{window.DTSSafety.setShow(localStorage,e.target.checked)}catch{e.target.checked=true;E.toast('Açılış tercihi kaydedilemedi.')}};$('#replayOpeningWarning').onclick=()=>safety.show('opening');
-  document.addEventListener('keydown',e=>{if(!isHome&&!safety.visible&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save(e.shiftKey)}});
+  document.addEventListener('keydown',e=>{if(isHome||safety.visible||e.isComposing||!((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='s'))return;e.preventDefault();if($('#modal')?.hidden===false)return;save(e.shiftKey)});
   // Drafts are automatic. Browser security still owns disk-file permissions and the tab-close confirmation UI.
   window.addEventListener('pagehide',()=>{if(!isHome&&!protectedProject())E.flushDraftSync?.()});
   window.addEventListener('beforeunload',e=>{if(isHome||protectedProject()||E.getProject().tutorialLesson||!fileDirty)return;E.flushDraftSync?.();e.preventDefault();e.returnValue=''});
