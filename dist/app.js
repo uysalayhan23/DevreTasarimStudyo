@@ -299,7 +299,14 @@
       // Keep the material nodes alive: animations and cable routes survive a solve.
       const material=g.querySelector('.material-layer');
       if(material){
-        const expected=window.CCSMaterials.family(d,c);if(material.dataset.material!==expected||window.DTSDeviceBehavior.analog(d)||d.arduinoPeripheral)material.outerHTML=window.CCSMaterials.markup(d,c);
+        const expected=window.CCSMaterials.family(d,c);
+         // A PLC front is not the generic plc-cpu asset family. Recreating its
+         // rich 3D SVG on every unchanged solver tick causes severe UI jank.
+         const reused=d.plcFront&&window.DTSPLCFront?.reuseLiveMaterial?.(material,d,c,()=>{
+           material.outerHTML=window.CCSMaterials.markup(d,c);
+           return g.querySelector('.material-layer');
+         });
+         if(!reused&&(material.dataset.material!==expected||window.DTSDeviceBehavior.analog(d)||d.arduinoPeripheral))material.outerHTML=window.CCSMaterials.markup(d,c);
       }
       for(const p of g.querySelectorAll('.port-group'))p.querySelector('.port')?.classList.toggle('energized',!!c._hot?.includes(p.dataset.port));
       const label=g.querySelector('.rotation-label');if(label)label.textContent=Symbols.directionText(c);

@@ -1,6 +1,28 @@
 (function(root){
  'use strict';
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ // Stable live signature for the rendered PLC front. Most solver passes do not
+ // change any input, output or power LED; avoid reparsing a large SVG then.
+ function liveStateKey(d,c={}){
+  const runtime=c._plcRuntime||{},ps=Array.isArray(d?.materialPins)?d.materialPins:Array.isArray(d?.pins)?d.pins:[];
+  let key=c._active?'1':'0';
+  for(const p of ps){
+   if(p.signalType==='DI')key+=runtime.inputs?.[p.id]?'1':'0';
+   else if(p.signalType==='DO')key+=runtime.outputs?.[p.id]?'1':'0';
+  }
+  return key;
+ }
+ // True means this is a native PLC front and its live-material update was
+ // handled. Other devices must stay on the original presentation path.
+ function reuseLiveMaterial(node,d,c,redraw){
+  if(!d?.plcFront||!node?.dataset||node.dataset.material!=='plc-front-'+d.part)return false;
+  const next=liveStateKey(d,c);
+  if(node.dataset.plcLiveState!==next){
+   const updated=redraw();
+   if(updated?.dataset)updated.dataset.plcLiveState=next;
+  }
+  return true;
+ }
  function markup(d,c={}){
   const f=d.plcFront;if(!f)return '';
   const w=d.w,h=d.h,uid='plc-'+String(c.id||d.id).replace(/[^\w-]/g,'_'),runtime=c._plcRuntime||{inputs:{},outputs:{}};
@@ -110,7 +132,7 @@
    for(const [y,count] of [[65,d.io.DI],[h-62,d.io.DO]])for(let i=0;i<count;i++){const x=26+i*Math.min(9,(w-54)/count);s+=rect(x,y,3,2,'#bca557','#333b3c',0)}
    s+=text(w-24,151,d.powerSupply+' · '+(d.outputType==='relay'?'RELAY':d.outputType),5,'#d9dfe1','end');
   }
-  return `<g class="material-layer plc-front plc-model-front" data-material="plc-front-${esc(d.part)}" data-plc-part="${esc(d.part)}" data-projection="front">${s}</g>`;
+  return `<g class="material-layer plc-front plc-model-front" data-material="plc-front-${esc(d.part)}" data-plc-part="${esc(d.part)}" data-plc-live-state="${liveStateKey(d,c)}" data-projection="front">${s}</g>`;
  }
- const api={markup};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCFront=api;
+ const api={markup,liveStateKey,reuseLiveMaterial};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSPLCFront=api;
 })(typeof window==='undefined'?globalThis:window);
