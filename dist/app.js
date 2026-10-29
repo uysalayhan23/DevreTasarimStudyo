@@ -504,6 +504,42 @@
       if(valid&&(!simpleBest||score<simpleBest.score))simpleBest={points,score};
     }
     if(simpleBest)return cleanPoints(simpleBest.points);
+    // Large PLC bodies can require tens of thousands of A* nodes. Probe
+    // verified orthogonal corridors around nearby obstacles before searching.
+    // Every intermediate grid cell is checked; endpoints remain unchanged.
+    const detourLanes=new Set(),directDistance=Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y);
+    for(const box of routeObstacles){
+      if(box.right<Math.min(s.x,goal.x)-200||box.left>Math.max(s.x,goal.x)+200||
+         box.bottom<Math.min(s.y,goal.y)-200||box.top>Math.max(s.y,goal.y)+200)continue;
+      detourLanes.add('y:'+Math.max(0,Math.floor(box.top/GRID)*GRID-GRID));
+      detourLanes.add('y:'+Math.min(SHEET_H,Math.ceil(box.bottom/GRID)*GRID+GRID));
+      detourLanes.add('x:'+Math.max(0,Math.floor(box.left/GRID)*GRID-GRID));
+      detourLanes.add('x:'+Math.min(SHEET_W,Math.ceil(box.right/GRID)*GRID+GRID));
+    }
+    let detourBest=null;
+    for(const lane of detourLanes){
+      const [axis,number]=lane.split(':'),v=Number(number);
+      const corners=axis==='y'?[s,{x:s.x,y:v},{x:goal.x,y:v},goal]:
+        [s,{x:v,y:s.y},{x:v,y:goal.y},goal];
+      let distance=0,score=0,heading=preferredDir??-1,valid=true;
+      for(let i=1;i<corners.length&&valid;i++){
+        const p=corners[i-1],q=corners[i],dx=Math.sign(q.x-p.x),dy=Math.sign(q.y-p.y);
+        if(!dx&&!dy)continue;
+        const dir=dx>0?0:dx<0?1:dy>0?2:3;
+        score+=heading<0||heading===dir?0:(heading^1)===dir?120:70;
+        heading=dir;
+        const steps=(Math.abs(q.x-p.x)+Math.abs(q.y-p.y))/GRID;
+        distance+=steps*GRID;
+        if(distance>Math.min(directDistance*2.5,directDistance+2800)){valid=false;break}
+        for(let n=1;n<=steps;n++){
+          const key=cell({x:p.x+dx*n*GRID,y:p.y+dy*n*GRID});
+          if(key!==goalCell&&occupied.has(key)){valid=false;break}
+          score+=GRID+(routingUsage.get(key)||0)*250;
+        }
+      }
+      if(valid&&(!detourBest||score<detourBest.score))detourBest={corners,score};
+    }
+    if(detourBest)return cleanPoints(detourBest.corners);
     const directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&occupied.has(cell(p)),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
     heapPush(open,{...s,dir:preferredDir??-1,key:startKey,h:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y),f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
     let foundKey=null,guard=0;
