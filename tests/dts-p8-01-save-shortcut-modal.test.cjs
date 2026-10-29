@@ -7,13 +7,13 @@ const vm=require('node:vm');
 const source=fs.readFileSync(path.join(__dirname,'..','dist','studio.js'),'utf8');
 const html=fs.readFileSync(path.join(__dirname,'..','dist','index.html'),'utf8');
 const binding=source.split(/\r?\n/).find(line=>line.includes("document.addEventListener('keydown',e=>{if(isHome"));
-function run({home=false,safetyVisible=false,modal=false,key='s',ctrl=false,meta=false,alt=false,shift=false,composing=false}={}){
+function run({home=false,safetyVisible=false,modal=false,arduinoModal=false,guideModal=false,key='s',ctrl=false,meta=false,alt=false,shift=false,composing=false}={}){
   assert.ok(binding,'studio keyboard handler must exist');
   let listener=null;
   const calls=[];
   const e={key,ctrlKey:ctrl,metaKey:meta,altKey:alt,shiftKey:shift,isComposing:composing,preventDefault(){this.prevented=true}};
   vm.runInNewContext(binding,{
-    document:{addEventListener(name,fn){assert.equal(name,'keydown');listener=fn}},
+    document:{addEventListener(name,fn){assert.equal(name,'keydown');listener=fn},querySelector(selector){assert.equal(selector,'#arduinoIdeModal:not([hidden]),#hc05GuideModal:not([hidden])');return arduinoModal||guideModal?{}:null}},
     isHome:home,safety:{visible:safetyVisible},
     $:selector=>{assert.equal(selector,'#modal');return {hidden:!modal}},
     save:as=>calls.push(as)
@@ -32,4 +32,8 @@ test('Safety overlay shortcut is not routed to project save',()=>assert.deepEqua
 test('Alt+Ctrl+S is not a save shortcut',()=>assert.deepEqual(run({ctrl:true,alt:true}),{saved:0,saveAs:false,prevented:false}));
 test('IME composition cannot trigger a save',()=>assert.deepEqual(run({ctrl:true,composing:true}),{saved:0,saveAs:false,prevented:false}));
 test('Plain S does not save',()=>assert.deepEqual(run(),{saved:0,saveAs:false,prevented:false}));
-test('Offline HTML references updated studio script revision',()=>assert.ok(html.includes('studio.js?rev=20261030-p0-open-race1')));
+test('Ctrl+S in Arduino IDE cannot save underlying project',()=>assert.deepEqual(run({ctrl:true,arduinoModal:true}),{saved:0,saveAs:false,prevented:true}));
+test('Ctrl+Shift+S in Arduino IDE cannot open background Save As',()=>assert.deepEqual(run({ctrl:true,shift:true,arduinoModal:true}),{saved:0,saveAs:false,prevented:true}));
+test('Ctrl+S in HC05 guide cannot save underlying project',()=>assert.deepEqual(run({ctrl:true,guideModal:true}),{saved:0,saveAs:false,prevented:true}));
+test('Hidden Arduino IDE and guide do not block normal Ctrl+S',()=>assert.deepEqual(run({ctrl:true,arduinoModal:false,guideModal:false}),{saved:1,saveAs:false,prevented:true}));
+test('Offline HTML references updated studio script revision',()=>assert.ok(html.includes('studio.js?rev=20261030-p8-01-modal-shortcut1')));
