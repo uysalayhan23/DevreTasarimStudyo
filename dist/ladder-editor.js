@@ -205,7 +205,8 @@
   return matches&&(draftSnapshot===null||JSON.stringify(currentDraft)===draftSnapshot)&&
    (savedSnapshot===null||JSON.stringify(currentSaved)===savedSnapshot);
  }
- const pins=(d,t)=>(d?.pins||[]).filter(p=>p.signalType===t);
+ // A malformed catalog pin list must not break the Ladder launch button.
+ const pins=(d,t)=>(Array.isArray(d?.pins)?d.pins:[]).filter(p=>p&&typeof p.id==='string'&&p.id.length>0&&p.signalType===t);
  const supported=(editor)=>editor?.getProject?.()?.components?.filter(c=>L?.supportedPLC?.(editor.byId?.[c.typeId])&&pins(editor.byId[c.typeId],'DI').length&&pins(editor.byId[c.typeId],'DO').length)||[];
  const starter=()=>({version:1,rungs:[
   {id:'R1',paths:[[{type:'NO',ref:'I1'},{type:'NC',ref:'I2'}],[{type:'NO',ref:'Q1'},{type:'NC',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}
@@ -409,7 +410,24 @@
   }
   function open(which){
    const items=available();
-   if(!items.length){editor.toast?.('Şu an yalnız native testi doğrulanmış Siemens CPU 1211C DC/DC/DC için Ladder açılabilir.');return false}
+   if(!items.length){
+    // Keep the native execution lock, but show a persistent accessible reason.
+    returnFocus=doc.activeElement;
+    active=null;
+    const anyPLC=editor.getProject?.()?.components?.some(c=>editor.byId?.[c.typeId]?.isPLC);
+    overlay.innerHTML='<section class="dts-ladder-dialog" role="dialog" aria-modal="true" aria-label="Ladder açılış bilgisi" tabindex="-1">'+
+     '<header class="dts-ladder-header"><div><strong>PLC Ladder · DTS</strong><small>Güvenli sanal PLC programlama</small></div>'+
+     '<button type="button" data-action="close" aria-label="Kapat">×</button></header>'+
+     '<div class="dts-ladder-guide"><h3>PLC Ladder için doğrulanmış bir CPU gerekli</h3>'+
+     '<p>'+(anyPLC?'Projede PLC var, ancak bu model Ladder için henüz native doğrulanmış değil.':
+      'Bu projeye henüz Ladder destekli bir PLC eklenmemiş.')+'</p>'+
+     '<p>Sol malzeme kütüphanesinden <strong>Siemens CPU 1211C DC/DC/DC</strong> ekleyin; sonra PLC Ladder düğmesine yeniden basın.</p>'+
+     '<p>Doğrulanmayan PLC modellerinde çıkış veya simülasyon etkinleştirilmez.</p>'+
+     '<button type="button" data-action="close">Anladım</button></div></section>';
+    overlay.hidden=false;
+    overlay.querySelector('.dts-ladder-dialog')?.focus();
+    return false;
+   }
    const target=items.find(c=>c.id===which)||items[0];
    const firstOpen=overlay.hidden;
    if(firstOpen){returnFocus=doc.activeElement;diagramMode='ladder';selectedTool=null;focusedNetwork=null;closedNetworks.clear();}
@@ -616,7 +634,10 @@
    // No selected tool: click an existing symbol to edit its operand.
    if(activateDiagramTarget(e.target))return;
    if(e.target===overlay){close();return}
-   const b=e.target.closest('[data-action]');if(b&&overlay.contains(b))action(b);
+   const b=e.target.closest('[data-action]');if(b&&overlay.contains(b)){
+    if(!active&&b.dataset.action==='close'){close();return}
+    action(b);
+   }
   });
   overlay.addEventListener('dragstart',e=>{
    const tile=e.target.closest?.('[data-tool-id]');
