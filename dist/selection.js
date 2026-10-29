@@ -2,7 +2,10 @@
   'use strict';
   function isEditing(element){return !!element&&(['INPUT','TEXTAREA','SELECT'].includes(element.tagName)||!!element.isContentEditable)}
   function bounds(c,d){
-    d={...d,w:d.w*(c.materialScale||1),h:d.h*(c.materialScale||1)};
+    // The SVG renderer/terminal contract clamps materialScale to 0.25..3.
+    // Use the same effective dimensions for selection and group movement.
+    const raw=Number(c?.materialScale),scale=Number.isFinite(raw)&&raw>0?Math.max(.25,Math.min(3,raw)):1;
+    d={...d,w:d.w*scale,h:d.h*scale};
     const quarter=Math.abs(c.rotation||0)%180===90,w=quarter?d.h:d.w,h=quarter?d.w:d.h;
     return {left:c.x+d.w/2-w/2,right:c.x+d.w/2+w/2,top:c.y+d.h/2-h/2,bottom:c.y+d.h/2+h/2};
   }
