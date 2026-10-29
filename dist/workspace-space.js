@@ -1,8 +1,8 @@
 (function(root){
   'use strict';
   const SCENE_UNITS_PER_MM=2;
-  const WIDTH_SCENE=2800;
-  const HEIGHT_SCENE=1800;
+  const WIDTH_SCENE=3200;
+  const HEIGHT_SCENE=2100;
   const api=Object.freeze({
     version:'workspace-space-v1',
     sceneUnitsPerMm:SCENE_UNITS_PER_MM,

@@ -8,7 +8,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Devre Tasarım Stüdyosu</title>
-  <link rel="stylesheet" href="styles.css?rev=20261008-marquee-screen-overlay2">
+  <link rel="stylesheet" href="styles.css?rev=20261029-expanded-sheet1">
   <link rel="stylesheet" href="studio.css?rev=20261028-sensor-card1">
   <link rel="stylesheet" href="v20.css"><link rel="stylesheet" href="acs800.css">
   <link rel="stylesheet" href="arduino.css?rev=20261004-wp014shboard3">
@@ -22,7 +22,7 @@
         <div class="warning-sign" data-electrical-sign></div>
         <div class="danger-banner"><strong>ELEKTRİK GÖZLE GÖRÜLMEZ.<br>ELEKTRİK ÇARPMASI ÖLÜMCÜL OLABİLİR!</strong><p>GERÇEK DEVREYE, PANOYA VEYA KABLOYA DOKUNMADAN ÖNCE ENERJİYİ KES!<br>ENERJİSİ KESİLMEMİŞ KABLOYA KESİNLİKLE DOKUNMA!</p><span>Enerjisizliği öğretmenin veya yetkili bir kişi uygun ölçü aletiyle doğrulasın. Enerjinin tekrar verilmesini önleyin. Gerçek elektrik çalışmalarını tek başına yapma.</span></div>
       </section>
-      <div class="dashboard-welcome"><div><span class="eyebrow">YAKUB’UN ATÖLYESİ</span><h1>Bugün ne tasarlayalım?</h1><p>Bir tasarım alanı seç veya kaldığın projeden devam et.</p></div><button id="resumeProject" class="secondary" hidden>Son taslağa devam et →</button></div>
+      <div class="dashboard-welcome"><div><span class="eyebrow">YAKUB’UN ATÖLYESİ</span><h1>Bugün ne tasarlayalım?</h1><p>Bir tasarım alanı seç veya kaldığın projeden devam et.</p></div><div class="dashboard-welcome-actions"><button id="quickStartProject" class="primary" type="button" title="Salt okunur başlangıç devresini aç">Hızlı Başla · örnek devre →</button><button id="resumeProject" class="secondary" hidden>Son taslağa devam et →</button></div></div>
       <div class="design-cards">
         <button class="design-card control-card" data-new-mode="control"><span class="mode-number">01</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M12 8v12m0 22v10h55V38m0-21V8H12M12 22l10 16M59 20h16v18H59Z"/></svg><strong>KUMANDA DEVRELERİ TASARIMI</strong><span>Buton, kontaktör, motor ve PLC.<br>Devreni kur, klasik kumandayı simüle et.</span><b>Yeni kumanda projesi →</b></button>
         <button class="design-card building-card" data-new-mode="building"><span class="mode-number">02</span><svg viewBox="0 0 80 60" aria-hidden="true"><path d="M6 28L40 4l34 24M16 24v30h48V24M30 54V34h20v20M40 13v10"/><circle cx="40" cy="25" r="3"/></svg><strong>TESİSAT VE DAĞITIM DEVRELERİ TASARIMI</strong><span>Aydınlatma, priz ve topraklama.<br>Bina tesisatı ve A.G. dağıtımını çiz.</span><b>Yeni tesisat projesi →</b></button>
@@ -127,7 +127,7 @@
             <pattern id="majorGrid" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="url(#minorGrid)"/><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#c5cfdb" stroke-width="1.15"/></pattern>
             <filter id="selectedGlow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#2563eb" flood-opacity=".35"/></filter>
           </defs>
-          <rect class="grid-bg" x="0" y="0" width="2400" height="1500" fill="url(#majorGrid)"/>
+          <rect class="grid-bg" x="0" y="0" width="3200" height="2100" fill="url(#majorGrid)"/>
           <g id="scene"></g>
         </svg>
         <div id="emptyHint" class="empty-hint">
@@ -386,7 +386,7 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <div id="safetyModal" class="safety-modal" role="dialog" aria-modal="true" aria-labelledby="safetyTitle" hidden><div class="safety-card"><div class="safety-stripe"></div><div class="safety-sign" data-electrical-sign></div><h2 id="safetyTitle"></h2><div id="safetyBody"></div><label id="safetyDismissRow" class="checkbox-row"><input id="safetyDismiss" type="checkbox">Bir daha gösterme</label><button id="safetyAcknowledge" class="safety-ack">Anladım · Güvenle öğrenmeye başla</button></div></div>
   <script src="installation-v118.js?rev=20261004-wp014"></script>
   <script src="design-library.js?rev=20261014-bell-trafo-v1"></script>
-  <script src="workspace-space.js?rev=20261007-workspace-space1"></script>
+  <script src="workspace-space.js?rev=20261029-expanded-sheet1"></script>
   <script src="workspaces.js?rev=20261025-bell-catalog1"></script>
   <script src="project-store.js?rev=20261011-collector-legacy-warning1"></script>
   <script src="safety.js?rev=20261004-wp014"></script>

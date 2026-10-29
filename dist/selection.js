@@ -44,7 +44,7 @@
     if(!boxes.length)return {positioned,wires,left:0,top:0,right:0,bottom:0,empty:true};
     return {positioned,wires,left:Math.min(...boxes.map(b=>b.left)),top:Math.min(...boxes.map(b=>b.top)),right:Math.max(...boxes.map(b=>b.right)),bottom:Math.max(...boxes.map(b=>b.bottom))};
   }
-  function constrain(plan,dx,dy,grid=10,width=2400,height=1500){
+  function constrain(plan,dx,dy,grid=10,width=3200,height=2100){
     if(plan?.empty||!Number.isFinite(dx)||!Number.isFinite(dy)||!Number.isFinite(grid)||grid<=0||!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)return {x:0,y:0};
     const snap=v=>Math.round(v/grid)*grid;
     const axis=(v,low,high)=>Math.max(Math.ceil(low/grid)*grid,Math.min(Math.floor(high/grid)*grid,snap(v)));
