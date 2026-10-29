@@ -3,7 +3,7 @@
   const NS='http://www.w3.org/2000/svg';
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   const WorkspaceSpace=window.DTSWorkspaceSpace;
-  const GRID=WorkspaceSpace?.gridScene||10,SHEET_W=WorkspaceSpace?.widthScene||2800,SHEET_H=WorkspaceSpace?.heightScene||1800,APP_VERSION='1.19.20';
+  const GRID=WorkspaceSpace?.gridScene||10,SHEET_W=WorkspaceSpace?.widthScene||3200,SHEET_H=WorkspaceSpace?.heightScene||2100,APP_VERSION='1.19.20';
   const Symbols=window.CCSSymbols,Simulation=window.CCSSimulation,Viewport=window.CCSViewport,Components=window.CCSComponents,Norms=window.CCSNorms,Labels=window.CCSLabels,Catalog=window.CCSCatalog,Selection=window.CCSSelection,Lines=window.CCSConductors,Leads=window.DTSProbeLeads,Sensors=window.CCSSensors,Clamp=window.DTSClampMeter,Physical=window.DTSPhysicalMetadata;
   const SceneLayers=window.DTSSceneLayerOrder;
   const Arduino=window.DTSArduino,Workspaces=window.DTSWorkspaces,favorites=Workspaces.favorites(localStorage);
