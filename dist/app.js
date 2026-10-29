@@ -1039,6 +1039,8 @@
     if(!guardEdit())return;
     if(gesture||labelDragging)return;e.preventDefault();
     const ids=[...selectedIds],plan=Selection.beginMove(project,ids,byId,renderedWirePoints),startZoom=zoom,oldFuture=[...future];
+     // During a stopped simulation, move SVG nodes instead of rebuilding every device and rerouting every cable per frame.
+     const dragPreview=!running&&window.DTSDragPreview?.create?.(els.scene,project,ids,plan,endpointInfo,roundedPath);
     let moved=false,raf=0;
     trackGesture(e,{
       move:ev=>{
@@ -1049,7 +1051,7 @@
         Selection.applyMove(plan,delta);
         const x=c.x,y=c.y;snapDraggedComponent(c);
         delta=Selection.constrain(plan,delta.x+c.x-x,delta.y+c.y-y,GRID,SHEET_W,SHEET_H);Selection.applyMove(plan,delta);
-        if(!raf)raf=requestAnimationFrame(()=>{raf=0;render()});
+        if(!raf)raf=requestAnimationFrame(()=>{raf=0;dragPreview?dragPreview.refresh():render()});
       },
       finish:cancelled=>{
         if(raf)cancelAnimationFrame(raf);alignmentGuides=[];
