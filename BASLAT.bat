@@ -139,7 +139,6 @@ rem Verify the DTS window title before declaring success. Do not count this CMD
 rem window; it shares the "Devre Tasarim" prefix with the actual page.
 :confirm_browser_window
 timeout /t 3 /nobreak >nul 2>&1
-powershell.exe -NoProfile -Command "$w=Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(msedge|chrome|firefox|brave|opera|iexplore)
- -and $_.MainWindowTitle -like '*Devre Tasar*' }; if(@($w).Count -gt 0){exit 0}else{exit 1}" >nul 2>&1
+powershell.exe -NoProfile -Command "$w=Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(msedge|chrome|firefox|brave|opera|iexplore)$' -and $_.MainWindowTitle -like '*Devre Tasar*' }; if(@($w).Count -gt 0){exit 0}else{exit 1}" >nul 2>&1
 exit /b %ERRORLEVEL%
 
