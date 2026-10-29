@@ -430,6 +430,18 @@
   function componentObstacles(){return project.components.filter(c=>byId[c.typeId]?.kind!=='clamp-meter'&&!Leads.floating(byId[c.typeId])&&!(appearance==='material'&&c.auxFor)).map(c=>Symbols.materialBounds(c,materialDefinition(c,byId[c.typeId]),GRID*.7))}
   function heapPush(heap,node){heap.push(node);let i=heap.length-1;while(i){const p=(i-1)>>1;if(heap[p].f<=node.f)break;heap[i]=heap[p];i=p}heap[i]=node}
   function heapPop(heap){if(!heap.length)return null;const root=heap[0],last=heap.pop();if(heap.length){let i=0;while(true){let l=i*2+1,r=l+1;if(l>=heap.length)break;let c=r<heap.length&&heap[r].f<heap[l].f?r:l;if(heap[c].f>=last.f)break;heap[i]=heap[c];i=c}heap[i]=last}return root}
+  // One collision index per scene redraw; routing uses it across every cable.
+  let obstacleCellSource=null,obstacleCells=new Set();
+  function routingBlockedCells(){
+    if(obstacleCellSource===routeObstacles)return obstacleCells;
+    const next=new Set();
+    for(const o of routeObstacles){
+      const minX=Math.max(0,Math.floor(o.left/GRID)+1),maxX=Math.min(Math.floor(SHEET_W/GRID),Math.ceil(o.right/GRID)-1);
+      const minY=Math.max(0,Math.floor(o.top/GRID)+1),maxY=Math.min(Math.floor(SHEET_H/GRID),Math.ceil(o.bottom/GRID)-1);
+      for(let y=minY;y<=maxY;y++)for(let x=minX;x<=maxX;x++)next.add((x*GRID)+','+(y*GRID));
+    }
+    obstacleCellSource=routeObstacles;obstacleCells=next;return next;
+  }
   function gridRoute(from,to,preferredDir=null){
     const snap=p=>({x:Math.max(0,Math.min(SHEET_W,Math.round(p.x/GRID)*GRID)),y:Math.max(0,Math.min(SHEET_H,Math.round(p.y/GRID)*GRID))}),s=snap(from),goal=snap(to),cell=p=>`${p.x},${p.y}`,state=(p,dir)=>`${p.x},${p.y},${dir}`,goalCell=cell(goal);
     if(cell(s)===goalCell)return[s];
@@ -448,7 +460,7 @@
       }
       if(clear&&!routingUsage.get(goalCell))return cleanPoints([s,goal]);
     }
-    const directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&routeObstacles.some(o=>p.x>o.left&&p.x<o.right&&p.y>o.top&&p.y<o.bottom),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
+    const occupied=routingBlockedCells(),directions=[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]],startKey=state(s,preferredDir??-1),blocked=p=>cell(p)!==cell(s)&&cell(p)!==goalCell&&occupied.has(cell(p)),open=[],cost=new Map([[startKey,0]]),prev=new Map(),closed=new Set();
     heapPush(open,{...s,dir:preferredDir??-1,key:startKey,f:Math.abs(goal.x-s.x)+Math.abs(goal.y-s.y)});
     let foundKey=null,guard=0;
     while(open.length&&guard++<160000){
