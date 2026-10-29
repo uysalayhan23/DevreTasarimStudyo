@@ -3,7 +3,9 @@
  // Browser-native Save as PDF: no server, third-party PDF library or direct PDF binary.
  function bounds(rect,pad=60){
   if(!rect||!Number.isFinite(pad)||pad<0||pad>500)return null;
-  const v=[rect.x,rect.y,rect.width,rect.height].map(Number);
+  // Native SVG getBBox() exposes numeric geometry. Do not coerce absent, blank
+  // or boolean values to zero and print a fabricated crop of a damaged scene.
+  const v=[rect.x,rect.y,rect.width,rect.height];
   if(!v.every(Number.isFinite)||v[2]<=0||v[3]<=0||v[2]>20000||v[3]>20000)return null;
   const out={x:v[0]-pad,y:v[1]-pad,width:v[2]+2*pad,height:v[3]+2*pad};
   if(!Object.values(out).every(Number.isFinite)||out.x+out.width===out.x||out.y+out.height===out.y)return null;
