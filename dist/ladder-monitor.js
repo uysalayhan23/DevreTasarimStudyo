@@ -17,7 +17,7 @@
    Array.isArray(c?._dtsLadderTraces)&&c._dtsLadderTraces.length===c.ladderProgram.rungs.length&&
    c._dtsLadderTraces.every((t,i)=>{
     const rung=c.ladderProgram.rungs[i];
-    return t&&t.id===rung?.id&&Array.isArray(rung.paths)&&
+    return t&&t.id===rung?.id&&(t.coil==null||t.coil===rung.coil?.ref)&&Array.isArray(rung.paths)&&
      Array.isArray(t.pathStates)&&t.pathStates.length===rung.paths.length&&
      t.pathStates.every(v=>typeof v==='boolean')&&
      typeof t.active==='boolean'&&t.active===t.pathStates.some(Boolean)&&
