@@ -5,7 +5,10 @@
 
   const round=(n,p=2)=>Number(Number(n).toFixed(p));
   const finitePositive=v=>Number.isFinite(Number(v))&&Number(v)>0;
-  const verified=e=>e?.status==='verified'&&typeof e.sourceUrl==='string'&&/^https:\/\//.test(e.sourceUrl);
+  // Verification labels need a syntactically grounded HTTPS host, not merely "https://".
+  const sourceUrlValid=url=>typeof url==='string'&&
+    /^https:\/\/(?![^/?#]*@)[a-z0-9-]+(?:\.[a-z0-9-]+)+(?::[0-9]{1,5})?(?:[/?#]|$)/i.test(url);
+  const verified=e=>e?.status==='verified'&&sourceUrlValid(e.sourceUrl);
   const roleClass=role=>{
     role=String(role||'').toUpperCase();
     if(['L1','L2','L3','N','PE'].includes(role))return 'power';
@@ -93,16 +96,20 @@
   function bendAudit(panel,byId){
     return (panel?.wires||[]).map(w=>{
       const e=w.engineering||{},requirementVerified=verified(e)&&finitePositive(e.minBendRadiusMm),required=requirementVerified?Number(e.minBendRadiusMm):null;
-      const sections=wireRoute(panel,byId,w),turns=sections.flatMap((s,section)=>turnMetrics(s.points).map(t=>({...t,section:s.surface||section})));
+      const sections=wireRoute(panel,byId,w);
+      const geometryKnown=sections.length>0&&sections.every(section=>Array.isArray(section.points)&&
+        section.points.length>=2&&section.points.every(p=>p&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&
+        (p.z==null||Number.isFinite(p.z))));
+      const turns=geometryKnown?sections.flatMap((s,section)=>turnMetrics(s.points).map(t=>({...t,section:s.surface||section}))):[];
       const worst=turns.length?Math.min(...turns.map(t=>t.feasibleRadiusMm)):null;
       return {
         wireId:w.id,
-        status:!requirementVerified?'unknown':worst===null?'ok':worst+1e-9>=required?'ok':'violation',
-        authority:requirementVerified?'verified-inputs':'insufficient-verified-data',
+        status:!requirementVerified||!geometryKnown?'unknown':worst===null?'ok':worst+1e-9>=required?'ok':'violation',
+        authority:requirementVerified&&geometryKnown?'verified-inputs':'insufficient-verified-data',
         minBendRadiusMm:required,
         minimumFeasibleRadiusMm:worst===null?null:round(worst,2),
         turnCount:turns.length,
-        missing:requirementVerified?[]:['verified-min-bend-radius']
+        missing:[...(!requirementVerified?['verified-min-bend-radius']:[]),...(!geometryKnown?['verified-panel-wire-route']:[])]
       };
     });
   }
@@ -148,7 +155,7 @@
     for(const item of panel?.items||[]){
       const base=item?.requiredClearanceMm,byVoltage=item?.requiredClearanceByVoltageMm;
       if(!base&&!byVoltage)continue;
-      const evidenceOk=item.physicalDimensionStatus==='verified'&&typeof item.dimensionSource==='string'&&/^https:\/\//.test(item.dimensionSource);
+      const evidenceOk=item.physicalDimensionStatus==='verified'&&sourceUrlValid(item.dimensionSource);
       const geometryOk=item.dimensionStatus==='verified'&&item.panelGeometryStatus==='ready';
       const row={itemId:item.id,status:'unknown',authority:evidenceOk&&geometryOk?'verified-product-and-panel-geometry':'insufficient-verified-data',sourceUrl:evidenceOk?item.dimensionSource:null,checks:[],unresolved:[],missing:[]};
       if(!evidenceOk)row.missing.push('verified-product-clearance-source');
@@ -188,6 +195,7 @@
       }
       for(const context of Object.keys(base||{}))if(!['freeAirFlow','neighbouringSubassemblies','cabinetEnclosure','adjacentConverters'].includes(context))row.unresolved.push(context);
       if(byVoltage)row.unresolved.push('requiredClearanceByVoltageMm');
+      if(!row.checks.length&&!row.unresolved.length)row.unresolved.push('no-verifiable-clearance-check');
       row.status=row.checks.some(x=>x.status==='violation')?'violation':row.unresolved.length?'unknown':'ok';
       if(row.missing.length)row.authority='insufficient-verified-data';
       else if(row.unresolved.length)row.authority='verified-product-metadata-context-required';
@@ -210,7 +218,9 @@
   }
   function thermalSummary(panel){
     const items=panel?.items||[],rows=items.map(item=>{
-      const e=item.engineering||{},ok=verified(e)&&Number.isFinite(Number(e.heatLossW))&&Number(e.heatLossW)>=0;
+      const e=item.engineering||{},value=e.heatLossW;
+      const ok=verified(e)&&value!=null&&(typeof value!=='string'||!!value.trim())&&
+        Number.isFinite(Number(value))&&Number(value)>=0;
       return {itemId:item.id,verified:ok,heatLossW:ok?Number(e.heatLossW):null};
     });
     const known=rows.filter(x=>x.verified),unknown=rows.filter(x=>!x.verified);
