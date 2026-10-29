@@ -414,7 +414,10 @@
         const d=definition(byId,c);if(!d?.isPLC||!PLC)continue;
         // Respect the PLC's own configured program. SC202 has no verified
         // delayed-stop/TON/TOF model: do not silently force timed-stop here.
-        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,c.plcProgram==='temperature-ntc-sc999'?{project}:{});
+        PLC.evaluate(c,d,{at,dcVoltage,voltage,find},now,{
+          ...(c.plcProgram==='temperature-ntc-sc999'?{project}:{}),
+          deferLadderMemoryClear:true
+        });
       }
       const next=new Set();
       for(const c of derived){const spec=converter(definition(byId,c));if(spec.hcfa){if(voltage(c,'L1','L2'))next.add(c.id);continue;}if(spec.acs){const ext=dcVoltage(c,'X23:1','X23:2'),external=at(c,'X23:1').some(v=>v.domain!=='acsaux:'+c.id);c._acsExternal=external&&ext>=21.6&&ext<=26.4;if(threePhase(c,spec.input)||voltage(c,'U1','V1')||voltage(c,'U1','W1')||voltage(c,'V1','W1')||c._acsExternal)next.add(c.id);continue;}const ex=spec.loadCell?dcVoltage(c,...spec.input):null;if(spec.loadCell?(ex!==null&&Math.abs(ex)>0&&Math.abs(ex)<=15):spec.threePhase?threePhase(c,spec.input):voltage(c,...spec.input))next.add(c.id)}
@@ -850,6 +853,12 @@ for(const c of project.components){c._solveNow=now;const ed=definition(byId,c);i
       }
       if(equalMap(next,actuators)&&equalSet(nextSensors,sensors)&&!bjtChanged&&!semiconductorChanged&&!plcChanged&&net.settled){stable=true;break}
       actuators=next;sensors=nextSensors;
+    }
+    // Clear Ladder memory on actual power loss, not a transient solver guess.
+    for(const c of project.components){
+      if(definition(byId,c)?.isPLC&&c.plcProgram==='dts-ladder-v1'&&c._plcRuntime?.powered===false){
+        delete c._dtsLadderMemory;c._dtsLadderTraces=[];
+      }
     }
     const oscillating=!stable&&!!cycle&&firstNet.settled;
     const cyclingRefs=oscillating?[...new Set(cycle.flatMap(frame=>[...frame.keys()]))].filter(ref=>cycle.some(frame=>!!frame.get(ref)!==!!cycle[0].get(ref))):[];

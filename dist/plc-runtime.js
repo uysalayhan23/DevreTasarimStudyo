@@ -438,7 +438,9 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  }
  // CPU power loss must not perform a hidden Ladder scan or retain stale traces.
  if(!powered&&c.plcProgram==='dts-ladder-v1'){
-  delete c._dtsLadderMemory;c._dtsLadderTraces=[];
+  // Network fixed-point passes can temporarily appear unpowered; defer memory clearing.
+  if(!options.deferLadderMemoryClear)delete c._dtsLadderMemory;
+  c._dtsLadderTraces=[];
  }
  const outputPins=pins(d,'DO');
  const allowed=c.plcProgram!=='dts-ladder-v1'||Ladder?.supportedPLC?.(d)===true;
