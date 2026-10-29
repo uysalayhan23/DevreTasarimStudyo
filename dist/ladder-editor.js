@@ -353,6 +353,7 @@
    if(!active)return;
    const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
+   const advancedOpen=overlay.querySelector('.dts-ladder-advanced')?.open===true;
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program);
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live&&active.c._plcRuntime?.powered===true&&active.c._plcRuntime?.program==='dts-ladder-v1'&&!active.c._dtsLadderError?active.c._dtsLadderMemory?.values:null;
@@ -369,13 +370,15 @@
     '<button type="button" data-action="redo" '+(active.history.canRedo()?'':'disabled')+' aria-label="Ladder yinele">↷ Yinele</button>'+
     '<button type="button" data-action="add-rung">+ Rung</button>'+ 
     '<button type="button" data-action="toggle-diagram" aria-pressed="'+(diagramMode==='fbd')+'">'+(diagramMode==='fbd'?'LAD görünümü':'FBD görünümü')+'</button>'+
+    '<details class="dts-ladder-advanced"><summary>Diğer araçlar</summary><div>'+ 
     '<label class="dts-ladder-examples">Örnek program '+exampleSelect+'</label>'+ 
     '<button type="button" data-action="load-example" '+(options.length?'':'disabled')+'>Örneği taslağa al</button>'+ 
     '<button type="button" data-action="export-program">Dışa aktar</button>'+ 
     '<button type="button" data-action="import-program">İçe aktar</button>'+ 
-    '<input type="file" id="dtsLadderImport" accept=".dtsladder,.json" hidden>'+
+    '<input type="file" id="dtsLadderImport" accept=".dtsladder,.json" hidden></div></details>'+
     '<button type="button" data-action="save" class="dts-ladder-primary">Programı kaydet</button>'+ 
-    '<button type="button" data-action="toggle-sim" '+(canRun?'':'disabled title="Önce Ladder programını kaydet ve devreyi doğrula"')+'>'+runAction+'</button></div>'+
+    '<button type="button" data-action="toggle-sim" '+(canRun?'':'disabled title="Önce Ladder programını kaydet ve devreyi doğrula"')+'>'+runAction+'</button>'+ 
+    '<button type="button" data-action="live-watch" title="Proje sayfasındaki butonlar kullanılabilirken Ladder sinyallerini izle">◉ Projede izle</button></div>'+
     '<div class="dts-ladder-toolbox" role="group" aria-label="Ladder araç paleti" '+(diagramMode==='fbd'?'hidden':'')+'><strong>Komut paleti</strong><small>Kontak veya bloğu Network üzerine sürükleyin. Alternatif: paletten seçin, ekleme alanına tıklayın.</small><div class="dts-ladder-tool-list">'+
     Toolbox.tools.map(t=>'<button type="button" draggable="true" data-tool-id="'+t.id+'" aria-pressed="'+(selectedTool===t.id)+'" title="'+escape(t.label)+' sürükle veya seç"><span class="dts-tool-symbol">'+escape(t.symbol)+'</span><span>'+escape(t.label)+'</span></button>').join('')+
     '</div></div>'+ 
@@ -408,6 +411,7 @@
      '<footer class="dts-ladder-footer"><span id="dtsLadderValidation" role="status">'+(valid.ok?'Program kontrolü: uygun.':escape(valid.error))+'</span><button type="button" data-action="close">Kapat</button></footer>'+
      '</section>';
    const newList=overlay.querySelector('.dts-ladder-rungs');if(newList)newList.scrollTop=oldScroll;
+   if(advancedOpen){const more=overlay.querySelector('.dts-ladder-advanced');if(more)more.open=true}
    if(priorFocus){
     const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>focusableControl(el)&&focusKey(el)===priorFocus);
     if(next)next.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
@@ -519,6 +523,11 @@
     editor.toast?.('Önce simülasyonu durdurun.');return;
    }
    if(type==='close'){close();return}
+   if(type==='live-watch'){
+    const id=active.c.id;
+    if(!root.DTSLadderWatch?.open){editor.toast?.('Canlı izleme yüklenemedi.');return}
+    close();root.DTSLadderWatch.open(id);return;
+   }
    if(type==='save'){save();return}
    if(type==='toggle-diagram'){diagramMode=diagramMode==='fbd'?'ladder':'fbd';selectedTool=null;render();return}
    if(type==='toggle-network'){

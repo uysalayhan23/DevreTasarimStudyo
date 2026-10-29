@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Devre Tasarım Stüdyosu</title>
   <link rel="stylesheet" href="styles.css?rev=20261029-expanded-sheet1">
-  <link rel="stylesheet" href="studio.css?rev=20261029-wire-palette-ladder1">
+  <link rel="stylesheet" href="studio.css?rev=20261029-floating-watch1">
   <link rel="stylesheet" href="v20.css"><link rel="stylesheet" href="acs800.css">
   <link rel="stylesheet" href="arduino.css?rev=20261004-wp014shboard3">
   <link rel="stylesheet" href="tutorial.css?rev=20261010-measure-batch-d2">
@@ -86,7 +86,7 @@
     </div>
     <div class="run-group">
       <span id="plcGuard" class="guard" hidden>Bu PLC modeli veya programı henüz doğrulanmadı</span>
-      <button id="dtsLadderBtn" class="tool dts-ladder-launch" type="button" title="Projede PLC programı düzenle">▤ PLC Ladder</button>
+      <button id="dtsLadderBtn" class="tool dts-ladder-launch" type="button" title="Projede PLC programı düzenle">▤ PLC Ladder</button><button id="dtsLadderWatchBtn" class="tool" type="button" title="Simülasyonda Ladder'ı ve proje butonlarını birlikte izle">◉ Canlı Ladder</button>
       <button id="dtsOperatorBtn" class="tool dts-operator-launch" type="button" aria-pressed="false" title="Sanal PLC giriş ve çıkışlarını ayrı panelde izle">▣ PLC I/O</button>
        <button id="dtsFullModeBtn" class="tool dts-full-toggle" type="button" aria-pressed="false" title="Tam sayfa / standart çalışma alanı (Esc ile çık)">⛶ Tam sayfa</button><span id="dtsFocusBadge" role="status" aria-live="polite" class="dts-focus-badge" hidden>Simülasyon · Odak</span>
        <button id="soundBtn" class="tool sound-toggle" aria-pressed="true" title="Simülasyon seslerini aç / kapat">♪ Ses açık</button>
@@ -461,7 +461,8 @@ AT+PSWD=1234</pre><p>AT ayarını tamamladıktan sonra normal veri kullanımı i
   <script src="ladder-examples.js?rev=20261028-original-programs1"></script>
   <script src="fbd-view.js?rev=20261028-safe-parallel-open1"></script>
   <script src="ladder-toolbox.js?rev=20261028-network-tools-v1"></script>
-  <script src="ladder-editor.js?rev=20261029-counter-coil-integrity1"></script>
+  <script src="ladder-editor.js?rev=20261029-floating-watch1"></script>
+   <script src="ladder-watch.js?rev=20261029-floating-watch1"></script>
   <script src="plc-operator.js?rev=20261028-operator-live-validation1"></script>
   <script src="library-search-ux.js?rev=20261027-search1"></script>
   <script src="tutorial-labs.js?rev=20261008-electric-machines-labs1"></script>
