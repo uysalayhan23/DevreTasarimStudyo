@@ -46,3 +46,16 @@ test('P0-04 protected real training panel remains readonly after parsing',()=>{
  const p={...sample(),defaultTemplate:{id:'protected',readOnly:true}};
  assert.equal(Projects.isProtected(parse(p)),true);
 });
+
+test('P0-04 panel inventory respects 10000 component limit without rewriting valid panels',()=>{
+ const p=sample();p.panel.items=Array.from({length:10000},(_,i)=>({id:'part-'+i,typeId:'lamp'}));
+ assert.equal(parse(p).panel.items.length,10000);
+ p.panel.items.push({id:'over',typeId:'lamp'});
+ assert.throws(()=>parse(p),/Pano projesi eğitim çalışma alanı için çok büyük/);
+});
+test('P0-04 panel conductors respect 40000 cable limit with legacy compatibility',()=>{
+ const p=sample();p.panel.wires=Array.from({length:40000},(_,i)=>({id:'wire-'+i}));
+ assert.equal(parse(p).panel.wires.length,40000);
+ p.panel.wires.push({id:'over'});
+ assert.throws(()=>parse(p),/Pano projesi eğitim çalışma alanı için çok büyük/);
+});
