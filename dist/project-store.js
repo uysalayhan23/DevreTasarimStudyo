@@ -225,7 +225,7 @@
           handle=await directory.getFileHandle(name,{create:true});
         }
         if(!handle&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}]});
-        if(!handle){const result=download(copy);await put(copy);return {...result,project:copy,requiresOpen:saveAs}}
+        if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy)}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
@@ -250,7 +250,11 @@
         }
         if(existing&&!saveAs){const current=await handle.getFile();if(current.lastModified!==existing.lastModified)throw Error('Dosya başka bir uygulamada değişmiş. Üzerine yazılmadı; Farklı kaydet ile bir kopya kaydedin.')}
         const writable=await handle.createWritable();try{await writable.write(JSON.stringify(copy,null,2));await writable.close()}catch(e){try{await writable.abort()}catch{}throw e}
-        const saved=await handle.getFile();await remember(copy,handle,saved.lastModified);await put(copy);return {saved:true,name:handle.name,project:copy};
+        const saved=await handle.getFile();let cacheWarning=false;
+        // The disk write is complete. Cache/index failures must not report it as unsaved.
+        try{await remember(copy,handle,saved.lastModified)}catch{cacheWarning=true}
+        try{await put(copy)}catch{cacheWarning=true}
+        return {saved:true,name:handle.name,project:copy,cacheWarning};
       }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
     return {put,get,list:readIndex,removeDraft,restoreFolder,chooseFolder,useFolderFiles,scan,readEntry,openFile,remember,save,download,get folderName(){return directory?.name||(readOnlyFiles?.[0]?.webkitRelativePath||'').split('/')[0]||''},get permissionNeeded(){return permissionNeeded}};
