@@ -191,14 +191,18 @@
   const rows=Array.isArray(draft?.rungs)?draft.rungs:[];
   const failed=typeof scanError==='string'&&scanError.trim().length>0;
   const live=!!running&&!failed&&powered===true&&mode==='dts-ladder-v1'&&runtimeMode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
-  const byId=new Map((live&&Array.isArray(traces)?traces:[]).map(t=>[t.id,t]));
+  // Never replay a partial, reordered or malformed scan as current Network telemetry.
+  const traceReady=live&&Array.isArray(traces)&&traces.length===rows.length&&
+   traces.every((t,i)=>t&&t.id===rows[i].id&&typeof t.active==='boolean'&&typeof t.value==='boolean');
+  const byId=new Map((traceReady?traces:[]).map(t=>[t.id,t]));
   return rows.map(r=>{
    const t=live?byId.get(r.id):null;
-   return {active:!!t?.active,value:t?!!t.value:null,count:Number.isInteger(t?.count)?t.count:null,
+   return {active:t?.active===true,value:t?t.value:null,count:Number.isInteger(t?.count)&&t.count>=0?t.count:null,
     type:r.coil.type,preset:['CTU','CTD'].includes(r.coil.type)?r.coil.preset:null,
     presetMs:['TON','TOF','TP'].includes(r.coil.type)?r.coil.presetMs:null,
-    elapsedMs:Number.isFinite(t?.elapsedMs)?t.elapsedMs:null,
-    pathStates:Array.isArray(t?.pathStates)&&t.pathStates.length===r.paths.length?t.pathStates.map(Boolean):null,
+    elapsedMs:Number.isFinite(t?.elapsedMs)&&t.elapsedMs>=0?t.elapsedMs:null,
+    pathStates:Array.isArray(t?.pathStates)&&t.pathStates.length===r.paths.length&&
+      t.pathStates.every(v=>typeof v==='boolean')?t.pathStates.slice():null,
     status:!running?'Simülasyon kapalı':failed?'PLC taraması başarısız':powered!==true?'PLC beslemesi yok':!live?'Taslak izlenmiyor · kayıtlı program farklı':!t?'Sinyal bekleniyor':t.active?'AKTİF':'Pasif'};
   });
  }
