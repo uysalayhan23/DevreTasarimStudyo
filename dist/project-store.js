@@ -112,6 +112,14 @@
       if(typeof w.id!=='string'||!w.id.trim()||wireIds.has(w.id))throw Error('Projedeki kablo kimliği geçersiz veya tekrarlanıyor.');
       wireIds.add(w.id);
     }
+    // Malformed saved routes can reach routePoints(...manual.map(...)) and crash
+    // file:/// project opening. Legacy absent/null route arrays remain supported.
+    const validRoutePoints=points=>points==null||(Array.isArray(points)&&points.every(pt=>
+      pt&&typeof pt==='object'&&!Array.isArray(pt)&&Number.isFinite(pt.x)&&Number.isFinite(pt.y)));
+    for(const w of p.wires){
+      if(!validRoutePoints(w.points)||!validRoutePoints(w.fixedPoints))
+        throw Error('Projedeki kablo güzergâhı geçersiz.');
+    }
     // A panel is its own editable graph. A duplicate part or wire ID must never
     // resolve to an arbitrary object when reopening a saved panel project.
     if(p.panel!=null){
