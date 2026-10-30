@@ -59,3 +59,15 @@ test('P0-02 keeps truly open branch with false native trace',()=>{
  const r=rung([[]],{type:'OUT',ref:'Q1'});
  allow(r,L.scan({version:1,rungs:[r]},{I1:true},{},10,limits).traces[0]);
 });
+
+test('P0-02 malformed saved contact path fails closed without throwing',()=>{
+ const broken=rung([null],{type:'OUT',ref:'Q1'}),t=trace([false],false);
+ const program={version:1,rungs:[broken]};
+ const state={powered:true,program:'dts-ladder-v1',
+  inputs:Object.fromEntries(d.pins.filter(p=>p.signalType==='DI').map(p=>[p.id,false])),
+  outputs:Object.fromEntries(d.pins.filter(p=>p.signalType==='DO').map(p=>[p.id,false]))};
+ const cpu={plcProgram:'dts-ladder-v1',ladderProgram:program,_plcRuntime:state,_dtsLadderTraces:[t]};
+ assert.equal(M.snapshot(cpu,d,true,true).live,false);
+ const row=E.monitorRows(program,program,[t],true,'dts-ladder-v1',true,null,'dts-ladder-v1')[0];
+ assert.equal(row.value,null);
+});
