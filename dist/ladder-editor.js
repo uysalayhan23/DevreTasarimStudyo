@@ -91,6 +91,10 @@
    rung.paths[p][c][field==='contact-type'?'type':'ref']=value;
   }else if(field==='coil-ref')rung.coil.ref=value;
   else if(field==='presetMs'||field==='preset'){
+   // Match FBD: a stale/malformed LAD field must not store a hidden preset
+   // on a different block kind (or persist it in the saved PLC draft).
+   if(field==='presetMs'?!['TON','TOF','TP'].includes(rung.coil.type):!['CTU','CTD'].includes(rung.coil.type))
+    return {ok:false,error:'Bu blok türünde süre/hedef alanı yok.'};
    if(!/^[1-9][0-9]*$/.test(String(value))||!Number.isSafeInteger(Number(value)))
     return {ok:false,error:'Süre/hedef pozitif tam sayı olmalıdır.'};
    rung.coil[field]=Number(value);
