@@ -567,9 +567,17 @@
    if(zone.dataset.i!==undefined)target.i=parseUiIndex(zone.dataset.i);
    const result=Toolbox.apply(active.draft,id,target,limits());
    if(!result.ok){editor.toast?.(result.error);return false}
+   // Restore keyboard focus to the inserted operand, not the destroyed
+   // drop zone. This applies to both a specific branch and a whole Network.
+   const tool=Toolbox.byId(id),pathIndex=target.p===undefined?0:target.p;
+   const originalPath=active.draft.rungs[target.r]?.paths?.[pathIndex];
+   const insertIndex=target.i===undefined?originalPath?.length:target.i;
+   const nextFocus=tool?.kind==='contact'?
+    'field:contact-ref:'+target.r+':'+pathIndex+':'+insertIndex:
+    'field:coil-ref:'+target.r+'::';
    active.draft=result.program;active.history.push(result.program);
    closedNetworks.delete(result.rungId);
-   selectedTool=null;render();return true;
+   selectedTool=null;render(nextFocus);return true;
   }
   function action(button){
    if(!active)return;
