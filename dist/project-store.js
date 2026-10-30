@@ -24,6 +24,10 @@
     const recognizable=Array.isArray(p.components)||Array.isArray(p.wires)||Array.isArray(p.devices)||Array.isArray(p.connections)||!!p.panel;
     if(!recognizable)return JSON.parse(JSON.stringify(p));
     const q=JSON.parse(JSON.stringify(p));
+    // Synthesize missing legacy arrays, but never erase explicitly malformed saved collections.
+    for(const key of ['components','wires','junctions','devices','connections']){
+      if(q[key]!==undefined&&!Array.isArray(q[key]))throw Error('Proje '+key+' listesi geçersiz.');
+    }
     if(!Array.isArray(q.components))q.components=Array.isArray(q.devices)?q.devices:[];
     if(!Array.isArray(q.wires))q.wires=Array.isArray(q.connections)?q.connections:[];
     if(!Array.isArray(q.junctions))q.junctions=[];
