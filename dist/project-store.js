@@ -28,6 +28,13 @@
     for(const key of ['components','wires','junctions','devices','connections']){
       if(q[key]!==undefined&&!Array.isArray(q[key]))throw Error('Proje '+key+' listesi geçersiz.');
     }
+    // Never silently drop a non-empty legacy list in a mixed-format project.
+    // Identical duplicates are compatible; conflicting lists require review.
+    for(const [current,legacy] of [['components','devices'],['wires','connections']]){
+      if(Array.isArray(q[current])&&Array.isArray(q[legacy])&&q[legacy].length&&
+        JSON.stringify(q[current])!==JSON.stringify(q[legacy]))
+        throw Error('Proje '+current+' / '+legacy+' listeleri çelişkili; veri kaybını önlemek için açılmadı.');
+    }
     if(!Array.isArray(q.components))q.components=Array.isArray(q.devices)?q.devices:[];
     if(!Array.isArray(q.wires))q.wires=Array.isArray(q.connections)?q.connections:[];
     if(!Array.isArray(q.junctions))q.junctions=[];
