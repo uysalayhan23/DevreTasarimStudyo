@@ -249,6 +249,9 @@
   if(!el)return '';
   if(el.id)return 'id:'+el.id;
   const d=el.dataset||{};
+  // Selecting a LAD palette button rerenders the toolbox. Preserve its
+  // keyboard focus so the next tool can be selected without restarting Tab.
+  if(d.toolId)return 'tool:'+d.toolId;
   if(d.fbdStructure&&d.fbdPosition)return 'fbd-structure:'+d.fbdStructure+':'+d.fbdPosition;
   if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
   if(d.fbdContactRef)return 'fbd-ref:'+d.fbdContactRef;
