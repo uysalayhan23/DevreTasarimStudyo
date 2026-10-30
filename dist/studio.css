@@ -1368,3 +1368,26 @@ body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:bloc
 .dts-timer-guide-body .dts-timer-example{background:#e3f4e9;border-radius:5px;padding:7px}
 .dts-timer-guide-body small{display:block;color:#506d7d;font-size:10px}
 @media(max-width:720px){.dts-timer-guide summary{flex-wrap:wrap}}
+
+/* Self-contained IEC-like timing diagrams, no remote images or script animation. */
+.dts-timer-diagram{max-width:100%;margin:10px 0;background:#fff;
+ border:1px solid #c4d7e6;border-radius:7px;padding:7px;overflow-x:auto}
+.dts-timer-diagram svg{display:block;width:100%;max-width:600px;height:auto;min-width:270px;
+ background:#fff;stroke-linecap:round;stroke-linejoin:round}
+.dts-timer-diagram-grid{stroke:#e0e8ef;stroke-width:1.5;stroke-dasharray:4 5;fill:none}
+.dts-timer-diagram-guide{stroke:#adc2d5;stroke-width:1.4;stroke-dasharray:5 5;fill:none}
+.dts-timer-diagram-in{stroke:#1879c4;stroke-width:3.4;fill:none}
+.dts-timer-diagram-q{stroke:#148461;stroke-width:3.4;fill:none}
+.dts-timer-diagram-et{stroke:#e08927;stroke-width:3.2;fill:none}
+.dts-timer-diagram-pt{stroke:#7b4bc6;stroke-width:1.9;fill:none}
+.dts-timer-diagram-time{stroke:#657c91;stroke-width:1.5;fill:none}
+.dts-timer-diagram-label{font:700 15px system-ui,sans-serif;fill:#24465e}
+.dts-timer-diagram-small{font:12px system-ui,sans-serif;fill:#526779}
+.dts-timer-diagram-pt-label{font:700 12px system-ui,sans-serif;fill:#6035a4;text-anchor:middle}
+.dts-timer-diagram figcaption{font:11px/1.5 system-ui,sans-serif;color:#385970;
+ margin:4px 4px 1px}
+.dts-timer-diagram figcaption strong{color:#653ea7}
+@media(max-width:720px){
+ .dts-timer-diagram{padding:4px}
+ .dts-timer-diagram figcaption{font-size:11px}
+}
