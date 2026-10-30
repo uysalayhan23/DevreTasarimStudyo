@@ -112,6 +112,21 @@
       if(typeof w.id!=='string'||!w.id.trim()||wireIds.has(w.id))throw Error('Projedeki kablo kimliği geçersiz veya tekrarlanıyor.');
       wireIds.add(w.id);
     }
+    // A saved cable must name a terminal reference or a junction reference.
+    // Empty/ambiguous endpoints were silently drawn at (0,0).
+    // Check structure only: legacy IDs are canonicalized by migration; existing
+    // project references remain untouched.
+    const validWireEnd=end=>{
+      if(!end||typeof end!=='object'||Array.isArray(end))return false;
+      const hasComponent=Object.prototype.hasOwnProperty.call(end,'c');
+      const hasJunction=Object.prototype.hasOwnProperty.call(end,'j');
+      if(hasComponent===hasJunction)return false;
+      return hasComponent?typeof end.c==='string'&&!!end.c.trim()&&
+        typeof end.p==='string'&&!!end.p.trim():
+        typeof end.j==='string'&&!!end.j.trim();
+    };
+    if(p.wires.some(w=>!validWireEnd(w.from)||!validWireEnd(w.to)))
+      throw Error('Projedeki kablo uç referansı geçersiz.');
     // Malformed saved routes can reach routePoints(...manual.map(...)) and crash
     // file:/// project opening. Legacy absent/null route arrays remain supported.
     const validRoutePoints=points=>points==null||(Array.isArray(points)&&points.every(pt=>
