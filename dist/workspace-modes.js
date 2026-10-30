@@ -29,7 +29,7 @@
    running=newValue;apply();return true;
   }
   function exitNative(){
-   if(nativeRequested&&doc.fullscreenElement&&typeof doc.exitFullscreen==='function'){
+   if(nativeRequested&&doc.fullscreenElement===doc.documentElement&&typeof doc.exitFullscreen==='function'){
     try{const p=doc.exitFullscreen();p?.catch?.(()=>{});}catch{}
    }
    nativeRequested=false;
