@@ -36,24 +36,37 @@
  }
  function rungHtml(rung,row,values,live,i){
   const paths=Array.isArray(rung.paths)?rung.paths:[];
+  // Reject stale/contradictory scan traces; this is read-only visualization.
+  const traceReady=live&&Array.isArray(row?.pathStates)&&row.pathStates.length===paths.length&&
+   row.pathStates.every(v=>typeof v==='boolean')&&typeof row.active==='boolean'&&
+   typeof row.value==='boolean'&&row.active===row.pathStates.some(Boolean);
   const pathMarkup=paths.map((path,pi)=>{
-   const pathOn=live&&row?.pathStates?.[pi]===true;
-   return '<div class="dts-watch-path '+(pathOn?'is-on':'')+'" data-path="'+i+':'+pi+'">'+
-    '<span class="dts-watch-rail" aria-hidden="true">┃─</span>'+ (pi?'<small>VEYA</small>':'')+
-    (path.length?path.map(contact=>{
-      const on=contactState(contact,values,live),onClass=on===true?'is-on':on===false?'is-off':'is-unknown';
-      const sym=contact.type==='NC'?'─|/|─':'─| |─';
-      return '<span class="dts-watch-contact '+onClass+'" data-ref="'+esc(contact.ref)+'" aria-label="'+esc(contact.ref+' '+contact.type+(on===null?' bilinmiyor':on?' iletimde':' açık'))+'"><span>'+sym+'</span><b>'+esc(contact.ref)+'</b></span>';
-    }).join('<span class="dts-watch-wire">─</span>'):'<span class="dts-watch-empty">Boş · açık devre</span>')+
-    '<span class="dts-watch-rail" aria-hidden="true">─┃</span></div>';
+   const pathOn=traceReady&&row.pathStates[pi]===true;
+   // Current on a lower parallel branch flows through both shared vertical buses.
+   const bridgeOn=traceReady&&pi>0&&row.pathStates.slice(pi).some(Boolean);
+   const bridge=pi?'<div class="dts-watch-parallel-bridge'+(bridgeOn?' is-on':'')+'" aria-hidden="true"></div>':'';
+   const wireClass='dts-watch-segment'+(pathOn?' is-on':'');
+   const contacts=path.length?path.map((contact,index)=>{
+    const on=contactState(contact,values,live),onClass=on===true?'is-on':on===false?'is-off':'is-unknown';
+    const sym=contact.type==='NC'?'|/|':'| |';
+    return (index?'<span class="'+wireClass+'" aria-hidden="true"></span>':'')+
+     '<span class="dts-watch-contact '+onClass+'" data-ref="'+esc(contact.ref)+'" aria-label="'+esc(contact.ref+' '+contact.type+(on===null?' bilinmiyor':on?' iletimde':' açık'))+'"><span>'+sym+'</span><b>'+esc(contact.ref)+'</b></span>';
+   }).join(''):'<span class="dts-watch-empty">Boş · açık devre</span>';
+   return bridge+'<div class="dts-watch-path '+(pathOn?'is-on':'')+'" data-path="'+i+':'+pi+'">'+
+    '<span class="dts-watch-rail left" aria-hidden="true"></span>'+(pi?'<small>VEYA</small>':'')+
+    '<span class="'+wireClass+' start" aria-hidden="true"></span>'+contacts+
+    '<span class="'+wireClass+' tail" aria-hidden="true"></span>'+
+    '<span class="dts-watch-rail right" aria-hidden="true"></span></div>';
   }).join('');
-  const coil=rung.coil||{},coilOn=live&&row?.value===true;
+  const coil=rung.coil||{},coilOn=traceReady&&coil.type!=='NOP'&&row.value===true,
+   flowOn=traceReady&&coil.type!=='NOP'&&row.active===true;
   const ref=coil.type==='NOP'?'Çıkış yok':(coil.ref||'?');
   const value=live?Editor.signalText(row):'—';
   return '<article class="dts-watch-network" data-network="'+esc(rung.id)+'">'+
    '<header><strong>Network '+(i+1)+'</strong><span>'+(live?(row?.active?'Akış var':'Bekliyor'):'Canlı veri yok')+'</span></header>'+
    '<div class="dts-watch-circuit"><div class="dts-watch-paths">'+pathMarkup+'</div>'+
-   '<div class="dts-watch-result '+(coilOn?'is-on':'')+'"><small>'+esc(coil.type||'NOP')+'</small><strong>'+esc(ref)+'</strong><span>'+esc(value)+'</span></div></div>'+ 
+   '<span class="dts-watch-output-wire '+(flowOn?'is-on':'')+'" aria-hidden="true"></span>'+
+   '<div class="dts-watch-result '+(coilOn?'is-on':flowOn?'is-flowing':'')+'"><small>'+esc(coil.type||'NOP')+'</small><strong>'+esc(ref)+'</strong><span>'+esc(value)+'</span></div></div>'+
    (rung.comment?'<p>'+esc(rung.comment)+'</p>':'')+'</article>';
  }
  function markup(view){
