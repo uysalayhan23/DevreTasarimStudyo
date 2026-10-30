@@ -252,10 +252,13 @@
   // Selecting a LAD palette button rerenders the toolbox. Preserve its
   // keyboard focus so the next tool can be selected without restarting Tab.
   if(d.toolId)return 'tool:'+d.toolId;
-  if(d.fbdStructure&&d.fbdPosition)return 'fbd-structure:'+d.fbdStructure+':'+d.fbdPosition;
-  if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
-  if(d.fbdContactRef)return 'fbd-ref:'+d.fbdContactRef;
-   if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.r??'');
+  // FBD positions are still numeric for edits, but focus must follow the
+  // owning rung when Undo or Network order changes its numeric position.
+  const stablePosition=value=>d.rungId?d.rungId+value.slice(value.indexOf(':')):value;
+  if(d.fbdStructure&&d.fbdPosition)return 'fbd-structure:'+d.fbdStructure+':'+stablePosition(d.fbdPosition);
+  if(d.fbdToggleContact)return 'fbd-toggle:'+stablePosition(d.fbdToggleContact);
+  if(d.fbdContactRef)return 'fbd-ref:'+stablePosition(d.fbdContactRef);
+  if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.rungId??d.r??'');
   const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
   // The numeric rung position changes after ↑/↓, but its native ID remains
   // stable. Never move keyboard focus to a different Network after reordering.
@@ -453,21 +456,21 @@
        '<div class="dts-ladder-diagram" data-drop-kind="network" data-r="'+ri+'" data-diagram="'+ri+'" title="Paletten öğeyi buraya bırakın">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
-        select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
-        select(contact.ref,asOptions(choices()),'data-field="contact-ref" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'"')+
-        '<button type="button" data-action="remove-contact" data-r="'+ri+'" data-p="'+pi+'" data-c="'+ci+'" aria-label="Kontağı sil">×</button></div>').join('')+(path.length?'':'<span class="dts-ladder-empty-path">BOŞ KONTAK · devre açık. + Seri ile yeniden ekleyin.</span>')+
-        '<button type="button" data-action="add-contact" data-r="'+ri+'" data-p="'+pi+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
-        '<button type="button" class="dts-ladder-dropzone" data-drop-kind="contact" data-r="'+ri+'" data-p="'+pi+'" data-i="'+path.length+'" '+(path.length>=12?'disabled':'')+' title="Bu seri kola kontak bırakın">⇣ Kontak bırak</button>'+
-        (pi?'<button type="button" data-action="remove-path" data-r="'+ri+'" data-p="'+pi+'">Yolu sil</button>':'')+
+        select(contact.type,[{value:'NO',label:'NO'},{value:'NC',label:'NC'}],'data-field="contact-type" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'" data-c="'+ci+'"')+
+        select(contact.ref,asOptions(choices()),'data-field="contact-ref" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'" data-c="'+ci+'"')+
+        '<button type="button" data-action="remove-contact" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'" data-c="'+ci+'" aria-label="Kontağı sil">×</button></div>').join('')+(path.length?'':'<span class="dts-ladder-empty-path">BOŞ KONTAK · devre açık. + Seri ile yeniden ekleyin.</span>')+
+        '<button type="button" data-action="add-contact" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
+        '<button type="button" class="dts-ladder-dropzone" data-drop-kind="contact" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'" data-i="'+path.length+'" '+(path.length>=12?'disabled':'')+' title="Bu seri kola kontak bırakın">⇣ Kontak bırak</button>'+
+        (pi?'<button type="button" data-action="remove-path" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" data-p="'+pi+'">Yolu sil</button>':'')+
         '</div>').join('')+
-       '<button type="button" data-action="add-path" data-r="'+ri+'" '+(r.paths.length>=8?'disabled':'')+'>+ Paralel yol</button></div>'+
-       '<div class="dts-ladder-coil"><span>SONUÇ →</span><button type="button" class="dts-ladder-dropzone" data-drop-kind="coil" data-r="'+ri+'" title="Buraya bobin, timer veya counter bırakın">⇣ Bobin / Blok bırak</button>'+
-       select(r.coil.type,['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v==='NOP'?'BOŞ (çıkış yok)':v})),'data-field="coil-type" data-r="'+ri+'"')+
-       (r.coil.type==='NOP'?'<span class="dts-ladder-empty-output">Çıkış adresi yok</span>':select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"'))+
-       (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
+       '<button type="button" data-action="add-path" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(r.paths.length>=8?'disabled':'')+'>+ Paralel yol</button></div>'+
+       '<div class="dts-ladder-coil"><span>SONUÇ →</span><button type="button" class="dts-ladder-dropzone" data-drop-kind="coil" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" title="Buraya bobin, timer veya counter bırakın">⇣ Bobin / Blok bırak</button>'+
+       select(r.coil.type,['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v==='NOP'?'BOŞ (çıkış yok)':v})),'data-field="coil-type" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'"')+
+       (r.coil.type==='NOP'?'<span class="dts-ladder-empty-output">Çıkış adresi yok</span>':select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'"'))+
+       (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'"></label>':'')+
        (TimerGuide?.markup?.(r.coil)||'')+
-       (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
-       (r.coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+ri+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' çıkışını güvenle kaldır')+'">'+(['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'Bloğu kaldır':'Bobini kaldır')+'</button>':'')+
+       (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'"></label>':'')+
+       (r.coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' çıkışını güvenle kaldır')+'">'+(['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'Bloğu kaldır':'Bobini kaldır')+'</button>':'')+
        '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
        '</div></div></article>';
      }).join('')+'</main>'+
@@ -477,7 +480,12 @@
    if(advancedOpen){const more=overlay.querySelector('.dts-ladder-advanced');if(more)more.open=true}
    if(priorFocus){
     const controls=Array.from(overlay.querySelectorAll('button,select,input'));
-    const next=controls.find(el=>focusableControl(el)&&focusKey(el)===priorFocus);
+    const next=controls.find(el=>focusableControl(el)&&
+     (focusKey(el)===priorFocus||
+      // Existing add/remove helpers return positional keys on purpose. Keep
+      // those one-shot targets working, without using positions for Undo.
+      (preferredFocus&&el.dataset?.rungId&&
+       focusKey({dataset:{...el.dataset,rungId:undefined}})===priorFocus)));
     // After moving a rung to an edge, ↑ or ↓ becomes disabled. Return focus
     // to the SAME rung's always-available workspace action, not its neighbor.
     const sameRung=!next&&priorRungId?controls.find(el=>focusableControl(el)&&
