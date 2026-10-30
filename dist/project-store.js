@@ -166,6 +166,18 @@
       for(const wire of p.panel.wires||[]){
         if(!wire||typeof wire!=='object'||Array.isArray(wire))
           throw Error('Pano kablo kaydı geçersiz.');
+        // Check saved panel endpoints before the editor dereferences from.c/to.c.
+        // Keep legacy unnamed wire IDs and absent/null route arrays compatible.
+        const validPanelEnd=end=>end&&typeof end==='object'&&!Array.isArray(end)&&
+          typeof end.c==='string'&&!!end.c.trim()&&typeof end.p==='string'&&!!end.p.trim();
+        if(!validPanelEnd(wire.from)||!validPanelEnd(wire.to)||
+           (wire.from.c===wire.to.c&&wire.from.p===wire.to.p))
+          throw Error('Pano kablo uç referansı geçersiz.');
+        if(wire.points!=null&&(!Array.isArray(wire.points)||wire.points.length>1000||
+           wire.points.some(pt=>!pt||typeof pt!=='object'||Array.isArray(pt)||
+             !['plate','door'].includes(pt.surface)||!Number.isFinite(pt.x)||
+             !Number.isFinite(pt.y)||Math.abs(pt.x)>10000||Math.abs(pt.y)>10000)))
+          throw Error('Pano kablo güzergâhı geçersiz.');
         if(wire.id==null)continue; // Legacy unnamed panel wires remain readable.
         const id=wire.id;
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
