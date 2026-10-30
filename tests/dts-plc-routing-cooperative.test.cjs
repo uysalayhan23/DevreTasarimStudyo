@@ -60,5 +60,5 @@ test('project opening and drop use cancellable cooperative routing',()=>{
   assert.ok(app.includes('cancelAnimationFrame(pendingScenePaint)'));
   assert.ok(app.includes('reusableRoutesAfterComponentMove(ids,plan)'));
   assert.ok(app.includes('render(false,true)'));
-  assert.ok(html.includes('app.js?rev=20261030-cooperative-corridors-2'));
+  assert.ok(html.includes('app.js?rev=20261030-trapped-endpoint-fastfail1'));
 });

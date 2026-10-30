@@ -514,6 +514,17 @@
       if(valid&&(!simpleBest||score<simpleBest.score))simpleBest={points,score};
     }
     if(simpleBest)return cleanPoints(simpleBest.points);
+    // A terminal stub fully enclosed by blocked cells cannot be reached by A*.
+    // Keep the established fallback shape without 160k fruitless expansions.
+    const trapped=(p,other)=>[[GRID,0],[-GRID,0],[0,GRID],[0,-GRID]].every(([dx,dy])=>{
+      const x=p.x+dx,y=p.y+dy;
+      return x<0||x>SHEET_W||y<0||y>SHEET_H||
+        (occupied.has(x+','+y)&&!(x===other.x&&y===other.y));
+    });
+    if(trapped(s,goal)||trapped(goal,s)){
+      const mid=Math.round((s.x+goal.x)/(2*GRID))*GRID;
+      return cleanPoints([s,{x:mid,y:s.y},{x:mid,y:goal.y},goal]);
+    }
     // Large PLC bodies can require tens of thousands of A* nodes. Probe
     // verified orthogonal corridors around nearby obstacles before searching.
     // Every intermediate grid cell is checked; endpoints remain unchanged.

@@ -77,5 +77,5 @@ test('electrical identity, wire color, undo and layer ordering are not replaced 
   assert.match(app,/function undo\(\)/);
   assert.match(app,/function redo\(\)/);
   assert.match(app,/Simulation\.clear\(project\)/);
-  assert.ok(html.includes('app.js?rev=20261030-shared-clear-corridor1'));
+  assert.ok(html.includes('app.js?rev=20261030-trapped-endpoint-fastfail1'));
 });
