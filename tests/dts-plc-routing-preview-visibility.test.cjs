@@ -50,5 +50,5 @@ test('unverified provisional paths cannot become final cached wire geometry',()=
 });
 test('panel switch cancels old cable routing and Edge loads updated code',()=>{
   assert.ok(app.includes("if(pendingScenePaint){cancelAnimationFrame(pendingScenePaint);pendingScenePaint=0}++scenePaintGeneration;running=false"));
-  assert.ok(html.includes('app.js?rev=20261030-trapped-endpoint-fastfail1'));
+  assert.ok(html.includes('app.js?rev=20261030-small-project-cooperative1'));
 });

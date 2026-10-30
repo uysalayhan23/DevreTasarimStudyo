@@ -70,5 +70,5 @@ test('progressive preview, PLC identity, wire color and layer guards are untouch
   assert.match(app,/Simulation\.clear\(project\)/);
 });
 test('offline HTML loads updated route code',()=>{
-  assert.ok(html.includes('app.js?rev=20261030-trapped-endpoint-fastfail1'));
+  assert.ok(html.includes('app.js?rev=20261030-small-project-cooperative1'));
 });

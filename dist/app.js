@@ -219,7 +219,7 @@
     };
     // Opening or dropping a wired project must not block zoom, pan and selection
     // while the entire cable graph is routed synchronously on the UI thread.
-    if(progressive&&sceneWires.length>4){
+    if(progressive&&sceneWires.length>0){
       // Previous progressive rendering left every cable invisible until A* finished.
       // Keep provisional connected SVG paths visible while validated routes resolve.
       for(let i=0;i<sceneWires.length;i++){
