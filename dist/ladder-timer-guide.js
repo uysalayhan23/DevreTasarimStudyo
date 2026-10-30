@@ -88,7 +88,7 @@
    '<text class="dts-timer-diagram-small" x="81" y="269">0</text>'+
    '<text class="dts-timer-diagram-small" x="555" y="258">t</text>'+
    '</svg><figcaption><strong>'+esc(sample.edge)+' → PT</strong> · '+
-   esc(sample.label)+'. IN: giriş, Q: çıkış, ET: geçen süre (şematik).</figcaption></figure>';
+   esc(sample.label)+'. IN: giriş, Q: çıkış, ET: geçen süre (şematik). Canlı ölçüm değildir.</figcaption></figure>';
  }
  function markup(coil){
   const item=describe(coil?.type,coil?.presetMs);
@@ -102,7 +102,7 @@
    '<p><b>Zaman akışı:</b> '+esc(item.sequence)+'</p>'+
    '<p><b>Önemli koşul:</b> '+esc(item.conditions)+'</p>'+
    '<p class="dts-timer-example">'+esc(item.example)+'</p>'+
-   '<small>Bu açıklama DTS sanal PLC simülasyonuna aittir; fiziksel PLC onayı değildir.</small></div></details>';
+   '<small>Şemalar öğretici örnektir; canlı ölçüm değildir. Siemens IEC zamanlayıcılarında çalışma sırasında PT değişimi süreyi sıfırlamaz; DTS sanal modelinde PT değişikliği yeni ayar olarak sıfırlanır. Fiziksel PLC onayı değildir.</small></div></details>';
  }
  const api=Object.freeze({describe,markup,timingDiagram});
  if(typeof module==='object'&&module.exports)module.exports=api;
