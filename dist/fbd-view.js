@@ -172,7 +172,7 @@
   // Reject partial or non-boolean trace payloads rather than coloring a stale coil live.
   // An OUT trace must match its energized paths; a NOP has no writable output.
   // Empty paths cannot conduct. SET latches and timed blocks are intentionally exempt.
-  const traceConsistent=Array.isArray(opts.pathStates)&&opts.pathStates.every((value,i)=>
+  const traceConsistent=Array.isArray(opts.pathStates)&&opts.pathStates.length===paths.length&&opts.pathStates.every((value,i)=>
    typeof value==='boolean'&&(paths[i].length>0||value===false))&&
    (rung.coil.type!=='NOP'||opts.coilValue===false)&&
    (rung.coil.type!=='OUT'||opts.coilValue===opts.pathStates.some(Boolean));
