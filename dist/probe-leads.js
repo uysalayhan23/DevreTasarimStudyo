@@ -2,10 +2,10 @@
   'use strict';
   const floating=d=>!!d&&(d.kind==='multimeter'||!!d.probeColor);
   const meterPins=d=>d?.kind==='multimeter'?['COM','V','10A']:d?.kind==='clamp-meter'?['COM','V']:[];
-  function info(project,byId,w){
+  function info(project,byId,w,componentIndex=null){
     let probe=null,meter=null,meterPin=null;
     for(const r of [w.from,w.to]){
-      const c=project.components.find(c=>c.id===r?.c),d=c&&byId[c.typeId];
+      const c=componentIndex?componentIndex.get(r?.c):project.components.find(c=>c.id===r?.c),d=c&&byId[c.typeId];
       if(d?.probeColor&&r.p==='PLUG')probe=c;
       if(meterPins(d).includes(r.p)){meter=c;meterPin=r.p}
     }
@@ -54,9 +54,10 @@
     const c=project.components.find(c=>c.id===target?.c),d=c&&byId[c.typeId];
     return d?.pins.some(p=>p.id===target.p)?{c:c.id,p:target.p}:null;
   }
-  function prepare(project,byId){
+  function prepare(project,byId,componentIndex=null){
+    if(!componentIndex){componentIndex=new Map();for(const c of project.components)if(!componentIndex.has(c.id))componentIndex.set(c.id,c)}
     for(const c of project.components)if(byId[c.typeId]?.kind==='multimeter')delete c._redProbeJack;
-    for(const w of project.wires){const lead=info(project,byId,w);if(lead){w.probeLead=true;w.color=lead.color;w.role=lead.role;w.size=w.probeSize||'6 mm²';w._lineConflict=false;if(lead.meter&&byId[lead.meter.typeId]?.kind==='multimeter'){const r=[w.from,w.to].find(r=>r.c===lead.meter.id&&['V','10A'].includes(r.p));if(r)lead.meter._redProbeJack=r.p}}else delete w.probeLead}
+    for(const w of project.wires){const lead=info(project,byId,w,componentIndex);if(lead){w.probeLead=true;w.color=lead.color;w.role=lead.role;w.size=w.probeSize||'6 mm²';w._lineConflict=false;if(lead.meter&&byId[lead.meter.typeId]?.kind==='multimeter'){const r=[w.from,w.to].find(r=>r.c===lead.meter.id&&['V','10A'].includes(r.p));if(r)lead.meter._redProbeJack=r.p}}else delete w.probeLead}
     for(const c of project.components)if(byId[c.typeId]?.probeColor&&c.probeTarget&&!resolve(project,byId,c.probeTarget))delete c.probeTarget;
   }
   // Two smooth cubic spans keep their exact socket endpoints. The bend is free

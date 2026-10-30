@@ -79,7 +79,7 @@
     const join=(a,b)=>{if(a&&b)parents.set(find(a),find(b))};
     for(const c of project.components){const d=byId[c.typeId];for(const p of d?.pins||[])find(key({c:c.id,p:p.id}));for(const [a,b] of permanentPairs(d,c))join(key({c:c.id,p:a}),key({c:c.id,p:b}));sources.push(...sourceLines(c,d));}
     for(const j of project.junctions||[])find(key({j:j.id}));
-    const wires=project.wires.filter(w=>w.id!==options.ignoreWireId&&!w.mechanical&&w.role!=='MECHANICAL'&&!Leads.info(project,byId,w));
+    const wires=project.wires.filter(w=>w.id!==options.ignoreWireId&&!w.mechanical&&w.role!=='MECHANICAL'&&!Leads.info(project,byId,w,options.componentIndex));
     for(const w of wires)join(key(w.from),key(w.to));
     function net(r){const id=find(key(r));if(!nets.has(id))nets.set(id,{id,wires:[],members:[],anchors:[],roles:new Set(),domains:new Set(),color:null,freeColor:false});return nets.get(id)}
     for(const s of sources){const n=net(s.ref);n.anchors.push(s);n.roles.add(s.role);n.domains.add(s.domain)}
@@ -137,8 +137,8 @@
     project.lineColors={...(project.lineColors||{})};project.colorSizes={...(project.colorSizes||{})};
     for(const [color,role] of Object.entries(project.colorLocks))project.colorRoles[color]=role;
   }
-  function releaseUnused(project,byId){
-    const wires=project.wires.filter(w=>!w.mechanical&&w.role!=='MECHANICAL'&&!w.freeColor&&w.role!=='FREE'&&!Leads.info(project,byId,w)),used=new Set(wires.map(w=>normalizeColor(w.color)));
+  function releaseUnused(project,byId,componentIndex=null){
+    const wires=project.wires.filter(w=>!w.mechanical&&w.role!=='MECHANICAL'&&!w.freeColor&&w.role!=='FREE'&&!Leads.info(project,byId,w,componentIndex)),used=new Set(wires.map(w=>normalizeColor(w.color)));
     for(const color of Object.keys(project.colorLocks))if(!used.has(color))delete project.colorLocks[color];
     for(const [role,color] of Object.entries(project.lineColors))if(!wires.some(w=>w.role===role&&normalizeColor(w.color)===color))delete project.lineColors[role];
   }
@@ -169,7 +169,8 @@
     return {...result,role,color,size:sizeLabel(project.colorSizes?.[color]||size)};
   }
   function synchronize(project,byId,{legacy=false}={}){
-    Leads.prepare(project,byId);state(project);releaseUnused(project,byId);const graph=analyze(project,byId,{legacy}),warnings=[];if(graph.invalidCatalog){for(const w of project.wires||[])w._lineConflict=true;return [{reason:'Katalog terminal listesi bozuk.'}]}
+    const componentIndex=new Map();for(const c of project.components)if(!componentIndex.has(c.id))componentIndex.set(c.id,c);
+    Leads.prepare(project,byId,componentIndex);state(project);releaseUnused(project,byId,componentIndex);const graph=analyze(project,byId,{legacy,componentIndex}),warnings=[];if(graph.invalidCatalog){for(const w of project.wires||[])w._lineConflict=true;return [{reason:'Katalog terminal listesi bozuk.'}]}
     for(const c of project.components)c._terminalLines={};
     const ordered=[...graph.nets.values()].sort((a,b)=>b.anchors.length-a.anchors.length);
     for(const n of ordered){
@@ -195,7 +196,7 @@
       // Never write the inherited name into a component's physical pin record.
       for(const {c,p} of n.members)c._terminalLines[p.id]={role,color,size:project.colorSizes[color]};
     }
-    releaseUnused(project,byId);project.conductorVersion=1;return warnings;
+    releaseUnused(project,byId,componentIndex);project.conductorVersion=1;return warnings;
   }
   function initialize(project,byId){
     const legacy=project.conductorVersion!==1;state(project);
