@@ -5,24 +5,24 @@
  const DATA=Object.freeze({
   TON:Object.freeze({
    title:'TON · Açmada gecikme',
-   meaning:'Giriş kesintisiz aktif kaldığında belirlenen süre sonunda zamanlayıcı çıkışı açılır.',
+   meaning:'Giriş kesintisiz aktif kaldığında belirlenen süre sonunda zamanlayıcı çıkışı T=1 olur.',
    sequence:'IN 0→1: süre başlar → PT dolunca T=1 → IN 1→0: T hemen 0 olur.',
    conditions:'PT dolmadan giriş kapanırsa sayaç sıfırlanır. Tekrar açıldığında süre yeniden başlar.',
-   example:'Örnek: Bir buton 2 saniye boyunca basılı tutulursa T kontağı açılır; erken bırakılırsa açılmaz.'
+   example:'Örnek: Buton PT süresince kesintisiz basılı kalırsa T=1 olur; erken bırakılırsa T=0 kalır.'
   }),
   TOF:Object.freeze({
    title:'TOF · Kapamada gecikme',
-   meaning:'Giriş aktifken zamanlayıcı çıkışı hemen açılır; giriş kapandığında süre dolana kadar açık kalır.',
+   meaning:'Giriş aktifken çıkış hemen T=1 olur; giriş kapanınca süre dolana kadar T=1 kalır.',
    sequence:'IN 0→1: T hemen 1 → IN 1→0: PT boyunca T=1 → PT dolunca T=0.',
    conditions:'Bekleme süresinde giriş tekrar açılırsa kapanma gecikmesi iptal edilir; sonraki kapanışta süre yeniden başlar.',
-   example:'Örnek: Buton bırakıldıktan sonra sanal gösterge 2 saniye daha aktif kalır.'
+   example:'Örnek: Buton bırakıldıktan sonra sanal gösterge PT süresince aktif kalır.'
   }),
   TP:Object.freeze({
    title:'TP · Sabit süreli darbe',
    meaning:'Giriş 0’dan 1’e yükseldiğinde önceden belirlenen uzunlukta tek bir darbe üretir.',
    sequence:'IN 0→1: T hemen 1 → PT süresince 1 → PT dolunca T=0.',
    conditions:'Giriş erken bırakılsa bile darbe PT dolana kadar sürer. Darbe sırasında tekrar basmak süreyi uzatmaz; sonraki darbe için yeni 0→1 kenarı gerekir.',
-   example:'Örnek: Butona kısa basmak sanal lambayı tam 2 saniye etkinleştirir.'
+   example:'Örnek: Butona kısa basmak sanal göstergeyi tam PT süresince etkinleştirir.'
   })
  });
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
