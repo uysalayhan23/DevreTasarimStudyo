@@ -47,7 +47,12 @@
    const bridge=pi?'<div class="dts-watch-parallel-bridge'+(bridgeOn?' is-on':'')+'" aria-hidden="true"></div>':'';
    const wireClass='dts-watch-segment'+(pathOn?' is-on':'');
    const contacts=path.length?path.map((contact,index)=>{
-    const on=contactState(contact,values,live),onClass=on===true?'is-on':on===false?'is-off':'is-unknown';
+    // Final scan memory can include Q/M/T/C writes from *later* networks.
+    // A true native path trace proves every contact conducted at this rung;
+    // an inactive path cannot prove the earlier internal-bit state.
+    const internal=/^[QMTC][1-9][0-9]*$/.test(String(contact.ref||''));
+    const on=!traceReady?null:pathOn?true:internal?null:contactState(contact,values,live);
+    const onClass=on===true?'is-on':on===false?'is-off':'is-unknown';
     const sym=contact.type==='NC'?'|/|':'| |';
     return (index?'<span class="'+wireClass+'" aria-hidden="true"></span>':'')+
      '<span class="dts-watch-contact '+onClass+'" data-ref="'+esc(contact.ref)+'" aria-label="'+esc(contact.ref+' '+contact.type+(on===null?' bilinmiyor':on?' iletimde':' açık'))+'"><span>'+sym+'</span><b>'+esc(contact.ref)+'</b></span>';
