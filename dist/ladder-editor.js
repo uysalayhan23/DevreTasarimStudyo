@@ -456,7 +456,10 @@
    }
    const target=items.find(c=>c.id===which)||items[0];
    const firstOpen=overlay.hidden;
-   if(firstOpen){returnFocus=doc.activeElement;diagramMode='ladder';selectedTool=null;focusedNetwork=null;closedNetworks.clear();}
+   if(firstOpen){returnFocus=doc.activeElement;diagramMode='ladder';}
+   // Network IDs such as R1/R2 recur on separate PLCs. Carrying focus or
+   // collapsed branches across a PLC change hides unrelated Networks.
+   if(firstOpen||active?.c!==target){selectedTool=null;focusedNetwork=null;closedNetworks.clear();}
    active=stateFor(target,editor);
    active.history=sessions.forComponent(editor.getProject(),target,active.draft);
    active.draft=active.history.current();
@@ -604,6 +607,12 @@
     const result=editNetworkOrder(active.draft,operation,r,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
+    // A copied Network is an address-free NOP draft; show it immediately
+    // when its source was displayed in the single-Network workspace.
+    if(operation==='copy'&&focusedNetwork===result.program.rungs[r]?.id){
+     focusedNetwork=result.program.rungs[r+1]?.id||null;
+     if(focusedNetwork)closedNetworks.delete(focusedNetwork);
+    }
    }
    else if(type==='remove-rung'){
      const result=removeNetwork(active.draft,r,limits());
