@@ -47,6 +47,11 @@
     if(!hex)return other;
     const cp=parseInt(hex,16);return String.fromCodePoint(cp>0&&cp<=0x10ffff?cp:0xfffd);
    });
+  // CSS Images Level 4 also permits direct quoted image sources without url().
+  // Reject image()/image-set() (including prefixed/escaped forms) instead of
+  // allowing an external image to evade the shared PNG/PDF offline guard.
+  if(/(?:^|[^\w-])(?:-webkit-)?image-set\s*\(|(?:^|[^\w-])image\s*\(/i.test(normalized))
+   return {ok:false,error:'PNG için harici CSS görsel işlevleri desteklenmiyor; PDF / Yazdır kullanın.'};
   if(/@import\b/i.test(normalized))return {ok:false,error:'PNG için dış CSS içe aktarımı desteklenmiyor.'};
   const refs=normalized.match(/url\s*\(\s*[^)]*\)/gi)||[];
   for(const ref of refs){
