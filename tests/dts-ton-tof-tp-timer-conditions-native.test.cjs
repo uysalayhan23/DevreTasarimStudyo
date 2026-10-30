@@ -92,3 +92,36 @@ test('three Turkish explanations describe all key timing conditions',()=>{
  assert.equal(Guide.markup({type:'OUT',ref:'Q1'}),'');
  assert.equal(Guide.describe('TON',0).ms,null);
 });
+
+test('deterministic 7500-scan reference model for TON, TOF and TP conditions',()=>{
+ let seed=0x5f3759df;
+ const rnd=()=>{seed=(seed^(seed<<13))>>>0;seed=(seed^(seed>>>17))>>>0;seed=(seed^(seed<<5))>>>0;return seed>>>0};
+ for(const type of ['TON','TOF','TP']){
+  const p=program(type,97),mem={};let now=0,input=false,priorInput=false,start=null,offStart=null,previousOutput=false;
+  for(let i=0;i<2500;i++){
+   now+=(rnd()%17)+1;
+   if(rnd()%13===0)input=!input;
+   let expected=false;
+   if(type==='TON'){
+    if(!input)start=null;
+    else if(start===null)start=now;
+    expected=input&&now-start>=97;
+   }else if(type==='TOF'){
+    if(input){offStart=null;expected=true}
+    else{
+     if(previousOutput&&offStart===null)offStart=now;
+     expected=offStart!==null&&now-offStart<97;
+    }
+   }else{
+    const activePulse=start!==null&&now-start<97;
+    if(input&&!priorInput&&!activePulse)start=now;
+    expected=start!==null&&now-start<97;
+    priorInput=input;
+   }
+   const scan=L.scan(p,{I1:input},mem,now,limits);
+   assert.equal(scan.ok,true);
+   assert.equal(scan.memory.values.T1,expected,type+' sample '+i+' at '+now+' ms');
+   previousOutput=expected;
+  }
+ }
+});
