@@ -268,8 +268,10 @@
   const [r,p,c]=parts.map(Number);
   if(![r,p,...(parts.length===3?[c]:[])].every(Number.isSafeInteger))return '';
   const rung=program.rungs?.[r],paths=rung?.paths;
-  if(!paths||!paths[p])return '';
+  if(!paths)return '';
+  // The deleted path can be the last one: it no longer exists in the result.
   if(action==='remove-path')return 'action:focus-network:'+rung.id+'::';
+  if(!paths[p])return '';
   if(action==='add-path')return 'fbd-structure:add-contact:'+r+':'+(p+1)+':0';
   const path=paths[p];
   if(action==='remove-contact'){
