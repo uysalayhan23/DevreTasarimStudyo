@@ -58,6 +58,12 @@
       candidates.find(x=>!busy.has(x));
      if(!ref)return {ok:false,error:family==='Q'?'Boş PLC çıkış adresi kalmadı.':'Boş M bellek adresi kalmadı.'};
     }
+    // A RESET dropped on an existing output must keep its valid target.
+    // Otherwise replacing OUT Q2 silently resets unrelated Q1 on the next scan.
+    if(tool.id==='RESET'&&typeof previous?.ref==='string'&&
+      /^(?:Q(?:[1-9]|1[0-6])|M(?:[1-9]|[12][0-9]|3[0-2])|T(?:[1-9]|1[0-6])|C(?:[1-9]|1[0-6]))$/.test(previous.ref)&&
+      (previous.ref[0]!=='Q'||Number(previous.ref.slice(1))<=(Number.isInteger(limits.outputCount)?limits.outputCount:16)))
+      ref=previous.ref;
     if(prefix==='T'||prefix==='C'){
      // Preserve the current owner's compatible address or allocate an unused slot.
      const busy=new Set(next.rungs.filter((x,i)=>i!==r&&
