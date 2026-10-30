@@ -54,8 +54,12 @@
      const family=outputCount===0?'M':'Q';
      const candidates=Array.from({length:family==='M'?32:Math.min(16,Math.max(0,outputCount))},(_,i)=>family+(i+1));
      const busy=new Set(next.rungs.filter((x,i)=>i!==r&&['OUT','SET'].includes(x.coil.type)).map(x=>x.coil.ref));
-     ref=candidates.includes(previous?.ref)&&!busy.has(previous.ref)?previous.ref:
-      candidates.find(x=>!busy.has(x));
+     // Switching OUT/SET must not silently redirect an existing M writer
+     // to Q1 just because this PLC also has physical Q outputs.
+     const own=previous?.ref;
+     const keep=typeof own==='string'&&/^(?:M(?:[1-9]|[12][0-9]|3[0-2])|Q(?:[1-9]|1[0-6]))$/.test(own)&&
+      (own[0]!=='Q'||Number(own.slice(1))<=outputCount)&&!busy.has(own);
+     ref=keep?own:candidates.find(x=>!busy.has(x));
      if(!ref)return {ok:false,error:family==='Q'?'Boş PLC çıkış adresi kalmadı.':'Boş M bellek adresi kalmadı.'};
     }
     // A RESET dropped on an existing output must keep its valid target.
