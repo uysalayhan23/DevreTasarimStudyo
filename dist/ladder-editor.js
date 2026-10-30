@@ -253,7 +253,9 @@
   if(d.fbdContactRef)return 'fbd-ref:'+d.fbdContactRef;
    if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.r??'');
   const kind=d.field?'field:'+d.field:d.action?'action:'+d.action:'';
-  return kind?kind+':'+(d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
+  // The numeric rung position changes after ↑/↓, but its native ID remains
+  // stable. Never move keyboard focus to a different Network after reordering.
+  return kind?kind+':'+(d.rungId??d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
  }
  // Keep keyboard navigation inside the dialog; disabled controls are never targets.
  function focusableControl(el){
@@ -366,7 +368,9 @@
    const networkIds=new Set(active.draft.rungs.map(r=>r.id));
    if(focusedNetwork&&!networkIds.has(focusedNetwork))focusedNetwork=null;
    for(const id of closedNetworks)if(!networkIds.has(id))closedNetworks.delete(id);
-   const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
+   const priorElement=overlay.contains(doc.activeElement)?doc.activeElement:null;
+   const priorFocus=focusKey(priorElement);
+   const priorRungId=priorElement?.dataset?.rungId||null;
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
    const advancedOpen=overlay.querySelector('.dts-ladder-advanced')?.open===true;
    const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program);
@@ -402,7 +406,7 @@
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs"><div class="dts-ladder-networks-bar"><strong>'+active.draft.rungs.length+' Network · LAD</strong>'+(focusedNetwork?'<button type="button" data-action="all-networks">▣ Tüm Networkleri göster</button>':'<span>Her Network ayrı bir çalışma penceresidir.</span>')+'</div>'+active.draft.rungs.map((r,ri)=>{
       const monitored=views[ri];
-      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'" '+(focusedNetwork&&focusedNetwork!==r.id?'hidden':'')+'><div class="dts-ladder-rung-title"><strong>Network '+(ri+1)+' · '+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="toggle-network" data-r="'+ri+'" aria-expanded="'+!closedNetworks.has(r.id)+'">'+(closedNetworks.has(r.id)?'▣ Aç':'▾ Daralt')+'</button><button type="button" data-action="focus-network" data-r="'+ri+'">'+(focusedNetwork===r.id?'Tümüne dön':'⛶ Tek pencere')+'</button><button type="button" data-action="copy-rung" data-r="'+ri+'" '+(active.draft.rungs.length>=32?'disabled':'')+'>Kopyala</button><button type="button" data-action="move-rung-up" data-r="'+ri+'" '+(ri===0?'disabled':'')+'>↑</button><button type="button" data-action="move-rung-down" data-r="'+ri+'" '+(ri===active.draft.rungs.length-1?'disabled':'')+'>↓</button><button type="button" data-action="remove-rung" data-r="'+ri+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div><div class="dts-ladder-network-body" '+(closedNetworks.has(r.id)?'hidden':'')+'>'+
+      return '<article class="dts-ladder-rung '+(monitored?.active?'active':'')+'" '+(focusedNetwork&&focusedNetwork!==r.id?'hidden':'')+'><div class="dts-ladder-rung-title"><strong>Network '+(ri+1)+' · '+escape(r.id)+'</strong><input type="text" class="dts-ladder-comment-field" maxlength="100" placeholder="Network açıklaması…" aria-label="'+escape(r.id)+' açıklaması" data-field="rung-comment" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" value="'+escape(r.comment||'')+'"><span data-monitor="status">'+escape(monitored.status)+'</span><button type="button" data-action="toggle-network" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" aria-expanded="'+!closedNetworks.has(r.id)+'">'+(closedNetworks.has(r.id)?'▣ Aç':'▾ Daralt')+'</button><button type="button" data-action="focus-network" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'">'+(focusedNetwork===r.id?'Tümüne dön':'⛶ Tek pencere')+'</button><button type="button" data-action="copy-rung" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(active.draft.rungs.length>=32?'disabled':'')+'>Kopyala</button><button type="button" data-action="move-rung-up" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(ri===0?'disabled':'')+'>↑</button><button type="button" data-action="move-rung-down" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(ri===active.draft.rungs.length-1?'disabled':'')+'>↓</button><button type="button" data-action="remove-rung" data-r="'+ri+'" data-rung-id="'+escape(r.id)+'" '+(active.draft.rungs.length===1?'disabled':'')+'>Satırı sil</button></div><div class="dts-ladder-network-body" '+(closedNetworks.has(r.id)?'hidden':'')+'>'+
        '<div class="dts-ladder-diagram" data-drop-kind="network" data-r="'+ri+'" data-diagram="'+ri+'" title="Paletten öğeyi buraya bırakın">'+draw(r,{index:ri,live:!!liveBits&&Array.isArray(monitored.pathStates),values:liveBits,pathStates:monitored.pathStates,coilValue:monitored.value,limits:limits()})+'</div>'+ 
        '<div class="dts-ladder-branches">'+r.paths.map((path,pi)=>'<div class="dts-ladder-path"><span class="dts-path-label">'+(pi?'VEYA':'EĞER')+'</span>'+
         path.map((contact,ci)=>'<div class="dts-ladder-contact"><span>—[ '+(contact.type==='NC'?'/':'')+' ]—</span>'+
@@ -429,8 +433,13 @@
    const newList=overlay.querySelector('.dts-ladder-rungs');if(newList)newList.scrollTop=oldScroll;
    if(advancedOpen){const more=overlay.querySelector('.dts-ladder-advanced');if(more)more.open=true}
    if(priorFocus){
-    const next=Array.from(overlay.querySelectorAll('button,select,input')).find(el=>focusableControl(el)&&focusKey(el)===priorFocus);
-    if(next)next.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
+    const controls=Array.from(overlay.querySelectorAll('button,select,input'));
+    const next=controls.find(el=>focusableControl(el)&&focusKey(el)===priorFocus);
+    // After moving a rung to an edge, ↑ or ↓ becomes disabled. Return focus
+    // to the SAME rung's always-available workspace action, not its neighbor.
+    const sameRung=!next&&priorRungId?controls.find(el=>focusableControl(el)&&
+     el.dataset?.rungId===priorRungId&&el.dataset?.action==='focus-network'):null;
+    if(next)next.focus();else if(sameRung)sameRung.focus();else overlay.querySelector('.dts-ladder-dialog')?.focus();
    }
   }
   function close(){
