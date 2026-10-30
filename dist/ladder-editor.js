@@ -249,6 +249,7 @@
   if(!el)return '';
   if(el.id)return 'id:'+el.id;
   const d=el.dataset||{};
+  if(d.fbdStructure&&d.fbdPosition)return 'fbd-structure:'+d.fbdStructure+':'+d.fbdPosition;
   if(d.fbdToggleContact)return 'fbd-toggle:'+d.fbdToggleContact;
   if(d.fbdContactRef)return 'fbd-ref:'+d.fbdContactRef;
    if(d.fbdCoilField)return 'fbd-coil:'+d.fbdCoilField+':'+(d.r??'');
@@ -256,6 +257,27 @@
   // The numeric rung position changes after ↑/↓, but its native ID remains
   // stable. Never move keyboard focus to a different Network after reordering.
   return kind?kind+':'+(d.rungId??d.r??'')+':'+(d.p??'')+':'+(d.c??''):'';
+ }
+ // Re-rendering an FBD structure replaces the triggering DOM node. Restore
+ // focus to the newly inserted contact, the surviving branch, or a stable
+ // Network control; never guess the identity of a deleted parallel path.
+ function fbdStructureNextFocus(program,action,position){
+  if(!program||typeof position!=='string'||!['add-path','remove-path','add-contact','add-contact-before','remove-contact'].includes(action))return '';
+  const parts=position.split(':');
+  if(parts.length!==(action.endsWith('path')?2:3)||parts.some(v=>!/^(?:0|[1-9][0-9]*)$/.test(v)))return '';
+  const [r,p,c]=parts.map(Number);
+  if(![r,p,...(parts.length===3?[c]:[])].every(Number.isSafeInteger))return '';
+  const rung=program.rungs?.[r],paths=rung?.paths;
+  if(!paths||!paths[p])return '';
+  if(action==='remove-path')return 'action:focus-network:'+rung.id+'::';
+  if(action==='add-path')return 'fbd-structure:add-contact:'+r+':'+(p+1)+':0';
+  const path=paths[p];
+  if(action==='remove-contact'){
+   if(path.length===0)return 'fbd-structure:add-contact:'+r+':'+p+':0';
+   return 'fbd-ref:'+r+':'+p+':'+Math.min(c,path.length-1);
+  }
+  const inserted=action==='add-contact'?path.length-1:c;
+  return 'fbd-ref:'+r+':'+p+':'+inserted;
  }
  // Keep keyboard navigation inside the dialog; disabled controls are never targets.
  function focusableControl(el){
@@ -361,7 +383,7 @@
    if(!forCoil)return asOptions(c);
    return coilSelectOptions(type,limits(),c);
   };
-  function render(){
+  function render(preferredFocus=null){
    if(!active)return;
    // Undo, Redo or Network deletion may remove the focused ID. Avoid an
    // invisible workspace when no current rung matches the old single view.
@@ -369,7 +391,7 @@
    if(focusedNetwork&&!networkIds.has(focusedNetwork))focusedNetwork=null;
    for(const id of closedNetworks)if(!networkIds.has(id))closedNetworks.delete(id);
    const priorElement=overlay.contains(doc.activeElement)?doc.activeElement:null;
-   const priorFocus=focusKey(priorElement);
+   const priorFocus=preferredFocus||focusKey(priorElement);
    const priorRungId=priorElement?.dataset?.rungId||null;
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
    const advancedOpen=overlay.querySelector('.dts-ladder-advanced')?.open===true;
@@ -666,7 +688,8 @@
     if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
     const result=FBDView.editStructure(active.draft,structure.dataset.fbdStructure,structure.dataset.fbdPosition,limits());
     if(!result.ok){editor.toast?.(result.error);return}
-    active.draft=result.program;active.history.push(active.draft);render();return;
+    active.draft=result.program;active.history.push(active.draft);
+    render(fbdStructureNextFocus(active.draft,structure.dataset.fbdStructure,structure.dataset.fbdPosition));return;
    }
    const polarity=e.target.closest?.('[data-fbd-toggle-contact]');
    if(polarity&&overlay.contains(polarity)){
@@ -792,7 +815,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft,parseUiIndex};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft,parseUiIndex,fbdStructureNextFocus};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
