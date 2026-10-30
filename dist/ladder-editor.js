@@ -229,7 +229,7 @@
   const live=!!running&&!failed&&powered===true&&mode==='dts-ladder-v1'&&runtimeMode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
   // Never replay a partial, reordered or malformed scan as current Network telemetry.
   const traceReady=live&&Array.isArray(traces)&&traces.length===rows.length&&
-   traces.every((t,i)=>t&&t.id===rows[i].id&&(t.coil==null||t.coil===rows[i].coil.ref)&&
+   traces.every((t,i)=>t&&t.id===rows[i].id&&t.coil===rows[i].coil.ref&&
     typeof t.active==='boolean'&&typeof t.value==='boolean'&&
     Array.isArray(rows[i].paths)&&Array.isArray(t.pathStates)&&t.pathStates.length===rows[i].paths.length&&
     t.pathStates.every((v,j)=>typeof v==='boolean'&&Array.isArray(rows[i].paths[j])&&(rows[i].paths[j].length>0||v===false))&&

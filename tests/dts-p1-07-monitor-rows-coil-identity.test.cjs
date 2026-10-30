@@ -1,0 +1,10 @@
+'use strict';
+const test=require('node:test');const assert=require('node:assert/strict');const E=require('../dist/ladder-editor.js');
+const program={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
+const row={id:'R1',coil:'Q1',active:true,value:true,pathStates:[true]};
+const read=(trace,running=true)=>E.monitorRows(program,program,[trace],running,'dts-ladder-v1',true)[0];
+test('matching coil is visible live',()=>assert.equal(read(row).value,true));
+test('missing coil must be hidden',()=>{const x={...row};delete x.coil;assert.equal(read(x).value,null)});
+test('wrong coil must be hidden',()=>assert.equal(read({...row,coil:'Q2'}).value,null));
+test('stopped simulation hidden',()=>assert.equal(read(row,false).value,null));
+test('unsaved draft hidden',()=>assert.equal(E.monitorRows(program,{version:1,rungs:[]},[row],true,'dts-ladder-v1',true)[0].value,null));
