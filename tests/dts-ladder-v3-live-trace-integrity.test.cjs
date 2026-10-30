@@ -7,6 +7,8 @@ const ton={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'
 const scan=(p,m,now,inputs)=>L.scan(p,inputs,m,now,limits);
 const draw=(p,t,values)=>D.render(p.rungs[0],{live:true,values,pathStates:t.pathStates,coilValue:t.value});
 const cpu={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
+ {id:'X10:1',signalType:'POWER'},
+ {id:'X10:2',signalType:'POWER'},
  {id:'X10:6',label:'1M',signalType:'POWER'},{id:'X12:1',label:'3L+',signalType:'POWER'},
  {id:'X12:2',label:'3M',signalType:'POWER'},
  ...Array.from({length:6},(_,i)=>({id:'X10:'+(7+i),signalType:'DI'})),

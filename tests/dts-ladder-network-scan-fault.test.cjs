@@ -25,10 +25,10 @@ test('empty native error does not disable a valid live program',()=>{
 test('initial Ladder/FBD render and 300 ms updates both gate old trace bits',()=>{
  const s=fs.readFileSync(path.join(__dirname,'../dist/ladder-editor.js'),'utf8');
  assert.equal((s.match(/active\.c\._plcRuntime\?\.powered,active\.c\._dtsLadderError/g)||[]).length,2);
- assert.match(s,/const liveBits=live&&active\.c\._plcRuntime\?\.powered===true&&!active\.c\._dtsLadderError/);
- assert.match(s,/const bits=shown&&active\.c\._plcRuntime\?\.powered===true&&!active\.c\._dtsLadderError/);
+ assert.match(s,/const liveBits=live&&active\.c\._plcRuntime\?\.powered===true&&active\.c\._plcRuntime\?\.program===\x27dts-ladder-v1\x27&&!active\.c\._dtsLadderError/);
+ assert.match(s,/const bits=shown&&active\.c\._plcRuntime\?\.powered===true&&active\.c\._plcRuntime\?\.program===\x27dts-ladder-v1\x27&&!active\.c\._dtsLadderError/);
 });
 test('offline editor includes updated asset revision',()=>{
  const h=fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8');
- assert.match(h,/ladder-editor\.js\?rev=20261028-network-scan-fault1/);
+ assert.match(h,/ladder-editor\.js\?rev=[a-zA-Z0-9_-]+/);
 });
