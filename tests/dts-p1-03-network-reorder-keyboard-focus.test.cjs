@@ -82,8 +82,16 @@ test('focus identity follows stable rung IDs, never old list indices',()=>{
 });
 test('all seven Network title controls carry stable rung identity',()=>{
  const u=app();
- for(const id of ['R1','R2','R3'])
-  assert.equal(u.overlay.nodes.filter(n=>n.dataset.rungId===id).length,7);
+ const titleActions=new Set(['toggle-network','focus-network','copy-rung',
+  'move-rung-up','move-rung-down','remove-rung']);
+ for(const id of ['R1','R2','R3']){
+  // Six title actions plus the comment editor remain stable; operand editors
+  // also carry rung identity now and must not inflate this title-only count.
+  const title=u.overlay.nodes.filter(n=>n.dataset.rungId===id&&
+   (titleActions.has(n.dataset.action)||n.dataset.field==='rung-comment'));
+  assert.equal(title.length,7);
+  assert.ok(u.overlay.nodes.some(n=>n.dataset.rungId===id&&n.dataset.field==='contact-ref'));
+ }
 });
 test('Network order alters scan execution without rewriting saved draft',()=>{
  const p={version:1,rungs:[
