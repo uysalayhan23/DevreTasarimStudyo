@@ -2,6 +2,7 @@
  'use strict';
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
+ const TimerGuide=typeof module==='object'&&module.exports?require('./ladder-timer-guide.js'):root?.DTSLadderTimerGuide;
  // Edit only the local FBD draft. Reject invalid addresses and any program not valid for the actual PLC pins.
  function toggleContact(program,position,limits={}){
   if(typeof position!=='string'||!/^(0|[1-9][0-9]*):(0|[1-9][0-9]*):(0|[1-9][0-9]*)$/.test(position))
@@ -158,7 +159,8 @@
    preset='<label>Süre (ms) <input data-fbd-coil-field="presetMs" data-r="'+index+'" aria-label="FBD zamanlayıcı süresi ms" type="number" min="1" max="600000" step="1" value="'+escape(coil.presetMs)+'"></label>';
   else if(['CTU','CTD'].includes(coil.type))
    preset='<label>Hedef <input data-fbd-coil-field="preset" data-r="'+index+'" aria-label="FBD sayaç hedefi" type="number" min="1" max="65535" step="1" value="'+escape(coil.preset)+'"></label>';
-  return '<div class="dts-fbd-block-controls" role="group" aria-label="FBD blok düzenleme">'+typeSelect+refSelect+preset+'</div>';
+  return '<div class="dts-fbd-block-controls" role="group" aria-label="FBD blok düzenleme">'+typeSelect+refSelect+preset+'</div>'+
+   (TimerGuide?.markup?.(coil)||'');
  }
  function render(rung,opts={}){
   // A malformed/stale imported draft is never an energized or editable FBD network.
