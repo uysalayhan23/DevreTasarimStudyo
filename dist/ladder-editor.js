@@ -623,7 +623,10 @@
     if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
     const removed=type==='remove-output'?removeOutput(active.draft,r,limits()):removeFunctionBlock(active.draft,r,limits());
     if(!removed.ok){editor.toast?.(removed.error);return}
-    active.draft=removed.program;active.history.push(active.draft);render();
+    active.draft=removed.program;active.history.push(active.draft);
+    // The remove button disappears when the coil becomes a safe NOP.
+    // Focus the same Network's command selector, never a stale control.
+    render(diagramMode==='fbd'?'fbd-coil:type:'+r:'field:coil-type:'+r+'::');
     editor.toast?.('Blok kaldırıldı. Network çıkışsızdır; Geri al ile dönebilirsiniz.');
     return;
    }
