@@ -57,14 +57,21 @@ test('real catalogue CPU 1211C virtual PLC outputs drop after timer kind change'
  assert.equal(L.supportedPLC(d),true);
  const c={id:'plc',plcProgram:'dts-ladder-v1',ladderProgram:program('TON')};
  const sp=PLC.supplyPair(d),di=d.pins.find(p=>p.signalType==='DI'),anchor=PLC.inputAnchor(d,di);
- let input=true,power=true;
+ let input=true,power=true,bankPower=true;
  const net={voltage:(_c,a,b)=>{
   if(a===sp.a.id&&b===sp.b.id)return power?24:0;
+  if(a==='X12:1'&&b==='X12:2')return bankPower?24:0;
   if(a===di.id&&b===anchor.id)return input?24:0;
   return 0;
  }};
  const at=now=>PLC.evaluate(c,d,net,now);
  assert.equal(at(0).outputs['X12:3'],false);
+ assert.equal(at(100).outputs['X12:3'],true);
+ // The CPU 1211C has an independent output bank. Without its 3L+/3M
+ // supply, a correct PLC must not energize any physical Q terminal.
+ bankPower=false;
+ assert.equal(at(100).outputs['X12:3'],false);
+ bankPower=true;
  assert.equal(at(100).outputs['X12:3'],true);
  assert.equal(PLC.links(c,d).length,1);
  c.ladderProgram.rungs[0].coil.type='TOF';input=false;
