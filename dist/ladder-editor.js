@@ -284,7 +284,9 @@
    if(path.length===0)return 'fbd-structure:add-contact:'+r+':'+p+':0';
    return 'fbd-ref:'+r+':'+p+':'+Math.min(c,path.length-1);
   }
-  const inserted=action==='add-contact'?path.length-1:c;
+  // + Seri inserts immediately after the clicked contact, not always at the
+  // end of the branch. In an empty branch its first contact is index 0.
+  const inserted=action==='add-contact'?Math.min(c+1,path.length-1):c;
   return 'fbd-ref:'+r+':'+p+':'+inserted;
  }
  // LAD branch indices shift after removal. Restoring the original button
