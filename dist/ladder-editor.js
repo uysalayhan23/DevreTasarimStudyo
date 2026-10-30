@@ -353,7 +353,7 @@
    active.savedBaseline===JSON.stringify(active.c.ladderProgram??null);
  }
  function ladderShortcut(e,editing=false,running=false){
-  if(e?.isComposing||e?.keyCode===229||!((e?.ctrlKey||e?.metaKey)&&!e?.altKey))return null;
+  if(e?.defaultPrevented||e?.isComposing||e?.keyCode===229||!((e?.ctrlKey||e?.metaKey)&&!e?.altKey))return null;
   const key=String(e.key||'').toLowerCase();
   if(key==='s'&&!e.shiftKey)return editing?'pending-field':running?'locked':'save';
   if(key==='z'||key==='y'){
