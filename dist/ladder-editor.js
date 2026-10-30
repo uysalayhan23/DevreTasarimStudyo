@@ -151,7 +151,7 @@
  }
  // Undo/Redo is local to the Ladder draft; it never modifies the saved circuit.
  function createDraftHistory(initial,maxSteps=50){
-  let steps=[clone(initial)],index=0;
+  let steps=[clone(initial)],index=0,revision=0;
   const limit=Math.max(2,Math.min(100,Number.isInteger(maxSteps)?maxSteps:50));
   const current=()=>clone(steps[index]);
   return Object.freeze({
@@ -161,11 +161,12 @@
     steps=steps.slice(0,index+1);
     steps.push(clone(next));
     if(steps.length>limit)steps.shift();
-    index=steps.length-1;
+    index=steps.length-1;revision++;
     return true;
    },
-   undo(){if(index===0)return null;index--;return current()},
-   redo(){if(index>=steps.length-1)return null;index++;return current()},
+   undo(){if(index===0)return null;index--;revision++;return current()},
+   redo(){if(index>=steps.length-1)return null;index++;revision++;return current()},
+   revision:()=>revision,
    canUndo:()=>index>0,canRedo:()=>index<steps.length-1
   });
  }
@@ -199,12 +200,13 @@
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
  // Never apply an async import to a different component or a replaced project instance.
- function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null,draftSnapshot=null,currentDraft=null,savedSnapshot=null,currentSaved=null){
+ function importContextMatches(source,latest,projectAtStart,currentProject,dialogVisible,requestId=null,currentRequestId=null,draftSnapshot=null,currentDraft=null,savedSnapshot=null,currentSaved=null,historyRevision=null,currentHistoryRevision=null){
   const matches=!!source&&source===latest&&!!projectAtStart&&projectAtStart===currentProject&&!!dialogVisible&&
    (requestId===null||(Number.isSafeInteger(requestId)&&requestId===currentRequestId));
   // Do not overwrite contacts or outputs changed while the selected file was reading.
   return matches&&(draftSnapshot===null||JSON.stringify(currentDraft)===draftSnapshot)&&
-   (savedSnapshot===null||JSON.stringify(currentSaved)===savedSnapshot);
+   (savedSnapshot===null||JSON.stringify(currentSaved)===savedSnapshot)&&
+   (historyRevision===null||(Number.isSafeInteger(historyRevision)&&historyRevision===currentHistoryRevision));
  }
  // A malformed catalog pin list must not break the Ladder launch button.
  const pins=(d,t)=>(Array.isArray(d?.pins)?d.pins:[]).filter(p=>p&&typeof p.id==='string'&&p.id.length>0&&p.signalType===t);
@@ -689,14 +691,14 @@
    if(e.target.id==='dtsLadderImport'){
     const file=e.target.files?.[0],target=active,originalProject=editor.getProject();
     if(file&&target){
-     const requestId=++importSerial,draftSnapshot=JSON.stringify(target.draft),savedSnapshot=JSON.stringify(target.c.ladderProgram??null);
+     const requestId=++importSerial,draftSnapshot=JSON.stringify(target.draft),savedSnapshot=JSON.stringify(target.c.ladderProgram??null),historyRevision=target.history.revision();
      try{
       if(editor.running)throw Error('İçe aktarmadan önce simülasyonu durdurun.');
       if(file.size>ProgramIO.maxBytes)throw Error('Ladder program dosyası 512 KB sınırını aşıyor.');
       // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
       const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
       const raw=await file.text();
-      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft,savedSnapshot,target.c.ladderProgram??null)||!canCommitDraft(target,editor)||editor.running){
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft,savedSnapshot,target.c.ladderProgram??null,historyRevision,target.history.revision())||!canCommitDraft(target,editor)||editor.running){
        editor.toast?.('İçe aktarma iptal: PLC, proje veya taslak değişti. Program değiştirilmedi.');
       }else{
        const draft=ProgramIO.parse(raw,originalLimits);
