@@ -125,16 +125,17 @@
     }
     // A saved cable must name a terminal reference or a junction reference.
     // Empty/ambiguous endpoints were silently drawn at (0,0).
-    // Check structure only: legacy IDs are canonicalized by migration; existing
-    // project references remain untouched.
+    // Validate endpoint shape and ownership. Deleted components or junctions
+    // must not turn saved wires into invisible (0,0) ghost connections.
+    // Legacy numeric IDs are normalized by migrate() before this check.
     const validWireEnd=end=>{
       if(!end||typeof end!=='object'||Array.isArray(end))return false;
       const hasComponent=Object.prototype.hasOwnProperty.call(end,'c');
       const hasJunction=Object.prototype.hasOwnProperty.call(end,'j');
       if(hasComponent===hasJunction)return false;
       return hasComponent?typeof end.c==='string'&&!!end.c.trim()&&
-        typeof end.p==='string'&&!!end.p.trim():
-        typeof end.j==='string'&&!!end.j.trim();
+        typeof end.p==='string'&&!!end.p.trim()&&ids.has(end.c):
+        typeof end.j==='string'&&!!end.j.trim()&&junctionIds.has(end.j);
     };
     if(p.wires.some(w=>!validWireEnd(w.from)||!validWireEnd(w.to)))
       throw Error('Projedeki kablo uç referansı geçersiz.');
