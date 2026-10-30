@@ -40,3 +40,27 @@ test('P0-04 distinct IDs and protected examples retain previous behavior',async(
  assert.equal(store.list().length,2);
  assert.equal(store.list()[0].name,'Güncel');
 });
+
+function legacyFallback(project){
+ const data=new Map([['ods-project',JSON.stringify(project)]]);
+ const storage={getItem:key=>data.get(key)||null,setItem:(key,value)=>data.set(key,String(value)),removeItem:key=>data.delete(key)};
+ return Projects.create({storage,indexedDB:null,env:{}});
+}
+
+test('P0-04 numeric legacy fallback project ID is readable through a string key',async()=>{
+ const project=draft(7),store=legacyFallback(project);
+ assert.equal((await store.get('7')).projectId,7);
+ assert.equal((await store.get(7)).projectId,7);
+});
+
+test('P0-04 string legacy fallback project ID is readable through a numeric key',async()=>{
+ const store=legacyFallback(draft('7'));
+ assert.equal((await store.get(7)).projectId,'7');
+});
+
+test('P0-04 legacy fallback does not alias unrelated or missing project IDs',async()=>{
+ const store=legacyFallback(draft(7));
+ assert.equal(await store.get('8'),null);
+ const missing=legacyFallback({...draft(7),projectId:null});
+ assert.equal(await missing.get('null'),null);
+});
