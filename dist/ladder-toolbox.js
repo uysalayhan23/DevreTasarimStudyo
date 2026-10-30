@@ -37,7 +37,9 @@
   const next=JSON.parse(JSON.stringify(program)),rung=next.rungs[r];
   if(isContact){
    if(!Number.isInteger(p)||p<0||p>=rung.paths.length)return {ok:false,error:'Paralel yol bulunamadı.'};
-   const path=rung.paths[p],at=target.i==null?path.length:index(target.i);
+   // Only an omitted insertion index means append. An explicit null is
+   // malformed input and must never mutate an otherwise valid rung.
+   const path=rung.paths[p],at=target.i===undefined?path.length:index(target.i);
    if(!Number.isSafeInteger(at)||at>path.length||path.length>=12)return {ok:false,error:'Seri yolda en fazla 12 kontak kullanılabilir.'};
    const ref=Number.isInteger(limits.inputCount)&&limits.inputCount<1?'M1':'I1';
    path.splice(at,0,{type:tool.id,ref});
