@@ -1285,11 +1285,69 @@ body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:bloc
 .dts-watch-toolbar{padding:6px 11px;border-bottom:1px solid #dae5ef}.dts-watch-toolbar label{display:flex;gap:8px;align-items:center;font-size:12px}.dts-watch-toolbar select{max-width:320px;flex:1;min-width:0;padding:5px;border:1px solid #b8ccdc;border-radius:6px;background:white;color:#17374f}
 .dts-watch-body{overflow:auto;overscroll-behavior:contain;padding:8px;min-height:50px}.dts-watch-status{font-size:11px;background:#fff5dd;color:#79531c;border-radius:5px;padding:7px 9px;margin:0 0 8px}.dts-watch-status.is-live{background:#e2f5e7;color:#126c40}
 .dts-watch-network{margin:0 0 8px;background:#fff;border:1px solid #c5d7e3;border-radius:7px;padding:8px}.dts-watch-network>header{display:flex;align-items:center;justify-content:space-between;color:#436077;font-size:11px;margin-bottom:7px}.dts-watch-network>header strong{color:#163750}.dts-watch-network>p{margin:7px 1px 0;font-size:11px;color:#52687a}
-.dts-watch-circuit{display:flex;align-items:stretch;gap:6px;min-width:0}.dts-watch-paths{flex:1;min-width:0;border-left:3px solid #4a6276;border-right:3px solid #4a6276;padding:4px 3px;display:flex;flex-direction:column;gap:5px;overflow-x:auto}.dts-watch-path{display:flex;align-items:center;gap:3px;min-height:42px;white-space:nowrap;font-family:ui-monospace,Consolas,monospace}.dts-watch-path small{font-size:9px;color:#648094}.dts-watch-rail{color:#577086}.dts-watch-wire{color:#637d92}
-.dts-watch-path.is-on .dts-watch-rail,.dts-watch-path.is-on .dts-watch-wire{color:#11965b;font-weight:700}
+/* Read-only compact Siemens LOGO-like Ladder watch: complete rails and branches. */
+.dts-watch-circuit{display:flex;align-items:stretch;gap:0;min-width:0;--watch-neon:#1986ff;--watch-halo:#43cbff}
+.dts-watch-paths{flex:1;min-width:0;border-left:3px solid #4a6276;border-right:3px solid #4a6276;padding:3px 0;display:flex;flex-direction:column;gap:0;overflow-x:auto}
+.dts-watch-path{display:flex;align-items:center;gap:0;min-height:44px;padding:0 3px;white-space:nowrap;font-family:ui-monospace,Consolas,monospace}
+.dts-watch-path small{font-size:9px;color:#648094;padding:0 4px}
+.dts-watch-rail{position:relative;display:inline-block;flex:0 0 10px;width:10px;height:22px}
+.dts-watch-rail::before{content:"";position:absolute;left:0;top:50%;width:10px;height:3px;transform:translateY(-50%);border-radius:2px;background:#637d92}
+.dts-watch-rail::after{content:"";position:absolute;top:50%;left:-5px;width:7px;height:7px;transform:translateY(-50%);border-radius:50%;background:#637d92}
+.dts-watch-rail.right::after{left:auto;right:-5px}
+.dts-watch-segment{display:inline-block;flex:0 0 14px;height:0;min-width:14px;border-top:3px solid #637d92}
+.dts-watch-segment.tail{flex:1 1 auto;min-width:20px}
+.dts-watch-output-wire{align-self:center;flex:0 0 18px;height:0;border-top:3px solid #637d92}
+.dts-watch-parallel-bridge{position:relative;height:12px;flex:0 0 12px}
+.dts-watch-parallel-bridge::before,.dts-watch-parallel-bridge::after{content:"";position:absolute;top:0;bottom:0;width:3px;background:#637d92}
+.dts-watch-parallel-bridge::before{left:0}
+.dts-watch-parallel-bridge::after{right:0}
 .dts-watch-empty{font:11px system-ui,sans-serif;color:#758797}
-.dts-watch-contact{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #aabfce;border-radius:5px;padding:2px 6px;min-width:45px;background:#eff4f8;color:#375469}.dts-watch-contact span{font-size:12px}.dts-watch-contact b{font-size:12px}.dts-watch-contact.is-on{border-color:#259c63;background:#daf7e6;color:#096f42;box-shadow:inset 0 0 0 1px #36b877}.dts-watch-contact.is-off{opacity:.75}
-.dts-watch-result{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 75px;border:1px solid #b6c9d5;border-radius:6px;background:#edf3f7;font-family:ui-monospace,Consolas,monospace}.dts-watch-result small{font-size:10px}.dts-watch-result strong{font-size:13px}.dts-watch-result span{font-size:10px;text-align:center}.dts-watch-result.is-on{background:#d8f7e4;border-color:#23a765;color:#11643c}
+.dts-watch-contact{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #aabfce;border-radius:5px;padding:2px 6px;min-width:45px;background:#eff4f8;color:#375469;position:relative;z-index:1}
+.dts-watch-contact span{font-size:12px}
+.dts-watch-contact b{font-size:12px}
+.dts-watch-contact.is-on{border-color:#259c63;background:#daf7e6;color:#096f42;box-shadow:inset 0 0 0 1px #36b877}
+.dts-watch-contact.is-off{opacity:.75}
+.dts-watch-result{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 75px;border:1px solid #b6c9d5;border-radius:6px;background:#edf3f7;font-family:ui-monospace,Consolas,monospace}
+.dts-watch-result small{font-size:10px}
+.dts-watch-result strong{font-size:13px}
+.dts-watch-result span{font-size:10px;text-align:center}
+/* Neon is derived only from verified Ladder pathStates; no solver logic changes. */
+.dts-watch-parallel-bridge.is-on::before,.dts-watch-parallel-bridge.is-on::after,
+.dts-watch-path.is-on .dts-watch-rail::before,.dts-watch-path.is-on .dts-watch-rail::after,
+.dts-watch-path.is-on .dts-watch-segment,.dts-watch-output-wire.is-on{
+ background:var(--watch-neon);border-color:var(--watch-neon);
+ box-shadow:0 0 3px var(--watch-neon),0 0 8px rgba(67,203,255,.65),0 0 13px rgba(67,203,255,.35)
+}
+.dts-watch-path.is-on .dts-watch-contact{
+ border-color:var(--watch-neon);
+ box-shadow:inset 0 0 0 1px rgba(67,203,255,.5),0 0 6px rgba(25,134,255,.65),0 0 12px rgba(67,203,255,.3)
+}
+/* A conducting input can precede a timer/counter output: glow only its entry. */
+.dts-watch-result.is-flowing:not(.is-on){border-left:3px solid var(--watch-neon)}
+.dts-watch-result.is-on{
+ background:#e1f7f0;color:#075a3b;border:2px solid #12ad78;
+ box-shadow:inset 0 0 0 1px rgba(70,255,168,.4),0 0 7px rgba(0,229,137,.65),0 0 16px rgba(31,226,179,.35)
+}
+.dts-watch-result.is-on strong{text-shadow:0 0 6px rgba(0,229,137,.4)}
+@media(prefers-reduced-motion:no-preference){
+ .dts-watch-result.is-on{animation:dts-watch-block-glow 2.2s ease-in-out infinite alternate}
+ .dts-watch-path.is-on .dts-watch-segment,.dts-watch-path.is-on .dts-watch-rail::before,
+ .dts-watch-parallel-bridge.is-on::before,.dts-watch-parallel-bridge.is-on::after{
+ animation:dts-watch-line-glow 2.2s ease-in-out infinite alternate
+ }
+}
+@keyframes dts-watch-block-glow{
+ from{box-shadow:inset 0 0 0 1px rgba(70,255,168,.4),0 0 6px rgba(0,229,137,.5),0 0 13px rgba(31,226,179,.3)}
+ to{box-shadow:inset 0 0 0 1px rgba(70,255,168,.6),0 0 9px rgba(0,229,137,.7),0 0 18px rgba(31,226,179,.42)}
+}
+@keyframes dts-watch-line-glow{
+ from{box-shadow:0 0 3px var(--watch-neon),0 0 7px rgba(67,203,255,.55)}
+ to{box-shadow:0 0 5px var(--watch-neon),0 0 12px rgba(67,203,255,.7)}
+}
+@media(prefers-reduced-motion:reduce){
+ .dts-watch-result.is-on,.dts-watch-path.is-on *,
+ .dts-watch-parallel-bridge.is-on::before,.dts-watch-parallel-bridge.is-on::after{animation:none!important}
+}
 .dts-ladder-advanced{position:relative;min-width:120px;align-self:center}.dts-ladder-advanced>summary{padding:8px 10px;background:#e8f1f7;border:1px solid #a9c4d4;border-radius:6px;color:#244b64;cursor:pointer}.dts-ladder-advanced>div{display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:9px;border:1px solid #b9cedb;background:#f8fcff;border-radius:6px}
 .dts-ladder-advanced label{display:flex;flex-direction:column;gap:3px;font-size:12px}
 @media(max-width:720px){.dts-ladder-watch{right:8px;top:64px;width:min(440px,calc(100vw - 16px));max-height:55vh}.dts-watch-network{padding:5px}}
