@@ -8,6 +8,7 @@
  const Examples=typeof module==='object'&&module.exports?require('./ladder-examples.js'):root?.DTSLadderExamples;
  const FBDView=typeof module==='object'&&module.exports?require('./fbd-view.js'):root?.DTSFBDView;
  const Toolbox=typeof module==='object'&&module.exports?require('./ladder-toolbox.js'):root?.DTSLadderToolbox;
+ const TimerGuide=typeof module==='object'&&module.exports?require('./ladder-timer-guide.js'):root?.DTSLadderTimerGuide;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  // LAD and FBD use exactly the same allowed native output addresses.
  function coilSelectOptions(type,limits={},candidates=[]){
@@ -406,6 +407,7 @@
        select(r.coil.type,['NOP','OUT','SET','RESET','TON','TOF','TP','CTU','CTD'].map(v=>({value:v,label:v==='NOP'?'BOŞ (çıkış yok)':v})),'data-field="coil-type" data-r="'+ri+'"')+
        (r.coil.type==='NOP'?'<span class="dts-ladder-empty-output">Çıkış adresi yok</span>':select(r.coil.ref,refOptions(true,r.coil.type),'data-field="coil-ref" data-r="'+ri+'"'))+
        (['TON','TOF','TP'].includes(r.coil.type)?'<label>Süre (ms) <input type="number" min="1" max="600000" value="'+escape(r.coil.presetMs||1000)+'" data-field="presetMs" data-r="'+ri+'"></label>':'')+
+       (TimerGuide?.markup?.(r.coil)||'')+
        (['CTU','CTD'].includes(r.coil.type)?'<label>Hedef <input type="number" min="1" max="65535" value="'+escape(r.coil.preset||1)+'" data-field="preset" data-r="'+ri+'"></label>':'')+
        (r.coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+ri+'" '+(editor.running?'disabled title="Önce simülasyonu durdur"':'title="Bloğu kaldır; Network kalsın, çıkış etkinleşmesin"')+' aria-label="'+escape(r.coil.type+' çıkışını güvenle kaldır')+'">'+(['TON','TOF','TP','CTU','CTD'].includes(r.coil.type)?'Bloğu kaldır':'Bobini kaldır')+'</button>':'')+
        '<strong class="dts-ladder-signal" data-monitor="value">'+escape(signalText(monitored))+'</strong>'+
