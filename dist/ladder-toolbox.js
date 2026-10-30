@@ -26,7 +26,10 @@
   // must never silently select Network 0 or another contact.
   const index=v=>typeof v==='number'&&Number.isSafeInteger(v)&&v>=0?v:
    typeof v==='string'&&/^(?:0|[1-9][0-9]*)$/.test(v)&&Number.isSafeInteger(Number(v))?Number(v):NaN;
-  const r=index(target.r),p=target.p===undefined?0:index(target.p);
+  // A dedicated contact drop zone must identify its parallel path. Only
+  // dropping on the whole Network may intentionally default to its first path.
+  const r=index(target.r),p=target.kind==='contact'?index(target.p):
+   target.p===undefined?0:index(target.p);
   if(!Number.isSafeInteger(r)||r>=program.rungs.length)return {ok:false,error:'Network numarası geçersiz.'};
   if(!['network','contact','coil'].includes(target.kind))return {ok:false,error:'Hedef alan geçersiz.'};
   const isContact=tool.kind==='contact';
