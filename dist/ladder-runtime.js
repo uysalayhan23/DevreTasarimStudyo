@@ -70,7 +70,8 @@
   }
   // A restarted virtual clock invalidates elapsed timer state. Keep M latches and
   // counter memory untouched; a stale TOF/TP must never re-energize an output.
-  if(Number.isFinite(mem.lastTime)&&now<mem.lastTime){
+  const clockRewound=Number.isFinite(mem.lastTime)&&now<mem.lastTime;
+  if(clockRewound){
    for(const ref of assignedBlocks)if(ref[0]==='T'){bits[ref]=false;delete states[ref];}
   }
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
@@ -133,6 +134,9 @@
      // IEC-style TP: a new edge cannot extend a pulse that is already running.
      // Rewind is defensive for a restarted virtual simulation clock.
      if(Number.isFinite(s.pulseStart)&&now<s.pulseStart)delete s.pulseStart;
+     // Rewinding a virtual clock is not a physical rising edge. Held input
+     // must first fall and rise again before TP can generate a new pulse.
+     if(clockRewound){delete s.pulseStart;s.prev=active;}
      const pulseRunning=Number.isFinite(s.pulseStart)&&now-s.pulseStart<coil.presetMs;
      if(active&&!s.prev&&!pulseRunning)s.pulseStart=now;
      next=Number.isFinite(s.pulseStart)&&now>=s.pulseStart&&now-s.pulseStart<coil.presetMs;
