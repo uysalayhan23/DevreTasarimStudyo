@@ -60,3 +60,23 @@ test('P0-04 ordinary schematic project still parses',()=>{
    wires:[{id:'w',from:{c:'a',p:'1'},to:{j:'j'}}],junctions:[{id:'j',x:5,y:5}]};
  assert.equal(Projects.parse(JSON.stringify(p)).wires.length,1);
 });
+test('P0-04 rejects a panel wire whose source item was deleted',()=>{
+ assert.throws(()=>parseWire(w=>{w.from.c='missing-item'}),/Pano kablo uç referansı geçersiz/);
+});
+test('P0-04 rejects a panel wire whose destination item was deleted',()=>{
+ assert.throws(()=>parseWire(w=>{w.to.c='missing-item'}),/Pano kablo uç referansı geçersiz/);
+});
+test('P0-04 rejects two orphan endpoints even when their pins differ',()=>{
+ assert.throws(()=>parseWire(w=>{w.from.c='gone';w.to.c='gone';w.to.p='2'}),/Pano kablo uç referansı geçersiz/);
+});
+test('P0-04 rejects panel wire ID colliding with an item ID',()=>{
+ assert.throws(()=>parseWire(w=>{w.id='i1'}),/Pano kablo kimliği eksik veya tekrarlı/);
+});
+test('P0-04 rejects numeric panel wire ID colliding with numeric item ID',()=>{
+ const p=base(),w=cable();p.panel.items.push({id:12,typeId:'lamp'});w.id=12;p.panel.wires.push(w);
+ assert.throws(()=>Projects.parse(JSON.stringify(p)),/Pano kablo kimliği eksik veya tekrarlı/);
+});
+test('P0-04 rejects numeric item ID as a string endpoint owner (panel renderer uses strict IDs)',()=>{
+ const p=base(),w=cable();p.panel.items.push({id:12,typeId:'lamp'});w.to.c='12';p.panel.wires.push(w);
+ assert.throws(()=>Projects.parse(JSON.stringify(p)),/Pano kablo uç referansı geçersiz/);
+});

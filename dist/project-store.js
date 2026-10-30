@@ -158,12 +158,13 @@
       // Apply the established schematic collection limits to the panel workspace too.
       if((p.panel.items?.length||0)>10000||(p.panel.wires?.length||0)>40000)
         throw Error('Pano projesi eğitim çalışma alanı için çok büyük.');
-      const panelIds=new Set();
+      const panelIds=new Set(),panelTerminalOwners=new Set();
       for(const item of p.panel.items||[]){
         const id=item?.id;
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
           panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
         panelIds.add(String(id));
+        if(typeof id==='string')panelTerminalOwners.add(id);
         // Optional legacy geometry may be absent, but an explicitly corrupt
         // coordinate or footprint must never be treated as real panel space.
         for(const key of ['x','y','w','h','depth']){
@@ -183,7 +184,8 @@
         const validPanelEnd=end=>end&&typeof end==='object'&&!Array.isArray(end)&&
           typeof end.c==='string'&&!!end.c.trim()&&typeof end.p==='string'&&!!end.p.trim();
         if(!validPanelEnd(wire.from)||!validPanelEnd(wire.to)||
-           (wire.from.c===wire.to.c&&wire.from.p===wire.to.p))
+           (wire.from.c===wire.to.c&&wire.from.p===wire.to.p)||
+           !panelTerminalOwners.has(wire.from.c)||!panelTerminalOwners.has(wire.to.c))
           throw Error('Pano kablo uç referansı geçersiz.');
         if(wire.points!=null&&(!Array.isArray(wire.points)||wire.points.length>1000||
            wire.points.some(pt=>!pt||typeof pt!=='object'||Array.isArray(pt)||
@@ -193,7 +195,7 @@
         if(wire.id==null)continue; // Legacy unnamed panel wires remain readable.
         const id=wire.id;
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
-          panelWireIds.has(String(id)))throw Error('Pano kablo kimliği eksik veya tekrarlı.');
+          panelWireIds.has(String(id))||panelIds.has(String(id)))throw Error('Pano kablo kimliği eksik veya tekrarlı.');
         panelWireIds.add(String(id));
       }
     }
