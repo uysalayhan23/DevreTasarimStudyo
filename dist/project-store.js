@@ -279,6 +279,14 @@
         // A picker may return the original file even when no handle was remembered.
         // Save As must never replace a non-empty project, including one with the same ID.
         if(saveAs&&target.size!==0)throw Error('Farklı Kaydet mevcut bir proje dosyasının üzerine yazamaz. Yeni bir dosya adı seçin.');
+        // ID-less legacy files can be saved in place only through their remembered handle.
+        // A fresh picker selection alone must never authorize overwriting someone else's file.
+        if(!saveAs&&target.size!==0&&targetProject?.projectId==null){
+          if(!existing){try{existing=await db('get','handle:'+project.projectId)}catch{}}
+          const known=existing?.handle;
+          if(!known||!(handle===known||await handle.isSameEntry?.(known)))
+            throw Error('Kimliği olmayan eski proje dosyasının sahipliği doğrulanamadı; üzerine yazılmadı. Farklı Kaydet kullanın.');
+        }
         // Never replace another editable project's file, even if it parses cleanly.
         // Keep legacy files without an ID openable through their remembered handle.
         if(targetProject?.projectId!=null&&String(targetProject.projectId)!==String(project.projectId))
