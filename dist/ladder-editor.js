@@ -346,7 +346,7 @@
   // starter. Use an electrically open, address-free NOP recovery draft instead.
   // A genuinely new PLC keeps the existing explicit starter workflow.
   const safeDraft=()=>({version:1,rungs:[{id:'R1',paths:[[]],coil:{type:'NOP',ref:''}}]});
-  return {c,d,inputs,outputs,savedBaseline:JSON.stringify(c.ladderProgram??null),
+  return {c,d,inputs,outputs,savedProgramMode:c.plcProgram,savedBaseline:JSON.stringify(c.ladderProgram??null),
    recoveryWarning:!valid&&hasSaved,
    draft:valid?clone(c.ladderProgram):hasSaved?safeDraft():L.blank()};
  }
@@ -354,6 +354,7 @@
   const project=editor?.getProject?.();
   return !!active?.c&&Array.isArray(project?.components)&&project.components.includes(active.c)&&
    supported(editor).includes(active.c)&&
+   active.savedProgramMode===active.c.plcProgram&&
    active.savedBaseline===JSON.stringify(active.c.ladderProgram??null);
  }
  function ladderShortcut(e,editing=false,running=false){
