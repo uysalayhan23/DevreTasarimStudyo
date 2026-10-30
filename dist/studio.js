@@ -124,6 +124,7 @@
     const f=e.target.files?.[0];if(!f)return;
     const ticket=projectRequests.begin();
     try{
+      if(f.size>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       const raw=await f.text();
       if(!projectRequests.isCurrent(ticket)||safety.visible)return;
       const p=Projects.parse(raw);
