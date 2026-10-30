@@ -147,7 +147,11 @@
     const initial=coil.type==='CTD'?coil.preset:0;
     const s=states[ref]||(states[ref]={count:initial});
     // A CTU/CTD type change must not reuse the other counter's count or edge memory.
-    if(s.kind&&s.kind!==coil.type){s.count=initial;delete s.prev;delete s.tick;}
+    if(s.kind&&s.kind!==coil.type){
+      // A held count input during CTU/CTD type change is not a new rising edge.
+      // Rebase the input edge along with the counter value before evaluating it.
+      s.count=initial;s.prev=active;delete s.tick;bits[ref]=false;
+     }
     // A new counter target must not inherit the old count or a held input edge.
     if(Number.isInteger(s.preset)&&s.preset!==coil.preset){
      s.count=initial;s.prev=active;bits[ref]=false;
