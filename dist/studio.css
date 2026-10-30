@@ -1352,3 +1352,19 @@ body.dts-full-mode .wire-settings,body.dts-sim-focus .wire-settings{display:bloc
 .dts-ladder-advanced label{display:flex;flex-direction:column;gap:3px;font-size:12px}
 @media(max-width:720px){.dts-ladder-watch{right:8px;top:64px;width:min(440px,calc(100vw - 16px));max-height:55vh}.dts-watch-network{padding:5px}}
 @media(prefers-reduced-motion:reduce){.dts-ladder-watch *{transition:none!important;animation:none!important}}
+
+/* Accessible, read-only IEC-like TON/TOF/TP guidance in LAD and FBD.
+   Restrained layout; never overlays simulation buttons or the drawing canvas. */
+.dts-timer-guide{flex:1 1 100%;min-width:0;margin:5px 0 3px;border:1px solid #8aaec6;
+ background:#f5fbff;border-radius:7px;color:#173d58;font:12px/1.45 system-ui,sans-serif}
+.dts-timer-guide summary{display:flex;align-items:center;justify-content:space-between;gap:9px;
+ cursor:pointer;padding:8px 10px;list-style:revert}
+.dts-timer-guide summary strong{font-size:12px;color:#143e61}
+.dts-timer-guide summary span{font-size:11px;color:#3b617b}
+.dts-timer-guide summary:focus-visible{outline:2px solid #1674b7;outline-offset:2px}
+.dts-timer-guide[open] summary{border-bottom:1px solid #b8d1e2;background:#eaf5ff;border-radius:7px 7px 0 0}
+.dts-timer-guide-body{padding:5px 10px 9px}
+.dts-timer-guide-body p{margin:6px 0;color:#173d58}
+.dts-timer-guide-body .dts-timer-example{background:#e3f4e9;border-radius:5px;padding:7px}
+.dts-timer-guide-body small{display:block;color:#506d7d;font-size:10px}
+@media(max-width:720px){.dts-timer-guide summary{flex-wrap:wrap}}
