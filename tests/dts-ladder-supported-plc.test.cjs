@@ -2,6 +2,8 @@
 const assert=require('node:assert/strict'),{test}=require('node:test');
 const L=require('../dist/ladder-runtime.js'),P=require('../dist/plc-runtime.js');
 const verified={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
+ {id:'X10:1',signalType:'POWER'},
+ {id:'X10:2',signalType:'POWER'},
  {id:'X10:6',label:'1M',signalType:'POWER'},
  {id:'X12:1',label:'3L+',signalType:'POWER'},
  {id:'X12:2',label:'3M',signalType:'POWER'},

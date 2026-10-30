@@ -2,6 +2,8 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const Ladder=require('../dist/ladder-runtime.js');
 const pins=[
+ {id:'X10:1',signalType:'POWER'},
+ {id:'X10:2',signalType:'POWER'},
  {id:'X10:6',label:'1M',signalType:'POWER'},
  {id:'X12:1',label:'3L+',signalType:'POWER'},
  {id:'X12:2',label:'3M',signalType:'POWER'},
