@@ -221,10 +221,10 @@
    traces.every((t,i)=>t&&t.id===rows[i].id&&(t.coil==null||t.coil===rows[i].coil.ref)&&
     typeof t.active==='boolean'&&typeof t.value==='boolean'&&
     Array.isArray(rows[i].paths)&&Array.isArray(t.pathStates)&&t.pathStates.length===rows[i].paths.length&&
-    t.pathStates.every((v,j)=>typeof v==='boolean'&&(rows[i].paths[j].length>0||v===false))&&
+    t.pathStates.every((v,j)=>typeof v==='boolean'&&Array.isArray(rows[i].paths[j])&&(rows[i].paths[j].length>0||v===false))&&
     t.active===t.pathStates.some(Boolean)&&
-    (rows[i].coil.type!=='OUT'||t.value===t.active)&&
-    (rows[i].coil.type!=='NOP'||t.value===false));
+    (rows[i].coil?.type!=='OUT'||t.value===t.active)&&
+    (rows[i].coil?.type!=='NOP'||t.value===false));
   const byId=new Map((traceReady?traces:[]).map(t=>[t.id,t]));
   return rows.map(r=>{
    const t=live?byId.get(r.id):null;
