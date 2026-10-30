@@ -284,6 +284,22 @@
   const inserted=action==='add-contact'?path.length-1:c;
   return 'fbd-ref:'+r+':'+p+':'+inserted;
  }
+ // LAD branch indices shift after removal. Restoring the original button
+ // would focus a different physical branch; prefer the stable Network header.
+ function ladStructureNextFocus(program,action,r,p,c){
+  if(!['add-path','remove-path','add-contact','remove-contact'].includes(action)||
+     !Number.isSafeInteger(r)||r<0)return '';
+  const rung=program?.rungs?.[r],paths=rung?.paths;
+  if(!paths)return '';
+  if(action==='remove-path')return 'action:focus-network:'+rung.id+'::';
+  if(action==='add-path')return 'action:add-contact:'+r+':'+(paths.length-1)+':';
+  if(!Number.isSafeInteger(p)||p<0||!Array.isArray(paths[p]))return '';
+  const series=paths[p];
+  if(action==='add-contact')return 'field:contact-ref:'+r+':'+p+':'+(series.length-1);
+  if(!Number.isSafeInteger(c)||c<0)return '';
+  return series.length?'field:contact-ref:'+r+':'+p+':'+Math.min(c,series.length-1):
+   'action:add-contact:'+r+':'+p+':';
+ }
  // Keep keyboard navigation inside the dialog; disabled controls are never targets.
  function focusableControl(el){
   // A control inside a collapsed Network is hidden even if the input itself
@@ -689,7 +705,8 @@
     if(!removed.ok){editor.toast?.(removed.error);return}
     active.draft=removed.program;
    }
-   active.history.push(active.draft);render();
+   active.history.push(active.draft);
+   render(ladStructureNextFocus(active.draft,type,r,p,c));
   }
   function activateDiagramTarget(element){
    return focusDiagramOperand(overlay,element,diagramMode);
@@ -828,7 +845,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft,parseUiIndex,fbdStructureNextFocus};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft,parseUiIndex,fbdStructureNextFocus,ladStructureNextFocus};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
