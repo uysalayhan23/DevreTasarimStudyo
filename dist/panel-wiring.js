@@ -45,6 +45,9 @@
     if(!Array.isArray(p.wires)||p.wires.length>20000)throw Error('Pano kablo listesi geçersiz veya çok büyük.');
     const ids=new Set([...p.items,...p.rails,...p.ducts].map(i=>i.id));
     for(const w of p.wires){
+      // Legacy numeric cable IDs remain unchanged in imported files, but the
+      // editable panel uses string IDs for selection and wire lookups.
+      if(w&&typeof w.id==='number'&&Number.isFinite(w.id))w.id=String(w.id);
       if(!w||typeof w.id!=='string'||ids.has(w.id)||!w.from||!w.to||same(w.from,w.to)||![w.from,w.to].every(r=>typeof r.c==='string'&&typeof r.p==='string'&&p.items.some(i=>i.id===r.c)&&(!byId||endpoint(p,byId,r))))throw Error('Pano kablosunun bağlı olduğu terminal geçersiz.');
       ids.add(w.id);w.points=w.points||[];
       if(!Array.isArray(w.points)||w.points.length>1000||w.points.some(q=>!q||!['plate','door'].includes(q.surface)||!Number.isFinite(q.x)||!Number.isFinite(q.y)||Math.abs(q.x)>10000||Math.abs(q.y)>10000))throw Error('Pano kablosunun güzergâhı geçersiz.');
