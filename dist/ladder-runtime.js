@@ -113,7 +113,9 @@
      Number.isFinite(s.offStart)?'TOF':
      (Number.isFinite(s.pulseStart)||typeof s.prev==='boolean')?'TP':null);
     if(previousKind&&previousKind!==coil.type){
-     delete s.start;delete s.offStart;delete s.pulseStart;delete s.prev;
+     delete s.start;delete s.offStart;delete s.pulseStart;
+     // A held input on TON/TOF -> TP is not a new rising edge.
+     s.prev=active;
      bits[ref]=false;
     }
     // Changing a timer preset is a fresh configuration. Old elapsed time must
