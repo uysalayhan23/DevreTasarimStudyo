@@ -361,6 +361,11 @@
   };
   function render(){
    if(!active)return;
+   // Undo, Redo or Network deletion may remove the focused ID. Avoid an
+   // invisible workspace when no current rung matches the old single view.
+   const networkIds=new Set(active.draft.rungs.map(r=>r.id));
+   if(focusedNetwork&&!networkIds.has(focusedNetwork))focusedNetwork=null;
+   for(const id of closedNetworks)if(!networkIds.has(id))closedNetworks.delete(id);
    const priorFocus=overlay.contains(doc.activeElement)?focusKey(doc.activeElement):'';
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
    const advancedOpen=overlay.querySelector('.dts-ladder-advanced')?.open===true;
