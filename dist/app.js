@@ -625,7 +625,17 @@
   function renderTerminalLeads(){
     if(appearance!=='material')return;
     const layer=svg('g',{class:'terminal-wire-overlay'}),defs=svg('defs');layer.appendChild(defs);
-    project.components.filter(c=>byId[c.typeId]?.instrument==='tx11'||c.typeId==='abb-acs800-r5'||byId[c.typeId]?.arduinoBoard).forEach((c,index)=>{
+    const terminalComponents=project.components.filter(c=>byId[c.typeId]?.instrument==='tx11'||c.typeId==='abb-acs800-r5'||byId[c.typeId]?.arduinoBoard);
+    const terminalWires=new Map();
+    if(terminalComponents.length)for(const w of project.wires){
+      if(w.probeLead)continue;
+      for(const id of new Set([w.from?.c,w.to?.c])){
+        if(!id)continue;
+        if(!terminalWires.has(id))terminalWires.set(id,[]);
+        terminalWires.get(id).push(w);
+      }
+    }
+    terminalComponents.forEach((c,index)=>{
       const d=materialDefinition(c,byId[c.typeId]),scale=Symbols.materialScale(c),corners=[[0,0],[d.w,0],[d.w,d.h],[0,d.h]].map(([x,y])=>Symbols.terminalPosition(c,d,{x,y})),xs=corners.map(p=>p.x),ys=corners.map(p=>p.y),clipId='tx-terminal-clip-'+index,clip=svg('clipPath',{id:clipId,clipPathUnits:'userSpaceOnUse'});
       clip.appendChild(svg('rect',{x:Math.min(...xs)-8,y:Math.min(...ys)-8,width:Math.max(...xs)-Math.min(...xs)+16,height:Math.max(...ys)-Math.min(...ys)+16}));defs.appendChild(clip);
       // Leave the terminal hit areas open while painting the cable over the body.
@@ -633,7 +643,7 @@
       let hitArea=`M${Math.min(...xs)-8} ${Math.min(...ys)-8}H${Math.max(...xs)+8}V${Math.max(...ys)+8}H${Math.min(...xs)-8}Z`;
       for(const pin of d.pins){const q=absolutePort({c:c.id,p:pin.id});hitArea+=` M${q.x-r} ${q.y}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0Z`}
       hitClip.appendChild(svg('path',{d:hitArea,'clip-rule':'evenodd'}));defs.appendChild(hitClip);
-      for(const w of project.wires.filter(w=>!w.probeLead&&[w.from,w.to].some(r=>r.c===c.id))){const points=renderedWirePoints[w.id];if(!points)continue;const path=roundedPath(points),g=svg('g',{'data-wire':w.id,'data-terminal-overlay':c.id,'clip-path':'url(#'+clipId+')',style:wireStyle(w)});
+      for(const w of terminalWires.get(c.id)||[]){const points=renderedWirePoints[w.id];if(!points)continue;const path=roundedPath(points),g=svg('g',{'data-wire':w.id,'data-terminal-overlay':c.id,'clip-path':'url(#'+clipId+')',style:wireStyle(w)});
         g.innerHTML=`<path class="wire-outline" d="${path}" pointer-events="none"/><path class="wire ${selectedWire===w.id?'selected':''} ${w._active?'energized':''} ${flowClass(w)} ${w._lineConflict?'line-conflict':''}" d="${path}" stroke="${w.color}" style="color:${w.color}" pointer-events="none"/><path class="wire-hit" d="${path}" clip-path="url(#${hitId})"/>`;layer.appendChild(g);
       }
     });if(layer.children.length>1)els.scene.appendChild(layer);
