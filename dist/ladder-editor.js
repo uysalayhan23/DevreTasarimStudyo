@@ -29,7 +29,7 @@
  }
  // Removal never substitutes a potentially energized OUT Q/M for any coil.
  function removeOutput(program,index,limits={}){
-  if(!Number.isInteger(index)||index<0||!program?.rungs?.[index]||program.rungs[index].coil.type==='NOP')
+  if(!Number.isInteger(index)||index<0||!program?.rungs?.[index]||!program.rungs[index].coil||program.rungs[index].coil.type==='NOP')
    return {ok:false,error:'Kaldırılacak çıkış bulunamadı.'};
   return FBDView.editCoil(program,index,{type:'NOP'},limits);
  }
