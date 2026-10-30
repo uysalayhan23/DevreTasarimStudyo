@@ -13,7 +13,7 @@
     doc.getElementById('dtsTerminalDraftOverlay')?.hidden===false;
   }
   doc.addEventListener('keydown',function(e){
-   if(!(e.ctrlKey||e.metaKey)||e.altKey||e.shiftKey||e.isComposing||e.keyCode===229||String(e.key).toLowerCase()!=='k'||blocked())return;
+   if(e.defaultPrevented||!(e.ctrlKey||e.metaKey)||e.altKey||e.shiftKey||e.isComposing||e.keyCode===229||String(e.key).toLowerCase()!=='k'||blocked())return;
    const active=doc.activeElement;
    if(active&&active!==input&&
      (['INPUT','TEXTAREA','SELECT'].includes(active.tagName)||active.isContentEditable))return;
