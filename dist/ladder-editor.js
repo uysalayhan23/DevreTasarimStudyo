@@ -56,6 +56,10 @@
   ];
  }
  const clone=x=>JSON.parse(JSON.stringify(x));
+ // Dataset positions are decimal strings. Number('') would target Network 0
+ // when a missing/malformed drop zone should be rejected without any edit.
+ const parseUiIndex=value=>typeof value==='string'&&/^(?:0|[1-9][0-9]*)$/.test(value)&&
+  Number.isSafeInteger(Number(value))?Number(value):NaN;
  // New LAD rungs and OR paths must not energize an output by themselves.
  function addSafeRung(program,limits={}){
   const initial=L?.validate?.(program,limits);
@@ -514,9 +518,9 @@
   function addFromPalette(id,zone){
    if(!active||diagramMode!=='ladder')return false;
    if(editor.running){editor.toast?.('Önce simülasyonu durdurup programı düzenleyin.');return false}
-   const target={r:Number(zone.dataset.r),kind:zone.dataset.dropKind};
-   if(zone.dataset.p!==undefined)target.p=Number(zone.dataset.p);
-   if(zone.dataset.i!==undefined)target.i=Number(zone.dataset.i);
+   const target={r:parseUiIndex(zone.dataset.r),kind:zone.dataset.dropKind};
+   if(zone.dataset.p!==undefined)target.p=parseUiIndex(zone.dataset.p);
+   if(zone.dataset.i!==undefined)target.i=parseUiIndex(zone.dataset.i);
    const result=Toolbox.apply(active.draft,id,target,limits());
    if(!result.ok){editor.toast?.(result.error);return false}
    active.draft=result.program;active.history.push(result.program);
@@ -525,7 +529,7 @@
   }
   function action(button){
    if(!active)return;
-   const type=button.dataset.action,r=Number(button.dataset.r),p=Number(button.dataset.p),c=Number(button.dataset.c);
+   const type=button.dataset.action,r=parseUiIndex(button.dataset.r),p=parseUiIndex(button.dataset.p),c=parseUiIndex(button.dataset.c);
    if(editor.running&&['undo','redo','starter','load-example','add-rung','remove-rung','copy-rung','move-rung-up','move-rung-down','add-path','remove-path','add-contact','remove-contact'].includes(type)){
     editor.toast?.('Önce simülasyonu durdurun.');return;
    }
@@ -722,12 +726,12 @@
     if(diagramMode!=='fbd'||!active)return;
     const nextValue=['presetMs','preset'].includes(fbdCoilField)?
       (e.target.value.trim()===''?NaN:Number(e.target.value)):e.target.value;
-    const result=FBDView.editCoil(active.draft,Number(r),{[fbdCoilField]:nextValue},limits());
+    const result=FBDView.editCoil(active.draft,parseUiIndex(r),{[fbdCoilField]:nextValue},limits());
     if(!result.ok){editor.toast?.(result.error);render();return}
     active.draft=result.program;active.history.push(active.draft);render();return;
    }
    if(!field||!active)return;
-   const changed=editLadderField(active.draft,field,Number(r),Number(p),Number(c),e.target.value,limits());
+   const changed=editLadderField(active.draft,field,parseUiIndex(r),parseUiIndex(p),parseUiIndex(c),e.target.value,limits());
    if(!changed.ok){editor.toast?.(changed.error);render();return}
    active.draft=changed.program;
    active.history.push(active.draft);render();
@@ -765,7 +769,7 @@
   root.DTSLadderEditor=Object.freeze({open,close,save,supported:()=>available().length});
   return true;
  }
- const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft};
+ const api={init,supported,starter,stateFor,monitorRows,signalText,createDraftHistory,createDraftSessions,focusKey,trapModalTab,canStartLadder,importContextMatches,coilSelectOptions,contactChoices,changeCoilType,removeFunctionBlock,removeOutput,removeContact,focusDiagramOperand,addSafeRung,addSafeContact,addSafeParallelPath,editLadderField,editNetworkOrder,removeNetwork,removeParallelPath,focusableControl,ladderShortcut,canCommitDraft,parseUiIndex};
  if(typeof module==='object'&&module.exports)module.exports=api;
  if(root?.document)root.DTSLadderEditorBootstrap=api,init(root.document,root.DTSEditor);
 })(typeof window==='undefined'?globalThis:window);
