@@ -149,16 +149,17 @@
   const valid=Ladder.validate(draft,limits);
   return valid.ok?{ok:true,program:draft}:{ok:false,error:valid.error};
  }
- function blockControls(coil,index,limits={}){
+ function blockControls(coil,index,limits={},rungId=''){
+  const stable=' data-rung-id="'+escape(rungId)+'"';
   const options=items=>items.map(value=>'<option value="'+escape(value)+'"'+(value===coil.ref||value===coil.type?' selected':'')+'>'+escape(value)+'</option>').join('');
-  const typeSelect='<label>Komut <select data-fbd-coil-field="type" data-r="'+index+'" aria-label="FBD çıkış komutu">'+options(blockTypes)+'</select></label>';
+  const typeSelect='<label>Komut <select'+stable+' data-fbd-coil-field="type" data-r="'+index+'" aria-label="FBD çıkış komutu">'+options(blockTypes)+'</select></label>';
   const refSelect=coil.type==='NOP'?'<span class="dts-fbd-empty-output">BOŞ · Çıkış yok</span>':
-   '<label>Adres <select data-fbd-coil-field="ref" data-r="'+index+'" aria-label="FBD çıkış adresi">'+options(refsFor(coil.type,limits))+'</select></label>';
+   '<label>Adres <select'+stable+' data-fbd-coil-field="ref" data-r="'+index+'" aria-label="FBD çıkış adresi">'+options(refsFor(coil.type,limits))+'</select></label>';
   let preset='';
   if(['TON','TOF','TP'].includes(coil.type))
-   preset='<label>Süre (ms) <input data-fbd-coil-field="presetMs" data-r="'+index+'" aria-label="FBD zamanlayıcı süresi ms" type="number" min="1" max="600000" step="1" value="'+escape(coil.presetMs)+'"></label>';
+   preset='<label>Süre (ms) <input'+stable+' data-fbd-coil-field="presetMs" data-r="'+index+'" aria-label="FBD zamanlayıcı süresi ms" type="number" min="1" max="600000" step="1" value="'+escape(coil.presetMs)+'"></label>';
   else if(['CTU','CTD'].includes(coil.type))
-   preset='<label>Hedef <input data-fbd-coil-field="preset" data-r="'+index+'" aria-label="FBD sayaç hedefi" type="number" min="1" max="65535" step="1" value="'+escape(coil.preset)+'"></label>';
+   preset='<label>Hedef <input'+stable+' data-fbd-coil-field="preset" data-r="'+index+'" aria-label="FBD sayaç hedefi" type="number" min="1" max="65535" step="1" value="'+escape(coil.preset)+'"></label>';
   return '<div class="dts-fbd-block-controls" role="group" aria-label="FBD blok düzenleme">'+typeSelect+refSelect+preset+'</div>'+
    (TimerGuide?.markup?.(coil)||'');
  }
@@ -179,19 +180,21 @@
    typeof opts.coilValue==='boolean'&&traceConsistent;
   const states=paths.map((_,i)=>live&&opts.pathStates[i]===true);
   const id=Number.isInteger(opts.index)?opts.index:0;
+  // Reorder/Undo may change numeric positions; identity remains on the rung.
+  const stable=' data-rung-id="'+escape(rung.id)+'"';
   const lines=paths.map((path,pi)=>{
    const contacts=path.map((c,ci)=>'<span class="dts-fbd-contact-group"><span role="button" tabindex="0" class="dts-fbd-contact" data-ladder-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını düzenle')+'">'+escape(c.type==='NC'?'NOT '+c.ref:c.ref)+'</span>'+
-    '<label class="dts-fbd-ref-label">Adres <select class="dts-fbd-contact-ref" data-fbd-contact-ref="'+id+':'+pi+':'+ci+'" aria-label="'+escape('FBD '+(ci+1)+'. kontak adresi')+'">'+contactRefs(opts.limits).map(ref=>'<option value="'+escape(ref)+'"'+(ref===c.ref?' selected':'')+'>'+escape(ref)+'</option>').join('')+'</select></label>'+
-    '<button type="button" class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
-    ('<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact-before" data-fbd-position="'+id+':'+pi+':'+ci+'" '+(path.length>=12?'disabled':'')+' aria-label="'+escape(c.ref+' kontağının önüne yeni kontak ekle')+'">+ Önüne</button>'+
-    '<button type="button" class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
-   return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+(path.length?contacts:'<span class="dts-fbd-empty-path">BOŞ KONTAK · devre açık</span>')+' <span class="dts-fbd-gate">'+(path.length===0?'AÇIK':path.length>1?'AND':'PASS')+'</span>'+ '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-contact" data-fbd-position="'+id+':'+pi+':'+(path.length?path.length-1:0)+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
-    '<button type="button" class="dts-fbd-structure" data-fbd-structure="add-path" data-fbd-position="'+id+':'+pi+'" '+(paths.length>=8?'disabled':'')+'>+ Paralel</button>'+
-    (paths.length>1?'<button type="button" class="dts-fbd-structure dts-fbd-remove" data-fbd-structure="remove-path" data-fbd-position="'+id+':'+pi+'">Yolu sil</button>':'')+'</div>';
+    '<label class="dts-fbd-ref-label">Adres <select'+stable+' class="dts-fbd-contact-ref" data-fbd-contact-ref="'+id+':'+pi+':'+ci+'" aria-label="'+escape('FBD '+(ci+1)+'. kontak adresi')+'">'+contactRefs(opts.limits).map(ref=>'<option value="'+escape(ref)+'"'+(ref===c.ref?' selected':'')+'>'+escape(ref)+'</option>').join('')+'</select></label>'+
+    '<button type="button"'+stable+' class="dts-fbd-polarity" data-fbd-toggle-contact="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' kontağını '+(c.type==='NC'?'normalde açık':'normalde kapalı')+' yap')+'" title="Taslakta NO/NC değiştir">'+(c.type==='NC'?'NC → NO':'NO → NC')+'</button>'+
+    ('<button type="button"'+stable+' class="dts-fbd-structure" data-fbd-structure="add-contact-before" data-fbd-position="'+id+':'+pi+':'+ci+'" '+(path.length>=12?'disabled':'')+' aria-label="'+escape(c.ref+' kontağının önüne yeni kontak ekle')+'">+ Önüne</button>'+
+    '<button type="button"'+stable+' class="dts-fbd-structure" data-fbd-structure="remove-contact" data-fbd-position="'+id+':'+pi+':'+ci+'" aria-label="'+escape(c.ref+' seri kontağını sil')+'">− Kontak</button>')+'</span>').join(' <span class="dts-fbd-link">━</span> ');
+   return '<div class="dts-fbd-line'+(states[pi]?' dts-fbd-on':'')+'"><small>Yol '+(pi+1)+'</small>'+(path.length?contacts:'<span class="dts-fbd-empty-path">BOŞ KONTAK · devre açık</span>')+' <span class="dts-fbd-gate">'+(path.length===0?'AÇIK':path.length>1?'AND':'PASS')+'</span>'+ '<button type="button"'+stable+' class="dts-fbd-structure" data-fbd-structure="add-contact" data-fbd-position="'+id+':'+pi+':'+(path.length?path.length-1:0)+'" '+(path.length>=12?'disabled':'')+'>+ Seri</button>'+
+    '<button type="button"'+stable+' class="dts-fbd-structure" data-fbd-structure="add-path" data-fbd-position="'+id+':'+pi+'" '+(paths.length>=8?'disabled':'')+'>+ Paralel</button>'+
+    (paths.length>1?'<button type="button"'+stable+' class="dts-fbd-structure dts-fbd-remove" data-fbd-structure="remove-path" data-fbd-position="'+id+':'+pi+'">Yolu sil</button>':'')+'</div>';
   }).join('');
   const coil=rung?.coil||{},out=live&&opts.coilValue===true;
   return '<section class="dts-fbd-view" role="group" aria-label="'+escape('FBD Network '+(id+1))+'"><header>FBD Network '+(id+1)+' · '+escape(rung?.comment||rung?.id||'')+'</header>'+lines+
-   '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type==='NOP'?'BOŞ · çıkış yok':(coil.type||'OUT')+' · '+(coil.ref||'?'))+'</span>'+blockControls(coil,id,opts.limits)+(coil.type!=='NOP'?'<button type="button" data-action="remove-output" data-r="'+id+'" title="Bobini ya da bloğu güvenle kaldır">Çıkışı kaldır</button>':'')+'</div></section>';
+   '<div class="dts-fbd-output"><span class="dts-fbd-gate">'+(paths.length>1?'OR':'DOĞRUDAN')+'</span><span class="dts-fbd-link">━</span><span class="dts-fbd-coil'+(out?' dts-fbd-on':'')+'" role="button" tabindex="0" data-ladder-coil="'+id+'" aria-label="'+escape((coil.ref||'?')+' bloğunu düzenle')+'">'+escape(coil.type==='NOP'?'BOŞ · çıkış yok':(coil.type||'OUT')+' · '+(coil.ref||'?'))+'</span>'+blockControls(coil,id,opts.limits,rung.id)+(coil.type!=='NOP'?'<button type="button"'+stable+' data-action="remove-output" data-r="'+id+'" title="Bobini ya da bloğu güvenle kaldır">Çıkışı kaldır</button>':'')+'</div></section>';
  }
  const api=Object.freeze({render,toggleContact,editCoil,editStructure,refsFor,contactRefs,editContactRef});
  if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSFBDView=api;
