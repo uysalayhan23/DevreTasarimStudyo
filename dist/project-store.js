@@ -168,7 +168,7 @@
         if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
           panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
         panelIds.add(String(id));
-        if(typeof id==='string')panelTerminalOwners.add(id);
+        panelTerminalOwners.add(String(id));
         // Optional legacy geometry may be absent, but an explicitly corrupt
         // coordinate or footprint must never be treated as real panel space.
         for(const key of ['x','y','w','h','depth']){

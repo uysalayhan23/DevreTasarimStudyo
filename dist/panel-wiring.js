@@ -43,6 +43,8 @@
   function normalize(p,byId){
     if(p.wires===undefined)p.wires=[];
     if(!Array.isArray(p.wires)||p.wires.length>20000)throw Error('Pano kablo listesi geçersiz veya çok büyük.');
+    // Normalize legacy numeric part IDs only in the editable panel graph.
+    for(const item of p.items)if(item&&typeof item.id==='number'&&Number.isFinite(item.id))item.id=String(item.id);
     const ids=new Set([...p.items,...p.rails,...p.ducts].map(i=>i.id));
     for(const w of p.wires){
       // Legacy numeric cable IDs remain unchanged in imported files, but the
