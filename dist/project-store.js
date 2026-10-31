@@ -50,6 +50,12 @@
       if(w.id!==undefined&&typeof w.id!=='string')w.id=String(w.id);
       for(const end of [w.from,w.to])if(end&&typeof end==='object'){if(end.c!==undefined&&typeof end.c!=='string')end.c=String(end.c);if(end.j!==undefined&&typeof end.j!=='string')end.j=String(end.j)}
     }
+    // Legacy panel endpoints can refer to numeric part IDs. Normalize only
+    // finite numeric component references before validating the saved graph.
+    if(q.panel&&Array.isArray(q.panel.wires))for(const wire of q.panel.wires){
+      for(const end of [wire?.from,wire?.to])if(end&&typeof end==='object'&&!Array.isArray(end)&&
+        typeof end.c==='number'&&Number.isFinite(end.c))end.c=String(end.c);
+    }
     return q;
   }
   function normalizeWorkspace(q){
