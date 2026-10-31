@@ -325,6 +325,12 @@
         try{saved=await handle.getFile()}catch{cacheWarning=true}
         // Without fresh metadata, do not cache a stale lastModified guard.
         if(saved)try{await remember(copy,handle,saved.lastModified)}catch{cacheWarning=true}
+        else{
+          // Disk write succeeded, but the old lastModified guard is now stale.
+          // Forget it so the next save requires a fresh picker, not a false conflict.
+          handles.delete(copy.projectId);
+          try{await db('delete','handle:'+copy.projectId)}catch{}
+        }
         try{await put(copy)}catch{cacheWarning=true}
         return {saved:true,name:handle.name,project:copy,cacheWarning};
       }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
