@@ -253,7 +253,7 @@
       }else if(readOnlyFiles){for(const file of readOnlyFiles)try{entries.push({key:file.webkitRelativePath||file.name,name:file.name,project:await readProjectFile(file),handle:null,lastModified:file.lastModified})}catch(e){warnings.push(file.name+': '+e.message)}}
       entries.sort((a,b)=>(a.project.name||a.name).localeCompare(b.project.name||b.name,'tr',{numeric:true}));if(directory)writeFolderIndex(entries);return {entries,warnings,permissionNeeded:false};
     }
-    async function remember(project,handle,lastModified){if(project.projectId==null||project.projectId==='')project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);await db('put','handle:'+project.projectId,data)}}
+    async function remember(project,handle,lastModified){if(project.projectId==null||project.projectId==='')project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);try{await db('put','handle:'+project.projectId,data)}catch{}}}
     async function readEntry(entry,request=false){
       if(!entry)throw Error('Proje kaydı bulunamadı.');
       let handle=entry.handle||null;
