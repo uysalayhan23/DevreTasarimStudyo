@@ -111,6 +111,9 @@
   }
   function normalizeLegacy(p){return migrate(p)}
   function validate(p){
+    // Browser storage keys stringify IDs; object/array/boolean IDs can alias unrelated drafts.
+    if(p?.projectId!=null&&!(typeof p.projectId==='string'||(typeof p.projectId==='number'&&Number.isFinite(p.projectId))))
+      throw Error('Proje kimliği metin veya sonlu sayı olmalıdır.');
     if(!p||typeof p!=='object'||!Array.isArray(p.components)||!Array.isArray(p.wires)||!p.components.every(c=>c&&typeof c.id==='string'&&typeof c.typeId==='string')||!p.wires.every(w=>w&&w.from&&typeof w.from==='object'&&!Array.isArray(w.from)&&w.to&&typeof w.to==='object'&&!Array.isArray(w.to)))throw Error('Bu dosya geçerli bir Devre Tasarım Stüdyosu projesi değil.');
     const ids=new Set();for(const c of p.components){if(!c.id.trim()||ids.has(c.id)||['x','y','rotation'].some(k=>c[k]!==undefined&&(typeof c[k]!=='number'||!Number.isFinite(c[k])||Math.abs(c[k])>100000)))throw Error('Projedeki eleman kimliği veya konumu geçersiz.');ids.add(c.id)}
     if(p.junctions!==undefined&&(!Array.isArray(p.junctions)||p.junctions.some(j=>!j||typeof j.id!=='string'||!j.id.trim()||!Number.isFinite(j.x)||!Number.isFinite(j.y)||Math.abs(j.x)>100000||Math.abs(j.y)>100000)))throw Error('Projedeki kablo birleşim noktaları geçersiz.');
