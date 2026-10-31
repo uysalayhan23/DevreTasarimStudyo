@@ -229,9 +229,9 @@
     const openDB=()=>{if(!indexedDB)return Promise.resolve(null);if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{const r=indexedDB.open('dts-projects',1);r.onupgradeneeded=()=>r.result.createObjectStore('objects');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)}).catch(()=>null);return dbPromise};
     async function db(action,key,value){const database=await openDB();if(!database)return null;return new Promise((resolve,reject)=>{const tx=database.transaction('objects',action==='get'?'readonly':'readwrite'),store=tx.objectStore('objects'),r=action==='get'?store.get(key):action==='delete'?store.delete(key):store.put(value,key);let result;r.onsuccess=()=>{result=r.result};tx.oncomplete=()=>resolve(action==='get'?result:true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Kayıt tamamlanamadı.'))})}
     function metadata(p){return {id:p.projectId,name:p.name||'Adsız proje',workspaceMode:p.workspaceMode||'control',updatedAt:p.updatedAt||new Date().toISOString(),count:p.workspaceMode==='panel'?(p.panel?.items?.length||0):p.components.length}}
-    async function put(project){
+    async function put(project,{preserveUpdatedAt=false}={}){
       if(isProtected(project))return clean(project);
-      validate(project);const copy=clean(project);if(copy.projectId==null||copy.projectId==='')copy.projectId=uid();copy.updatedAt=new Date().toISOString();if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
+      validate(project);const copy=clean(project);if(copy.projectId==null||copy.projectId==='')copy.projectId=uid();if(!preserveUpdatedAt||!copy.updatedAt)copy.updatedAt=new Date().toISOString();if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let persisted=false;try{persisted=await db('put','project:'+copy.projectId,copy)}catch{}if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
       // Publish generated ID/timestamp only after a draft has been persisted.
       project.projectId=copy.projectId;project.updatedAt=copy.updatedAt;
@@ -333,8 +333,8 @@
           handles.delete(copy.projectId);
           try{await db('delete','handle:'+copy.projectId)}catch{}
         }
-        try{await put(copy)}catch{cacheWarning=true}
-        if(!saveAs)project.projectId=copy.projectId;
+        try{await put(copy,{preserveUpdatedAt:true})}catch{cacheWarning=true}
+        if(!saveAs){project.projectId=copy.projectId;project.updatedAt=copy.updatedAt;}
         return {saved:true,name:handle.name,project:copy,cacheWarning};
       }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
