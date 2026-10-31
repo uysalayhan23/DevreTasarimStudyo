@@ -43,7 +43,9 @@
   function toggleFull(){
    // Entering fullscreen is blocked by dialogs, but exiting must ALWAYS remain possible.
    if(full)return setFull(false);
-   if(body.classList.contains('dashboard-open')||win.DTSStudio?.safety?.visible||doc.getElementById('modal')?.hidden===false)return false;
+   if(body.classList.contains('dashboard-open')||win.DTSStudio?.safety?.visible||
+    ['modal','arduinoIdeModal','hc05GuideModal','safetyModal','dtsLadderOverlay','dtsTerminalDraftOverlay']
+     .some(id=>doc.getElementById(id)?.hidden===false))return false;
    setFull(true);
    // The CSS full-workspace mode remains available if the browser refuses native fullscreen on file://.
    if(typeof doc.documentElement?.requestFullscreen==='function'){
