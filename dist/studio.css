@@ -1045,7 +1045,7 @@ body.dts-full-mode .dts-full-toggle{background:#165f70;color:white;border-color:
 .dts-toolbar-organized #zoomLabel{flex:0 0 auto}
 .dts-toolbar-organized button:focus-visible{outline:2px solid #8bd7ff;outline-offset:1px}
 @media(max-width:1050px){.topbar .toolbar.dts-toolbar-organized{min-width:65px}}
-@media(max-width:720px){.topbar .toolbar.dts-toolbar-organized{gap:0}.topbar .toolbar.dts-toolbar-organized .dts-toolbar-cluster{padding:0 6px}.topbar .toolbar.dts-toolbar-organized .tool{display:none}}
+@media(max-width:720px){.topbar .toolbar.dts-toolbar-organized{gap:0}.topbar .toolbar.dts-toolbar-organized .dts-toolbar-cluster{padding:0 6px}.topbar .toolbar.dts-toolbar-organized .tool{display:inline-flex;align-items:center}}
 @media(prefers-reduced-motion:reduce){.topbar .toolbar.dts-toolbar-organized{scroll-behavior:auto}}
 
 /* Selected catalog component summary: real names, pins, model data only. */
