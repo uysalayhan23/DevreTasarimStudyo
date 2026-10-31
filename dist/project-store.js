@@ -288,7 +288,7 @@
           handle=await directory.getFileHandle(name,{create:true});
         }
         if(!handle&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}]});
-        if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy);if(!saveAs)project.projectId=copy.projectId}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
+        if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy,{preserveUpdatedAt:true});if(!saveAs){project.projectId=copy.projectId;project.updatedAt=copy.updatedAt}}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
