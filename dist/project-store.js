@@ -217,13 +217,13 @@
     let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false;const handles=new Map();
     const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');return Array.isArray(rows)?rows.filter(r=>r&&typeof r==='object'&&!Array.isArray(r)&&(typeof r.id==='string'||typeof r.id==='number')&&String(r.id).length>0):[]}catch{return []}};
     const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries.filter(e=>e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.name==='string'&&e.project&&typeof e.project==='object'):[]}catch{return []}};
-    const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId||'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
+    const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId??'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
     const openDB=()=>{if(!indexedDB)return Promise.resolve(null);if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{const r=indexedDB.open('dts-projects',1);r.onupgradeneeded=()=>r.result.createObjectStore('objects');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)}).catch(()=>null);return dbPromise};
     async function db(action,key,value){const database=await openDB();if(!database)return null;return new Promise((resolve,reject)=>{const tx=database.transaction('objects',action==='get'?'readonly':'readwrite'),store=tx.objectStore('objects'),r=action==='get'?store.get(key):action==='delete'?store.delete(key):store.put(value,key);let result;r.onsuccess=()=>{result=r.result};tx.oncomplete=()=>resolve(action==='get'?result:true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Kayıt tamamlanamadı.'))})}
     function metadata(p){return {id:p.projectId,name:p.name||'Adsız proje',workspaceMode:p.workspaceMode||'control',updatedAt:p.updatedAt||new Date().toISOString(),count:p.workspaceMode==='panel'?(p.panel?.items?.length||0):p.components.length}}
     async function put(project){
       if(isProtected(project))return clean(project);
-      validate(project);if(!project.projectId)project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
+      validate(project);if(project.projectId==null||project.projectId==='')project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let persisted=false;try{persisted=await db('put','project:'+copy.projectId,copy)}catch{}if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
       const rows=readIndex().filter(r=>String(r.id)!==String(copy.projectId));rows.unshift(metadata(copy));storage.setItem('dts-project-index',JSON.stringify(rows));return copy;
     }
@@ -245,7 +245,7 @@
       }else if(readOnlyFiles){for(const file of readOnlyFiles)try{entries.push({key:file.webkitRelativePath||file.name,name:file.name,project:await readProjectFile(file),handle:null,lastModified:file.lastModified})}catch(e){warnings.push(file.name+': '+e.message)}}
       entries.sort((a,b)=>(a.project.name||a.name).localeCompare(b.project.name||b.name,'tr',{numeric:true}));if(directory)writeFolderIndex(entries);return {entries,warnings,permissionNeeded:false};
     }
-    async function remember(project,handle,lastModified){if(!project.projectId)project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);await db('put','handle:'+project.projectId,data)}}
+    async function remember(project,handle,lastModified){if(project.projectId==null||project.projectId==='')project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);await db('put','handle:'+project.projectId,data)}}
     async function readEntry(entry,request=false){
       if(!entry)throw Error('Proje kaydı bulunamadı.');
       let handle=entry.handle||null;
@@ -255,7 +255,7 @@
       }
       if(handle&&!await permission(handle,'read',request))throw Error('Proje dosyasını açmak için izin gerekli.');
       const file=handle?await handle.getFile():null,p=file?await readProjectFile(file):validate(migrate(clean(entry.project)));
-      if(!p.projectId)p.projectId=uid();await remember(p,handle,file?.lastModified||entry.lastModified);return p
+      if(p.projectId==null||p.projectId==='')p.projectId=uid();await remember(p,handle,file?.lastModified||entry.lastModified);return p
     }
     async function openFile(){
       if(!env.showOpenFilePicker)return {fallback:true};
@@ -264,7 +264,7 @@
     function download(project){const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
-      if(!project.projectId)project.projectId=uid();const copy=saveAs?editableCopy(project):clean(project);copy.updatedAt=new Date().toISOString();
+      if(project.projectId==null||project.projectId==='')project.projectId=uid();const copy=saveAs?editableCopy(project):clean(project);copy.updatedAt=new Date().toISOString();
       if(exceedsProjectBytes(JSON.stringify(copy,null,2)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let existing=handles.get(project.projectId),handle;
       try{
