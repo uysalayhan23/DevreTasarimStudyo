@@ -274,7 +274,7 @@
     function download(project){const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
-      if(!saveAs&&(project.projectId==null||project.projectId===''))project.projectId=uid();const copy=saveAs?editableCopy(project):clean(project);copy.updatedAt=new Date().toISOString();
+      const copy=saveAs?editableCopy(project):clean(project);if(!saveAs&&(copy.projectId==null||copy.projectId===''))copy.projectId=uid();copy.updatedAt=new Date().toISOString();
       if(exceedsProjectBytes(JSON.stringify(copy,null,2)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let existing=handles.get(project.projectId),handle;
       try{
@@ -288,7 +288,7 @@
           handle=await directory.getFileHandle(name,{create:true});
         }
         if(!handle&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}]});
-        if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy)}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
+        if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy);if(!saveAs)project.projectId=copy.projectId}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
@@ -334,6 +334,7 @@
           try{await db('delete','handle:'+copy.projectId)}catch{}
         }
         try{await put(copy)}catch{cacheWarning=true}
+        if(!saveAs)project.projectId=copy.projectId;
         return {saved:true,name:handle.name,project:copy,cacheWarning};
       }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
