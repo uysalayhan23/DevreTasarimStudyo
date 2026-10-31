@@ -173,7 +173,7 @@
       const panelIds=new Set(),panelTerminalOwners=new Set();
       for(const item of p.panel.items||[]){
         const id=item?.id;
-        if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
+        if((typeof id!=='string'&&(typeof id!=='number'||!Number.isFinite(id)))||!String(id).trim()||
           panelIds.has(String(id)))throw Error('Pano malzeme kimliği eksik veya tekrarlı.');
         panelIds.add(String(id));
         panelTerminalOwners.add(String(id));
@@ -206,7 +206,7 @@
           throw Error('Pano kablo güzergâhı geçersiz.');
         if(wire.id==null)continue; // Legacy unnamed panel wires remain readable.
         const id=wire.id;
-        if((typeof id!=='string'&&typeof id!=='number')||!String(id).trim()||
+        if((typeof id!=='string'&&(typeof id!=='number'||!Number.isFinite(id)))||!String(id).trim()||
           panelWireIds.has(String(id))||panelIds.has(String(id)))throw Error('Pano kablo kimliği eksik veya tekrarlı.');
         panelWireIds.add(String(id));
       }
