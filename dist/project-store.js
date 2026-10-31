@@ -276,7 +276,7 @@
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
       const copy=saveAs?editableCopy(project):clean(project);if(!saveAs&&(copy.projectId==null||copy.projectId===''))copy.projectId=uid();copy.updatedAt=new Date().toISOString();
       if(exceedsProjectBytes(JSON.stringify(copy,null,2)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
-      let existing=handles.get(project.projectId),handle;
+      let existing=handles.get(project.projectId),handle,createdFolderFile=null;
       try{
         // Save As opens its picker before any IndexedDB work loses the user gesture.
         if(saveAs&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}],...(directory?{startIn:directory}:{})});
@@ -286,12 +286,14 @@
           let name=filename(copy.name),n=2;
           while(true){try{await directory.getFileHandle(name);name=filename(copy.name+' ('+(n++)+')')}catch(e){if(e.name!=='NotFoundError')throw e;break}}
           handle=await directory.getFileHandle(name,{create:true});
+          createdFolderFile={directory,name,handle,initialLastModified:null};
         }
         if(!handle&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}]});
         if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy,{preserveUpdatedAt:true});if(!saveAs){project.projectId=copy.projectId;project.updatedAt=copy.updatedAt}}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
+        if(createdFolderFile&&target.size===0&&Number.isFinite(target.lastModified))createdFolderFile.initialLastModified=target.lastModified;
         // An existing invalid or oversized target is user data, never a blank new file.
         // Do not silently overwrite it after a failed parse or allocate an oversized read.
         if(target.size!==0){
@@ -336,7 +338,24 @@
         try{await put(copy,{preserveUpdatedAt:true})}catch{cacheWarning=true}
         if(!saveAs){project.projectId=copy.projectId;project.updatedAt=copy.updatedAt;}
         return {saved:true,name:handle.name,project:copy,cacheWarning};
-      }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
+      }catch(e){
+        // A failed first folder save may have created an empty .odsdevre file.
+        // Roll back only our freshly created, still-empty, unchanged entry.
+        // Never delete an existing file or rely on filename equality alone.
+        if(createdFolderFile&&createdFolderFile.initialLastModified!==null){
+          try{
+            const {directory:dir,name,handle:created,initialLastModified:stamp}=createdFolderFile;
+            if(typeof created.isSameEntry==='function'&&typeof dir.removeEntry==='function'){
+              const current=await dir.getFileHandle(name);
+              if(await created.isSameEntry(current)){
+                const file=await current.getFile();
+                if(file.size===0&&file.lastModified===stamp)await dir.removeEntry(name);
+              }
+            }
+          }catch{} // A cleanup failure must not hide the original write error.
+        }
+        if(e.name==='AbortError')return {cancelled:true};throw e
+      }
     }
     return {put,get,list:readIndex,removeDraft,restoreFolder,chooseFolder,useFolderFiles,scan,readEntry,openFile,remember,save,download,get folderName(){return directory?.name||(readOnlyFiles?.[0]?.webkitRelativePath||'').split('/')[0]||''},get permissionNeeded(){return permissionNeeded}};
   }
