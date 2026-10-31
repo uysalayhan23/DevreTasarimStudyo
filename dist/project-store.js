@@ -231,8 +231,10 @@
     function metadata(p){return {id:p.projectId,name:p.name||'Adsız proje',workspaceMode:p.workspaceMode||'control',updatedAt:p.updatedAt||new Date().toISOString(),count:p.workspaceMode==='panel'?(p.panel?.items?.length||0):p.components.length}}
     async function put(project){
       if(isProtected(project))return clean(project);
-      validate(project);if(project.projectId==null||project.projectId==='')project.projectId=uid();project.updatedAt=new Date().toISOString();const copy=clean(project);if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
+      validate(project);const copy=clean(project);if(copy.projectId==null||copy.projectId==='')copy.projectId=uid();copy.updatedAt=new Date().toISOString();if(exceedsProjectBytes(JSON.stringify(copy)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
       let persisted=false;try{persisted=await db('put','project:'+copy.projectId,copy)}catch{}if(!persisted)storage.setItem('dts-project:'+copy.projectId,JSON.stringify(copy));
+      // Publish generated ID/timestamp only after a draft has been persisted.
+      project.projectId=copy.projectId;project.updatedAt=copy.updatedAt;
       const rows=readIndex().filter(r=>String(r.id)!==String(copy.projectId));rows.unshift(metadata(copy));storage.setItem('dts-project-index',JSON.stringify(rows));return copy;
     }
     async function get(id){const sameId=p=>{if(p.projectId!==undefined&&p.projectId!==null&&String(p.projectId)!==String(id))throw Error('Taslak proje kimliği uyuşmuyor.');return p};let value,dbError=null;try{value=await db('get','project:'+id)}catch(e){dbError=e}let fromDB=null;if(value)try{fromDB=sameId(validate(migrate(value)))}catch(e){dbError=e}let raw=null,localError=null;try{raw=storage.getItem('dts-project:'+id)}catch(e){localError=e}let fromLocal=null;if(raw)try{fromLocal=sameId(parse(raw))}catch(e){localError=e}if(fromDB&&fromLocal){const dbTime=Date.parse(fromDB.updatedAt||'')||0,localTime=Date.parse(fromLocal.updatedAt||'')||0;return localTime>dbTime?fromLocal:fromDB}if(fromDB)return fromDB;if(fromLocal)return fromLocal;if(localError)throw localError;const legacy=storage.getItem('ods-project');if(legacy){try{const p=parse(legacy);if(p.projectId!=null&&String(p.projectId)===String(id))return p}catch{}}if(dbError)throw dbError;return null}
