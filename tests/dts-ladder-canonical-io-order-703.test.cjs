@@ -18,9 +18,9 @@ const net={voltage(c,a,b){
 const plc=()=>({plcProgram:'dts-ladder-v1',ladderProgram:Ladder.blank()});
 test('canonical selectable CPU 1211C retains its exact six DI and four DO order',()=>{
  assert.ok(def);assert.equal(Ladder.supportedPLC(def),true);
- assert.deepEqual(def.pins.filter(p=>p.signalType==='DI').map(p=>p.id),
+ assert.deepEqual(Array.from(def.pins.filter(p=>p.signalType==='DI'),p=>p.id),
   ['X10:7','X10:8','X10:9','X10:10','X10:11','X10:12']);
- assert.deepEqual(def.pins.filter(p=>p.signalType==='DO').map(p=>p.id),
+ assert.deepEqual(Array.from(def.pins.filter(p=>p.signalType==='DO'),p=>p.id),
   ['X12:3','X12:4','X12:5','X12:6']);
 });
 test('native evaluator maps real I1 to real Q1 only',()=>{

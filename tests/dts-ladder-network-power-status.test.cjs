@@ -1,8 +1,9 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const E=require('../dist/ladder-editor.js');
+const L=require('../dist/ladder-runtime.js');
 const p={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
-const t=[{id:'R1',active:true,value:true,pathStates:[true]}];
+const t=L.scan(p,{I1:true},{},10,{inputCount:6,outputCount:4}).traces;
 const row=(powered,running=true,saved=p)=>E.monitorRows(p,saved,t,running,'dts-ladder-v1',powered)[0];
 test('powerless PLC reports supply absence without displaying stale signals',()=>{
  const x=row(false);assert.equal(x.status,'PLC beslemesi yok');

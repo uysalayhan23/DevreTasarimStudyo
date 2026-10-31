@@ -1,8 +1,9 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const E=require('../dist/ladder-editor.js');
+const L=require('../dist/ladder-runtime.js');
 const p={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
-const traces=[{id:'R1',active:true,value:true,pathStates:[true]}];
+const traces=L.scan(p,{I1:true},{},10,{inputCount:6,outputCount:4}).traces;
 test('powered PLC displays actual live paths',()=>{
  const row=E.monitorRows(p,p,traces,true,'dts-ladder-v1',true)[0];
  assert.equal(row.active,true);assert.deepEqual(row.pathStates,[true]);assert.equal(row.value,true);

@@ -11,9 +11,13 @@
   // Never advertise that fault state as live or show misleading 0/1 telemetry.
   const error=validationError||(typeof c?._dtsLadderError==='string'&&c._dtsLadderError.trim()?c._dtsLadderError:null);
   const mapped=!!state&&['DI','DO'].every(type=>pins(d,type).every(p=>Object.prototype.hasOwnProperty.call(state[type==='DI'?'inputs':'outputs']||{},p.id)&&typeof state[type==='DI'?'inputs':'outputs'][p.id]==='boolean'));
-  // For real saved Ladder programs, require a complete scan trace before exposing I/O.
+  // Reject a malformed saved program even if an older trace matches its IDs.
+  // Use the actual PLC hardware input/output limits, not the generic 16/16 defaults.
+  const programValid=!c?.ladderProgram||Ladder?.validate?.(c.ladderProgram,{
+   inputCount:pins(d,'DI').length,outputCount:pins(d,'DO').length
+  })?.ok===true;
   // Legacy read-only telemetry without a Ladder program keeps its existing contract.
-  const traceReady=!c?.ladderProgram||(Array.isArray(c?.ladderProgram?.rungs)&&
+  const traceReady=programValid&&(!c?.ladderProgram||(Array.isArray(c?.ladderProgram?.rungs)&&
    Array.isArray(c?._dtsLadderTraces)&&c._dtsLadderTraces.length===c.ladderProgram.rungs.length&&
    c._dtsLadderTraces.every((t,i)=>{
     const rung=c.ladderProgram.rungs[i];
@@ -24,7 +28,7 @@
      typeof t.value==='boolean'&&
      (rung.coil?.type!=='OUT'||t.value===t.active)&&
      (rung.coil?.type!=='NOP'||t.value===false);
-   }));
+   })));
   const live=!!running&&!!savedMatches&&!error&&mapped&&traceReady&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));
   return {live,powered:live?!!state.powered:null,

@@ -29,10 +29,13 @@ test('32 network maximum rejects copy and preserves source',()=>{
  assert.equal(Editor.editNetworkOrder(source,'copy',0,limits).ok,false);
  assert.equal(source.rungs.length,32);
 });
-test('copied timer network with duplicate timer ownership is rejected',()=>{
+test('copied timer network keeps original writer and makes the copy NOP',()=>{
  const source=original();
  source.rungs[0].coil={type:'TON',ref:'T1',presetMs:100};
- assert.equal(Editor.editNetworkOrder(source,'copy',0,limits).ok,false);
+ const copy=Editor.editNetworkOrder(source,'copy',0,limits);
+ assert.equal(copy.ok,true);assert.deepEqual(copy.program.rungs[1].coil,{type:'NOP',ref:''});
+ assert.equal(Ladder.validate(copy.program,limits).ok,true);
+ assert.equal(source.rungs.length,2);
 });
 test('invalid original program cannot be reordered',()=>{
  const source=original();source.rungs[1].id='R1';

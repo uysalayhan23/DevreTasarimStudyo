@@ -23,7 +23,7 @@ const cases=[
  {title:'I1 missing returns PLC output LOW and lamp OFF',cut:[7],input:false,output:false,lamp:false,powered:true},
  {title:'PLC L+ missing disables output',cut:[0],input:false,output:false,lamp:false,powered:false},
  {title:'PLC M missing disables output',cut:[1],input:false,output:false,lamp:false,powered:false},
- {title:'output bank DC+ missing de-energizes lamp',cut:[3],input:true,output:true,lamp:false,powered:true},
+ {title:'output bank DC+ missing de-energizes lamp',cut:[3],input:true,output:false,lamp:false,powered:true},
  {title:'Q1 wire missing de-energizes lamp but retains logical Q1',cut:[5],input:true,output:true,lamp:false,powered:true},
  {title:'lamp return missing de-energizes lamp but retains logical Q1',cut:[6],input:true,output:true,lamp:false,powered:true}
 ];

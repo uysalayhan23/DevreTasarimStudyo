@@ -2,12 +2,17 @@
  'use strict';
  // Original DTS SVG ladder rendering. Diagram reflects the same V1 rung paths as native logic.
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const Ladder=typeof module==='object'&&module.exports?require('./ladder-runtime.js'):root?.DTSLadderRuntime;
  const line=(x1,y1,x2,y2,cls='')=>'<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="'+cls+'"/>';
  const text=(x,y,value,cls='')=>'<text x="'+x+'" y="'+y+'" class="'+cls+'" text-anchor="middle">'+escape(value)+'</text>';
  function pathState(path,values){
   return Array.isArray(path)&&path.length>0&&path.every(c=>c.type==='NC'?!Boolean(values?.[c.ref]):Boolean(values?.[c.ref]));
  }
  function render(rung,options={}){
+  // The LAD view must reject the same malformed/stale rung as FBD.
+  // Never render energized SVG from unvalidated imported network data.
+  const valid=Ladder?.validate?.({version:1,rungs:[rung]},options.limits||{});
+  if(valid?.ok!==true)return '<div class="dts-ladder-svg-invalid" role="status">LAD Network · geçersiz taslak: '+escape(valid?.error||'Program doğrulanamadı.')+'</div>';
   const paths=Array.isArray(rung?.paths)?rung.paths:[],maxContacts=Math.max(1,...paths.map(p=>Array.isArray(p)?p.length:0));
   const startX=172,step=94,railLeft=32,branchX=94,joinX=Math.max(686,startX+(maxContacts-1)*step+75);
   const coilX=joinX+124,rightX=coilX+119,width=rightX+35;

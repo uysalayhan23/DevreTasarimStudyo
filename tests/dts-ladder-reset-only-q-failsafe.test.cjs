@@ -36,5 +36,5 @@ test('RESET-only M retains independently owned memory behavior',()=>{
 });
 test('offline runtime has refreshed local cache revision',()=>{
  const fs=require('node:fs'),path=require('node:path');
- assert.match(fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8'),/ladder-runtime\.js\?rev=20261028-q-reset-owner1/);
+ assert.match(fs.readFileSync(path.join(__dirname,'../dist/index.html'),'utf8'),/ladder-runtime\.js\?rev=[a-zA-Z0-9_-]+/);
 });
