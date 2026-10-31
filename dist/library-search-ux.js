@@ -9,6 +9,9 @@
    return doc.body?.classList?.contains('dashboard-open')||
     env.DTSStudio?.isHome||env.DTSStudio?.safety?.visible||
     doc.getElementById('modal')?.hidden===false||
+    doc.getElementById('arduinoIdeModal')?.hidden===false||
+    doc.getElementById('hc05GuideModal')?.hidden===false||
+    doc.getElementById('safetyModal')?.hidden===false||
     doc.getElementById('dtsLadderOverlay')?.hidden===false||
     doc.getElementById('dtsTerminalDraftOverlay')?.hidden===false;
   }
