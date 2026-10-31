@@ -1619,6 +1619,7 @@ const c=project.components.find(c=>c.id===selected);if(!c)return;if(e.target.dat
     load(value){
       const migrated=window.DTSProjects.migrate?.(value)||value,p=window.DTSProjects.clean(window.DTSProjects.validate(migrated));
       if(p.components.some(c=>!byId[c.typeId])||(p.panel?.items||[]).some(c=>!byId[c.typeId]))throw Error('Projedeki bazı malzemeler bu sürümde tanınmıyor. Dosya değiştirilmedi.');
+      window.DTSLadderEditor?.close?.();
       gesture?.cancel();labelCancel?.();resetDraft();running=false;setStatus('Hazır');cancelPressedControls();clearTimeout(saveTimer);
       project=migrateProject(p);history=[];future=[];selectedWire=null;hideWireMenu();setSelection([]);category='electrical';group=brand=series='all';els.search.value='';
       modeUI();populateWireMenu();renderLibrary();render(false,true);if(project.workspaceMode==='panel')window.DTSPanelEditor?.fit();else materialLayoutWarning();
