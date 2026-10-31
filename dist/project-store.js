@@ -19,6 +19,8 @@
     return false;
   }
   const WORKSPACE_ALIASES=Object.freeze({installation:'building',tesisat:'building',cabinet:'panel',pano:'panel','arduino-workshop':'arduino',kumanda:'control'});
+  // Only finite numeric legacy IDs are valid aliases for string IDs.
+  const legacyId=v=>typeof v==='number'&&Number.isFinite(v)?String(v):v;
   function canonicalShape(p){
     if(!p||typeof p!=='object'||Array.isArray(p))return p;
     const recognizable=Array.isArray(p.components)||Array.isArray(p.wires)||Array.isArray(p.devices)||Array.isArray(p.connections)||!!p.panel;
@@ -42,13 +44,13 @@
     for(const c of q.components){
       if(!c||typeof c!=='object')continue;
       if(c.typeId===undefined&&typeof c.type==='string')c.typeId=c.type;
-      if(c.id!==undefined&&typeof c.id!=='string')c.id=String(c.id);
+      if(c.id!==undefined)c.id=legacyId(c.id);
     }
-    for(const j of q.junctions)if(j&&j.id!==undefined&&typeof j.id!=='string')j.id=String(j.id);
+    for(const j of q.junctions)if(j&&j.id!==undefined)j.id=legacyId(j.id);
     for(const w of q.wires){
       if(!w||typeof w!=='object')continue;
-      if(w.id!==undefined&&typeof w.id!=='string')w.id=String(w.id);
-      for(const end of [w.from,w.to])if(end&&typeof end==='object'){if(end.c!==undefined&&typeof end.c!=='string')end.c=String(end.c);if(end.j!==undefined&&typeof end.j!=='string')end.j=String(end.j)}
+      if(w.id!==undefined)w.id=legacyId(w.id);
+      for(const end of [w.from,w.to])if(end&&typeof end==='object'){if(end.c!==undefined)end.c=legacyId(end.c);if(end.j!==undefined)end.j=legacyId(end.j)}
     }
     // Legacy panel endpoints can refer to numeric part IDs. Normalize only
     // finite numeric component references before validating the saved graph.
