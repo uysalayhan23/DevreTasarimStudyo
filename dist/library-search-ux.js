@@ -27,7 +27,7 @@
    if(input.value)input.select();
   });
   input.addEventListener('keydown',function(e){
-   if(e.key!=='Escape'||e.isComposing||e.keyCode===229)return;
+   if(e.defaultPrevented||e.key!=='Escape'||e.isComposing||e.keyCode===229)return;
    e.preventDefault();e.stopPropagation();
    if(input.value){
     input.value='';
