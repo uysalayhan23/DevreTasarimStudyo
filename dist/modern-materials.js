@@ -4,7 +4,7 @@
  function markup(d,c,sprite){
   const scope=Array.from(c.id||d.id).map(x=>x.codePointAt(0).toString(16)).join('-'),w=d.w,h=d.h,cx=w/2,cy=h/2;
   if(d.id==='sensor-linear-position'){
-   const p=Math.max(0,Math.min(100,Number(c.analogPosition??50))),x=100+p*.7;
+   const requested=Number(c.analogPosition??50),p=Number.isFinite(requested)?Math.max(0,Math.min(100,requested)):50,x=100+p*.7;
    return `<g class="material-layer linear-position" data-material="design-sensor-linear-position"><rect x="10" y="40" width="85" height="40" rx="4" fill="#cbd2d9" stroke="#526474"/><path d="M15 46H90M15 74H90" stroke="#f9fbfc" stroke-width="3"/><text transform="rotate(${-Number(c.rotation||0)} 52 64)" x="52" y="64" text-anchor="middle" font-size="9" fill="#243746">LINEER POT</text><g data-analog-handle="${esc(c.id||d.id)}" role="slider" tabindex="0" aria-label="Doğrusal konum" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100"><path d="M90 60H${x}" stroke="#677b8b" stroke-width="9"/><path d="M90 58H${x}" stroke="#f1f5f9" stroke-width="3"/><rect x="${x}" y="48" width="16" height="24" rx="3" fill="#81919d" stroke="#314253"/><rect x="${x-4}" y="42" width="24" height="36" fill="transparent"/></g></g>`;
   }
   if(d.selectorSteps||(d.rotaryIsolator&&d.id!=='packet-switch-3p')){
