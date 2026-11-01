@@ -30,7 +30,8 @@
 
  // Orthographic, code-native assemblies: the moving part is separate from its housing.
  function markup(d,c={}){
-  const w=d.w,h=d.h,x=w/2,y=h/2,on=!!c.state;
+  const isNhHolder=d.id==='nh-fuse-holder';
+  const w=isNhHolder?180:d.w,h=d.h,x=w/2,y=h/2,on=!!c.state;
   const rect=(x,y,w,h,fill,rx=3)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" stroke="#334155"/>`;
   const text=(s,x,y,size=10)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${size}" fill="#162536">${s}</text>`;
   const circle=(x,y,r,fill)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="#263744"/>`;
@@ -126,7 +127,8 @@
    for(let i=0;i<8;i++){const angle=i*Math.PI/4;a+=circle(x+Math.sin(angle)*18,y-3+Math.cos(angle)*18,4,'#141b20')}
    a+=circle(x,y-3,9,'#c54d3c');
   }
-  return a?`<g class="material-layer material-v111" data-material="front-${d.id}" stroke-linecap="round">${a}</g>`:'';
+  const materialArt=isNhHolder?`<g data-physical-width="105.8" data-physical-height="202" transform="scale(${d.w/180} 1)">${a}</g>`:a;
+  return a?`<g class="material-layer material-v111" data-material="front-${d.id}" stroke-linecap="round">${materialArt}</g>`:'';
  }
  const api={markup,resistorColorBands};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSMaterials111=api;
 })(typeof window==='undefined'?globalThis:window);
