@@ -1,0 +1,13 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const Materials=require('../dist/materials.js');
+const visual=(part,match='exact')=>({id:'p4-03-explicit-fixture',part,visualInfo:{match,part:'PR12-4DN',model:'Autonics PR12-4DN',source:'test-evidence'}});
+test('explicit exact image is downgraded when catalog part conflicts',()=>{const r=Materials.info(visual('PR99'));assert.equal(r.match,'representative');assert.equal(r.note,'catalog-visual-part-mismatch');assert.equal(r.part,'PR12-4DN')});
+test('matching exact model remains exact',()=>assert.equal(Materials.info(visual('PR12-4DN')).match,'exact'));
+test('case and surrounding whitespace do not create false mismatch',()=>assert.equal(Materials.info(visual(' pr12-4dn ')).match,'exact'));
+test('different family image is not promoted or demoted',()=>assert.equal(Materials.info(visual('PR99','family')).match,'family'));
+test('representative image stays representative',()=>assert.equal(Materials.info(visual('PR99','representative')).match,'representative'));
+test('catalog without part does not invent mismatch evidence',()=>assert.equal(Materials.info(visual(undefined)).match,'exact'));
+test('non-string catalog part cannot manufacture identity evidence',()=>assert.equal(Materials.info(visual(123)).match,'exact'));
+test('explicit image metadata and component are never mutated',()=>{const d=visual('PR99');const before=JSON.stringify(d);Materials.info(d);assert.equal(JSON.stringify(d),before)});
+test('asset-derived identity guard remains in place',()=>assert.equal(Materials.info({id:'asset-fixture',part:'PR99',materialAsset:'autonics-pr'}).match,'representative'));
