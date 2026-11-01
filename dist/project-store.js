@@ -277,7 +277,7 @@
       if(!env.showOpenFilePicker)return {fallback:true};
       try{const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});const file=await handle.getFile(),p=await readProjectFile(file);await remember(p,handle,file.lastModified);return {project:p}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
-    function download(project){const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
+    function download(project){validate(project);const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
       const copy=saveAs?editableCopy(project):clean(project);if(!saveAs&&(copy.projectId==null||copy.projectId===''))copy.projectId=uid();copy.updatedAt=new Date().toISOString();
