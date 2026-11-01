@@ -125,6 +125,14 @@
       const portStyle=inherited?' style="stroke:'+esc(inherited.color)+'"':v20Photo?' style="fill:rgba(255,255,255,.58);stroke:#2f3b45;stroke-width:.8"':'';
       pins+='<g data-port="'+esc(p.id)+'"'+(inherited?' data-line-role="'+esc(inherited.role)+'"':'')+' class="port-group'+(v20Photo?' v20-photo-port-group':'')+'"><title>'+esc((p.signalLabel||p.label)+(inherited?' · '+inherited.role+' · '+inherited.size:''))+'</title><circle class="port-hit" cx="'+pos.x+'" cy="'+pos.y+'" r="'+hitR+'"/>'+terminalArt +'<circle class="port '+(pending?'pending ':'')+(c._hot?.includes(p.id)?'energized':'')+(v20Photo?' v20-photo-port':'')+'" cx="'+pos.x+'" cy="'+pos.y+'" r="'+portR+'"'+portStyle+'/></g>';
       let physicalLabel=material&&p.labelOffset?rotatedPoint({x:p.x+p.labelOffset.x,y:p.y+p.labelOffset.y},d,rotation):{x,y},labelAnchor=material&&p.labelOffset?(p.labelAnchor||'middle'):anchor,labelText=material?(c.physicalLabels?.[p.id]||Components.pinLabel(c,d,p)):Norms.pinLabel(c,d,p,norm),labelStyle=[inherited?'fill:'+inherited.color:'',material&&p.labelSize?'font-size:'+p.labelSize+'px':''].filter(Boolean).join(';');
+      // WAZ5 has two adjacent terminal columns with six independent rows.
+      // Align each label to its physical terminal's Y and point outward;
+      // leave the actual terminal coordinates and cable routing untouched.
+      if(material&&d.instrument==='waz5'){
+        const left=Number(p.id)<=6;
+        physicalLabel={x:pos.x+(left?-14:14),y:pos.y+3};
+        labelAnchor=left?'end':'start';
+      }
       if(material&&d.instrument==='et4420'){
         labelText=p.id;
         labelAnchor='middle';
