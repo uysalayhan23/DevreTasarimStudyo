@@ -32,7 +32,12 @@
    // not a second IEC device. Only a real parent with the same ref may share it.
    const parentId=!panel?identity(device.auxFor):'';
    const parent=parentId&&items.get(parentId);
-   const owner=parent&&!parent.auxFor&&refKey(parent)===key?parentId:id;
+   const parentDef=parent&&byId?.[parent.typeId];
+   const kind=parentDef?.kind;
+   const expected=parentDef?.id==='voltage-protection-relay'?'protection-changeover'
+    :['overload','thermal-magnetic'].includes(kind)?'thermal-contact-nc'
+    :['coil-pulse','coil-flasher','relay-protection'].includes(kind)?'contact-no':null;
+   const owner=parent&&!parent.auxFor&&expected===device.typeId&&refKey(parent)===key?parentId:id;
    if(refs.has(key)&&refs.get(key)!==owner)errors.push('Tekrarlı IEC cihaz referansı: '+ref);
    else refs.set(key,owner);
   }
