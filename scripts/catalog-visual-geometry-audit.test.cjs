@@ -1,8 +1,13 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const {inspect,load}=require('./catalog-visual-geometry-audit.cjs');
-test('real baseline catalog is exhaustively inspected',()=>{const items=load();assert.equal(items.length,703);assert.equal(inspect(items).total,703)});
+test('real baseline catalog is exhaustively inspected',()=>{const items=load();assert.equal(items.length,703);const r=inspect(items);assert.equal(r.total,703);assert.equal(r.issues.length,0);assert.equal(r.reviews.length,14);assert.ok(r.reviews.every(p=>p.id==='temperature-controller'))});
 test('rejects duplicate pin identities and out-of-bound terminal positions',()=>{const result=inspect([{id:'x',w:100,h:100,pins:[{id:'1',x:0,y:0},{id:'1',x:101,y:40}]}]);assert.deepEqual(result.issues.map(i=>i.issue),['duplicate-pin-id','pin-outside-footprint'])});
 test('rejects invalid sizing and calibration',()=>{const x=inspect([{id:'x',w:0,h:100,pins:[]},{id:'y',w:100,h:100,pins:[],runtimeVisualCalibration:{targetFrameMm:{width:0,height:10}}}]);assert.deepEqual(x.issues.map(i=>i.issue),['invalid-footprint','invalid-calibration'])});
 test('does not declare a physical scale error without manufacturer evidence',()=>{assert.equal(inspect([{id:'x',w:180,h:240,pins:[{id:'1',x:20,y:0}]}]).issues.length,0)});
 
+test('declared external rows are REVIEW, not fatal footprint errors or physical PASS',()=>{const x=inspect([{id:'temperature-controller',w:96,h:96,terminalRowOutsideVisual:true,terminalEnvelopeBottomScene:142,pins:[{id:'4',x:12,y:108},{id:'17',x:84,y:130}]}]);assert.equal(x.issues.length,0);assert.deepEqual(x.reviews.map(p=>p.pin),['4','17']);assert.ok(x.reviews.every(p=>p.issue==='pin-outside-visual-frame-review'))});
+test('external pin without explicit envelope remains fatal',()=>{const x=inspect([{id:'x',w:96,h:96,terminalRowOutsideVisual:true,pins:[{id:'4',x:12,y:108}]}]);assert.deepEqual(x.issues.map(p=>p.issue),['invalid-terminal-envelope','pin-outside-footprint']);assert.equal(x.reviews.length,0)});
+test('external pin beyond envelope remains fatal',()=>{const x=inspect([{id:'x',w:96,h:96,terminalRowOutsideVisual:true,terminalEnvelopeBottomScene:142,pins:[{id:'4',x:12,y:143}]}]);assert.deepEqual(x.issues.map(p=>p.issue),['pin-outside-terminal-envelope']);assert.equal(x.reviews.length,0)});
+test('horizontal or negative overflow is never exempted',()=>{const x=inspect([{id:'x',w:96,h:96,terminalRowOutsideVisual:true,terminalEnvelopeBottomScene:142,pins:[{id:'4',x:97,y:108},{id:'5',x:12,y:-1}]}]);assert.deepEqual(x.issues.map(p=>p.issue),['pin-outside-footprint','pin-outside-footprint']);assert.equal(x.reviews.length,0)});
+test('external rows without declared opt-in remain fatal',()=>{const x=inspect([{id:'x',w:96,h:96,terminalEnvelopeBottomScene:142,pins:[{id:'4',x:12,y:108}]}]);assert.deepEqual(x.issues.map(p=>p.issue),['pin-outside-footprint']);assert.equal(x.reviews.length,0)});
