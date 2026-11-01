@@ -619,7 +619,7 @@
   function materialDefinition(component,options={}){
     if(!component||component._physicalMaterialNormalized)return component;
     if(component.instrument||component.isPLC||component.arduinoPeripheral||component.designMaterial||component.materialSymbol||component._auxOnly)return component;
-    const units=Math.max(.1,Number(options.sceneUnitsPerMm??MATERIAL_SCENE_UNITS_PER_MM)||MATERIAL_SCENE_UNITS_PER_MM),record=get(component);
+    const requestedUnits=Number(options.sceneUnitsPerMm??MATERIAL_SCENE_UNITS_PER_MM),units=Number.isFinite(requestedUnits)&&requestedUnits>0?requestedUnits:MATERIAL_SCENE_UNITS_PER_MM,record=get(component);
     const requested=component.physicalDimensionsMm,userLocked=component.physicalScaleSource==='workspace-space-v1:user-locked'&&requested&&[requested.width,requested.height,component.w,component.h].every(v=>Number.isFinite(v)&&v>0);
     const conflictsWithVerified=userLocked&&record&&record.sourceStatus==='verified'&&(Math.abs(requested.width-record.widthMm)>1e-9||Math.abs(requested.height-record.heightMm)>1e-9);
     if(conflictsWithVerified){
