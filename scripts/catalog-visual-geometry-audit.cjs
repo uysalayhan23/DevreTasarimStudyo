@@ -18,6 +18,8 @@ function inspect(items){
   const pins=new Set();for(const p of d.pins){
    if(!p||typeof p.id!=='string'||!p.id){issues.push({id:d.id,issue:'invalid-pin-id'});continue}
    if(pins.has(p.id))issues.push({id:d.id,issue:'duplicate-pin-id',pin:p.id});else pins.add(p.id);
+   if(typeof p.label!=='string'||!p.label.trim())issues.push({id:d.id,issue:'invalid-pin-label',pin:p.id});
+   if(!['top','right','bottom','left'].includes(p.side))issues.push({id:d.id,issue:'invalid-pin-side',pin:p.id});
    if(!Number.isFinite(p.x)||!Number.isFinite(p.y))issues.push({id:d.id,issue:'invalid-pin-point',pin:p.id});
    else if(p.x<0||p.y<0||p.x>d.w)issues.push({id:d.id,issue:'pin-outside-footprint',pin:p.id,x:p.x,y:p.y,w:d.w,h:d.h});
    else if(p.y>d.h){

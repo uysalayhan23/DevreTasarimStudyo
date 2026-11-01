@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const {inspect}=require('../scripts/catalog-visual-geometry-audit.cjs');
+const make=(patch={})=>({id:'test-device',w:100,h:100,pins:[{id:'A1',label:'A1',x:0,y:50,side:'left',...patch}]});
+const issues=d=>inspect([d]).issues.map(x=>x.issue);
+test('valid left terminal has no issues',()=>assert.deepEqual(issues(make()),[]));
+test('valid top terminal has no issues',()=>assert.deepEqual(issues(make({x:50,y:0,side:'top'})),[]));
+test('valid right terminal has no issues',()=>assert.deepEqual(issues(make({x:100,side:'right'})),[]));
+test('valid bottom terminal has no issues',()=>assert.deepEqual(issues(make({x:50,y:100,side:'bottom'})),[]));
+test('missing terminal side is rejected',()=>assert.ok(issues(make({side:undefined})).includes('invalid-pin-side')));
+test('unknown terminal side is rejected',()=>assert.ok(issues(make({side:'diagonal'})).includes('invalid-pin-side')));
+test('blank IEC terminal label is rejected',()=>assert.ok(issues(make({label:' '})).includes('invalid-pin-label')));
+test('nonstring IEC terminal label is rejected',()=>assert.ok(issues(make({label:42})).includes('invalid-pin-label')));
