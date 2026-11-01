@@ -128,6 +128,10 @@
       // WAZ5 has two adjacent terminal columns with six independent rows.
       // Align each label to its physical terminal's Y and point outward;
       // leave the actual terminal coordinates and cable routing untouched.
+      if(material&&!p.labelOffset&&d.instrument!=='waz5'&&d.instrument!=='et4420'&&!v20Photo&&(p.side==='left'||p.side==='right')){
+        physicalLabel={x:pos.x+(side==='left'?-14:14),y:pos.y+3};
+        labelAnchor=side==='left'?'end':'start';
+      }
       if(material&&d.instrument==='waz5'){
         const left=Number(p.id)<=6;
         physicalLabel={x:pos.x+(left?-14:14),y:pos.y+3};

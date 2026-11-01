@@ -1,0 +1,10 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const S=require('../dist/symbols.js');
+const d={id:'generic-side-pins',kind:'switch-no',name:'Generic',w:100,h:120,pins:[{id:'L',x:0,y:30,side:'left',label:'L'},{id:'R',x:100,y:30,side:'right',label:'R'}]};
+const at=(s,id)=>{const m=s.match(new RegExp('data-label-key="pin:'+id+'" data-base-x="([^"]+)" data-base-y="([^"]+)"[^>]*><text[^>]*text-anchor="([^"]+)"'));assert.ok(m);return {x:+m[1],y:+m[2],anchor:m[3]}};
+test('native material left/right terminal labels face outward',()=>{const m=S.markup(d,{id:'c',ref:'S1'},{mode:'material'});assert.deepEqual(at(m,'L'),{x:-14,y:33,anchor:'end'});assert.deepEqual(at(m,'R'),{x:114,y:33,anchor:'start'})});
+test('original IEC diagram label semantics unchanged',()=>{const m=S.markup(d,{id:'c',ref:'S1'},{mode:'iec'});assert.deepEqual(at(m,'L'),{x:9,y:33,anchor:'start'});assert.deepEqual(at(m,'R'),{x:91,y:33,anchor:'end'})});
+test('explicit label offsets remain authoritative',()=>{const special={...d,pins:d.pins.map(p=>({...p,labelOffset:{x:2,y:-3},labelAnchor:'middle'}))};const m=S.markup(special,{id:'c',ref:'S1'},{mode:'material'});assert.deepEqual(at(m,'L'),{x:2,y:27,anchor:'middle'});assert.deepEqual(at(m,'R'),{x:102,y:27,anchor:'middle'})});
+test('rotated upper/lower pins are unaffected by lateral material labels',()=>{const top={...d,pins:[{id:'T',x:40,y:0,side:'top',label:'T'}]};const m=S.markup(top,{id:'c',ref:'S1',rotation:90},{mode:'material'});const pos=S.rotatedPoint(top.pins[0],top,90);assert.equal(at(m,'T').x,pos.x-9)});
+test('physical cable port centers remain unchanged',()=>{const m=S.markup(d,{id:'c',ref:'S1'},{mode:'material'});assert.match(m,/data-port="L"[\s\S]*?class="port-hit" cx="0" cy="30"/);assert.match(m,/data-port="R"[\s\S]*?class="port-hit" cx="100" cy="30"/)});
