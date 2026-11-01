@@ -23,12 +23,18 @@
   // An IEC reference used by two different device IDs makes the human-facing
   // cross-reference ambiguous even though the physical wire IDs remain distinct.
   const refs=new Map();
+  const refKey=device=>text(device?.ref).normalize('NFKC').toLocaleUpperCase('tr-TR');
   for(const [id,device] of items){
    const ref=text(device.ref);
    if(!ref)continue;
-   const key=ref.normalize('NFKC').toLocaleUpperCase('tr-TR');
-   if(refs.has(key)&&refs.get(key)!==id)errors.push('Tekrarlı IEC cihaz referansı: '+ref);
-   else refs.set(key,id);
+   const key=refKey(device);
+   // An assembly contact is a separate terminal-bearing item of its parent,
+   // not a second IEC device. Only a real parent with the same ref may share it.
+   const parentId=!panel?identity(device.auxFor):'';
+   const parent=parentId&&items.get(parentId);
+   const owner=parent&&!parent.auxFor&&refKey(parent)===key?parentId:id;
+   if(refs.has(key)&&refs.get(key)!==owner)errors.push('Tekrarlı IEC cihaz referansı: '+ref);
+   else refs.set(key,owner);
   }
   if(!panel){
    for(const j of project?.junctions||[]){
