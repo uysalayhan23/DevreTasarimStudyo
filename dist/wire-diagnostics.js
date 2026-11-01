@@ -10,12 +10,20 @@
    String(a.c)===String(b.c)&&String(a.p)===String(b.p);
  }
  function scan(project,byId){
-  const componentRows=(Array.isArray(project?.components)?project.components:[]).filter(c=>c&&typeof c==='object');
+  const rawComponents=project?.components;
+  const componentRows=(Array.isArray(rawComponents)?rawComponents:[]).filter(c=>c&&typeof c==='object');
   const components=new Map(componentRows.filter(c=>c.id!=null&&String(c.id).trim()).map(c=>[String(c.id),c]));
   const rawJunctions=project?.junctions;
   const junctionRows=Array.isArray(rawJunctions)?rawJunctions:[];
   const junctions=new Set(junctionRows.filter(j=>j&&j.id!=null&&String(j.id).trim()).map(j=>String(j.id)));
-  const issues=[],wires=Array.isArray(project?.wires)?project.wires:[];
+  const rawWires=project?.wires;
+  const issues=[],wires=Array.isArray(rawWires)?rawWires:[];
+  if(rawComponents!=null&&!Array.isArray(rawComponents))
+   issues.push({wire:'Bileşen',kind:'invalid-components',message:'Bileşen listesi geçersiz.'});
+  if(Array.isArray(rawComponents))for(const c of rawComponents)if(!c||typeof c!=='object')
+   issues.push({wire:'Bileşen',kind:'invalid-component',message:'Bileşen kaydı geçersiz.'});
+  if(rawWires!=null&&!Array.isArray(rawWires))
+   issues.push({wire:'Kablo',kind:'invalid-wires',message:'Kablo listesi geçersiz.'});
   if(rawJunctions!=null&&!Array.isArray(rawJunctions))
    issues.push({wire:'Düğüm',kind:'invalid-junctions',message:'Bağlantı düğümü listesi geçersiz.'});
   const seenComponents=new Set(),seenJunctions=new Set();
@@ -59,7 +67,7 @@
   const detail=report.issues.map(x=>{
    const label=esc(x.wire),msg=esc(x.message);
    // Device/node identity errors are not wire objects; never create a fake wire-focus button.
-   const focus=x.kind==='duplicate-component-id'||x.kind==='missing-component-id'||x.kind==='duplicate-junction-id'||x.kind==='missing-junction-id'||x.kind==='invalid-junctions'
+   const focus=['duplicate-component-id','missing-component-id','invalid-component','invalid-components','duplicate-junction-id','missing-junction-id','invalid-junctions','invalid-wire','invalid-wires','missing-wire-id'].includes(x.kind)
     ?'<strong>'+label+'</strong>'
     :'<button type="button" data-audit-wire="'+label+'" title="Şemada kabloyu işaretle">'+label+'</button>';
    return '<li>'+focus+': '+msg+'</li>';
@@ -70,7 +78,7 @@
  // Visually mark only current DOM wire groups; leave wire color, endpoints and native solver untouched.
  function mark(scene,report,onlyWire=null){
   if(!scene||typeof scene.querySelectorAll!=='function')return 0;
-  const nonWire=new Set(['duplicate-component-id','missing-component-id','duplicate-junction-id','missing-junction-id','invalid-junctions']);
+  const nonWire=new Set(['duplicate-component-id','missing-component-id','invalid-component','invalid-components','duplicate-junction-id','missing-junction-id','invalid-junctions','invalid-wire','invalid-wires','missing-wire-id']);
   const ids=new Set((report?.issues||[]).filter(i=>!nonWire.has(i.kind)).map(i=>String(i.wire)));
   let marked=0;
   for(const group of scene.querySelectorAll('[data-wire]')){
