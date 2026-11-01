@@ -1,0 +1,14 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const Materials=require('../dist/materials.js');
+const row=(part,materialAsset='autonics-pr')=>({id:'p4-03-identity-fixture',name:'Model identity fixture',materialAsset,...(part===undefined?{}:{part})});
+test('different catalog part never inherits exact product-image match',()=>{const r=Materials.info(row('PR99'));assert.equal(r.match,'representative');assert.equal(r.note,'catalog-visual-part-mismatch');});
+test('same catalog and image part keeps exact fidelity',()=>assert.equal(Materials.info(row('PR12-4DN')).match,'exact'));
+test('part identity comparison ignores surrounding whitespace and case',()=>assert.equal(Materials.info(row(' pr12-4dn ')).match,'exact'));
+test('missing catalog part does not overwrite verified asset provenance',()=>assert.equal(Materials.info(row(undefined)).match,'exact'));
+test('empty catalog part retains current image provenance',()=>assert.equal(Materials.info(row('')).match,'exact'));
+test('non-string catalog part cannot manufacture mismatch evidence',()=>assert.equal(Materials.info(row(17)).match,'exact'));
+test('family image is not silently promoted or demoted',()=>assert.equal(Materials.info(row('BJ100-DDT','autonics-bj')).match,'family'));
+test('existing representative image remains representative',()=>assert.equal(Materials.info(row('OTHER','erv03-front-v110')).match,'representative'));
+test('image identity check never mutates source component',()=>{const d=row('PR99'),before=JSON.stringify(d);Materials.info(d);assert.equal(JSON.stringify(d),before)});
+test('exact image retains its original source model and part',()=>{const r=Materials.info(row('PR12-4DN'));assert.equal(r.model,'PR12-4DN');assert.equal(r.part,'PR12-4DN')});
