@@ -1,0 +1,17 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const current=require('../dist/materials-v111.js');
+const source=fs.readFileSync(path.join(__dirname,'../dist/materials-v111.js'),'utf8');
+const exact="+text('TEMSİLİ GÖRSEL',x,225,7)";
+assert.equal(source.split(exact).length,2);
+const sandbox={module:{exports:{}}};vm.runInNewContext(source.replace(exact,''),sandbox);
+const original=sandbox.module.exports;
+const d={id:'nh-fuse-holder',w:180,h:240};
+const render=(api,c={id:'S3'})=>api.markup(d,c);
+const mark=/<text x="90" y="225" text-anchor="middle" font-size="7" fill="#162536">TEMSİLİ GÖRSEL<\/text>/;
+test('negative control: original falsely leaves representative product image unmarked',()=>{assert.doesNotMatch(render(original),/TEMSİLİ GÖRSEL/);assert.match(render(current),mark)});
+test('representative label survives both lid states',()=>{for(const open of [false,true])assert.match(render(current,{id:'S3',state:open}),mark)});
+test('product image, SVG frame and terminal-neutral geometry remain unchanged',()=>{const strip=s=>s.replace(mark,'');assert.equal(strip(render(current)),render(original));});
+test('other product markup does not change',()=>{for(const id of ['packet-star-delta','nh-fuse','siren']){const product={id,w:180,h:240};assert.equal(current.markup(product,{id:'x'}),original.markup(product,{id:'x'}));}});
+test('model-specific catalog description remains visible without falsely asserting image match',()=>{assert.match(render(current),/3NP1 · NH00 \/ 000/);assert.doesNotMatch(render(current),/3NP1133-1CA10.*EXACT/)});

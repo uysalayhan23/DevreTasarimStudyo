@@ -62,7 +62,7 @@
    const nhScope='nh-holder-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
    a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
    for(let i=0;i<3;i++)if(c.nhFuses?.[i])a+=rect(34+i*50,88,12,77,'#b8bdc0')+rect(28+i*50,104,24,46,'#eee9dc')+text('NH',40+i*50,130,8);
-   a+='</g>'+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
+   a+='</g>'+text('TEMSİLİ GÖRSEL',x,225,7)+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
   }else if(d.id==='nh-fuse'){
    const nhFuseScope='nh-fuse-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
    a=`<defs><clipPath id="${nhFuseScope}"><path d="M24 18H${w-24}V${h-18}H24Z"/></clipPath></defs><image href="assets/products/nh-reference-v111.png" x="10" y="5" width="${w-20}" height="${h-10}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${nhFuseScope})"/>`;
