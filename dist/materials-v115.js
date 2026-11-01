@@ -44,11 +44,11 @@
    return `<g class="material-layer" data-material="unit-ut61e-plus-vector">${art}</g>`;
   }
   if(d.kind==='multimeter'){
-   const bgId='ut33d-bg-'+String(c.id||d.id).replace(/[^\w-]/g,'_');
-   /* Keep the exact UT33D+ source photo; remove only its white backdrop by
-      clipping to the verified outer silhouette of the meter body. */
-   let art=`<svg x="0" y="0" width="180" height="340" viewBox="110 45 320 548" preserveAspectRatio="none" overflow="hidden"><defs><clipPath id="${bgId}"><path d="M176 50C158 50 149 61 145 81L126 508C123 544 137 568 164 579C225 595 324 592 382 580C402 570 414 548 410 515L397 82C395 62 384 50 365 50Z"/></clipPath></defs><image href="assets/products/unit-v115.jpg" width="600" height="600" clip-path="url(#${bgId})"/></svg>`;
-   art+=`<rect x="28" y="49" width="126" height="52" rx="2" fill="${c.meterBacklight?'#d9efb4':'#98b7a4'}"/>`+text(93,81,c._meter?.display??'',22,'#122823')+text(130,96,c._meter?.unit||'',8);
+   // Front-on UT33D+ photograph supplied by the user, cropped to transparent
+   // silhouette. Preserve the interactive screen, dial and click targets.
+   let art=`<svg x="0" y="0" width="180" height="340" viewBox="0 0 285 508" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/ut33d-front-transparent.webp" width="285" height="508"/></svg>`;
+   // Cover the photograph's static 1999 readout; the live instrument owns it.
+   art+=`<rect x="31" y="52" width="119" height="59" rx="2" fill="${c.meterBacklight?'#d9efb4':'#98b7a4'}"/>`+text(91,91,c._meter?.display??'',22,'#122823')+text(133,105,c._meter?.unit||'',8);
    art+=`<circle cx="90" cy="198" r="49" fill="#202021" stroke="#484649" stroke-width="3"/><g transform="rotate(${(c.meterPosition||0)*18} 90 198)"><rect x="81" y="155" width="18" height="86" rx="5" fill="#414042" stroke="#191919"/><path d="M90 157v17" stroke="#dad9d7" stroke-width="3"/></g>`;
    for(let i=0;i<20;i++){const a=(i*18-99)*Math.PI/180,b=(i*18-81)*Math.PI/180,r=68;art+=`<path data-meter-position="${i}" d="M90 198L${90+Math.cos(a)*r} ${198+Math.sin(a)*r}A${r} ${r} 0 0 1 ${90+Math.cos(b)*r} ${198+Math.sin(b)*r}Z" fill="transparent" style="cursor:pointer"/>`}
    art+=`<rect data-meter-action="hold" x="27" y="123" width="30" height="20" fill="transparent" style="cursor:pointer"/><rect data-meter-action="light" x="125" y="123" width="30" height="20" fill="transparent" style="cursor:pointer"/>`;
