@@ -154,7 +154,13 @@
     const rows=[];
     for(const item of panel?.items||[]){
       const base=item?.requiredClearanceMm,byVoltage=item?.requiredClearanceByVoltageMm;
-      if(!base&&!byVoltage)continue;
+      if(!base&&!byVoltage){
+        // No manufacturer spacing criteria means unassessed, never compliant by default.
+        rows.push({itemId:item?.id,status:'unknown',authority:'insufficient-verified-data',
+          sourceUrl:null,checks:[],unresolved:['manufacturer-clearance-requirements-not-provided'],
+          missing:['verified-manufacturer-clearance-requirements']});
+        continue;
+      }
       const evidenceOk=item.physicalDimensionStatus==='verified'&&sourceUrlValid(item.dimensionSource);
       // Status flags alone cannot verify missing, coerced or out-of-panel geometry.
       const validBox=x=>x&&['x','y','w','h'].every(k=>Number.isFinite(x[k]))&&x.w>0&&x.h>0;

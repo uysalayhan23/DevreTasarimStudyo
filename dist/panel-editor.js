@@ -57,9 +57,10 @@
   function engineeringSummary(p,closure){
     const status=$('#panelEngineeringStatus'),detail=$('#panelEngineeringDetail'),body=$('#panelEngineeringReport');if(!status||!detail||!Engineering)return;
     const report=Engineering.audit(p,E.byId,{doorClearance:()=>closure||P.doorClearance(p)}),s=report.summary;
-    status.textContent=s.verifiedViolations?('⚠ '+s.verifiedViolations+' doğrulanmış mühendislik ihlali'):s.unknownChecks?('Veri eksik · '+s.unknownChecks+' kontrol doğrulanamıyor'):'Doğrulanmış kontrollerde ihlal yok';
+    const noChecks=!(p?.items?.length||p?.wires?.length||p?.ducts?.length);
+    status.textContent=s.verifiedViolations?('⚠ '+s.verifiedViolations+' doğrulanmış mühendislik ihlali'):s.unknownChecks?('Veri eksik · '+s.unknownChecks+' kontrol doğrulanamıyor'):noChecks?'Denetim için cihaz/kablo yok · uygunluk bilinmiyor':'Doğrulanmış kontrollerde ihlal yok · fiziksel uygunluk onayı değil';
     detail.textContent='BOM: '+report.bom.items.reduce((n,x)=>n+x.quantity,0)+' cihaz · '+report.bom.wires.quantity+' kablo · '+Math.round(report.bom.wires.totalLengthMm)+' mm rota'+(s.segregationAdvisories?' · '+s.segregationAdvisories+' segregasyon uyarısı':'')+'. Unknown sonuçlar uygunluk onayı değildir.';
-    status.dataset.state=s.verifiedViolations?'violation':s.unknownChecks?'unknown':'ok';
+    status.dataset.state=s.verifiedViolations?'violation':s.unknownChecks||noChecks?'unknown':'ok';
     if(body){
       const tag=v=>v==='violation'?'⚠ ihlal':v==='ok'?'✓ uygun':'? veri eksik';
       const bom=report.bom.items.length?report.bom.items.map(x=>'<li>'+esc(x.name)+' × '+x.quantity+' <small>ölçü: '+x.dimensionStatus.verified+' verified / '+x.dimensionStatus.approximate+' approximate / '+x.dimensionStatus.unknown+' unknown</small></li>').join(''):'<li>Cihaz yok</li>';
@@ -67,7 +68,8 @@
       const bendUnknown=report.bendAudit.filter(x=>x.status==='unknown').length,bendViolation=report.bendAudit.filter(x=>x.status==='violation').length;
       const serviceUnknown=report.serviceAudit.filter(x=>x.status==='unknown').length,serviceViolation=report.serviceAudit.filter(x=>x.status==='violation').length;
       const manufacturerUnknown=report.manufacturerClearanceAudit.filter(x=>x.status==='unknown').length,manufacturerViolation=report.manufacturerClearanceAudit.filter(x=>x.status==='violation').length,manufacturerOk=report.manufacturerClearanceAudit.filter(x=>x.status==='ok').length;
-      body.innerHTML='<strong>BOM</strong><ul>'+bom+'</ul><strong>Kablo kanalları</strong><ul>'+ducts+'</ul><p><strong>Bükülme:</strong> '+bendViolation+' ihlal · '+bendUnknown+' veri eksik</p><p><strong>Servis boşluğu:</strong> '+serviceViolation+' ihlal · '+serviceUnknown+' veri eksik</p><p><strong>Üretici montaj boşluğu:</strong> '+manufacturerViolation+' ihlal · '+manufacturerOk+' uygun · '+manufacturerUnknown+' bağlam/veri eksik</p><p><strong>Termal envanter:</strong> '+report.thermal.knownHeatLossW+' W doğrulanmış yük · '+report.thermal.unknownItemCount+' cihaz veri eksik · enclosure uygunluğu unknown</p>';
+      const manufacturerNoCriteria=report.manufacturerClearanceAudit.filter(x=>x.missing?.includes('verified-manufacturer-clearance-requirements')).length;
+      body.innerHTML='<strong>BOM</strong><ul>'+bom+'</ul><strong>Kablo kanalları</strong><ul>'+ducts+'</ul><p><strong>Bükülme:</strong> '+bendViolation+' ihlal · '+bendUnknown+' veri eksik</p><p><strong>Servis boşluğu:</strong> '+serviceViolation+' ihlal · '+serviceUnknown+' veri eksik</p><p><strong>Üretici montaj boşluğu:</strong> '+manufacturerViolation+' ihlal · '+manufacturerOk+' uygun · '+manufacturerUnknown+' bağlam/veri eksik'+(manufacturerNoCriteria?' · '+manufacturerNoCriteria+' cihaz için üretici montaj kriteri yok (REVIEW)':'')+'</p><p><strong>Termal envanter:</strong> '+report.thermal.knownHeatLossW+' W doğrulanmış yük · '+report.thermal.unknownItemCount+' cihaz veri eksik · enclosure uygunluğu unknown</p>';
     }
   }
   function render(properties=true){
