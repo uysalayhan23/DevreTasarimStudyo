@@ -20,6 +20,16 @@
    if(!id||items.has(id)){errors.push('Eksik veya tekrarlı cihaz kimliği.');continue}
    items.set(id,device);
   }
+  // An IEC reference used by two different device IDs makes the human-facing
+  // cross-reference ambiguous even though the physical wire IDs remain distinct.
+  const refs=new Map();
+  for(const [id,device] of items){
+   const ref=text(device.ref);
+   if(!ref)continue;
+   const key=ref.normalize('NFKC').toLocaleUpperCase('tr-TR');
+   if(refs.has(key)&&refs.get(key)!==id)errors.push('Tekrarlı IEC cihaz referansı: '+ref);
+   else refs.set(key,id);
+  }
   if(!panel){
    for(const j of project?.junctions||[]){
     const id=identity(j?.id);
