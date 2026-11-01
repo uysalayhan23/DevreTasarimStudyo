@@ -61,7 +61,7 @@
     return q;
   }
   function normalizeWorkspace(q){
-    if(WORKSPACE_ALIASES[q.workspaceMode])q.workspaceMode=WORKSPACE_ALIASES[q.workspaceMode];
+    if(Object.prototype.hasOwnProperty.call(WORKSPACE_ALIASES,q.workspaceMode))q.workspaceMode=WORKSPACE_ALIASES[q.workspaceMode];
     if(!q.workspaceMode)q.workspaceMode=q.panel?'panel':q.components.some(c=>/^arduino-/i.test(c?.typeId||''))?'arduino':'control';
     return q;
   }
