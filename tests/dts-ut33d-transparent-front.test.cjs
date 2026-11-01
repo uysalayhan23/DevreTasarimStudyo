@@ -41,3 +41,15 @@ test('WAZ5 material branch stays separate and maintains existing physical body e
  assert.match(waz,/waz5-physical-envelope/);
  assert.match(waz,/weid-front-v115\.png/);
 });
+
+test('UT33D+ invalid saved dial positions fall back without nonfinite SVG transforms',()=>{
+ for(const bad of ['bad',Infinity,-Infinity,{},NaN]){
+  const svg=render({meterPosition:bad});
+  assert.match(svg,/rotate\(0 90 198\)/);
+  assert.doesNotMatch(svg,/rotate\((?:NaN|-?Infinity)/);
+ }
+ for(const good of [0,7,19]){
+  const svg=render({meterPosition:good});
+  assert.match(svg,new RegExp('rotate\\('+good*18+' 90 198\\)'));
+ }
+});

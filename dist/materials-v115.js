@@ -49,7 +49,7 @@
    let art=`<svg x="0" y="0" width="180" height="340" viewBox="0 0 285 508" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/ut33d-front-transparent.webp" width="285" height="508"/></svg>`;
    // Cover the photograph's static 1999 readout; the live instrument owns it.
    art+=`<rect x="31" y="52" width="119" height="59" rx="2" fill="${c.meterBacklight?'#d9efb4':'#98b7a4'}"/>`+text(91,91,c._meter?.display??'',22,'#122823')+text(133,105,c._meter?.unit||'',8);
-   art+=`<circle cx="90" cy="198" r="49" fill="#202021" stroke="#484649" stroke-width="3"/><g transform="rotate(${(c.meterPosition||0)*18} 90 198)"><rect x="81" y="155" width="18" height="86" rx="5" fill="#414042" stroke="#191919"/><path d="M90 157v17" stroke="#dad9d7" stroke-width="3"/></g>`;
+   art+=`<circle cx="90" cy="198" r="49" fill="#202021" stroke="#484649" stroke-width="3"/><g transform="rotate(${(Number.isFinite(Number(c.meterPosition))?Number(c.meterPosition):0)*18} 90 198)"><rect x="81" y="155" width="18" height="86" rx="5" fill="#414042" stroke="#191919"/><path d="M90 157v17" stroke="#dad9d7" stroke-width="3"/></g>`;
    for(let i=0;i<20;i++){const a=(i*18-99)*Math.PI/180,b=(i*18-81)*Math.PI/180,r=68;art+=`<path data-meter-position="${i}" d="M90 198L${90+Math.cos(a)*r} ${198+Math.sin(a)*r}A${r} ${r} 0 0 1 ${90+Math.cos(b)*r} ${198+Math.sin(b)*r}Z" fill="transparent" style="cursor:pointer"/>`}
    art+=`<rect data-meter-action="hold" x="27" y="123" width="30" height="20" fill="transparent" style="cursor:pointer"/><rect data-meter-action="light" x="125" y="123" width="30" height="20" fill="transparent" style="cursor:pointer"/>`;
    return `<g class="material-layer" data-material="unit-ut33d-original">${art}</g>`;
