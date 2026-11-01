@@ -123,6 +123,9 @@
     // Browser storage keys stringify IDs; object/array/boolean IDs can alias unrelated drafts.
     if(p?.projectId!=null&&!(typeof p.projectId==='string'||(typeof p.projectId==='number'&&Number.isFinite(p.projectId))))
       throw Error('Proje kimliği metin veya sonlu sayı olmalıdır.');
+    // Whitespace-only IDs persist successfully but disappear from the draft index.
+    if(typeof p?.projectId==='string'&&p.projectId!==''&&!p.projectId.trim())
+      throw Error('Proje kimliği yalnız boşluk olamaz.');
     // Reopen and save must reject the same unsupported project schema versions.
     if(p?.version!=null){
       const version=Number(p.version);
