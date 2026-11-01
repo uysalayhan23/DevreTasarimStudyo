@@ -45,7 +45,7 @@
   }
   return {ok:true,error:null};
  }
- function scan(source,inputValues,memory={},now=0,limits={}){
+ function scanPass(source,inputValues,memory={},now=0,limits={},forcedResets=null){
   const check=validate(source,limits);
   if(!check.ok)return {ok:false,error:check.error,outputs:{},memory,traces:[]};
   if(!Number.isFinite(now))return {ok:false,error:'Simülasyon zamanı geçersiz.',outputs:{},memory,traces:[]};
@@ -75,6 +75,7 @@
    for(const ref of assignedBlocks)if(ref[0]==='T'){bits[ref]=false;delete states[ref];}
   }
   for(let i=1;i<=16;i++)bits['I'+i]=!!inputValues?.['I'+i];
+  if(forcedResets)for(const ref of forcedResets)bits[ref]=false;
   // Coil outputs re-evaluate from zero every scan; latched M/Q values remain only when SET/RESET is used.
   const written=new Set(),traces=[];
    // Counter RESET has priority over a simultaneous count pulse regardless of
@@ -82,7 +83,7 @@
    // the count button is held does not invent another rising edge.
    const counterOwners=new Map(source.rungs.filter(r=>['CTU','CTD'].includes(r.coil.type))
     .map(r=>[r.coil.ref,r]));
-   const resetCounters=new Set();
+   const resetCounters=new Set(),resetRungs=new Set();
   for(const rung of source.rungs){
    // Preserve path truth at the exact scan point, before later coils change shared bits.
    const pathStates=rung.paths.map(path=>path.length>0&&path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
@@ -100,7 +101,7 @@
        const inputHeld=owner.paths.some(path=>path.length>0&&path.every(c=>c.type==='NC'?!bits[c.ref]:!!bits[c.ref]));
        states[ref]={kind:owner.coil.type,preset:owner.coil.preset,
         count:owner.coil.type==='CTD'?owner.coil.preset:0,prev:inputHeld,tick:now};
-       resetCounters.add(ref);
+       resetCounters.add(ref);resetRungs.add(rung.id);
       }else delete states[ref];
      }
      next=!!bits[ref];written.add(ref);
@@ -160,10 +161,10 @@
     }
     s.kind=coil.type;s.preset=coil.preset;
     if(!Number.isInteger(s.count))s.count=initial;
-    if(resetCounters.has(ref))s.count=initial;
+    if(resetCounters.has(ref)||forcedResets?.has(ref))s.count=initial;
     else if(active&&!s.prev)s.count=Math.max(0,Math.min(65535,s.count+(coil.type==='CTU'?1:-1)));
     s.prev=active;s.tick=now;
-    next=coil.type==='CTU'?s.count>=coil.preset:s.count===0;
+    next=forcedResets?.has(ref)?false:(coil.type==='CTU'?s.count>=coil.preset:s.count===0);
     bits[ref]=next;written.add(ref);
    }
    const trace={id:rung.id,active,pathStates,coil:ref,value:coil.type==='NOP'?false:!!bits[ref],count:coil.type==='NOP'?null:states[ref]?.count??null};
@@ -177,7 +178,43 @@
   }
   const physical={};for(let i=1;i<=(Number.isInteger(limits.outputCount)?limits.outputCount:16);i++)physical['Q'+i]=!!bits['Q'+i];
   mem.values=bits;mem.blocks=states;mem.lastTime=now;mem._ladderOwnedM=[...assignedM];
-  return {ok:true,outputs:physical,memory:mem,traces};
+  return {ok:true,outputs:physical,memory:mem,traces,resetCounters,resetRungs};
+ }
+ // Counter RESET is scan-priority, including resets activated indirectly through
+ // other counters and M/Q contacts. Replay only when a later RESET could have
+ // left an earlier consumer stale; each pass starts from the SAME pre-scan
+ // memory, so timer time and count edges are never applied more than once.
+ function scan(source,inputValues,memory={},now=0,limits={}){
+  const needsReplay=Array.isArray(source?.rungs)&&source.rungs.some((r,i)=>r?.coil?.type==='RESET'&&r.coil.ref?.[0]==='C'&&
+   source.rungs.slice(0,i).some(earlier=>Array.isArray(earlier?.paths)&&
+    earlier.paths.some(path=>Array.isArray(path)&&path.some(c=>c?.ref===r.coil.ref))));
+  if(!needsReplay){
+   const result=scanPass(source,inputValues,memory,now,limits);
+   delete result.resetCounters;delete result.resetRungs;
+   return result;
+  }
+  const target=memory&&typeof memory==='object'?memory:{};
+  const snapshot={...target,values:{...(target.values||{})},
+   blocks:Object.fromEntries(Object.entries(target.blocks||{}).map(([ref,s])=>[ref,{...s}]))};
+  const fresh=()=>({...snapshot,values:{...snapshot.values},
+   blocks:Object.fromEntries(Object.entries(snapshot.blocks).map(([ref,s])=>[ref,{...s}]))});
+  const forced=new Set(),applied=new Set();
+  // At most 16 distinct counters can be reset; a final pass commits the
+  // monotone reset closure. The bounded loop cannot hang on feedback cycles.
+  for(let pass=0;pass<=16;pass++){
+   const draft=fresh();
+   const result=scanPass(source,inputValues,draft,now,limits,forced);
+   if(!result.ok){delete result.resetCounters;delete result.resetRungs;return result;}
+   for(const id of result.resetRungs)applied.add(id);
+   const newRefs=[...result.resetCounters].filter(ref=>!forced.has(ref));
+   if(newRefs.length){for(const ref of newRefs)forced.add(ref);continue;}
+   for(const trace of result.traces)if(applied.has(trace.id))trace.resetApplied=true;
+   Object.assign(target,draft);
+   result.memory=target;
+   delete result.resetCounters;delete result.resetRungs;
+   return result;
+  }
+  return {ok:false,error:'Sayaç RESET çözümü güvenli şekilde tamamlanamadı.',outputs:{},memory:target,traces:[]};
  }
  function blank(){return {version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};}
  function supportedPLC(d){
