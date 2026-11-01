@@ -36,6 +36,9 @@
   }
   // Inherited xml:base can redirect a permitted relative assets/ image to a remote host.
   for(const el of [svg,...(svg.querySelectorAll('*')||[])]){
+   // Event-handler SVG attributes can execute after print preparation appends the clone.
+   for(const attr of el?.attributes||[])if(/^on[a-z]/i.test(attr.name||''))
+    return {ok:false,error:'PDF için etkin SVG olay işleyicileri desteklenmiyor.'};
    if(el?.getAttribute?.('xml:base')!=null||
       el?.getAttributeNS?.('http://www.w3.org/XML/1998/namespace','base')!=null)
     return {ok:false,error:'PDF için XML temel adresi desteklenmiyor.'};
