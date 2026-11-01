@@ -208,6 +208,15 @@
             throw Error('Pano malzeme geometrisi geçersiz.');
         }
       }
+      // Keep saved panel mounting identities consistent with the panel editor.
+      // Wire IDs remain in their existing namespace and retain their old contract.
+      const mountIds=new Set(panelIds);
+      for(const kind of ['rails','ducts'])for(const part of p.panel[kind]||[]){
+        const id=part?.id;
+        if(typeof id!=='string'||!id.trim()||mountIds.has(id))
+          throw Error('Pano ray/kanal kimliği eksik veya tekrarlı.');
+        mountIds.add(id);
+      }
       const panelWireIds=new Set();
       for(const wire of p.panel.wires||[]){
         if(!wire||typeof wire!=='object'||Array.isArray(wire))
