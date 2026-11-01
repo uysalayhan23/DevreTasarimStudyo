@@ -179,6 +179,9 @@
         throw Error('Pano malzeme listesi geçersiz.');
       if(p.panel.wires!==undefined&&!Array.isArray(p.panel.wires))
         throw Error('Pano kablo listesi geçersiz.');
+      // Reject corrupt rail/duct collections before panel.normalize silently discards them.
+      for(const key of ['rails','ducts'])if(p.panel[key]!=null&&!Array.isArray(p.panel[key]))
+        throw Error('Pano '+key+' listesi geçersiz.');
       // Apply the established schematic collection limits to the panel workspace too.
       if((p.panel.items?.length||0)>10000||(p.panel.wires?.length||0)>40000)
         throw Error('Pano projesi eğitim çalışma alanı için çok büyük.');
