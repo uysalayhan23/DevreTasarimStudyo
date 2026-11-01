@@ -643,7 +643,7 @@
       const base=byId?.[instance?.typeId];if(!base)continue;
       const d=materialDefinition(base,options);
       if(d===base||!d._physicalMaterialNormalized)continue;
-      const scale=Number(instance.materialScale)>0?Number(instance.materialScale):1,rotation=((Number(instance.rotation)||0)%360+360)%360,quarter=rotation===90||rotation===270;
+      const requestedScale=Number(instance.materialScale),scale=Number.isFinite(requestedScale)&&requestedScale>0?Math.max(.25,Math.min(3,requestedScale)):1,rotation=((Number(instance.rotation)||0)%360+360)%360,quarter=rotation===90||rotation===270;
       const w=d.w*scale,h=d.h*scale,bw=quarter?h:w,bh=quarter?w:h,cx=Number(instance.x)+w/2,cy=Number(instance.y)+h/2;
       if(![cx,cy,bw,bh].every(Number.isFinite))continue;
       rows.push({id:instance.id||null,ref:instance.ref||null,typeId:instance.typeId,productKey:get(base)?.productKey||null,left:cx-bw/2,top:cy-bh/2,right:cx+bw/2,bottom:cy+bh/2,width:bw,height:bh});
