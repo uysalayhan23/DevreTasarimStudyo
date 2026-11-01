@@ -148,7 +148,7 @@
     if(d.kind==='pwm-generator'||d.id==='virtual-pwm-generator-v1')return Design.markup(d,c);
     if(d.materialSymbol||d.designMaterial)return Design.markup(d,c);
     if(d.id==='sensor-level-analog'){
-      const handle=String(c.id||d.id).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x])),id='level-'+(c.id||d.id).replace(/[^a-zA-Z0-9_-]/g,'_'),position=Math.max(0,Math.min(100,Number(c.analogPosition??50))),y=220-position*1.4;
+      const handle=String(c.id||d.id).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x])),id='level-'+(c.id||d.id).replace(/[^a-zA-Z0-9_-]/g,'_'),rawPosition=Number(c.analogPosition??50),position=Number.isFinite(rawPosition)?Math.max(0,Math.min(100,rawPosition)):50,y=220-position*1.4;
       return `<g class="material-layer" data-material="level-reference"><svg x="20" y="8" width="80" height="244" viewBox="55 0 60 276" overflow="visible"><defs><clipPath id="${id}-body"><path fill="black" d="M63 3H109V24H94V47H101V57H94V73H84V131H76V73H63V60H55V48H62Z M76 170H84V248H93V257H84V268H76V257H66V247H76Z"/></clipPath><clipPath id="${id}-float"><rect fill="black" x="63" y="131" width="32" height="39" rx="2"/></clipPath></defs><image href="assets/products/level-reference-v19.jpg" width="170" height="300" clip-path="url(#${id}-body)"/><path d="M80 73V250" stroke="#8b9697" stroke-width="6"/><path d="M78 73V250" stroke="#dfe9e5" stroke-width="2"/><g data-analog-handle="${handle}" style="cursor:ns-resize" transform="translate(0 ${y-131})"><image href="assets/products/level-reference-v19.jpg" width="170" height="300" clip-path="url(#${id}-float)"/></g></svg></g>`;
     }
     if(d.isPLC){
