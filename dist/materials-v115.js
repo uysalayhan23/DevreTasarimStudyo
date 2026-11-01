@@ -78,8 +78,11 @@
     art=maskedPhoto('baykon-front-v115.png','326 40 373 1440',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="334" y="48" width="357" height="1424" rx="24"/>');
     if(s?.on)art+=`<circle cx="43" cy="205" r="4" fill="#60dc58"/><circle cx="93" cy="205" r="4" fill="${s.error?'#f55':'#382d2d'}"/>`;
    }else if(d.instrument==='waz5'){
-    // The old asset is preserved, but its visible frame now fills the verified physical envelope.
-    art=maskedPhoto('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="401" y="34" width="212" height="1466" rx="16"/>');
+    // The 17.5 x 92.4 mm manufacturer envelope is wider than the image's
+    // aspect-preserved crop. Show the housing at real scene scale without
+    // stretching the original photograph or moving any cable terminals.
+    art=`<rect class="waz5-physical-envelope" x="0" y="0" width="${d.w}" height="${d.h}" rx="1.5" fill="#e6ecef" stroke="#67747d" stroke-width="0.7"/>`+
+      maskedPhoto('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="401" y="34" width="212" height="1466" rx="16"/>');
     art+=text(d.w/2,d.h*(205/460),'2 + 0–10V − 3',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(225/460),'V → I',Math.max(5,d.w*(12/180)))+text(d.w/2,d.h*(245/460),'7 + 4–20mA − 8',Math.max(4,d.w*(7/180)))+text(d.w/2,d.h*(280/460),'4/10 +24V',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(298/460),'5/11 0V',Math.max(4,d.w*(8/180)));
    }
    if(d.instrument==='hmt'&&(d.w!==240||d.h!==240))art=`<g class="instrument-scale-only" transform="scale(${d.w/240} ${d.h/240})">${art}</g>`;
