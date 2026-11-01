@@ -8,6 +8,9 @@
   let all;
   try{all=svg.querySelectorAll('*')}catch{return {ok:false,error:'PNG SVG kaynakları incelenemedi.'}}
   for(const el of [svg,...(all||[])]){
+   // Match the PDF guard: active event attributes are not offline-safe PNG art.
+   for(const attr of el?.attributes||[])if(/^on[a-z]/i.test(attr.name||''))
+    return {ok:false,error:'PNG için etkin SVG olay işleyicileri desteklenmiyor.'};
    if(el?.getAttribute?.('xml:base')!=null||
       el?.getAttributeNS?.('http://www.w3.org/XML/1998/namespace','base')!=null)
     return {ok:false,error:'PNG için XML temel adresi desteklenmiyor.'};
