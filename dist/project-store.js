@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const uid=()=> 'dts-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9);
-  const filename=name=>(String(name||'Yeni Proje').replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_').replace(/[. ]+$/,'').slice(0,100)||'Yeni Proje')+'.odsdevre';
+  const filename=name=>{const base=(String(name||'Yeni Proje').replace(/[<>:"/\\|?*\u0000-\u001f]/g,'_').replace(/[. ]+$/,'').slice(0,100)||'Yeni Proje');return (/^(?:con|prn|aux|nul|com[1-9¹²³]|lpt[1-9¹²³]|conin\$|conout\$)(?:[. ]|$)/i.test(base)?'_'+base:base)+'.odsdevre'};
   const CURRENT_VERSION=7,MIN_SUPPORTED_VERSION=5,LEGACY_BASELINE_VERSION=5;
   const MAX_PROJECT_BYTES=20*1024*1024;
   // Use UTF-8 byte limits for browser files and local persistence alike.
