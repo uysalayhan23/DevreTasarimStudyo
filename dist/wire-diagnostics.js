@@ -70,7 +70,8 @@
  // Visually mark only current DOM wire groups; leave wire color, endpoints and native solver untouched.
  function mark(scene,report,onlyWire=null){
   if(!scene||typeof scene.querySelectorAll!=='function')return 0;
-  const ids=new Set((report?.issues||[]).map(i=>String(i.wire)));
+  const nonWire=new Set(['duplicate-component-id','missing-component-id','duplicate-junction-id','missing-junction-id','invalid-junctions']);
+  const ids=new Set((report?.issues||[]).filter(i=>!nonWire.has(i.kind)).map(i=>String(i.wire)));
   let marked=0;
   for(const group of scene.querySelectorAll('[data-wire]')){
    const visible=ids.has(String(group.dataset?.wire))&&

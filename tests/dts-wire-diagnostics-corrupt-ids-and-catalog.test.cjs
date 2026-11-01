@@ -22,5 +22,5 @@ test('null pin records never crash or accidentally match a terminal',()=>{
 test('corrupt components/junctions collections produce diagnostics without throwing',()=>{
  const report=Audit.scan({components:{},junctions:{},wires:[{id:'w',from:{c:'s',p:'1'},to:{j:'missing'}}]},catalog);
  assert.equal(report.checked,1);
- assert.deepEqual(report.issues.map(i=>i.kind),['missing-component','unknown-junction']);
+ assert.deepEqual(report.issues.map(i=>i.kind),['invalid-junctions','missing-component','unknown-junction']);
 });
