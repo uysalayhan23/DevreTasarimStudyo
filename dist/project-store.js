@@ -179,6 +179,12 @@
         throw Error('Pano malzeme listesi geçersiz.');
       if(p.panel.wires!==undefined&&!Array.isArray(p.panel.wires))
         throw Error('Pano kablo listesi geçersiz.');
+      // Fail closed before the panel editor clamps saved physical mm dimensions.
+      for(const key of ['width','height','depth']){
+        const value=p.panel[key],min=key==='depth'?100:200,max=key==='depth'?800:2400;
+        if(value!=null&&(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max))
+          throw Error('Pano '+key+' fiziksel ölçüsü geçersiz.');
+      }
       // Reject corrupt rail/duct collections before panel.normalize silently discards them.
       for(const key of ['rails','ducts'])if(p.panel[key]!=null&&!Array.isArray(p.panel[key]))
         throw Error('Pano '+key+' listesi geçersiz.');
