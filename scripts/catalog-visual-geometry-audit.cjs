@@ -14,7 +14,8 @@ function inspect(items){
   const envelope=d.terminalEnvelopeBottomScene;
   const validEnvelope=external&&Number.isFinite(envelope)&&envelope>d.h;
   if(external&&!validEnvelope)issues.push({id:d.id,issue:'invalid-terminal-envelope'});
-  const pins=new Set();for(const p of Array.isArray(d.pins)?d.pins:[]){
+  if(!Array.isArray(d.pins)){issues.push({id:d.id,issue:'invalid-pin-collection'});continue}
+  const pins=new Set();for(const p of d.pins){
    if(!p||typeof p.id!=='string'||!p.id){issues.push({id:d.id,issue:'invalid-pin-id'});continue}
    if(pins.has(p.id))issues.push({id:d.id,issue:'duplicate-pin-id',pin:p.id});else pins.add(p.id);
    if(!Number.isFinite(p.x)||!Number.isFinite(p.y))issues.push({id:d.id,issue:'invalid-pin-point',pin:p.id});
