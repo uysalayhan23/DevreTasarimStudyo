@@ -26,6 +26,7 @@
   function legacySpec(d){
     if(['supply','supply3','supply-dc-plus','supply-dc-minus'].includes(d.kind))return {w:80,h:60,depth:10,mount:'external'};
     const id=d.id,g=d.classification?.group||d.catalogGroup,k=d.kind;
+    if(id==='nh-fuse-holder')return {w:105.8,h:202,depth:86.5,mount:'plate'}; // Siemens 3NP1133-1CA10 physical envelope (mm)
     if(d.isPLC)return {w:/cpu|işlemci/i.test(d.name)?110:45,h:100,depth:75,mount:'rail'};
     if(/^door-isolator/.test(id)||id==='packet-switch-3p'||/^layout-packet/.test(id))return {w:64,h:64,depth:80,mount:'door'};
     if(g==='buttons'||g==='lamps'||/pilot|layout-(lamp|start|stop|jog)/.test(id))return {w:32,h:32,depth:50,mount:'door'};
