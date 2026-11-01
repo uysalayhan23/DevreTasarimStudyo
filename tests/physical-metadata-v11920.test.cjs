@@ -498,12 +498,27 @@ test('physical terminal anchors override schematic boundary only when panel geom
   try{
     Physical.terminalAnchor=(d,pinId)=>pinId==='X'?{pinId:'X',xMm:12,yMm:18,side:'left',status:'verified',sourceUrl:'https://example.invalid/terminal-drawing'}:null;
     const d={id:'synthetic',w:100,h:100,pins:[{id:'X',label:'X',x:0,y:50,side:'left'}]};
-    const ready={id:'ready',x:100,y:200,w:50,h:80,depth:30,mount:'plate',panelGeometryStatus:'ready'};
+    // Verified terminal anchors require a ready physical frame AND matching manufacturer mm dimensions.
+    const ready={id:'ready',x:100,y:200,w:50,h:80,depth:30,mount:'plate',panelGeometryStatus:'ready',
+      dimensionStatus:'verified',physicalWidthMm:50,physicalHeightMm:80,physicalDepthMm:30};
     const verified=Wiring.ports(ready,d)[0];
     assert.equal(verified.x,112);
     assert.equal(verified.y,218);
     assert.equal(verified.geometryStatus,'verified');
     assert.match(verified.geometrySource,/^https:\/\//);
+
+    // An incomplete/mismatched physical frame cannot claim verified terminal coordinates.
+    for(const incomplete of [
+      {...ready,id:'missing-physical-width',physicalWidthMm:undefined},
+      {...ready,id:'mismatched-width',physicalWidthMm:52},
+      {...ready,id:'approximate',dimensionStatus:'approximate'}
+    ]){
+      const port=Wiring.ports(incomplete,d)[0];
+      assert.equal(port.x,100);
+      assert.equal(port.y,240);
+      assert.equal(port.geometryStatus,'approximate');
+      assert.equal(port.geometrySource,null);
+    }
 
     const staged={...ready,id:'staged',panelGeometryStatus:'staged'};
     const fallback=Wiring.ports(staged,d)[0];
