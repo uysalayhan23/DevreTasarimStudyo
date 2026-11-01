@@ -12,7 +12,7 @@ function inspect(items){
   // The declared envelope permits REVIEW, not an unqualified geometry PASS.
   const external=d.terminalRowOutsideVisual===true;
   const envelope=d.terminalEnvelopeBottomScene;
-  const validEnvelope=external&&Number.isFinite(envelope)&&envelope>d.h;
+  const validEnvelope=external&&d.id==='temperature-controller'&&Number.isFinite(envelope)&&envelope>d.h;
   if(external&&!validEnvelope)issues.push({id:d.id,issue:'invalid-terminal-envelope'});
   if(!Array.isArray(d.pins)){issues.push({id:d.id,issue:'invalid-pin-collection'});continue}
   const pins=new Set();for(const p of d.pins){
