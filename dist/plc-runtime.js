@@ -56,11 +56,21 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   let result;
   try{result=Ladder?.scan?.(c.ladderProgram,Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value])),c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
   catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
-  if(result?.ok){
+  // A malformed or stale success-shaped scan is a fault, never an energized Q.
+  const rungs=Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[];
+  const healthy=result?.ok===true&&result.outputs&&typeof result.outputs==='object'&&
+   result.memory&&typeof result.memory==='object'&&Array.isArray(result.traces)&&
+   result.traces.length===rungs.length&&result.traces.every((t,i)=>t&&
+    t.id===rungs[i]?.id&&t.coil===rungs[i]?.coil?.ref&&
+    typeof t.active==='boolean'&&typeof t.value==='boolean'&&
+    Array.isArray(t.pathStates)&&t.pathStates.length===rungs[i]?.paths?.length&&
+    t.pathStates.every(v=>typeof v==='boolean')&&t.active===t.pathStates.some(Boolean))&&
+   outputPins.every((p,i)=>typeof result.outputs['Q'+(i+1)]==='boolean');
+  if(healthy){
    c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
    return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map((x,i)=>[x.id,!!result.outputs['Q'+(i+1)]]))};
   }
-  c._dtsLadderError=result?.error||'Geçersiz Ladder programı';
+  c._dtsLadderError=result?.ok?'Ladder tarama sonucu geçersiz.':(result?.error||'Geçersiz Ladder programı');
   c._dtsLadderTraces=[];delete c._dtsLadderMemory;
   return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map(x=>[x.id,false]))};
  }
