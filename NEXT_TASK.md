@@ -13,3 +13,11 @@ SC078–081'in mevcut native ve pedagojik kazanımlarını koru; geçtiği bildi
 
 ## Yasaklar
 Actions, Work/Codex, force-push, geçici dal, golden/PASS/HOLD bozulması, eski QA tekrarı, kanıtsız COMPLETE ve rapor-only commit yok. Yalnız gerçek onarım ve çalışan kabul mekanizması değişikliği `[skip ci]` ile doğrudan `main` dalına. İş sonunda gerçek HEAD, uzak blob SHA, doğrulanmış tam kabul sayısı ve kullanıcıdan beklenen tek işlemi açıkça bildir.
+
+## V3 yeni aktif iş — P4-05: 703 malzemede 3D ölçek ve terminal görsel denetimi
+Kullanıcı kabulü (2026-11-01): Siemens 3NP1133 boyutlandırması dahil kütüphanenin tüm **703 temel malzemesi** sırayla denetlenecek. Genişletilmiş katalog varlıkları ayrıca sayılmalı, 703 ile karıştırılmamalı.
+- Her kayıtta üretici gerçek ölçüsü / gövde footprint'i; kaynak fotoğraf, viewBox ve preserveAspectRatio; 2D/3D terminal numarası ve koordinatları; sol/sağ etiket yönü; çakışma ve taşma; dönüş/ölçek ve kablo-uç eşleşmesi ölçülsün.
+- `node scripts/catalog-visual-geometry-audit.cjs` başlangıçta 703 kaydı tarar. İlk taramada 14 uyarının tamamı `temperature-controller` dışarı taşan terminalleridir; bunlar görüntü ve katalog kanıtı olmadan kusur ilan edilmez (**REVIEW**).
+- Öncelik 3NP1133 kullanıcı görsel boyut kabulü; katalog ile görselin fiziksel ölçeğini kanıtla. Üretici ölçüsü olmadan yapay küçültme/büyütme yasak. Sonrasında katalogdaki diğer açık geometri adaylarını sırayla onar.
+- Her malzeme için PASS / REVIEW / HOLD ve açık kusur kimliği ayrılmalı. Geçerli malzemeyi yeniden çizme. Tespit → minimal kaynak onarımı → özgün render ve pozitif-negatif native test → yalnız PASS sonrası `[skip ci]` main + uzak blob SHA.
+- WAZ5/MT031 görsel kabulleri, P3-03 otomasyon alanı, performans, SC1194 ve 3D kablo güzergâhı korunacak. Windows/Edge görsel kabulü NOT_RUN iken PASS sayılmaz.
