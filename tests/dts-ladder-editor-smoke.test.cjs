@@ -22,10 +22,16 @@ test('Starter has two seal-in paths and NC STOP in both paths',()=>{
  assert.equal(L.validate(p,{inputCount:6,outputCount:4}).ok,true);
 });
 
-test('Live Ladder monitor shows actual saved rung trace and counter',()=>{
- const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',active:true,value:true,count:3}],true,'dts-ladder-v1',true);
+test('Live Ladder monitor shows the validated saved OUT trace without false counter data',()=>{
+ const p=L.blank(),rows=E.monitorRows(p,p,[{id:'R1',coil:'Q1',pathStates:[true],active:true,value:true,count:3}],true,'dts-ladder-v1',true);
  assert.equal(rows[0].status,'AKTİF');assert.equal(rows[0].active,true);
- assert.equal(E.signalText(rows[0]),'1 · Sayaç 3');
+ assert.equal(E.signalText(rows[0]),'1');
+});
+test('Live Ladder counter trace displays its actual count and preset',()=>{
+ const p={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'CTU',ref:'C1',preset:5}}]};
+ const rows=E.monitorRows(p,p,[{id:'R1',coil:'C1',pathStates:[true],active:true,value:false,count:3}],true,'dts-ladder-v1',true);
+ assert.equal(rows[0].status,'AKTİF');
+ assert.equal(E.signalText(rows[0]),'0 · Sayaç 3/5');
 });
 test('Unsaved Ladder draft never shows misleading saved-program trace',()=>{
  const p=L.blank(),draft=JSON.parse(JSON.stringify(p));draft.rungs[0].paths[0][0].type='NC';

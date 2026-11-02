@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const E=require('../dist/ladder-editor.js');
 const program={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
-const traces=[{id:'R1',active:true,value:true,pathStates:[true]}];
+const traces=[{id:'R1',coil:'Q1',active:true,value:true,pathStates:[true]}];
 const row=(running,powered,error,runtimeMode)=>E.monitorRows(program,program,traces,running,'dts-ladder-v1',powered,error,runtimeMode)[0];
 test('live verified Ladder runtime displays network signal',()=>{
  const r=row(true,true,null,'dts-ladder-v1');assert.equal(r.active,true);assert.equal(r.value,true);

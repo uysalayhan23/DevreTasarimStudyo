@@ -54,6 +54,8 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
  if(c.plcProgram==='dts-ladder-v1'){
   const inputBits=Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value]));
+  // scan() mutates its memory argument; snapshot Q before it runs.
+  const previousQ=outputPins.map((p,i)=>c._dtsLadderMemory?.values?.['Q'+(i+1)]===true);
   let result;
   try{result=Ladder?.scan?.(c.ladderProgram,inputBits,c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
   catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
@@ -81,11 +83,21 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
     (rungs[i]?.coil?.type!=='NOP'||t.value===false))&&
    outputPins.every((p,i)=>{
     const ref='Q'+(i+1);
-    const lastValue=rungs.reduce((value,r,j)=>r?.coil?.ref===ref&&
-     ['OUT','SET','RESET'].includes(r.coil.type)?result.traces[j].value:value,false);
-    return typeof result.outputs[ref]==='boolean'&&
+    // Check each Q write against its actual SET/RESET/OUT transition.
+    // An inactive SET cannot invent a new latch; an active RESET cannot retain Q=1.
+    const owned=rungs.some(r=>r?.coil?.ref===ref&&['OUT','SET'].includes(r.coil.type));
+    let expected=owned&&previousQ[i],consistent=true;
+    rungs.forEach((r,j)=>{
+     if(r?.coil?.ref!==ref||!['OUT','SET','RESET'].includes(r.coil.type))return;
+     const active=result.traces[j].active;
+     if(r.coil.type==='OUT')expected=active;
+     else if(r.coil.type==='SET'&&active)expected=true;
+     else if(r.coil.type==='RESET'&&active)expected=false;
+     if(result.traces[j].value!==expected)consistent=false;
+    });
+    return consistent&&typeof result.outputs[ref]==='boolean'&&
      typeof result.memory.values[ref]==='boolean'&&
-     result.outputs[ref]===result.memory.values[ref]&&result.outputs[ref]===lastValue;
+     result.outputs[ref]===result.memory.values[ref]&&result.outputs[ref]===expected;
    });
   if(healthy){
    c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
