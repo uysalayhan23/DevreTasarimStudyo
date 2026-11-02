@@ -234,12 +234,12 @@
   {id:'R1',paths:[[{type:'NO',ref:'I1'},{type:'NC',ref:'I2'}],[{type:'NO',ref:'Q1'},{type:'NC',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}
  ]});
  // Only saved, currently running programs may display live signals.
- function monitorRows(draft,saved,traces,running,mode,powered,scanError=null,runtimeMode='dts-ladder-v1',hardwareLimits={}){
+ function monitorRows(draft,saved,traces,running,mode,powered,scanError=null,runtimeMode='dts-ladder-v1',hardwareLimits={},telemetryLive=null){
   const rows=Array.isArray(draft?.rungs)?draft.rungs:[];
   const failed=typeof scanError==='string'&&scanError.trim().length>0;
   // A saved but invalid program must not replay an older, shape-compatible trace.
   const validProgram=L?.validate?.(draft,hardwareLimits)?.ok===true;
-  const live=!!running&&validProgram&&!failed&&powered===true&&mode==='dts-ladder-v1'&&runtimeMode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved);
+  const live=!!running&&validProgram&&!failed&&powered===true&&mode==='dts-ladder-v1'&&runtimeMode==='dts-ladder-v1'&&JSON.stringify(draft)===JSON.stringify(saved)&&telemetryLive!==false;
   // Never replay a partial, reordered or malformed scan as current Network telemetry.
   const traceReady=live&&Array.isArray(traces)&&traces.length===rows.length&&
    traces.every((t,i)=>t&&t.id===rows[i].id&&t.coil===rows[i].coil.ref&&
@@ -458,9 +458,11 @@
    const priorRungId=priorElement?.dataset?.rungId||null;
    const oldScroll=overlay.querySelector('.dts-ladder-rungs')?.scrollTop||0;
    const advancedOpen=overlay.querySelector('.dts-ladder-advanced')?.open===true;
-   const cp=available(),valid=L.validate(active.draft,limits()),views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program,limits());
+   const cp=available(),valid=L.validate(active.draft,limits());
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
-   const liveBits=live&&active.c._plcRuntime?.powered===true&&active.c._plcRuntime?.program==='dts-ladder-v1'&&!active.c._dtsLadderError?active.c._dtsLadderMemory?.values:null;
+   const telemetry=Monitor.snapshot(active.c,active.d,editor.running,live);
+   const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program,limits(),telemetry.live);
+   const liveBits=telemetry.live?active.c._dtsLadderMemory?.values:null;
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
    const canRun=canToggleLadder()&&canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'),limits());
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
@@ -486,7 +488,7 @@
     '<div class="dts-ladder-toolbox" role="group" aria-label="Ladder araç paleti" '+(diagramMode==='fbd'?'hidden':'')+'><strong>Komut paleti</strong><small>Kontak veya bloğu Network üzerine sürükleyin. Alternatif: paletten seçin, ekleme alanına tıklayın.</small><div class="dts-ladder-tool-list">'+
     Toolbox.tools.map(t=>'<button type="button" draggable="true" data-tool-id="'+t.id+'" aria-pressed="'+(selectedTool===t.id)+'" title="'+escape(t.label)+' sürükle veya seç"><span class="dts-tool-symbol">'+escape(t.symbol)+'</span><span>'+escape(t.label)+'</span></button>').join('')+
     '</div></div>'+ 
-    '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(Monitor.snapshot(active.c,active.d,editor.running,live))+'</div>'+ 
+    '<div id="dtsLadderLivePanel" class="dts-ladder-live" aria-label="Sanal PLC durumları">'+Monitor.markup(telemetry)+'</div>'+ 
     (active.recoveryWarning?'<p class="dts-ladder-hint" role="alert">Kayıtlı Ladder programı geçersiz veya eksik. Güvenli BOŞ/NOP taslak açıldı; hiçbir çıkış otomatik atanmadı. Gerekirse programınızı elle düzenleyip açıkça kaydedin.</p>':'')+
     '<div class="dts-ladder-hint">Sanal girişler I1, I2… · Sanal çıkışlar Q1, Q2… · M bellek, T zamanlayıcı, C sayaç. Kontaklar seri AND, paralel yollar OR çalışır. Gerçek tesisat güvenlik denetimi değildir.</div>'+
     '<main class="dts-ladder-rungs"><div class="dts-ladder-networks-bar"><strong>'+active.draft.rungs.length+' Network · LAD</strong>'+(focusedNetwork?'<button type="button" data-action="all-networks">▣ Tüm Networkleri göster</button>':'<span>Her Network ayrı bir çalışma penceresidir.</span>')+'</div>'+active.draft.rungs.map((r,ri)=>{
@@ -572,7 +574,10 @@
    overlay.querySelector(firstOpen?'.dts-ladder-dialog':'#dtsLadderTarget')?.focus();
    if(!monitorTimer)monitorTimer=root.setInterval(()=>{
     if(overlay.hidden||!active)return;
-    const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program,limits());
+    const liveSaved=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
+      JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
+    const telemetry=Monitor.snapshot(active.c,active.d,editor.running,liveSaved);
+    const views=monitorRows(active.draft,active.c.ladderProgram,active.c._dtsLadderTraces,editor.running,active.c.plcProgram,active.c._plcRuntime?.powered,active.c._dtsLadderError,active.c._plcRuntime?.program,limits(),telemetry.live);
     overlay.querySelectorAll('.dts-ladder-rung').forEach((el,i)=>{
      const row=views[i];if(!row)return;
      el.classList.toggle('active',row.active);
@@ -581,7 +586,7 @@
      if(value)value.textContent=signalText(row);
      const diagram=el.querySelector('[data-diagram]'),shown=editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
        JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
-     const bits=shown&&active.c._plcRuntime?.powered===true&&active.c._plcRuntime?.program==='dts-ladder-v1'&&!active.c._dtsLadderError?active.c._dtsLadderMemory?.values:null;
+     const bits=telemetry.live?active.c._dtsLadderMemory?.values:null;
      if(diagram){
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
       if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]'))){
@@ -590,11 +595,9 @@
       }
      }
     });
-    const liveSaved=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&
-      JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
     const hud=overlay.querySelector('#dtsLadderLivePanel');
     if(hud){
-      const info=Monitor.snapshot(active.c,active.d,editor.running,liveSaved);
+      const info=telemetry;
       const stateKey=JSON.stringify(info);
       if(hud.dataset.snapshotKey!==stateKey){hud.innerHTML=Monitor.markup(info);hud.dataset.snapshotKey=stateKey}
     }
