@@ -56,6 +56,10 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   const inputBits=Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value]));
   // scan() mutates its memory argument; snapshot Q before it runs.
   const previousQ=outputPins.map((p,i)=>c._dtsLadderMemory?.values?.['Q'+(i+1)]===true);
+  // Preserve pre-scan M latch values: scan() mutates its memory argument.
+  const previousM=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
+   .filter(r=>r?.coil?.ref?.[0]==='M'&&['OUT','SET'].includes(r.coil.type))
+   .map(r=>[r.coil.ref,c._dtsLadderMemory?.values?.[r.coil.ref]===true]));
   let result;
   try{result=Ladder?.scan?.(c.ladderProgram,inputBits,c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
   catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
@@ -103,6 +107,21 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
     return consistent&&typeof result.outputs[ref]==='boolean'&&
      typeof result.memory.values[ref]==='boolean'&&
      result.outputs[ref]===result.memory.values[ref]&&result.outputs[ref]===expected;
+   })&&Object.entries(previousM).every(([ref,wasSet])=>{
+    // A forged M latch must not energize a downstream Q through an otherwise
+    // success-shaped scan. Verify every M OUT/SET/RESET transition in order.
+    let expected=wasSet,consistent=true;
+    rungs.forEach((r,j)=>{
+     if(r?.coil?.ref!==ref||!['OUT','SET','RESET'].includes(r.coil.type))return;
+     const active=result.traces[j].active;
+     if(r.coil.type==='OUT')expected=active;
+     else if(r.coil.type==='SET'&&active)expected=true;
+     else if(r.coil.type==='RESET'&&active)expected=false;
+     if(result.traces[j].value!==expected)consistent=false;
+    });
+    const observed=result.memory.values[ref];
+    return consistent&&(observed===undefined||typeof observed==='boolean')&&
+     (observed===true)===expected;
    });
   if(healthy){
    c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
