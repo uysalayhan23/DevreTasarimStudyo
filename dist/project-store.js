@@ -243,6 +243,12 @@
           throw Error('Pano kablo kanalı yönü geçersiz.');
         mountIds.add(id);
       }
+      // An explicitly selected DIN rail must still exist in this panel.
+      // Legacy rail-mounted parts without a railId remain readable.
+      const railIds=new Set((p.panel.rails||[]).map(r=>r.id));
+      for(const item of p.panel.items||[])if(item.mount==='rail'&&item.railId!==undefined&&
+         (typeof item.railId!=='string'||!railIds.has(item.railId)))
+        throw Error('Pano ray montaj referansı geçersiz.');
       const panelWireIds=new Set();
       for(const wire of p.panel.wires||[]){
         if(!wire||typeof wire!=='object'||Array.isArray(wire))
