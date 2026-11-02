@@ -60,6 +60,10 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   const previousM=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
    .filter(r=>r?.coil?.ref?.[0]==='M'&&['OUT','SET'].includes(r.coil.type))
    .map(r=>[r.coil.ref,c._dtsLadderMemory?.values?.[r.coil.ref]===true]));
+  // Snapshot counter state before scan mutates its memory object.
+  const previousCounters=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
+   .filter(r=>['CTU','CTD'].includes(r?.coil?.type))
+   .map(r=>[r.coil.ref,{...(c._dtsLadderMemory?.blocks?.[r.coil.ref]||{})}]));
   let result;
   try{result=Ladder?.scan?.(c.ladderProgram,inputBits,c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
   catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
@@ -107,6 +111,28 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
     return consistent&&typeof result.outputs[ref]==='boolean'&&
      typeof result.memory.values[ref]==='boolean'&&
      result.outputs[ref]===result.memory.values[ref]&&result.outputs[ref]===expected;
+   })&&rungs.every((r,j)=>{
+    if(!['CTU','CTD'].includes(r?.coil?.type))return true;
+    const ref=r.coil.ref,type=r.coil.type,preset=r.coil.preset;
+    const trace=result.traces[j],count=trace.count,finalCount=result.memory.blocks?.[ref]?.count;
+    const initial=type==='CTD'?preset:0,old=previousCounters[ref]||{};
+    const rebased=(old.kind&&old.kind!==type)||
+     (Number.isInteger(old.preset)&&old.preset!==preset);
+    const priorCount=rebased?initial:Number.isInteger(old.count)?old.count:initial;
+    const priorActive=rebased?trace.active:!!old.prev;
+    const expected=rebased?initial:trace.active&&!priorActive?
+     Math.max(0,Math.min(65535,priorCount+(type==='CTU'?1:-1))):priorCount;
+    const resets=rungs.map((next,k)=>({next,k})).filter(x=>
+     x.next?.coil?.type==='RESET'&&x.next.coil.ref===ref&&
+     (result.traces[x.k].active||result.traces[x.k].resetApplied===true));
+    const resetBefore=resets.some(x=>x.k<j),resetAfter=resets.some(x=>x.k>j);
+    return Number.isSafeInteger(count)&&count>=0&&count<=65535&&
+     Number.isSafeInteger(finalCount)&&finalCount>=0&&finalCount<=65535&&
+     trace.value===(type==='CTU'?count>=preset:count===0)&&
+     (resetBefore?count===initial:resetAfter?
+      (count===expected||count===initial):count===expected)&&
+     (resetAfter?(finalCount===initial&&result.memory.values[ref]===false):
+      finalCount===count);
    })&&Object.entries(previousM).every(([ref,wasSet])=>{
     // A forged M latch must not energize a downstream Q through an otherwise
     // success-shaped scan. Verify every M OUT/SET/RESET transition in order.
