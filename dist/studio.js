@@ -116,8 +116,48 @@
     }
   }
   async function save(saveAs=false){
-    if(isHome||safety.visible)return;if(!saveAs&&protectedNotice())return;const project=protectedProject()&&templateOriginal?Projects.clean(templateOriginal):E.getProject(),button=saveAs?$('#exportBtn'):$('#saveBtn');if(button.disabled)return;button.disabled=true;
-    try{const result=await store.save(project,{saveAs});if(result.cancelled){E.toast('Kaydetme iptal edildi; mevcut proje değişmedi.');return}if(result.requiresOpen){E.toast('Kopya için indirme isteği gönderildi. Dosyanın indirildiğini doğrulayın; düzenlemek için Dosya Aç kullanın.');if(result.cacheWarning)E.toast('Tarayıcı taslak yedeği kaydedilemedi; indirilen dosyayı ayrıca doğrulayın.');return}if(saveAs&&result.saved){load(result.project);markClean();E.toast('Kopya kaydedildi. Artık düzenleyebilirsiniz.')}else if(result.saved){markClean();E.toast(result.name+' dosyasına kaydedildi.')}else if(result.download){E.toast('İndirme isteği gönderildi; dosyanın gerçekten indirildiğini doğrulayın. Değişiklikler tarayıcı taslağında korunuyor.')}else throw Error('Kaydetme sonucu doğrulanamadı.');try{localStorage.setItem('ods-project',JSON.stringify(Projects.clean(E.getProject())))}catch(e){E.toast('Dosya işlemi tamamlandı; tarayıcı taslak yedeği güncellenemedi.')}if(result.cacheWarning)E.toast('Dosya işlemi tamamlandı; tarayıcı proje arşivi güncellenemedi.')}catch(e){E.toast('Kaydedilemedi: '+e.message)}finally{button.disabled=false}
+    if(isHome||safety.visible)return;
+    if(!saveAs&&protectedNotice())return;
+    const openedProject=E.getProject();
+    const project=protectedProject()&&templateOriginal?Projects.clean(templateOriginal):openedProject;
+    const button=saveAs?$('#exportBtn'):$('#saveBtn');
+    if(button.disabled)return;
+    // File pickers and disk writes are asynchronous. The editor can change
+    // while the saved snapshot is being written. Never mark new edits clean or
+    // replace the user's live project with an older Save As result.
+    const contentSignature=value=>{
+      const copy={...Projects.clean(value)};
+      delete copy.projectId;delete copy.updatedAt;
+      return JSON.stringify(copy);
+    };
+    const before=contentSignature(openedProject);
+    const stillCurrent=()=>!isHome&&!safety.visible&&E.getProject()===openedProject&&
+      contentSignature(openedProject)===before;
+    button.disabled=true;
+    try{
+      const result=await store.save(project,{saveAs});
+      if(result.cancelled){E.toast('Kaydetme iptal edildi; mevcut proje değişmedi.');return}
+      if(result.requiresOpen){
+        E.toast('Kopya için indirme isteği gönderildi. Dosyanın indirildiğini doğrulayın; düzenlemek için Dosya Aç kullanın.');
+        if(result.cacheWarning)E.toast('Tarayıcı taslak yedeği kaydedilemedi; indirilen dosyayı ayrıca doğrulayın.');
+        return;
+      }
+      if(saveAs&&result.saved){
+        if(stillCurrent()){
+          load(result.project);markClean();
+          E.toast('Kopya kaydedildi. Artık düzenleyebilirsiniz.');
+        }else E.toast('Kopya dosyası kaydedildi, ancak bu sırada proje değişti. Mevcut çalışma korunuyor; yeni değişiklikleri ayrıca kaydedin.');
+      }else if(result.saved){
+        const unchanged=stillCurrent();
+        if(unchanged)markClean();
+        E.toast(result.name+' dosyasına kaydedildi.'+(unchanged?'':' Bu sırada yapılan yeni değişiklikler henüz kaydedilmedi.'));
+      }else if(result.download){
+        E.toast('İndirme isteği gönderildi; dosyanın gerçekten indirildiğini doğrulayın. Değişiklikler tarayıcı taslağında korunuyor.');
+      }else throw Error('Kaydetme sonucu doğrulanamadı.');
+      try{localStorage.setItem('ods-project',JSON.stringify(Projects.clean(E.getProject())))}
+      catch(e){E.toast('Dosya işlemi tamamlandı; tarayıcı taslak yedeği güncellenemedi.')}
+      if(result.cacheWarning)E.toast('Dosya işlemi tamamlandı; tarayıcı proje arşivi güncellenemedi.');
+    }catch(e){E.toast('Kaydedilemedi: '+e.message)}finally{button.disabled=false}
   }
   $('#projectFolderInput').onchange=async e=>{if(!e.target.files?.length)return;store.useFolderFiles(e.target.files);await renderProjects();$('#folderStatus').textContent+=' · Bu tarayıcıda klasör salt okunur; Kaydet dosya indirir.';e.target.value=''};
   $('#fileInput').onchange=async e=>{
