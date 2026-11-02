@@ -56,7 +56,10 @@
   // A removed Q coil must never keep energizing a physical output or feed a stale Q contact.
   // Preserve only outputs still assigned to a coil (including intentional SET latches).
   const assignedQ=new Set(source.rungs.filter(r=>['OUT','SET'].includes(r.coil.type)&&r.coil.ref?.[0]==='Q').map(r=>r.coil.ref));
-  for(let i=1;i<=16;i++)if(!assignedQ.has('Q'+i))bits['Q'+i]=false;
+  for(let i=1;i<=16;i++){
+   const ref='Q'+i;
+   if(!assignedQ.has(ref)||typeof bits[ref]!=='boolean')bits[ref]=false;
+  }
   // Track M writers so removing an OUT/SET clears only that previously-owned
   // bit. Independent M values and still-present SET latches must be preserved.
   const assignedM=new Set(source.rungs.filter(r=>['OUT','SET'].includes(r.coil.type)&&r.coil.ref?.[0]==='M').map(r=>r.coil.ref));
