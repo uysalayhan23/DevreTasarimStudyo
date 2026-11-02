@@ -593,8 +593,16 @@
       if(!telemetry.live&&diagramMode==='fbd')diagram.querySelectorAll('.dts-fbd-on').forEach(node=>node.classList.remove('dts-fbd-on'));
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
       if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]'))){
+       // A 300 ms redraw replaces focusable LAD/FBD symbols. Restore keyboard
+       // focus by its stable, validated contact/coil position after repaint.
+       const focused=diagram.contains(doc.activeElement)?doc.activeElement:null;
+       const contact=focused?.dataset?.ladderContact,coil=focused?.dataset?.ladderCoil;
+       const focusSelector=typeof contact==='string'&&/^(?:0|[1-9][0-9]*):(?:0|[1-9][0-9]*):(?:0|[1-9][0-9]*)$/.test(contact)?
+        '[data-ladder-contact="'+contact+'"]':typeof coil==='string'&&/^(?:0|[1-9][0-9]*)$/.test(coil)?
+        '[data-ladder-coil="'+coil+'"]':null;
        diagram.innerHTML=draw(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value,limits:limits()});
        diagram.dataset.signalKey=key;
+       if(focusSelector)diagram.querySelector(focusSelector)?.focus?.();
       }
      }
     });
