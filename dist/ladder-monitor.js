@@ -41,19 +41,27 @@
   // The physical inputs must match native scan memory and the shown paths.
   // A path with a false I contact cannot be live even if M/Q contacts also exist.
   const di=pins(d,'DI');
+  // The physical inputs and provable scan-time contacts must match the trace.
+  // Later M/Q/T/C writers can change a bit after an earlier rung reads it.
   const inputsAgree=traceReady&&(!c?.ladderProgram||(
    di.every((p,i)=>{
     const sampled=c?._dtsLadderMemory?.values?.['I'+(i+1)];
     return typeof sampled!=='boolean'||sampled===state?.inputs?.[p.id];
    })&&c.ladderProgram.rungs.every((r,i)=>r.paths.every((path,j)=>{
-    const truth=path.filter(x=>x.ref?.[0]==='I').map(x=>{
-     const pin=di[Number(x.ref.slice(1))-1];
-     const bit=state?.inputs?.[pin?.id];
-     return x.type==='NC'?!bit:!!bit;
-    });
+    const bits=c?._dtsLadderMemory?.values||{};
+    let unknown=false,blocked=false;
+    for(const contact of path){
+     const ref=contact.ref;
+     const pin=ref[0]==='I'?di[Number(ref.slice(1))-1]:null;
+     const laterWrite=ref[0]!=='I'&&c.ladderProgram.rungs.slice(i).some(next=>
+      next.coil?.ref===ref&&next.coil.type!=='NOP');
+     const value=pin?state?.inputs?.[pin.id]:bits[ref];
+     if(laterWrite||typeof value!=='boolean'){unknown=true;continue;}
+     if(!(contact.type==='NC'?!value:value))blocked=true;
+    }
     const reported=c._dtsLadderTraces[i].pathStates[j];
-    return path.every(x=>x.ref?.[0]==='I')?reported===(path.length>0&&truth.every(Boolean)):
-     !reported||truth.every(Boolean);
+    return path.length===0?reported===false:
+     blocked?reported===false:unknown||reported===true;
    }))));
   const live=!!running&&!!savedMatches&&!error&&mapped&&traceReady&&outputsAgree&&inputsAgree&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));

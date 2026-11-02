@@ -71,13 +71,18 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
     t.pathStates.every((v,j)=>{
      const path=rungs[i].paths[j];
      if(typeof v!=='boolean'||!Array.isArray(path))return false;
-     // An input contact that is physically open cannot energize a path.
-     const blocked=path.some(contact=>contact?.ref?.[0]==='I'&&
-      (contact.type==='NC'?inputBits[contact.ref]:!inputBits[contact.ref]));
-     if(v&&blocked)return false;
-     // For input-only paths the actual input bits determine the entire truth.
-     return path.length===0?v===false:
-      path.every(contact=>contact?.ref?.[0]==='I')?v===!blocked:true;
+     // Check every contact whose scan-time value is provable. A later
+     // M/Q/T/C writer may change a bit after this rung has read it.
+     let unknown=false,blocked=false;
+     for(const contact of path){
+      const ref=contact.ref;
+      const laterWrite=ref[0]!=='I'&&rungs.slice(i).some(next=>
+       next.coil?.ref===ref&&next.coil.type!=='NOP');
+      const bit=ref[0]==='I'?inputBits[ref]:result.memory.values[ref];
+      if(laterWrite||typeof bit!=='boolean'){unknown=true;continue;}
+      if(!(contact.type==='NC'?!bit:bit))blocked=true;
+     }
+     return path.length===0?v===false:blocked?v===false:unknown||v===true;
     })&&t.active===t.pathStates.some(Boolean)&&
     (rungs[i]?.coil?.type!=='OUT'||t.value===t.active)&&
     (rungs[i]?.coil?.type!=='NOP'||t.value===false))&&
