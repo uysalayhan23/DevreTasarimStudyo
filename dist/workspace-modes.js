@@ -5,7 +5,7 @@
   if(!doc||!panelAPI||typeof panelAPI.getState!=='function'||typeof panelAPI.setState!=='function')return null;
   const body=doc.body,button=doc.getElementById('dtsFullModeBtn'),badge=doc.getElementById('dtsFocusBadge'),sim=doc.getElementById('simulateBtn');
   if(!body||!button||!sim)return null;
-  let running=false,full=false,before=null,nativeRequested=false;
+  let running=false,full=false,before=null,nativeRequested=false,nativeRequestSerial=0;
   function focused(){return running||full}
   function apply(){
    body.classList.toggle('dts-sim-focus',running&&!full);
@@ -29,6 +29,8 @@
    running=newValue;apply();return true;
   }
   function exitNative(){
+   // Retire the previous browser request before a quick reentry can start another.
+   nativeRequestSerial++;
    if(nativeRequested&&doc.fullscreenElement===doc.documentElement&&typeof doc.exitFullscreen==='function'){
     try{const p=doc.exitFullscreen();p?.catch?.(()=>{});}catch{}
    }
@@ -50,6 +52,7 @@
    // The CSS full-workspace mode remains available if the browser refuses native fullscreen on file://.
    if(typeof doc.documentElement?.requestFullscreen==='function'){
     try{
+     const requestSerial=++nativeRequestSerial;
      const result=doc.documentElement.requestFullscreen();
      nativeRequested=true;
      result?.then?.(()=>{
@@ -58,7 +61,7 @@
       if(!full&&doc.fullscreenElement===doc.documentElement&&typeof doc.exitFullscreen==='function'){
        try{doc.exitFullscreen()?.catch?.(()=>{})}catch{}
       }
-     },()=>{nativeRequested=false});
+     },()=>{if(requestSerial===nativeRequestSerial)nativeRequested=false});
     }catch{nativeRequested=false}
    }
    return true;
