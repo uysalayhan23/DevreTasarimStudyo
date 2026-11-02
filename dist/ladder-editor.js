@@ -685,6 +685,7 @@
     overlay.querySelector('#dtsLadderImport')?.click();return;
    }
    if(type==='export-program'){
+    if(!canCommitDraft(active,editor)){editor.toast?.('PLC veya proje degisti. Eski Ladder taslagi disa aktarilmadi.');return}
     try{
      const data=ProgramIO.serialize(active.draft,limits(),active.c.label||active.c.id);
      const file=new Blob([data],{type:'application/json'});
