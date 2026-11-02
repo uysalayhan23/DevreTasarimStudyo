@@ -195,10 +195,10 @@
       for(const key of ['rails','ducts'])if(p.panel[key]!=null&&!Array.isArray(p.panel[key]))
         throw Error('Pano '+key+' listesi geçersiz.');
       // Apply the established schematic collection limits to the panel workspace too.
-      if((p.panel.items?.length||0)>10000||(p.panel.wires?.length||0)>40000)
+      if((p.panel.items?.length||0)>5000||(p.panel.wires?.length||0)>40000)
         throw Error('Pano projesi eğitim çalışma alanı için çok büyük.');
       // Mounting-only imports must not bypass the panel collection ceiling.
-      if((p.panel.rails?.length||0)>10000||(p.panel.ducts?.length||0)>10000)
+      if((p.panel.rails?.length||0)>1000||(p.panel.ducts?.length||0)>1000)
         throw Error('Pano ray/kanal sayısı eğitim çalışma alanı sınırını aşıyor.');
       const panelIds=new Set(),panelTerminalOwners=new Set();
       for(const item of p.panel.items||[]){
