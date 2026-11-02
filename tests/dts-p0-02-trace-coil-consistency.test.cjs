@@ -15,8 +15,8 @@ function checked(r,t){
  const p={version:1,rungs:[r]};
  assert.equal(L.validate(p,limits).ok,true);
  const state={powered:true,program:'dts-ladder-v1',
-  inputs:Object.fromEntries(d.pins.filter(x=>x.signalType==='DI').map(x=>[x.id,false])),
-  outputs:Object.fromEntries(d.pins.filter(x=>x.signalType==='DO').map(x=>[x.id,false]))};
+  inputs:Object.fromEntries(d.pins.filter(x=>x.signalType==='DI').map(x=>[x.id,x.id==='X10:7'&&r.paths?.[0]?.some(c=>c.type==='NO'&&c.ref==='I1')&&t.pathStates?.[0]===true])),
+  outputs:Object.fromEntries(d.pins.filter(x=>x.signalType==='DO').map(x=>[x.id,x.id==='X12:3'&&t.coil==='Q1'&&t.value===true]))};
  const cpu={plcProgram:'dts-ladder-v1',ladderProgram:p,_plcRuntime:state,_dtsLadderTraces:[t]};
  return {io:M.snapshot(cpu,d,true,true),
   row:E.monitorRows(p,p,[t],true,'dts-ladder-v1',true,null,'dts-ladder-v1')[0]};

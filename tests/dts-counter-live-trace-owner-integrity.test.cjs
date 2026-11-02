@@ -14,8 +14,8 @@ const cpu={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
  ...Array.from({length:4},(_,i)=>({id:'X12:'+(3+i),signalType:'DO'}))
 ]};
 function state(p,traces){
- const inputs=Object.fromEntries(cpu.pins.filter(p=>p.signalType==='DI').map(p=>[p.id,false]));
- const outputs=Object.fromEntries(cpu.pins.filter(p=>p.signalType==='DO').map(p=>[p.id,false]));
+ const inputs=Object.fromEntries(cpu.pins.filter(p=>p.signalType==='DI').map(p=>[p.id,p.id==='X10:7'?traces[0]?.pathStates?.[0]===true:p.id==='X10:8'&&traces[1]?.pathStates?.[0]===true]));
+ const outputs=Object.fromEntries(cpu.pins.filter(p=>p.signalType==='DO').map(p=>[p.id,p.id==='X12:3'&&traces[2]?.value===true]));
  return {plcProgram:'dts-ladder-v1',ladderProgram:p,_dtsLadderTraces:traces,
   _plcRuntime:{powered:true,program:'dts-ladder-v1',inputs,outputs}};
 }

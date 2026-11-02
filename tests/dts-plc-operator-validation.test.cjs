@@ -1,16 +1,23 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const O=require('../dist/plc-operator.js'),M=require('../dist/ladder-monitor.js');
+const O=require('../dist/plc-operator.js'),M=require('../dist/ladder-monitor.js'),L=require('../dist/ladder-runtime.js');
 const definition={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
+ {signalType:'POWER',id:'X10:1'},{signalType:'POWER',id:'X10:2'},
  {signalType:'POWER',id:'X10:6',label:'1M'},
  {signalType:'POWER',id:'X12:1',label:'3L+'},
  {signalType:'POWER',id:'X12:2',label:'3M'},
  ...Array.from({length:6},(_,i)=>({signalType:'DI',id:'X10:'+(7+i)})),
  ...Array.from({length:4},(_,i)=>({signalType:'DO',id:'X12:'+(3+i)}))
 ]};
-const projectOf=program=>({components:[{id:'cpu',typeId:definition.id,plcProgram:'dts-ladder-v1',
- ladderProgram:program,_plcRuntime:{powered:true,program:'dts-ladder-v1',
- inputs:{'X10:7':true},outputs:{'X12:3':true}}}]});
+const projectOf=program=>{
+ const scan=L.validate(program,{inputCount:6,outputCount:4}).ok?
+  L.scan(program,{I1:true},{},100,{inputCount:6,outputCount:4}):null;
+ return {components:[{id:'cpu',typeId:definition.id,plcProgram:'dts-ladder-v1',
+  ladderProgram:program,_dtsLadderTraces:scan?.traces||[],_dtsLadderMemory:scan?.memory,
+  _plcRuntime:{powered:true,program:'dts-ladder-v1',
+   inputs:Object.fromEntries(definition.pins.filter(p=>p.signalType==='DI').map(p=>[p.id,p.id==='X10:7'])),
+   outputs:Object.fromEntries(definition.pins.filter(p=>p.signalType==='DO').map(p=>[p.id,p.id==='X12:3'&&!!scan?.outputs?.Q1]))}}]};
+};
 const defs={[definition.id]:definition};
 const valid={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}]],coil:{type:'OUT',ref:'Q1'}}]};
 test('valid saved CPU program shows live inputs and outputs',()=>{

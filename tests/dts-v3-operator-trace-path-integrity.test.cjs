@@ -10,7 +10,7 @@ const d={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
 ]};
 const program={version:1,rungs:[{id:'R1',paths:[[{type:'NO',ref:'I1'}],[{type:'NO',ref:'I2'}]],coil:{type:'OUT',ref:'Q1'}}]};
 function fixture(t){return {plcProgram:'dts-ladder-v1',ladderProgram:program,_dtsLadderTraces:[t],_plcRuntime:{powered:true,program:'dts-ladder-v1',inputs:Object.fromEntries(d.pins.filter(p=>p.signalType==='DI').map(p=>[p.id,p.id==='X10:7'])),outputs:Object.fromEntries(d.pins.filter(p=>p.signalType==='DO').map(p=>[p.id,p.id==='X12:3']))}}}
-const trace={id:'R1',active:true,value:true,pathStates:[true,false]};
+const trace={id:'R1',coil:'Q1',active:true,value:true,pathStates:[true,false]};
 test('P2-04 canonical CPU and complete trace remain live',()=>{
  assert.equal(L.supportedPLC(d),true);
  const s=M.snapshot(fixture(trace),d,true,true);
