@@ -192,10 +192,13 @@
    forComponent(project,component,initial){
     const per=entries(project),baseline=JSON.stringify(component.ladderProgram??null);
     const last=lastIdentity.get(component);
-    // An ID change must retire the old keyed session; switching A->B->A
-    // must never resurrect a draft saved under the former identity.
-    if(last?.project===project&&last.id!==component.id&&per.get(last.id)?.component===component)
-      per.delete(last.id);
+    // A project or PLC-ID switch must retire the previous session.
+    // Returning to an older project/ID must not revive an unsaved draft.
+    if(last&&(last.project!==project||last.id!==component.id)){
+      const previousProjectSessions=projects.get(last.project);
+      if(previousProjectSessions?.get(last.id)?.component===component)
+        previousProjectSessions.delete(last.id);
+    }
     lastIdentity.set(component,{project,id:component.id});
     const previous=per.get(component.id),mode=component.plcProgram,typeId=component.typeId;
     if(previous&&previous.component===component&&previous.baseline===baseline&&
