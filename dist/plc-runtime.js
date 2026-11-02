@@ -59,13 +59,22 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   // A malformed or stale success-shaped scan is a fault, never an energized Q.
   const rungs=Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[];
   const healthy=result?.ok===true&&result.outputs&&typeof result.outputs==='object'&&
-   result.memory&&typeof result.memory==='object'&&Array.isArray(result.traces)&&
+   result.memory&&typeof result.memory==='object'&&result.memory.values&&typeof result.memory.values==='object'&&Array.isArray(result.traces)&&
    result.traces.length===rungs.length&&result.traces.every((t,i)=>t&&
     t.id===rungs[i]?.id&&t.coil===rungs[i]?.coil?.ref&&
     typeof t.active==='boolean'&&typeof t.value==='boolean'&&
     Array.isArray(t.pathStates)&&t.pathStates.length===rungs[i]?.paths?.length&&
-    t.pathStates.every(v=>typeof v==='boolean')&&t.active===t.pathStates.some(Boolean))&&
-   outputPins.every((p,i)=>typeof result.outputs['Q'+(i+1)]==='boolean');
+    t.pathStates.every(v=>typeof v==='boolean')&&t.active===t.pathStates.some(Boolean)&&
+    (rungs[i]?.coil?.type!=='OUT'||t.value===t.active)&&
+    (rungs[i]?.coil?.type!=='NOP'||t.value===false))&&
+   outputPins.every((p,i)=>{
+    const ref='Q'+(i+1);
+    const lastValue=rungs.reduce((value,r,j)=>r?.coil?.ref===ref&&
+     ['OUT','SET','RESET'].includes(r.coil.type)?result.traces[j].value:value,false);
+    return typeof result.outputs[ref]==='boolean'&&
+     typeof result.memory.values[ref]==='boolean'&&
+     result.outputs[ref]===result.memory.values[ref]&&result.outputs[ref]===lastValue;
+   });
   if(healthy){
    c._dtsLadderMemory=result.memory;c._dtsLadderTraces=result.traces;delete c._dtsLadderError;
    return {mode:'dts-ladder-v1',outputs:Object.fromEntries(outputPins.map((x,i)=>[x.id,!!result.outputs['Q'+(i+1)]]))};
