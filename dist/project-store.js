@@ -187,6 +187,10 @@
         if(value!=null&&(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max))
           throw Error('Pano '+key+' fiziksel ölçüsü geçersiz.');
       }
+      // Explicitly corrupt saved door angles must not be silently clamped on reopening.
+      const doorAngle=p.panel.doorAngle;
+      if(doorAngle!=null&&(typeof doorAngle!=='number'||!Number.isFinite(doorAngle)||doorAngle<0||doorAngle>120))
+        throw Error('Pano kapak açısı geçersiz.');
       // Reject corrupt rail/duct collections before panel.normalize silently discards them.
       for(const key of ['rails','ducts'])if(p.panel[key]!=null&&!Array.isArray(p.panel[key]))
         throw Error('Pano '+key+' listesi geçersiz.');
@@ -212,6 +216,9 @@
              (['w','h'].includes(key)&&value<=0)||(key==='depth'&&value<0))
             throw Error('Pano malzeme geometrisi geçersiz.');
         }
+        // Explicitly invalid mounting surfaces otherwise fail later in panel.normalize.
+        if(item.mount!==undefined&&!['door','plate','rail','external'].includes(item.mount))
+          throw Error('Pano malzeme montaj yüzeyi geçersiz.');
       }
       // Keep saved panel mounting identities consistent with the panel editor.
       // Wire IDs remain in their existing namespace and retain their old contract.
