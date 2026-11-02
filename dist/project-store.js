@@ -275,7 +275,9 @@
     }
     if(p.components.length>10000||p.wires.length>40000)throw Error('Bu proje eğitim çalışma alanı için çok büyük.');return p;
   }
-  function parse(text){if(exceedsProjectBytes(text))throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text)))}
+  // Windows text editors can prefix a valid UTF-8 .odsdevre with one BOM.
+  // Preserve the original byte ceiling; strip only that leading marker.
+  function parse(text){if(exceedsProjectBytes(text))throw Error('Proje dosyası 20 MB sınırını aşıyor.');return validate(migrate(JSON.parse(text.charCodeAt(0)===0xFEFF?text.slice(1):text)))}
   async function readProjectFile(file){
     if(file?.size>20*1024*1024)throw Error('Proje dosyası 20 MB sınırını aşıyor.');
     return parse(await file.text());
