@@ -191,10 +191,11 @@
   return Object.freeze({
    forComponent(project,component,initial){
     const per=entries(project),baseline=JSON.stringify(component.ladderProgram??null);
-    const previous=per.get(component.id);
-    if(previous&&previous.component===component&&previous.baseline===baseline)return previous.history;
+    const previous=per.get(component.id),mode=component.plcProgram,typeId=component.typeId;
+    if(previous&&previous.component===component&&previous.baseline===baseline&&
+      previous.mode===mode&&previous.typeId===typeId)return previous.history;
     const history=createDraftHistory(initial);
-    per.set(component.id,{component,baseline,history});
+    per.set(component.id,{component,baseline,mode,typeId,history});
     return history;
    },
    forget(project,component){if(project&&typeof project==='object')projects.get(project)?.delete(component.id)}
