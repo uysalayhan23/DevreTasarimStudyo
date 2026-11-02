@@ -213,9 +213,13 @@
           const value=item[key];
           if(value===undefined)continue;
           if(typeof value!=='number'||!Number.isFinite(value)||Math.abs(value)>100000||
-             (['w','h'].includes(key)&&value<=0)||(key==='depth'&&value<0))
+             (['w','h'].includes(key)&&value<5)||(key==='depth'&&value<0))
             throw Error('Pano malzeme geometrisi geçersiz.');
         }
+        // Explicitly corrupt catalog identities cannot be rendered by the panel engine.
+        // Older records without a type ID remain loadable for review.
+        if(item.typeId!==undefined&&typeof item.typeId!=='string')
+          throw Error('Pano malzeme katalog türü geçersiz.');
         // Explicitly invalid mounting surfaces otherwise fail later in panel.normalize.
         if(item.mount!==undefined&&!['door','plate','rail','external'].includes(item.mount))
           throw Error('Pano malzeme montaj yüzeyi geçersiz.');
