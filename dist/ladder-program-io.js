@@ -31,7 +31,9 @@
  }
  function parse(raw,limits){
   if(typeof raw!=='string'||utf8Bytes(raw)>MAX_BYTES)throw Error('Ladder program dosyası fazla büyük veya geçersiz.');
-  let data;try{data=JSON.parse(raw)}catch{throw Error('Ladder dosyası geçerli JSON değil.')}
+  // A Windows UTF-8 text editor may prepend a BOM to otherwise valid DTS JSON.
+  // Count the original bytes above; ignore only this one leading marker.
+  let data;try{data=JSON.parse(raw.charCodeAt(0)===0xFEFF?raw.slice(1):raw)}catch{throw Error('Ladder dosyası geçerli JSON değil.')}
   if(!data||Array.isArray(data)||data.format!==MAGIC||data.version!==1)throw Error('Bu dosya DTS Ladder V1 programı değil.');
   const valid=L?.validate?.(data.program,limits);
   if(!valid?.ok)throw Error('Ladder programı doğrulanamadı: '+(valid?.error||'model yok'));
