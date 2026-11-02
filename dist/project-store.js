@@ -220,6 +220,16 @@
         const id=part?.id;
         if(typeof id!=='string'||!id.trim()||mountIds.has(id))
           throw Error('Pano ray/kanal kimliği eksik veya tekrarlı.');
+        // Preserve absent legacy dimensions, but reject explicitly corrupted
+        // mounting geometry before the panel renderer interprets it.
+        for(const key of kind==='rails'?['x','y','length']:['x','y','width','length']){
+          const value=part[key];
+          if(value!==undefined&&(typeof value!=='number'||!Number.isFinite(value)||
+             Math.abs(value)>100000||(['length','width'].includes(key)&&value<=0)))
+            throw Error('Pano ray/kanal geometrisi geçersiz.');
+        }
+        if(kind==='ducts'&&part.vertical!==undefined&&typeof part.vertical!=='boolean')
+          throw Error('Pano kablo kanalı yönü geçersiz.');
         mountIds.add(id);
       }
       const panelWireIds=new Set();
