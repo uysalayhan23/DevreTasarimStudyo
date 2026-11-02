@@ -818,7 +818,7 @@
       // Snapshot limits before asynchronous file reading; never read a newly selected PLC's limits.
       const originalLimits={inputCount:target.inputs.length,outputCount:target.outputs.length};
       const raw=await file.text();
-      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft,savedSnapshot,target.c.ladderProgram??null,historyRevision,target.history.revision())||!canCommitDraft(target,editor)||editor.running){
+      if(!importContextMatches(target,active,originalProject,editor.getProject(),!overlay.hidden,requestId,importSerial,draftSnapshot,target.draft,savedSnapshot,target.c.ladderProgram??null,historyRevision,target.history.revision())||!canCommitDraft(target,editor)||editor.running||editor.guardEdit?.()!==true){
        editor.toast?.('İçe aktarma iptal: PLC, proje veya taslak değişti. Program değiştirilmedi.');
       }else{
        const draft=ProgramIO.parse(raw,originalLimits);
