@@ -425,6 +425,9 @@
   // Editing a stale Ladder dialog is forbidden after its project or PLC context changed.
   // Saving already uses this same context lock; local Undo/FBD/LAD edits must agree.
   const canEditDraft=()=>!!active&&canCommitDraft(active,editor)&&editor.guardEdit?.()===true;
+  // Starting a saved PLC program needs the same project/PLC context lock as Save.
+  // An already-running simulator may still be stopped after the project changes.
+  const canToggleLadder=()=>!!active&&(editor.running||canCommitDraft(active,editor));
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
   const draw=(r,options)=>(diagramMode==='fbd'?FBDView:Diagram).render(r,options);
@@ -459,7 +462,7 @@
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live&&active.c._plcRuntime?.powered===true&&active.c._plcRuntime?.program==='dts-ladder-v1'&&!active.c._dtsLadderError?active.c._dtsLadderMemory?.values:null;
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
-   const canRun=canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'),limits());
+   const canRun=canToggleLadder()&&canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'),limits());
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    const options=Examples.list(limits());
    const exampleSelect=select(options[0]?.id,options.map(item=>({value:item.id,label:item.title})), 'id="dtsLadderExample" aria-label="Örnek Ladder programı"');
@@ -600,7 +603,7 @@
       // Reuse the saved-program start gate: liveSaved is false whenever stopped.
       // The timer must not disable a valid program's Start button after 300 ms.
       const nativeSim=doc.getElementById('simulateBtn');
-      simAction.disabled=!canStartLadder(active.c,active.draft,editor.running,nativeSim,limits());
+      simAction.disabled=!canToggleLadder()||!canStartLadder(active.c,active.draft,editor.running,nativeSim,limits());
       simAction.textContent=editor.running?'■ Durdur':'▶ Simüle et';
     }
    },300);
@@ -694,7 +697,7 @@
    }
    if(type==='toggle-sim'){
     const sim=doc.getElementById('simulateBtn');
-    if(canStartLadder(active.c,active.draft,editor.running,sim,limits())&&sim&&!sim.disabled)sim.click();
+    if(canToggleLadder()&&canStartLadder(active.c,active.draft,editor.running,sim,limits())&&sim&&!sim.disabled)sim.click();
     render();return;
    }
    if(type==='undo'||type==='redo'){
