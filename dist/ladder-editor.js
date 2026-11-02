@@ -418,6 +418,8 @@
   let active=null,monitorTimer=null,returnFocus=null,diagramMode='ladder',selectedTool=null,focusedNetwork=null,importSerial=0;
   const closedNetworks=new Set();
   const sessions=createDraftSessions();
+  // A protected example may be viewed, but no local LAD/FBD or Undo history edit is allowed.
+  const canEditDraft=()=>editor.guardEdit?.()===true;
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
   const draw=(r,options)=>(diagramMode==='fbd'?FBDView:Diagram).render(r,options);
@@ -615,6 +617,7 @@
   function addFromPalette(id,zone){
    if(!active||diagramMode!=='ladder')return false;
    if(editor.running){editor.toast?.('Önce simülasyonu durdurup programı düzenleyin.');return false}
+   if(!canEditDraft())return false;
    const target={r:parseUiIndex(zone.dataset.r),kind:zone.dataset.dropKind};
    if(zone.dataset.p!==undefined)target.p=parseUiIndex(zone.dataset.p);
    if(zone.dataset.i!==undefined)target.i=parseUiIndex(zone.dataset.i);
@@ -638,6 +641,9 @@
    if(editor.running&&['undo','redo','starter','load-example','add-rung','remove-rung','copy-rung','move-rung-up','move-rung-down','add-path','remove-path','add-contact','remove-contact'].includes(type)){
     editor.toast?.('Önce simülasyonu durdurun.');return;
    }
+   if(['undo','redo','starter','load-example','add-rung','remove-rung',
+       'copy-rung','move-rung-up','move-rung-down','add-path','remove-path',
+       'add-contact','remove-contact','remove-output','remove-block'].includes(type)&&!canEditDraft())return;
    if(type==='close'){close();return}
    if(type==='live-watch'){
     const id=active.c.id;
@@ -756,6 +762,7 @@
    if(structure&&overlay.contains(structure)){
     if(diagramMode!=='fbd'||!active)return;
     if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
+    if(!canEditDraft())return;
     const result=FBDView.editStructure(active.draft,structure.dataset.fbdStructure,structure.dataset.fbdPosition,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;active.history.push(active.draft);
@@ -766,6 +773,7 @@
     // The FBD view edits the same draft as LAD; the saved program is never updated by a click.
     if(diagramMode!=='fbd'||!active)return;
     if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');return}
+    if(!canEditDraft())return;
     const result=FBDView.toggleContact(active.draft,polarity.dataset.fbdToggleContact,limits());
     if(!result.ok){editor.toast?.(result.error);return}
     active.draft=result.program;
@@ -832,6 +840,7 @@
    if(e.target.id==='dtsLadderTarget'){open(e.target.value);return}
    if(editor.running){editor.toast?.('Önce simülasyonu durdurun.');render();return}
    const {field,r,p,c,fbdCoilField,fbdContactRef}=e.target.dataset;
+   if((field||fbdCoilField||fbdContactRef)&&!canEditDraft()){render();return}
    if(fbdContactRef){
     if(diagramMode!=='fbd'||!active)return;
     const result=FBDView.editContactRef(active.draft,fbdContactRef,e.target.value,limits());
@@ -867,6 +876,7 @@
     else if(shortcut==='pending-field')editor.toast?.('Önce düzenlediğiniz alanı tamamlayın, sonra Ctrl+S ile kaydedin.');
     else if(shortcut==='locked')editor.toast?.('Ladder düzenlemesi için önce simülasyonu durdurun.');
     else{
+     if(!canEditDraft())return;
      const next=shortcut==='redo'?active?.history.redo():active?.history.undo();
      if(next){active.draft=next;render()}
     }
