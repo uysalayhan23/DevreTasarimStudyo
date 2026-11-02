@@ -27,17 +27,22 @@
      typeof t.active==='boolean'&&t.active===t.pathStates.some(Boolean)&&
      typeof t.value==='boolean'&&
      (rung.coil?.type!=='OUT'||t.value===t.active)&&
+     (rung.coil?.type!=='SET'||!t.active||t.value===true)&&
+     (rung.coil?.type!=='RESET'||!t.active||t.value===false)&&
      (rung.coil?.type!=='NOP'||t.value===false);
    })));
   // Hardware Q telemetry must agree with the last Ladder writer in this scan.
   // An unwritten Q is false; an older/contradictory output state is not live.
   const outputsAgree=traceReady&&(!c?.ladderProgram||pins(d,'DO').every((p,i)=>{
    const ref='Q'+(i+1),rungs=c.ladderProgram.rungs;
-   let expected=false;
+   let expected=false,hasWriter=false;
    for(let j=0;j<rungs.length;j++)if(rungs[j]?.coil?.ref===ref&&
-     ['OUT','SET','RESET'].includes(rungs[j].coil.type))expected=c._dtsLadderTraces[j]?.value;
+     ['OUT','SET','RESET'].includes(rungs[j].coil.type)){
+    if(rungs[j].coil.type!=='RESET')hasWriter=true;
+    expected=c._dtsLadderTraces[j]?.value;
+   }
    const sampled=c?._dtsLadderMemory?.values?.[ref];
-   return typeof expected==='boolean'&&state?.outputs?.[p.id]===expected&&
+   return typeof expected==='boolean'&&(hasWriter||expected===false)&&state?.outputs?.[p.id]===expected&&
     (!c?._dtsLadderMemory?.values||(typeof sampled==='boolean'&&sampled===expected));
   }));
   // The physical inputs must match native scan memory and the shown paths.
