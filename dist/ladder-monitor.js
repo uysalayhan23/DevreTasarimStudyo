@@ -43,7 +43,14 @@
   const di=pins(d,'DI');
   // The physical inputs and provable scan-time contacts must match the trace.
   // Later M/Q/T/C writers can change a bit after an earlier rung reads it.
-  const inputsAgree=traceReady&&(!c?.ladderProgram||(
+  // Internal contacts require native scan memory; without it their traces
+  // cannot be trusted after a reset, unlike directly sampled physical inputs.
+  const internalContacts=Array.isArray(c?.ladderProgram?.rungs)&&
+   c.ladderProgram.rungs.some(r=>Array.isArray(r?.paths)&&r.paths.some(path=>
+    Array.isArray(path)&&path.some(contact=>typeof contact?.ref==='string'&&contact.ref[0]!=='I')));
+  const memoryReady=!internalContacts||!!(c?._dtsLadderMemory?.values&&
+   typeof c._dtsLadderMemory.values==='object');
+  const inputsAgree=traceReady&&memoryReady&&(!c?.ladderProgram||(
    di.every((p,i)=>{
     const sampled=c?._dtsLadderMemory?.values?.['I'+(i+1)];
     return typeof sampled!=='boolean'||sampled===state?.inputs?.[p.id];
@@ -55,7 +62,8 @@
      const pin=ref[0]==='I'?di[Number(ref.slice(1))-1]:null;
      const laterWrite=ref[0]!=='I'&&c.ladderProgram.rungs.slice(i).some(next=>
       next.coil?.ref===ref&&next.coil.type!=='NOP');
-     const value=pin?state?.inputs?.[pin.id]:bits[ref];
+     // Unset internal bits are false in the native Ladder.scan contract.
+     const value=pin?state?.inputs?.[pin.id]:(typeof bits[ref]==='boolean'?bits[ref]:false);
      if(laterWrite||typeof value!=='boolean'){unknown=true;continue;}
      if(!(contact.type==='NC'?!value:value))blocked=true;
     }
