@@ -53,18 +53,30 @@ function inputState(c,d,net,p){
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
  if(c.plcProgram==='dts-ladder-v1'){
+  const inputBits=Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value]));
   let result;
-  try{result=Ladder?.scan?.(c.ladderProgram,Object.fromEntries(inputValues.map((x,i)=>['I'+(i+1),!!x.value])),c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
+  try{result=Ladder?.scan?.(c.ladderProgram,inputBits,c._dtsLadderMemory||{},now,{inputCount:inputValues.length,outputCount:outputPins.length})}
   catch{result={ok:false,error:'Ladder taraması güvenli biçimde tamamlanamadı.'}}
   // A malformed or stale success-shaped scan is a fault, never an energized Q.
   const rungs=Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[];
   const healthy=result?.ok===true&&result.outputs&&typeof result.outputs==='object'&&
-   result.memory&&typeof result.memory==='object'&&result.memory.values&&typeof result.memory.values==='object'&&Array.isArray(result.traces)&&
+   result.memory&&typeof result.memory==='object'&&result.memory.values&&typeof result.memory.values==='object'&&
+   Object.entries(inputBits).every(([ref,value])=>result.memory.values[ref]===value)&&Array.isArray(result.traces)&&
    result.traces.length===rungs.length&&result.traces.every((t,i)=>t&&
     t.id===rungs[i]?.id&&t.coil===rungs[i]?.coil?.ref&&
     typeof t.active==='boolean'&&typeof t.value==='boolean'&&
     Array.isArray(t.pathStates)&&t.pathStates.length===rungs[i]?.paths?.length&&
-    t.pathStates.every(v=>typeof v==='boolean')&&t.active===t.pathStates.some(Boolean)&&
+    t.pathStates.every((v,j)=>{
+     const path=rungs[i].paths[j];
+     if(typeof v!=='boolean'||!Array.isArray(path))return false;
+     // An input contact that is physically open cannot energize a path.
+     const blocked=path.some(contact=>contact?.ref?.[0]==='I'&&
+      (contact.type==='NC'?inputBits[contact.ref]:!inputBits[contact.ref]));
+     if(v&&blocked)return false;
+     // For input-only paths the actual input bits determine the entire truth.
+     return path.length===0?v===false:
+      path.every(contact=>contact?.ref?.[0]==='I')?v===!blocked:true;
+    })&&t.active===t.pathStates.some(Boolean)&&
     (rungs[i]?.coil?.type!=='OUT'||t.value===t.active)&&
     (rungs[i]?.coil?.type!=='NOP'||t.value===false))&&
    outputPins.every((p,i)=>{
