@@ -32,7 +32,7 @@ test('P0-03 positive: same PLC and unchanged saved program remain saveable',()=>
 });
 test('P0-03 negative: changed project instance or replaced PLC object cannot receive stale draft',()=>{
  const {c,editor,active,project}=fixture();
- editor.getProject=()=>({components:[c]});assert.equal(E.canCommitDraft(active,editor),true);
+ editor.getProject=()=>({components:[c]});assert.equal(E.canCommitDraft(active,editor),false);
  editor.getProject=()=>project;project.components=[{...c}];
  assert.equal(E.canCommitDraft(active,editor),false);
 });
