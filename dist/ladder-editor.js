@@ -201,10 +201,10 @@
   });
  }
  // Simulation can start only for a saved, current Ladder program and an enabled native simulator.
- function canStartLadder(c,draft,running,simButton){
+ function canStartLadder(c,draft,running,simButton,hardwareLimits={}){
   if(running)return true;
   return !!simButton&&!simButton.disabled&&c?.plcProgram==='dts-ladder-v1'&&
-    !!c.ladderProgram&&L?.validate?.(draft)?.ok===true&&
+    !!c.ladderProgram&&L?.validate?.(draft,hardwareLimits)?.ok===true&&
     JSON.stringify(draft)===JSON.stringify(c.ladderProgram);
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
@@ -443,7 +443,7 @@
    const live=!!editor.running&&active.c.plcProgram==='dts-ladder-v1'&&JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
    const liveBits=live&&active.c._plcRuntime?.powered===true&&active.c._plcRuntime?.program==='dts-ladder-v1'&&!active.c._dtsLadderError?active.c._dtsLadderMemory?.values:null;
    const runAction=editor.running?'■ Durdur':'▶ Simüle et';
-   const canRun=canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'));
+   const canRun=canStartLadder(active.c,active.draft,editor.running,doc.getElementById('simulateBtn'),limits());
    const selectPLC=select(active.c.id,cp.map(c=>({value:c.id,label:c.label||editor.byId[c.typeId]?.name||c.typeId})), 'id="dtsLadderTarget" aria-label="PLC seç"');
    const options=Examples.list(limits());
    const exampleSelect=select(options[0]?.id,options.map(item=>({value:item.id,label:item.title})), 'id="dtsLadderExample" aria-label="Örnek Ladder programı"');
@@ -584,7 +584,7 @@
       // Reuse the saved-program start gate: liveSaved is false whenever stopped.
       // The timer must not disable a valid program's Start button after 300 ms.
       const nativeSim=doc.getElementById('simulateBtn');
-      simAction.disabled=!canStartLadder(active.c,active.draft,editor.running,nativeSim);
+      simAction.disabled=!canStartLadder(active.c,active.draft,editor.running,nativeSim,limits());
       simAction.textContent=editor.running?'■ Durdur':'▶ Simüle et';
     }
    },300);
@@ -674,7 +674,7 @@
    }
    if(type==='toggle-sim'){
     const sim=doc.getElementById('simulateBtn');
-    if(canStartLadder(active.c,active.draft,editor.running,sim)&&sim&&!sim.disabled)sim.click();
+    if(canStartLadder(active.c,active.draft,editor.running,sim,limits())&&sim&&!sim.disabled)sim.click();
     render();return;
    }
    if(type==='undo'||type==='redo'){
