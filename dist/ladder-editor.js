@@ -588,6 +588,9 @@
        JSON.stringify(active.draft)===JSON.stringify(active.c.ladderProgram);
      const bits=telemetry.live?active.c._dtsLadderMemory?.values:null;
      if(diagram){
+      // A focused FBD operand must not freeze stale green paths on a failed scan.
+      // Remove only live styling; keep the focused select and its draft value intact.
+      if(!telemetry.live&&diagramMode==='fbd')diagram.querySelectorAll('.dts-fbd-on').forEach(node=>node.classList.remove('dts-fbd-on'));
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
       if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]'))){
        diagram.innerHTML=draw(active.draft.rungs[i],{index:i,live:!!bits&&Array.isArray(row.pathStates),values:bits,pathStates:row.pathStates,coilValue:row.value,limits:limits()});
