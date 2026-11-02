@@ -36,7 +36,9 @@
    let expected=false;
    for(let j=0;j<rungs.length;j++)if(rungs[j]?.coil?.ref===ref&&
      ['OUT','SET','RESET'].includes(rungs[j].coil.type))expected=c._dtsLadderTraces[j]?.value;
-   return typeof expected==='boolean'&&state?.outputs?.[p.id]===expected;
+   const sampled=c?._dtsLadderMemory?.values?.[ref];
+   return typeof expected==='boolean'&&state?.outputs?.[p.id]===expected&&
+    (!c?._dtsLadderMemory?.values||(typeof sampled==='boolean'&&sampled===expected));
   }));
   // The physical inputs must match native scan memory and the shown paths.
   // A path with a false I contact cannot be live even if M/Q contacts also exist.
