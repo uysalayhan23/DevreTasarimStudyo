@@ -14,8 +14,16 @@ function mounted(allowed=false){
  const button={dataset:{},addEventListener(){},focus(){}};
  const doc={getElementById:k=>k==='dtsLadderBtn'?button:null,
   createElement:()=>overlay,body:{appendChild(){}}};
+ const cpu={id:'plc-hw-6es7211-1ae40-0xb0',isPLC:true,pins:[
+  {id:'X10:1',signalType:'POWER'},{id:'X10:2',signalType:'POWER'},
+  {id:'X10:6',signalType:'POWER',label:'1M'},
+  {id:'X12:1',signalType:'POWER',label:'3L+'},
+  {id:'X12:2',signalType:'POWER',label:'3M'},
+  ...Array.from({length:6},(_,i)=>({id:'X10:'+(7+i),signalType:'DI'})),
+  ...Array.from({length:4},(_,i)=>({id:'X12:'+(3+i),signalType:'DO'}))
+ ]};
  const project={components:[]};
- const editor={getProject:()=>project,byId:{},running:false,
+ const editor={getProject:()=>project,byId:{cpu},running:false,
    guardEdit(){editAttempts++;if(!allowed){notices++;return false}return true},toast(){}};
  const inject="  const sessions=createDraftSessions();";
  const accessor="  const sessions=createDraftSessions();\n  globalThis.__dtsReadonlyCapture={setActive(value){active=value},setMode(value){diagramMode=value},getMode(){return diagramMode}};";
@@ -30,10 +38,10 @@ function mounted(allowed=false){
  const m=new Module(sourcePath,module);m.filename=sourcePath;m.paths=Module._nodeModulePaths(path.dirname(sourcePath));
  m._compile(code,sourcePath);assert.equal(m.exports.init(doc,editor),true);
  const E=m.exports;
- const c={id:'CPU1',plcProgram:'dts-ladder-v1',ladderProgram:L.blank()};project.components.push(c);
+ const c={id:'CPU1',typeId:'cpu',plcProgram:'dts-ladder-v1',ladderProgram:L.blank()};project.components.push(c);
  const history=E.createDraftHistory(c.ladderProgram);
  const next=history.current();next.rungs[0].coil.ref='Q2';history.push(next);
- const active={c,inputs:Array(6).fill({}),outputs:Array(4).fill({}),draft:history.current(),history};
+ const active=E.stateFor(c,editor);active.draft=history.current();active.history=history;
  globalThis.__dtsReadonlyCapture.setActive(active);
  function clickAction(action){const b={dataset:{action}};return handlers.click({target:{closest(q){return q==='[data-action]'?b:null}}})}
  function clickFBD(structural){globalThis.__dtsReadonlyCapture.setMode('fbd');

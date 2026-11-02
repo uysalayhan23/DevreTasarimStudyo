@@ -419,7 +419,9 @@
   const closedNetworks=new Set();
   const sessions=createDraftSessions();
   // A protected example may be viewed, but no local LAD/FBD or Undo history edit is allowed.
-  const canEditDraft=()=>editor.guardEdit?.()===true;
+  // Editing a stale Ladder dialog is forbidden after its project or PLC context changed.
+  // Saving already uses this same context lock; local Undo/FBD/LAD edits must agree.
+  const canEditDraft=()=>!!active&&canCommitDraft(active,editor)&&editor.guardEdit?.()===true;
   const available=()=>supported(editor);
   const limits=()=>({inputCount:active?.inputs.length||0,outputCount:active?.outputs.length||0});
   const draw=(r,options)=>(diagramMode==='fbd'?FBDView:Diagram).render(r,options);
