@@ -181,7 +181,7 @@
  // Unsaved drafts are scoped to the actual project object and component ID.
  // A changed saved-program baseline invalidates the old draft on reopening.
  function createDraftSessions(){
-  const projects=new WeakMap();
+  const projects=new WeakMap(),lastIdentity=new WeakMap();
   function entries(project){
    if(!project||typeof project!=='object')throw Error('Ladder projesi bulunamadı.');
    let per=projects.get(project);
@@ -191,6 +191,12 @@
   return Object.freeze({
    forComponent(project,component,initial){
     const per=entries(project),baseline=JSON.stringify(component.ladderProgram??null);
+    const last=lastIdentity.get(component);
+    // An ID change must retire the old keyed session; switching A->B->A
+    // must never resurrect a draft saved under the former identity.
+    if(last?.project===project&&last.id!==component.id&&per.get(last.id)?.component===component)
+      per.delete(last.id);
+    lastIdentity.set(component,{project,id:component.id});
     const previous=per.get(component.id),mode=component.plcProgram,typeId=component.typeId;
     if(previous&&previous.component===component&&previous.baseline===baseline&&
       previous.mode===mode&&previous.typeId===typeId)return previous.history;
