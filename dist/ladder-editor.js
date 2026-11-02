@@ -592,7 +592,18 @@
       // Remove only live styling; keep the focused select and its draft value intact.
       if(!telemetry.live&&diagramMode==='fbd')diagram.querySelectorAll('.dts-fbd-on').forEach(node=>node.classList.remove('dts-fbd-on'));
       const key=JSON.stringify([!!bits,bits||{},row.active,row.value,row.pathStates]);
-      if(diagram.dataset.signalKey!==key&&!(diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]'))){
+      const focusedFbd=diagramMode==='fbd'&&diagram.contains(doc.activeElement)&&
+       doc.activeElement?.matches?.('[data-fbd-coil-field],[data-fbd-contact-ref]');
+      if(focusedFbd){
+       // Do not destroy the focused selector, but refresh its visible live path.
+       // Invalid or missing scan traces must clear every old energized marker.
+       const lines=diagram.querySelectorAll?.('.dts-fbd-line')||[];
+       const traceReady=!!bits&&Array.isArray(row.pathStates)&&
+        row.pathStates.length===lines.length&&lines.length>0&&typeof row.value==='boolean';
+       lines.forEach((line,j)=>line.classList.toggle('dts-fbd-on',!!traceReady&&row.pathStates[j]===true));
+       (diagram.querySelectorAll?.('.dts-fbd-coil')||[]).forEach(coil=>
+        coil.classList.toggle('dts-fbd-on',!!traceReady&&row.value===true));
+      }else if(diagram.dataset.signalKey!==key){
        // A 300 ms redraw replaces focusable LAD/FBD symbols. Restore keyboard
        // focus by its stable, validated contact/coil position after repaint.
        const focused=diagram.contains(doc.activeElement)?doc.activeElement:null;
