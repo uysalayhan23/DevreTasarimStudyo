@@ -348,7 +348,17 @@
         if(!handle&&directory&&!saveAs){
           if(!await permission(directory,'readwrite',true))throw Error('Klasöre yazma izni verilmedi.');
           let name=filename(copy.name),n=2;
-          while(true){try{await directory.getFileHandle(name);name=filename(copy.name+' ('+(n++)+')')}catch(e){if(e.name!=='NotFoundError')throw e;break}}
+          // Keep the collision number before the extension, including names
+          // already ending in .odsdevre. Reserve room for (2), (3), ...
+          // inside the 100-character stem limit to prevent a retry loop.
+          const stem=name.slice(0,-'.odsdevre'.length);
+          while(true){
+            try{
+              await directory.getFileHandle(name);
+              const suffix=' ('+(n++)+')';
+              name=stem.slice(0,Math.max(0,100-suffix.length))+suffix+'.odsdevre';
+            }catch(e){if(e.name!=='NotFoundError')throw e;break}
+          }
           handle=await directory.getFileHandle(name,{create:true});
           createdFolderFile={directory,name,handle,initialLastModified:null};
         }
