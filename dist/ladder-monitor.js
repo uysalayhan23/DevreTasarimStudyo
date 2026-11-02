@@ -53,7 +53,7 @@
   const inputsAgree=traceReady&&memoryReady&&(!c?.ladderProgram||(
    di.every((p,i)=>{
     const sampled=c?._dtsLadderMemory?.values?.['I'+(i+1)];
-    return typeof sampled!=='boolean'||sampled===state?.inputs?.[p.id];
+    return c?._dtsLadderMemory?.values ? (typeof sampled==='boolean'&&sampled===state?.inputs?.[p.id]) : true;
    })&&c.ladderProgram.rungs.every((r,i)=>r.paths.every((path,j)=>{
     const bits=c?._dtsLadderMemory?.values||{};
     let unknown=false,blocked=false;
