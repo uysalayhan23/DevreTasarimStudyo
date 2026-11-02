@@ -204,7 +204,8 @@
  function canStartLadder(c,draft,running,simButton){
   if(running)return true;
   return !!simButton&&!simButton.disabled&&c?.plcProgram==='dts-ladder-v1'&&
-    !!c.ladderProgram&&JSON.stringify(draft)===JSON.stringify(c.ladderProgram);
+    !!c.ladderProgram&&L?.validate?.(draft)?.ok===true&&
+    JSON.stringify(draft)===JSON.stringify(c.ladderProgram);
  }
  // A File.text() Promise may finish after the modal closes or the user chooses another PLC.
  // Never apply an async import to a different component or a replaced project instance.
