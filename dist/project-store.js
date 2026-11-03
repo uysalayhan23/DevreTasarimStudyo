@@ -289,7 +289,7 @@
   const isProtected=p=>!!(p?.defaultTemplate?.id&&p.defaultTemplate.readOnly===true);
   function editableCopy(project){const p=clean(project);p.projectId=uid();if(isProtected(p)){p.sourceExample=p.defaultTemplate.id;p.name=(p.name||'Örnek')+' · Çalışma kopyam';delete p.defaultTemplate}return p}
   function create({storage=root.localStorage,indexedDB=root.indexedDB,env=root}={}){
-    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false,folderChoiceEpoch=0;const handles=new Map();
+    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false,folderChoiceEpoch=0,folderPickerRequest=0;const handles=new Map();
     const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');if(!Array.isArray(rows))return [];const seen=new Set();return rows.filter(r=>{if(!r||typeof r!=='object'||Array.isArray(r)||!(typeof r.id==='string'||typeof r.id==='number')||!String(r.id).trim())return false;const id=String(r.id);if(seen.has(id))return false;seen.add(id);return true})}catch{return []}};
     const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries.filter(e=>e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.name==='string'&&e.project&&typeof e.project==='object'):[]}catch{return []}};
     const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId??'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
@@ -318,7 +318,11 @@
     }
     async function chooseFolder(){
       if(!env.showDirectoryPicker)return {fallback:true};
-      try{const chosen=await env.showDirectoryPicker({id:'dts-project-folder',mode:'readwrite'});folderChoiceEpoch++;directory=chosen;readOnlyFiles=null;permissionNeeded=false;try{storage.setItem('dts-folder-index','[]')}catch{}await db('put','directory',directory);return {name:directory.name}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
+      const request=++folderPickerRequest,epoch=folderChoiceEpoch;
+      try{const chosen=await env.showDirectoryPicker({id:'dts-project-folder',mode:'readwrite'});
+      // Earlier pickers and obsolete selections must never displace the latest user choice.
+      if(request!==folderPickerRequest||epoch!==folderChoiceEpoch)return {cancelled:true};
+      folderChoiceEpoch++;directory=chosen;readOnlyFiles=null;permissionNeeded=false;try{storage.setItem('dts-folder-index','[]')}catch{}await db('put','directory',directory);return {name:directory.name}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
     function useFolderFiles(files){folderChoiceEpoch++;readOnlyFiles=[...files].filter(f=>/\.(odsdevre|dtsproj|json)$/i.test(f.name));directory=null;permissionNeeded=false;return readOnlyFiles.length}
     async function scan(request=false){
