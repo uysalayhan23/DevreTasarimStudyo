@@ -58,7 +58,7 @@
     return `<g class="material-layer" data-material="omron-my-relay-v11920"><svg x="0" y="0" width="${d.w}" height="${d.h}" viewBox="0 0 180 240" preserveAspectRatio="xMidYMid meet" overflow="visible"><image href="assets/products/omron-my-relay-v11920.webp?rev=20261008-omron7" x="0" y="0" width="180" height="240"/></svg></g>`;
   }
   if(d.productPhoto115){const bg='p115-bg-'+String(c.id||d.id).replace(/[^\w-]/g,'_');return `<g class="material-layer" data-material="design-${d.id}">${maskedPhoto(d.productPhoto115,'145 0 160 450',10,0,100,280,450,450,bg,'<rect x="151" y="6" width="148" height="438" rx="10"/>')}</g>`}
-  if(d.instrument){const s=c._instrument,q=c._controller,uid='instrument-'+String(c.id||d.id).replace(/[^\w-]/g,'_');let art='';
+  if(d.instrument){const s=c._instrument,q=c._controller,uid='instrument-'+String(c.id||d.id).replace(/[^A-Za-z0-9_-]/gu,ch=>'.'+ch.codePointAt(0).toString(16)+'.');let art='';
    if(d.instrument==='ht2'){
     art=`<defs><clipPath id="${uid}"><path d="M210 154Q210 94 280 94H972Q1047 94 1047 164V617Q1047 685 973 685H694V1095Q694 1169 628 1169Q564 1169 564 1095V685H281Q210 685 210 610Z"/></clipPath></defs><svg x="0" y="15" width="180" height="225" viewBox="210 94 837 1075" preserveAspectRatio="xMidYMid meet"><image href="assets/products/gentek-front-v115.png" width="1254" height="1254" clip-path="url(#${uid})"/></svg>`;
     if(s?.on){const m=c.instrumentSettings?.measurement||'both';art+=text(96,48,m==='humidity'?'':s.temperature.toFixed(1),16,'#f65')+text(96,75,m==='temperature'?'':s.humidity.toFixed(1),16,'#f65')}
