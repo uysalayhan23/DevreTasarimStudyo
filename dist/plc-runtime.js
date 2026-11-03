@@ -567,7 +567,9 @@ function evaluate(c,d,net,now=Date.now(),options={}){
   c._dtsLadderTraces=[];
  }
  const outputPins=pins(d,'DO');
- const allowed=c.plcProgram!=='dts-ladder-v1'||Ladder?.supportedPLC?.(d)===true;
+ const verifiedModel=Ladder?.supportedPLC?.(d)===true;
+ const allowed=verifiedDc?verifiedModel&&(!c.plcProgram||c.plcProgram==='dts-ladder-v1'):
+  c.plcProgram!=='dts-ladder-v1'||verifiedModel;
  const ladderUnpowered=c.plcProgram==='dts-ladder-v1'&&!powered;
  // A verified PLC without an explicit Ladder program is a powered, idle virtual CPU.
  // No implicit legacy start/stop program may energize its outputs.
