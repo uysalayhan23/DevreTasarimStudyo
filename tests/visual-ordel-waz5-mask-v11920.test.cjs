@@ -19,14 +19,13 @@ test('ORDEL top photograph is not falsely declared an alpha-transparent asset',(
  assert.match(svg,/clip-path="url\(#instrument-ordel-verification\)"/);
  assert.match(svg,/<clipPath id="instrument-ordel-verification"/);
 });
-test('Weidmuller WAZ5 1024x1536 RGB source remains explicitly silhouette-clipped',()=>{
+test('Weidmuller WAZ5 photo remains identity evidence but active rendering is a top-view plan',()=>{
  const meta=pngHeader(image('weid-front-v115.png'));
  assert.deepEqual(meta,{width:1024,height:1536,colorType:2},'RGB photo requires mask, not alpha claim');
  const d={id:'converter-pressure',instrument:'waz5',w:35,h:184.8};
  const svg=Material.markup(d,{id:'waz5-verification'});
- assert.match(svg,/weid-front-v115\.png/);
- assert.match(svg,/clip-path="url\(#instrument-waz5-verification-body\)"/);
- assert.match(svg,/preserveAspectRatio="xMidYMid meet"/);
+ assert.match(svg,/class="waz5-top-plan" data-view="orthographic-top"/);
+ assert.doesNotMatch(svg,/weid-front-v115\.png|<image|<clipPath|preserveAspectRatio="none"/);
  assert.doesNotMatch(svg,/preserveAspectRatio="none"/);
  const physical=Physical.get(d);
  assert.ok(physical);assert.equal(physical.widthMm,17.5);assert.equal(physical.heightMm,92.4);

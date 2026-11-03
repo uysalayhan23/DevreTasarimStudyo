@@ -63,7 +63,7 @@
       visual:visual?{
         assetKey:mapping.assetKey,
         file:visual.file,
-        runtimeFile:mapping.visualSourceFile?('assets/products/'+mapping.visualSourceFile):visual.file,
+        runtimeFile:mapping.visualSourceStatus==='code-native-orthographic-plan'?null:mapping.visualSourceFile?('assets/products/'+mapping.visualSourceFile):visual.file,
         matchQuality:mapping.visualMatchStatus||visual.matchQuality,
         orientationStatus:mapping.visualOrientationStatus||visual.orientationStatus,
         policyId:mapping.visualPolicyId||null,

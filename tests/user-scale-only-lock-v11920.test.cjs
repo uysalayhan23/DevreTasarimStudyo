@@ -117,11 +117,11 @@ test('user scale-only lock preserves old visuals and applies requested physical 
   const art=fs.readFileSync(path.join(root,'dist','materials-v115.js'),'utf8');
   assert.match(art,/ordel-top-v115\.png/);
   assert.match(art,/viewBox="85 75 1080 1080"/);
-  assert.match(art,/weid-front-v115\.png/);
-  assert.match(art,/'394 27 226 1480'/);
-  assert.match(art,/maskedPhoto\('weid-front-v115\.png','394 27 226 1480',0,0,d\.w,d\.h/);
+  assert.match(art,/class="waz5-top-plan" data-view="orthographic-top"/);
+  assert.doesNotMatch(art,/maskedPhoto\('weid-front-v115\.png'/);
   const wazRender=require('../dist/materials-v115.js').markup(waz,{id:'waz5-frame-test'});
-  assert.match(wazRender,/weid-front-v115\.png/);
+  assert.match(wazRender,/class="waz5-top-plan"/);
+  assert.doesNotMatch(wazRender,/weid-front-v115\.png|<image/);
   assert.doesNotMatch(wazRender,/instrument-scale-only/);
   assert.match(art,/instrument-scale-only/); // ORDEL keeps its square legacy-art wrapper.
 });

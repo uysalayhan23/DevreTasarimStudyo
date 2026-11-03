@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),{createAp
 function down(a,node,x=300,y=300){node.emit('pointerdown',{clientX:x,clientY:y});a.window.emit('pointerup',{buttons:0,clientX:x,clientY:y})}
 const scene=(a,id)=>a.$('#scene [data-id="'+id+'"]');
 test('new instruments expose actual settings, persist values and share photo with palette',()=>{
- const a=createApp({appearance:'material'});a.drop('converter-pressure',350,220);let c=a.save().components[0];assert(a.$('[data-instrument-param="inputValue"]'));const input=a.$('[data-instrument-param="inputValue"]');input.type='number';input.min='0';input.max='10';input.value='7.5';input.emit('change');assert.equal(a.save().components[0].instrumentSettings.inputValue,7.5);assert(scene(a,c.id).innerHTML.includes('weid-front-v115.png'));
+ const a=createApp({appearance:'material'});a.drop('converter-pressure',350,220);let c=a.save().components[0];assert(a.$('[data-instrument-param="inputValue"]'));const input=a.$('[data-instrument-param="inputValue"]');input.type='number';input.min='0';input.max='10';input.value='7.5';input.emit('change');assert.equal(a.save().components[0].instrumentSettings.inputValue,7.5);assert(scene(a,c.id).innerHTML.includes('waz5-top-plan'));assert(!scene(a,c.id).innerHTML.includes('weid-front-v115.png'));
  a.drop('temperature-controller',700,300);assert(a.$('[data-instrument-param="pb"]'));assert(a.$('[data-instrument-param="a1Type"]'));assert(a.$('[data-instrument-param="securityCode"]'));
  a.drop('thermocouple',900,500);assert(a.$('[data-thermal-param="thermocoupleType"]'));assert.equal(Number(a.$('#propTemperature').max),1372);
 });
