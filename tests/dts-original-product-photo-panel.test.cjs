@@ -139,3 +139,40 @@ test('existing selected-device card is already wired to right-hand properties pa
  assert.match(html,/aside id="propertiesPanel"[\s\S]*section id="dtsComponentBrief"/);
  assert.match(app,/window\.DTSComponentBrief\.markup\(item\)/);
 });
+
+
+test('UT200A selected-device card uses its real closed-jaw alpha photo without altering open-jaw scene',()=>{
+ const Clamp=require('../dist/clamp-meter.js'),Mat=require('../dist/materials-v115.js');
+ const originalPins=JSON.stringify(Clamp.definition.pins);
+ const appended=library.slice();Clamp.register(appended);
+ const d=appended.find(x=>x.id==='unit-ut200a');
+ assert.ok(d,'UT200A must be registered in runtime catalog');
+ assert.equal(d.brand,'UNI-T');assert.equal(d.model,'UT200A');
+ const file='ut200a-user-photo-closed.webp';
+ const b=fs.readFileSync(path.join(__dirname,'../dist/assets/products',file));
+ assert.equal(b.toString('ascii',0,4),'RIFF');assert.equal(b.toString('ascii',8,12),'WEBP');
+ assert.equal(b.toString('ascii',12,16),'VP8X');assert.ok(b[20]&16,'original alpha photo must remain transparent');
+ const row=Brief.model(d,{id:'CL1',ref:'P1',meterPosition:1});
+ assert.equal(row.originalPhoto,'assets/products/'+file);
+ assert.equal(row.totalPins,2);assert.deepEqual(row.terminals.map(p=>p.id),['COM','V']);
+ const html=Brief.markup(row);
+ assert.match(html,/<figure class="dts-original-product-photo"/);
+ assert.ok(html.includes('<img src="assets/products/'+file+'"'));
+ const closed=Mat.markup(d,{id:'CL1',_clamp:{display:'0.125',unit:'A'}});
+ const open=Mat.markup(d,{id:'CL1',_clampJawOpen:true});
+ assert.match(closed,/ut200a-user-photo-closed\.webp/);
+ assert.match(open,/ut200a-user-photo-open\.webp/);
+ assert.match(closed,/>0\.125</);
+ assert.equal(JSON.stringify(Clamp.definition.pins),originalPins);
+});
+
+test('UT200A original photo whitelist rejects a forged external or injected preview',()=>{
+ const Clamp=require('../dist/clamp-meter.js');
+ const row=Brief.model(Clamp.definition,{id:'CL2'});
+ for(const value of ['https://attacker.example/pens.webp','javascript:alert(1)',
+                     'assets/products/ut200a-user-photo-open.webp',
+                     'assets/products/ut200a-user-photo-closed.webp" onerror="alert(1)']){
+  assert.doesNotMatch(Brief.markup({...row,originalPhoto:value}),/<img|onerror|javascript:|attacker\.example/);
+ }
+ assert.match(Brief.markup(row),/ut200a-user-photo-closed\.webp/);
+});
