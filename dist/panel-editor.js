@@ -182,7 +182,7 @@
   $('#panelOrbitLeft').onclick=()=>{camera.view='3d';camera.yaw=Math.max(-60,camera.yaw-10);render()};$('#panelOrbitRight').onclick=()=>{camera.view='3d';camera.yaw=Math.min(60,camera.yaw+10);render()};
   let angleBefore=null;
   $('#panelDoorAngle').oninput=e=>{if(!active())return;if(doorFrame){cancelAnimationFrame(doorFrame);doorFrame=null}const p=panel(),target=Number(e.target.value);if(target<p.doorAngle&&typeof P.doorClearance==='function'){const clearance=P.doorClearance(p,{fromAngle:target,toAngle:p.doorAngle});if(!clearance.ok){e.target.value=Math.round(p.doorAngle);$('#panelDoorValue').textContent=Math.round(p.doorAngle)+'°';selected=new Set([clearance.collision.doorId,clearance.collision.plateId]);E.toast(clearance.reason);render();return}}if(angleBefore===null){if(!E.snapshot())return;angleBefore=p.doorAngle}p.doorAngle=target;render(false)};
-  $('#panelDoorAngle').onchange=()=>{angleBefore=null;E.scheduleSave()};
+  $('#panelDoorAngle').onchange=()=>{if(angleBefore===null)return;angleBefore=null;E.scheduleSave();render()};
   $('#panelToggleDoor').onclick=()=>{
     if(!editable())return;cancelDrag();if(doorFrame)cancelAnimationFrame(doorFrame);camera.view='3d';const p=panel(),from=p.doorAngle,to=from>10?0:105;
     if(to<from&&typeof P.doorClearance==='function'){const clearance=P.doorClearance(p,{fromAngle:to,toAngle:from});if(!clearance.ok){selected=new Set([clearance.collision.doorId,clearance.collision.plateId]);E.toast(clearance.reason);render();return}}
