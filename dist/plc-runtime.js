@@ -45,10 +45,10 @@ function inputState(c,d,net,p){
  // Native Simulation.network.voltage returns boolean even for reversed wiring.
   // Only signed dcVoltage can prove the verified CPU's positive DI polarity.
   const verified=d?.id==='plc-hw-6es7211-1ae40-0xb0';
-  const voltage=verified&&typeof net.dcVoltage==='function'?net.dcVoltage(c,p.id,anchor.id):net.voltage(c,p.id,anchor.id);
+  const voltage=verified?(typeof net.dcVoltage==='function'?net.dcVoltage(c,p.id,anchor.id):null):net.voltage(c,p.id,anchor.id);
  // Verified CPU 1211C DC inputs require positive polarity relative to X10:6 (1M).
  // Negative or absent voltage must not become logical TRUE via !!voltage.
- return d?.id==='plc-hw-6es7211-1ae40-0xb0'?(Number.isFinite(Number(voltage))&&Number(voltage)>0):!!voltage;
+ return d?.id==='plc-hw-6es7211-1ae40-0xb0'?(typeof voltage==='number'&&Number.isFinite(voltage)&&voltage>0):!!voltage;
 }
 function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
  // Explicit opt-in for the original DTS Ladder interpreter; legacy lessons keep their modes.
@@ -448,9 +448,9 @@ function simulationGate(project,byId){
 function evaluate(c,d,net,now=Date.now(),options={}){
  const sp=supplyPair(d),ioCount=pins(d,'DI').length+pins(d,'DO').length+pins(d,'AI').length+pins(d,'AO').length;
  const verifiedDc=d?.id==='plc-hw-6es7211-1ae40-0xb0';
-  const supplyVoltage=sp?(verifiedDc&&typeof net.dcVoltage==='function'?net.dcVoltage(c,sp.a.id,sp.b.id):net.voltage(c,sp.a.id,sp.b.id)):null;
+  const supplyVoltage=sp?(verifiedDc?(typeof net.dcVoltage==='function'?net.dcVoltage(c,sp.a.id,sp.b.id):null):net.voltage(c,sp.a.id,sp.b.id)):null;
   // Verified CPU without its own supply pair cannot borrow the virtual backplane.
-  const powered=verifiedDc?!!sp&&Number.isFinite(Number(supplyVoltage))&&Number(supplyVoltage)>0:
+  const powered=verifiedDc?!!sp&&typeof supplyVoltage==='number'&&Number.isFinite(supplyVoltage)&&supplyVoltage>0:
    sp?!!supplyVoltage:(ioCount>0&&(d.plcBackplane!==false||c.plcBackplanePowered===true));
   const inputPins=pins(d,'DI'),inputs=inputPins.map(p=>({id:p.id,label:p.label,value:powered&&inputState(c,d,net,p)}));
  const analogInputs=Object.fromEntries(pins(d,'AI').map(p=>{
@@ -582,8 +582,8 @@ function evaluate(c,d,net,now=Date.now(),options={}){
  // CPU 1211C output bank needs its own 3L+ / 3M supply; no phantom Q0.
  const bankRestricted=['plc-0-0-documented','plc-hw-6es7211-1ae40-0xb0'].includes(d?.id);
  // A reversed 3L+/3M bank must not drive a logical Q or a physical lamp.
-  const bankVoltage=bankRestricted?(verifiedDc&&typeof net.dcVoltage==='function'?net.dcVoltage(c,'X12:1','X12:2'):net.voltage(c,'X12:1','X12:2')):null;
- const outputSupplyValid=!bankRestricted||(Number.isFinite(Number(bankVoltage))&&Number(bankVoltage)>0);
+  const bankVoltage=bankRestricted?(verifiedDc?(typeof net.dcVoltage==='function'?net.dcVoltage(c,'X12:1','X12:2'):null):net.voltage(c,'X12:1','X12:2')):null;
+ const outputSupplyValid=!bankRestricted||(verifiedDc?(typeof bankVoltage==='number'&&Number.isFinite(bankVoltage)&&bankVoltage>0):(Number.isFinite(Number(bankVoltage))&&Number(bankVoltage)>0));
  if(!powered||!outputSupplyValid)for(const p of outputPins)prg.outputs[p.id]=false;
  // A Q terminal wired directly to the output bank's 3M return is a hard
  // short, not a valid energized load. Refuse that Q link before network
