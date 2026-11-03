@@ -289,7 +289,7 @@
   const isProtected=p=>!!(p?.defaultTemplate?.id&&p.defaultTemplate.readOnly===true);
   function editableCopy(project){const p=clean(project);p.projectId=uid();if(isProtected(p)){p.sourceExample=p.defaultTemplate.id;p.name=(p.name||'Örnek')+' · Çalışma kopyam';delete p.defaultTemplate}return p}
   function create({storage=root.localStorage,indexedDB=root.indexedDB,env=root}={}){
-    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false,folderChoiceEpoch=0,folderPickerRequest=0;const handles=new Map();
+    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false,folderChoiceEpoch=0,folderPickerRequest=0,openFileRequest=0;const handles=new Map();
     const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');if(!Array.isArray(rows))return [];const seen=new Set();return rows.filter(r=>{if(!r||typeof r!=='object'||Array.isArray(r)||!(typeof r.id==='string'||typeof r.id==='number')||!String(r.id).trim())return false;const id=String(r.id);if(seen.has(id))return false;seen.add(id);return true})}catch{return []}};
     const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries.filter(e=>e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.name==='string'&&e.project&&typeof e.project==='object'):[]}catch{return []}};
     const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId??'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
@@ -365,7 +365,18 @@
     }
     async function openFile(){
       if(!env.showOpenFilePicker)return {fallback:true};
-      try{const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});const file=await handle.getFile(),p=await readProjectFile(file);await remember(p,handle,file.lastModified);return {project:p}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
+      const request=++openFileRequest;
+      try{
+        const [handle]=await env.showOpenFilePicker({id:'dts-open-project',types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre','.dtsproj','.json']}}]});
+        if(request!==openFileRequest)return {cancelled:true};
+        const file=await handle.getFile(),p=await readProjectFile(file);
+        // The editor already discards obsolete Open results. Do not let one
+        // poison the remembered Save handle for a newer file of the same ID.
+        if(request!==openFileRequest)return {cancelled:true};
+        await remember(p,handle,file.lastModified);
+        if(request!==openFileRequest)return {cancelled:true};
+        return {project:p};
+      }catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
     function download(project){validate(project);const serialized=JSON.stringify(clean(project),null,2);if(exceedsProjectBytes(serialized))throw Error('Proje dosyası 20 MB sınırını aşıyor.');const blob=new env.Blob([serialized],{type:'application/json'}),a=env.document.createElement('a');a.href=env.URL.createObjectURL(blob);a.download=filename(project.name);a.click();env.setTimeout(()=>env.URL.revokeObjectURL(a.href),1000);return {download:true,name:a.download}}
     async function save(project,{saveAs=false}={}){
