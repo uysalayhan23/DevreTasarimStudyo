@@ -133,7 +133,20 @@
     const result=proposal(p,item,x-item.w/2,y-item.h/2,item.mount);if(result.ok)p.items.push(result.item);return result;
   }
   function addRail(p,x=40,y=150,length=p.width-80){const r={id:uid('rail'),x:snap(clamp(x,20,p.width-70)),y:snap(clamp(y,40,p.height-40)),length:clamp(length,50,p.width-40)};r.length=Math.min(r.length,p.width-20-r.x);p.rails.push(r);return r}
-  function remove(p,ids){const set=new Set(ids);p.items=p.items.filter(i=>!set.has(i.id));p.rails=p.rails.filter(r=>!set.has(r.id));p.ducts=p.ducts.filter(r=>!set.has(r.id));Wiring.remove(p,ids);for(const i of p.items)if(i.railId&&set.has(i.railId)){i.mount='plate';delete i.railId}}
+  function remove(p,ids){
+    const set=new Set(ids);
+    // A cable threaded through a duct follows that duct's CURRENT position.
+    // When removing the duct, retain this visible route as manual waypoints
+    // instead of snapping back to the outdated points stored at attachment time.
+    for(const wire of p.wires||[])if(set.has(wire.accessoryId)){
+      const duct=p.ducts.find(d=>d.id===wire.accessoryId);
+      if(duct)wire.points=Wiring.accessoryPoints(duct);
+      delete wire.accessoryId;
+    }
+    p.items=p.items.filter(i=>!set.has(i.id));p.rails=p.rails.filter(r=>!set.has(r.id));p.ducts=p.ducts.filter(r=>!set.has(r.id));
+    Wiring.remove(p,ids);
+    for(const i of p.items)if(i.railId&&set.has(i.railId)){i.mount='plate';delete i.railId}
+  }
   function moveRail(p,id,dx,dy){
     const r=p.rails.find(r=>r.id===id);if(!r)return {ok:false};const nx=snap(r.x+dx),ny=snap(r.y+dy),delta={x:nx-r.x,y:ny-r.y};
     if(nx<20||nx+r.length>p.width-20||ny<40||ny>p.height-40)return {ok:false,reason:'Ray pano sınırları içinde kalmalı.'};
