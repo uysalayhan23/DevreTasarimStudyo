@@ -99,7 +99,7 @@
    for(let i=0;i<d.fuseSlots;i++){
     const xx=i*40,open=!!c.fuseOpen?.[i];
     const scope='fuse-'+String(c.id||d.id).replace(/[^a-z0-9]/gi,'')+'-'+i;
-    a+=`<g data-fuse-slot="${i}" role="button" tabindex="0" aria-label="${i+1}. sigorta ${open?'kapat':'aç'}"><svg x="${xx+1}" y="6" width="38" height="148" viewBox="405 70 215 1400" preserveAspectRatio="none"><defs><clipPath id="${scope}"><rect x="423" y="516" width="180" height="523"/></clipPath></defs><image href="assets/products/wsi-top-v111.png" width="1024" height="1536"/><rect x="423" y="516" width="180" height="523" fill="#262b2e"/><g transform="translate(0 ${open?-150:0})"><image href="assets/products/wsi-top-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></g></svg>${text(open?'AÇIK':'',xx+20,156,8)}<rect x="${xx+1}" y="6" width="38" height="150" fill="transparent"/></g>`;
+    a+=`<g data-fuse-slot="${i}" role="button" tabindex="0" aria-label="${i+1}. sigorta ${open?'kapat':'aç'}"><svg x="${xx+1}" y="6" width="38" height="148" viewBox="405 70 215 1400" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="${scope}"><rect x="423" y="516" width="180" height="523"/></clipPath></defs><image href="assets/products/wsi-top-v111.png" width="1024" height="1536"/><rect x="423" y="516" width="180" height="523" fill="#262b2e"/><g transform="translate(0 ${open?-150:0})"><image href="assets/products/wsi-top-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></g></svg>${text(open?'AÇIK':'',xx+20,156,8)}<rect x="${xx+1}" y="6" width="38" height="150" fill="transparent"/></g>`;
    }
   }else if(d.id==='potentiometer'){
    const p=Math.max(0,Math.min(100,Number(c.potentiometer??50))),max=Math.max(1,Number(c.potMax)||10000);
