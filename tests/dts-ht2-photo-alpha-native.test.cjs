@@ -53,11 +53,11 @@ test('1P Siemens photo and the user 3-pole 3RV20 photo stay unchanged',()=>{
  assert.equal(sha256(asset('siemens-sirius-3rv20-user-front-20261103.webp')),'5e50e3af60cef15c681d0c4486004160d7792489c7d24c13f308d1218ff46fac');
 });
 
-test('UT33D and ET4420 original photos, click targets and overlays are untouched',()=>{
+test('UT33D original photo and ET4420 corrected photo keep all touch controls',()=>{
  const meter=Mat115.markup(defs['unit-ut33d-plus'],{id:'UT'});
  const et=Mat115.markup(defs['temperature-controller'],{id:'ET'});
  assert.match(meter,/ut33d-front-transparent\.webp/);
  assert.equal([...meter.matchAll(/data-meter-position="\d+"/g)].length,20);
- assert.match(et,/enda-front-v115\.png/);
+ assert.match(et,/enda-et4420-front-transparent\.webp/);
  for(const button of ['set','function','up','down'])assert.ok(et.includes('data-instrument-key="'+button+'"'));
 });

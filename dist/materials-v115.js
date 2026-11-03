@@ -74,7 +74,9 @@
     art+=text(120,222,(c.instrumentSettings?.input||'PT100')==='PT100'?'HMT-R · PT100 · 4–20 mA':'HMT-T · '+c.instrumentSettings.input+' · 4–20 mA',9);
    }else if(d.instrument==='et4420'){
     const sx=d.w/240,sy=d.h/240;
-    art=maskedPhoto('enda-front-v115.png','85 93 1085 1080',0,0,d.w,d.h,1254,1254,uid+'-body','<rect x="96" y="101" width="1062" height="1058" rx="22"/>');
+    // Exact front photograph with true alpha, cropped to the previous photographic face coordinates.
+    // Preserve live display and button hit targets; the original photo remains the information reference.
+    art=photo('enda-et4420-front-transparent.webp','54 59 692 689',0,0,d.w,d.h,800,800);
     let overlay='';
     if(q?.on){const f=v=>c.instrumentSettings?.unit==='F'?v*1.8+32:v;const read=v=>{const n=v==null||v===''?NaN:Number(v),shown=f(n);return Number.isFinite(shown)?shown.toFixed(c.instrumentSettings?.decimal==='on'?1:0):'—'};overlay+=`<rect x="78" y="40" width="132" height="98" fill="#111"/>`+text(143,78,q.error?'PFA':read(q.pv),26,'#ff5547')+text(143,126,read(q.sp),25,'#ebe447');for(const [i,k] of ['main','ssr','alarm1'].entries())if(q[k])overlay+=`<circle cx="36" cy="${58+i*29}" r="5" fill="#ff503f"/>`}
     for(const [i,k] of ['set','function','up','down'].entries())overlay+=`<rect data-instrument-key="${k}" x="${26+i*46}" y="167" width="35" height="28" fill="transparent" style="cursor:pointer"/>`;
