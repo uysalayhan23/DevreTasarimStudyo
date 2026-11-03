@@ -8,6 +8,7 @@ const library=ctx.window.COMPONENT_LIBRARY;
 const scenarios=[
  ['nh-fuse-holder','nh-holder-front-v111.png'],
  ['converter-pressure','weid-front-v115.png'],
+ ['converter-temperature','ordel-top-v115.png'],
  ['reed-no','reed-mr228b-v113.jpg'],
  ['reed-nc','reed-mr228b-v113.jpg'],
  ['fuse-switch-3','wsi-top-v111.png'],
@@ -55,6 +56,20 @@ test('photo src is strictly allowlisted; no external URL or injected HTML from a
   assert.doesNotMatch(html,/<img|onerror|attacker\.example|javascript:/);
  }
  assert.match(Brief.markup(row),/&lt;svg onload=alert\(1\)&gt;/);
+});
+
+test('ORDEL keeps original info photo while workspace rendering stays on transparent alpha asset and native terminals remain intact',()=>{
+ const Material=require('../dist/materials-v115.js');
+ const d=library.find(x=>x.id==='converter-temperature');assert.ok(d);
+ const item=Brief.model(d,{id:'ORD1',ref:'B1'});
+ assert.equal(item.originalPhoto,'assets/products/ordel-top-v115.png');
+ assert.equal(item.totalPins,6);
+ assert.equal(item.terminals.length,6);
+ const html=Brief.markup(item);
+ assert.match(html,/<img src="assets\/products\/ordel-top-v115\.png"/);
+ const svg=Material.markup(d,{id:'ordel-runtime'});
+ assert.match(svg,/assets\/products\/ordel-top-transparent\.webp/);
+ assert.doesNotMatch(svg,/ordel-top-v115\.png/);
 });
 
 test('original info photo does not alter live terminal metadata or current settings',()=>{
