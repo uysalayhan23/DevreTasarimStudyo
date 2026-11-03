@@ -177,7 +177,7 @@
   $('#panelAddRail').onclick=addRail;$('#panelAddDuct').onclick=addDuct;
   $('#panelWireMode').onclick=()=>{if(!editable())return;wireMode=!wireMode;if(!wireMode)draft=null;render()};$('#panelCancelWire').onclick=cancelWire;
   $('#panelWireColor').onchange=()=>{const color=$('#panelWireColor').value,cable=selectedCable();if(cable&&!draft){update(p=>W.recolor(p,E.byId,cable.id,color,cable.size));return}$('#panelWireSize').value=Lines.sizeLabel(panel().colorSizes?.[color]||1.5);if(draft){draft.color=color;draft.size=$('#panelWireSize').value;render(false)}};
-  $('#panelWireSize').onchange=()=>{const value=$('#panelWireSize').value,color=$('#panelWireColor').value,cable=selectedCable();if(cable&&!draft){update(p=>W.recolor(p,E.byId,cable.id,cable.color,value));return}if(draft)draft.size=value;update(p=>W.setSize(p,color,value))};
+  $('#panelWireSize').onchange=()=>{const value=$('#panelWireSize').value,color=$('#panelWireColor').value,cable=selectedCable();if(cable&&!draft){update(p=>W.recolor(p,E.byId,cable.id,cable.color,value));return}if(draft){draft.size=value;render(false);return}update(p=>W.setSize(p,color,value))};
   for(const b of document.querySelectorAll('[data-panel-view]'))b.onclick=()=>{cancelDrag();camera.view=b.dataset.panelView;fit()};
   $('#panelOrbitLeft').onclick=()=>{camera.view='3d';camera.yaw=Math.max(-60,camera.yaw-10);render()};$('#panelOrbitRight').onclick=()=>{camera.view='3d';camera.yaw=Math.min(60,camera.yaw+10);render()};
   let angleBefore=null;
