@@ -311,13 +311,19 @@
     }
     function useFolderFiles(files){readOnlyFiles=[...files].filter(f=>/\.(odsdevre|dtsproj|json)$/i.test(f.name));directory=null;permissionNeeded=false;return readOnlyFiles.length}
     async function scan(request=false){
-      const entries=[],warnings=[];
-      if(directory){permissionNeeded=!await permission(directory,'read',request);if(permissionNeeded)return {entries:readFolderIndex(),warnings,permissionNeeded:true};
-        for await(const [name,handle] of directory.entries())if(handle.kind==='file'&&/\.(odsdevre|dtsproj|json)$/i.test(name)){
+      const entries=[],warnings=[],scanDirectory=directory;
+      if(scanDirectory){
+        const needsPermission=!await permission(scanDirectory,'read',request);
+        // A stale scan must not change permission or cache state of a newly selected folder.
+        if(directory===scanDirectory)permissionNeeded=needsPermission;
+        if(needsPermission)return {entries:directory===scanDirectory?readFolderIndex():[],warnings,permissionNeeded:true};
+        for await(const [name,handle] of scanDirectory.entries())if(handle.kind==='file'&&/\.(odsdevre|dtsproj|json)$/i.test(name)){
           try{const file=await handle.getFile();entries.push({key:name,name,project:await readProjectFile(file),handle,lastModified:file.lastModified})}catch(e){warnings.push(name+': '+e.message)}
         }
       }else if(readOnlyFiles){for(const file of readOnlyFiles)try{entries.push({key:file.webkitRelativePath||file.name,name:file.name,project:await readProjectFile(file),handle:null,lastModified:file.lastModified})}catch(e){warnings.push(file.name+': '+e.message)}}
-      entries.sort((a,b)=>(a.project.name||a.name).localeCompare(b.project.name||b.name,'tr',{numeric:true}));if(directory)writeFolderIndex(entries);return {entries,warnings,permissionNeeded:false};
+      entries.sort((a,b)=>(a.project.name||a.name).localeCompare(b.project.name||b.name,'tr',{numeric:true}));
+      if(scanDirectory&&directory===scanDirectory)writeFolderIndex(entries);
+      return {entries,warnings,permissionNeeded:false};
     }
     async function remember(project,handle,lastModified){if(project.projectId==null||project.projectId==='')project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);try{await db('put','handle:'+project.projectId,data)}catch{}}}
     async function readEntry(entry,request=false){
