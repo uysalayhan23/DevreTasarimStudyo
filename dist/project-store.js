@@ -367,6 +367,11 @@
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
+        // A second tab/process may create the same filename between the free-name
+        // probe and getFileHandle({create:true}). Even a valid copy carrying the
+        // same project ID is not ours: do not overwrite it without a remembered handle.
+        if(createdFolderFile&&target.size!==0)
+          throw Error('Klasöre kayıt sırasında dosya adı başka bir işlem tarafından kullanıldı; mevcut dosyanın üzerine yazılmadı. Yeniden kaydedin.');
         if(createdFolderFile&&target.size===0&&Number.isFinite(target.lastModified))createdFolderFile.initialLastModified=target.lastModified;
         // An existing invalid or oversized target is user data, never a blank new file.
         // Do not silently overwrite it after a failed parse or allocate an oversized read.
