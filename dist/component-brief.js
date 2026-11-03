@@ -8,6 +8,8 @@
  const originalPhotos=Object.freeze({
   'nh-fuse-holder':'assets/products/nh-holder-front-v111.png',
   'converter-pressure':'assets/products/weid-front-v115.png',
+  'weighing-indicator':'assets/products/baykon-front-v115.png',
+  'load-cell':'assets/products/kobastar-sb2-v112.webp',
   'converter-temperature':'assets/products/ordel-top-v115.png',
   'thermal-magnetic':'assets/products/siemens-sirius-3rv20-user-front-20261103.webp',
   'reed-no':'assets/products/reed-mr228b-v113.jpg',

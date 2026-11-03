@@ -129,7 +129,14 @@
     const photo=(typeof module==='object'&&module.exports?require('./materials-v113.js'):root.DTSMaterials113)?.markup(d,c);if(photo)return photo;
     // A single renderer guarantees identical PT100/thermocouple probe artwork.
     if(d.ptWires||d.id==='thermocouple')return '<g class="material-layer" data-material="tc-reference">'+sprite('tc-reference',8,8,d.w-16,d.h-16,'material-art','shared-probe:'+(c.id||d.id))+'</g>';
-    if(d.id==='load-cell')return '<g class="material-layer" data-material="kobastar-sb2"><image href="assets/products/kobastar-sb2-v112.webp" x="0" y="30" width="'+d.w+'" height="'+d.w/2+'"/></g>';
+    if(d.id==='load-cell'){
+      // Preserve the unaltered manufacturer reference photograph's 2:1 ratio.
+      // Center it within the existing scene frame without moving electrical pins.
+      // The perspective RGB reference is still REVIEW for orthographic/alpha release.
+      const w=Math.max(0,Number(d.w)||0),h=Math.max(0,Number(d.h)||0);
+      const iw=Math.min(w,h*2),ih=iw/2;
+      return `<g class="material-layer" data-material="kobastar-sb2"><image href="assets/products/kobastar-sb2-v112.webp" x="${(w-iw)/2}" y="${(h-ih)/2}" width="${iw}" height="${ih}" preserveAspectRatio="xMidYMid meet"/></g>`;
+    }
     if(['tutorial-battery-alkaline','tutorial-battery-nimh','tutorial-battery-liion'].includes(d.id)){
       const style=d.id==='tutorial-battery-alkaline'?{band:'#d7a21b',body:'#202b34',name:'ALKALİN',sub:'BİRİNCİL · TEK KULLANIM'}:d.id==='tutorial-battery-nimh'?{band:'#4a9d6f',body:'#245c46',name:'NiMH',sub:'ŞARJ EDİLEBİLİR'}:{band:'#3b6fd8',body:'#1f3d78',name:'Li-ion',sub:'18650 · ŞARJ EDİLEBİLİR'};
       const volts=Math.max(.1,Number(c.cellVoltage??d.defaultVoltage??1.5)),label=volts.toFixed(1).replace('.',',')+' V',scope=String(c.id||d.id).replace(/[^a-zA-Z0-9_-]/g,'_'),grad='battery-type-'+scope;
