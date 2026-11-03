@@ -26,9 +26,9 @@ test('after physical wire snap, UT200A detects actual 1A AC current without rewi
  assert.equal(clamp._clamp.unit,'A');assert.ok(Math.abs(clamp._clamp.value-1)<.04);
  assert.equal(fixture.wires.length,2);
 });
-test('UT200A UI opens jaws only for nearby wire and closes them on release',()=>{
+test('UT200A UI opens jaws throughout a real drag and closes them on release',()=>{
  const app=read('dist/app.js'),qa=read('scripts/browser-mq05-ut200a-jaw-v11920.cjs');
- assert.match(app,/c\._clampJawOpen=!!candidate/);
+ assert.match(app,/c\._clampJawOpen=true;render\(\)/);
  assert.match(app,/delete c\._clampJawOpen;delete c\._clampCandidate/);
  assert.match(app,/g\.dataset\.clampJawState=c\._clampJawOpen\?'open':'closed'/);
  assert.match(app,/data-clamp-jaw-state':'open'/);

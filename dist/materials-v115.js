@@ -7,15 +7,29 @@
   const maskedPhoto=(file,vb,x,y,w,h,iw,ih,id,shape)=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet" overflow="hidden"><defs><clipPath id="${id}">${shape}</clipPath></defs><image href="assets/products/${file}" width="${iw}" height="${ih}" clip-path="url(#${id})"/></svg>`;
   if(d.probeColor)return `<g class="material-layer"><path d="M0 20h25" stroke="${d.probeColor}" stroke-width="4"/><path d="M100 20h40" stroke="#a8b3b9" stroke-width="3"/><rect x="25" y="12" width="75" height="16" rx="5" fill="${d.probeColor}" stroke="#394953"/><path d="M96 7v26" stroke="${d.probeColor}" stroke-width="6"/></g>`;
   if(d.kind==='clamp-meter'){
-   const M=typeof module==='object'&&module.exports?require('./clamp-meter.js'):root.DTSClampMeter,open=!!c._clampCandidate&&!c.clampedWireId,read=c._clamp||{},display=read.display??'—',unit=read.unit||'',jawShift=open?18:0;
-   let art=`<rect x="39" y="105" width="102" height="220" rx="22" fill="#c62828" stroke="#4a4a4a" stroke-width="4"/><rect x="48" y="118" width="84" height="72" rx="5" fill="#4d5553" stroke="#202625" stroke-width="3"/><rect x="53" y="126" width="74" height="42" rx="2" fill="${c.meterBacklight?'#d9efb4':'#a9bbaa'}"/>`+text(90,151,display,18,'#14231f')+text(116,164,unit,8,'#14231f');
-   art+=`<path d="M55 109V72C55 29 78 10 104 10C130 10 151 31 151 59V94" fill="none" stroke="#45484a" stroke-width="22" stroke-linecap="round"/><path d="M55 109V72C55 34 77 21 103 21" fill="none" stroke="#c9cdce" stroke-width="5" stroke-linecap="round"/><g transform="translate(${jawShift} 0)"><path d="M151 94V59C151 39 139 24 123 18" fill="none" stroke="#45484a" stroke-width="22" stroke-linecap="round"/><path d="M151 94V59C151 43 142 32 130 27" fill="none" stroke="#c9cdce" stroke-width="5" stroke-linecap="round"/></g>`;
-   if(c.clampedWireId)art+=`<line x1="28" y1="65" x2="166" y2="65" stroke="#1f2937" stroke-width="7"/><circle cx="103" cy="65" r="5" fill="#f4d03f"/>`;
-   art+=text(90,205,'UNI-T',14,'#fff')+text(90,222,'UT200A',11,'#fff')+`<circle cx="90" cy="257" r="39" fill="#242526" stroke="#555" stroke-width="3"/><g transform="rotate(${(c.meterPosition||0)*45} 90 257)"><rect x="83" y="225" width="14" height="64" rx="4" fill="#555"/><path d="M90 227v14" stroke="#eee" stroke-width="3"/></g>`;
-   for(let i=0;i<M.ranges.length;i++){const a=(i*45-22.5)*Math.PI/180,b=(i*45+22.5)*Math.PI/180,r=52;art+=`<path data-meter-position="${i}" d="M90 257L${90+Math.cos(a)*r} ${257+Math.sin(a)*r}A${r} ${r} 0 0 1 ${90+Math.cos(b)*r} ${257+Math.sin(b)*r}Z" fill="transparent" style="cursor:pointer"/>`}
-   art+=`<rect x="48" y="297" width="38" height="17" rx="4" fill="#2b2b2b"/><rect x="94" y="297" width="38" height="17" rx="4" fill="#2b2b2b"/><rect data-meter-action="hold" x="45" y="293" width="44" height="25" fill="transparent" style="cursor:pointer"/><rect data-meter-action="light" x="91" y="293" width="44" height="25" fill="transparent" style="cursor:pointer"/>`+text(67,309,'HOLD',7,'#fff')+text(113,309,'LIGHT',7,'#fff');
-   return `<g class="material-layer" data-material="unit-ut200a-vector">${art}</g>`;
-  }
+    // The user-approved product photograph is a transparent asset in both jaw states.
+    // Dragging uses the open photo; release closes the jaw, keeping the real solver's reading.
+    const M=typeof module==='object'&&module.exports?require('./clamp-meter.js'):root.DTSClampMeter;
+    const open=!!c._clampJawOpen||!!c._clampCandidate,read=c._clamp||{},display=String(read.display??'—'),unit=read.unit||'';
+    const file=open?'ut200a-user-photo-open.webp':'ut200a-user-photo-closed.webp';
+    let art=`<svg class="ut200a-user-photo" x="0" y="0" width="${d.w}" height="${d.h}" viewBox="0 0 360 680" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/${file}" width="360" height="680"/></svg>`;
+    // Cover the photo's static 3.099 demonstration readout; never report it as a measurement.
+    art+=`<rect class="clamp-lcd-live" x="76" y="224" width="50" height="37" rx="1" fill="${c.meterBacklight?'#b5ecfa':'#8bd8f4'}"/>`+
+      text(101,249,display,19,'#0d293f')+text(122,229,unit,7,'#0d293f');
+    if(c.clampedWireId)art+=`<path class="clamp-wire-indicator" d="M54 51H130" stroke="#16a34a" stroke-width="3.5" stroke-linecap="round"/>`;
+    const cx=108,cy=177,r=56;
+    for(let i=0;i<M.ranges.length;i++){
+     const a=(i*45-22.5)*Math.PI/180,b=(i*45+22.5)*Math.PI/180;
+     art+=`<path data-meter-position="${i}" d="M${cx} ${cy}L${cx+Math.cos(a)*r} ${cy+Math.sin(a)*r}A${r} ${r} 0 0 1 ${cx+Math.cos(b)*r} ${cy+Math.sin(b)*r}Z" fill="transparent" style="cursor:pointer"/>`;
+    }
+    art+=`<rect data-meter-action="hold" x="104" y="265" width="24" height="24" fill="transparent" style="cursor:pointer"/>`+
+      `<rect data-meter-action="light" x="63" y="265" width="24" height="24" fill="transparent" style="cursor:pointer"/>`;
+    return `<g class="material-layer" data-material="unit-ut200a-user-photo">${art}</g>`;
+   }
+   if(d.id==='diode'){
+    // User-approved illustrative 1N5408 photograph; the band faces the native K terminal at right.
+    return `<g class="material-layer" data-material="1n5408-photo-representative"><svg x="0" y="${(d.h-18)/2}" width="${d.w}" height="18" viewBox="0 0 640 128" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/1n5408-user-approved-representative.webp" width="640" height="128"/></svg></g>`;
+   }
   if(d.kind==='current-transformer'&&d.id==='current-transformer-edu-1p'){
    let art=`<rect x="8" y="8" width="134" height="134" rx="10" fill="#eef2f4" stroke="#5e6b72" stroke-width="3"/><circle cx="75" cy="64" r="36" fill="none" stroke="#3e4b52" stroke-width="15"/><line x1="5" y1="48" x2="145" y2="48" stroke="#e53935" stroke-width="7"/><path d="M48 103q9-16 18 0t18 0t18 0" fill="none" stroke="#8e44ad" stroke-width="4"/>`+text(75,20,'CT 100/5 A',10,'#2e4550')+text(75,132,'S1 / S2',8,'#6b4c7b');
    return `<g class="material-layer" data-material="current-transformer-edu-vector">${art}</g>`;
