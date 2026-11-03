@@ -24,7 +24,7 @@ test('verified Siemens protection devices use exact local photos while unverifie
  for(const d of lib.filter(d=>['breaker','breaker2','breaker3','thermal-magnetic'].includes(d.kind))){
   const closed=M.markup(d,{state:false}),opened=M.markup(d,{state:true});
   if(exactIds.has(d.id)){
-   if(d.id==='thermal-magnetic')assert.match(closed,/siemens-3rv2011-user-front-v11920\.webp/,d.id);else if(d.id==='disconnect-1p')assert.match(closed,/siemens-5tl1163-0-user-front\.webp/,d.id);else if(d.id==='mcb-1p')assert.match(closed,/siemens-5sl6116-7-user-front-v11920\.webp/,d.id);else assert.match(closed,/siemens-mcb[23]-v113\.png/,d.id);
+   if(d.id==='thermal-magnetic')assert.match(closed,/siemens-sirius-3rv20-user-front-20261103\.webp/,d.id);else if(d.id==='disconnect-1p')assert.match(closed,/siemens-5tl1163-0-user-front\.webp/,d.id);else if(d.id==='mcb-1p')assert.match(closed,/siemens-5sl6116-7-user-front-v11920\.webp/,d.id);else assert.match(closed,/siemens-mcb[23]-v113\.png/,d.id);
    assert.equal(d.visualInfo?.match,d.id==='mcb-3p'?'calibrated-family-front':'exact',d.id);
    assert.ok(d.siemensPhoto,d.id);
   }else if(d.id==='thermal-magnetic-1p'){

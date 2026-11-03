@@ -309,11 +309,11 @@ test('5SL6316-7 and 3RV2011 use the requested physical frames and user-approved 
   for(const p of rv.pins){assert.ok(p.x>=0&&p.x<=rv.w,'3RV2011 '+p.id+' x');assert.ok(p.y>=0&&p.y<=rv.h,'3RV2011 '+p.id+' y');}
 
   const material=fs.readFileSync(path.join(root,'dist','materials.js'),'utf8');
-  assert.match(material,/siemens-3rv2011-user-front-v11920\.webp/);
+  assert.match(material,/siemens-sirius-3rv20-user-front-20261103\.webp/);
   assert.match(material,/physicalFrameMm:\{width:45,height:97\}/);
   const renderer=fs.readFileSync(path.join(root,'dist','materials-v113.js'),'utf8');
-  assert.match(renderer,/siemens-3rv2011-user-front-v11920\.webp\?rev=20261008-3rv6/);
-  assert.match(renderer,/viewBox="0 0 180 388"/);
+  assert.match(renderer,/siemens-sirius-3rv20-user-front-20261103\.webp\?rev=20261103-user/);
+  assert.match(renderer,/viewBox="0 0 298 643"/);
   assert.match(renderer,/preserveAspectRatio="xMidYMid meet"/);
   const rvAsset=fs.readFileSync(path.join(root,'dist','assets','products','siemens-3rv2011-user-front-v11920.webp'));
   assert.ok(rvAsset.length>18000,'3RV2011 canonical WebP size');
@@ -401,10 +401,10 @@ test('runtime visual closure: 5SL6316, 3RV, 5TL and HCFA fit modes',()=>{
   assert.equal(rv.userVisualAsset,'siemens-3rv2011-user-front-v11920.webp');
 
   const m113=fs.readFileSync(path.join(root,'dist','materials-v113.js'),'utf8');
-  assert.match(m113,/siemens-3rv2011-user-front-v11920\.webp\?rev=20261008-3rv6/);
+  assert.match(m113,/siemens-sirius-3rv20-user-front-20261103\.webp\?rev=20261103-user/);
   assert.match(m113,/siemens-5tl1163-0-user-front\.webp\?rev=20261008-5tl5/);
   assert.match(m113,/viewBox="0 0 180 861"/);
-  assert.match(m113,/viewBox="0 0 180 388"/);
+  assert.match(m113,/viewBox="0 0 298 643"/);
   assert.doesNotMatch(m113,/3RV2011-1JA10'[\s\S]{0,400}siemens-3rv2011-1ja10-cad-front\.svg/);
   assert.match(m113,/d\.siemensPhoto==='5SL6316-7'/);
   assert.match(m113,/viewBox="0 115 594 770"/);

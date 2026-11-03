@@ -55,9 +55,9 @@ test('Thermal-magnetic 1P correct real one-pole photo instead of generic wrong d
  assert.equal(JSON.stringify(d.pins),before);
  const img=fromAsset('siemens-5sl6116-7-user-front-v11920.webp');assert.equal(img.toString('ascii',8,12),'WEBP');
 });
-test('Existing Siemens three-pole thermal-magnetic item retains exact original photograph',()=>{
+test('Siemens three-pole thermal-magnetic item uses the newly supplied photograph',()=>{
  const d=byId['thermal-magnetic'];const svg=M113.markup(d,{id:'TM3'});
- assert.match(svg,/siemens-3rv2011-user-front-v11920\.webp/);
+ assert.match(svg,/siemens-sirius-3rv20-user-front-20261103\.webp/);
  assert.doesNotMatch(svg,/waz5-front-transparent|ordel-top-transparent/);
 });
 test('Other original meter, controller, and HT2 photos remain untouched',()=>{
