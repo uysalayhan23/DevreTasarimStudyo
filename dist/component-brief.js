@@ -3,6 +3,20 @@
  // Read-only catalogue descriptions with native virtual sensor settings; no physical acceptance inferred.
  const Sensors=typeof module==='object'&&module.exports?require('./sensors.js'):root.CCSSensors;
  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ // Only use existing repository product photographs. Never trust catalog/imported
+ // image URLs as arbitrary HTML or use perspective shots as workspace assets.
+ const originalPhotos=Object.freeze({
+  'nh-fuse-holder':'assets/products/nh-holder-front-v111.png',
+  'converter-pressure':'assets/products/weid-front-v115.png',
+  'reed-no':'assets/products/reed-mr228b-v113.jpg',
+  'reed-nc':'assets/products/reed-mr228b-v113.jpg',
+  'fuse-switch':'assets/products/wsi-top-v111.png',
+  'fuse-switch-3':'assets/products/wsi-top-v111.png',
+  'unit-ut33d-plus':'assets/products/ut33d-front-transparent.webp',
+  'sensor-temperature-humidity':'assets/products/gentek-front-v115.png',
+  'temperature-controller':'assets/products/enda-front-v115.png'
+ });
+ const allowedOriginalPhotos=new Set(Object.values(originalPhotos));
  const kindHints={
   lamp:'Gösterge elemanı. Devredeki durumunu simülasyon sırasında izleyebilirsiniz.',
   plc:'PLC: giriş, çıkış ve gerçek katalog terminal adreslerini kontrol edin.',
@@ -36,7 +50,8 @@
    {label:'Sanal hedef uzaklığı',value:numeric(sensing.distance)+' mm'},
    {label:'Otomatik hareket',value:sensing.auto?'Açık':'Kapalı'}
   ]:[];
-  return {name,subtitle,kind:String(d.kind||''),
+  const originalPhoto=Object.prototype.hasOwnProperty.call(originalPhotos,d.id)?originalPhotos[d.id]:null;
+  return {name,subtitle,kind:String(d.kind||''),originalPhoto,
    hint:kindHints[d.kind]||'Malzeme bilgileri katalogdan alınmıştır. İşlev ve simülasyon desteği modele göre değişebilir.',
    ref:String(c.ref??c.label??c.id??''),terminals,totalPins:ps.length,parameters,
    note:!sourcePins?'Terminal bilgisi katalogda bulunamadı.':sourcePins.length!==ps.length?
@@ -48,6 +63,10 @@
   const pin=p=>'<span class="dts-component-pin" title="'+esc(p.id)+(p.type?' · '+esc(p.type):'')+'">'+esc(p.label)+'</span>';
   return '<header><strong>'+esc(item.name)+'</strong>'+(item.subtitle?'<small>'+esc(item.subtitle)+'</small>':'')+'</header>'+ (item.ref?'<small class="dts-component-ref">Cihaz: '+esc(item.ref)+'</small>':'')+
    '<p>'+esc(item.hint)+'</p>'+
+   (allowedOriginalPhotos.has(item.originalPhoto)?
+    '<figure class="dts-original-product-photo" style="margin:8px 0;padding:8px;border-radius:6px;background:#f4f6f8">'+
+    '<img src="'+esc(item.originalPhoto)+'" alt="Orijinal/katalog ürün fotoğrafı: '+esc(item.name)+'" loading="lazy" decoding="async" style="display:block;width:auto;height:auto;max-width:100%;max-height:180px;margin:0 auto;object-fit:contain">'+
+    '<figcaption style="margin-top:5px;font-size:11px;color:#4b5563;text-align:center">Orijinal/katalog fotoğrafı · bilgi amaçlı</figcaption></figure>':'')+
    (item.parameters?.length?'<div class="dts-component-params" aria-label="Sanal sensör parametreleri">'+
     item.parameters.map(p=>'<div><span>'+esc(p.label)+'</span><strong>'+esc(p.value)+'</strong></div>').join('')+'</div>':'')+
    (item.totalPins?'<div class="dts-component-pins">'+item.terminals.map(pin).join('')+'</div>':'')+
