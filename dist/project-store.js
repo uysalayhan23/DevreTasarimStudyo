@@ -372,13 +372,17 @@
       validate(project);if(isProtected(project)&&!saveAs)throw Error('Hazır örnek korunuyor. Düzenlemek için önce Farklı Kaydet ile kendi kopyanızı oluşturun.');
       const copy=saveAs?editableCopy(project):clean(project);if(!saveAs&&(copy.projectId==null||copy.projectId===''))copy.projectId=uid();copy.updatedAt=new Date().toISOString();
       if(exceedsProjectBytes(JSON.stringify(copy,null,2)))throw Error('Proje dosyası 20 MB sınırını aşıyor.');
+      const selectedDirectory=directory,selectedEpoch=folderChoiceEpoch;
+      const ensureSelectedFolder=()=>{if(selectedDirectory!==directory||selectedEpoch!==folderChoiceEpoch)throw Error('Proje klasörü değişti; yeniden kaydedin.');};
       let existing=handles.get(project.projectId),handle,createdFolderFile=null;
       try{
         // Save As opens its picker before any IndexedDB work loses the user gesture.
         if(saveAs&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}],...(directory?{startIn:directory}:{})});
         if(!handle&&!saveAs){if(!existing){try{existing=await db('get','handle:'+project.projectId)}catch{}}handle=existing?.handle}
-        if(!handle&&directory&&!saveAs){
-          if(!await permission(directory,'readwrite',true))throw Error('Klasöre yazma izni verilmedi.');
+        if(!handle&&selectedDirectory&&!saveAs){
+          ensureSelectedFolder();
+          if(!await permission(selectedDirectory,'readwrite',true))throw Error('Klasöre yazma izni verilmedi.');
+          ensureSelectedFolder();
           let name=filename(copy.name),n=2;
           // Keep the collision number before the extension, including names
           // already ending in .odsdevre. Reserve room for (2), (3), ...
@@ -386,17 +390,25 @@
           const stem=name.slice(0,-'.odsdevre'.length);
           while(true){
             try{
-              await directory.getFileHandle(name);
+              await selectedDirectory.getFileHandle(name);
+              ensureSelectedFolder();
               const suffix=' ('+(n++)+')';
               name=stem.slice(0,Math.max(0,100-suffix.length))+suffix+'.odsdevre';
-            }catch(e){if(e.name!=='NotFoundError')throw e;break}
+            }catch(e){ensureSelectedFolder();if(e.name!=='NotFoundError')throw e;break}
           }
-          handle=await directory.getFileHandle(name,{create:true});
-          createdFolderFile={directory,name,handle,initialLastModified:null};
+          handle=await selectedDirectory.getFileHandle(name,{create:true});
+          createdFolderFile={directory:selectedDirectory,name,handle,initialLastModified:null};
+          // Record the empty file's initial metadata before an async folder switch
+          // can abort the write, so the existing guarded cleanup can remove it.
+          const createdMetadata=await handle.getFile();
+          if(createdMetadata.size===0&&Number.isFinite(createdMetadata.lastModified))
+            createdFolderFile.initialLastModified=createdMetadata.lastModified;
+          ensureSelectedFolder();
         }
         if(!handle&&env.showSaveFilePicker)handle=await env.showSaveFilePicker({id:'dts-save-project',suggestedName:filename(copy.name),types:[{description:'Devre projesi',accept:{'application/json':['.odsdevre']}}]});
         if(!handle){const result=download(copy);let cacheWarning=false;try{await put(copy,{preserveUpdatedAt:true});if(!saveAs){project.projectId=copy.projectId;project.updatedAt=copy.updatedAt}}catch{cacheWarning=true}return {...result,project:copy,requiresOpen:saveAs,cacheWarning}}
         if(!await permission(handle,'readwrite',true))throw Error('Dosyaya yazma izni verilmedi.');
+        if(createdFolderFile)ensureSelectedFolder();
         // A copy must never replace a bundled example, even if chosen in Save As.
         const target=await handle.getFile();let targetProject;
         // A second tab/process may create the same filename between the free-name
@@ -433,7 +445,13 @@
             throw Error(isProtected(project)?'Özgün örneğin üzerine kaydedilemez. Farklı bir dosya seçin.':'Farklı Kaydet özgün proje dosyasının üzerine yazamaz. Başka bir dosya seçin.');
         }
         if(existing&&!saveAs){const current=await handle.getFile();if(current.lastModified!==existing.lastModified)throw Error('Dosya başka bir uygulamada değişmiş. Üzerine yazılmadı; Farklı kaydet ile bir kopya kaydedin.')}
-        const writable=await handle.createWritable();try{await writable.write(JSON.stringify(copy,null,2));await writable.close()}catch(e){try{await writable.abort()}catch{}throw e}
+        if(createdFolderFile)ensureSelectedFolder();
+        const writable=await handle.createWritable();try{
+          if(createdFolderFile)ensureSelectedFolder();
+          await writable.write(JSON.stringify(copy,null,2));
+          if(createdFolderFile)ensureSelectedFolder();
+          await writable.close();
+        }catch(e){try{await writable.abort()}catch{}throw e}
         let saved=null,cacheWarning=false;
         // A successful writable.close() confirms the disk write. A later metadata
         // read failure must not turn that confirmed save into a false failure.
