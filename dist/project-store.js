@@ -289,7 +289,7 @@
   const isProtected=p=>!!(p?.defaultTemplate?.id&&p.defaultTemplate.readOnly===true);
   function editableCopy(project){const p=clean(project);p.projectId=uid();if(isProtected(p)){p.sourceExample=p.defaultTemplate.id;p.name=(p.name||'Örnek')+' · Çalışma kopyam';delete p.defaultTemplate}return p}
   function create({storage=root.localStorage,indexedDB=root.indexedDB,env=root}={}){
-    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false;const handles=new Map();
+    let dbPromise=null,directory=null,readOnlyFiles=null,permissionNeeded=false,folderChoiceEpoch=0;const handles=new Map();
     const readIndex=()=>{try{const rows=JSON.parse(storage.getItem('dts-project-index')||'[]');if(!Array.isArray(rows))return [];const seen=new Set();return rows.filter(r=>{if(!r||typeof r!=='object'||Array.isArray(r)||!(typeof r.id==='string'||typeof r.id==='number')||!String(r.id).trim())return false;const id=String(r.id);if(seen.has(id))return false;seen.add(id);return true})}catch{return []}};
     const readFolderIndex=()=>{try{const row=JSON.parse(storage.getItem('dts-folder-index')||'null');return row&&row.folderName===directory?.name&&Array.isArray(row.entries)?row.entries.filter(e=>e&&typeof e==='object'&&typeof e.key==='string'&&typeof e.name==='string'&&e.project&&typeof e.project==='object'):[]}catch{return []}};
     const writeFolderIndex=entries=>{try{storage.setItem('dts-folder-index',JSON.stringify({folderName:directory?.name||'',entries:entries.map(e=>({key:e.key,name:e.name,lastModified:e.lastModified||0,cached:true,project:{projectId:e.project?.projectId??'',name:e.project?.name||e.name,workspaceMode:e.project?.workspaceMode||'control',updatedAt:e.project?.updatedAt||''}}))}))}catch{}};
@@ -307,12 +307,20 @@
     async function get(id){const sameId=p=>{if(p.projectId!==undefined&&p.projectId!==null&&p.projectId!==''&&String(p.projectId)!==String(id))throw Error('Taslak proje kimliği uyuşmuyor.');if(p.projectId===undefined||p.projectId===null||p.projectId==='')p.projectId=id;return p};let value,dbError=null;try{value=await db('get','project:'+id)}catch(e){dbError=e}let fromDB=null;if(value)try{fromDB=sameId(validate(migrate(value)))}catch(e){dbError=e}let raw=null,localError=null;try{raw=storage.getItem('dts-project:'+id)}catch(e){localError=e}let fromLocal=null;if(raw)try{fromLocal=sameId(parse(raw))}catch(e){localError=e}if(fromDB&&fromLocal){const dbTime=Date.parse(fromDB.updatedAt||'')||0,localTime=Date.parse(fromLocal.updatedAt||'')||0;return localTime>dbTime?fromLocal:fromDB}if(fromDB)return fromDB;if(fromLocal)return fromLocal;if(localError)throw localError;const legacy=storage.getItem('ods-project');if(legacy){try{const p=parse(legacy);if(p.projectId!=null&&String(p.projectId)===String(id))return p}catch{}}if(dbError)throw dbError;return null}
     async function removeDraft(id){await db('delete','project:'+id);storage.removeItem?.('dts-project:'+id);storage.setItem('dts-project-index',JSON.stringify(readIndex().filter(r=>String(r.id)!==String(id))))}
     async function permission(handle,mode='read',request=false){if(!handle?.queryPermission)return true;if(await handle.queryPermission({mode})==='granted')return true;return !!(request&&await handle.requestPermission({mode})==='granted')}
-    async function restoreFolder(){directory=await db('get','directory');if(!directory)return false;permissionNeeded=!await permission(directory);return !permissionNeeded}
+    async function restoreFolder(){
+      const epoch=folderChoiceEpoch,restored=await db('get','directory');
+      // Startup restore must not replace a folder chosen while IndexedDB/permissions were pending.
+      if(epoch!==folderChoiceEpoch)return false;
+      directory=restored;if(!restored)return false;
+      const needsPermission=!await permission(restored);
+      if(epoch!==folderChoiceEpoch||directory!==restored)return false;
+      permissionNeeded=needsPermission;return !permissionNeeded;
+    }
     async function chooseFolder(){
       if(!env.showDirectoryPicker)return {fallback:true};
-      try{directory=await env.showDirectoryPicker({id:'dts-project-folder',mode:'readwrite'});readOnlyFiles=null;permissionNeeded=false;try{storage.setItem('dts-folder-index','[]')}catch{}await db('put','directory',directory);return {name:directory.name}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
+      try{const chosen=await env.showDirectoryPicker({id:'dts-project-folder',mode:'readwrite'});folderChoiceEpoch++;directory=chosen;readOnlyFiles=null;permissionNeeded=false;try{storage.setItem('dts-folder-index','[]')}catch{}await db('put','directory',directory);return {name:directory.name}}catch(e){if(e.name==='AbortError')return {cancelled:true};throw e}
     }
-    function useFolderFiles(files){readOnlyFiles=[...files].filter(f=>/\.(odsdevre|dtsproj|json)$/i.test(f.name));directory=null;permissionNeeded=false;return readOnlyFiles.length}
+    function useFolderFiles(files){folderChoiceEpoch++;readOnlyFiles=[...files].filter(f=>/\.(odsdevre|dtsproj|json)$/i.test(f.name));directory=null;permissionNeeded=false;return readOnlyFiles.length}
     async function scan(request=false){
       const entries=[],warnings=[],scanDirectory=directory;
       if(scanDirectory){
