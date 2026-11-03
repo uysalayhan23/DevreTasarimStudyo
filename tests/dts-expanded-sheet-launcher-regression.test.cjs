@@ -3,25 +3,25 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path');
 const base=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(base,p),'utf8');
 const space=require('../dist/workspace-space.js'),selection=require('../dist/selection.js');
-test('drawing page expands to 3200 x 2100 scene units while preserving physical grid scale',()=>{
- assert.equal(space.widthScene,3200);assert.equal(space.heightScene,2100);
- assert.equal(space.widthMm,1600);assert.equal(space.heightMm,1050);
+test('drawing page keeps its 6400 x 4200 physical scene while preserving the scale',()=>{
+ assert.equal(space.widthScene,6400);assert.equal(space.heightScene,4200);
+ assert.equal(space.widthMm,3200);assert.equal(space.heightMm,2100);
  assert.equal(space.sceneUnitsPerMm,2);assert.equal(space.gridScene,10);
  assert.equal(space.gridMm,5);assert.equal(space.panelMmNative,true);
 });
 test('editor scene, grid, scrollable SVG and fallback dimensions match expanded page',()=>{
  const app=read('dist/app.js'),html=read('dist/index.html'),css=read('dist/styles.css');
- assert.match(app,/SHEET_W=WorkspaceSpace\?\.widthScene\|\|3200/);
- assert.match(app,/SHEET_H=WorkspaceSpace\?\.heightScene\|\|2100/);
- assert.match(html,/class="grid-bg" x="0" y="0" width="3200" height="2100"/);
- assert.equal((css.match(/width:3200px;height:2100px/g)||[]).length,2);
+ assert.match(app,/SHEET_W=WorkspaceSpace\?\.widthScene\|\|6400/);
+ assert.match(app,/SHEET_H=WorkspaceSpace\?\.heightScene\|\|4200/);
+ assert.match(html,/class="grid-bg" x="0" y="0" width="6400" height="4200"/);
+ assert.equal((css.match(/width:6400px;height:4200px/g)||[]).length,2);
  assert.doesNotMatch(css,/width:2400px;height:1500px/);
  assert.match(html,/workspace-space\.js\?rev=20261029-expanded-sheet1/);
- assert.match(html,/styles\.css\?rev=20261029-expanded-sheet1/);
+ assert.match(html,/styles\.css\?rev=20261101-physical-workspace-6400x4200/);
 });
 test('default group movement includes newly available right and bottom drawing area',()=>{
- const bounds={left:3100,right:3130,top:2040,bottom:2050};
- assert.deepEqual(selection.constrain(bounds,100,100),{x:70,y:50});
+ const bounds={left:6300,right:6330,top:4140,bottom:4150};
+ assert.deepEqual(selection.constrain(bounds,100,100,space.gridScene,space.widthScene,space.heightScene),{x:70,y:50});
 });
 test('launcher keeps a fully extracted dist index, offline smoke gate and direct Edge launch',()=>{
  const bat=read('BASLAT.bat');

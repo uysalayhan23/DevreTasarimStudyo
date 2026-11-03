@@ -52,7 +52,7 @@ test('safety output links change NO/NC state and preserve off-delay pair',()=>{
 });
 test('document atlas, visible grid, exact schematics and protected starter hooks are wired',()=>{
  const html=fs.readFileSync(require.resolve('../dist/index.html'),'utf8');
- assert.match(html,/minorGrid[^\n]*#dde4ec[^\n]*0\.85/);assert.match(html,/majorGrid[^\n]*#c5cfdb[^\n]*1\.15/);
+ assert.match(html,/minorGrid[^\n]*#cbd5e1[^\n]*0\.9/);assert.match(html,/majorGrid[^\n]*#acbbca[^\n]*1\.2/);
  for(let i=0;i<6;i++)assert.match(html,new RegExp('dold-atlas-'+i+'\\.js'));
  assert.match(html,/data-example="dold_bg5933"/);assert.match(html,/data-example="encoder_arduino_119"/);
  const norms=fs.readFileSync(require.resolve('../dist/norms.js'),'utf8');assert.match(norms,/doldSafety.*schematicMarkup/);assert.match(norms,/incrementalEncoder38mm.*encoderSchematicMarkup/);
