@@ -343,14 +343,25 @@
     async function remember(project,handle,lastModified){if(project.projectId==null||project.projectId==='')project.projectId=uid();if(handle){const data={handle,lastModified};handles.set(project.projectId,data);try{await db('put','handle:'+project.projectId,data)}catch{}}}
     async function readEntry(entry,request=false){
       if(!entry)throw Error('Proje kaydı bulunamadı.');
+      // Cached folder cards contain no file handle. Never resolve them against
+      // a different folder chosen while a permission, file or text read awaits.
+      const sourceDirectory=entry.cached?directory:null,sourceEpoch=folderChoiceEpoch;
+      const sameFolder=()=>sourceDirectory===directory&&sourceEpoch===folderChoiceEpoch;
+      const ensureFolder=()=>{if(!sourceDirectory||!sameFolder())throw Error('Proje klasörü değişti; projeyi yeniden seçin.');};
       let handle=entry.handle||null;
-      if(!handle&&entry.cached&&directory){
-        if(!await permission(directory,'read',request))throw Error('Proje klasörünü açmak için izin gerekli.');
-        handle=await directory.getFileHandle(entry.name);
+      if(entry.cached)ensureFolder();
+      if(!handle&&entry.cached){
+        if(!await permission(sourceDirectory,'read',request))throw Error('Proje klasörünü açmak için izin gerekli.');
+        ensureFolder();
+        handle=await sourceDirectory.getFileHandle(entry.name);
+        ensureFolder();
       }
       if(handle&&!await permission(handle,'read',request))throw Error('Proje dosyasını açmak için izin gerekli.');
       const file=handle?await handle.getFile():null,p=file?await readProjectFile(file):validate(migrate(clean(entry.project)));
-      if(p.projectId==null||p.projectId==='')p.projectId=uid();await remember(p,handle,file?.lastModified||entry.lastModified);return p
+      if(entry.cached)ensureFolder();
+      if(p.projectId==null||p.projectId==='')p.projectId=uid();await remember(p,handle,file?.lastModified||entry.lastModified);
+      if(entry.cached)ensureFolder();
+      return p
     }
     async function openFile(){
       if(!env.showOpenFilePicker)return {fallback:true};
