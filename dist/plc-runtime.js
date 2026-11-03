@@ -132,7 +132,7 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
      (resetBefore?count===initial:resetAfter?
       (count===expected||count===initial):count===expected)&&
      (resetAfter?(finalCount===initial&&result.memory.values[ref]===false):
-      finalCount===count);
+      finalCount===count&&result.memory.values[ref]===(type==='CTU'?finalCount>=preset:finalCount===0));
    })&&Object.entries(previousM).every(([ref,wasSet])=>{
     // A forged M latch must not energize a downstream Q through an otherwise
     // success-shaped scan. Verify every M OUT/SET/RESET transition in order.
