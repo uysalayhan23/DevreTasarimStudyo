@@ -78,7 +78,7 @@
     return path.length===0?reported===false:
      blocked?reported===false:unknown||reported===true;
    }))));
-  const live=!!running&&!!savedMatches&&!error&&mapped&&traceReady&&outputsAgree&&inputsAgree&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
+  const live=!!c?.ladderProgram&&!!running&&!!savedMatches&&!error&&mapped&&traceReady&&outputsAgree&&inputsAgree&&Ladder?.supportedPLC?.(d)===true&&state?.powered===true&&c?.plcProgram==='dts-ladder-v1'&&state?.program==='dts-ladder-v1';
   const list=(type,key,prefix)=>pins(d,type).map((p,i)=>({ref:prefix+(i+1),terminal:p.id,value:live?!!state[key]?.[p.id]:null}));
   return {live,powered:live?!!state.powered:null,
    inputs:list('DI','inputs','I'),outputs:list('DO','outputs','Q'),
