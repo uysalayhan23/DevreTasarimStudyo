@@ -12,6 +12,10 @@
    const lever='M595 534L591 431L600 348L625 269L629 211L630 141L650 96L686 61L734 49L817 55L850 95L860 146L850 222L820 270L766 309L745 365L741 494L718 558L672 594L631 582Z';
    const body='M377 1047L348 577L370 566L370 420L411 386L470 363L561 369L601 382L605 526L641 586L718 565L721 679L752 692L743 1068L531 1181Z';
    a=`<svg x="5" y="3" width="${w-10}" height="${h-6}" viewBox="340 40 525 1150" overflow="visible"><defs><clipPath id="${id}-body"><path d="${body}"/></clipPath><clipPath id="${id}-lever"><path d="${lever}"/></clipPath></defs>${image('limit-sem121-v113.jpg',1200,1200,`clip-path="url(#${id}-body)"`)}<g class="roller-lever" transform="rotate(${on?90:0} 660 502)">${image('limit-sem121-v113.jpg',1200,1200,`clip-path="url(#${id}-lever)"`)}<path d="${lever}" fill="transparent"/></g></svg>`;
+  }else if(d.id==='thermal-magnetic-1p'){
+   // Exact 1P thermal-magnetic MCB reference photo, not the 3-pole motor breaker.
+   const stateOverlay=on?'<rect x="47" y="390" width="66" height="34" rx="3" fill="#2f7d3b" opacity=".90"/><text x="80" y="413" font-size="16" font-weight="700" text-anchor="middle" fill="white">I ON</text>':'';
+   a=`<svg x="0" y="0" width="${w}" height="${h}" viewBox="0 0 126 490" preserveAspectRatio="xMidYMid meet" overflow="visible"><defs><clipPath id="${id}-body"><rect x="2" y="2" width="122" height="486" rx="4"/></clipPath></defs>${image('siemens-5sl6116-7-user-front-v11920.webp?rev=20261008-5sl6116-11',126,490,`clip-path="url(#${id}-body)"`)}${stateOverlay}</svg>`;
   }else if(d.siemensPhoto){
    if(d.siemensPhoto==='3RV2011-1JA10'){
     const stateOverlay=on?'<rect x="128" y="181" width="38.4" height="17.6" rx="2.4" fill="#2f7d3b" opacity=".88"/><text x="147.2" y="193.6" font-size="8.8" font-weight="700" text-anchor="middle" fill="white">I ON</text>':'';

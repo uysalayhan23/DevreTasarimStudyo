@@ -39,7 +39,7 @@ test('UT33D+ dial keeps all 20 hit targets, position indicator and controls',()=
 test('WAZ5 material branch stays separate and maintains existing physical body envelope',()=>{
  const waz=Mat.markup({id:'converter-pressure',instrument:'waz5',w:35,h:184.8},{id:'regression'});
  assert.match(waz,/waz5-physical-envelope/);
- assert.match(waz,/weid-front-v115\.png/);
+ assert.match(waz,/waz5-front-transparent\.webp/);
 });
 
 test('UT33D+ invalid saved dial positions fall back without nonfinite SVG transforms',()=>{

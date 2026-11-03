@@ -28,7 +28,8 @@ test('verified Siemens protection devices use exact local photos while unverifie
    assert.equal(d.visualInfo?.match,d.id==='mcb-3p'?'calibrated-family-front':'exact',d.id);
    assert.ok(d.siemensPhoto,d.id);
   }else if(d.id==='thermal-magnetic-1p'){
-   assert.doesNotMatch(closed,/siemens-mcb1-v113.png/);
+   assert.doesNotMatch(closed,/siemens-mcb1-v113.png|siemens-3rv2011-user-front/);
+   assert.match(closed,/siemens-5sl6116-7-user-front-v11920\.webp/);
    assert.match(closed,/data-material="front-thermal-magnetic-1p"/);
    assert.equal(d.visualInfo?.match,'representative');
    assert.equal(d.siemensPhoto,undefined);

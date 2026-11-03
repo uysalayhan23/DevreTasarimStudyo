@@ -31,16 +31,16 @@ test('3NP1133 original photographic product face restored for both cover positio
 test('WAZ5 exact stored photograph restored, proportional original crop, manufacturer footprint unchanged',()=>{
  const d=byId['converter-pressure'];assert.ok(d);assert.deepEqual([d.w,d.h],[35,184.8]);
  const s=Mat115.markup(d,{id:'waz-photo'});
- assert.ok(isPhoto(s));assert.match(s,/weid-front-v115\.png/);
+ assert.ok(isPhoto(s));assert.match(s,/waz5-front-transparent\.webp/);
  assert.match(s,/class="waz5-physical-envelope"/);
- assert.match(s,/viewBox="394 27 226 1480" preserveAspectRatio="xMidYMid meet"/);
+ assert.match(s,/viewBox="0 0 160 949" preserveAspectRatio="xMidYMid meet"/);
  assert.doesNotMatch(s,/waz5-top-plan|data-view="orthographic-top"|preserveAspectRatio="none"/);
  assert.equal(d.pins.length,12);
  const p=Physical.get(d);assert.deepEqual([p.widthMm,p.heightMm,p.depthMm],[17.5,92.4,112.4]);
  assert.equal(p.visualMatchStatus,'exact');
  assert.equal(p.visualOrientationStatus,'source-image-derived-front');
  assert.equal(Physical.panelEligibility(d).eligible,false);
- const twin=Twin.record(d);assert.match(twin.visual.runtimeFile,/weid-front-v115\.png$/);
+ const twin=Twin.record(d);assert.match(twin.visual.runtimeFile,/waz5-front-transparent\.webp$/);
 });
 
 test('reed NO/NC original photo and draggable magnet photo restored, with unchanged ports and drag',()=>{

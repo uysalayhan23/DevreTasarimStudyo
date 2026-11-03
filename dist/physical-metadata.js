@@ -353,7 +353,7 @@
       visualMatchStatus:'exact',
       visualOrientationStatus:'source-image-derived-front',
       visualSourceStatus:'repo-existing-product-visual',
-      visualSourceFile:'weid-front-v115.png',
+      visualSourceFile:'waz5-front-transparent.webp',
       terminalGeometryStatus:'unverified',
       terminalGeometryRequiredForPanel:true,
       physicalRole:'standalone',

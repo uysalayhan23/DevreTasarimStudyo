@@ -63,7 +63,9 @@
     art=`<defs><clipPath id="${uid}"><path d="M210 154Q210 94 280 94H972Q1047 94 1047 164V617Q1047 685 973 685H694V1095Q694 1169 628 1169Q564 1169 564 1095V685H281Q210 685 210 610Z"/></clipPath></defs><svg x="0" y="15" width="180" height="225" viewBox="210 94 837 1075" preserveAspectRatio="xMidYMid meet"><image href="assets/products/gentek-front-v115.png" width="1254" height="1254" clip-path="url(#${uid})"/></svg>`;
     if(s?.on){const m=c.instrumentSettings?.measurement||'both';art+=text(96,48,m==='humidity'?'':s.temperature.toFixed(1),16,'#f65')+text(96,75,m==='temperature'?'':s.humidity.toFixed(1),16,'#f65')}
    }else if(d.instrument==='hmt'){
-    art=`<defs><clipPath id="${uid}"><path clip-rule="evenodd" d="M1164 615A539 539 0 1 0 86 615A539 539 0 1 0 1164 615Z M697 615A72 72 0 1 1 553 615A72 72 0 1 1 697 615Z M293 595A63 63 0 1 1 167 595A63 63 0 1 1 293 595Z M1084 594A63 63 0 1 1 958 594A63 63 0 1 1 1084 594Z"/></clipPath></defs><svg width="240" height="240" viewBox="85 75 1080 1080"><image href="assets/products/ordel-top-v115.png" width="1254" height="1254" clip-path="url(#${uid})"/></svg>`;
+    // Original top-down photograph with genuine RGBA transparency (including three holes).
+    // The source RGB original is retained for the right-hand product information panel.
+    art=`<svg width="240" height="240" viewBox="0 0 480 480" preserveAspectRatio="xMidYMid meet"><image href="assets/products/ordel-top-transparent.webp" width="480" height="480"/></svg>`;
     if(c.instrumentSettings?.input&&c.instrumentSettings.input!=='PT100')art=`<g transform="rotate(90 120 120)">${art}</g>`;
     art+=text(120,222,(c.instrumentSettings?.input||'PT100')==='PT100'?'HMT-R · PT100 · 4–20 mA':'HMT-T · '+c.instrumentSettings.input+' · 4–20 mA',9);
    }else if(d.instrument==='et4420'){
@@ -81,8 +83,10 @@
     // The 17.5 x 92.4 mm manufacturer envelope is wider than the image's
     // aspect-preserved crop. Show the housing at real scene scale without
     // stretching the original photograph or moving any cable terminals.
-    art=`<rect class="waz5-physical-envelope" x="0" y="0" width="${d.w}" height="${d.h}" rx="1.5" fill="#e6ecef" stroke="#67747d" stroke-width="0.7"/>`+
-      maskedPhoto('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="401" y="34" width="212" height="1466" rx="16"/>');
+    // Preserve the real 8540300000 front photograph, with its own alpha channel.
+    // Strict meet scaling never distorts the physical 17.5 x 92.4 mm body envelope.
+    art=`<rect class="waz5-physical-envelope" x="0" y="0" width="${d.w}" height="${d.h}" rx="1.5" fill="none" stroke="none"/>`+
+      `<svg x="0" y="0" width="${d.w}" height="${d.h}" viewBox="0 0 160 949" preserveAspectRatio="xMidYMid meet" overflow="hidden"><image href="assets/products/waz5-front-transparent.webp" width="160" height="949"/></svg>`;
     art+=text(d.w/2,d.h*(205/460),'2 + 0–10V − 3',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(225/460),'V → I',Math.max(5,d.w*(12/180)))+text(d.w/2,d.h*(245/460),'7 + 4–20mA − 8',Math.max(4,d.w*(7/180)))+text(d.w/2,d.h*(280/460),'4/10 +24V',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(298/460),'5/11 0V',Math.max(4,d.w*(8/180)));
    }
    if(d.instrument==='hmt'&&(d.w!==240||d.h!==240))art=`<g class="instrument-scale-only" transform="scale(${d.w/240} ${d.h/240})">${art}</g>`;
