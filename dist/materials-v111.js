@@ -58,37 +58,12 @@
    a+=circle(f?75:124,f?150:177,3,c._active?'#4ff461':'#35513a');
    if(c._phaseFault)a+=text(c._phaseFault,x,h+8,8);
   }else if(d.id==='nh-fuse-holder'){
-    // Orthographic top-down educational plan, not a manufacturer's exact product photograph.
-    // The outer SVG maps 126 x 240 plan units to 105.8 x 202 mm; keep all six
-    // catalog terminals at x=40/90/140 and y=0/240, including cable endpoints.
-    // No oblique projection, perspectival skew, aspect distortion or lid squash.
-    a=`<g class="nh-top-plan" data-view="top-orthographic" data-visual-match="representative">`+
-      `<rect x="27" y="2" width="126" height="236" rx="3" fill="#768b96" stroke="#334552" stroke-width="1.5"/>`+
-      `<rect x="31" y="26" width="118" height="186" rx="3" fill="#33434b" stroke="#203039"/>`;
-    for(let i=0;i<3;i++){
-     const cx=40+i*50;
-     // Vertical copper paths terminate at the exact native terminal coordinates.
-     a+=`<g data-nh-pole="${i+1}"><path d="M${cx} 0V28M${cx} 211V240" stroke="#b8a075" stroke-width="4"/>`+
-       `<circle cx="${cx}" cy="14" r="5" fill="#cfb881" stroke="#5c4c34"/>`+
-       `<circle cx="${cx}" cy="226" r="5" fill="#cfb881" stroke="#5c4c34"/>`+
-       `<rect x="${cx-12}" y="38" width="24" height="159" rx="3" fill="#1e2a32" stroke="#526572"/>`;
-     if(c.nhFuses?.[i])a+=`<rect x="${cx-8}" y="65" width="16" height="102" rx="2" fill="#e8e9df" stroke="#8c9699"/>`+
-       `<rect x="${cx-9}" y="65" width="18" height="14" rx="1" fill="#b8a576"/>`+
-       `<rect x="${cx-9}" y="153" width="18" height="14" rx="1" fill="#b8a576"/>`+
-       text('NH',cx,120,7);
-     a+='</g>';
-    }
-    if(!on){
-     // Closed cover seen face-on from above. Open state removes it without
-     // deforming or translating the underlying physical housing/terminals.
-     a+=`<g class="nh-lid"><rect x="30" y="44" width="120" height="145" rx="3" fill="#a9b8c3" stroke="#4b606d" stroke-width="1.5"/>`+
-       `<rect x="35" y="49" width="110" height="20" rx="2" fill="#7f929e"/>`+
-       `<rect x="36" y="76" width="108" height="65" rx="3" fill="#c6d0d7"/>`+
-       text('3NP1 · NH00',x,109,10)+text('KAPAK KAPALI',x,127,7)+'</g>';
-    }
-    if(on)a+=text('KAPAK AÇIK',x,34,7);
-    a+=`<rect x="31" y="197" width="118" height="14" rx="1" fill="#d8e0e5"/>`+
-      text('TEMSİLİ · ÜSTTEN',x,207,7)+'</g>';
+   a=rect(10,10,w-20,h-20,'#74868f')+rect(18,24,w-36,h-54,'#383f42');
+   for(let i=0;i<3;i++)a+=rect(28+i*50,32,24,18,'#c5a770')+rect(28+i*50,164,24,18,'#c5a770');
+   const nhScope='nh-holder-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
+   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
+   for(let i=0;i<3;i++)if(c.nhFuses?.[i])a+=rect(34+i*50,88,12,77,'#b8bdc0')+rect(28+i*50,104,24,46,'#eee9dc')+text('NH',40+i*50,130,8);
+   a+='</g>'+text('TEMSİLİ GÖRSEL',x,225,7)+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
   }else if(d.id==='nh-fuse'){
    const nhFuseScope='nh-fuse-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
    a=`<defs><clipPath id="${nhFuseScope}"><path d="M24 18H${w-24}V${h-18}H24Z"/></clipPath></defs><image href="assets/products/nh-reference-v111.png" x="10" y="5" width="${w-20}" height="${h-10}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${nhFuseScope})"/>`;
@@ -96,36 +71,10 @@
    const angle=[-60,0,60][Number(c.position)||0];
    a=rect(x-66,y-72,132,144,'#087e64')+rect(x-58,y-64,116,128,'#eaf0df')+text('0',x-42,y-30)+text('Y',x,y-45)+text('Δ',x+42,y-30)+circle(x,y,31,'#096f58')+`<g transform="rotate(${angle} ${x} ${y})">${rect(x-9,y-36,18,72,'#05503f',6)}<path d="M${x} ${y-30}v18" stroke="white" stroke-width="3"/></g>`+text('METOP MT031',x,y+55,9);
   }else if(d.fuseSlots){
-   // WSI-style fused terminal: a flat, code-native overhead training plan.
-   // The archived product photo is not an exact orthographic top projection.
-   // Every slot retains the catalog's 40x160 scene footprint and exact pins
-   // at x=20+40*i, y=0/160. The fuse switch uses its original click region.
    for(let i=0;i<d.fuseSlots;i++){
-    const xx=i*40,cx=xx+20,open=!!c.fuseOpen?.[i];
-    a+=`<g data-fuse-slot="${i}" role="button" tabindex="0" aria-label="${i+1}. sigorta ${open?'kapat':'aç'}" class="wsi-top-plan" data-view="orthographic-top" data-visual-match="representative" data-wsi-top-slot="${i}">`+
-      `<path data-wsi-terminal-path="${i+1}" d="M${cx} 0V17M${cx} 142V160" stroke="#bc9964" stroke-width="3" fill="none"/>`+
-      `<svg x="${xx+1}" y="6" width="38" height="148" viewBox="0 0 38 148" preserveAspectRatio="xMidYMid meet">`+
-      `<rect x="1" y="0" width="36" height="148" rx="2" fill="#c6d4da" stroke="#53646e" stroke-width=".8"/>`+
-      `<rect x="4" y="26" width="30" height="96" rx="2" fill="#52646d" stroke="#34464f" stroke-width=".6"/>`+
-      `<circle cx="19" cy="9" r="4" fill="#bf975d" stroke="#6e5b3a" stroke-width=".7"/>`+
-      `<circle cx="19" cy="139" r="4" fill="#bf975d" stroke="#6e5b3a" stroke-width=".7"/>`+
-      `<text x="19" y="23" text-anchor="middle" font-size="6" fill="#263d48">${i*2+1}</text>`+
-      `<text x="19" y="132" text-anchor="middle" font-size="6" fill="#263d48">${i*2+2}</text>`+
-      `<text x="19" y="42" text-anchor="middle" font-size="5" fill="#f0f4f6">WSI 6</text>`;
-    if(open){
-     a+=`<g data-wsi-state="open"><rect x="13" y="50" width="12" height="17" rx="1" fill="#d6b586"/>`+
-       `<rect x="13" y="89" width="12" height="17" rx="1" fill="#d6b586"/>`+
-       `<rect x="13" y="71" width="12" height="14" fill="#26323b" stroke="#f4c4a7" stroke-width=".8"/>`+
-       `<text x="19" y="82" font-size="5" text-anchor="middle" fill="#f1c2a8">AÇIK</text></g>`;
-    }else{
-     a+=`<g data-wsi-state="closed"><rect x="13" y="50" width="12" height="56" rx="2" fill="#e5e8df" stroke="#9ba3a5" stroke-width=".7"/>`+
-       `<rect x="13" y="50" width="12" height="8" rx="1" fill="#c5a677"/>`+
-       `<rect x="13" y="98" width="12" height="8" rx="1" fill="#c5a677"/>`+
-       `<text x="19" y="82" text-anchor="middle" font-size="7" fill="#3a4b54">F</text></g>`;
-    }
-    a+=`<text x="19" y="115" font-size="4" text-anchor="middle" fill="#ecf3f5">TEMSİLİ</text>`+
-      `<text x="19" y="121" font-size="4" text-anchor="middle" fill="#ecf3f5">ÜSTTEN</text>`+
-      `</svg><rect x="${xx+1}" y="6" width="38" height="150" fill="transparent"/></g>`;
+    const xx=i*40,open=!!c.fuseOpen?.[i];
+    const scope='fuse-'+String(c.id||d.id).replace(/[^a-z0-9]/gi,'')+'-'+i;
+    a+=`<g data-fuse-slot="${i}" role="button" tabindex="0" aria-label="${i+1}. sigorta ${open?'kapat':'aç'}"><svg x="${xx+1}" y="6" width="38" height="148" viewBox="405 70 215 1400" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${scope}"><rect x="423" y="516" width="180" height="523"/></clipPath></defs><image href="assets/products/wsi-top-v111.png" width="1024" height="1536"/><rect x="423" y="516" width="180" height="523" fill="#262b2e"/><g transform="translate(0 ${open?-150:0})"><image href="assets/products/wsi-top-v111.png" width="1024" height="1536" clip-path="url(#${scope})"/></g></svg>${text(open?'AÇIK':'',xx+20,156,8)}<rect x="${xx+1}" y="6" width="38" height="150" fill="transparent"/></g>`;
    }
   }else if(d.id==='potentiometer'){
    const p=Math.max(0,Math.min(100,Number(c.potentiometer??50))),max=Math.max(1,Number(c.potMax)||10000);

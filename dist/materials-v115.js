@@ -77,36 +77,13 @@
    }else if(d.instrument==='tx11'){
     art=maskedPhoto('baykon-front-v115.png','326 40 373 1440',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="334" y="48" width="357" height="1424" rx="24"/>');
     if(s?.on)art+=`<circle cx="43" cy="205" r="4" fill="#60dc58"/><circle cx="93" cy="205" r="4" fill="${s.error?'#f55':'#382d2d'}"/>`;
-    }else if(d.instrument==='waz5'){
-     // Native 2D orthographic upper plan. The photograph is a front reference,
-     // not a verified overhead projection; do not present it as top-view art.
-     // Geometry stays in the component's original 2 scene units/mm frame and
-     // the catalog owns all twelve electrical terminal coordinates.
-     const w=d.w,h=d.h,good=Number.isFinite(w)&&w>0&&Number.isFinite(h)&&h>0;
-     if(!good)return '';
-     const fs=Math.max(3,Math.min(5,w*.14,h*.034));
-     art=`<g class="waz5-top-plan" data-view="orthographic-top" data-visual-match="representative">`+
-       `<rect class="waz5-physical-envelope" x="0" y="0" width="${w}" height="${h}" rx="1.5" fill="#d4dde2" stroke="#657a85" stroke-width=".7"/>`+
-       `<rect x="${w*.085}" y="${h*.02}" width="${w*.83}" height="${h*.96}" rx="1.2" fill="#edf2f4" stroke="#8d9da6" stroke-width=".5"/>`+
-       `<rect x="${w*.14}" y="${h*.54}" width="${w*.72}" height="${h*.31}" rx="1.2" fill="#e4ecf0" stroke="#9caeb9" stroke-width=".4"/>`;
-     // Top plan uses the actual schematic terminal centers. Do not invent
-     // manufacturer-verified terminal positions for 3D or panel promotion.
-     const terminalRadius=Math.max(.7,Math.min(1.5,w*.035,h*.01));
-     for(const p of Array.isArray(d.pins)?d.pins:[]){
-      const id=String(p?.id||''),x=Number(p?.x),y=Number(p?.y);
-      if(!/^(?:[1-9]|1[0-2])$/.test(id)||![x,y].every(Number.isFinite)||x<0||x>w||y<0||y>h)continue;
-      const left=Number(id)<=6;
-      art+=`<circle data-waz5-terminal="${id}" cx="${x}" cy="${y}" r="${terminalRadius}" fill="#c56c37" stroke="#554c43" stroke-width=".35"/>`+
-        `<text x="${left?w*.26:w*.74}" y="${y+fs*.36}" text-anchor="middle" font-size="${fs}" fill="#243d4a">${id}</text>`;
-     }
-     art+=text(w/2,h*.595,'WAZ5',Math.max(4,Math.min(7,w*.19)))+
-       text(w/2,h*.66,'0–10 V',fs)+
-       `<path d="M${w/2} ${h*.682}V${h*.725}m-2 -2l2 2l2 -2" fill="none" stroke="#33515c" stroke-width=".7"/>`+
-       text(w/2,h*.78,'4–20 mA',fs)+
-       `<rect x="${w*.105}" y="${h*.865}" width="${w*.79}" height="${h*.06}" rx=".6" fill="#d6e2e8"/>`+
-       text(w/2,h*.91,'24 V DC',fs)+
-       text(w/2,h*.956,'TEMSİLİ ÜSTTEN',Math.max(2.6,Math.min(3.45,w*.094)))+'</g>';
-
+   }else if(d.instrument==='waz5'){
+    // The 17.5 x 92.4 mm manufacturer envelope is wider than the image's
+    // aspect-preserved crop. Show the housing at real scene scale without
+    // stretching the original photograph or moving any cable terminals.
+    art=`<rect class="waz5-physical-envelope" x="0" y="0" width="${d.w}" height="${d.h}" rx="1.5" fill="#e6ecef" stroke="#67747d" stroke-width="0.7"/>`+
+      maskedPhoto('weid-front-v115.png','394 27 226 1480',0,0,d.w,d.h,1024,1536,uid+'-body','<rect x="401" y="34" width="212" height="1466" rx="16"/>');
+    art+=text(d.w/2,d.h*(205/460),'2 + 0–10V − 3',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(225/460),'V → I',Math.max(5,d.w*(12/180)))+text(d.w/2,d.h*(245/460),'7 + 4–20mA − 8',Math.max(4,d.w*(7/180)))+text(d.w/2,d.h*(280/460),'4/10 +24V',Math.max(4,d.w*(8/180)))+text(d.w/2,d.h*(298/460),'5/11 0V',Math.max(4,d.w*(8/180)));
    }
    if(d.instrument==='hmt'&&(d.w!==240||d.h!==240))art=`<g class="instrument-scale-only" transform="scale(${d.w/240} ${d.h/240})">${art}</g>`;
    return `<g class="material-layer" data-material="${d.instrument}-front">${art}</g>`;

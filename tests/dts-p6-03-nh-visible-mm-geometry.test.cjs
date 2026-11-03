@@ -11,14 +11,13 @@ test('3NP1133 true 2 scene units/mm dimensions and all wired terminal coordinate
   assert.equal(d.pins[i].y,i%2?404:0);
  }
 });
-test('3NP1133 uses top-down orthographic plan without stretched or front photographic art',()=>{
+test('3NP1133 photo preserved and rendered with proportional crop not nonuniform squeezing',()=>{
  for(const state of [false,true]){
   const art=Material.markup(d,{id:'s3',state});
   assert.match(art,/width="211\.6" height="404" viewBox="27 0 126 240" preserveAspectRatio="xMidYMid meet"/);
-  assert.match(art,/data-view="top-orthographic"/);
-  assert.match(art,/data-visual-match="representative"/);
-  assert.match(art,/TEMSİLİ · ÜSTTEN/);
-  assert.doesNotMatch(art,/nh-holder-front-v111\.png|preserveAspectRatio="none"|scale\(1 0\.32\)|rotate\(|skew|perspective/);
+  assert.match(art,/nh-holder-front-v111\.png/);
+  assert.match(art,/TEMSİLİ GÖRSEL/);
+  assert.doesNotMatch(art,/scale\(0\.7 1\)/);
  }
 });
 test('other material branches are not wrapped with physical NH geometry',()=>{

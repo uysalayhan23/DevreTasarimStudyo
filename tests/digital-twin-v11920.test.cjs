@@ -71,11 +71,8 @@ test('WP-021 registry and audit expose one current truth for mapped product evid
   assert.equal(Object.keys(registry).length,13);
   assert.equal(audit.mapped,13);
   assert.equal(audit.verifiedPhysical,13);
-  assert.equal(audit.exactVisual,12, 'WAZ5 upper schematic is representative rather than exact photo');
-  assert.equal(registry['converter-pressure'].visual.promotionReady,false,'representative top plan is not exact photo evidence');
-  assert.equal(registry['converter-pressure'].visual.runtimeFile,null);
-  assert.equal(registry['converter-pressure'].visual.matchQuality,'representative');
-  assert.equal(registry['converter-pressure'].visual.orientationStatus,'orthographic-top');
+  assert.equal(audit.exactVisual,13);
+  assert.equal(registry['converter-pressure'].visual.promotionReady,false,'WAZ5 orientation evidence is still pending');
   assert.equal(registry['converter-pressure'].panel.eligible,false,'WAZ5 panel promotion is blocked');
   assert.equal(audit.orthographicVisual,7);
   assert.equal(audit.visualPromotionReady,12);

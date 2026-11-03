@@ -4,7 +4,7 @@
   const VALID_STATUS=new Set(['verified','partial','unverified','approximate']);
   const VALID_AUTHORITY=new Set(['manufacturer','official-doc','authorized-distributor','supplier','other']);
   const VALID_VISUAL_MATCH=new Set(['exact','family','representative','unverified']);
-  const VALID_VISUAL_ORIENTATION=new Set(['orthographic-front','orthographic-top','source-image-derived-front','front-lens','isometric','three-quarter','isometric-allowed','front-perspective','perspective','side','rear','unverified']);
+  const VALID_VISUAL_ORIENTATION=new Set(['orthographic-front','source-image-derived-front','front-lens','isometric','three-quarter','isometric-allowed','front-perspective','perspective','side','rear','unverified']);
   const VALID_TERMINAL_STATUS=new Set(['verified','unverified','connectorized-external']);
   const VALID_TERMINAL_IDENTITY_STATUS=new Set(['verified','partial','unverified']);
   const VALID_PROFILE_STATUS=new Set(['verified','unverified']);
@@ -350,11 +350,10 @@
       assetKey:'weid-front-v115',
       assetIdentityField:'instrument',
       assetIdentityValue:'waz5',
-      // Original front photo is retained as identity evidence only. Runtime
-      // appearance is a schematic, non-perspective upper plan, not an exact photo.
-      visualMatchStatus:'representative',
-      visualOrientationStatus:'orthographic-top',
-      visualSourceStatus:'code-native-orthographic-plan',
+      visualMatchStatus:'exact',
+      visualOrientationStatus:'source-image-derived-front',
+      visualSourceStatus:'repo-existing-product-visual',
+      visualSourceFile:'weid-front-v115.png',
       terminalGeometryStatus:'unverified',
       terminalGeometryRequiredForPanel:true,
       physicalRole:'standalone',
@@ -418,7 +417,7 @@
     if(typeof mapping.assetKey!=='string'||!mapping.assetKey.trim())return {ok:false,reason:'assetKey'};
     if(mapping.assetIdentityField!==undefined&&!VALID_ASSET_IDENTITY_FIELDS.has(mapping.assetIdentityField))return {ok:false,reason:'assetIdentityField'};
     if(mapping.assetIdentityField!==undefined&&(typeof mapping.assetIdentityValue!=='string'||!mapping.assetIdentityValue.trim()))return {ok:false,reason:'assetIdentityValue'};
-    if(mapping.visualSourceStatus!==undefined&&mapping.visualSourceStatus!==null&&!['repo-exact-product-visual','repo-existing-product-visual','code-native-orthographic-plan','derived-from-exact-repo-source','verified-manifest-provenance','user-supplied-canonical','user-supplied-manufacturer-cad+exact-photo-evidence'].includes(mapping.visualSourceStatus))return {ok:false,reason:'visualSourceStatus'};
+    if(mapping.visualSourceStatus!==undefined&&mapping.visualSourceStatus!==null&&!['repo-exact-product-visual','repo-existing-product-visual','derived-from-exact-repo-source','verified-manifest-provenance','user-supplied-canonical','user-supplied-manufacturer-cad+exact-photo-evidence'].includes(mapping.visualSourceStatus))return {ok:false,reason:'visualSourceStatus'};
     if(mapping.visualSourceFile!==undefined&&mapping.visualSourceFile!==null&&(typeof mapping.visualSourceFile!=='string'||!mapping.visualSourceFile.trim()))return {ok:false,reason:'visualSourceFile'};
     if(mapping.visualSourceSha256!==undefined&&(typeof mapping.visualSourceSha256!=='string'||!/^[0-9a-f]{64}$/.test(mapping.visualSourceSha256)))return {ok:false,reason:'visualSourceSha256'};
     if(!VALID_VISUAL_MATCH.has(mapping.visualMatchStatus))return {ok:false,reason:'visualMatchStatus'};
