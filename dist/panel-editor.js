@@ -96,9 +96,18 @@
   }
   function showInterior(){draft=null;wireMode=false;if(camera.view==='door'||panel().doorAngle<15){camera.view='plate';fit()}else render()}
   function addRail(){const ok=update(p=>{const y=Math.min(p.height-40,150+(p.rails.length%Math.max(1,Math.floor((p.height-190)/25)))*25),r=P.addRail(p,40,y,p.width-100);selected=new Set([r.id]);return {ok:true}});if(ok)showInterior()}
-  function checkDuct(p,d){const box={x:d.x,y:d.y,w:d.vertical?d.width:d.length,h:d.vertical?d.length:d.width};if(![d.x,d.y,d.width,d.length].every(Number.isFinite)||d.width<10||d.length<50||box.x<20||box.y<20||box.x+box.w>p.width-20||box.y+box.h>p.height-20)return {ok:false,reason:'Kanalın konumunu ve ölçülerini kontrol edin.'};return {ok:true}}
+  function checkDuct(p,d){
+    const box={x:d.x,y:d.y,w:d.vertical?d.width:d.length,h:d.vertical?d.length:d.width};
+    if(![d.x,d.y,d.width,d.length].every(Number.isFinite)||d.width<10||d.length<50||box.x<20||box.y<20||box.x+box.w>p.width-20||box.y+box.h>p.height-20)
+      return {ok:false,reason:'Kanalın konumunu ve ölçülerini kontrol edin.'};
+    // Native item placement rejects devices overlapping a cable duct. Apply
+    // the same rule when moving, resizing or adding the duct itself.
+    if(!d.kind&&p.items.some(i=>i.mount!=='door'&&i.mount!=='external'&&P.overlap(i,box,0)))
+      return {ok:false,reason:'Kablo kanalı malzemenin üzerine yerleştirilemez.'};
+    return {ok:true};
+  }
   function addAccessory(kind){const ok=update(p=>{const d={id:P.uid(kind),kind,x:40,y:40,width:kind==='gland'?30:20,length:kind==='gland'?50:150,vertical:true};p.ducts.push(d);selected=new Set([d.id]);return {ok:true}});if(ok)showInterior()}
-  function addDuct(){const ok=update(p=>{const d={id:P.uid('duct'),x:p.width-50-(p.ducts.length%5)*5,y:40,width:30,length:p.height-80,vertical:true};p.ducts.push(d);selected=new Set([d.id]);return {ok:true}});if(ok)showInterior()}
+  function addDuct(){const ok=update(p=>{const d={id:P.uid('duct'),x:p.width-50-(p.ducts.length%5)*5,y:40,width:30,length:p.height-80,vertical:true};const check=checkDuct(p,d);if(!check.ok)return check;p.ducts.push(d);selected=new Set([d.id]);return {ok:true}});if(ok)showInterior()}
   function removeSelected(){if(!selected.size)return;draft=null;update(p=>{P.remove(p,[...selected]);selected.clear()})}
   function selectAll(){selected=new Set([...panel().items,...panel().rails,...panel().ducts,...panel().wires||[]].map(i=>i.id));render()}
   function terminal(ref){
