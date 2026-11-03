@@ -23,10 +23,14 @@ test('new ET4420 alpha binary asset is valid and source-locked',()=>{
  assert.equal(hash(b),'a8801b9a7ed4e332f2fb27f27f4539980eff65017b144081aea5d6021fe5eb19');
 });
 
-test('original ENDA photo remains unmodified as right panel information reference',()=>{
+test('right panel uses matching alpha ET4420 photo, while the unmodified legacy original remains available',()=>{
  assert.equal(hash(asset('enda-front-v115.png')),'b562f7a9979b30b52201fca8742a0b2b214af73f95ef490ba0ab16ea8c7cebf3');
- const item=Brief.model(d,{id:'et1'});assert.equal(item.originalPhoto,'assets/products/enda-front-v115.png');
- assert.match(Brief.markup(item),/enda-front-v115\.png/);
+ const item=Brief.model(d,{id:'et1'});
+ assert.equal(item.originalPhoto,'assets/products/enda-et4420-front-transparent.webp');
+ const html=Brief.markup(item);
+ assert.match(html,/<img src="assets\/products\/enda-et4420-front-transparent\.webp"/);
+ assert.doesNotMatch(html,/enda-front-v115\.png/);
+ assert.equal(item.totalPins,14);
 });
 
 test('all ET4420 live PV/SP overlays and four touch key targets remain present',()=>{

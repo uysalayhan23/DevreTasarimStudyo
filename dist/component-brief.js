@@ -15,7 +15,7 @@
   'fuse-switch-3':'assets/products/wsi-top-v111.png',
   'unit-ut33d-plus':'assets/products/ut33d-front-transparent.webp',
   'sensor-temperature-humidity':'assets/products/gentek-front-v115.png',
-  'temperature-controller':'assets/products/enda-front-v115.png'
+  'temperature-controller':'assets/products/enda-et4420-front-transparent.webp'
  });
  const allowedOriginalPhotos=new Set(Object.values(originalPhotos));
  const kindHints={

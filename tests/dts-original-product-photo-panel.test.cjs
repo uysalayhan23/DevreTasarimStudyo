@@ -14,7 +14,7 @@ const scenarios=[
  ['fuse-switch','wsi-top-v111.png'],
  ['unit-ut33d-plus','ut33d-front-transparent.webp'],
  ['sensor-temperature-humidity','gentek-front-v115.png'],
- ['temperature-controller','enda-front-v115.png']
+ ['temperature-controller','enda-et4420-front-transparent.webp']
 ];
 
 test('original product reference photographs appear in right-side component info, not as invented vector content',()=>{
@@ -29,6 +29,16 @@ test('original product reference photographs appear in right-side component info
   assert.match(html,/Orijinal\/katalog fotoğrafı/);
   assert.doesNotMatch(html,/<svg|data-view="top-orthographic"/);
  }
+});
+
+test('ET4420 right panel never falls back to opaque legacy PNG or untrusted photo',()=>{
+ const d=library.find(x=>x.id==='temperature-controller');
+ const row=Brief.model(d,{id:'ET4420'});
+ const markup=Brief.markup(row);
+ assert.match(markup,/enda-et4420-front-transparent\.webp/);
+ assert.doesNotMatch(markup,/enda-front-v115\.png/);
+ assert.doesNotMatch(Brief.markup({...row,originalPhoto:'javascript:alert(1)'}),/<img/);
+ assert.equal(row.totalPins,14);
 });
 
 test('other catalog parts do not have fictitious product photographs',()=>{
