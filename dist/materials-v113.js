@@ -7,7 +7,19 @@
   const id='photo113-'+safe(c.id||d.id),on=!!c.state,w=d.w,h=d.h;
   let a='';
   if(d.reedSensor){
-   a=`<svg x="5" y="5" width="${w-10}" height="${h-10}" viewBox="87 0 324 327"><defs><clipPath id="${id}"><path d="M92 236L211 128L273 163L305 101L336 41L370 2H410L363 43L333 80L308 139L281 178L300 191L295 224L179 324L95 283Z"/></clipPath></defs>${image('reed-mr228b-v113.jpg',500,500,`clip-path="url(#${id})"`)}</svg>`;
+   // The original MR-228B photograph is oblique and includes a separate magnet.
+   // The editable device must use an original, explicitly representative TOP plan.
+   // Native 13/14 or 21/22 cable terminals remain at (w/2,0) and (w/2,h).
+   const cx=w/2,face=d.id==='reed-nc'?'NC':'NO';
+   a=`<g class="reed-top-plan" data-view="top-orthographic" data-visual-match="representative" aria-label="Reed sensörü temsili üstten plan">`+
+     `<path d="M${cx} 0V${h*.18}M${cx} ${h*.82}V${h}" stroke="#718096" stroke-width="2.5" fill="none"/>`+
+     `<rect x="${w*.25}" y="${h*.18}" width="${w*.5}" height="${h*.64}" rx="3" fill="#25333c" stroke="#142028" stroke-width="1.5"/>`+
+     `<rect x="${w*.30}" y="${h*.24}" width="${w*.4}" height="${h*.52}" rx="1.5" fill="#465764" stroke="#93a3ae" stroke-width=".7"/>`+
+     `<circle cx="${cx}" cy="${h*.30}" r="3" fill="#c9d4da" stroke="#344653"/>`+
+     `<circle cx="${cx}" cy="${h*.70}" r="3" fill="#c9d4da" stroke="#344653"/>`+
+     `<text x="${cx}" y="${h*.48}" font-size="6" text-anchor="middle" fill="#fff" stroke="none">REED</text>`+
+     `<text x="${cx}" y="${h*.59}" font-size="7" font-weight="700" text-anchor="middle" fill="#fff" stroke="none">${face}</text>`+
+     `<text x="${cx}" y="${h*.93}" font-size="5.5" text-anchor="middle" fill="#405261" stroke="none">TEMSİLİ · ÜSTTEN</text></g>`;
   }else if(['limit-no','limit-nc','mechanical-control','mechanical-latching'].includes(d.id)){
    const lever='M595 534L591 431L600 348L625 269L629 211L630 141L650 96L686 61L734 49L817 55L850 95L860 146L850 222L820 270L766 309L745 365L741 494L718 558L672 594L631 582Z';
    const body='M377 1047L348 577L370 566L370 420L411 386L470 363L561 369L601 382L605 526L641 586L718 565L721 679L752 692L743 1068L531 1181Z';
@@ -32,7 +44,7 @@
     a=`<svg x="5" y="5" width="${w-10}" height="${h-10}" viewBox="0 0 ${iw} 1000" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${id}-body"><rect x="8" y="8" width="${iw-16}" height="984" rx="6"/></clipPath><clipPath id="${id}"><rect x="20" y="684" width="${iw-40}" height="61"/></clipPath></defs>${image(file,iw,1000,`clip-path="url(#${id}-body)"`)}${windows}<rect x="20" y="684" width="${iw-40}" height="61" fill="#d4d8d7"/><g class="breaker-lever" transform="translate(0 ${on?0:-100})">${image(file,iw,1000,`clip-path="url(#${id})"`)}</g><text x="${iw/2}" y="${on?590:700}" font-size="28" text-anchor="middle" fill="${on?'#acd8ac':'#b52121'}">${on?'0 OFF':'I ON'}</text></svg>`;
    }
   }
-  return a?`<g class="material-layer material-v113" data-material="photo-${d.id}">${a}</g>`:'';
+  return a?`<g class="material-layer material-v113" data-material="${d.reedSensor?'top-plan':'photo'}-${d.id}">${a}</g>`:'';
  }
  const api={markup};if(typeof module==='object'&&module.exports)module.exports=api;else root.DTSMaterials113=api;
 })(typeof window==='undefined'?globalThis:window);
