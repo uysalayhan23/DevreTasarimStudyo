@@ -5,6 +5,26 @@ const {pngSize}=require('./browser-visual-hl-v11920.cjs');
 const ROOT=path.resolve(__dirname,'..'),OUT=path.join(ROOT,'build','mq05-ut200a-browser');
 const REPORT=path.join(OUT,'report.json'),hash=buf=>crypto.createHash('sha256').update(buf).digest('hex');
 const EXPECTED=['jaw-before-drag','jaw-open-over-live-wire','jaw-snapped-closed','jaw-current-ac-1a'];
+const PHOTO_SHA256=Object.freeze({
+ 'ut200a-user-photo-closed.webp':'80316e422ac4d1d9e77a3ded0f948031cb284fb9563af5727932608cdf22ee1b',
+ 'ut200a-user-photo-open.webp':'aede335afae7d05b28046a1540b89cc0e8b1307faa06b5ade8922dd5f70b3d00',
+ '1n5408-user-approved-representative.webp':'2132d13a9c20231de9c75d553218a376ebaf87608cdc4b7b0282f7145a531109',
+});
+const PHOTOS=Object.freeze({photo_before:'ut200a-user-photo-closed.webp',
+ photo_open:'ut200a-user-photo-open.webp',photo_snapped:'ut200a-user-photo-closed.webp',
+ photo_measured:'ut200a-user-photo-closed.webp'});
+function validatePhotoEvidence(states){
+ const photos={};
+ for(const [step,file] of Object.entries(PHOTOS)){
+  const e=states?.[step];
+  if(!e?.ok||!e.visible||e.file!==file||e.href!=='assets/products/'+file||e.sha256!==PHOTO_SHA256[file]||
+     !(e.width>=200&&e.height>=300&&e.bytes>3500&&e.opaque>20&&e.transparent>20))
+   throw Error('Real browser photo evidence missing, stale or opaque: '+step);
+  photos[step]={file,sha256:e.sha256,bytes:e.bytes,width:e.width,height:e.height,
+   opaque:e.opaque,transparent:e.transparent};
+ }
+ return photos;
+}
 function validate(report){
  if(report.status!=='PASS'||report.failure||report.exceptions?.length)throw Error('Real Chromium jaw run failed');
  const c=report.coverage||{},s=report.states||{};
@@ -18,6 +38,7 @@ function validate(report){
    Math.abs(Number(s.measured?.clamp?.value)-1)<.04&&s.measured?.clamp?.warning===''&&
    s.measured?.wireCount===2&&s.measured?.projectRunning))
   throw Error('UT200A jaw state/snap/current evidence inconsistent');
+ const photos=validatePhotoEvidence(s);
  if(!Array.isArray(report.screenshots)||report.screenshots.length!==4||
    report.screenshots.some((item,i)=>item.step!==EXPECTED[i]))
   throw Error('Expected exactly four ordered real screenshots');
@@ -34,7 +55,7 @@ function validate(report){
  }
  if(new Set(files.map(v=>v.sha256)).size!==4)
   throw Error('UT200A four images must provide distinct physical interaction evidence');
- return {status:'PASS',steps:4,files,coverage:c};
+ return {status:'PASS',steps:4,files,coverage:c,photos};
 }
 function main(){
  if(!fs.existsSync(REPORT))throw Error('Real UT200A Chromium report.json not found');
@@ -50,4 +71,4 @@ if(require.main===module)try{main()}catch(e){
  fs.writeFileSync(path.join(OUT,'verification.failure.json'),JSON.stringify({status:'FAIL',message:e.message,time:new Date().toISOString()},null,2)+'\n');
  console.error('UT200A-JAW verifier FAILED:',e.stack||e);process.exitCode=1;
 }
-module.exports={validate,main};
+module.exports={validate,validatePhotoEvidence,main};

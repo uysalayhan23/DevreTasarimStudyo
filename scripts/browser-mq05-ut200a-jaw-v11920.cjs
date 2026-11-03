@@ -5,6 +5,23 @@ const {spawn,spawnSync}=require('node:child_process');
 const ROOT=path.resolve(__dirname,'..'),DIST=path.join(ROOT,'dist'),BUILD=path.join(ROOT,'build','mq05-ut200a-browser');
 const GOLDEN=JSON.parse(fs.readFileSync(path.join(ROOT,'tests','browser-visual-golden-v11920.json'),'utf8'));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const PHOTO_SHA256=Object.freeze({
+ 'ut200a-user-photo-closed.webp':'80316e422ac4d1d9e77a3ded0f948031cb284fb9563af5727932608cdf22ee1b',
+ 'ut200a-user-photo-open.webp':'aede335afae7d05b28046a1540b89cc0e8b1307faa06b5ade8922dd5f70b3d00',
+ '1n5408-user-approved-representative.webp':'2132d13a9c20231de9c75d553218a376ebaf87608cdc4b7b0282f7145a531109',
+});
+function verifyPhotoAssetBytes(){
+ const result={};
+ for(const [file,expected] of Object.entries(PHOTO_SHA256)){
+  const abs=path.join(DIST,'assets','products',file);
+  if(!fs.existsSync(abs))throw Error('Photo asset missing in this local DTS folder: '+file);
+  const bytes=fs.readFileSync(abs),actual=sha256(bytes);
+  if(actual!==expected)throw Error('Old/mixed DTS photo asset: '+file+' SHA256 '+actual+' expected '+expected);
+  result[file]={sha256:actual,bytes:bytes.length};
+ }
+ return result;
+}
+
 function sha256(data){return crypto.createHash('sha256').update(data).digest('hex')}
 function pngCrc(data){
  let crc=0xffffffff;
@@ -73,13 +90,20 @@ function pngSize(data){
  }
  return {width,height};
 }
+function browserCandidates(platform=process.platform,env=process.env){
+  // Windows/Edge is the user-facing DTS runtime. Do not require a separate
+  // Chrome installation merely to prove the real app's photo/jaw behaviour.
+  const join=platform==='win32'?path.win32.join:path.join;
+  const edges=platform==='win32'?[...['PROGRAMFILES(X86)','PROGRAMFILES','LOCALAPPDATA']
+    .map(key=>env[key]).filter(Boolean).map(root=>join(root,'Microsoft','Edge','Application','msedge.exe')),'msedge.exe']:[];
+  return [env.CHROME_BIN,...edges,'google-chrome','google-chrome-stable','chromium','chromium-browser'].filter(Boolean);
+}
 function findBrowser(){
-  const candidates=[process.env.CHROME_BIN,'google-chrome','google-chrome-stable','chromium','chromium-browser'].filter(Boolean);
-  for(const cmd of candidates){
+  for(const cmd of browserCandidates()){
     const r=spawnSync(cmd,['--version'],{encoding:'utf8'});
     if(!r.error&&r.status===0)return {cmd,version:(r.stdout||r.stderr||'').trim()};
   }
-  throw Error('Gerçek Chrome/Chromium bulunamadı. CHROME_BIN ayarlayın.');
+  throw Error('Gerçek Edge/Chrome/Chromium bulunamadı. CHROME_BIN ayarlayın.');
 }
 function mime(file){
   const ext=path.extname(file).toLowerCase();
@@ -160,6 +184,41 @@ async function evaluate(cdp,expression){
   const r=await cdp.call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true,userGesture:true});
   if(r.exceptionDetails)throw Error('Browser JS exception: '+(r.exceptionDetails.text||r.exceptionDetails.exception?.description||'unknown'));
   return r.result?.value;
+}
+// A DOM href alone is not proof that Edge loaded or decoded a product photo.
+// Check the actual on-screen SVG image, fetch its same-origin bytes, decode it
+// in the real browser, and require both opaque body and transparent background.
+async function photoEvidence(cdp,filename){
+ const evidence=await evaluate(cdp,expression(async expected=>{
+  const image=document.querySelector('#scene .component[data-id="cl"] svg.ut200a-user-photo image');
+  const href=image?.getAttribute('href')||'';
+  const rect=image?.getBoundingClientRect();
+  const visible=!!rect&&rect.width>20&&rect.height>20&&
+   window.getComputedStyle(image).visibility!=='hidden';
+  if(href!=='assets/products/'+expected||!visible)return {file:expected,href,visible,ok:false,reason:'missing or invisible SVG photo'};
+  try{
+   const response=await fetch(new URL(href,document.baseURI),{cache:'no-store'});
+   if(!response.ok)return {file:expected,href,visible,ok:false,reason:'HTTP '+response.status};
+   const blob=await response.blob(),bitmap=await createImageBitmap(blob);
+   const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',await blob.arrayBuffer()))).map(n=>n.toString(16).padStart(2,'0')).join('');
+   const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
+   const ctx=canvas.getContext('2d',{willReadFrequently:true});
+   if(!ctx)throw Error('Canvas 2D unavailable');
+   ctx.drawImage(bitmap,0,0);bitmap.close?.();
+   const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+   let opaque=0,transparent=0;
+   const step=Math.max(1,Math.floor(Math.min(canvas.width,canvas.height)/50));
+   for(let y=0;y<canvas.height;y+=step)for(let x=0;x<canvas.width;x+=step){
+    const alpha=pixels[(y*canvas.width+x)*4+3];
+    if(alpha>245)opaque++;if(alpha<10)transparent++;
+   }
+   return {file:expected,href,visible,ok:canvas.width>=200&&canvas.height>=300&&opaque>20&&transparent>20,
+    width:canvas.width,height:canvas.height,bytes:blob.size,opaque,transparent,sha256:digest};
+  }catch(e){return {file:expected,href,visible,ok:false,reason:String(e?.message||e)}}
+ },filename));
+ check(evidence?.ok,'Real Edge/Chromium photo did not render/decode with alpha: '+JSON.stringify(evidence));
+ check(evidence.sha256===PHOTO_SHA256[filename],'Stale/incorrect Edge photo pixels: '+filename+' SHA256 '+evidence.sha256);
+ return evidence;
 }
 async function shot(cdp,name){
   let r;
@@ -400,7 +459,7 @@ async function runJaw(cdp,report){
  check(before.projectRunning,'Real AC simulation did not start');
  check(!before.clampedWireId&&!before.jawOpen&&before.visualState==='closed','UT200A must begin unattached with closed jaws');
  check(before.wireCount===2,'UT200A clamp must not add wires to a load circuit');
- report.states.before=before;await shotEvidence(cdp,report,'jaw-before-drag');
+ report.states.before=before;report.states.photo_before=await photoEvidence(cdp,'ut200a-user-photo-closed.webp');await shotEvidence(cdp,report,'jaw-before-drag');
  let geometry=await aimJaw(cdp);
  check(geometry?.end&&[geometry.from.x,geometry.from.y,geometry.end.x,geometry.end.y].every(Number.isFinite)&&geometry.from.x>0&&geometry.from.y>0,'Cannot locate visible jaw and live conductor in viewport');
  report.states.drag_geometry=geometry;
@@ -443,7 +502,7 @@ async function runJaw(cdp,report){
  const pointerLast=await dragDiagnostics(cdp,alignedEnd);
  report.states.pointer_last_drag=pointerLast;
  const opened=await inspectJaw(cdp);
- report.states.opened=opened;await shotEvidence(cdp,report,'jaw-open-over-live-wire');
+ report.states.opened=opened;report.states.photo_open=await photoEvidence(cdp,'ut200a-user-photo-open.webp');await shotEvidence(cdp,report,'jaw-open-over-live-wire');
  const pointerDelta=pointerLast.devicePosition&&initial.devicePosition?
   Math.hypot(pointerLast.devicePosition.x-initial.devicePosition.x,pointerLast.devicePosition.y-initial.devicePosition.y):0;
  report.states.pointer_actual_world_displacement=pointerDelta;
@@ -456,7 +515,7 @@ async function runJaw(cdp,report){
  check(!opened.clampedWireId,'UT200A must not claim attachment before the mouse is released');
  await release(cdp,alignedEnd);await sleep(170);
  const snapped=await inspectJaw(cdp);
- report.states.snapped=snapped;await shotEvidence(cdp,report,'jaw-snapped-closed');
+ report.states.snapped=snapped;report.states.photo_snapped=await photoEvidence(cdp,'ut200a-user-photo-closed.webp');await shotEvidence(cdp,report,'jaw-snapped-closed');
  check(snapped.clampedWireId==='w1'&&Number.isFinite(snapped.clampT),
   'Physical UT200A drag did not snap onto the correct wire');
  check(!snapped.jawOpen&&snapped.visualState==='closed'&&!snapped.visibleOpenMark,
@@ -474,7 +533,7 @@ async function runJaw(cdp,report){
  check(dial.found&&dial.selected==='1','UT200A ACA dial not available through the real inspector UI');
  await sleep(170);
  const measured=await inspectJaw(cdp);
- report.states.measured=measured;await shotEvidence(cdp,report,'jaw-current-ac-1a');
+ report.states.measured=measured;report.states.photo_measured=await photoEvidence(cdp,'ut200a-user-photo-closed.webp');await shotEvidence(cdp,report,'jaw-current-ac-1a');
  check(measured.clampedWireId==='w1'&&!measured.jawOpen,'Clamp attachment lost after selecting ACA range');
  check(measured.meterPosition===1&&measured.clamp?.warning==='',
   'Clamp ACA meter must be free of warnings: '+JSON.stringify(measured.clamp));
@@ -488,12 +547,14 @@ async function runJaw(cdp,report){
 }
 async function main(){
  fs.mkdirSync(BUILD,{recursive:true});
+ const photoAssetHashes=verifyPhotoAssetBytes();
  const browser=findBrowser(),userData=fs.mkdtempSync(path.join(os.tmpdir(),'dts-ut200a-jaw-'));
  const {server,url}=await staticServer();
- const child=spawn(browser.cmd,['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage',
+ // Keep the normal Edge sandbox on Windows; isolated Linux CI may need its existing flag.
+ const child=spawn(browser.cmd,['--headless=new',...(process.platform==='win32'?[]:['--no-sandbox']),'--disable-gpu','--disable-dev-shm-usage',
   '--hide-scrollbars','--remote-debugging-port=0','--user-data-dir='+userData,'--window-size=1440,1000','about:blank'],{stdio:'ignore'});
  let cdp;const report={schema:'dts-ut200a-physical-jaw-v1',started_at:new Date().toISOString(),
-  browser:browser.version,states:{},screenshots:[],coverage:{},exceptions:[],status:'FAIL'};
+  browser:browser.version,photoAssetHashes,states:{},screenshots:[],coverage:{},exceptions:[],status:'FAIL'};
  try{
   const port=Number((await waitForFile(path.join(userData,'DevToolsActivePort'))).split(/\r?\n/)[0]);
   cdp=new CDP((await pageTarget(port)).webSocketDebuggerUrl);await cdp.open();
@@ -523,4 +584,4 @@ async function main(){
  }
 }
 if(require.main===module)main().catch(e=>{console.error('[UT200A-JAW]',e.stack||e.message);process.exitCode=1});
-module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible,dragDiagnostics,liveJawAlignment,alignJawWhileDragging};
+module.exports={freeClampFixture,runJaw,aimJaw,inspectJaw,ensureEditorVisible,dragDiagnostics,liveJawAlignment,alignJawWhileDragging,browserCandidates,photoEvidence,verifyPhotoAssetBytes,PHOTO_SHA256};

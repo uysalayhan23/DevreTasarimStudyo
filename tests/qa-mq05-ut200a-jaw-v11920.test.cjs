@@ -197,7 +197,10 @@ test('UT200A noninvasive clamp never becomes a moving wire-routing obstacle',()=
  };
  const env={
   project:fixture,byId:byIdMinimal,Leads:{floating:d=>!!d&&(d.kind==='multimeter'||!!d.probeColor)},
-  appearance:'symbol',materialDefinition:(c,d)=>d,GRID:20
+  appearance:'symbol',materialDefinition:(c,d)=>d,GRID:20,
+  // The isolated geometry unit test must supply the actual function dependency.
+  // It checks conductor routing, not pixel-perfect device outlines.
+  Symbols:{materialBounds:(c,d)=>({left:c.x-5,top:c.y-5,right:c.x+d.w+5,bottom:c.y+d.h+5})}
  };
  const obstacleFunction=new Function(...Object.keys(env),
   src.slice(start,end)+';return componentObstacles;')(...Object.values(env));

@@ -12,7 +12,7 @@ $Visual = Join-Path $Build 'mq05-ut200a-browser'
 New-Item -ItemType Directory -Path $RunDir -Force | Out-Null
 
 $Summary = [ordered]@{
-  qa='MQ-05 UT200A physical jaw Chrome QA'
+  qa='MQ-05 UT200A physical jaw Edge/Chromium photo QA'
   started_at=(Get-Date).ToString('o')
   project_root=$Root
   status='FAIL'
@@ -98,8 +98,20 @@ try {
     'tests/tutorial-measurement-batch-d-v11920.test.cjs',
     'tests/signed-flow-v11920.test.cjs',
     'tests/qa-mq05-windows-v11920.test.cjs',
+    'tests/dts-ut200a-edge-photo-acceptance-native.test.cjs',
+    'tests/dts-ut200a-1n5408-photo-native.test.cjs',
     'tests/qa-mq05-ut200a-jaw-v11920.test.cjs'
   )
+  # A narrow one-click Edge photo/jaw acceptance for the current DTS folder.
+  # The historical full MQ-05 suite remains the default when this is not set.
+  if ($env:DTS_UT200A_PHOTO_ONLY -eq '1') {
+    $Tests = @(
+      'tests/dts-ut200a-edge-photo-acceptance-native.test.cjs',
+      'tests/dts-ut200a-1n5408-photo-native.test.cjs',
+      'tests/qa-mq05-ut200a-jaw-v11920.test.cjs'
+    )
+    Note 'Photo-only QA: current WebP bytes, real jaw open/closed and live AC reading.'
+  }
   foreach ($Test in $Tests) {
     if (-not (Test-Path -LiteralPath (Join-Path $Root $Test) -PathType Leaf)) {
       throw ('Missing Node test: '+$Test)
@@ -108,7 +120,11 @@ try {
   $Summary.test_files = $Tests
   $SourceHashes = [ordered]@{}
   foreach ($SourceFile in @('dist\app.js','dist\tutorial-mode.js','scripts\browser-mq05-ut200a-jaw-v11920.cjs',
-      'scripts\qa-mq05-ut200a-jaw-verify-v11920.cjs','tests\qa-mq05-ut200a-jaw-v11920.test.cjs','BASLAT.bat')) {
+      'scripts\qa-mq05-ut200a-jaw-verify-v11920.cjs','tests\qa-mq05-ut200a-jaw-v11920.test.cjs','tests\dts-ut200a-edge-photo-acceptance-native.test.cjs',
+      'tests\dts-ut200a-1n5408-photo-native.test.cjs',
+      'dist\assets\products\ut200a-user-photo-closed.webp',
+      'dist\assets\products\ut200a-user-photo-open.webp',
+      'dist\assets\products\1n5408-user-approved-representative.webp','BASLAT.bat')) {
     $SourceHashes[$SourceFile] = (Get-FileHash -LiteralPath (Join-Path $Root $SourceFile) -Algorithm SHA256).Hash.ToLowerInvariant()
   }
   [System.IO.File]::WriteAllText((Join-Path $RunDir 'source-hashes.json'),($SourceHashes | ConvertTo-Json -Depth 5),$Utf8NoBom)
@@ -129,7 +145,7 @@ try {
   $Summary.verification_exit_code = Invoke-QA -Exe $Node.Source -Argv @('scripts/qa-mq05-ut200a-jaw-verify-v11920.cjs') -Label 'artifact-verification'
   if ($Summary.verification_exit_code -ne 0) { throw 'UT200A jaw PNG JSON/SHA-256 verification FAILED.' }
   $Summary.status = 'PASS'
-  Note 'PASS: real UT200A jaw open/snap, live AC 1A and 4 PNG JSON SHA-256 verified.'
+  Note 'PASS: real Edge/Chromium decoded alpha in 4 jaw states, live AC 1A and 4 PNG SHA-256 verified.'
 }
 catch {
   $Message = $_.Exception.Message
