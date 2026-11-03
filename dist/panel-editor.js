@@ -107,7 +107,23 @@
     return {ok:true};
   }
   function addAccessory(kind){const ok=update(p=>{const d={id:P.uid(kind),kind,x:40,y:40,width:kind==='gland'?30:20,length:kind==='gland'?50:150,vertical:true};p.ducts.push(d);selected=new Set([d.id]);return {ok:true}});if(ok)showInterior()}
-  function addDuct(){const ok=update(p=>{const d={id:P.uid('duct'),x:p.width-50-(p.ducts.length%5)*5,y:40,width:30,length:p.height-80,vertical:true};const check=checkDuct(p,d);if(!check.ok)return check;p.ducts.push(d);selected=new Set([d.id]);return {ok:true}});if(ok)showInterior()}
+  function addDuct(){
+    const ok=update(p=>{
+      const id=P.uid('duct'),width=30,length=p.height-80,y=40;
+      // Keep the existing first placement, but find a free lane for later ducts.
+      // A 5 mm offset is not enough to separate two 30 mm wide channels.
+      const start=P.snap(p.width-50-(p.ducts.length%5)*5);
+      for(let x=start;x>=20;x-=5){
+        const d={id,x,y,width,length,vertical:true},check=checkDuct(p,d);
+        if(!check.ok)continue;
+        const box={x,y,w:width,h:length};
+        if(p.ducts.some(other=>!other.kind&&P.overlap(box,{x:other.x,y:other.y,w:other.vertical?other.width:other.length,h:other.vertical?other.length:other.width},0)))continue;
+        p.ducts.push(d);selected=new Set([d.id]);return {ok:true};
+      }
+      return {ok:false,reason:'Yeni kablo kanalı için çakışmasız boş alan bulunamadı.'};
+    });
+    if(ok)showInterior();
+  }
   function removeSelected(){if(!selected.size)return;draft=null;update(p=>{P.remove(p,[...selected]);selected.clear()})}
   function selectAll(){selected=new Set([...panel().items,...panel().rails,...panel().ducts,...panel().wires||[]].map(i=>i.id));render()}
   function terminal(ref){
