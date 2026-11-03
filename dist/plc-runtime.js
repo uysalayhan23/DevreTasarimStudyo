@@ -60,6 +60,10 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
   const previousM=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
    .filter(r=>r?.coil?.ref?.[0]==='M'&&['OUT','SET'].includes(r.coil.type))
    .map(r=>[r.coil.ref,c._dtsLadderMemory?.values?.[r.coil.ref]===true]));
+  // Timer start timestamps must come from this scan or trusted prior memory.
+  const previousTimers=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
+   .filter(r=>['TON','TOF','TP'].includes(r?.coil?.type))
+   .map(r=>[r.coil.ref,{...(c._dtsLadderMemory?.blocks?.[r.coil.ref]||{})}]));
   // Snapshot counter state before scan mutates its memory object.
   const previousCounters=Object.fromEntries((Array.isArray(c.ladderProgram?.rungs)?c.ladderProgram.rungs:[])
    .filter(r=>['CTU','CTD'].includes(r?.coil?.type))
@@ -133,6 +137,33 @@ function program(c,inputValues,outputPins,now,defaultMode='start-stop-latch'){
       (count===expected||count===initial):count===expected)&&
      (resetAfter?(finalCount===initial&&result.memory.values[ref]===false):
       finalCount===count&&result.memory.values[ref]===(type==='CTU'?finalCount>=preset:finalCount===0));
+   })&&rungs.every((r,j)=>{
+    // A successful-looking scan must not forge a timer bit to energize Q.
+    // Validate timer progress against the actual block state and scan time.
+    if(!['TON','TOF','TP'].includes(r?.coil?.type))return true;
+    const ref=r.coil.ref,type=r.coil.type,preset=r.coil.presetMs;
+    const trace=result.traces[j],elapsed=trace.elapsedMs;
+    const resetAfter=rungs.slice(j+1).some((next,k)=>
+     next?.coil?.type==='RESET'&&next.coil.ref===ref&&result.traces[j+1+k].active);
+    const block=result.memory.blocks?.[ref];
+    const started=type==='TON'?block?.start:type==='TOF'?block?.offStart:block?.pulseStart;
+    const elapsedFromState=Number.isFinite(started)?Math.max(0,Math.min(preset,now-started)):null;
+    const old=previousTimers[ref]||{};
+    const priorStart=type==='TON'?old.start:type==='TOF'?old.offStart:old.pulseStart;
+    const priorElapsed=Number.isFinite(priorStart)&&now>=priorStart?
+     Math.max(0,Math.min(preset,now-priorStart)):null;
+    // A forged scan cannot invent an already-elapsed timer on its first tick.
+    const trustedElapsed=elapsed===null||elapsed===0||elapsed===priorElapsed;
+    const trustedStart=!Number.isFinite(started)||started===now||started===priorStart;
+    const expected=type==='TON'?(trace.active&&elapsed===preset):
+     type==='TOF'?(trace.active||(elapsed!==null&&elapsed<preset)):
+     (elapsed!==null&&elapsed<preset);
+    return (elapsed===null||(Number.isFinite(elapsed)&&elapsed>=0&&elapsed<=preset))&&
+     trustedElapsed&&trustedStart&&
+     trace.value===expected&&
+     (resetAfter?result.memory.values[ref]===false:
+      block?.kind===type&&block.presetMs===preset&&elapsed===elapsedFromState&&
+      result.memory.values[ref]===trace.value);
    })&&Object.entries(previousM).every(([ref,wasSet])=>{
     // A forged M latch must not energize a downstream Q through an otherwise
     // success-shaped scan. Verify every M OUT/SET/RESET transition in order.
