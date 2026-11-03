@@ -58,12 +58,37 @@
    a+=circle(f?75:124,f?150:177,3,c._active?'#4ff461':'#35513a');
    if(c._phaseFault)a+=text(c._phaseFault,x,h+8,8);
   }else if(d.id==='nh-fuse-holder'){
-   a=rect(10,10,w-20,h-20,'#74868f')+rect(18,24,w-36,h-54,'#383f42');
-   for(let i=0;i<3;i++)a+=rect(28+i*50,32,24,18,'#c5a770')+rect(28+i*50,164,24,18,'#c5a770');
-   const nhScope='nh-holder-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
-   a+=`<g class="nh-lid" transform="translate(0 ${on?145:0}) scale(1 ${on?.32:1})"><svg x="10" y="10" width="${w-20}" height="${h-20}" viewBox="105 180 785 1350" preserveAspectRatio="xMidYMid meet"><defs><clipPath id="${nhScope}"><rect x="122" y="194" width="752" height="1318" rx="22"/></clipPath></defs><image href="assets/products/nh-holder-front-v111.png" width="996" height="1580" clip-path="url(#${nhScope})"/></svg>`;
-   for(let i=0;i<3;i++)if(c.nhFuses?.[i])a+=rect(34+i*50,88,12,77,'#b8bdc0')+rect(28+i*50,104,24,46,'#eee9dc')+text('NH',40+i*50,130,8);
-   a+='</g>'+text('TEMSİLİ GÖRSEL',x,225,7)+text(on?'KAPAK AÇIK':'3NP1 · NH00 / 000',x,238,9);
+    // Orthographic top-down educational plan, not a manufacturer's exact product photograph.
+    // The outer SVG maps 126 x 240 plan units to 105.8 x 202 mm; keep all six
+    // catalog terminals at x=40/90/140 and y=0/240, including cable endpoints.
+    // No oblique projection, perspectival skew, aspect distortion or lid squash.
+    a=`<g class="nh-top-plan" data-view="top-orthographic" data-visual-match="representative">`+
+      `<rect x="27" y="2" width="126" height="236" rx="3" fill="#768b96" stroke="#334552" stroke-width="1.5"/>`+
+      `<rect x="31" y="26" width="118" height="186" rx="3" fill="#33434b" stroke="#203039"/>`;
+    for(let i=0;i<3;i++){
+     const cx=40+i*50;
+     // Vertical copper paths terminate at the exact native terminal coordinates.
+     a+=`<g data-nh-pole="${i+1}"><path d="M${cx} 0V28M${cx} 211V240" stroke="#b8a075" stroke-width="4"/>`+
+       `<circle cx="${cx}" cy="14" r="5" fill="#cfb881" stroke="#5c4c34"/>`+
+       `<circle cx="${cx}" cy="226" r="5" fill="#cfb881" stroke="#5c4c34"/>`+
+       `<rect x="${cx-12}" y="38" width="24" height="159" rx="3" fill="#1e2a32" stroke="#526572"/>`;
+     if(c.nhFuses?.[i])a+=`<rect x="${cx-8}" y="65" width="16" height="102" rx="2" fill="#e8e9df" stroke="#8c9699"/>`+
+       `<rect x="${cx-9}" y="65" width="18" height="14" rx="1" fill="#b8a576"/>`+
+       `<rect x="${cx-9}" y="153" width="18" height="14" rx="1" fill="#b8a576"/>`+
+       text('NH',cx,120,7);
+     a+='</g>';
+    }
+    if(!on){
+     // Closed cover seen face-on from above. Open state removes it without
+     // deforming or translating the underlying physical housing/terminals.
+     a+=`<g class="nh-lid"><rect x="30" y="44" width="120" height="145" rx="3" fill="#a9b8c3" stroke="#4b606d" stroke-width="1.5"/>`+
+       `<rect x="35" y="49" width="110" height="20" rx="2" fill="#7f929e"/>`+
+       `<rect x="36" y="76" width="108" height="65" rx="3" fill="#c6d0d7"/>`+
+       text('3NP1 · NH00',x,109,10)+text('KAPAK KAPALI',x,127,7)+'</g>';
+    }
+    if(on)a+=text('KAPAK AÇIK',x,34,7);
+    a+=`<rect x="31" y="197" width="118" height="14" rx="1" fill="#d8e0e5"/>`+
+      text('TEMSİLİ · ÜSTTEN',x,207,7)+'</g>';
   }else if(d.id==='nh-fuse'){
    const nhFuseScope='nh-fuse-bg-'+String(c.id||d.id).replace(/[^a-z0-9_-]/gi,'');
    a=`<defs><clipPath id="${nhFuseScope}"><path d="M24 18H${w-24}V${h-18}H24Z"/></clipPath></defs><image href="assets/products/nh-reference-v111.png" x="10" y="5" width="${w-20}" height="${h-10}" preserveAspectRatio="xMidYMid meet" clip-path="url(#${nhFuseScope})"/>`;

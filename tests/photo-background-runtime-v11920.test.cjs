@@ -13,7 +13,8 @@ test('phase and NH renderers preserve aspect ratio with a local silhouette clip'
     assert.doesNotMatch(html,/preserveAspectRatio="none"/);
   }
   const nh=M111.markup({id:'nh-fuse-holder',w:180,h:240},{id:'nh-test',nhFuses:[false,false,false]});
-  assert.match(nh,/clip-path="url\(#nh-holder-bg-/);
+  assert.match(nh,/class="nh-top-plan" data-view="top-orthographic"/);
+  assert.doesNotMatch(nh,/nh-holder-front-v111\.png/);
   assert.match(nh,/preserveAspectRatio="xMidYMid meet"/);
   assert.doesNotMatch(nh,/preserveAspectRatio="none"/);
 });

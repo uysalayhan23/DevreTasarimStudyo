@@ -1,17 +1,41 @@
 'use strict';
 const {test}=require('node:test'),assert=require('node:assert/strict');
-const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const current=require('../dist/materials-v111.js');
-const source=fs.readFileSync(path.join(__dirname,'../dist/materials-v111.js'),'utf8');
-const exact="+text('TEMSİLİ GÖRSEL',x,225,7)";
-assert.equal(source.split(exact).length,2);
-const sandbox={module:{exports:{}}};vm.runInNewContext(source.replace(exact,''),sandbox);
-const original=sandbox.module.exports;
-const d={id:'nh-fuse-holder',w:180,h:240};
-const render=(api,c={id:'S3'})=>api.markup(d,c);
-const mark=/<text x="90" y="225" text-anchor="middle" font-size="7" fill="#162536">TEMSİLİ GÖRSEL<\/text>/;
-test('negative control: original falsely leaves representative product image unmarked',()=>{assert.doesNotMatch(render(original),/TEMSİLİ GÖRSEL/);assert.match(render(current),mark)});
-test('representative label survives both lid states',()=>{for(const open of [false,true])assert.match(render(current,{id:'S3',state:open}),mark)});
-test('product image, SVG frame and terminal-neutral geometry remain unchanged',()=>{const strip=s=>s.replace(mark,'');assert.equal(strip(render(current)),render(original));});
-test('other product markup does not change',()=>{for(const id of ['packet-star-delta','nh-fuse','siren']){const product={id,w:180,h:240};assert.equal(current.markup(product,{id:'x'}),original.markup(product,{id:'x'}));}});
-test('model-specific catalog description remains visible without falsely asserting image match',()=>{assert.match(render(current),/3NP1 · NH00 \/ 000/);assert.doesNotMatch(render(current),/3NP1133-1CA10.*EXACT/)});
+const Mat=require('../dist/materials-v111.js');
+const d={id:'nh-fuse-holder',w:211.6,h:404};
+const render=c=>Mat.markup(d,{id:'nh-1',...c});
+test('3NP1133 no longer displays the mismatched front product photo as an overhead plan',()=>{
+ const svg=render();
+ assert.match(svg,/class="nh-top-plan" data-view="top-orthographic" data-visual-match="representative"/);
+ assert.doesNotMatch(svg,/nh-holder-front-v111\.png|<image|perspective|skew\(|scale\(1 0\.32\)/);
+ assert.match(svg,/TEMSİLİ · ÜSTTEN/);
+});
+test('all 6 overhead terminal positions are visible at original diagram coordinates',()=>{
+ const svg=render();
+ assert.equal((svg.match(/data-nh-pole="[123]"/g)||[]).length,3);
+ for(const x of [40,90,140]){
+  assert.match(svg,new RegExp('M'+x+' 0V28M'+x+' 211V240'));
+  assert.match(svg,new RegExp('cx="'+x+'" cy="14"'));
+  assert.match(svg,new RegExp('cx="'+x+'" cy="226"'));
+ }
+});
+test('opening the cover changes only a face-on layer, never the frame or terminal traces',()=>{
+ const closed=render({state:false}),opened=render({state:true});
+ assert.match(closed,/class="nh-lid"/);assert.doesNotMatch(opened,/class="nh-lid"/);
+ assert.match(opened,/KAPAK AÇIK/);
+ for(const s of [closed,opened]){
+  assert.match(s,/x="27" y="2" width="126" height="236"/);
+  assert.equal((s.match(/data-nh-pole=/g)||[]).length,3);
+  assert.doesNotMatch(s,/transform="rotate|scale\(0\.7 1\)|preserveAspectRatio="none"/);
+ }
+});
+test('installed fuses are shown as three independent top-view slots only when present',()=>{
+ const all=render({state:true,nhFuses:[true,true,true]}),none=render({state:true,nhFuses:[false,false,false]});
+ assert.equal((all.match(/>NH<\/text>/g)||[]).length,3);
+ assert.doesNotMatch(none,/>NH<\/text>/);
+});
+test('other product markup is not converted to 3NP overhead plan',()=>{
+ for(const type of ['packet-star-delta','nh-fuse','siren']){
+  const svg=Mat.markup({id:type,w:180,h:240},{id:'other'});
+  assert.doesNotMatch(svg,/nh-top-plan|data-view="top-orthographic"/);
+ }
+});
